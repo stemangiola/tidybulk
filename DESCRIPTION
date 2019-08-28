@@ -1,0 +1,18 @@
+Package: tidyTranscriptomics
+Type: Package
+Title: Friendly tidy wrappers for facilitating transcriptional analyses
+Version: 0.1.0
+Author: Stefano Mangiola
+Maintainer: Stefano Mangiola <mangiolastefano@gmail.com>
+Description: This is a collection of utility function that allow to perform exploration of and calculations to RNA sequencing data, in a tidy and pipe-friendly fashion. 
+License: GPL3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
+biocViews:
+Biarch: true
+Imports: tibble, dplyr, magrittr, tidyr, ggplot2, readr, widyr, foreach, rlang, purrr, furrr
+Suggests: 
+    parallel,
+    testthat
+Remotes: bioc::3.3/edgeR, bioc::3.3/AnnotationDbi, bioc::3.3/org.Hs.eg.db, bioc::3.3/sva
