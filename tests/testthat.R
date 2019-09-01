@@ -1,4 +1,4 @@
 library(testthat)
-library(tidyTranscriptomics)
+library(ttBulk)
 
-test_check("tidyTranscriptomics")
+test_check("ttBulk")

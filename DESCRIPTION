@@ -1,4 +1,4 @@
-Package: tidyTranscriptomics
+Package: ttBulk
 Type: Package
 Title: Friendly tidy wrappers for facilitating transcriptional analyses
 Version: 0.1.0

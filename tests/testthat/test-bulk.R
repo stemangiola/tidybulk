@@ -1,6 +1,6 @@
 context('Bulk functions')
 
-test_that("Test data frame",{ expect_equal( ncol(tidyTranscriptomics::counts_mini), 6 ) })
+test_that("Test data frame",{ expect_equal( ncol(ttBulk::counts_mini), 6 ) })
 
 test_that("Creating tt object from tibble, number of parameters",{
 
@@ -9,7 +9,7 @@ test_that("Creating tt object from tibble, number of parameters",{
     length(
       attr(
         create_tt_from_tibble_bulk(
-          tidyTranscriptomics::counts_mini,
+          ttBulk::counts_mini,
           sample_column = sample,
           transcript_column = transcript,
           counts_column = `read count`
@@ -26,7 +26,7 @@ test_that("Getting normalised counts - no object",{
 
   res =
     get_normalised_counts_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       sample_column = sample,
       transcript_column = transcript,
       counts_column = `read count`
@@ -50,7 +50,7 @@ test_that("Adding normalised counts - no object",{
 
   res =
     add_normalised_counts_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       sample_column = sample,
       transcript_column = transcript,
       counts_column = `read count`
@@ -73,7 +73,7 @@ test_that("Get differential trancript abundance - no object",{
 
   res =
     get_differential_transcript_abundance_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       ~ condition,
       sample_column = sample,
       transcript_column = transcript,
@@ -97,7 +97,7 @@ test_that("Get cluster lables based on Kmeans - no object",{
 
   res =
     get_clusters_kmeans_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       value_column = `read count`,
       elements_column = sample,
       feature_column = transcript,
@@ -120,7 +120,7 @@ test_that("Add cluster lables based on Kmeans - no object",{
 
   res =
     add_clusters_kmeans_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       value_column = `read count`,
       elements_column = sample,
       feature_column = transcript,
@@ -143,7 +143,7 @@ test_that("Get reduced dimensions MDS - no object",{
 
   res =
     get_reduced_dimensions_MDS_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       value_column = `read count`,
       elements_column = sample,
       feature_column = transcript
@@ -166,7 +166,7 @@ test_that("Add reduced dimensions MDS - no object",{
 
   res =
     add_reduced_dimensions_MDS_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       value_column = `read count`,
       elements_column = sample,
       feature_column = transcript
@@ -189,7 +189,7 @@ test_that("Get reduced dimensions PCA - no object",{
 
   res =
     get_reduced_dimensions_PCA_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       value_column = `read count`,
       elements_column = sample,
       feature_column = transcript
@@ -212,7 +212,7 @@ test_that("Add reduced dimensions PCA - no object",{
 
   res =
     add_reduced_dimensions_PCA_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       value_column = `read count`,
       elements_column = sample,
       feature_column = transcript
@@ -235,7 +235,7 @@ test_that("Get rotated dimensions - no object",{
 
   res.pca =
     add_reduced_dimensions_PCA_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       value_column = `read count`,
       elements_column = sample,
       feature_column = transcript
@@ -267,7 +267,7 @@ test_that("Add rotated dimensions - no object",{
 
   res.pca =
     add_reduced_dimensions_PCA_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       value_column = `read count`,
       elements_column = sample,
       feature_column = transcript
@@ -299,7 +299,7 @@ test_that("Aggregate duplicated transcript - no object",{
 
   res =
     aggregate_duplicated_transcripts_bulk(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       sample_column = sample,
       transcript_column = transcript,
       counts_column = `read count`
@@ -321,7 +321,7 @@ test_that("Drop redundant correlated - no object",{
 
   res =
     drop_redundant_elements_through_correlation(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       value_column = `read count`,
       elements_column = sample,
       feature_column = transcript
@@ -344,7 +344,7 @@ test_that("Get symbol from ensambl - no object",{
 
   res =
     get_symbol_from_ensembl(
-      tidyTranscriptomics::counts_ensembl,
+      ttBulk::counts_ensembl,
       ensembl_transcript_column = ens
     )
 
@@ -364,7 +364,7 @@ test_that("Add symbol from ensambl - no object",{
 
   res =
     add_symbol_from_ensembl(
-      tidyTranscriptomics::counts_ensembl,
+      ttBulk::counts_ensembl,
       ensembl_transcript_column = ens
     )
 
@@ -384,7 +384,7 @@ test_that("Get cell type proportions - no object",{
 
   expect_error(
     get_cell_type_proportions(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       sample_column = sample,
       transcript_column = transcript,
       counts_column = `read count`
@@ -394,9 +394,9 @@ test_that("Get cell type proportions - no object",{
 
   res =
     get_cell_type_proportions(
-      tidyTranscriptomics::counts[
-        tidyTranscriptomics::counts$sample %in%
-          unique(tidyTranscriptomics::counts_mini$sample),
+      ttBulk::counts[
+        ttBulk::counts$sample %in%
+          unique(ttBulk::counts_mini$sample),
         ],
       sample_column = sample,
       transcript_column = transcript,
@@ -420,7 +420,7 @@ test_that("Add cell type proportions - no object",{
 
   expect_error(
     add_cell_type_proportions(
-      tidyTranscriptomics::counts_mini,
+      ttBulk::counts_mini,
       sample_column = sample,
       transcript_column = transcript,
       counts_column = `read count`
@@ -430,9 +430,9 @@ test_that("Add cell type proportions - no object",{
 
   res =
     add_cell_type_proportions(
-      tidyTranscriptomics::counts[
-        tidyTranscriptomics::counts$sample %in%
-          unique(tidyTranscriptomics::counts_mini$sample),
+      ttBulk::counts[
+        ttBulk::counts$sample %in%
+          unique(ttBulk::counts_mini$sample),
         ],
       sample_column = sample,
       transcript_column = transcript,
