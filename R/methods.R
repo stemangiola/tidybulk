@@ -31,7 +31,12 @@ create_ttBulk.tbl_df <- function(input.df,
                                  type,
                                  ...)
 {
-  create_tt_from_tibble_bulk(input.df, sample_column, transcript_column,  counts_column)
+  # Make col names
+  sample_column = enquo(sample_column)
+  transcript_column = enquo(transcript_column)
+  counts_column = enquo(counts_column)
+
+  create_tt_from_tibble_bulk(input.df, !!sample_column, !!transcript_column,  !!counts_column)
 
 }
 
