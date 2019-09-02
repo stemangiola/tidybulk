@@ -1,6 +1,6 @@
 context('Bulk functions')
 
-test_that("Test data frame",{ expect_equal( ncol(ttBulk::counts_mini), 6 ) })
+test_that("Test data frame",{ expect_equal( ncol(ttBulk::counts_mini), 7 ) })
 
 test_that("Creating tt object from tibble, number of parameters",{
 
@@ -64,7 +64,7 @@ test_that("Adding normalised counts - no object",{
 
   expect_equal(
     ncol(res),
-    10
+    11
   )
 
 })
@@ -134,7 +134,7 @@ test_that("Add cluster lables based on Kmeans - no object",{
 
   expect_equal(
     ncol(res),
-    7
+    8
   )
 
 })
@@ -180,7 +180,7 @@ test_that("Add reduced dimensions MDS - no object",{
 
   expect_equal(
     ncol(res),
-    8
+    9
   )
 
 })
@@ -226,7 +226,7 @@ test_that("Add reduced dimensions PCA - no object",{
 
   expect_equal(
     ncol(res),
-    8
+    9
   )
 
 })
@@ -290,7 +290,7 @@ test_that("Add rotated dimensions - no object",{
 
   expect_equal(
     ncol(res),
-    10
+    11
   )
 
 })
@@ -312,7 +312,7 @@ test_that("Aggregate duplicated transcript - no object",{
 
   expect_equal(
     ncol(res),
-    7
+    8
   )
 
 })
@@ -334,7 +334,7 @@ test_that("Drop redundant correlated - no object",{
 
   expect_equal(
     ncol(res),
-    6
+    7
   )
 
 })

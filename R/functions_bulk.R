@@ -1791,6 +1791,14 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
   transcript_column = col_names$transcript_column
   counts_column = col_names$counts_column
 
+  # Check that formula includes at least two covariates
+  if(parse_formula(formula) %>% length %>% `<` (2))
+    stop("The formula must contain two covariates, the first being the factor of interest, the second being the factor of unwanted variation")
+
+  # Check that formula includes no more than two covariates at the moment
+  if(parse_formula(formula) %>% length %>% `>` (3))
+    warning("Only the second covariate in the formula is adjusted for, at the moment")
+
   # New column name
   value_adjusted = as.symbol(sprintf("%s adjusted",  quo_name(counts_column)))
 
@@ -1825,6 +1833,13 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
     ) %>%
     set_colnames(c("(Intercept)", parse_formula(formula)[1]))
 
+  # Check if package is installed, otherwise install
+  if ("sva" %in% rownames(installed.packages()) == FALSE) {
+    writeLines("Installing sva - Combat needed for adjustment for unwanted variation")
+    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+    BiocManager::install("sva")
+  }
+
   df_for_combat %>%
 
     # Filter low read counts
@@ -1842,13 +1857,6 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
     spread(!!sample_column,!!counts_column) %>%
     as_matrix(rownames = !!transcript_column,
               do_check = FALSE) %>%
-
-    # Check if package is installed, otherwise install
-    if ("sva" %in% rownames(installed.packages()) == FALSE) {
-      writeLines("Installing sva - Combat needed for adjustment for unwanted variation")
-      if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-      BiocManager::install("sva")
-    }
 
     # Run combat
     sva::ComBat(
