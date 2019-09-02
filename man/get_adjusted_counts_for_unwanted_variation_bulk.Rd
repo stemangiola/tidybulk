@@ -22,7 +22,7 @@ get_adjusted_counts_for_unwanted_variation_bulk(input.df, formula,
 \item{design_column}{A character name of the covariate column}
 }
 \value{
-A tibble with edgeR results
+A tibble with adjusted counts
 }
 \description{
 Get adjusted read count for some batch effect

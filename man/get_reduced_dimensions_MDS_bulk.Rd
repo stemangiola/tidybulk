@@ -4,14 +4,14 @@
 \alias{get_reduced_dimensions_MDS_bulk}
 \title{Get dimensionality information to a tibble using MDS}
 \usage{
-get_reduced_dimensions_MDS_bulk(input.df, value_column,
-  components_list = list(c(1, 2)), elements_column = NULL,
-  feature_column = NULL, of_samples = T, log_transform = T)
+get_reduced_dimensions_MDS_bulk(input.df, value_column, components = 1:2,
+  elements_column = NULL, feature_column = NULL, of_samples = T,
+  log_transform = T)
 }
 \arguments{
 \item{input.df}{A tibble}
 
-\item{components_list}{A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))}
+\item{components}{A integer vector corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))}
 
 \item{elements_column}{A character string. The column that is used to calculate distance (i.e., normally samples)}
 

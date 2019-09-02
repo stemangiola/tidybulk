@@ -15,4 +15,4 @@ Imports: tibble, dplyr, magrittr, tidyr, ggplot2, readr, widyr, foreach, rlang, 
 Suggests: 
     parallel,
     testthat
-Remotes: bioc::3.3/edgeR, bioc::3.3/AnnotationDbi, bioc::3.3/org.Hs.eg.db, bioc::3.3/sva
+
