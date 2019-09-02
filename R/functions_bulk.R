@@ -166,7 +166,7 @@ add_normalised_counts_bulk.get_cpm <- function(df,
         do(
           bind_cols(
             !!transcript_column := (.) %>% pull(!!transcript_column),
-            tibble::as_tibble((.) %>% select(-!!transcript_column) %>% cpm)
+            tibble::as_tibble((.) %>% select(-!!transcript_column) %>% edgeR::cpm())
           )
         ) %>%
         gather(!!sample_column, cpm,-!!transcript_column) %>%
@@ -182,7 +182,6 @@ add_normalised_counts_bulk.get_cpm <- function(df,
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
-#' @importFrom edgeR cpm
 #'
 #'
 #' @param df A tibble
@@ -243,7 +242,6 @@ add_normalised_counts_bulk.get_low_expressed <- function(df,
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
-#' @importFrom edgeR calcNormFactors
 #'
 #' @param df A tibble
 #' @param reference A reference matrix, not sure if used anymore
@@ -358,6 +356,13 @@ get_normalised_counts_bulk <- function(input.df,
   sample_column = col_names$sample_column
   transcript_column = col_names$transcript_column
   counts_column = col_names$counts_column
+
+  # Check if package is installed, otherwise install
+  if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
+    writeLines("Installing edgeR needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+    BiocManager::install("edgeR")
+  }
 
   # Set column name for value normalised
   value_normalised = as.symbol(sprintf("%s normalised",  quo_name(counts_column)))
@@ -528,13 +533,6 @@ add_normalised_counts_bulk <- function(input.df,
 #' @import tidyr
 #' @import tibble
 #' @importFrom magrittr set_colnames
-#' @importFrom edgeR DGEList
-#' @importFrom edgeR calcNormFactors
-#' @importFrom edgeR estimateGLMCommonDisp
-#' @importFrom edgeR estimateGLMTagwiseDisp
-#' @importFrom edgeR glmFit
-#' @importFrom edgeR glmLRT
-#' @importFrom edgeR topTags
 #'
 #'
 #'
@@ -609,6 +607,12 @@ get_differential_transcript_abundance_bulk <- function(input.df,
         (.) %>% colnames %>% `[` (-1)
       ))
 
+  # Check if package is installed, otherwise install
+  if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
+    writeLines("Installing edgeR needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+    BiocManager::install("edgeR")
+  }
 
   df_for_edgeR.filt <-
     df_for_edgeR %>%
@@ -665,7 +669,7 @@ get_differential_transcript_abundance_bulk <- function(input.df,
 #'
 #'
 #'
-#' @param df A tibble
+#' @param input.df A tibble
 #' @param formula a formula with no response variable, referring only to numeric variables
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
@@ -832,7 +836,7 @@ add_clusters_kmeans_bulk <-
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally genes)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally samples)
 #' @param counts_column   A character string. The column that contains the numeric value (i.e., normally read counts)
-#' @param components_list A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
+#' @param components A integer vector corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @return A tibble with additional columns
 #'
@@ -840,7 +844,7 @@ add_clusters_kmeans_bulk <-
 get_reduced_dimensions_MDS_bulk <-
   function(input.df,
            value_column,
-           components_list = list(c(1, 2)),
+           components = 1:2,
            elements_column = NULL,
            feature_column = NULL,
            of_samples = T,
@@ -854,6 +858,10 @@ get_reduced_dimensions_MDS_bulk <-
     feature_column = col_names$feature_column
 
     value_column = enquo(value_column)
+
+    # Convert components to components list
+    if((length(components) %% 2) != 0 ) components = components %>% append(components[1])
+    components_list = split(components, ceiling(seq_along(components)/2))
 
     # Loop over components list and calculate MDS. (I have to make this process more elegant)
     components_list %>%
@@ -917,7 +925,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally genes)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally samples)
 #' @param counts_column   A character string. The column that contains the numeric value (i.e., normally read counts)
-#' @param components_list A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
+#' @param components A integer vector corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @return A tibble with additional columns
 #'
@@ -925,7 +933,7 @@ get_reduced_dimensions_MDS_bulk <-
 add_reduced_dimensions_MDS_bulk <-
   function(input.df,
            value_column ,
-           components_list = list(c(1, 2)),
+           components = 1:2,
            elements_column = NULL,
            feature_column = NULL,
            of_samples = T,
@@ -945,7 +953,7 @@ add_reduced_dimensions_MDS_bulk <-
         (.) %>%
           get_reduced_dimensions_MDS_bulk(
             value_column = !!value_column,
-            components_list = components_list,
+            components = components,
             elements_column = !!elements_column,
             feature_column = !!feature_column,
             log_transform = log_transform
@@ -1756,14 +1764,6 @@ add_cell_type_proportions = function(input.df,            sample_column = NULL,
 #' @import tidyr
 #' @import tibble
 #' @importFrom magrittr set_colnames
-#' @importFrom edgeR DGEList
-#' @importFrom edgeR calcNormFactors
-#' @importFrom edgeR estimateGLMCommonDisp
-#' @importFrom edgeR estimateGLMTagwiseDisp
-#' @importFrom edgeR glmFit
-#' @importFrom edgeR glmLRT
-#' @importFrom edgeR topTags
-#' @importFrom sva ComBat
 #'
 #' @param df A tibble
 #' @param formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
@@ -1772,7 +1772,7 @@ add_cell_type_proportions = function(input.df,            sample_column = NULL,
 #' @param counts_column A character name of the read count column
 #' @param design_column A character name of the covariate column
 #'
-#' @return A tibble with edgeR results
+#' @return A tibble with adjusted counts
 #'
 #' @export
 get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
@@ -1843,8 +1843,15 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
     as_matrix(rownames = !!transcript_column,
               do_check = FALSE) %>%
 
+    # Check if package is installed, otherwise install
+    if ("sva" %in% rownames(installed.packages()) == FALSE) {
+      writeLines("Installing sva - Combat needed for adjustment for unwanted variation")
+      if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+      BiocManager::install("sva")
+    }
+
     # Run combat
-    ComBat(
+    sva::ComBat(
       batch =
         df_for_combat %>%
         distinct(!!sample_column,!!as.symbol(parse_formula(formula)[2])) %>%
@@ -1897,7 +1904,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
 #' @param counts_column A character name of the read count column
 #' @param design_column A character name of the covariate column
 #'
-#' @return A tibble with edgeR results
+#' @return A tibble with adjusted counts
 #'
 #' @export
 add_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
@@ -1932,4 +1939,3 @@ counts_column = col_names$counts_column
     )
 
 }
-
