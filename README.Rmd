@@ -1,0 +1,214 @@
+---
+title: "tidyTranscriptomics (tidyT) - beta"
+output: github_document
+---
+A user-firendly grammar of bulk RNA sequencing data explaration and processing
+
+
+#  <img src="inst/logo.png" height="139px" width="120px" />
+
+A user-firendly grammar of bulk RNA sequencing data explaration and processing; which allows the use of a consistent data structure, in a tidy and pipe-friendly fashion. In brief you can easily pipe thought:
+
++ Going from BAM/SAM to a tidy data frame of counts (FeatureCounts)
++ Adding gene symbols from ensembl IDs
++ Aggregating duplicated gene symbols
++ Adding normalised counts
++ Adding principal components
++ Adding MDS components
++ Rotating principal component or MDS dimensions
++ Running differential transcript abunance analyses (edgeR)
++ Adding batch adjusted read counts (Combat) 
++ Eliminating redunant samples and/or genes
++ Clustering samples and/or genes with kmeans
++ Adding tissue composition (Cibersort)
+
+The grammar verbs:
+
++ drop_
++ aggregate_
++ recuce_
++ noralise_
++ adjust_
++ annotate_
+
+Data structure management:
+
+with the "action" parameter you can decide whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).
+
+You can convert a list of BAM/SAM files into a tidy data frame of annotated counts
+
+```{r eval=FALSE}
+counts = bam_sam_to_featureCounts_tibble(file_names, genome = "hg38")
+```
+
+We can add transcript from ensembl indexes if needed
+
+```{r eval = F}
+counts_ensembl %>% annotate_symbol(ens)
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache.lazy = FALSE)
+```
+
+```{r, echo=FALSE, include=FALSE, }
+library(tidyverse)
+library(magrittr)
+library(ttBulk)
+
+my_theme = 	
+	theme_bw() +
+	theme(
+		panel.border = element_blank(),
+		axis.line = element_line(),
+		panel.grid.major = element_line(size = 0.2),
+		panel.grid.minor = element_line(size = 0.1),
+		text = element_text(size=12),
+		legend.position="bottom",
+		aspect.ratio=1,
+		strip.background = element_blank(),
+		axis.title.x  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10)),
+		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
+	)
+
+```
+
+
+With an example data set of this kind (included in the package)
+
+```{r}
+counts # Accessible via tidyTranscriptomics::counts
+```
+
+We can aggregate (e.g., sum) duplicated gene symbols
+
+```{r, cache=TRUE}
+counts.aggr = 
+  counts %>%
+  aggregate_duplicates(sample, transcript, `read count`,  aggregation_function = sum)
+
+counts.aggr
+```
+
+We can add normalised counts
+
+```{r, cache=TRUE}
+counts.norm =  counts.aggr %>% normalise_counts(sample, transcript, `read count`)
+counts.norm
+
+counts.norm %>% ggplot(aes(`read count normalised` + 1, group=sample, color=`Cell type`)) + geom_density() + scale_x_log10() + my_theme
+```
+
+We can add MDS components, then use them for plotting or other post processing
+
+```{r, cache=TRUE}
+counts.norm.MDS = 
+  counts.norm %>%
+  reduce_dimensions(value_column = `read count normalised`, method="MDS" , elements_column = sample, feature_column = transcript)
+counts.norm.MDS
+```
+
+```{r, cache=TRUE}
+counts.norm.MDS %>% 
+	distinct(sample, `Dimension 1`, `Dimension 2`, `Cell type`) %>%
+	ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=`Cell type`)) + 
+  geom_point() +
+  my_theme
+
+```
+
+There are cases where we may want to rotate two dimensions (e.g., when a factor of interest is correlated - diagonally - with a linear combination of two dimensions)
+
+```{r, cache=TRUE}
+counts.norm.MDS.rotated =
+  counts.norm.MDS %>%
+	rotate_dimensions(`Dimension 1`, `Dimension 2`, rotation_degrees = 45, elements_column = sample)
+```
+
+```{r, cache=TRUE}
+counts.norm.MDS.rotated %>%
+	distinct(sample, `Dimension 1 rotated 45`,`Dimension 2 rotated 45`, `Cell type`) %>%
+	ggplot(aes(x=`Dimension 1 rotated 45`, y=`Dimension 2 rotated 45`, color=`Cell type` )) + 
+  geom_point() +
+  my_theme
+```
+
+We visualise the combinations of the first N Dimensions for an overall evaluation
+
+```{r, cache=TRUE}
+counts.norm %>%
+ reduce_dimensions(value_column = `read count normalised`, method="MDS" , elements_column = sample, feature_column = transcript, components = 1:6) %>%
+  select(contains("Dimension"), everything()) %>%
+  distinct() %>%
+  GGally::ggpairs(columns = 1:6, ggplot2::aes(colour=`Cell type`)) 
+
+```
+
+We can remove highly correlated samples and see how the MDS plot looks like
+
+```{r, cache=TRUE}
+counts.norm.MDS %>% 
+  drop_redundant(method = "correlation", elements_column = sample, feature_column = transcript, value_column = `read count normalised`) %>%
+	distinct(sample, `Dimension 1`, `Dimension 2`, `Cell type`) %>%
+	ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=`Cell type`)) + 
+  geom_point() +
+  my_theme
+
+```
+
+We can add K-means cluster labels, then use them for plotting or other post processing
+
+```{r, cache=TRUE}
+counts.norm.MDS.kmeans = counts.norm.MDS %>%
+  annotate_clusters(value_column = `read count normalised`, elements_column = sample, feature_column = transcript,	number_of_clusters = 2 )
+
+counts.norm.MDS.kmeans
+```
+
+```{r, cache=TRUE}
+counts.norm.MDS.kmeans %>% 
+	distinct(sample, `Dimension 1`, `Dimension 2`, cluster) %>%
+	ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=cluster)) + 
+  geom_point() +
+  my_theme
+```
+
+We can annotate our tibble with differential transcription analysis results
+
+```{r, cache=TRUE}
+counts.norm.MDS.kmeans %>%
+	annotate_differential_transcription( ~ cluster,	sample, transcript, `read count`, action="get") 
+```
+
+For visualisation purposes, we can add the batch adjusted read counts; to see the data with the linear model eyes in case the batch is one of the covariates
+
+```{r, cache=TRUE}
+counts.norm.MDS.kmeans %>%
+  
+  # Add fake batch
+  left_join( (.) %>% distinct(sample) %>% mutate(batch = sample(0:1, n(), replace = T))) %>%
+    
+  # Add covariate
+  adjust_counts( ~ cluster + batch,	sample, transcript, `read count normalised`)
+```
+
+We can add the predictions from Cibersort to each sample
+
+```{r, cache=TRUE}
+counts.cibersort = counts %>% annotate_cell_type(sample, transcript, `read count`, action="add") 
+counts.cibersort
+```
+
+And plot the distributions of cell types across samples
+
+```{r, cache=TRUE}
+counts.cibersort %>%
+  rename(`Cell type experimental` = `Cell type.x`, `Cell type estimated` = `Cell type.y`) %>%
+  distinct(sample, `Cell type experimental`, `Cell type estimated`, proportion) %>%
+  ggplot(aes(x=`Cell type estimated`, y=proportion, fill=`Cell type experimental`)) + 
+  geom_boxplot() + 
+  facet_wrap(~`Cell type experimental`) +
+  my_theme + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
+```

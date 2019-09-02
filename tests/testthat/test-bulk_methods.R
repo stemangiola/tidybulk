@@ -13,7 +13,7 @@ test_that("Creating tt object from tibble, number of parameters, methods",{
           transcript_column = transcript,
           counts_column = `read count`
         ) ,
-      "parameters"
+        "parameters"
       )
     ),
     3
@@ -24,15 +24,15 @@ test_that("Creating tt object from tibble, number of parameters, methods",{
 test_that("Test class identity of tt object",{
 
   expect_equal(
-      class(
-        create_ttBulk(
-          ttBulk::counts_mini,
-          sample_column = sample,
-          transcript_column = transcript,
-          counts_column = `read count`
-        )
-      )[1],
-      "ttBulk"
+    class(
+      create_ttBulk(
+        ttBulk::counts_mini,
+        sample_column = sample,
+        transcript_column = transcript,
+        counts_column = `read count`
+      )
+    )[1],
+    "ttBulk"
   )
 
 })
@@ -81,7 +81,7 @@ test_that("Adding normalised counts - no object",{
 
   expect_equal(
     ncol(res),
-    10
+    11
   )
 
 })
@@ -111,7 +111,7 @@ test_that("Get differential trancript abundance - no object",{
 
 })
 
-test_that("Get differential trancript abundance - no object",{
+test_that("Add differential trancript abundance - no object",{
 
   res =
     annotate_differential_transcription(
@@ -131,15 +131,41 @@ test_that("Get differential trancript abundance - no object",{
 
   expect_equal(
     ncol(res),
-    13
+    14
   )
 
 })
 
+test_that("Get adjusted counts - no object",{
+
+  res =
+    adjust_counts(
+      ttBulk::counts_mini,
+      ~ condition + batch,
+      sample_column = sample,
+      transcript_column = transcript,
+      counts_column = `read count`,
+      action="get"
+    )
+
+  expect_equal(
+    unique(res$`read count adjusted`)[c(1, 3, 4, 5)],
+    c(372 ,  19 ,  14, 1209),
+    tolerance=1e-7
+  )
+
+  expect_equal(
+    ncol(res),
+    4
+  )
+
+})
+
+
 test_that("Get cluster lables based on Kmeans - no object",{
 
   res =
-    find_clusters(
+    annotate_clusters(
       ttBulk::counts_mini,
       value_column = `read count`,
       elements_column = sample,
@@ -163,7 +189,7 @@ test_that("Get cluster lables based on Kmeans - no object",{
 test_that("Add cluster lables based on Kmeans - no object",{
 
   res =
-    find_clusters(
+    annotate_clusters(
       ttBulk::counts_mini,
       value_column = `read count`,
       elements_column = sample,
@@ -179,7 +205,7 @@ test_that("Add cluster lables based on Kmeans - no object",{
 
   expect_equal(
     ncol(res),
-    7
+    8
   )
 
 })
@@ -229,7 +255,7 @@ test_that("Add reduced dimensions MDS - no object",{
 
   expect_equal(
     ncol(res),
-    8
+    9
   )
 
 })
@@ -279,7 +305,7 @@ test_that("Add reduced dimensions PCA - no object",{
 
   expect_equal(
     ncol(res),
-    8
+    9
   )
 
 })
@@ -349,7 +375,7 @@ test_that("Add rotated dimensions - no object",{
 
   expect_equal(
     ncol(res),
-    10
+    11
   )
 
 })
@@ -371,7 +397,7 @@ test_that("Aggregate duplicated transcript - no object",{
 
   expect_equal(
     ncol(res),
-    7
+    8
   )
 
 })
@@ -394,7 +420,7 @@ test_that("Drop redundant correlated - no object",{
 
   expect_equal(
     ncol(res),
-    6
+    7
   )
 
 })

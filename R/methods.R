@@ -162,7 +162,7 @@ normalise_counts.tbl_df = normalise_counts.ttBulk <-
 #' @return A tibble with additional columns
 #'
 #' @export
-find_clusters <- function(input.df,
+annotate_clusters <- function(input.df,
                           value_column,
                           number_of_clusters,
                           elements_column = NULL,
@@ -170,11 +170,11 @@ find_clusters <- function(input.df,
                           of_samples = T,
                           log_transform = T,
                           action = "add") {
-  UseMethod("find_clusters", input.df)
+  UseMethod("annotate_clusters", input.df)
 }
 
 #' @export
-find_clusters.default <-  function(input.df,
+annotate_clusters.default <-  function(input.df,
                                    value_column,
                                    number_of_clusters,
                                    elements_column = NULL,
@@ -187,7 +187,7 @@ find_clusters.default <-  function(input.df,
 }
 
 #' @export
-find_clusters.tbl_df = find_clusters.ttBulk <-  function(input.df,
+annotate_clusters.tbl_df = annotate_clusters.ttBulk <-  function(input.df,
                                                          value_column,
                                                          number_of_clusters,
                                                          elements_column = NULL,
