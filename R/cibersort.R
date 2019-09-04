@@ -29,12 +29,12 @@
 # License: http://cibersort.stanford.edu/CIBERSORT_License.txt
 
 
-#dependencies
+# Core algorithm of Cibersort
 #' @importFrom parallel mclapply
 #'
 #'
 #Core algorithm
-CoreAlg <- function(X, y){
+CoreAlg <- function(X, y, cores = 3){
 
 
   ########################
@@ -62,7 +62,7 @@ CoreAlg <- function(X, y){
 
   #Execute In a parallel way the SVM
   if(Sys.info()['sysname'] == 'Windows') out <- mclapply(1:svn_itor, res, mc.cores=1) else
-    out <-  mclapply(1:svn_itor, res, mc.cores=svn_itor) #lapply(1:svn_itor, res) #
+    out <-  mclapply(1:svn_itor, res, mc.cores=cores) #lapply(1:svn_itor, res) #
 
   #Initiate two variables with 0
   nusvm <- rep(0,svn_itor)
@@ -132,8 +132,10 @@ CoreAlg <- function(X, y){
 
 }
 
-#do permutations
-doPerm <- function(perm, X, Y){
+#' Do permutations
+#'
+#' @return A data frame
+doPerm <- function(perm, X, Y, cores = 3){
 
 
   itor <- 1
@@ -150,7 +152,7 @@ doPerm <- function(perm, X, Y){
     yr <- (yr - mean(yr)) / sd(yr)
 
     #run CIBERSORT core algorithm
-    result <- CoreAlg(X, yr)
+    result <- CoreAlg(X, yr, cores = cores)
 
     mix_r <- result$mix_r
 
@@ -163,8 +165,10 @@ doPerm <- function(perm, X, Y){
   newList <- list("dist" = dist)
 }
 
-#main function
-my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE){
+#' Run Cibersort
+#'
+#' @return A data frame
+my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
 
 
   #read in data
@@ -210,7 +214,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE){
   Y_norm <- apply(Y, 2, function(mc) (mc - mean(mc)) / sd(mc)  )
 
   #empirical null distribution of correlation coefficients
-  if(P > 0) {nulldist <- sort(doPerm(P, X, Y)$dist)}
+  if(P > 0) {nulldist <- sort(doPerm(P, X, Y, cores = cores)$dist)}
 
   #print(nulldist)
 
@@ -235,7 +239,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE){
     y <- (y - mean(y)) / sd(y)
 
     #run SVR core algorithm
-    result <- CoreAlg(X, y)
+    result <- CoreAlg(X, y, cores = cores)
 
     #get results
     w <- result$w

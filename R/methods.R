@@ -560,14 +560,6 @@ drop_redundant.tbl_df = drop_redundant.ttBulk <-  function(input.df,
 #' @import tidyr
 #' @import tibble
 #' @importFrom magrittr set_colnames
-#' @importFrom edgeR DGEList
-#' @importFrom edgeR calcNormFactors
-#' @importFrom edgeR estimateGLMCommonDisp
-#' @importFrom edgeR estimateGLMTagwiseDisp
-#' @importFrom edgeR glmFit
-#' @importFrom edgeR glmLRT
-#' @importFrom edgeR topTags
-#' @importFrom sva ComBat
 #'
 #' @param df A tibble
 #' @param formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
@@ -834,13 +826,6 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 #' @import tidyr
 #' @import tibble
 #' @importFrom magrittr set_colnames
-#' @importFrom edgeR DGEList
-#' @importFrom edgeR calcNormFactors
-#' @importFrom edgeR estimateGLMCommonDisp
-#' @importFrom edgeR estimateGLMTagwiseDisp
-#' @importFrom edgeR glmFit
-#' @importFrom edgeR glmLRT
-#' @importFrom edgeR topTags
 #'
 #'
 #'

@@ -659,14 +659,6 @@ get_differential_transcript_abundance_bulk <- function(input.df,
 #' @import tidyr
 #' @import tibble
 #' @importFrom magrittr set_colnames
-#' @importFrom edgeR DGEList
-#' @importFrom edgeR calcNormFactors
-#' @importFrom edgeR estimateGLMCommonDisp
-#' @importFrom edgeR estimateGLMTagwiseDisp
-#' @importFrom edgeR glmFit
-#' @importFrom edgeR glmLRT
-#' @importFrom edgeR topTags
-#'
 #'
 #'
 #' @param input.df A tibble
@@ -1903,7 +1895,6 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
 #' @import tidyr
 #' @import tibble
 #' @importFrom magrittr set_colnames
-#' @importFrom sva ComBat
 #'
 #' @param df A tibble
 #' @param formula a formula with no response variable, of the kind ~ factor_of_intrest + batch

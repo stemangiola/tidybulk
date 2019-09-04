@@ -136,30 +136,30 @@ test_that("Add differential trancript abundance - no object",{
 
 })
 
-test_that("Get adjusted counts - no object",{
-
-  res =
-    adjust_counts(
-      ttBulk::counts_mini,
-      ~ condition + batch,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `read count`,
-      action="get"
-    )
-
-  expect_equal(
-    unique(res$`read count adjusted`)[c(1, 3, 4, 5)],
-    c(372 ,  19 ,  14, 1209),
-    tolerance=1e-7
-  )
-
-  expect_equal(
-    ncol(res),
-    4
-  )
-
-})
+# test_that("Get adjusted counts - no object",{
+#
+#   res =
+#     adjust_counts(
+#       ttBulk::counts_mini,
+#       ~ condition + batch,
+#       sample_column = sample,
+#       transcript_column = transcript,
+#       counts_column = `read count`,
+#       action="get"
+#     )
+#
+#   expect_equal(
+#     unique(res$`read count adjusted`)[c(1, 3, 4, 5)],
+#     c(372 ,  19 ,  14, 1209),
+#     tolerance=1e-7
+#   )
+#
+#   expect_equal(
+#     ncol(res),
+#     4
+#   )
+#
+# })
 
 
 test_that("Get cluster lables based on Kmeans - no object",{
@@ -468,76 +468,78 @@ test_that("Add symbol from ensambl - no object",{
 
 })
 
-test_that("Get cell type proportions - no object",{
-
-  expect_error(
-    annotate_cell_type(
-      ttBulk::counts_mini,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `read count`
-    ),
-    "You have less than 50 genes that overlap the Cibersort signature"
-  )
-
-  res =
-    annotate_cell_type(
-      ttBulk::counts[
-        ttBulk::counts$sample %in%
-          unique(ttBulk::counts_mini$sample),
-        ],
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `read count`,
-      action="get"
-    )
-
-  expect_equal(
-    res$proportion[1:4],
-    c(0.6273726, 0.6004113, 0.5931743, 0.5811784),
-    tolerance=1e-7
-  )
-
-  expect_equal(
-    ncol(res),
-    3
-  )
-
-})
-
-test_that("Add cell type proportions - no object",{
-
-  expect_error(
-    annotate_cell_type(
-      ttBulk::counts_mini,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `read count`
-    ),
-    "You have less than 50 genes that overlap the Cibersort signature"
-  )
-
-  res =
-    annotate_cell_type(
-      ttBulk::counts[
-        ttBulk::counts$sample %in%
-          unique(ttBulk::counts_mini$sample),
-        ],
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `read count`,
-      action="add"
-    )
-
-  expect_equal(
-    res$proportion[1:4],
-    c(0.6273726, 0.2553588, 0.0000000, 0.0000000),
-    tolerance=1e-7
-  )
-
-  expect_equal(
-    ncol(res),
-    7
-  )
-
-})
+# test_that("Get cell type proportions - no object",{
+#
+#   expect_error(
+#     annotate_cell_type(
+#       ttBulk::counts_mini,
+#       sample_column = sample,
+#       transcript_column = transcript,
+#       counts_column = `read count`
+#     ),
+#     "You have less than 50 genes that overlap the Cibersort signature"
+#   )
+#
+#   res =
+#     annotate_cell_type(
+#       ttBulk::counts[
+#         ttBulk::counts$sample %in%
+#           unique(ttBulk::counts_mini$sample),
+#         ],
+#       sample_column = sample,
+#       transcript_column = transcript,
+#       counts_column = `read count`,
+#       action="get"
+#     )
+#
+#   expect_equal(
+#     res$proportion[1:4],
+#     c(0.6273726, 0.6004113, 0.5931743, 0.5811784),
+#     tolerance=1e-7
+#   )
+#
+#   expect_equal(
+#     ncol(res),
+#     3
+#   )
+#
+# })
+#
+# test_that("Add cell type proportions - no object",{
+#
+#   expect_error(
+#     annotate_cell_type(
+#       ttBulk::counts_mini,
+#       sample_column = sample,
+#       transcript_column = transcript,
+#       counts_column = `read count`,
+#       cores = 2
+#     ),
+#     "You have less than 50 genes that overlap the Cibersort signature"
+#   )
+#
+#   res =
+#     annotate_cell_type(
+#       ttBulk::counts[
+#         ttBulk::counts$sample %in%
+#           unique(ttBulk::counts_mini$sample),
+#         ],
+#       sample_column = sample,
+#       transcript_column = transcript,
+#       counts_column = `read count`,
+#       action="add",
+#       cores = 2
+#     )
+#
+#   expect_equal(
+#     res$proportion[1:4],
+#     c(0.6273726, 0.2553588, 0.0000000, 0.0000000),
+#     tolerance=1e-7
+#   )
+#
+#   expect_equal(
+#     ncol(res),
+#     7
+#   )
+#
+# })
