@@ -1,5 +1,10 @@
-tidyTranscriptomics (tidyT) - beta
+ttBulk - tidyTranscriptomics
 ================
+
+[![Build
+Status](https://travis-ci.org/stemangiola/ttBulk.svg?branch=master)](https://travis-ci.org/stemangiola/ttBulk)
+[![Coverage
+Status](https://coveralls.io/repos/github/stemangiola/ttBulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/ttBulk?branch=master)
 
 A user-firendly grammar of bulk RNA sequencing data explaration and
 processing
