@@ -11,7 +11,7 @@ LazyData: true
 RoxygenNote: 6.1.1
 biocViews:
 Biarch: true
-Imports: tibble, dplyr, magrittr, tidyr, ggplot2, readr, widyr, foreach, rlang, purrr, furrr
+Imports: tibble, dplyr, magrittr, tidyr, ggplot2, readr, widyr, foreach, rlang, purrr
 Suggests: 
     parallel,
     testthat
