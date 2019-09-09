@@ -733,7 +733,7 @@ get_clusters_kmeans_bulk <-
     # Get column names
     elements_column = enquo(elements_column)
     feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column)
+    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
     elements_column = col_names$elements_column
     feature_column = col_names$feature_column
 
@@ -794,7 +794,7 @@ add_clusters_kmeans_bulk <-
     # Get column names
     elements_column = enquo(elements_column)
     feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column)
+    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
     elements_column = col_names$elements_column
     feature_column = col_names$feature_column
 
@@ -845,7 +845,7 @@ get_reduced_dimensions_MDS_bulk <-
     # Get column names
     elements_column = enquo(elements_column)
     feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column)
+    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
     elements_column = col_names$elements_column
     feature_column = col_names$feature_column
 
@@ -934,7 +934,7 @@ add_reduced_dimensions_MDS_bulk <-
     # Get column names
     elements_column = enquo(elements_column)
     feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column)
+    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
     elements_column = col_names$elements_column
     feature_column = col_names$feature_column
 
@@ -986,7 +986,7 @@ get_reduced_dimensions_PCA_bulk <-
     # Get column names
     elements_column = enquo(elements_column)
     feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column)
+    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
     elements_column = col_names$elements_column
     feature_column = col_names$feature_column
 
@@ -1098,7 +1098,7 @@ add_reduced_dimensions_PCA_bulk <-
     # Get column names
     elements_column = enquo(elements_column)
     feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column)
+    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
     elements_column = col_names$elements_column
     feature_column = col_names$feature_column
 
@@ -1414,7 +1414,7 @@ drop_redundant_elements_through_correlation <- function(input.df,
   # Get column names
   elements_column = enquo(elements_column)
   feature_column = enquo(feature_column)
-  col_names = get_elements_features(input.df, elements_column, feature_column)
+  col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
   elements_column = col_names$elements_column
   feature_column = col_names$feature_column
 

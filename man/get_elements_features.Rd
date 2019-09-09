@@ -4,7 +4,8 @@
 \alias{get_elements_features}
 \title{Get column names either from user or from attributes}
 \usage{
-get_elements_features(input.df, elements_column, feature_column)
+get_elements_features(input.df, elements_column, feature_column,
+  of_samples)
 }
 \arguments{
 \item{input.df}{A tibble}

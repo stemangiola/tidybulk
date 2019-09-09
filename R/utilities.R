@@ -324,7 +324,7 @@ get_sample_transcript_counts = function(input.df, sample_column, transcript_colu
 #' @param feature_column A character name of the gene/transcript name column
 #'
 #' @return A list of column enquo or error
-get_elements_features = function(input.df, elements_column, feature_column){
+get_elements_features = function(input.df, elements_column, feature_column, of_samples){
 
   # If setted by the user, enquo those
   if(
