@@ -304,6 +304,7 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
           components = components,
           elements_column = !!elements_column,
           feature_column = !!feature_column,
+          of_samples = of_samples,
           log_transform = log_transform
         )
       else if (action == "get")
@@ -313,6 +314,7 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
           components = components,
           elements_column = !!elements_column,
           feature_column = !!feature_column,
+          of_samples = of_samples,
           log_transform = log_transform
         )
       else
@@ -328,6 +330,7 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
           components = components,
           elements_column = !!elements_column,
           feature_column = !!feature_column,
+          of_samples = of_samples,
           log_transform = log_transform
         )
       else if (action == "get")
@@ -337,6 +340,7 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
           components = components,
           elements_column = !!elements_column,
           feature_column = !!feature_column,
+          of_samples = of_samples,
           log_transform = log_transform
         )
       else
