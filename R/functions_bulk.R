@@ -360,7 +360,7 @@ get_normalised_counts_bulk <- function(input.df,
   # Check if package is installed, otherwise install
   if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
     writeLines("Installing edgeR needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos="https://cloud.r-project.org")
     BiocManager::install("edgeR")
   }
 
@@ -610,7 +610,7 @@ get_differential_transcript_abundance_bulk <- function(input.df,
   # Check if package is installed, otherwise install
   if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
     writeLines("Installing edgeR needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos="https://cloud.r-project.org")
     BiocManager::install("edgeR")
   }
 
@@ -1658,14 +1658,14 @@ get_cell_type_proportions = function(input.df,            sample_column = NULL,
   # Check if package is installed, otherwise install
   if ("e1071" %in% rownames(installed.packages()) == FALSE) {
     writeLines("Installing e1071 needed for Cibersort")
-    install.packages("e1071")
+    install.packages("e1071", repos="https://cloud.r-project.org")
   }
 
   # Check if package is installed, otherwise install
   if ("preprocessCore" %in% rownames(installed.packages()) == FALSE) {
     writeLines("Installing preprocessCore needed for Cibersort")
     if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager")
+      install.packages("BiocManager", repos="https://cloud.r-project.org")
     BiocManager::install("preprocessCore")
 
   }
@@ -1828,7 +1828,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
   # Check if package is installed, otherwise install
   if ("sva" %in% rownames(installed.packages()) == FALSE) {
     writeLines("Installing sva - Combat needed for adjustment for unwanted variation")
-    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos="https://cloud.r-project.org")
     BiocManager::install("sva")
   }
 
