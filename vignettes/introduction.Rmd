@@ -1,13 +1,15 @@
 ---
-title: "ttBulk - tidyTranscriptomics"
-output: github_document
+title: "Introduction to the ttBulk package"
+author: "Stefano Mangiola"
+package: ttBulk
+output:
+  BiocStyle::html_document:
+    toc_float: true
+vignette: >
+  %\VignetteIndexEntry{Introduction}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
-
-[![Build Status](https://travis-ci.org/stemangiola/ttBulk.svg?branch=master)](https://travis-ci.org/stemangiola/ttBulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/ttBulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/ttBulk?branch=master)
-
-A user-firendly grammar of bulk RNA sequencing data explaration and processing
-
-#  <img src="inst/logo.png" height="139px" width="120px" />
 
 ```{r, echo=FALSE, include=FALSE, }
 library(knitr)
@@ -35,7 +37,11 @@ my_theme =
 
 ```
 
+
 # Introduction
+
+<img src="../inst/logo.png" height="139px" width="120px" />
+
 
 ttBulk is a collection of wrappers for bulk tanscriptomic analyses that follows the "tidy" paradigm. The data structure is a tibble with a column for 
 
@@ -332,4 +338,10 @@ We can add gene symbols from ensembl identifiers
 
 ```{r eval = F}
 counts_ensembl %>% annotate_symbol(ens)
+```
+
+# Appendix
+
+```{r}
+sessionInfo()
 ```

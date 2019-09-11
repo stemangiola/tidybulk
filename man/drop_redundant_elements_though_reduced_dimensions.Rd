@@ -14,7 +14,7 @@ drop_redundant_elements_though_reduced_dimensions(input.df, Dim_a_column,
 
 \item{Dim_b_column}{A character string. The column of another principal component}
 
-\item{redundant_column}{A character string. The column that is represents entities to cluster (i.e., normally samples)}
+\item{elements_column}{A character string. The column that is represents entities to cluster (i.e., normally samples)}
 
 \item{counts_column}{A character string. The column that contains the numeric value (i.e., normally read counts)}
 }

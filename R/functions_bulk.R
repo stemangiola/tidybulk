@@ -1493,7 +1493,7 @@ drop_redundant_elements_through_correlation <- function(input.df,
 #' @param input.df A tibble
 #' @param Dim_a_column A character string. The column of one principal component
 #' @param Dim_b_column A character string. The column of another principal component
-#' @param redundant_column A character string. The column that is represents entities to cluster (i.e., normally samples)
+#' @param elements_column A character string. The column that is represents entities to cluster (i.e., normally samples)
 #' @param counts_column   A character string. The column that contains the numeric value (i.e., normally read counts)
 #' @return A tibble with pairs dropped
 #'
@@ -1521,7 +1521,7 @@ drop_redundant_elements_though_reduced_dimensions <-
       input.df %>%
       select(sample,!!Dim_a_column,!!Dim_b_column) %>%
       distinct() %>%
-      as_matrix(rownames = !!redundant_column) %>%
+      as_matrix(rownames = !!elements_column) %>%
       dist() %>%
 
       # Prepare matrix

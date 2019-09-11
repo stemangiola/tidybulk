@@ -519,14 +519,16 @@ drop_redundant.tbl_df = drop_redundant.ttBulk <-  function(input.df,
                                                            correlation_threshold = 0.9,
                                                            log_transform = F,
 
-                                                           Dim_a_column,
-                                                           Dim_b_column)
+                                                           Dim_a_column = NULL,
+                                                           Dim_b_column = NULL)
 {
   # Make col names
   value_column = enquo(value_column)
   elements_column = enquo(elements_column)
   feature_column = enquo(feature_column)
 
+  Dim_a_column = enquo(Dim_a_column)
+  Dim_b_column = enquo(Dim_b_column)
 
   if (method == "correlation")
     drop_redundant_elements_through_correlation(
@@ -544,8 +546,7 @@ drop_redundant.tbl_df = drop_redundant.ttBulk <-  function(input.df,
       Dim_a_column = !!Dim_a_column,
       Dim_b_column = !!Dim_b_column,
       elements_column = !!elements_column,
-      of_samples = of_samples,
-      log_transform = log_transform
+      of_samples = of_samples
     )
   else
     stop(
@@ -607,8 +608,7 @@ adjust_counts.tbl_df = adjust_counts.ttBulk <-  function(input.df,
                                                          transcript_column = NULL,
                                                          counts_column = NULL,
                                                          log_transform = T,
-                                                         action =
-                                                           "add")
+                                                         action = "add")
 {
   # Make col names
   sample_column = enquo(sample_column)
