@@ -22,4 +22,5 @@ Suggests:
 		edgeR,
 		limma,
 		org.Hs.eg.db,
-		sva
+		sva,
+		GGally

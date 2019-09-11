@@ -11,55 +11,21 @@ processing
 
 # <img src="inst/logo.png" height="139px" width="120px" />
 
-A user-firendly grammar of bulk RNA sequencing data explaration and
-processing; which allows the use of a consistent data structure, in a
-tidy and pipe-friendly fashion. In brief you can easily pipe thought:
+# Introduction
 
-  - Going from BAM/SAM to a tidy data frame of counts (FeatureCounts)
-  - Adding gene symbols from ensembl IDs
-  - Aggregating duplicated gene symbols
-  - Adding normalised counts
-  - Adding principal components
-  - Adding MDS components
-  - Rotating principal component or MDS dimensions
-  - Running differential transcript abunance analyses (edgeR)
-  - Adding batch adjusted read counts (Combat)
-  - Eliminating redunant samples and/or genes
-  - Clustering samples and/or genes with kmeans
-  - Adding tissue composition (Cibersort)
+ttBulk is a collection of wrappers for bulk tanscriptomic analyses that
+follows the “tidy” paradigm. The data structure is a tibble with a
+column for
 
-The grammar verbs:
+  - sample identifier column
+  - transcript identifier column
+  - `read count` column
+  - annotation (and other info) columns
 
-  - drop\_
-  - aggregate\_
-  - recuce\_
-  - noralise\_
-  - adjust\_
-  - annotate\_
-
-Data structure management:
-
-with the “action” parameter you can decide whether to join the new
-information to the input tibble (add), or just get the non-redundant
-tibble with the new information (get).
-
-You can convert a list of BAM/SAM files into a tidy data frame of
-annotated counts
+<!-- end list -->
 
 ``` r
-counts = bam_sam_to_featureCounts_tibble(file_names, genome = "hg38")
-```
-
-We can add transcript from ensembl indexes if needed
-
-``` r
-counts_ensembl %>% annotate_symbol(ens)
-```
-
-With an example data set of this kind (included in the package)
-
-``` r
-counts # Accessible via tidyTranscriptomics::counts
+ttBulk::counts # Accessible via ttBulk::counts
 ```
 
     ## # A tibble: 1,340,160 x 5
@@ -77,12 +43,40 @@ counts # Accessible via tidyTranscriptomics::counts
     ## 10 SRR1740034 MIR6859-2    b_cell                40 0 d  
     ## # … with 1,340,150 more rows
 
-We can aggregate (e.g., sum) duplicated gene symbols
+Every function takes this tructure as input and outputs: (i) this
+structure with addictional information (action=“add”); or (ii) this
+structure with the isolated new information (action=“get”)
+
+In brief you can:
+
+  - Going from BAM/SAM to a tidy data frame of counts (FeatureCounts)
+  - Adding gene symbols from ensembl IDs
+  - Aggregating duplicated gene symbols
+  - Adding normalised counts
+  - Adding principal components
+  - Adding MDS components
+  - Rotating principal component or MDS dimensions
+  - Running differential transcript abunance analyses (edgeR)
+  - Adding batch adjusted read counts (Combat)
+  - Eliminating redunant samples and/or genes
+  - Clustering samples and/or genes with kmeans
+  - Adding tissue composition (Cibersort)
+
+# Aggregate `transcripts`
+
+Aggregating duplicated transcripts (e.g., isoforms, ensembl). For
+example, we often have to convert ensembl to gene symbol, in doing so we
+have to deal with duplicated symbols
 
 ``` r
 counts.aggr = 
-  counts %>%
-  aggregate_duplicates(sample, transcript, `read count`,  aggregation_function = sum)
+  ttBulk::counts %>%
+  aggregate_duplicates(
+    sample, 
+    transcript, 
+    `read count`,  
+    aggregation_function = sum
+  )
 
 counts.aggr
 ```
@@ -102,8 +96,13 @@ counts.aggr
     ## 10 SRR1740… MIR6859-2   b_cell                40 0 d                      1
     ## # … with 1,340,150 more rows
 
-We can add normalised
-counts
+# Normalise `read counts`
+
+For visualisation purposes or ad hoc analyses, we may want to calculate
+the normalised read counts for library size (e.g., with TMM algorithm).
+These new values will be added to the original data set as `<NAME OF
+SAMPLE COLUMN>
+normalised`
 
 ``` r
 counts.norm =  counts.aggr %>% normalise_counts(sample, transcript, `read count`)
@@ -127,23 +126,34 @@ counts.norm
     ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>,
     ## #   filtered_out_low_counts <lgl>
 
+We can easily plot the normalised density to check the outcome
+
 ``` r
-counts.norm %>% ggplot(aes(`read count normalised` + 1, group=sample, color=`Cell type`)) + geom_density() + scale_x_log10() + my_theme
+counts.norm %>% 
+    ggplot(aes(`read count normalised` + 1, group=sample, color=`Cell type`)) +
+    geom_density() + 
+    scale_x_log10() +
+    my_theme
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
-We can add MDS components, then use them for plotting or other post
-processing
+# Reduce `dimensions`
+
+For visualisation purposes or ad hoc analyses, we may want to reduce the
+dimentions of our data, for example using PCA or MDS algorithms. These
+new values will be added to the original data set.
+
+## MDS
 
 ``` r
 counts.norm.MDS = 
   counts.norm %>%
-  reduce_dimensions(value_column = `read count normalised`, method="MDS" , elements_column = sample, feature_column = transcript)
+  reduce_dimensions(value_column = `read count normalised`, method="MDS" , elements_column = sample, feature_column = transcript, components = 1:10)
 counts.norm.MDS
 ```
 
-    ## # A tibble: 1,340,160 x 12
+    ## # A tibble: 1,340,160 x 20
     ##    sample transcript `Cell type` `read count` time  `number of merg…
     ##    <chr>  <chr>      <chr>              <dbl> <chr>            <dbl>
     ##  1 SRR17… A1BG       b_cell               153 0 d                  1
@@ -156,30 +166,104 @@ counts.norm.MDS
     ##  8 SRR17… A3GALT2    b_cell                 0 0 d                  1
     ##  9 SRR17… A4GALT     b_cell                 4 0 d                  1
     ## 10 SRR17… A4GNT      b_cell                 0 0 d                  1
-    ## # … with 1,340,150 more rows, and 6 more variables: `read count
+    ## # … with 1,340,150 more rows, and 14 more variables: `read count
     ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>,
     ## #   filtered_out_low_counts <lgl>, `Dimension 1` <dbl>, `Dimension
-    ## #   2` <dbl>
+    ## #   10` <dbl>, `Dimension 2` <dbl>, `Dimension 3` <dbl>, `Dimension
+    ## #   4` <dbl>, `Dimension 5` <dbl>, `Dimension 6` <dbl>, `Dimension
+    ## #   7` <dbl>, `Dimension 8` <dbl>, `Dimension 9` <dbl>
 
 ``` r
 counts.norm.MDS %>% 
-    distinct(sample, `Dimension 1`, `Dimension 2`, `Cell type`) %>%
-    ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=`Cell type`)) + 
-  geom_point() +
-  my_theme
+    select(contains("Dimension"), sample, `Cell type`) %>%
+  distinct() %>%
+  GGally::ggpairs(columns = 1:6, ggplot2::aes(colour=`Cell type`)) 
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-There are cases where we may want to rotate two dimensions (e.g., when a
-factor of interest is correlated - diagonally - with a linear
-combination of two dimensions)
+## PCA
+
+``` r
+counts.norm.PCA = 
+  counts.norm %>%
+  reduce_dimensions(value_column = `read count normalised`, method="PCA" , elements_column = sample, feature_column = transcript, components = 1:10)
+```
+
+    ## Fraction of variance explained by the selected principal components
+    ## # A tibble: 10 x 2
+    ##    `Fraction of variance`    PC
+    ##                     <dbl> <int>
+    ##  1               0.897        1
+    ##  2               0.0475       2
+    ##  3               0.0205       3
+    ##  4               0.0157       4
+    ##  5               0.00661      5
+    ##  6               0.00283      6
+    ##  7               0.00191      7
+    ##  8               0.000635     8
+    ##  9               0.000411     9
+    ## 10               0.000395    10
+
+``` r
+counts.norm.PCA
+```
+
+    ## # A tibble: 1,340,160 x 20
+    ##    sample transcript `Cell type` `read count` time  `number of merg…
+    ##    <chr>  <chr>      <chr>              <dbl> <chr>            <dbl>
+    ##  1 SRR17… A1BG       b_cell               153 0 d                  1
+    ##  2 SRR17… A1BG-AS1   b_cell                83 0 d                  1
+    ##  3 SRR17… A1CF       b_cell                 1 0 d                  1
+    ##  4 SRR17… A2M        b_cell                 1 0 d                  1
+    ##  5 SRR17… A2M-AS1    b_cell                 0 0 d                  1
+    ##  6 SRR17… A2ML1      b_cell                 3 0 d                  1
+    ##  7 SRR17… A2MP1      b_cell                 0 0 d                  1
+    ##  8 SRR17… A3GALT2    b_cell                 0 0 d                  1
+    ##  9 SRR17… A4GALT     b_cell                 4 0 d                  1
+    ## 10 SRR17… A4GNT      b_cell                 0 0 d                  1
+    ## # … with 1,340,150 more rows, and 14 more variables: `read count
+    ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>,
+    ## #   filtered_out_low_counts <lgl>, PC1 <dbl>, PC2 <dbl>, PC3 <dbl>,
+    ## #   PC4 <dbl>, PC5 <dbl>, PC6 <dbl>, PC7 <dbl>, PC8 <dbl>, PC9 <dbl>,
+    ## #   PC10 <dbl>
+
+``` r
+counts.norm.PCA %>% 
+    select(contains("PC"), sample, `Cell type`) %>%
+  distinct() %>%
+  GGally::ggpairs(columns = 1:6, ggplot2::aes(colour=`Cell type`)) 
+```
+
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+# Rotate `dimensions`
+
+For visualisation purposes or ad hoc analyses, we may want to rotate the
+reduced dimentions (or any two numeric columns really) of our data, of a
+set angle. The rotated dimensions will be added to the original data set
+as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in
+the input arguments.
 
 ``` r
 counts.norm.MDS.rotated =
   counts.norm.MDS %>%
     rotate_dimensions(`Dimension 1`, `Dimension 2`, rotation_degrees = 45, elements_column = sample)
 ```
+
+## Original
+
+``` r
+counts.norm.MDS.rotated %>%
+    distinct(sample, `Dimension 1`,`Dimension 2`, `Cell type`) %>%
+    ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=`Cell type` )) + 
+  geom_point() +
+  my_theme
+```
+
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+## Rotated
 
 ``` r
 counts.norm.MDS.rotated %>%
@@ -189,136 +273,103 @@ counts.norm.MDS.rotated %>%
   my_theme
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
-
-We visualise the combinations of the first N Dimensions for an overall
-evaluation
-
-``` r
-counts.norm %>%
- reduce_dimensions(value_column = `read count normalised`, method="MDS" , elements_column = sample, feature_column = transcript, components = 1:6) %>%
-  select(contains("Dimension"), everything()) %>%
-  distinct() %>%
-  GGally::ggpairs(columns = 1:6, ggplot2::aes(colour=`Cell type`)) 
-```
-
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
-
-We can remove highly correlated samples and see how the MDS plot looks
-like
-
-``` r
-counts.norm.MDS %>% 
-  drop_redundant(method = "correlation", elements_column = sample, feature_column = transcript, value_column = `read count normalised`) %>%
-    distinct(sample, `Dimension 1`, `Dimension 2`, `Cell type`) %>%
-    ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=`Cell type`)) + 
-  geom_point() +
-  my_theme
-```
-
 ![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
-We can add K-means cluster labels, then use them for plotting or other
-post processing
+# Differential transcirption
+
+We may want to test for differential transcription between sample-wise
+factors of interest (e.g., with edgeR). The statistics will be added to
+the original data. In this example we set action =“get” to just output
+the non redundant gene statistics.
 
 ``` r
-counts.norm.MDS.kmeans = counts.norm.MDS %>%
-  annotate_clusters(value_column = `read count normalised`, elements_column = sample, feature_column = transcript,  number_of_clusters = 2 )
-
-counts.norm.MDS.kmeans
+ttBulk::counts_mini %>%
+    annotate_differential_transcription(
+      ~ condition,
+      sample_column = sample,
+      transcript_column = transcript,
+      counts_column = `read count`,
+      action="get") 
 ```
 
-    ## # A tibble: 1,340,160 x 13
-    ##    sample transcript `Cell type` `read count` time  `number of merg…
-    ##    <chr>  <chr>      <chr>              <dbl> <chr>            <dbl>
-    ##  1 SRR17… A1BG       b_cell               153 0 d                  1
-    ##  2 SRR17… A1BG-AS1   b_cell                83 0 d                  1
-    ##  3 SRR17… A1CF       b_cell                 1 0 d                  1
-    ##  4 SRR17… A2M        b_cell                 1 0 d                  1
-    ##  5 SRR17… A2M-AS1    b_cell                 0 0 d                  1
-    ##  6 SRR17… A2ML1      b_cell                 3 0 d                  1
-    ##  7 SRR17… A2MP1      b_cell                 0 0 d                  1
-    ##  8 SRR17… A3GALT2    b_cell                 0 0 d                  1
-    ##  9 SRR17… A4GALT     b_cell                 4 0 d                  1
-    ## 10 SRR17… A4GNT      b_cell                 0 0 d                  1
-    ## # … with 1,340,150 more rows, and 7 more variables: `read count
-    ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>,
-    ## #   filtered_out_low_counts <lgl>, `Dimension 1` <dbl>, `Dimension
-    ## #   2` <dbl>, cluster <fct>
+    ## # A tibble: 30 x 8
+    ##    transcript    logFC logCPM    LR  PValue    FDR is_de filtered_out_low_…
+    ##    <chr>         <dbl>  <dbl> <dbl>   <dbl>  <dbl> <lgl> <lgl>             
+    ##  1 MIR1244-4   -0.564   15.4   8.01 0.00466 0.0932 FALSE FALSE             
+    ##  2 LOC1006527…  0.688   12.0   3.20 0.0734  0.609  FALSE FALSE             
+    ##  3 KLHL17       0.172   16.5   2.49 0.115   0.609  FALSE FALSE             
+    ##  4 DLG5        -0.477   12.2   1.82 0.178   0.609  FALSE FALSE             
+    ##  5 ARHGAP11A   -0.225   15.4   1.80 0.180   0.609  FALSE FALSE             
+    ##  6 LOC1002894… -0.280   13.5   1.49 0.222   0.609  FALSE FALSE             
+    ##  7 PRSS23      -1.25     9.83  1.38 0.241   0.609  FALSE FALSE             
+    ##  8 B3GAT3       0.0889  18.3   1.21 0.271   0.609  FALSE FALSE             
+    ##  9 C6orf201     0.197   14.3   1.20 0.274   0.609  FALSE FALSE             
+    ## 10 WBP1         0.132   15.4   1.03 0.310   0.613  FALSE FALSE             
+    ## # … with 20 more rows
+
+# Adjust `read counts`
+
+Adjust `read counts` for (known) unwanted variation. For visualisation
+purposes or ad hoc analyses, we may want to adjust our normalised counts
+to remove known unwanted variation. The adjusted counts will be added to
+the original data set as `<READ COUNT COLUMN> adjusted`. The formulation
+is similar to a linear model, where the first covariate is the factor of
+interest and the second covariate is the unwanted variation. At the
+moment just an unwanted covariated is allowed at the time.
 
 ``` r
-counts.norm.MDS.kmeans %>% 
-    distinct(sample, `Dimension 1`, `Dimension 2`, cluster) %>%
-    ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=cluster)) + 
-  geom_point() +
-  my_theme
-```
-
-![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
-
-We can annotate our tibble with differential transcription analysis
-results
-
-``` r
-counts.norm.MDS.kmeans %>%
-    annotate_differential_transcription( ~ cluster, sample, transcript, `read count`, action="get") 
-```
-
-    ## # A tibble: 27,920 x 8
-    ##    transcript logFC logCPM    LR    PValue       FDR is_de filtered_out_lo…
-    ##    <chr>      <dbl>  <dbl> <dbl>     <dbl>     <dbl> <lgl> <lgl>           
-    ##  1 ZNF827      7.37   3.78  984. 5.10e-216 8.06e-212 TRUE  FALSE           
-    ##  2 SLC31A2    -5.18   6.60  974. 6.63e-214 5.24e-210 TRUE  FALSE           
-    ##  3 SEPT1       6.31   6.70  970. 6.20e-213 3.27e-209 TRUE  FALSE           
-    ##  4 CLUHP3      8.62   3.56  935. 2.11e-205 8.35e-202 TRUE  FALSE           
-    ##  5 MCTP1      -4.71   5.37  843. 3.06e-185 9.67e-182 TRUE  FALSE           
-    ##  6 DMXL2      -6.07   8.12  751. 2.63e-165 6.92e-162 TRUE  FALSE           
-    ##  7 LINC00426   7.21   2.49  717. 6.31e-158 1.43e-154 TRUE  FALSE           
-    ##  8 LDOC1       6.86   2.54  707. 1.03e-155 2.03e-152 TRUE  FALSE           
-    ##  9 CASP17P     7.18   2.20  705. 2.40e-155 4.22e-152 TRUE  FALSE           
-    ## 10 SIDT1       5.02   5.40  696. 2.28e-153 3.61e-150 TRUE  FALSE           
-    ## # … with 27,910 more rows
-
-For visualisation purposes, we can add the batch adjusted read counts;
-to see the data with the linear model eyes in case the batch is one of
-the covariates
-
-``` r
-counts.norm.MDS.kmeans %>%
-  
-  # Add fake batch
-  left_join( (.) %>% distinct(sample) %>% mutate(batch = sample(0:1, n(), replace = T))) %>%
-    
-  # Add covariate
-  adjust_counts( ~ cluster + batch, sample, transcript, `read count normalised`)
+counts.norm.adj = 
+    counts.norm %>%
+      
+      # Add fake batch and factor of interest
+      left_join( 
+        (.) %>% 
+            distinct(sample) %>% 
+            mutate(batch = sample(0:1, n(), replace = T)) 
+      ) %>%
+        mutate(factor_of_interest = `Cell type` == "b_cell") %>%
+        
+      # Add covariate
+      adjust_counts(
+        ~ factor_of_interest + batch,   
+        sample, 
+        transcript, 
+        `read count normalised`, 
+        action = "get"
+      )
 ```
 
     ## Standardizing Data across genes
 
-    ## # A tibble: 1,340,160 x 16
-    ##    sample transcript `Cell type` `read count` time  `number of merg…
-    ##    <chr>  <chr>      <chr>              <dbl> <chr>            <dbl>
-    ##  1 SRR17… A1BG       b_cell               153 0 d                  1
-    ##  2 SRR17… A1BG-AS1   b_cell                83 0 d                  1
-    ##  3 SRR17… A1CF       b_cell                 1 0 d                  1
-    ##  4 SRR17… A2M        b_cell                 1 0 d                  1
-    ##  5 SRR17… A2M-AS1    b_cell                 0 0 d                  1
-    ##  6 SRR17… A2ML1      b_cell                 3 0 d                  1
-    ##  7 SRR17… A2MP1      b_cell                 0 0 d                  1
-    ##  8 SRR17… A3GALT2    b_cell                 0 0 d                  1
-    ##  9 SRR17… A4GALT     b_cell                 4 0 d                  1
-    ## 10 SRR17… A4GNT      b_cell                 0 0 d                  1
-    ## # … with 1,340,150 more rows, and 10 more variables: `read count
-    ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>,
-    ## #   filtered_out_low_counts.x <lgl>, `Dimension 1` <dbl>, `Dimension
-    ## #   2` <dbl>, cluster <fct>, batch <int>, `read count normalised
-    ## #   adjusted` <int>, filtered_out_low_counts.y <lgl>
+``` r
+counts.norm.adj
+```
 
-We can add the predictions from Cibersort to each
-sample
+    ## # A tibble: 1,340,160 x 4
+    ##    transcript sample     `read count normalised adju… filtered_out_low_cou…
+    ##    <chr>      <chr>                             <int> <lgl>                
+    ##  1 A1BG       SRR1740034                          130 FALSE                
+    ##  2 A1BG-AS1   SRR1740034                           72 FALSE                
+    ##  3 A1CF       SRR1740034                           NA TRUE                 
+    ##  4 A2M        SRR1740034                            0 FALSE                
+    ##  5 A2M-AS1    SRR1740034                            0 FALSE                
+    ##  6 A2ML1      SRR1740034                            2 FALSE                
+    ##  7 A2MP1      SRR1740034                           NA TRUE                 
+    ##  8 A3GALT2    SRR1740034                            0 FALSE                
+    ##  9 A4GALT     SRR1740034                           NA TRUE                 
+    ## 10 A4GNT      SRR1740034                           NA TRUE                 
+    ## # … with 1,340,150 more rows
+
+# Cell type composition
+
+We may want to infer the cell type composition of our samples (e.g.,
+with cibersort). The cell type proportions will be added to the original
+data.
 
 ``` r
-counts.cibersort = counts %>% annotate_cell_type(sample, transcript, `read count`, action="add") 
+counts.cibersort = 
+    ttBulk::counts %>% 
+    annotate_cell_type(sample, transcript, `read count`, action="add") 
 counts.cibersort
 ```
 
@@ -337,7 +388,9 @@ counts.cibersort
     ## 10 SRR17… DDX11L1    b_cell                  17 0 d   T cells gamm…
     ## # … with 29,483,510 more rows, and 1 more variable: proportion <dbl>
 
-And plot the distributions of cell types across samples
+We can plot the distributions of cell types across samples, and compare
+them with the nominal cell type labels to check for the purity of
+isolation.
 
 ``` r
 counts.cibersort %>%
@@ -350,4 +403,129 @@ counts.cibersort %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
 ```
 
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+# Cluster
+
+For visualisation purposes or ad hoc analyses, we may want to cluster
+our data (e.g., k-means sample-wise). The cluster annotation will be
+added to the original data set.
+
+## k-means
+
+``` r
+counts.norm.cluster = counts.norm %>%
+  annotate_clusters(value_column = `read count normalised`, elements_column = sample, feature_column = transcript,  number_of_clusters = 2 )
+
+counts.norm.cluster
+```
+
+    ## # A tibble: 1,340,160 x 11
+    ##    sample transcript `Cell type` `read count` time  `number of merg…
+    ##    <chr>  <chr>      <chr>              <dbl> <chr>            <dbl>
+    ##  1 SRR17… A1BG       b_cell               153 0 d                  1
+    ##  2 SRR17… A1BG-AS1   b_cell                83 0 d                  1
+    ##  3 SRR17… A1CF       b_cell                 1 0 d                  1
+    ##  4 SRR17… A2M        b_cell                 1 0 d                  1
+    ##  5 SRR17… A2M-AS1    b_cell                 0 0 d                  1
+    ##  6 SRR17… A2ML1      b_cell                 3 0 d                  1
+    ##  7 SRR17… A2MP1      b_cell                 0 0 d                  1
+    ##  8 SRR17… A3GALT2    b_cell                 0 0 d                  1
+    ##  9 SRR17… A4GALT     b_cell                 4 0 d                  1
+    ## 10 SRR17… A4GNT      b_cell                 0 0 d                  1
+    ## # … with 1,340,150 more rows, and 5 more variables: `read count
+    ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>,
+    ## #   filtered_out_low_counts <lgl>, cluster <fct>
+
+We can add cluster annotation to the MDS dimesion reduced data set and
+plot
+
+``` r
+ counts.norm.MDS %>%
+  annotate_clusters(
+    value_column = `read count normalised`,
+    elements_column = sample, 
+    feature_column = transcript,    
+    number_of_clusters = 2 
+  ) %>% 
+    distinct(sample, `Dimension 1`, `Dimension 2`, cluster) %>%
+    ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=cluster)) + 
+  geom_point() +
+  my_theme
+```
+
 ![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+# Drop redundant
+
+For visualisation purposes or ad hoc analyses, we may want to remove
+redundant elements from the original data set (e.g., samples or
+transcripts).
+
+## Use correlation or sample removal
+
+``` r
+counts.norm.non_redundant = 
+    counts.norm.MDS %>% 
+  drop_redundant(
+    method = "correlation",
+    elements_column = sample,
+    feature_column = transcript, 
+    value_column = `read count normalised`
+  )
+```
+
+We can visualise how the reduced redundancy with the reduced dimentions
+look like
+
+``` r
+counts.norm.non_redundant %>%
+    distinct(sample, `Dimension 1`, `Dimension 2`, `Cell type`) %>%
+    ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=`Cell type`)) + 
+  geom_point() +
+  my_theme
+```
+
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+## Use reduced dimensions
+
+``` r
+counts.norm.non_redundant = 
+    counts.norm.MDS %>% 
+  drop_redundant(
+    method = "reduced_dimensions",
+    elements_column = sample,
+    feature_column = transcript,
+    Dim_a_column = `Dimension 1`,
+    Dim_b_column = `Dimension 2`
+  )
+```
+
+We can visualise how the reduced redundancy with the reduced dimentions
+look like
+
+``` r
+counts.norm.non_redundant %>%
+    distinct(sample, `Dimension 1`, `Dimension 2`, `Cell type`) %>%
+    ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=`Cell type`)) + 
+  geom_point() +
+  my_theme
+```
+
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+# Other useful wrappers
+
+We can convert a list of BAM/SAM files into a tidy data frame of
+annotated counts, via FeatureCounts
+
+``` r
+counts = bam_sam_to_featureCounts_tibble(file_names, genome = "hg38")
+```
+
+We can add gene symbols from ensembl identifiers
+
+``` r
+counts_ensembl %>% annotate_symbol(ens)
+```
