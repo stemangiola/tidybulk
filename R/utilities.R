@@ -59,6 +59,8 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
 #' @param tbl A tibble
 #' @param rownames A character string of the rownames
 #' @return A matrix
+#'
+#' @export
 as_matrix <- function(tbl,
                       rownames = NULL,
                       do_check = TRUE) {
