@@ -12,7 +12,7 @@ create_tt_from_tibble_bulk(input.df, sample_column, transcript_column,
 
 \item{transcript_column}{A character name of the gene/transcript name column}
 
-\item{counts_column}{A character name of the read count column}
+\item{counts_column}{A character name of the count column}
 
 \item{df}{A tibble}
 }

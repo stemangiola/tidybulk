@@ -5,7 +5,7 @@
 \title{Get count per million for TMM normalisation.}
 \usage{
 add_normalised_counts_bulk.get_cpm(df, sample_column = sample,
-  transcript_column = transcript, counts_column = `read count`,
+  transcript_column = transcript, counts_column = count,
   cpm_threshold = 0.5)
 }
 \arguments{

@@ -18,7 +18,7 @@ drop_redundant(input.df, method, elements_column = NULL,
 
 \item{of_samples}{if the input is tt object, this will indicate whether the element column will be sample or transcript column}
 
-\item{value_column}{A character string. For correlation based calculation. The column that contains the numeric value (i.e., normally read counts)}
+\item{value_column}{A character string. For correlation based calculation. The column that contains the numeric value (i.e., normally counts)}
 
 \item{feature_column}{A character string. For correlation based calculation. The column that is represents entities to cluster (i.e., normally genes)}
 

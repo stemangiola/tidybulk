@@ -15,7 +15,7 @@ get_differential_transcript_abundance_bulk(input.df, formula,
 
 \item{transcript_column}{A character name of the gene/transcript name column}
 
-\item{counts_column}{A character name of the read count column}
+\item{counts_column}{A character name of the count column}
 
 \item{df}{A tibble}
 

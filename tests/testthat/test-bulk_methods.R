@@ -223,7 +223,7 @@ test_that("Get reduced dimensions MDS - no object",{
     )
 
   expect_equal(
-    res$`Dimension 1`,
+    res$`Dim 1`,
     c(0.2772910, -0.2172255, -0.1806345,  0.1205691),
     tolerance=1e-7
   )
@@ -248,7 +248,7 @@ test_that("Add reduced dimensions MDS - no object",{
     )
 
   expect_equal(
-    (res$`Dimension 1`)[1:4],
+    (res$`Dim 1`)[1:4],
     c(0.277291, 0.277291, 0.277291, 0.277291),
     tolerance=1e-7
   )

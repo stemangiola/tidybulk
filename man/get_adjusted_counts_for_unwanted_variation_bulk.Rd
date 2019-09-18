@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_bulk.R
 \name{get_adjusted_counts_for_unwanted_variation_bulk}
 \alias{get_adjusted_counts_for_unwanted_variation_bulk}
-\title{Get adjusted read count for some batch effect}
+\title{Get adjusted count for some batch effect}
 \usage{
 get_adjusted_counts_for_unwanted_variation_bulk(input.df, formula,
   sample_column = NULL, transcript_column = NULL,
@@ -15,7 +15,7 @@ get_adjusted_counts_for_unwanted_variation_bulk(input.df, formula,
 
 \item{transcript_column}{A character name of the gene/transcript name column}
 
-\item{counts_column}{A character name of the read count column}
+\item{counts_column}{A character name of the count column}
 
 \item{df}{A tibble}
 
@@ -25,5 +25,5 @@ get_adjusted_counts_for_unwanted_variation_bulk(input.df, formula,
 A tibble with adjusted counts
 }
 \description{
-Get adjusted read count for some batch effect
+Get adjusted count for some batch effect
 }

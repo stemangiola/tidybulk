@@ -19,7 +19,7 @@ add_clusters_kmeans_bulk(input.df, value_column, number_of_clusters,
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
-\item{counts_column}{A character string. The column that contains the numeric value (i.e., normally read counts)}
+\item{counts_column}{A character string. The column that contains the numeric value (i.e., normally counts)}
 }
 \value{
 A tibble with additional columns

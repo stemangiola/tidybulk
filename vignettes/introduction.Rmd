@@ -18,12 +18,14 @@ vignette: >
 <!--   margin-right: auto; -->
 <!-- } -->
 <!-- </style> -->
-<!-- Hack above didn't solve the truncated column problem :( -->
 
 ```{r, echo=FALSE, include=FALSE}
 library(knitr)
+#library(kableExtra)
 knitr::opts_chunk$set(cache = TRUE, warning = FALSE, 
                       message = FALSE, cache.lazy = FALSE)
+#options(width = 120)
+options(pillar.min_title_chars = Inf)
 
 library(tidyverse)
 library(magrittr)
@@ -56,16 +58,12 @@ ttBulk is a collection of wrapper functions for bulk tanscriptomic analyses that
 
 + sample identifier column
 + transcript identifier column
-+ `read count` column
++ count column
 + annotation (and other info) columns
 
-**RD: why are cell type and read count quoted?**
 ```{r}
 ttBulk::counts # Accessible via ttBulk::counts
 ```
-
-Every function takes this structure as input and outputs either (i) this structure with additional information, or (ii) this structure with **the isolated new information**(I don't get this), via "add" and "get" actions respectively. **More details about the actions will be explained in section xx and xx**. 
-**RD: the actions are a bit out of context to me without seeing examples of what the functions can do.**
 
 In brief you can:
 + Going from BAM/SAM to a tidy data frame of counts (FeatureCounts)
@@ -76,48 +74,46 @@ In brief you can:
 + Adding MDS components
 + Rotating principal component or MDS dimensions
 + Running differential transcript abunance analyses (edgeR)
-+ Adding batch adjusted read counts (Combat) 
++ Adding batch adjusted counts (Combat) 
 + Eliminating redunant samples and/or genes
 + Clustering samples and/or genes with kmeans
 + Adding tissue composition (Cibersort)
 
 # Aggregate `transcripts`
 
-ttBulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert **transcript names(?) from ** ensembl to gene symbol, but in doing so we have to deal with duplicated symbols. **`aggregate_duplicates` takes xx as arguments and returns xx. **
-**RD: The example in vignette doesn't really show what is changed by this function. "number of merged tr.." column is truncated**
+ttBulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with aggregate transcript with the same name. All the rest of the column are appended, and factors and boolean are appended as characters.
 
-```{r, cache=TRUE}
+```{r aggregate, cache=TRUE}
 counts.aggr = 
   ttBulk::counts %>%
   aggregate_duplicates(
   	sample, 
   	transcript, 
-  	`read count`,  
+  	`count`,  
   	aggregation_function = sum
   )
 
-counts.aggr
+counts.aggr 
+
 
 ```
 
-# Normalise `read counts`
+# Normalise `counts`
 
-For visualisation purposes or ad hoc analyses, we may want to calculate the normalised read counts for library size (e.g., with TMM algorithm).**RD: citation perhaps?**
-These new values will be added to the original data set as `<NAME OF SAMPLE COLUMN> normalised`.
+We may want to calculate the normalised counts for library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `normalise_counts` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`.
 
-**RD: The columns are truncated again. **
-
-```{r, cache=TRUE}
+```{r normalise, cache=TRUE}
 counts.norm =  counts.aggr %>% 
-	normalise_counts(sample, transcript, `read count`)
-counts.norm
+	normalise_counts(sample, transcript, `count`)
+
+counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
 ```
 
-We can easily plot the normalised density to check the outcome
+We can easily plot the normalised density to check the normalisation outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type. 
 
-```{r}
+```{r plot_normalise, cache=TRUE}
 counts.norm %>% 
-	ggplot(aes(`read count normalised` + 1, group=sample, color=`Cell type`)) +
+	ggplot(aes(`count normalised` + 1, group=sample, color=`Cell type`)) +
 	geom_density() + 
 	scale_x_log10() +
 	my_theme
@@ -125,37 +121,41 @@ counts.norm %>%
 
 # Reduce `dimensions`
 
-For visualisation purposes or ad hoc analyses, we may want to reduce the dimensions of our data, for example using PCA or MDS algorithms. 
-**These new values can be added to the original data set, or retrived in regards to samples via `reduce_dimensions` funcion.**
+We may want to reduce the dimensions of our data, for example using PCA or MDS algorithms. `reduce_dimensions` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method (e.g., MDS or PCA) as arguments and returns a tibble with additional columns for the reduced dimensions.
 
-**RD: MDS and PCA are not really different sections since they use the same function. Perhaps just explain what methods are supported by the function and show MDS and PCA as examples?**
-## MDS
-```{r, cache=TRUE}
+**MDS** (Robinson et al., 10.1093/bioinformatics/btp616)
+
+```{r mds, cache=TRUE}
 counts.norm.MDS =
   counts.norm %>%
-  reduce_dimensions(value_column = `read count normalised`, method="MDS" , elements_column = sample, feature_column = transcript, components = 1:10)
-counts.norm.MDS
+  reduce_dimensions(value_column = `count normalised`, method="MDS" , elements_column = sample, feature_column = transcript, components = 1:6)
+
+counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 ```
 
-```{r, cache=TRUE}
+On the x and y axes axis we have the reduced dimensions 1 to 6, data is coloured by cell type. 
+
+```{r plot_mds, cache=TRUE}
 counts.norm.MDS %>%
-	select(contains("Dimension"), sample, `Cell type`) %>%
+	select(contains("Dim"), sample, `Cell type`) %>%
   distinct() %>%
   GGally::ggpairs(columns = 1:6, ggplot2::aes(colour=`Cell type`))
 
 
 ```
 
-## adding PCA values
+**PCA**
 
-```{r, cache=TRUE}
+```{r pca, cache=TRUE}
 counts.norm.PCA =
   counts.norm %>%
-  reduce_dimensions(value_column = `read count normalised`, method="PCA" , elements_column = sample, feature_column = transcript, components = 1:10)
+  reduce_dimensions(value_column = `count normalised`, method="PCA" , elements_column = sample, feature_column = transcript, components = 1:6)
 counts.norm.PCA
 ```
 
-```{r, cache=TRUE}
+On the x and y axes axis we have the reduced dimensions 1 to 6, data is coloured by cell type. 
+
+```{r plot_pca, cache=TRUE}
 counts.norm.PCA %>%
 	select(contains("PC"), sample, `Cell type`) %>%
   distinct() %>%
@@ -164,58 +164,57 @@ counts.norm.PCA %>%
 
 # Rotate `dimensions`
 
-For visualisation purposes or ad hoc analyses, we may want to rotate the reduced dimensions (or any two numeric columns really) of our data, of a set angle. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
+We may want to rotate the reduced dimensions (or any two numeric columns really) of our data, of a set angle. `rotate_dimensions` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and an angle as arguments and returns a tibble with additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 
-**RD: For visualisation purposes or ad hoc analyses × 3**
-```{r, cache=TRUE}
+```{r rotate, cache=TRUE}
 counts.norm.MDS.rotated =
   counts.norm.MDS %>%
-	rotate_dimensions(`Dimension 1`, `Dimension 2`, rotation_degrees = 45, elements_column = sample)
+	rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45, elements_column = sample)
 ```
-**RD: These(⇩) are not really sections, but just two values to be compared? Perhaps just indicate that with fig titles and explain.**
-## Original
 
-```{r, cache=TRUE}
+**Original**
+On the x and y axes axis we have the first two reduced dimensions, data is coloured by cell type. 
+
+```{r plot_rotate_1, cache=TRUE}
 counts.norm.MDS.rotated %>%
-	distinct(sample, `Dimension 1`,`Dimension 2`, `Cell type`) %>%
-	ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=`Cell type` )) +
+	distinct(sample, `Dim 1`,`Dim 2`, `Cell type`) %>%
+	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type` )) +
   geom_point() +
   my_theme
 ```
 
-## Rotated
+**Rotated**
+On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by cell type. 
 
-```{r, cache=TRUE}
+```{r plot_rotate_2, cache=TRUE}
 counts.norm.MDS.rotated %>%
-	distinct(sample, `Dimension 1 rotated 45`,`Dimension 2 rotated 45`, `Cell type`) %>%
-	ggplot(aes(x=`Dimension 1 rotated 45`, y=`Dimension 2 rotated 45`, color=`Cell type` )) +
+	distinct(sample, `Dim 1 rotated 45`,`Dim 2 rotated 45`, `Cell type`) %>%
+	ggplot(aes(x=`Dim 1 rotated 45`, y=`Dim 2 rotated 45`, color=`Cell type` )) +
   geom_point() +
   my_theme
 ```
 
-# Differential transcirption
-**RD: This section title doesn't have a verb.**
+# Annotate `differential transcirption`
 
-We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). The statistics **what stats? maybe explain a little.** will be added to the original data. In this example we set `action ="get"` to just output the non-redundant gene statistics **such as ...**.
+We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). `annotate_differential_transcription` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate). 
 
-**RD: explain the args? counts_mini is a new dataset so perhaps show that first?**
-```{r, cache=TRUE}
-ttBulk::counts_mini %>%
+```{r de, cache=TRUE}
+ttBulk::counts %>%
 	annotate_differential_transcription(
       ~ condition,
       sample_column = sample,
       transcript_column = transcript,
-      counts_column = `read count`,
+      counts_column = `count`,
       action="get")
 ```
 
-# Adjust `read counts`
+# Adjust `counts`
 
-**`adjust_counts` function adjusts** `read counts` for (known) unwanted variation. For visualisation purposes or ad hoc analyses, we may want to adjust our normalised counts to remove known unwanted variation. The adjusted counts will be added to the original data set as `<READ COUNT COLUMN> adjusted`. The formulation is similar to a linear model, where the first covariate is the factor of interest and the second covariate is the unwanted variation. At the moment just an unwanted covariated is allowed at the **(a?)** time.
+We may want to adjust `counts` for (known) unwanted variation. `adjust_counts` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation, and returns a tibble with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`. At the moment just an unwanted covariated is allowed at a time.
 
 **"## Standardizing Data across genes" is still in the cache?**
 
-```{r, cache=TRUE}
+```{r adjust, cache=TRUE}
 counts.norm.adj =
 	counts.norm %>%
 
@@ -232,122 +231,120 @@ counts.norm.adj =
 	  	~ factor_of_interest + batch,
 	  	sample,
 	  	transcript,
-	  	`read count normalised`,
+	  	`count normalised`,
 	  	action = "get"
 	  )
 
 counts.norm.adj
 ```
 
-# Cell type composition
-**No verb in the title**
+# Annotate `Cell type composition`
 
-We may want to infer the cell type composition of our samples (e.g., with **cibersort (I don't know this one)**). The cell type proportions will be added to **or "get"** the original data **with `annotate_cell_type` function.
+We may want to infer the cell type composition of our samples (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337). `annotate_cell_type` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with additional columns for the adjusted  cell type proportions.
 
 **columns truncated**
-```{r, cache=TRUE}
+```{r cibersort, cache=TRUE}
 counts.cibersort =
 	ttBulk::counts %>%
-	annotate_cell_type(sample, transcript, `read count`, action="add")
-counts.cibersort
+	annotate_cell_type(sample, transcript, `count`, action="add")
+
+counts.cibersort %>% select(sample, contains("type:")) %>% distinct()
 ```
 
-We can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation **using xx function**.
+With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is facetted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).
 
-```{r, cache=TRUE}
+```{r plot_cibersort, cache=TRUE}
 counts.cibersort %>%
-  rename(`Cell type experimental` = `Cell type.x`, `Cell type estimated` = `Cell type.y`) %>%
-  distinct(sample, `Cell type experimental`, `Cell type estimated`, proportion) %>%
-  ggplot(aes(x=`Cell type estimated`, y=proportion, fill=`Cell type experimental`)) +
+	select(contains("type:"), everything()) %>%
+	gather(`Cell type inferred`, `proportion`, 1:22) %>%
+  distinct(sample, `Cell type`, `Cell type inferred`, proportion) %>%
+  ggplot(aes(x=`Cell type inferred`, y=proportion, fill=`Cell type`)) +
   geom_boxplot() +
-  facet_wrap(~`Cell type experimental`) +
+  facet_wrap(~`Cell type`) +
   my_theme +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
 ```
 
-# Cluster **xx data**
+# Annotate `clusters` 
 
-For visualisation purposes or ad hoc analyses, we may want to cluster our data (e.g., k-means sample-wise). The cluster annotation will be added to the original data set.
+We may want to cluster our data (e.g., using k-means sample-wise). `annotate_clusters` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with additional columns for the cluster annotation. At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
 
-**similar to the PCA/MDS, maybe just explain the xx function supports k-means clustering by xxx?**
-## k-means
+**k-means**
 
-```{r, cache=TRUE}
+```{r cluster, cache=TRUE}
 counts.norm.cluster = counts.norm %>%
-  annotate_clusters(value_column = `read count normalised`, elements_column = sample, feature_column = transcript,	number_of_clusters = 2 )
+  annotate_clusters(value_column = `count normalised`, elements_column = sample, feature_column = transcript,	number_of_clusters = 2 )
 
 counts.norm.cluster
 ```
 
-We can add cluster annotation to the MDS dimesion reduced data set and plot
+We can add cluster annotation to the MDS dimesion reduced data set and plot.
 
-```{r, cache=TRUE}
+```{r plot_cluster, cache=TRUE}
  counts.norm.MDS %>%
   annotate_clusters(
-  	value_column = `read count normalised`,
+  	value_column = `count normalised`,
   	elements_column = sample,
   	feature_column = transcript,
   	number_of_clusters = 2
   ) %>%
-	distinct(sample, `Dimension 1`, `Dimension 2`, cluster) %>%
-	ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=cluster)) +
+	distinct(sample, `Dim 1`, `Dim 2`, cluster) %>%
+	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=cluster)) +
   geom_point() +
   my_theme
 ```
 
-# Drop redundant
+# Drop `redundant`
 
-For visualisation purposes or ad hoc analyses, we may want to remove redundant elements from the original data set (e.g., samples or transcripts). 
+We may want to remove redundant elements from the original data set (e.g., samples or transcripts), for example if we want to define cell-type specific signatures with low sample redundancy. `drop_redundant` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble dropped recundant elements (e.g., samples). Two redundancy estimation approaches are supported: 
 
-**I don't get this part. What's the motivation for removing these information?**
-**Similar to above subsections, "e.g. ..." sounds like more than these two modes are supported. But it is unclear what are supported."**
++ removal of highly correlated clusters of elements (keeping a representative) with method="correlation"
++ removal of most proximal element pairs in a reduced dimensional space.
 
-## Use correlation or sample removal
-**sample removal?**
+**Approach 1**
 
-```{r, cache=TRUE}
+```{r drop, cache=TRUE}
 counts.norm.non_redundant =
 	counts.norm.MDS %>%
   drop_redundant(
   	method = "correlation",
   	elements_column = sample,
   	feature_column = transcript,
-  	value_column = `read count normalised`
+  	value_column = `count normalised`
   )
 ```
 
 We can visualise how the reduced redundancy with the reduced dimentions look like
 
-```{r, cache=TRUE}
+```{r plot_drop, cache=TRUE}
 counts.norm.non_redundant %>%
-	distinct(sample, `Dimension 1`, `Dimension 2`, `Cell type`) %>%
-	ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=`Cell type`)) +
+	distinct(sample, `Dim 1`, `Dim 2`, `Cell type`) %>%
+	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type`)) +
   geom_point() +
   my_theme
 
 ```
 
-## Use reduced dimensions
+**Approach 2**
 
-```{r, cache=TRUE}
+```{r drop2, cache=TRUE}
 counts.norm.non_redundant =
 	counts.norm.MDS %>%
   drop_redundant(
   	method = "reduced_dimensions",
   	elements_column = sample,
   	feature_column = transcript,
-  	Dim_a_column = `Dimension 1`,
-  	Dim_b_column = `Dimension 2`
+  	Dim_a_column = `Dim 1`,
+  	Dim_b_column = `Dim 2`
   )
 ```
 
+We can visualise MDS reduced dimensions of the samples with the closest pair removed.
 
-We can visualise how the reduced redundancy with the reduced dimentions look like
-**Maybe explain briefly what information the plot shows? Same with the previous plots as well.**
-```{r, cache=TRUE}
+```{r plot_drop2, cache=TRUE}
 counts.norm.non_redundant %>%
-	distinct(sample, `Dimension 1`, `Dimension 2`, `Cell type`) %>%
-	ggplot(aes(x=`Dimension 1`, y=`Dimension 2`, color=`Cell type`)) +
+	distinct(sample, `Dim 1`, `Dim 2`, `Cell type`) %>%
+	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type`)) +
   geom_point() +
   my_theme
 
@@ -355,22 +352,60 @@ counts.norm.non_redundant %>%
 
 # Other useful wrappers
 
-**some filler sentences? To conclude the above and explain these functions a bit more?**
+The above wrapper streamline the most common processing of bulk RNA sequencing data. Other useful wrappers are listed above.
 
-**e.g. above functions do xxx on single BAM/SAM file, however, xxx is also supported via xx function.**
+## From BAM/SAM to tibble of gene counts
 
-We can convert a list of BAM/SAM files into a tidy data frame of annotated counts, via FeatureCounts.
-
-**I don't know what FeatureCounts is :(**
+We can calculate gene counts (using FeatureCounts; Liao Y et al., 10.1093/nar/gkz114) from a list of BAM/SAM files and format them into a tidy structure (similar to ttBulk::counts).
 
 ```{r eval=FALSE}
 counts = bam_sam_to_featureCounts_tibble(file_names, genome = "hg38")
 ```
 
-We can add gene symbols from ensembl identifiers **give an example of application?**
+## From ensembl IDs to gene symbol IDs
 
-```{r eval = F}
+We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs.
+
+```{r ensembl, cache=TRUE}
 counts_ensembl %>% annotate_symbol(ens)
+```
+
+# ADD versus GET modes
+
+Every function takes this structure as input, and outputs either (i) the new information joint to the original input data frame (default), or (ii) just the new information, setting action="add" or action="get" respectively. For example, from this data set
+
+```{r, cache=TRUE}
+  counts.norm 
+```
+
+**action="add"** (Default)
+We can add the MDS dimensions to the original data set
+
+```{r, cache=TRUE}
+  counts.norm %>%
+    reduce_dimensions(
+    	value_column = `count normalised`, 
+    	method="MDS" , 
+    	elements_column = sample, 
+    	feature_column = transcript, 
+    	components = 1:6, 
+    	action="add"
+    )
+```
+
+**action="get"**
+We can get just the MDS dimensions relative to each sample
+
+```{r, cache=TRUE}
+  counts.norm %>%
+    reduce_dimensions(
+    	value_column = `count normalised`, 
+    	method="MDS" , 
+    	elements_column = sample, 
+    	feature_column = transcript, 
+    	components = 1:6, 
+    	action="get"
+    )
 ```
 
 # Appendix

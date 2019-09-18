@@ -6,7 +6,7 @@
 \usage{
 add_normalised_counts_bulk.calcNormFactor(df, reference = NULL,
   cpm_threshold = 0.5, prop = 3/4, sample_column = sample,
-  transcript_column = transcript, counts_column = `read count`)
+  transcript_column = transcript, counts_column = count)
 }
 \arguments{
 \item{df}{A tibble}

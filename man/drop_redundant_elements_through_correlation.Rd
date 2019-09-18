@@ -19,7 +19,7 @@ drop_redundant_elements_through_correlation(input.df, value_column,
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
-\item{counts_column}{A character string. The column that contains the numeric value (i.e., normally read counts)}
+\item{counts_column}{A character string. The column that contains the numeric value (i.e., normally counts)}
 }
 \value{
 A tibble with redundant elemens removed
