@@ -48,11 +48,10 @@ my_theme =
 
 ```
 
-
-# Introduction
-
 <img src="../inst/logo.png" height="139px" width="120px" />
 
+
+# Introduction
 
 ttBulk is a collection of wrapper functions for bulk tanscriptomic analyses that follows the "tidy" paradigm. The data structure is a tibble with columns for 
 
