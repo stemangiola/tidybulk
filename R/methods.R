@@ -12,7 +12,7 @@
 #' @param df A tibble
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #'
 #' @return A tibble with an additional column
 #'
@@ -57,7 +57,7 @@ create_ttBulk.tbl_df <- function(input.df,
 # NORMALISE
 
 
-#' Get a tibble with normalised read counts using TMM
+#' Get a tibble with normalised counts using TMM
 #'
 #' @import dplyr
 #' @import tidyr
@@ -72,7 +72,7 @@ create_ttBulk.tbl_df <- function(input.df,
 #' @param method A character string
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @param reference_selection_function A fucntion median, or max for the fererence sample
 #' @param action A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).
 #'
@@ -153,7 +153,7 @@ normalise_counts.tbl_df = normalise_counts.ttBulk <-
 #' @param input.df A tibble
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally samples)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally genes)
-#' @param value_column   A character string. The column that contains the numeric value (i.e., normally read counts)
+#' @param value_column   A character string. The column that contains the numeric value (i.e., normally counts)
 #' @param number_of_clusters A integer indicating how many clusters we are seeking
 #' @param of_samples if the input is tt object, this will indicate whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
@@ -244,7 +244,7 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-  function(input.df,
 #' @param input.df A tibble
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally genes)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally samples)
-#' @param value_column   A character string. The column that contains the numeric value (i.e., normally read counts)
+#' @param value_column   A character string. The column that contains the numeric value (i.e., normally counts)
 #' @param method A character string
 #' @param components A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
@@ -467,7 +467,7 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally samples)
 #' @param of_samples if the input is tt object, this will indicate whether the element column will be sample or transcript column
 
-#' @param value_column  A character string. For correlation based calculation. The column that contains the numeric value (i.e., normally read counts)
+#' @param value_column  A character string. For correlation based calculation. The column that contains the numeric value (i.e., normally counts)
 #' @param feature_column A character string. For correlation based calculation. The column that is represents entities to cluster (i.e., normally genes)
 #' @param correlation_threshold A real number between 0 and 1. For correlation based calculation.
 #' @param log_transform A boolean. For correlation based calculation. Whether the value should be log-transformed (e.g., TRUE for RNA sequencing data).
@@ -559,7 +559,7 @@ drop_redundant.tbl_df = drop_redundant.ttBulk <-  function(input.df,
 # ADJUST
 
 
-#' Get adjusted read count for unwanted variation
+#' Get adjusted count for unwanted variation
 #'
 #' @import dplyr
 #' @import tidyr
@@ -570,7 +570,7 @@ drop_redundant.tbl_df = drop_redundant.ttBulk <-  function(input.df,
 #' @param formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @param log_transform A boolean. For correlation based calculation. Whether the value should be log-transformed (e.g., TRUE for RNA sequencing data).
 #' @param action A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).
 #'
@@ -641,8 +641,8 @@ adjust_counts.tbl_df = adjust_counts.ttBulk <-  function(input.df,
 
 # AGGREGATE DUPLICATES
 
-#' Aggregates multiple read counts from the same samples (e.g., from isoforms)
-#' This function aggregates read counts over samples, concatenates other character columns, and averages other numeric columns
+#' Aggregates multiple counts from the same samples (e.g., from isoforms)
+#' This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns
 #'
 #' @importFrom dplyr summarise_all
 #' @importFrom dplyr bind_rows
@@ -650,7 +650,7 @@ adjust_counts.tbl_df = adjust_counts.ttBulk <-  function(input.df,
 #' @param input.df A tibble
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @param aggregation_function A function for counts aggregation (e.g., sum)
 #' @param keep_integer A boolean. Whether to force the aggregate counts to integer
 #'
@@ -714,7 +714,7 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 #' @param input.df A tibble
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @param action A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).
 #'
 #' @return A tibble including additional columns
@@ -837,7 +837,7 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 #' @param formula a formula with no response variable, referring only to numeric variables
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @param significance_threshold A real between 0 and 1.
 #' @param action A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).
 #'

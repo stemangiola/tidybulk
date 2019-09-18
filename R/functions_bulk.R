@@ -8,7 +8,7 @@
 #' @param df A tibble
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #'
 #' @return A tibble with an additional column
 #'
@@ -109,7 +109,7 @@ create_tt_from_bam_sam_bulk <-
       {
         reduce(
           list(
-            (.) %$% counts %>% as_tibble(rownames = "GeneID") %>% mutate(GeneID = GeneID %>% as.integer()) %>% gather(sample, `read count`,-GeneID),
+            (.) %$% counts %>% as_tibble(rownames = "GeneID") %>% mutate(GeneID = GeneID %>% as.integer()) %>% gather(sample, `count`,-GeneID),
             (.) %$% genes %>% select(GeneID, transcript) %>% as_tibble(),
             (.) %$% samples %>% as_tibble()
           ),
@@ -133,7 +133,7 @@ create_tt_from_bam_sam_bulk <-
 add_normalised_counts_bulk.get_cpm <- function(df,
                                                sample_column = `sample`,
                                                transcript_column = `transcript`,
-                                               counts_column = `read count`,
+                                               counts_column = `count`,
                                                cpm_threshold = 0.5) {
   sample_column = enquo(sample_column)
   transcript_column = enquo(transcript_column)
@@ -189,12 +189,12 @@ add_normalised_counts_bulk.get_cpm <- function(df,
 #' @param prop A number between 0 and 1
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @return A tibble filtered
 add_normalised_counts_bulk.get_low_expressed <- function(df,
                                                          sample_column = `sample`,
                                                          transcript_column = `transcript`,
-                                                         counts_column = `read count`,
+                                                         counts_column = `count`,
                                                          cpm_threshold = 0.5,
                                                          prop = 3 / 4) {
   sample_column = enquo(sample_column)
@@ -254,7 +254,7 @@ add_normalised_counts_bulk.calcNormFactor <- function(df,
                                                       prop = 3 / 4,
                                                       sample_column = `sample`,
                                                       transcript_column = `transcript`,
-                                                      counts_column = `read count`) {
+                                                      counts_column = `count`) {
   sample_column = enquo(sample_column)
   transcript_column = enquo(transcript_column)
   counts_column = enquo(counts_column)
@@ -320,7 +320,7 @@ add_normalised_counts_bulk.calcNormFactor <- function(df,
   list(gene_to_exclude= gene_to_exclude, nf = nf)
 }
 
-#' Get a tibble with normalised read counts using TMM
+#' Get a tibble with normalised counts using TMM
 #'
 #' @import dplyr
 #' @import tidyr
@@ -335,7 +335,7 @@ add_normalised_counts_bulk.calcNormFactor <- function(df,
 #' @param method A character string
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @return A tibble including additional columns
 #'
 #' @export
@@ -385,7 +385,7 @@ get_normalised_counts_bulk <- function(input.df,
 
     # Rename
     dplyr::select(!!sample_column,!!transcript_column,!!counts_column) %>%
-    #setNames(c("!!sample_column", "gene", "read count")) %>%
+    #setNames(c("!!sample_column", "gene", "count")) %>%
 
     # Set samples and genes as factors
     mutate(
@@ -456,7 +456,7 @@ get_normalised_counts_bulk <- function(input.df,
                   !!transcript_column,
                   !!value_normalised,
                   everything()) %>%
-    dplyr::mutate(filtered_out_low_counts = !!transcript_column %in% nf_obj$gene_to_exclude) %>%
+    dplyr::mutate(`filter out low counts` = !!transcript_column %in% nf_obj$gene_to_exclude) %>%
     dplyr::select(-!!counts_column,-tot,-tot_filt) %>%
     dplyr::rename(TMM = nf) %>%
     #setNames(c("sample", "gene", sprintf("%s normalised", input.df %>% select(!!counts_column) %>% colnames), colnames(.)[4:ncol(.)])) %>%
@@ -468,7 +468,7 @@ get_normalised_counts_bulk <- function(input.df,
 
 }
 
-#' Add a tibble with normalised read counts using TMM
+#' Add a tibble with normalised counts using TMM
 #'
 #' @import dplyr
 #' @import tidyr
@@ -482,7 +482,7 @@ get_normalised_counts_bulk <- function(input.df,
 #' @param method A character string
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @return A tibble including additional columns
 #'
 #' @export
@@ -540,7 +540,7 @@ add_normalised_counts_bulk <- function(input.df,
 #' @param formula a formula with no response variable, referring only to numeric variables
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @param design_column A character name of the covariate column
 #'
 #' @return A tibble with edgeR results
@@ -618,11 +618,11 @@ get_differential_transcript_abundance_bulk <- function(input.df,
     df_for_edgeR %>%
     select(!!transcript_column,!!sample_column,!!counts_column) %>%
     mutate(
-      filtered_out_low_counts = !!transcript_column %in% add_normalised_counts_bulk.get_low_expressed(.,!!sample_column,!!transcript_column,!!counts_column)
+      `filter out low counts` = !!transcript_column %in% add_normalised_counts_bulk.get_low_expressed(.,!!sample_column,!!transcript_column,!!counts_column)
     )
 
   df_for_edgeR.filt %>%
-    filter(!filtered_out_low_counts) %>%
+    filter(!`filter out low counts`) %>%
     select(!!transcript_column,!!sample_column,!!counts_column) %>%
     spread(!!sample_column,!!counts_column) %>%
     as_matrix(rownames = !!transcript_column) %>%
@@ -642,7 +642,7 @@ get_differential_transcript_abundance_bulk <- function(input.df,
     # Add filtering info
     full_join(
       df_for_edgeR.filt %>%
-        select(!!transcript_column, filtered_out_low_counts) %>%
+        select(!!transcript_column, `filter out low counts`) %>%
         distinct()
     ) %>%
 
@@ -665,7 +665,7 @@ get_differential_transcript_abundance_bulk <- function(input.df,
 #' @param formula a formula with no response variable, referring only to numeric variables
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @param design_column A character name of the covariate column
 #'
 #' @return A tibble with differential_transcript_abundance results
@@ -715,7 +715,7 @@ add_differential_transcript_abundance_bulk <- function(input.df,
 #' @param input.df A tibble
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally samples)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally genes)
-#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally read counts)
+#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally counts)
 #' @param number_of_clusters A integer indicating how many clusters we are seeking
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @return A tibble with additional columns
@@ -741,7 +741,7 @@ get_clusters_kmeans_bulk <-
 
     input.df %>%
 
-      # Through error if some read counts are NA
+      # Through error if some counts are NA
       error_if_counts_is_na(!!value_column) %>%
 
       # Prepare data frame
@@ -776,7 +776,7 @@ get_clusters_kmeans_bulk <-
 #' @param input.df A tibble
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally samples)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally genes)
-#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally read counts)
+#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally counts)
 #' @param number_of_clusters A integer indicating how many clusters we are seeking
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @return A tibble with additional columns
@@ -827,7 +827,7 @@ add_clusters_kmeans_bulk <-
 #' @param input.df A tibble
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally genes)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally samples)
-#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally read counts)
+#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally counts)
 #' @param components A integer vector corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @return A tibble with additional columns
@@ -860,12 +860,12 @@ get_reduced_dimensions_MDS_bulk <-
       map_dfr(
         ~ input.df %>%
 
-          # Through error if some read counts are NA
+          # Through error if some counts are NA
           error_if_counts_is_na(!!value_column) %>%
 
           # Filter lowly transcribed (I have to avoid the use of normalising function)
           add_normalised_counts_bulk(!!elements_column,!!feature_column,!!value_column) %>%
-          filter(!filtered_out_low_counts) %>%
+          filter(!`filter out low counts`) %>%
           distinct(!!feature_column,!!elements_column,!!value_column) %>%
 
           # Check if logtansform is needed
@@ -899,7 +899,7 @@ get_reduced_dimensions_MDS_bulk <-
       distinct() %>%
       spread(Component, `Component value`) %>%
       setNames(c((.) %>% select(1) %>% colnames(),
-                 paste("Dimension", (.) %>% select(-1) %>% colnames())
+                 paste("Dim", (.) %>% select(-1) %>% colnames())
       )) %>%
 
       # Attach attributes
@@ -916,7 +916,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @param input.df A tibble
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally genes)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally samples)
-#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally read counts)
+#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally counts)
 #' @param components A integer vector corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @return A tibble with additional columns
@@ -968,7 +968,7 @@ add_reduced_dimensions_MDS_bulk <-
 #' @param input.df A tibble
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally genes)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally samples)
-#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally read counts)
+#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally counts)
 #' @param components An integer vector corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @return A tibble with additional columns
@@ -994,7 +994,7 @@ get_reduced_dimensions_PCA_bulk <-
 
     input.df %>%
 
-      # Through error if some read counts are NA
+      # Through error if some counts are NA
       error_if_counts_is_na(!!value_column) %>%
 
       # Prepare data frame
@@ -1080,7 +1080,7 @@ get_reduced_dimensions_PCA_bulk <-
 #' @param input.df A tibble
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally genes)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally samples)
-#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally read counts)
+#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally counts)
 #' @param components An integer vector corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @return A tibble with additional columns
@@ -1280,8 +1280,8 @@ add_rotated_dimensions =
       )
   }
 
-#' Aggregates multiple read counts from the same samples (e.g., from isoforms)
-#' This function aggregates read counts over samples, concatenates other character columns, and averages other numeric columns
+#' Aggregates multiple counts from the same samples (e.g., from isoforms)
+#' This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns
 #'
 #' @importFrom dplyr summarise_all
 #' @importFrom dplyr bind_rows
@@ -1289,7 +1289,7 @@ add_rotated_dimensions =
 #' @param input.df A tibble
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @param aggregation_function A function for counts aggregation (e.g., sum)
 #' @return A tibble with aggregated genes and annotation
 #'
@@ -1342,7 +1342,7 @@ aggregate_duplicated_transcripts_bulk =
     # ggregates read input.df over samples, concatenates other character columns, and averages other numeric columns
     input.df %>%
 
-      # Through error if some read counts are NA
+      # Through error if some counts are NA
       error_if_counts_is_na(!!counts_column) %>%
 
       # transform logials and factors
@@ -1382,7 +1382,7 @@ aggregate_duplicated_transcripts_bulk =
       } %>%
 
       # Rename column of number of duplicates for each gene
-      rename(`number of merged transcripts` = n_aggr)
+      rename(`merged transcripts` = n_aggr)
 
   }
 
@@ -1397,7 +1397,7 @@ aggregate_duplicated_transcripts_bulk =
 #' @param input.df A tibble
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally genes)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally samples)
-#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally read counts)
+#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally counts)
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param correlation_threshold A real number between 0 and 1
 #' @return A tibble with redundant elemens removed
@@ -1494,7 +1494,7 @@ drop_redundant_elements_through_correlation <- function(input.df,
 #' @param Dim_a_column A character string. The column of one principal component
 #' @param Dim_b_column A character string. The column of another principal component
 #' @param elements_column A character string. The column that is represents entities to cluster (i.e., normally samples)
-#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally read counts)
+#' @param counts_column   A character string. The column that contains the numeric value (i.e., normally counts)
 #' @return A tibble with pairs dropped
 #'
 #' @export
@@ -1638,7 +1638,7 @@ add_symbol_from_ensembl <-
 #' @param input.df A tibble
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @return A tibble including additional columns
 #'
 #' @export
@@ -1701,7 +1701,9 @@ get_cell_type_proportions = function(input.df,            sample_column = NULL,
     # Parse results and return
     as_tibble(rownames = quo_name(sample_column)) %>%
     select(-`P-value`,-Correlation,-RMSE) %>%
-    gather(`Cell type`, proportion,-!!sample_column) %>%
+    setNames(c(quo_name(sample_column), (.) %>% select(-1) %>% colnames() %>% paste("type:", ., sep=" "))) %>%
+    #%>%
+    #gather(`Cell type`, proportion,-!!sample_column) %>%
 
     # Attach attributes
     add_attr(input.df %>% attr("parameters"), "parameters")
@@ -1717,7 +1719,7 @@ get_cell_type_proportions = function(input.df,            sample_column = NULL,
 #' @param input.df A tibble
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @return A tibble including additional columns
 #'
 #' @export
@@ -1750,7 +1752,7 @@ add_cell_type_proportions = function(input.df,            sample_column = NULL,
 
 }
 
-#' Get adjusted read count for some batch effect
+#' Get adjusted count for some batch effect
 #'
 #' @import dplyr
 #' @import tidyr
@@ -1761,7 +1763,7 @@ add_cell_type_proportions = function(input.df,            sample_column = NULL,
 #' @param formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @param design_column A character name of the covariate column
 #'
 #' @return A tibble with adjusted counts
@@ -1809,9 +1811,9 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
     ifelse_pipe(log_transform,
                 ~ .x %>% mutate(!!counts_column := !!counts_column %>% `+`(1) %>%  log())) %>%
 
-    # Mark Filter low read counts
+    # Mark Filter low counts
     mutate(
-      filtered_out_low_counts =
+      `filter out low counts` =
         !!transcript_column %in%
         add_normalised_counts_bulk.get_low_expressed(.,!!sample_column,!!transcript_column,!!counts_column)
     )
@@ -1834,8 +1836,8 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
 
   df_for_combat %>%
 
-    # Filter low read counts
-    filter(!filtered_out_low_counts) %>%
+    # Filter low counts
+    filter(!`filter out low counts`) %>%
 
     # Select relevant info
     distinct(!!transcript_column,!!sample_column,!!counts_column) %>%
@@ -1883,13 +1885,13 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
         distinct(
           !!transcript_column,
           !!sample_column,
-          filtered_out_low_counts
+          `filter out low counts`
         ),
       by = c(quo_name(transcript_column), quo_name(sample_column))
     )
 }
 
-#' Add adjusted read count for some batch effect
+#' Add adjusted count for some batch effect
 #'
 #' @import dplyr
 #' @import tidyr
@@ -1900,7 +1902,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
 #' @param formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param counts_column A character name of the count column
 #' @param design_column A character name of the covariate column
 #'
 #' @return A tibble with adjusted counts

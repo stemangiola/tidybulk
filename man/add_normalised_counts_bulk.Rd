@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_bulk.R
 \name{add_normalised_counts_bulk}
 \alias{add_normalised_counts_bulk}
-\title{Add a tibble with normalised read counts using TMM}
+\title{Add a tibble with normalised counts using TMM}
 \usage{
 add_normalised_counts_bulk(input.df, sample_column = NULL,
   transcript_column = NULL, counts_column = NULL,
@@ -14,7 +14,7 @@ add_normalised_counts_bulk(input.df, sample_column = NULL,
 
 \item{transcript_column}{A character name of the gene/transcript name column}
 
-\item{counts_column}{A character name of the read count column}
+\item{counts_column}{A character name of the count column}
 
 \item{cpm_threshold}{A real positive number}
 
@@ -30,5 +30,5 @@ add_normalised_counts_bulk(input.df, sample_column = NULL,
 A tibble including additional columns
 }
 \description{
-Add a tibble with normalised read counts using TMM
+Add a tibble with normalised counts using TMM
 }

@@ -15,7 +15,7 @@ annotate_cell_type(input.df, sample_column = NULL,
 
 \item{transcript_column}{A character name of the gene/transcript name column}
 
-\item{counts_column}{A character name of the read count column}
+\item{counts_column}{A character name of the count column}
 
 \item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).}
 }

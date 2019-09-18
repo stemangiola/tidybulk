@@ -18,7 +18,7 @@ annotate_differential_transcription(input.df, formula,
 
 \item{transcript_column}{A character name of the gene/transcript name column}
 
-\item{counts_column}{A character name of the read count column}
+\item{counts_column}{A character name of the count column}
 
 \item{significance_threshold}{A real between 0 and 1.}
 

@@ -2,8 +2,8 @@
 % Please edit documentation in R/methods.R
 \name{aggregate_duplicates}
 \alias{aggregate_duplicates}
-\title{Aggregates multiple read counts from the same samples (e.g., from isoforms)
-This function aggregates read counts over samples, concatenates other character columns, and averages other numeric columns}
+\title{Aggregates multiple counts from the same samples (e.g., from isoforms)
+This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns}
 \usage{
 aggregate_duplicates(input.df, aggregation_function = sum,
   sample_column = NULL, transcript_column = NULL,
@@ -18,7 +18,7 @@ aggregate_duplicates(input.df, aggregation_function = sum,
 
 \item{transcript_column}{A character name of the gene/transcript name column}
 
-\item{counts_column}{A character name of the read count column}
+\item{counts_column}{A character name of the count column}
 
 \item{keep_integer}{A boolean. Whether to force the aggregate counts to integer}
 }
@@ -26,6 +26,6 @@ aggregate_duplicates(input.df, aggregation_function = sum,
 A tibble with aggregated genes and annotation
 }
 \description{
-Aggregates multiple read counts from the same samples (e.g., from isoforms)
-This function aggregates read counts over samples, concatenates other character columns, and averages other numeric columns
+Aggregates multiple counts from the same samples (e.g., from isoforms)
+This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns
 }

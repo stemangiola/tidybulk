@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods.R
 \name{adjust_counts}
 \alias{adjust_counts}
-\title{Get adjusted read count for unwanted variation}
+\title{Get adjusted count for unwanted variation}
 \usage{
 adjust_counts(input.df, formula, sample_column = NULL,
   transcript_column = NULL, counts_column = NULL, log_transform = T,
@@ -15,7 +15,7 @@ adjust_counts(input.df, formula, sample_column = NULL,
 
 \item{transcript_column}{A character name of the gene/transcript name column}
 
-\item{counts_column}{A character name of the read count column}
+\item{counts_column}{A character name of the count column}
 
 \item{log_transform}{A boolean. For correlation based calculation. Whether the value should be log-transformed (e.g., TRUE for RNA sequencing data).}
 
@@ -27,5 +27,5 @@ adjust_counts(input.df, formula, sample_column = NULL,
 A tibble with edgeR results
 }
 \description{
-Get adjusted read count for unwanted variation
+Get adjusted count for unwanted variation
 }

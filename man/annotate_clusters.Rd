@@ -11,7 +11,7 @@ annotate_clusters(input.df, value_column, number_of_clusters,
 \arguments{
 \item{input.df}{A tibble}
 
-\item{value_column}{A character string. The column that contains the numeric value (i.e., normally read counts)}
+\item{value_column}{A character string. The column that contains the numeric value (i.e., normally counts)}
 
 \item{number_of_clusters}{A integer indicating how many clusters we are seeking}
 

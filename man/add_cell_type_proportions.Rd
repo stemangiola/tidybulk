@@ -14,7 +14,7 @@ add_cell_type_proportions(input.df, sample_column = NULL,
 
 \item{transcript_column}{A character name of the gene/transcript name column}
 
-\item{counts_column}{A character name of the read count column}
+\item{counts_column}{A character name of the count column}
 }
 \value{
 A tibble including additional columns

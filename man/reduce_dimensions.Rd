@@ -11,7 +11,7 @@ reduce_dimensions(input.df, value_column, method, components = 1:2,
 \arguments{
 \item{input.df}{A tibble}
 
-\item{value_column}{A character string. The column that contains the numeric value (i.e., normally read counts)}
+\item{value_column}{A character string. The column that contains the numeric value (i.e., normally counts)}
 
 \item{method}{A character string}
 

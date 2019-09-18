@@ -11,7 +11,7 @@ create_ttBulk(input.df, sample_column, transcript_column, counts_column)
 
 \item{transcript_column}{A character name of the gene/transcript name column}
 
-\item{counts_column}{A character name of the read count column}
+\item{counts_column}{A character name of the count column}
 
 \item{df}{A tibble}
 }
