@@ -9,6 +9,8 @@ adjust_counts(input.df, formula, sample_column = NULL,
   action = "add", ...)
 }
 \arguments{
+\item{input.df}{A tibble}
+
 \item{formula}{a formula with no response variable, of the kind ~ factor_of_intrest + batch}
 
 \item{sample_column}{A character name of the sample column}
@@ -21,7 +23,7 @@ adjust_counts(input.df, formula, sample_column = NULL,
 
 \item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).}
 
-\item{df}{A tibble}
+\item{...}{Further parameters passed to the function sva::ComBat}
 }
 \value{
 A tibble with edgeR results

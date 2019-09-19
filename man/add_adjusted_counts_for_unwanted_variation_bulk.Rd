@@ -6,9 +6,11 @@
 \usage{
 add_adjusted_counts_for_unwanted_variation_bulk(input.df, formula,
   sample_column = NULL, transcript_column = NULL,
-  counts_column = NULL, log_transform = T)
+  counts_column = NULL, log_transform = T, ...)
 }
 \arguments{
+\item{input.df}{A tibble}
+
 \item{formula}{a formula with no response variable, of the kind ~ factor_of_intrest + batch}
 
 \item{sample_column}{A character name of the sample column}
@@ -17,9 +19,9 @@ add_adjusted_counts_for_unwanted_variation_bulk(input.df, formula,
 
 \item{counts_column}{A character name of the count column}
 
-\item{df}{A tibble}
+\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
-\item{design_column}{A character name of the covariate column}
+\item{...}{Further parameters passed to the function sva::ComBat}
 }
 \value{
 A tibble with adjusted counts

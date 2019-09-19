@@ -9,7 +9,7 @@
 #' @import tidyr
 #' @import tibble
 #'
-#' @param df A tibble
+#' @param input.df A tibble
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
 #' @param counts_column A character name of the count column
@@ -28,10 +28,7 @@ create_ttBulk <- function(input.df,
 create_ttBulk.default <- function(input.df,
                                   sample_column,
                                   transcript_column,
-                                  counts_column,
-                                  cell_column = NULL,
-                                  type,
-                                  ...)
+                                  counts_column)
 {
   print("This function cannot be applied to this object")
 }
@@ -40,9 +37,7 @@ create_ttBulk.default <- function(input.df,
 create_ttBulk.tbl_df <- function(input.df,
                                  sample_column,
                                  transcript_column,
-                                 counts_column,
-                                 type,
-                                 ...)
+                                 counts_column)
 {
   # Make col names
   sample_column = enquo(sample_column)
@@ -66,15 +61,15 @@ create_ttBulk.tbl_df <- function(input.df,
 #'
 #'
 #' @param input.df A tibble
-#' @param reference A reference matrix, not sure if used anymore
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
-#' @param method A character string
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
 #' @param counts_column A character name of the count column
+#' @param cpm_threshold A real positive number
+#' @param prop A number between 0 and 1
+#' @param method A character string
 #' @param reference_selection_function A fucntion median, or max for the fererence sample
 #' @param action A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).
+#'
 #'
 #' @return A tibble including additional columns
 #'
@@ -87,8 +82,7 @@ normalise_counts <- function(input.df,
                              prop = 3 / 4,
                              method = "TMM",
                              reference_selection_function = median,
-                             action = "add",
-                             ...) {
+                             action = "add") {
   UseMethod("normalise_counts", input.df)
 }
 
@@ -101,8 +95,7 @@ normalise_counts.default <-  function(input.df,
                                       prop = 3 / 4,
                                       method = "TMM",
                                       reference_selection_function = median,
-                                      action = "add",
-                                      ...)
+                                      action = "add")
 {
   print("This function cannot be applied to this object")
 }
@@ -128,12 +121,21 @@ normalise_counts.tbl_df = normalise_counts.ttBulk <-
       add_normalised_counts_bulk(input.df,
                                  !!sample_column,
                                  !!transcript_column,
-                                 !!counts_column)
+                                 !!counts_column,
+                                 cpm_threshold = cpm_threshold,
+                                 prop = prop,
+                                 method = method,
+                                 reference_selection_function = reference_selection_function)
     else if (action == "get")
       get_normalised_counts_bulk(input.df,
                                  !!sample_column,
                                  !!transcript_column,
-                                 !!counts_column)
+                                 !!counts_column,
+                                 cpm_threshold = cpm_threshold,
+                                 prop = prop,
+                                 method = method,
+                                 reference_selection_function = reference_selection_function
+                                 )
     else
       stop(
         "action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -155,33 +157,38 @@ normalise_counts.tbl_df = normalise_counts.ttBulk <-
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally genes)
 #' @param value_column   A character string. The column that contains the numeric value (i.e., normally counts)
 #' @param number_of_clusters A integer indicating how many clusters we are seeking
+#' @param method A character string
 #' @param of_samples if the input is tt object, this will indicate whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param action A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).
+#' @param ... Further parameters passed to the function kmeans
+
 #'
 #' @return A tibble with additional columns
 #'
 #' @export
 annotate_clusters <- function(input.df,
-                          value_column,
-                          number_of_clusters,
-                          elements_column = NULL,
-                          feature_column = NULL,
-                          of_samples = T,
-                          log_transform = T,
-                          action = "add") {
+                              value_column,
+                              number_of_clusters,
+                              elements_column = NULL,
+                              feature_column = NULL,
+                              method = "kmeans",
+                              of_samples = T,
+                              log_transform = T,
+                              action = "add", ...) {
   UseMethod("annotate_clusters", input.df)
 }
 
 #' @export
 annotate_clusters.default <-  function(input.df,
-                                   value_column,
-                                   number_of_clusters,
-                                   elements_column = NULL,
-                                   feature_column = NULL,
-                                   of_samples = T,
-                                   log_transform = T,
-                                   action = "add")
+                                       value_column,
+                                       number_of_clusters,
+                                       elements_column = NULL,
+                                       feature_column = NULL,
+                                       method = "kmeans",
+                                       of_samples = T,
+                                       log_transform = T,
+                                       action = "add", ...)
 {
   print("This function cannot be applied to this object")
 }
@@ -195,7 +202,7 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-  function(input.df,
                                                          method = "kmeans",
                                                          of_samples = T,
                                                          log_transform = T,
-                                                         action = "add")
+                                                         action = "add", ...)
 {
   # Make col names
   value_column = enquo(value_column)
@@ -210,7 +217,9 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-  function(input.df,
         number_of_clusters = number_of_clusters,
         elements_column = !!elements_column,
         feature_column = !!feature_column,
-        log_transform = log_transform
+        of_samples = of_samples,
+        log_transform = log_transform,
+        ...
       )
     else if (action == "get")
       get_clusters_kmeans_bulk(
@@ -219,7 +228,9 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-  function(input.df,
         number_of_clusters = number_of_clusters,
         elements_column = !!elements_column,
         feature_column = !!feature_column,
-        log_transform = log_transform
+        of_samples = of_samples,
+        log_transform = log_transform,
+        ...
       )
     else
       stop(
@@ -245,12 +256,16 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-  function(input.df,
 #' @param feature_column A character string. The column that is represents entities to cluster (i.e., normally genes)
 #' @param elements_column A character string. The column that is used to calculate distance (i.e., normally samples)
 #' @param value_column   A character string. The column that contains the numeric value (i.e., normally counts)
+#' @param of_samples if the input is tt object, this will indicate whether the element column will be sample or transcript column
 #' @param method A character string
 #' @param components A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
-#' @param action A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).
+#' @param scale A boolean for method="PCA"
+#' @param action A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).#'
+#' @param ... Further parameters passed to the function prcomp if you choose method="PCA"
 #'
 #' @return A tibble with additional columns
+#'
 #'
 #' @export
 reduce_dimensions <- function(input.df,
@@ -261,7 +276,9 @@ reduce_dimensions <- function(input.df,
                               feature_column = NULL,
                               of_samples = T,
                               log_transform = T,
-                              action = "add") {
+                              scale = T,
+                              action = "add",
+                              ...) {
   UseMethod("reduce_dimensions", input.df)
 }
 
@@ -274,7 +291,9 @@ reduce_dimensions.default <-  function(input.df,
                                        feature_column = NULL,
                                        of_samples = T,
                                        log_transform = T,
-                                       action = "add")
+                                       scale = T,
+                                       action = "add",
+                                       ...)
 {
   print("This function cannot be applied to this object")
 }
@@ -289,7 +308,9 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
            feature_column = NULL,
            of_samples = T,
            log_transform = T,
-           action = "add")
+           scale = T,
+           action = "add",
+           ...)
   {
     # Make col names
     value_column = enquo(value_column)
@@ -305,7 +326,8 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
           elements_column = !!elements_column,
           feature_column = !!feature_column,
           of_samples = of_samples,
-          log_transform = log_transform
+          log_transform = log_transform,
+          ...
         )
       else if (action == "get")
         get_reduced_dimensions_MDS_bulk(
@@ -315,7 +337,8 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
           elements_column = !!elements_column,
           feature_column = !!feature_column,
           of_samples = of_samples,
-          log_transform = log_transform
+          log_transform = log_transform,
+          ...
         )
       else
         stop(
@@ -331,7 +354,9 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
           elements_column = !!elements_column,
           feature_column = !!feature_column,
           of_samples = of_samples,
-          log_transform = log_transform
+          log_transform = log_transform,
+          scale = scale,
+          ...
         )
       else if (action == "get")
         get_reduced_dimensions_PCA_bulk(
@@ -341,7 +366,9 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
           elements_column = !!elements_column,
           feature_column = !!feature_column,
           of_samples = of_samples,
-          log_transform = log_transform
+          log_transform = log_transform,
+          scale = scale,
+          ...
         )
       else
         stop(
@@ -566,14 +593,14 @@ drop_redundant.tbl_df = drop_redundant.ttBulk <-  function(input.df,
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #'
-#' @param df A tibble
+#' @param input.df A tibble
 #' @param formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
 #' @param sample_column A character name of the sample column
 #' @param transcript_column A character name of the gene/transcript name column
 #' @param counts_column A character name of the count column
 #' @param log_transform A boolean. For correlation based calculation. Whether the value should be log-transformed (e.g., TRUE for RNA sequencing data).
 #' @param action A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).
-#'
+#' @param ... Further parameters passed to the function sva::ComBat
 #' @return A tibble with edgeR results
 #'
 #' @export
@@ -608,7 +635,8 @@ adjust_counts.tbl_df = adjust_counts.ttBulk <-  function(input.df,
                                                          transcript_column = NULL,
                                                          counts_column = NULL,
                                                          log_transform = T,
-                                                         action = "add")
+                                                         action = "add",
+                                                         ...)
 {
   # Make col names
   sample_column = enquo(sample_column)
@@ -622,7 +650,8 @@ adjust_counts.tbl_df = adjust_counts.ttBulk <-  function(input.df,
       sample_column = !!sample_column,
       transcript_column = !!transcript_column,
       counts_column = !!counts_column,
-      log_transform = log_transform
+      log_transform = log_transform,
+      ...
     )
   else if (action == "get")
     get_adjusted_counts_for_unwanted_variation_bulk(
@@ -631,7 +660,8 @@ adjust_counts.tbl_df = adjust_counts.ttBulk <-  function(input.df,
       sample_column = !!sample_column,
       transcript_column = !!transcript_column,
       counts_column = !!counts_column,
-      log_transform = log_transform
+      log_transform = log_transform,
+      ...
     )
   else
     stop(
@@ -716,6 +746,7 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 #' @param transcript_column A character name of the gene/transcript name column
 #' @param counts_column A character name of the count column
 #' @param action A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).
+#' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
 #'
@@ -850,8 +881,7 @@ annotate_differential_transcription <- function(input.df,
                                                 transcript_column = NULL,
                                                 counts_column = NULL,
                                                 significance_threshold = 0.05,
-                                                action = "add",
-                                                ...) {
+                                                action = "add") {
   UseMethod("annotate_differential_transcription", input.df)
 }
 
@@ -862,8 +892,7 @@ annotate_differential_transcription.default <-  function(input.df,
                                                          transcript_column = NULL,
                                                          counts_column = NULL,
                                                          significance_threshold = 0.05,
-                                                         action = "add",
-                                                         ...)
+                                                         action = "add")
 {
   print("This function cannot be applied to this object")
 }

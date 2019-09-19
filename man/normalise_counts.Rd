@@ -7,7 +7,7 @@
 normalise_counts(input.df, sample_column = NULL,
   transcript_column = NULL, counts_column = NULL,
   cpm_threshold = 0.5, prop = 3/4, method = "TMM",
-  reference_selection_function = median, action = "add", ...)
+  reference_selection_function = median, action = "add")
 }
 \arguments{
 \item{input.df}{A tibble}
@@ -27,8 +27,6 @@ normalise_counts(input.df, sample_column = NULL,
 \item{reference_selection_function}{A fucntion median, or max for the fererence sample}
 
 \item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).}
-
-\item{reference}{A reference matrix, not sure if used anymore}
 }
 \value{
 A tibble including additional columns

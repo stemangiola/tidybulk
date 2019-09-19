@@ -132,9 +132,6 @@ CoreAlg <- function(X, y, cores = 3){
 
 }
 
-#' Do permutations
-#'
-#' @return A data frame
 doPerm <- function(perm, X, Y, cores = 3){
 
 
@@ -165,9 +162,6 @@ doPerm <- function(perm, X, Y, cores = 3){
   newList <- list("dist" = dist)
 }
 
-#' Run Cibersort
-#'
-#' @return A data frame
 my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
 
 

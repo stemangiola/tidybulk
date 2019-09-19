@@ -5,8 +5,8 @@
 \title{Get clusters of elements (e.g., samples or transcripts)}
 \usage{
 annotate_clusters(input.df, value_column, number_of_clusters,
-  elements_column = NULL, feature_column = NULL, of_samples = T,
-  log_transform = T, action = "add")
+  elements_column = NULL, feature_column = NULL, method = "kmeans",
+  of_samples = T, log_transform = T, action = "add", ...)
 }
 \arguments{
 \item{input.df}{A tibble}
@@ -19,11 +19,15 @@ annotate_clusters(input.df, value_column, number_of_clusters,
 
 \item{feature_column}{A character string. The column that is represents entities to cluster (i.e., normally samples)}
 
+\item{method}{A character string}
+
 \item{of_samples}{if the input is tt object, this will indicate whether the element column will be sample or transcript column}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
 \item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).}
+
+\item{...}{Further parameters passed to the function kmeans}
 }
 \value{
 A tibble with additional columns

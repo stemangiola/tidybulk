@@ -9,7 +9,7 @@ add_symbol_from_ensembl(input.df, ensembl_transcript_column)
 \arguments{
 \item{input.df}{A tibble}
 
-\item{ensembl_transcript_column}{A character string. The column that is represents ensembl gene id}
+\item{ensembl_transcript_column}{A column symbol. The column that is represents ensembl gene id}
 }
 \value{
 A tibble with added annotation

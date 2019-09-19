@@ -7,9 +7,13 @@
 ifelse_pipe(.x, .p, .f1, .f2 = NULL)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.x}{A tibble}
 
-\item{condition}{A boolean}
+\item{.p}{A boolean}
+
+\item{.f1}{A function}
+
+\item{.f2}{A function}
 }
 \value{
 A tibble

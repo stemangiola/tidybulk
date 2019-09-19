@@ -9,6 +9,8 @@ get_differential_transcript_abundance_bulk(input.df, formula,
   counts_column = NULL, significance_threshold = 0.05)
 }
 \arguments{
+\item{input.df}{A tibble}
+
 \item{formula}{a formula with no response variable, referring only to numeric variables}
 
 \item{sample_column}{A character name of the sample column}
@@ -17,9 +19,7 @@ get_differential_transcript_abundance_bulk(input.df, formula,
 
 \item{counts_column}{A character name of the count column}
 
-\item{df}{A tibble}
-
-\item{design_column}{A character name of the covariate column}
+\item{significance_threshold}{A real between 0 and 1}
 }
 \value{
 A tibble with edgeR results

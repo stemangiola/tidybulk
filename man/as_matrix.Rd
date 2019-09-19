@@ -10,6 +10,8 @@ as_matrix(tbl, rownames = NULL, do_check = TRUE)
 \item{tbl}{A tibble}
 
 \item{rownames}{A character string of the rownames}
+
+\item{do_check}{A boolean}
 }
 \value{
 A matrix

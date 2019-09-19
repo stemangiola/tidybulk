@@ -19,7 +19,7 @@ add_differential_transcript_abundance_bulk(input.df, formula,
 
 \item{counts_column}{A character name of the count column}
 
-\item{design_column}{A character name of the covariate column}
+\item{significance_threshold}{A real between 0 and 1}
 }
 \value{
 A tibble with differential_transcript_abundance results

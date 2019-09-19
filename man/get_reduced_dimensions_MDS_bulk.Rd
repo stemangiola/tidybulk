@@ -11,15 +11,17 @@ get_reduced_dimensions_MDS_bulk(input.df, value_column, components = 1:2,
 \arguments{
 \item{input.df}{A tibble}
 
-\item{components}{A integer vector corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))}
+\item{value_column}{A column symbol with the value the clustering is based on (e.g., `count`)}
 
-\item{elements_column}{A character string. The column that is used to calculate distance (i.e., normally samples)}
+\item{components}{A integer vector corresponding to principal components of interest (e.g., 1:6)}
 
-\item{feature_column}{A character string. The column that is represents entities to cluster (i.e., normally genes)}
+\item{elements_column}{A column symbol. The column that is used to calculate distance (i.e., normally samples)}
+
+\item{feature_column}{A column symbol. The column that is represents entities to cluster (i.e., normally genes)}
+
+\item{of_samples}{A boolean}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
-
-\item{counts_column}{A character string. The column that contains the numeric value (i.e., normally counts)}
 }
 \value{
 A tibble with additional columns

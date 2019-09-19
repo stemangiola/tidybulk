@@ -6,7 +6,7 @@
 \usage{
 reduce_dimensions(input.df, value_column, method, components = 1:2,
   elements_column = NULL, feature_column = NULL, of_samples = T,
-  log_transform = T, action = "add")
+  log_transform = T, scale = T, action = "add", ...)
 }
 \arguments{
 \item{input.df}{A tibble}
@@ -21,9 +21,15 @@ reduce_dimensions(input.df, value_column, method, components = 1:2,
 
 \item{feature_column}{A character string. The column that is represents entities to cluster (i.e., normally genes)}
 
+\item{of_samples}{if the input is tt object, this will indicate whether the element column will be sample or transcript column}
+
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
-\item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).}
+\item{scale}{A boolean for method="PCA"}
+
+\item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).#'}
+
+\item{...}{Further parameters passed to the function prcomp if you choose method="PCA"}
 }
 \value{
 A tibble with additional columns

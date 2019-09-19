@@ -13,6 +13,8 @@ get_elements_features(input.df, elements_column, feature_column,
 \item{elements_column}{A character name of the sample column}
 
 \item{feature_column}{A character name of the gene/transcript name column}
+
+\item{of_samples}{A boolean}
 }
 \value{
 A list of column enquo or error

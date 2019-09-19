@@ -8,11 +8,12 @@ Description: This is a collection of utility function that allow to perform expl
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 biocViews:
 Biarch: true
 Depends: R (>= 3.5.0)
-Imports: tibble, dplyr, magrittr, tidyr, ggplot2, readr, widyr, foreach, rlang, purrr
+Imports: tibble, dplyr, magrittr, tidyr, ggplot2, readr, widyr, foreach, rlang, purrr,	preprocessCore
 Suggests: 
     parallel,
     testthat,
@@ -24,4 +25,7 @@ Suggests:
 		limma,
 		org.Hs.eg.db,
 		sva,
-		GGally
+		GGally,
+		utils,
+		knitr,
+		qpdf
