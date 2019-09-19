@@ -3,3 +3,4 @@
 ^vignettes/introduction_cache
 ^doc$
 ^Meta$
+^codecov\.yml$
