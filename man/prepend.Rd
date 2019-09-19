@@ -6,6 +6,13 @@
 \usage{
 prepend(x, values, before = 1)
 }
+\arguments{
+\item{x}{An array}
+
+\item{values}{An array}
+
+\item{before}{A boolean}
+}
 \description{
 From rlang deprecated
 }

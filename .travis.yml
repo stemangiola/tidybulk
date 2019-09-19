@@ -5,3 +5,5 @@ cache: packages
 r:
  - bioc-release
  - bioc-devel
+env:
+- R_QPDF=true

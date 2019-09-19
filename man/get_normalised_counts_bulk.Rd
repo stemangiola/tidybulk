@@ -24,7 +24,7 @@ get_normalised_counts_bulk(input.df, sample_column = NULL,
 
 \item{method}{A character string}
 
-\item{reference}{A reference matrix, not sure if used anymore}
+\item{reference_selection_function}{A function between median, mean and max}
 }
 \value{
 A tibble including additional columns

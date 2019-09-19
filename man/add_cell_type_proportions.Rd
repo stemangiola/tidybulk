@@ -15,6 +15,8 @@ add_cell_type_proportions(input.df, sample_column = NULL,
 \item{transcript_column}{A character name of the gene/transcript name column}
 
 \item{counts_column}{A character name of the count column}
+
+\item{...}{Further parameters passed to the function Cibersort}
 }
 \value{
 A tibble including additional columns

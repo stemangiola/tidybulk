@@ -19,6 +19,8 @@ aggregate_duplicated_transcripts_bulk(input.df,
 \item{transcript_column}{A character name of the gene/transcript name column}
 
 \item{counts_column}{A character name of the count column}
+
+\item{keep_integer}{A boolean}
 }
 \value{
 A tibble with aggregated genes and annotation

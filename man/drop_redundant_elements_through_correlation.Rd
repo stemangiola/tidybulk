@@ -11,15 +11,17 @@ drop_redundant_elements_through_correlation(input.df, value_column,
 \arguments{
 \item{input.df}{A tibble}
 
+\item{value_column}{A column symbol with the value the clustering is based on (e.g., `count`)}
+
 \item{correlation_threshold}{A real number between 0 and 1}
 
-\item{elements_column}{A character string. The column that is used to calculate distance (i.e., normally samples)}
+\item{elements_column}{A column symbol. The column that is used to calculate distance (i.e., normally samples)}
 
-\item{feature_column}{A character string. The column that is represents entities to cluster (i.e., normally genes)}
+\item{feature_column}{A column symbol. The column that is represents entities to cluster (i.e., normally genes)}
+
+\item{of_samples}{A boolean}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
-
-\item{counts_column}{A character string. The column that contains the numeric value (i.e., normally counts)}
 }
 \value{
 A tibble with redundant elemens removed

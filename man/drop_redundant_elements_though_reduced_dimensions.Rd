@@ -10,13 +10,13 @@ drop_redundant_elements_though_reduced_dimensions(input.df, Dim_a_column,
 \arguments{
 \item{input.df}{A tibble}
 
-\item{Dim_a_column}{A character string. The column of one principal component}
+\item{Dim_a_column}{A column symbol. The column of one principal component}
 
-\item{Dim_b_column}{A character string. The column of another principal component}
+\item{Dim_b_column}{A column symbol. The column of another principal component}
 
-\item{elements_column}{A character string. The column that is represents entities to cluster (i.e., normally samples)}
+\item{elements_column}{A column symbol. The column that is represents entities to cluster (i.e., normally samples)}
 
-\item{counts_column}{A character string. The column that contains the numeric value (i.e., normally counts)}
+\item{of_samples}{A boolean}
 }
 \value{
 A tibble with pairs dropped

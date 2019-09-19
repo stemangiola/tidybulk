@@ -4,12 +4,12 @@
 \alias{add_normalised_counts_bulk.get_low_expressed}
 \title{Drop lowly tanscribed genes for TMM normalization}
 \usage{
-add_normalised_counts_bulk.get_low_expressed(df, sample_column = sample,
-  transcript_column = transcript, counts_column = count,
-  cpm_threshold = 0.5, prop = 3/4)
+add_normalised_counts_bulk.get_low_expressed(input.df,
+  sample_column = sample, transcript_column = transcript,
+  counts_column = count, cpm_threshold = 0.5, prop = 3/4)
 }
 \arguments{
-\item{df}{A tibble}
+\item{input.df}{A tibble}
 
 \item{sample_column}{A character name of the sample column}
 

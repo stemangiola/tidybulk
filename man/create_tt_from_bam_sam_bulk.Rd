@@ -4,10 +4,14 @@
 \alias{create_tt_from_bam_sam_bulk}
 \title{Convert bam/sam files to a tidy gene transcript counts data frame}
 \usage{
-create_tt_from_bam_sam_bulk(file_names, genome = "hg38")
+create_tt_from_bam_sam_bulk(file_names, genome = "hg38", ...)
 }
 \arguments{
 \item{file_names}{A character vector}
+
+\item{genome}{A character string}
+
+\item{...}{Further parameters passed to the function Rsubread::featureCounts}
 }
 \value{
 A tibble of gene counts

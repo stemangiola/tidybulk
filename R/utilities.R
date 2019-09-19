@@ -6,8 +6,11 @@
 #' @import tidyr
 #' @importFrom purrr as_mapper
 #'
-#' @param input.df A tibble
-#' @param condition A boolean
+#' @param .x A tibble
+#' @param .p A boolean
+#' @param .f1 A function
+#' @param .f2 A function
+#'
 #' @return A tibble
 ifelse_pipe = function(.x, .p, .f1, .f2 = NULL) {
   switch(.p %>% `!` %>% sum(1),
@@ -24,8 +27,13 @@ ifelse_pipe = function(.x, .p, .f1, .f2 = NULL) {
 #' @import dplyr
 #' @import tidyr
 #'
-#' @param input.df A tibble
-#' @param condition A boolean
+#' @param .x A tibble
+#' @param .p1 A boolean
+#' @param .p2 ELSE IF condition
+#' @param .f1 A function
+#' @param .f2 A function
+#' @param .f3 A function
+#'
 #' @return A tibble
 ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
   # Nested switch
@@ -58,6 +66,8 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
 #'
 #' @param tbl A tibble
 #' @param rownames A character string of the rownames
+#' @param do_check A boolean
+#'
 #' @return A matrix
 #'
 #' @export
@@ -100,6 +110,8 @@ as_matrix <- function(tbl,
 #' Check whether a numeric vector has been log transformed
 #'
 #' @param x A numeric vector
+#' @param counts_column A character name of the count column
+#'
 error_if_log_transformed <- function(x, counts_column) {
   counts_column = enquo(counts_column)
 
@@ -177,7 +189,9 @@ error_if_counts_is_na = function(input.df, counts_column) {
 #'
 #'
 #' @param input.df A tibble of read counts
-#' @param counts_column A character name of the read count column
+#' @param list_input A list
+#' @param expected_type A character string
+#'
 error_if_wrong_input = function(input.df, list_input, expected_type) {
 
 
@@ -214,6 +228,8 @@ parse_formula <- function(fm) {
 #' Scale design matrix
 #'
 #' @param df A tibble
+#' @param formula A formula
+#'
 #' @return A tibble
 #'
 #'
@@ -248,6 +264,11 @@ add_attr = function(var, attribute, name) {
 }
 
 #' From rlang deprecated
+#'
+#' @param x An array
+#' @param values An array
+#' @param before A boolean
+#'
 prepend = function (x, values, before = 1)
 {
   n <- length(x)
@@ -324,8 +345,10 @@ get_sample_transcript_counts = function(input.df, sample_column, transcript_colu
 #' @param input.df A tibble
 #' @param elements_column A character name of the sample column
 #' @param feature_column A character name of the gene/transcript name column
+#' @param of_samples A boolean
 #'
 #' @return A list of column enquo or error
+#'
 get_elements_features = function(input.df, elements_column, feature_column, of_samples){
 
   # If setted by the user, enquo those
@@ -409,7 +432,9 @@ get_elements = function(input.df, elements_column){
 
 #' Sub function of drop_redundant_elements_though_reduced_dimensions
 #'
-#' @param input.df A tibble
+#' @param df A tibble
+#'
+#'
 #' @return A tibble with pairs to drop
 select_closest_pairs = function(df) {
   couples <- df %>% head(n = 0)

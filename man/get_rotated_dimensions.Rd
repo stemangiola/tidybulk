@@ -11,11 +11,19 @@ get_rotated_dimensions(input.df, dimension_1_column, dimension_2_column,
 \arguments{
 \item{input.df}{A tibble}
 
-\item{dimension_1_column}{A character string. The column of the dimension 1}
+\item{dimension_1_column}{A column symbol. The column of the dimension 1}
 
-\item{dimension_2_column}{A character string. The column of the dimension 2}
+\item{dimension_2_column}{A column symbol. The column of the dimension 2}
 
 \item{rotation_degrees}{A real number between 0 and 360}
+
+\item{elements_column}{A column symbol. The column that is used to calculate distance (i.e., normally samples)}
+
+\item{of_samples}{A boolean}
+
+\item{dimension_1_column_rotated}{A column symbol. The column of the dimension 1 rotated}
+
+\item{dimension_2_column_rotated}{A column symbol. The column of the dimension 2 rotated}
 }
 \value{
 A tibble with additional rotated columns

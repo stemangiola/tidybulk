@@ -7,7 +7,7 @@
 select_closest_pairs(df)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{df}{A tibble}
 }
 \value{
 A tibble with pairs to drop

@@ -8,13 +8,13 @@ create_tt_from_tibble_bulk(input.df, sample_column, transcript_column,
   counts_column)
 }
 \arguments{
+\item{input.df}{A tibble}
+
 \item{sample_column}{A character name of the sample column}
 
 \item{transcript_column}{A character name of the gene/transcript name column}
 
 \item{counts_column}{A character name of the count column}
-
-\item{df}{A tibble}
 }
 \value{
 A tibble with an additional column

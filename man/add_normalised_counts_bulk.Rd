@@ -10,6 +10,8 @@ add_normalised_counts_bulk(input.df, sample_column = NULL,
   reference_selection_function = median)
 }
 \arguments{
+\item{input.df}{A tibble}
+
 \item{sample_column}{A character name of the sample column}
 
 \item{transcript_column}{A character name of the gene/transcript name column}
@@ -22,9 +24,7 @@ add_normalised_counts_bulk(input.df, sample_column = NULL,
 
 \item{method}{A character string}
 
-\item{df}{A tibble}
-
-\item{reference}{A reference matrix, not sure if used anymore}
+\item{reference_selection_function}{A function between median, mean and max}
 }
 \value{
 A tibble including additional columns

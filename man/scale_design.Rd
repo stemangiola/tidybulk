@@ -8,6 +8,8 @@ scale_design(df, formula)
 }
 \arguments{
 \item{df}{A tibble}
+
+\item{formula}{A formula}
 }
 \value{
 A tibble

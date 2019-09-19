@@ -18,6 +18,8 @@ annotate_cell_type(input.df, sample_column = NULL,
 \item{counts_column}{A character name of the count column}
 
 \item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).}
+
+\item{...}{Further parameters passed to the function Cibersort}
 }
 \value{
 A tibble including additional columns

@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^vignettes/introduction_cache
+^doc$
+^Meta$

@@ -7,7 +7,7 @@
 annotate_differential_transcription(input.df, formula,
   sample_column = NULL, transcript_column = NULL,
   counts_column = NULL, significance_threshold = 0.05,
-  action = "add", ...)
+  action = "add")
 }
 \arguments{
 \item{input.df}{A tibble}
