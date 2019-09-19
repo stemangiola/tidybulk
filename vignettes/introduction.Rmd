@@ -28,8 +28,16 @@ knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
 #options(width = 120)
 options(pillar.min_title_chars = Inf)
 
-library(tidyverse)
-library(magrittr)
+library(tibble)
+library(dplyr)
+library(magrittr) 
+library(tidyr)
+library(ggplot2)
+library(readr)
+library(widyr) 
+library(foreach)
+library(rlang) 
+library(purrr)
 library(ttBulk)
 
 my_theme = 	
