@@ -59,7 +59,7 @@ create_ttBulk.tbl_df <- function(.data,
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 
-	create_tt_from_tibble_bulk(.data, !!.sample, !!.transcript,  !!.abundance)
+	create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance)
 
 }
 
@@ -147,23 +147,20 @@ normalise_counts.tbl_df = normalise_counts.ttBulk <-
 		.abundance = enquo(.abundance)
 
 		if (action == "add")
-			add_normalised_counts_bulk(.data,
-																 !!.sample,
-																 !!.transcript,
-																 !!.abundance,
-																 cpm_threshold = cpm_threshold,
-																 prop = prop,
-																 method = method,
-																 reference_selection_function = reference_selection_function)
+			add_normalised_counts_bulk(
+				.data,!!.sample,!!.transcript,!!.abundance,
+				cpm_threshold = cpm_threshold,
+				prop = prop,
+				method = method,
+				reference_selection_function = reference_selection_function
+			)
 		else if (action == "get")
-			get_normalised_counts_bulk(.data,
-																 !!.sample,
-																 !!.transcript,
-																 !!.abundance,
-																 cpm_threshold = cpm_threshold,
-																 prop = prop,
-																 method = method,
-																 reference_selection_function = reference_selection_function
+			get_normalised_counts_bulk(
+				.data,!!.sample,!!.transcript,!!.abundance,
+				cpm_threshold = cpm_threshold,
+				prop = prop,
+				method = method,
+				reference_selection_function = reference_selection_function
 			)
 		else
 			stop(
@@ -220,7 +217,8 @@ annotate_clusters <- function(.data,
 															method = "kmeans",
 															of_samples = T,
 															log_transform = T,
-															action = "add", ...) {
+															action = "add",
+															...) {
 	UseMethod("annotate_clusters", .data)
 }
 
@@ -233,59 +231,62 @@ annotate_clusters.default <-  function(.data,
 																			 method = "kmeans",
 																			 of_samples = T,
 																			 log_transform = T,
-																			 action = "add", ...)
+																			 action = "add",
+																			 ...)
 {
 	print("This function cannot be applied to this object")
 }
 
 #' @export
-annotate_clusters.tbl_df = annotate_clusters.ttBulk <-  function(.data,
-																																 .element = NULL,
-																																 .feature = NULL,
-																																 .value,
-																																 number_of_clusters,
-																																 method = "kmeans",
-																																 of_samples = T,
-																																 log_transform = T,
-																																 action = "add", ...)
-{
-	# Make col names
-	.value = enquo(.value)
-	.element = enquo(.element)
-	.feature = enquo(.feature)
+annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
+	function(.data,
+					 .element = NULL,
+					 .feature = NULL,
+					 .value,
+					 number_of_clusters,
+					 method = "kmeans",
+					 of_samples = T,
+					 log_transform = T,
+					 action = "add",
+					 ...)
+	{
+		# Make col names
+		.value = enquo(.value)
+		.element = enquo(.element)
+		.feature = enquo(.feature)
 
-	if(method == "kmeans"){
-		if (action == "add")
-			add_clusters_kmeans_bulk(
-				.data,
-				.value = !!.value,
-				number_of_clusters = number_of_clusters,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
-		else if (action == "get")
-			get_clusters_kmeans_bulk(
-				.data,
-				.value = !!.value,
-				number_of_clusters = number_of_clusters,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
+		if (method == "kmeans") {
+			if (action == "add")
+				add_clusters_kmeans_bulk(
+					.data,
+					.value = !!.value,
+					number_of_clusters = number_of_clusters,
+					.element = !!.element,
+					.feature = !!.feature,
+					of_samples = of_samples,
+					log_transform = log_transform,
+					...
+				)
+			else if (action == "get")
+				get_clusters_kmeans_bulk(
+					.data,
+					.value = !!.value,
+					number_of_clusters = number_of_clusters,
+					.element = !!.element,
+					.feature = !!.feature,
+					of_samples = of_samples,
+					log_transform = log_transform,
+					...
+				)
+			else
+				stop(
+					"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				)
+		}
 		else
-			stop(
-				"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-	}
-	else
-		stop("the only supported method is \"kmeans\" ")
+			stop("the only supported method is \"kmeans\" ")
 
-}
+	}
 
 
 #' Dimension reduction of the transcript abundance data
@@ -755,67 +756,68 @@ drop_redundant.tbl_df = drop_redundant.ttBulk <-  function(.data,
 #'
 #'
 adjust_abundance <- function(.data,
-													.formula,
-													.sample = NULL,
-													.transcript = NULL,
-													.abundance = NULL,
-													log_transform = T,
-													action = "add",
-													...) {
+														 .formula,
+														 .sample = NULL,
+														 .transcript = NULL,
+														 .abundance = NULL,
+														 log_transform = T,
+														 action = "add",
+														 ...) {
 	UseMethod("adjust_abundance", .data)
 }
 #' @export
 adjust_abundance.default <-  function(.data,
-																	 .formula,
-																	 .sample = NULL,
-																	 .transcript = NULL,
-																	 .abundance = NULL,
-																	 log_transform = T,
-																	 action = "add",
-																	 ...)
+																			.formula,
+																			.sample = NULL,
+																			.transcript = NULL,
+																			.abundance = NULL,
+																			log_transform = T,
+																			action = "add",
+																			...)
 {
 	print("This function cannot be applied to this object")
 }
 #' @export
-adjust_abundance.tbl_df = adjust_abundance.ttBulk <-  function(.data,
-																												 .formula,
-																												 .sample = NULL,
-																												 .transcript = NULL,
-																												 .abundance = NULL,
-																												 log_transform = T,
-																												 action = "add",
-																												 ...)
-{
-	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+adjust_abundance.tbl_df = adjust_abundance.ttBulk <-
+	function(.data,
+					 .formula,
+					 .sample = NULL,
+					 .transcript = NULL,
+					 .abundance = NULL,
+					 log_transform = T,
+					 action = "add",
+					 ...)
+	{
+		# Make col names
+		.sample = enquo(.sample)
+		.transcript = enquo(.transcript)
+		.abundance = enquo(.abundance)
 
-	if (action == "add")
-		add_adjusted_counts_for_unwanted_variation_bulk(
-			.data,
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			log_transform = log_transform,
-			...
-		)
-	else if (action == "get")
-		get_adjusted_counts_for_unwanted_variation_bulk(
-			.data,
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			log_transform = log_transform,
-			...
-		)
-	else
-		stop(
-			"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-		)
-}
+		if (action == "add")
+			add_adjusted_counts_for_unwanted_variation_bulk(
+				.data,
+				.formula,
+				.sample = !!.sample,
+				.transcript = !!.transcript,
+				.abundance = !!.abundance,
+				log_transform = log_transform,
+				...
+			)
+		else if (action == "get")
+			get_adjusted_counts_for_unwanted_variation_bulk(
+				.data,
+				.formula,
+				.sample = !!.sample,
+				.transcript = !!.transcript,
+				.abundance = !!.abundance,
+				log_transform = log_transform,
+				...
+			)
+		else
+			stop(
+				"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			)
+	}
 
 
 #' Aggregates multiple counts from the same samples (e.g., from isoforms), concatenates other character columns, and averages other numeric columns
@@ -972,7 +974,8 @@ annotate_cell_type.tbl_df = annotate_cell_type.ttBulk <-
 					 .sample = NULL,
 					 .transcript = NULL,
 					 .abundance = NULL,
-					 action = "add", ...)  {
+					 action = "add",
+					 ...)  {
 		# Make col names
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
@@ -1059,10 +1062,10 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 
 
 		if (action == "add")
-			add_symbol_from_ensembl(.data,!!.ensembl)
+			add_symbol_from_ensembl(.data, !!.ensembl)
 
 		else if (action == "get")
-			get_symbol_from_ensembl(.data,!!.ensembl)
+			get_symbol_from_ensembl(.data, !!.ensembl)
 
 		else
 			stop(
@@ -1116,22 +1119,22 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 #' @export
 #'
 test_differential_transcription <- function(.data,
-																								.formula,
-																								.sample = NULL,
-																								.transcript = NULL,
-																								.abundance = NULL,
-																								significance_threshold = 0.05,
-																								action = "add") {
+																						.formula,
+																						.sample = NULL,
+																						.transcript = NULL,
+																						.abundance = NULL,
+																						significance_threshold = 0.05,
+																						action = "add") {
 	UseMethod("test_differential_transcription", .data)
 }
 #' @export
 test_differential_transcription.default <-  function(.data,
-																												 .formula,
-																												 .sample = NULL,
-																												 .transcript = NULL,
-																												 .abundance = NULL,
-																												 significance_threshold = 0.05,
-																												 action = "add")
+																										 .formula,
+																										 .sample = NULL,
+																										 .transcript = NULL,
+																										 .abundance = NULL,
+																										 significance_threshold = 0.05,
+																										 action = "add")
 {
 	print("This function cannot be applied to this object")
 }
