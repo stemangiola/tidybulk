@@ -4,12 +4,12 @@
 \alias{scale_design}
 \title{Scale design matrix}
 \usage{
-scale_design(df, formula)
+scale_design(df, .formula)
 }
 \arguments{
 \item{df}{A tibble}
 
-\item{formula}{A formula}
+\item{.formula}{a formula}
 }
 \value{
 A tibble

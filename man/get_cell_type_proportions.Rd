@@ -4,17 +4,17 @@
 \alias{get_cell_type_proportions}
 \title{Get cell type proportions from cibersort}
 \usage{
-get_cell_type_proportions(input.df, sample_column = NULL,
-  transcript_column = NULL, counts_column = NULL, ...)
+get_cell_type_proportions(.data, .sample = NULL, .transcript = NULL,
+  .abundance = NULL, ...)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{The name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{The name of the transcript/gene column}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{...}{Further parameters passed to the function Cibersort}
 }

@@ -110,13 +110,13 @@ as_matrix <- function(tbl,
 #' Check whether a numeric vector has been log transformed
 #'
 #' @param x A numeric vector
-#' @param counts_column A character name of the count column
+#' @param .abundance A character name of the transcript/gene abundance column
 #'
-error_if_log_transformed <- function(x, counts_column) {
-  counts_column = enquo(counts_column)
+error_if_log_transformed <- function(x, .abundance) {
+  .abundance = enquo(.abundance)
 
   if (x %>% nrow %>% `>` (0))
-    if (x %>% summarise(m = !!counts_column %>% max) %>% pull(m) < 50)
+    if (x %>% summarise(m = !!.abundance %>% max) %>% pull(m) < 50)
       stop(
         "The input was log transformed, this algorithm requires raw (un-normalised) read counts"
       )
@@ -129,23 +129,23 @@ error_if_log_transformed <- function(x, counts_column) {
 #' @import tibble
 #'
 #'
-#' @param input.df A tibble of read counts
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
-error_if_duplicated_genes <- function(input.df,
-                                      sample_column = `sample`,
-                                      transcript_column = `transcript`,
-                                      counts_column = `read count`) {
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
+#' @param .data A tibble of read counts
+#' @param .sample A character name of the sample column
+#' @param .transcript A character name of the transcript/gene column
+#' @param .abundance A character name of the read count column
+error_if_duplicated_genes <- function(.data,
+                                      .sample = `sample`,
+                                      .transcript = `transcript`,
+                                      .abundance = `read count`) {
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
 
   duplicates <-
-    input.df %>%
-    select(!!sample_column,!!transcript_column,!!counts_column) %>%
+    .data %>%
+    select(!!.sample,!!.transcript,!!.abundance) %>%
     distinct() %>%
-    count(!!sample_column,!!transcript_column) %>%
+    count(!!.sample,!!.transcript) %>%
     filter(n > 1) %>%
     arrange(n %>% desc())
 
@@ -157,7 +157,7 @@ error_if_duplicated_genes <- function(input.df,
     )
   }
 
-  input.df
+  .data
 
 }
 
@@ -168,17 +168,17 @@ error_if_duplicated_genes <- function(input.df,
 #' @import tibble
 #'
 #'
-#' @param input.df A tibble of read counts
-#' @param counts_column A character name of the read count column
-error_if_counts_is_na = function(input.df, counts_column) {
-  counts_column = enquo(counts_column)
+#' @param .data A tibble of read counts
+#' @param .abundance A character name of the read count column
+error_if_counts_is_na = function(.data, .abundance) {
+  .abundance = enquo(.abundance)
 
   # Do the check
-  if (input.df %>% filter(!!counts_column %>% is.na) %>% nrow %>% `>` (0))
+  if (.data %>% filter(!!.abundance %>% is.na) %>% nrow %>% `>` (0))
     stop("You have NA values in your counts")
 
   # If all good return original data frame
-  input.df
+  .data
 }
 
 #' Check whether there are NA counts
@@ -188,11 +188,11 @@ error_if_counts_is_na = function(input.df, counts_column) {
 #' @import tibble
 #'
 #'
-#' @param input.df A tibble of read counts
+#' @param .data A tibble of read counts
 #' @param list_input A list
 #' @param expected_type A character string
 #'
-error_if_wrong_input = function(input.df, list_input, expected_type) {
+error_if_wrong_input = function(.data, list_input, expected_type) {
 
 
 
@@ -208,19 +208,19 @@ error_if_wrong_input = function(input.df, list_input, expected_type) {
     stop("You have passed the wrong argument to the function. Please check again.")
 
   # If all good return original data frame
-  input.df
+  .data
 }
 
 
-#' Formula parser
+#' .formula parser
 #'
-#' @param fm A formula
+#' @param fm a formula
 #' @return A character vector
 #'
 #'
 parse_formula <- function(fm) {
   if (attr(terms(fm), "response") == 1)
-    stop("The formula must be of the kind \"~ covariates\" ")
+    stop("The .formula must be of the kind \"~ covariates\" ")
   else
     as.character(attr(terms(fm), "variables"))[-1]
 }
@@ -228,14 +228,14 @@ parse_formula <- function(fm) {
 #' Scale design matrix
 #'
 #' @param df A tibble
-#' @param formula A formula
+#' @param .formula a formula
 #'
 #' @return A tibble
 #'
 #'
-scale_design = function(df, formula) {
+scale_design = function(df, .formula) {
   df %>%
-    setNames(c("sample_idx", "(Intercept)", parse_formula(formula))) %>%
+    setNames(c("sample_idx", "(Intercept)", parse_formula(.formula))) %>%
     gather(cov, value,-sample_idx) %>%
     group_by(cov) %>%
     mutate(value = ifelse(
@@ -247,7 +247,7 @@ scale_design = function(df, formula) {
     ungroup() %>%
     spread(cov, value) %>%
     arrange(as.integer(sample_idx)) %>%
-    select(`(Intercept)`, one_of(parse_formula(formula)))
+    select(`(Intercept)`, one_of(parse_formula(.formula)))
 }
 
 #' Add attribute to abject
@@ -298,35 +298,35 @@ add_class = function(var, name) {
 #'
 #' @importFrom rlang quo_is_symbol
 #'
-#' @param input.df A tibble
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the read count column
+#' @param .data A tibble
+#' @param .sample A character name of the sample column
+#' @param .transcript A character name of the transcript/gene column
+#' @param .abundance A character name of the read count column
 #'
 #' @return A list of column enquo or error
-get_sample_transcript_counts = function(input.df, sample_column, transcript_column, counts_column){
+get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance){
 
   # If setted by the user, enquo those
   if(
-    sample_column %>% quo_is_symbol() &
-    transcript_column %>% quo_is_symbol() &
-    counts_column %>% quo_is_symbol()
+    .sample %>% quo_is_symbol() &
+    .transcript %>% quo_is_symbol() &
+    .abundance %>% quo_is_symbol()
   )
     return(list(
-      sample_column = sample_column,
-      transcript_column = transcript_column,
-      counts_column = counts_column
+      .sample = .sample,
+      .transcript = .transcript,
+      .abundance = .abundance
     ))
 
   # Otherwise check if attribute exists
   else {
 
     # If so, take them from the attribute
-    if(input.df %>% attr("parameters") %>% is.null %>% `!`)
+    if(.data %>% attr("parameters") %>% is.null %>% `!`)
       return(list(
-        sample_column = attr(input.df, "parameters")$sample_column,
-        transcript_column = attr(input.df, "parameters")$transcript_column,
-        counts_column = attr(input.df, "parameters")$counts_column
+        .sample = attr(.data, "parameters")$.sample,
+        .transcript = attr(.data, "parameters")$.transcript,
+        .abundance = attr(.data, "parameters")$.abundance
       ))
     # Else through error
     else
@@ -342,41 +342,41 @@ get_sample_transcript_counts = function(input.df, sample_column, transcript_colu
 #'
 #' @importFrom rlang quo_is_symbol
 #'
-#' @param input.df A tibble
-#' @param elements_column A character name of the sample column
-#' @param feature_column A character name of the gene/transcript name column
+#' @param .data A tibble
+#' @param .element A character name of the sample column
+#' @param .feature A character name of the transcript/gene column
 #' @param of_samples A boolean
 #'
 #' @return A list of column enquo or error
 #'
-get_elements_features = function(input.df, elements_column, feature_column, of_samples){
+get_elements_features = function(.data, .element, .feature, of_samples){
 
   # If setted by the user, enquo those
   if(
-    elements_column %>% quo_is_symbol() &
-    feature_column %>% quo_is_symbol()
+    .element %>% quo_is_symbol() &
+    .feature %>% quo_is_symbol()
   )
     return(list(
-      elements_column = elements_column,
-      feature_column = feature_column
+      .element = .element,
+      .feature = .feature
     ))
 
   # Otherwise check if attribute exists
   else {
 
     # If so, take them from the attribute
-    if(input.df %>% attr("parameters") %>% is.null %>% `!`)
+    if(.data %>% attr("parameters") %>% is.null %>% `!`)
 
       return(list(
-        elements_column =  switch(
+        .element =  switch(
           of_samples %>% `!` %>% sum(1),
-          attr(input.df, "parameters")$sample_column,
-          attr(input.df, "parameters")$transcript_column
+          attr(.data, "parameters")$.sample,
+          attr(.data, "parameters")$.transcript
         ),
-        feature_column = switch(
+        .feature = switch(
           of_samples %>% `!` %>% sum(1),
-          attr(input.df, "parameters")$transcript_column,
-          attr(input.df, "parameters")$sample_column
+          attr(.data, "parameters")$.transcript,
+          attr(.data, "parameters")$.sample
         )
       ))
     # Else through error
@@ -393,31 +393,31 @@ get_elements_features = function(input.df, elements_column, feature_column, of_s
 #'
 #' @importFrom rlang quo_is_symbol
 #'
-#' @param input.df A tibble
-#' @param elements_column A character name of the sample column
+#' @param .data A tibble
+#' @param .element A character name of the sample column
 #'
 #' @return A list of column enquo or error
-get_elements = function(input.df, elements_column){
+get_elements = function(.data, .element){
 
   # If setted by the user, enquo those
   if(
-    elements_column %>% quo_is_symbol()
+    .element %>% quo_is_symbol()
   )
     return(list(
-      elements_column = elements_column
+      .element = .element
     ))
 
   # Otherwise check if attribute exists
   else {
 
     # If so, take them from the attribute
-    if(input.df %>% attr("parameters") %>% is.null %>% `!`)
+    if(.data %>% attr("parameters") %>% is.null %>% `!`)
 
       return(list(
-        elements_column =  switch(
+        .element =  switch(
           of_samples %>% `!` %>% sum(1),
-          attr(input.df, "parameters")$sample_column,
-          attr(input.df, "parameters")$transcript_column
+          attr(.data, "parameters")$.sample,
+          attr(.data, "parameters")$.transcript
         )
       ))
     # Else through error

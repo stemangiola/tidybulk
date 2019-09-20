@@ -4,20 +4,20 @@
 \alias{get_adjusted_counts_for_unwanted_variation_bulk}
 \title{Get adjusted count for some batch effect}
 \usage{
-get_adjusted_counts_for_unwanted_variation_bulk(input.df, formula,
-  sample_column = NULL, transcript_column = NULL,
-  counts_column = NULL, log_transform = T, ...)
+get_adjusted_counts_for_unwanted_variation_bulk(.data, .formula,
+  .sample = NULL, .transcript = NULL, .abundance = NULL,
+  log_transform = T, ...)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
-\item{formula}{a formula with no response variable, of the kind ~ factor_of_intrest + batch}
+\item{.formula}{a formula with no response variable, of the kind ~ factor_of_intrest + batch}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{The name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{The name of the transcript/gene column}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 

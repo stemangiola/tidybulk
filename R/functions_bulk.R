@@ -1,49 +1,48 @@
 
 #' Create tt object from tibble
 #'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
+#' @importFrom rlang enquo
+#' @importFrom magrittr %>%
 #'
-#' @param input.df A tibble
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #'
 #' @return A tibble with an additional column
 #'
 #' @export
-create_tt_from_tibble_bulk = function(input.df,
-                                      sample_column,
-                                      transcript_column,
-                                      counts_column) {
+create_tt_from_tibble_bulk = function(.data,
+																			.sample,
+																			.transcript,
+																			.abundance) {
 
-  # Make col names
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
+	# Make col names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
 
-  input.df %>%
+	.data %>%
 
-    # # Check input types
-    # error_if_wrong_input(
-    #   as.list(environment()),
-    #   c("spec_tbl_df",  "quosure",  "quosure",  "quosure")
-    # ) %>%
+		# # Check input types
+		# error_if_wrong_input(
+		#   as.list(environment()),
+		#   c("spec_tbl_df",  "quosure",  "quosure",  "quosure")
+		# ) %>%
 
-    # Add parameters attribute
-    add_attr(
-      list(
-        sample_column = sample_column,
-        transcript_column = transcript_column,
-        counts_column = counts_column
-      ),
-      "parameters"
-    ) %>%
+		# Add parameters attribute
+		add_attr(
+			list(
+				.sample = .sample,
+				.transcript = .transcript,
+				.abundance = .abundance
+			),
+			"parameters"
+		) %>%
 
-    # Add class
-    add_class("tt") %>%
-    add_class("ttBulk")
+		# Add class
+		add_class("tt") %>%
+		add_class("ttBulk")
 }
 
 
@@ -57,68 +56,68 @@ create_tt_from_tibble_bulk = function(input.df,
 #'
 #' @export
 create_tt_from_bam_sam_bulk <-
-  function(file_names, genome = "hg38", ...) {
-    # This function uses Subread to count the gene features,
-    # annotate gene features with symbols, and
-    # convert the data frame to tibble format
+	function(file_names, genome = "hg38", ...) {
+		# This function uses Subread to count the gene features,
+		# annotate gene features with symbols, and
+		# convert the data frame to tibble format
 
-    n_cores <- system("nproc", intern = TRUE) %>%
-      as.integer() %>%
-      `-`(2)
+		n_cores <- system("nproc", intern = TRUE) %>%
+			as.integer() %>%
+			`-`(2)
 
-    file_names %>%
+		file_names %>%
 
-      # Run subread
-      Rsubread::featureCounts(
-        annot.inbuilt = genome,
-        nthreads = n_cores,
-        ...
-      ) %>%
+			# Run subread
+			Rsubread::featureCounts(
+				annot.inbuilt = genome,
+				nthreads = n_cores,
+				...
+			) %>%
 
-      # Anonymous function
-      # input: Subread results
-      # output edgeR::DGEList object
-      {
-        edgeR::DGEList(
-          counts = (.)$counts,
-          genes = (.)$annotation[, c("GeneID", "Length")],
-          samples = (.) %$% stat %>% as_tibble() %>% gather(sample, temp,-Status) %>% spread(Status, temp)
-        )
-      } %>%
+			# Anonymous function
+			# input: Subread results
+			# output edgeR::DGEList object
+			{
+				edgeR::DGEList(
+					counts = (.)$counts,
+					genes = (.)$annotation[, c("GeneID", "Length")],
+					samples = (.) %$% stat %>% as_tibble() %>% gather(sample, temp,-Status) %>% spread(Status, temp)
+				)
+			} %>%
 
-      # Anonymous function
-      # input: edgeR::DGEList object
-      # output: edgeR::DGEList object with added transcript symbol
-      {
-        dge <- (.)
-        dge$genes$transcript <-
-          AnnotationDbi::mapIds(
-            org.Hs.eg.db::org.Hs.eg.db,
-            keys = as.character(dge$genes$GeneID),
-            column = "transcript",
-            keytype = "ENTREZID",
-            multiVals = "first"
-          )
+			# Anonymous function
+			# input: edgeR::DGEList object
+			# output: edgeR::DGEList object with added transcript symbol
+			{
+				dge <- (.)
+				dge$genes$transcript <-
+					AnnotationDbi::mapIds(
+						org.Hs.eg.db::org.Hs.eg.db,
+						keys = as.character(dge$genes$GeneID),
+						column = "transcript",
+						keytype = "ENTREZID",
+						multiVals = "first"
+					)
 
-        dge
-      } %>%
+				dge
+			} %>%
 
-      # Anonymous function
-      # input: annotated edgeR::DGEList object
-      # output: tibble
-      {
-        reduce(
-          list(
-            (.) %$% counts %>% as_tibble(rownames = "GeneID") %>% mutate(GeneID = GeneID %>% as.integer()) %>% gather(sample, `count`,-GeneID),
-            (.) %$% genes %>% select(GeneID, transcript) %>% as_tibble(),
-            (.) %$% samples %>% as_tibble()
-          ),
-          left_join
-        ) %>%
-          rename(entrez = GeneID) %>%
-          mutate(entrez = entrez %>% as.character())
-      }
-  }
+			# Anonymous function
+			# input: annotated edgeR::DGEList object
+			# output: tibble
+			{
+				reduce(
+					list(
+						(.) %$% counts %>% as_tibble(rownames = "GeneID") %>% mutate(GeneID = GeneID %>% as.integer()) %>% gather(sample, `count`,-GeneID),
+						(.) %$% genes %>% select(GeneID, transcript) %>% as_tibble(),
+						(.) %$% samples %>% as_tibble()
+					),
+					left_join
+				) %>%
+					rename(entrez = GeneID) %>%
+					mutate(entrez = entrez %>% as.character())
+			}
+	}
 
 
 #' Get count per million for TMM normalisation.
@@ -127,56 +126,56 @@ create_tt_from_bam_sam_bulk <-
 #' @import tidyr
 #' @import tibble
 #'
-#' @param input.df A tibble
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param cpm_threshold A real positive number
 #'
 #' @return A tibble with an additional column
-add_normalised_counts_bulk.get_cpm <- function(input.df,
-                                               sample_column = `sample`,
-                                               transcript_column = `transcript`,
-                                               counts_column = `count`,
-                                               cpm_threshold = 0.5) {
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
+add_normalised_counts_bulk.get_cpm <- function(.data,
+																							 .sample = `sample`,
+																							 .transcript = `transcript`,
+																							 .abundance = `count`,
+																							 cpm_threshold = 0.5) {
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
 
-  if (cpm_threshold < 0)
-    stop("The parameter cpm_threshold must be > 0")
+	if (cpm_threshold < 0)
+		stop("The parameter cpm_threshold must be > 0")
 
-  # Adjust cpm_theshold based on the library size
-  cpm_threshold <-
-    cpm_threshold /
-    (
-      input.df %>%
-        group_by(!!sample_column) %>%
-        summarise(s = sum(!!counts_column)) %>%
-        ungroup() %>%
-        summarise(m = median(s)) %>%
-        pull(m) /
-        1e6
-    )
+	# Adjust cpm_theshold based on the library size
+	cpm_threshold <-
+		cpm_threshold /
+		(
+			.data %>%
+				group_by(!!.sample) %>%
+				summarise(s = sum(!!.abundance)) %>%
+				ungroup() %>%
+				summarise(m = median(s)) %>%
+				pull(m) /
+				1e6
+		)
 
-  # Add cmp and cmp threshold to the data set, and return
-  input.df %>%
-    left_join(
-      (.) %>%
-        select(-contains("ct")) %>%
-        select(!!transcript_column,!!sample_column,!!counts_column) %>%
-        spread(!!sample_column,!!counts_column) %>%
-        drop_na() %>%
-        do(
-          bind_cols(
-            !!transcript_column := (.) %>% pull(!!transcript_column),
-            tibble::as_tibble((.) %>% select(-!!transcript_column) %>% edgeR::cpm())
-          )
-        ) %>%
-        gather(!!sample_column, cpm,-!!transcript_column) %>%
-        mutate(cpm_threshold = cpm_threshold),
-      by = c(quo_name(transcript_column), quo_name(sample_column))
-    )
+	# Add cmp and cmp threshold to the data set, and return
+	.data %>%
+		left_join(
+			(.) %>%
+				select(-contains("ct")) %>%
+				select(!!.transcript,!!.sample,!!.abundance) %>%
+				spread(!!.sample,!!.abundance) %>%
+				drop_na() %>%
+				do(
+					bind_cols(
+						!!.transcript := (.) %>% pull(!!.transcript),
+						tibble::as_tibble((.) %>% select(-!!.transcript) %>% edgeR::cpm())
+					)
+				) %>%
+				gather(!!.sample, cpm,-!!.transcript) %>%
+				mutate(cpm_threshold = cpm_threshold),
+			by = c(quo_name(.transcript), quo_name(.sample))
+		)
 
 }
 
@@ -188,57 +187,57 @@ add_normalised_counts_bulk.get_cpm <- function(input.df,
 #' @import tibble
 #'
 #'
-#' @param input.df A tibble
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param cpm_threshold A real positive number
 #' @param prop A number between 0 and 1
 #'
 #' @return A tibble filtered
-add_normalised_counts_bulk.get_low_expressed <- function(input.df,
-                                                         sample_column = `sample`,
-                                                         transcript_column = `transcript`,
-                                                         counts_column = `count`,
-                                                         cpm_threshold = 0.5,
-                                                         prop = 3 / 4) {
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
+add_normalised_counts_bulk.get_low_expressed <- function(.data,
+																												 .sample = `sample`,
+																												 .transcript = `transcript`,
+																												 .abundance = `count`,
+																												 cpm_threshold = 0.5,
+																												 prop = 3 / 4) {
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
 
-  if (cpm_threshold < 0)
-    stop("The parameter cpm_threshold must be > 0")
-  if (prop < 0 |
-      prop > 1)
-    stop("The parameter prop must be between 0 and 1")
+	if (cpm_threshold < 0)
+		stop("The parameter cpm_threshold must be > 0")
+	if (prop < 0 |
+			prop > 1)
+		stop("The parameter prop must be between 0 and 1")
 
-  input.df %>%
+	.data %>%
 
-    # Prepare the data frame
-    select(!!transcript_column,!!sample_column,!!counts_column) %>%
-    tidyr::spread(!!sample_column,!!counts_column) %>%
-    gather(!!sample_column,!!counts_column,-!!transcript_column) %>%
-    group_by(!!transcript_column) %>%
-    mutate(
-      !!counts_column :=
-        ifelse(
-          !!counts_column %>% is.na(),!!counts_column %>% median(na.rm = T) %>% as.integer(),!!counts_column
-        )
-    ) %>%
-    ungroup() %>%
+		# Prepare the data frame
+		select(!!.transcript,!!.sample,!!.abundance) %>%
+		tidyr::spread(!!.sample,!!.abundance) %>%
+		gather(!!.sample,!!.abundance,-!!.transcript) %>%
+		group_by(!!.transcript) %>%
+		mutate(
+			!!.abundance :=
+				ifelse(
+					!!.abundance %>% is.na(),!!.abundance %>% median(na.rm = T) %>% as.integer(),!!.abundance
+				)
+		) %>%
+		ungroup() %>%
 
-    # Calculate cpm
-    add_normalised_counts_bulk.get_cpm(!!sample_column,!!transcript_column,!!counts_column) %>%
+		# Calculate cpm
+		add_normalised_counts_bulk.get_cpm(!!.sample,!!.transcript,!!.abundance) %>%
 
-    # Filter based on how many samples have a gene below the threshold
-    mutate(`gene above threshold` = (cpm > cpm_threshold) %>% as.integer) %>%
-    group_by(!!transcript_column) %>%
-    summarise(n = `gene above threshold` %>% sum) %>%
-    filter(n < (max(n) * !!prop) %>% floor) %>%
+		# Filter based on how many samples have a gene below the threshold
+		mutate(`gene above threshold` = (cpm > cpm_threshold) %>% as.integer) %>%
+		group_by(!!.transcript) %>%
+		summarise(n = `gene above threshold` %>% sum) %>%
+		filter(n < (max(n) * !!prop) %>% floor) %>%
 
-    # Pull information
-    pull(!!transcript_column) %>%
-    as.character()
+		# Pull information
+		pull(!!.transcript) %>%
+		as.character()
 }
 
 
@@ -248,88 +247,88 @@ add_normalised_counts_bulk.get_low_expressed <- function(input.df,
 #' @import tidyr
 #' @import tibble
 #'
-#' @param input.df A tibble
+#' @param .data A tibble
 #' @param reference A reference matrix, not sure if used anymore
 #' @param cpm_threshold A real positive number
 #' @param prop A number between 0 and 1
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param method A string character
 #'
 #'
 #' @return A list including the filtered data frame and the normalization factors
-add_normalised_counts_bulk.calcNormFactor <- function(input.df,
-                                                      reference = NULL,
-                                                      cpm_threshold = 0.5,
-                                                      prop = 3 / 4,
-                                                      sample_column = `sample`,
-                                                      transcript_column = `transcript`,
-                                                      counts_column = `count`,
-                                                      method) {
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
+add_normalised_counts_bulk.calcNormFactor <- function(.data,
+																											reference = NULL,
+																											cpm_threshold = 0.5,
+																											prop = 3 / 4,
+																											.sample = `sample`,
+																											.transcript = `transcript`,
+																											.abundance = `count`,
+																											method) {
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
 
-  error_if_log_transformed(input.df,!!counts_column)
+	error_if_log_transformed(.data,!!.abundance)
 
-  # Get list of low transcribed genes
-  gene_to_exclude <-
-    add_normalised_counts_bulk.get_low_expressed(
-      input.df %>%
-        filter(sample != "reference"),!!sample_column,!!transcript_column,!!counts_column,
-      cpm_threshold = cpm_threshold,
-      prop = prop
-    )
+	# Get list of low transcribed genes
+	gene_to_exclude <-
+		add_normalised_counts_bulk.get_low_expressed(
+			.data %>%
+				filter(sample != "reference"),!!.sample,!!.transcript,!!.abundance,
+			cpm_threshold = cpm_threshold,
+			prop = prop
+		)
 
-  # Check if transcript after filtering is 0
-  if (length(gene_to_exclude) == input.df %>%
-      dplyr::distinct(!!transcript_column) %>%
-      nrow()) {
-    stop("The gene expression matrix has been filtered completely for lowly expressed genes")
-  }
+	# Check if transcript after filtering is 0
+	if (length(gene_to_exclude) == .data %>%
+			dplyr::distinct(!!.transcript) %>%
+			nrow()) {
+		stop("The gene expression matrix has been filtered completely for lowly expressed genes")
+	}
 
-  # Get data frame for the higly transcribed transcripts
-  df.filt <-
-    input.df %>%
-    dplyr::filter(!(!!transcript_column %in% gene_to_exclude)) %>%
-    droplevels()
+	# Get data frame for the higly transcribed transcripts
+	df.filt <-
+		.data %>%
+		dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
+		droplevels()
 
 
 
-  # List of low abundant transcripts
-  gene_to_exclude = gene_to_exclude
+	# List of low abundant transcripts
+	gene_to_exclude = gene_to_exclude
 
-  # Normalised data set
-  nf =
-    tibble::tibble(
-      # Sample factor
-      sample = factor(levels(df.filt %>% pull(!!sample_column))),
+	# Normalised data set
+	nf =
+		tibble::tibble(
+			# Sample factor
+			sample = factor(levels(df.filt %>% pull(!!.sample))),
 
-      # normalised data frame
-      nf = edgeR::calcNormFactors(
-        df.filt %>%
-          tidyr::spread(!!sample_column,!!counts_column) %>%
-          tidyr::drop_na() %>%
-          dplyr::select(-!!transcript_column),
-        refColumn = which(reference == factor(levels(
-          df.filt %>% pull(!!sample_column)
-        ))),
-        method = method
-      )
-    ) %>%
+			# normalised data frame
+			nf = edgeR::calcNormFactors(
+				df.filt %>%
+					tidyr::spread(!!.sample,!!.abundance) %>%
+					tidyr::drop_na() %>%
+					dplyr::select(-!!.transcript),
+				refColumn = which(reference == factor(levels(
+					df.filt %>% pull(!!.sample)
+				))),
+				method = method
+			)
+		) %>%
 
-    # Add the statistics about the number of genes filtered
-    dplyr::left_join(
-      df.filt %>%
-        dplyr::group_by(!!sample_column) %>%
-        dplyr::summarise(tot_filt = sum(!!counts_column, na.rm = T)) %>%
-        dplyr::mutate(!!sample_column := as.factor(as.character(!!sample_column))),
-      by = quo_name(sample_column)
-    )
+		# Add the statistics about the number of genes filtered
+		dplyr::left_join(
+			df.filt %>%
+				dplyr::group_by(!!.sample) %>%
+				dplyr::summarise(tot_filt = sum(!!.abundance, na.rm = T)) %>%
+				dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))),
+			by = quo_name(.sample)
+		)
 
-  # Return
-  list(gene_to_exclude= gene_to_exclude, nf = nf)
+	# Return
+	list(gene_to_exclude= gene_to_exclude, nf = nf)
 }
 
 #' Get a tibble with normalised counts using TMM
@@ -340,10 +339,10 @@ add_normalised_counts_bulk.calcNormFactor <- function(input.df,
 #' @importFrom magrittr equals
 #'
 #'
-#' @param input.df A tibble
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param cpm_threshold A real positive number
 #' @param prop A number between 0 and 1
 #' @param method A character string
@@ -352,133 +351,133 @@ add_normalised_counts_bulk.calcNormFactor <- function(input.df,
 #' @return A tibble including additional columns
 #'
 #' @export
-get_normalised_counts_bulk <- function(input.df,
-                                       sample_column = NULL,
-                                       transcript_column = NULL,
-                                       counts_column = NULL,
-                                       cpm_threshold = 0.5,
-                                       prop = 3 / 4,
-                                       method = "TMM",
-                                       reference_selection_function = median) {
+get_normalised_counts_bulk <- function(.data,
+																			 .sample = NULL,
+																			 .transcript = NULL,
+																			 .abundance = NULL,
+																			 cpm_threshold = 0.5,
+																			 prop = 3 / 4,
+																			 method = "TMM",
+																			 reference_selection_function = median) {
 
-  # Get column names
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
-  col_names = get_sample_transcript_counts(input.df, sample_column, transcript_column, counts_column)
-  sample_column = col_names$sample_column
-  transcript_column = col_names$transcript_column
-  counts_column = col_names$counts_column
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
-  # Check if package is installed, otherwise install
-  if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
-    writeLines("Installing edgeR needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos="https://cloud.r-project.org")
-    BiocManager::install("edgeR")
-  }
+	# Check if package is installed, otherwise install
+	if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing edgeR needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos="https://cloud.r-project.org")
+		BiocManager::install("edgeR")
+	}
 
-  # Set column name for value normalised
-  value_normalised = as.symbol(sprintf("%s normalised",  quo_name(counts_column)))
+	# Set column name for value normalised
+	value_normalised = as.symbol(sprintf("%s normalised",  quo_name(.abundance)))
 
-  # Reformat input data set
-  df <-
-    input.df %>%
+	# Reformat input data set
+	df <-
+		.data %>%
 
-    # # Check input types
-    # error_if_wrong_input(
-    #   as.list(environment())[-1],
-    #   c("spec_tbl_df",  "quosure",  "quosure",  "quosure")
-    # ) %>%
+		# # Check input types
+		# error_if_wrong_input(
+		#   as.list(environment())[-1],
+		#   c("spec_tbl_df",  "quosure",  "quosure",  "quosure")
+		# ) %>%
 
-    # Stop if any counts is NA
-    error_if_counts_is_na(!!counts_column) %>%
+		# Stop if any counts is NA
+		error_if_counts_is_na(!!.abundance) %>%
 
-    # Stop if there are duplicated transcripts
-    error_if_duplicated_genes(!!sample_column,!!transcript_column,!!counts_column) %>%
+		# Stop if there are duplicated transcripts
+		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
-    # Rename
-    dplyr::select(!!sample_column,!!transcript_column,!!counts_column) %>%
-    #setNames(c("!!sample_column", "gene", "count")) %>%
+		# Rename
+		dplyr::select(!!.sample,!!.transcript,!!.abundance) %>%
+		#setNames(c("!!.sample", "gene", "count")) %>%
 
-    # Set samples and genes as factors
-    mutate(
-      !!sample_column := factor(!!sample_column),!!transcript_column := factor(!!transcript_column)
-    )
+		# Set samples and genes as factors
+		mutate(
+			!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript)
+		)
 
-  # Get norm factor object
-  reference <-
-    df %>%
-    group_by(!!sample_column) %>%
-    summarise(sum = sum(!!counts_column)) %>%
-    mutate(med = reference_selection_function(sum)) %>%
-    mutate(diff = abs(sum - med)) %>%
-    arrange(diff) %>%
-    head(n = 1) %>%
-    pull(!!sample_column) %>%
-    as.character()
+	# Get norm factor object
+	reference <-
+		df %>%
+		group_by(!!.sample) %>%
+		summarise(sum = sum(!!.abundance)) %>%
+		mutate(med = reference_selection_function(sum)) %>%
+		mutate(diff = abs(sum - med)) %>%
+		arrange(diff) %>%
+		head(n = 1) %>%
+		pull(!!.sample) %>%
+		as.character()
 
-  nf_obj <-
-    add_normalised_counts_bulk.calcNormFactor(
-      df,
-      reference,
-      cpm_threshold,
-      prop,
-      sample_column = !!sample_column,
-      transcript_column = !!transcript_column,
-      counts_column = !!counts_column,
-      method
-    )
+	nf_obj <-
+		add_normalised_counts_bulk.calcNormFactor(
+			df,
+			reference,
+			cpm_threshold,
+			prop,
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			method
+		)
 
-  # Calculate normalization factors
-  nf <- nf_obj$nf %>%
-    left_join(
-      df %>%
-        group_by(!!sample_column) %>%
-        summarise(tot = sum(!!counts_column, na.rm = T)) %>%
-        mutate(!!sample_column := as.factor(as.character(!!sample_column))),
-      by = quo_name(sample_column)
-    ) %>%
-    mutate(multiplier =
-             1 /
-             (tot_filt * nf) *
-             ((.) %>% filter(!!sample_column == reference) %>% pull(tot))) %>%
+	# Calculate normalization factors
+	nf <- nf_obj$nf %>%
+		left_join(
+			df %>%
+				group_by(!!.sample) %>%
+				summarise(tot = sum(!!.abundance, na.rm = T)) %>%
+				mutate(!!.sample := as.factor(as.character(!!.sample))),
+			by = quo_name(.sample)
+		) %>%
+		mutate(multiplier =
+					 	1 /
+					 	(tot_filt * nf) *
+					 	((.) %>% filter(!!.sample == reference) %>% pull(tot))) %>%
 
-    # I have correct the strange behaviour of edgeR of reference
-    # sample not being 1
-    ifelse_pipe(
-      "reference" %in% ((.) %>% pull(!!sample_column)),
-      ~ .x %>%
-        mutate(
-          multiplier =
-            multiplier /
-            (.) %>%
-            filter(!!sample_column == "reference") %>%
-            pull(multiplier)
-        )
-    )
+		# I have correct the strange behaviour of edgeR of reference
+		# sample not being 1
+		ifelse_pipe(
+			"reference" %in% ((.) %>% pull(!!.sample)),
+			~ .x %>%
+				mutate(
+					multiplier =
+						multiplier /
+						(.) %>%
+						filter(!!.sample == "reference") %>%
+						pull(multiplier)
+				)
+		)
 
-  # Return
-  df %>%
-    mutate(!!sample_column := as.factor(as.character(!!sample_column))) %>%
-    left_join(nf, by = quo_name(sample_column)) %>%
+	# Return
+	df %>%
+		mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
+		left_join(nf, by = quo_name(.sample)) %>%
 
-    # Calculate normalised values
-    mutate(!!value_normalised := !!counts_column * multiplier) %>%
+		# Calculate normalised values
+		mutate(!!value_normalised := !!.abundance * multiplier) %>%
 
-    # Format df for join
-    dplyr::select(!!sample_column,
-                  !!transcript_column,
-                  !!value_normalised,
-                  everything()) %>%
-    dplyr::mutate(`filter out low counts` = !!transcript_column %in% nf_obj$gene_to_exclude) %>%
-    dplyr::select(-!!counts_column,-tot,-tot_filt) %>%
-    dplyr::rename(TMM = nf) %>%
-    #setNames(c("sample", "gene", sprintf("%s normalised", input.df %>% select(!!counts_column) %>% colnames), colnames(.)[4:ncol(.)])) %>%
-    arrange(!!sample_column,!!transcript_column) %>%
-    #dplyr::select(-!!sample_column,-!!transcript_column) %>%
+		# Format df for join
+		dplyr::select(!!.sample,
+									!!.transcript,
+									!!value_normalised,
+									everything()) %>%
+		dplyr::mutate(`filter out low counts` = !!.transcript %in% nf_obj$gene_to_exclude) %>%
+		dplyr::select(-!!.abundance,-tot,-tot_filt) %>%
+		dplyr::rename(TMM = nf) %>%
+		#setNames(c("sample", "gene", sprintf("%s normalised", .data %>% select(!!.abundance) %>% colnames), colnames(.)[4:ncol(.)])) %>%
+		arrange(!!.sample,!!.transcript) %>%
+		#dplyr::select(-!!.sample,-!!.transcript) %>%
 
-    # Attach attributes
-    add_attr(input.df %>% attr("parameters"), "parameters")
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
 
 }
 
@@ -489,10 +488,10 @@ get_normalised_counts_bulk <- function(input.df,
 #' @import tibble
 #'
 #'
-#' @param input.df A tibble
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param cpm_threshold A real positive number
 #' @param prop A number between 0 and 1
 #' @param method A character string
@@ -501,44 +500,44 @@ get_normalised_counts_bulk <- function(input.df,
 #' @return A tibble including additional columns
 #'
 #' @export
-add_normalised_counts_bulk <- function(input.df,
-                                       sample_column = NULL,
-                                       transcript_column = NULL,
-                                       counts_column = NULL,
-                                       cpm_threshold = 0.5,
-                                       prop = 3 / 4,
-                                       method = "TMM",
-                                       reference_selection_function = median) {
+add_normalised_counts_bulk <- function(.data,
+																			 .sample = NULL,
+																			 .transcript = NULL,
+																			 .abundance = NULL,
+																			 cpm_threshold = 0.5,
+																			 prop = 3 / 4,
+																			 method = "TMM",
+																			 reference_selection_function = median) {
 
-  # Get column names
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
-  col_names = get_sample_transcript_counts(input.df, sample_column, transcript_column, counts_column)
-  sample_column = col_names$sample_column
-  transcript_column = col_names$transcript_column
-  counts_column = col_names$counts_column
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
-  input.df %>%
-    arrange(!!sample_column,!!transcript_column) %>%
+	.data %>%
+		arrange(!!.sample,!!.transcript) %>%
 
-    # Add normalised data set
-    bind_cols(
-      input.df %>%
-        get_normalised_counts_bulk(
-          sample_column = !!sample_column,
-          transcript_column = !!transcript_column,
-          counts_column = !!counts_column,
-          cpm_threshold = cpm_threshold,
-          prop = prop,
-          method = method,
-          reference_selection_function = reference_selection_function
-        ) %>%
-        select(-contains(quo_name(sample_column)), -contains(quo_name(transcript_column)))
-    ) %>%
+		# Add normalised data set
+		bind_cols(
+			.data %>%
+				get_normalised_counts_bulk(
+					.sample = !!.sample,
+					.transcript = !!.transcript,
+					.abundance = !!.abundance,
+					cpm_threshold = cpm_threshold,
+					prop = prop,
+					method = method,
+					reference_selection_function = reference_selection_function
+				) %>%
+				select(-contains(quo_name(.sample)), -contains(quo_name(.transcript)))
+		) %>%
 
-    # Attach attributes
-    add_attr(input.df %>% attr("parameters"), "parameters")
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
 }
 
 
@@ -551,122 +550,122 @@ add_normalised_counts_bulk <- function(input.df,
 #'
 #'
 #'
-#' @param input.df A tibble
-#' @param formula a formula with no response variable, referring only to numeric variables
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param significance_threshold A real between 0 and 1
 #'
 #' @return A tibble with edgeR results
 #'
 #' @export
-get_differential_transcript_abundance_bulk <- function(input.df,
-                                                       formula,
-                                                       sample_column = NULL,
-                                                       transcript_column = NULL,
-                                                       counts_column = NULL,
-                                                       significance_threshold = 0.05) {
+get_differential_transcript_abundance_bulk <- function(.data,
+																											 .formula,
+																											 .sample = NULL,
+																											 .transcript = NULL,
+																											 .abundance = NULL,
+																											 significance_threshold = 0.05) {
 
-  # Get column names
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
-  col_names = get_sample_transcript_counts(input.df, sample_column, transcript_column, counts_column)
-  sample_column = col_names$sample_column
-  transcript_column = col_names$transcript_column
-  counts_column = col_names$counts_column
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
-  # distinct_at is not released yet for dplyr, thus we have to use this trick
-  df_for_edgeR <- input.df %>%
+	# distinct_at is not released yet for dplyr, thus we have to use this trick
+	df_for_edgeR <- .data %>%
 
-    # # Check input types
-    # error_if_wrong_input(
-    #   as.list(environment())[-1],
-    #   c("spec_tbl_df","formula", "quosure",  "quosure",  "quosure", "numeric")
-    # ) %>%
+		# # Check input types
+		# error_if_wrong_input(
+		#   as.list(environment())[-1],
+		#   c("spec_tbl_df",".formula", "quosure",  "quosure",  "quosure", "numeric")
+		# ) %>%
 
-    # Stop if any counts is NA
-    error_if_counts_is_na(!!counts_column) %>%
+		# Stop if any counts is NA
+		error_if_counts_is_na(!!.abundance) %>%
 
-    # Stop if there are duplicated transcripts
-    error_if_duplicated_genes(!!sample_column,!!transcript_column,!!counts_column) %>%
+		# Stop if there are duplicated transcripts
+		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
-    # Prepare the data frame
-    select(!!transcript_column,
-           !!sample_column,
-           !!counts_column,
-           one_of(parse_formula(formula))) %>%
-    distinct()
+		# Prepare the data frame
+		select(!!.transcript,
+					 !!.sample,
+					 !!.abundance,
+					 one_of(parse_formula(.formula))) %>%
+		distinct()
 
-  # Check if at least two samples for each group
-  if(
-    df_for_edgeR %>%
-    select(!!sample_column, one_of(parse_formula(formula))) %>%
-    distinct %>%
-    count(!!as.symbol(parse_formula(formula))) %>%
-    distinct(n) %>%
-    pull(1) %>%
-    min %>%
-    `<` (2)
-  ) stop("You need at least two replicated for each condition for edgeR to work")
+	# Check if at least two samples for each group
+	if(
+		df_for_edgeR %>%
+		select(!!.sample, one_of(parse_formula(.formula))) %>%
+		distinct %>%
+		count(!!as.symbol(parse_formula(.formula))) %>%
+		distinct(n) %>%
+		pull(1) %>%
+		min %>%
+		`<` (2)
+	) stop("You need at least two replicated for each condition for edgeR to work")
 
-  # Create design matrix
-  design =
-    model.matrix(
-      object = formula,
-      data = df_for_edgeR %>% select(!!sample_column, one_of(parse_formula(formula))) %>% distinct %>% arrange(!!sample_column)
-    ) %>%
-    magrittr::set_colnames(
-      c(
-        "(Intercept)",
-        (.) %>% colnames %>% `[` (-1)
-      ))
+	# Create design matrix
+	design =
+		model.matrix(
+			object = .formula,
+			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
+		) %>%
+		magrittr::set_colnames(
+			c(
+				"(Intercept)",
+				(.) %>% colnames %>% `[` (-1)
+			))
 
-  # Check if package is installed, otherwise install
-  if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
-    writeLines("Installing edgeR needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos="https://cloud.r-project.org")
-    BiocManager::install("edgeR")
-  }
+	# Check if package is installed, otherwise install
+	if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing edgeR needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos="https://cloud.r-project.org")
+		BiocManager::install("edgeR")
+	}
 
-  df_for_edgeR.filt <-
-    df_for_edgeR %>%
-    select(!!transcript_column,!!sample_column,!!counts_column) %>%
-    mutate(
-      `filter out low counts` = !!transcript_column %in% add_normalised_counts_bulk.get_low_expressed(.,!!sample_column,!!transcript_column,!!counts_column)
-    )
+	df_for_edgeR.filt <-
+		df_for_edgeR %>%
+		select(!!.transcript,!!.sample,!!.abundance) %>%
+		mutate(
+			`filter out low counts` = !!.transcript %in% add_normalised_counts_bulk.get_low_expressed(.,!!.sample,!!.transcript,!!.abundance)
+		)
 
-  df_for_edgeR.filt %>%
-    filter(!`filter out low counts`) %>%
-    select(!!transcript_column,!!sample_column,!!counts_column) %>%
-    spread(!!sample_column,!!counts_column) %>%
-    as_matrix(rownames = !!transcript_column) %>%
-    edgeR::DGEList(counts = .) %>%
-    edgeR::calcNormFactors(method = "TMM") %>%
-    edgeR::estimateGLMCommonDisp(design) %>%
-    edgeR::estimateGLMTagwiseDisp(design) %>%
-    edgeR::glmFit(design) %>%
-    edgeR::glmLRT(coef = 2) %>%
-    edgeR::topTags(n = 999999) %$%
-    table %>%
-    as_tibble(rownames = quo_name(transcript_column)) %>%
+	df_for_edgeR.filt %>%
+		filter(!`filter out low counts`) %>%
+		select(!!.transcript,!!.sample,!!.abundance) %>%
+		spread(!!.sample,!!.abundance) %>%
+		as_matrix(rownames = !!.transcript) %>%
+		edgeR::DGEList(counts = .) %>%
+		edgeR::calcNormFactors(method = "TMM") %>%
+		edgeR::estimateGLMCommonDisp(design) %>%
+		edgeR::estimateGLMTagwiseDisp(design) %>%
+		edgeR::glmFit(design) %>%
+		edgeR::glmLRT(coef = 2) %>%
+		edgeR::topTags(n = 999999) %$%
+		table %>%
+		as_tibble(rownames = quo_name(.transcript)) %>%
 
-    # Mark DE genes
-    mutate(is_de = FDR < significance_threshold) %>%
+		# Mark DE genes
+		mutate(is_de = FDR < significance_threshold) %>%
 
-    # Add filtering info
-    full_join(
-      df_for_edgeR.filt %>%
-        select(!!transcript_column, `filter out low counts`) %>%
-        distinct()
-    ) %>%
+		# Add filtering info
+		full_join(
+			df_for_edgeR.filt %>%
+				select(!!.transcript, `filter out low counts`) %>%
+				distinct()
+		) %>%
 
-    # Arrange
-    arrange(FDR) %>%
+		# Arrange
+		arrange(FDR) %>%
 
-    # Attach attributes
-    add_attr(input.df %>% attr("parameters"), "parameters")
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
 }
 
 #' Add differential transcription information to a tibble using edgeR. At the moment only one covariate is accepted
@@ -677,47 +676,47 @@ get_differential_transcript_abundance_bulk <- function(input.df,
 #' @importFrom magrittr set_colnames
 #'
 #'
-#' @param input.df A tibble
-#' @param formula a formula with no response variable, referring only to numeric variables
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param significance_threshold A real between 0 and 1
 #'
 #' @return A tibble with differential_transcript_abundance results
 #'
 #' @export
-add_differential_transcript_abundance_bulk <- function(input.df,
-                                                       formula,
-                                                       sample_column = NULL,
-                                                       transcript_column = NULL,
-                                                       counts_column = NULL,
-                                                       significance_threshold = 0.05) {
+add_differential_transcript_abundance_bulk <- function(.data,
+																											 .formula,
+																											 .sample = NULL,
+																											 .transcript = NULL,
+																											 .abundance = NULL,
+																											 significance_threshold = 0.05) {
 
-  # Get column names
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
-  col_names = get_sample_transcript_counts(input.df, sample_column, transcript_column, counts_column)
-  sample_column = col_names$sample_column
-  transcript_column = col_names$transcript_column
-  counts_column = col_names$counts_column
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
-  input.df %>%
-    left_join(
-      (.) %>%
-        get_differential_transcript_abundance_bulk(formula,
-                                                   sample_column = !!sample_column,
-                                                   transcript_column = !!transcript_column,
-                                                   counts_column = !!counts_column,
-                                                   significance_threshold = significance_threshold)
-    ) %>%
+	.data %>%
+		left_join(
+			(.) %>%
+				get_differential_transcript_abundance_bulk(.formula,
+																									 .sample = !!.sample,
+																									 .transcript = !!.transcript,
+																									 .abundance = !!.abundance,
+																									 significance_threshold = significance_threshold)
+		) %>%
 
-    # Arrange
-    arrange(FDR) %>%
+		# Arrange
+		arrange(FDR) %>%
 
-    # Attach attributes
-    add_attr(input.df %>% attr("parameters"), "parameters")
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
 }
 
 #' Get K-mean clusters to a tibble
@@ -728,10 +727,10 @@ add_differential_transcript_abundance_bulk <- function(input.df,
 #' @importFrom stats kmeans
 #'
 #'
-#' @param input.df A tibble
-#' @param value_column A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param feature_column A column symbol. The column that is represents entities to cluster (i.e., normally samples)
-#' @param elements_column A column symbol. The column that is used to calculate distance (i.e., normally genes)
+#' @param .data A tibble
+#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
 #' @param number_of_clusters A integer indicating how many clusters we are seeking
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
@@ -741,49 +740,49 @@ add_differential_transcript_abundance_bulk <- function(input.df,
 #'
 #' @export
 get_clusters_kmeans_bulk <-
-  function(input.df,
-           value_column,
-           number_of_clusters,
-           elements_column = NULL,
-           feature_column = NULL,
-           of_samples = T,
-           log_transform = T,
-           ...) {
+	function(.data,
+					 .value,
+					 number_of_clusters,
+					 .element = NULL,
+					 .feature = NULL,
+					 of_samples = T,
+					 log_transform = T,
+					 ...) {
 
-    # Get column names
-    elements_column = enquo(elements_column)
-    feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
-    elements_column = col_names$elements_column
-    feature_column = col_names$feature_column
+		# Get column names
+		.element = enquo(.element)
+		.feature = enquo(.feature)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.element = col_names$.element
+		.feature = col_names$.feature
 
-    value_column = enquo(value_column)
+		.value = enquo(.value)
 
-    input.df %>%
+		.data %>%
 
-      # Through error if some counts are NA
-      error_if_counts_is_na(!!value_column) %>%
+			# Through error if some counts are NA
+			error_if_counts_is_na(!!.value) %>%
 
-      # Prepare data frame
-      distinct(!!feature_column,!!elements_column,!!value_column) %>%
+			# Prepare data frame
+			distinct(!!.feature,!!.element,!!.value) %>%
 
-      # Check if log tranfrom is needed
-      ifelse_pipe(log_transform,
-                  ~ .x %>% mutate(!!value_column := !!value_column %>%  `+`(1) %>%  log())) %>%
+			# Check if log tranfrom is needed
+			ifelse_pipe(log_transform,
+									~ .x %>% mutate(!!.value := !!.value %>%  `+`(1) %>%  log())) %>%
 
-      # Prepare data frame for return
-      spread(!!feature_column,!!value_column) %>%
-      as_matrix(rownames = !!elements_column) %>%
-      kmeans(centers = number_of_clusters, iter.max = 1000, ...) %$%
-      cluster %>%
-      as.list() %>%
-      as_tibble() %>%
-      gather(!!elements_column, cluster) %>%
-      mutate(cluster = cluster %>% as.factor()) %>%
+			# Prepare data frame for return
+			spread(!!.feature,!!.value) %>%
+			as_matrix(rownames = !!.element) %>%
+			kmeans(centers = number_of_clusters, iter.max = 1000, ...) %$%
+			cluster %>%
+			as.list() %>%
+			as_tibble() %>%
+			gather(!!.element, cluster) %>%
+			mutate(cluster = cluster %>% as.factor()) %>%
 
-      # Attach attributes
-      add_attr(input.df %>% attr("parameters"), "parameters")
-  }
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
+	}
 
 #' Add K-mean clusters to a tibble
 #'
@@ -793,10 +792,10 @@ get_clusters_kmeans_bulk <-
 #' @importFrom stats kmeans
 #'
 #'
-#' @param input.df A tibble
-#' @param value_column A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param feature_column A column symbol. The column that is represents entities to cluster (i.e., normally samples)
-#' @param elements_column A column symbol. The column that is used to calculate distance (i.e., normally genes)
+#' @param .data A tibble
+#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
 #' @param number_of_clusters A integer indicating how many clusters we are seeking
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
@@ -806,39 +805,39 @@ get_clusters_kmeans_bulk <-
 #'
 #' @export
 add_clusters_kmeans_bulk <-
-  function(input.df,
-           value_column,
-           number_of_clusters,
-           elements_column = NULL,
-           feature_column = NULL,
-           of_samples = T,
-           log_transform = T, ...) {
+	function(.data,
+					 .value,
+					 number_of_clusters,
+					 .element = NULL,
+					 .feature = NULL,
+					 of_samples = T,
+					 log_transform = T, ...) {
 
-    # Get column names
-    elements_column = enquo(elements_column)
-    feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
-    elements_column = col_names$elements_column
-    feature_column = col_names$feature_column
+		# Get column names
+		.element = enquo(.element)
+		.feature = enquo(.feature)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.element = col_names$.element
+		.feature = col_names$.feature
 
-    value_column = enquo(value_column)
+		.value = enquo(.value)
 
-    input.df %>%
-      left_join(
-        (.) %>%
-          get_clusters_kmeans_bulk(
-            value_column = !!value_column,
-            number_of_clusters = number_of_clusters,
-            elements_column = !!elements_column,
-            feature_column = !!feature_column,
-            log_transform = log_transform,
-            ...
-          )
-      ) %>%
+		.data %>%
+			left_join(
+				(.) %>%
+					get_clusters_kmeans_bulk(
+						.value = !!.value,
+						number_of_clusters = number_of_clusters,
+						.element = !!.element,
+						.feature = !!.feature,
+						log_transform = log_transform,
+						...
+					)
+			) %>%
 
-      # Attach attributes
-      add_attr(input.df %>% attr("parameters"), "parameters")
-  }
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
+	}
 
 #' Get dimensionality information to a tibble using MDS
 #'
@@ -847,11 +846,11 @@ add_clusters_kmeans_bulk <-
 #' @import tibble
 #' @importFrom purrr map_dfr
 #'
-#' @param input.df A tibble
-#' @param value_column A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .data A tibble
+#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param components A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param feature_column A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param elements_column A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
@@ -859,77 +858,77 @@ add_clusters_kmeans_bulk <-
 #'
 #' @export
 get_reduced_dimensions_MDS_bulk <-
-  function(input.df,
-           value_column,
-           components = 1:2,
-           elements_column = NULL,
-           feature_column = NULL,
-           of_samples = T,
-           log_transform = T) {
+	function(.data,
+					 .value,
+					 components = 1:2,
+					 .element = NULL,
+					 .feature = NULL,
+					 of_samples = T,
+					 log_transform = T) {
 
-    # Get column names
-    elements_column = enquo(elements_column)
-    feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
-    elements_column = col_names$elements_column
-    feature_column = col_names$feature_column
+		# Get column names
+		.element = enquo(.element)
+		.feature = enquo(.feature)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.element = col_names$.element
+		.feature = col_names$.feature
 
-    value_column = enquo(value_column)
+		.value = enquo(.value)
 
-    # Convert components to components list
-    if((length(components) %% 2) != 0 ) components = components %>% append(components[1])
-    components_list = split(components, ceiling(seq_along(components)/2))
+		# Convert components to components list
+		if((length(components) %% 2) != 0 ) components = components %>% append(components[1])
+		components_list = split(components, ceiling(seq_along(components)/2))
 
-    # Loop over components list and calculate MDS. (I have to make this process more elegant)
-    components_list %>%
-      map_dfr(
-        ~ input.df %>%
+		# Loop over components list and calculate MDS. (I have to make this process more elegant)
+		components_list %>%
+			map_dfr(
+				~ .data %>%
 
-          # Through error if some counts are NA
-          error_if_counts_is_na(!!value_column) %>%
+					# Through error if some counts are NA
+					error_if_counts_is_na(!!.value) %>%
 
-          # Filter lowly transcribed (I have to avoid the use of normalising function)
-          add_normalised_counts_bulk(!!elements_column,!!feature_column,!!value_column) %>%
-          filter(!`filter out low counts`) %>%
-          distinct(!!feature_column,!!elements_column,!!value_column) %>%
+					# Filter lowly transcribed (I have to avoid the use of normalising function)
+					add_normalised_counts_bulk(!!.element,!!.feature,!!.value) %>%
+					filter(!`filter out low counts`) %>%
+					distinct(!!.feature,!!.element,!!.value) %>%
 
-          # Check if logtansform is needed
-          ifelse_pipe(
-            log_transform,
-            ~ .x %>% mutate(!!value_column := !!value_column %>% `+`(1) %>%  log())
-          ) %>%
+					# Check if logtansform is needed
+					ifelse_pipe(
+						log_transform,
+						~ .x %>% mutate(!!.value := !!.value %>% `+`(1) %>%  log())
+					) %>%
 
-          # Stop any column is not if not numeric or integer
-          ifelse_pipe(
-            (.) %>% select(!!value_column) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-            ~ stop("value_column must be numerical or integer")
-          ) %>%
-          spread(!!elements_column,!!value_column) %>%
-          as_matrix(rownames = !!feature_column, do_check = FALSE) %>%
-          limma::plotMDS(dim.plot = .x, plot = F) %>%
+					# Stop any column is not if not numeric or integer
+					ifelse_pipe(
+						(.) %>% select(!!.value) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+						~ stop(".value must be numerical or integer")
+					) %>%
+					spread(!!.element,!!.value) %>%
+					as_matrix(rownames = !!.feature, do_check = FALSE) %>%
+					limma::plotMDS(dim.plot = .x, plot = F) %>%
 
-          # Anonymous function
-          # input: MDS object
-          # output: tibble
-          {
-            tibble(names((.)$x), (.)$x, (.)$y) %>%
-              rename(
-                !!elements_column := `names((.)$x)`,
-                !!as.symbol(.x[1]) := `(.)$x`,
-                !!as.symbol(.x[2]) := `(.)$y`
-              ) %>%
-              gather(Component, `Component value`,-!!elements_column)
-          }
-      )  %>%
-      distinct() %>%
-      spread(Component, `Component value`) %>%
-      setNames(c((.) %>% select(1) %>% colnames(),
-                 paste("Dim", (.) %>% select(-1) %>% colnames())
-      )) %>%
+					# Anonymous function
+					# input: MDS object
+					# output: tibble
+					{
+						tibble(names((.)$x), (.)$x, (.)$y) %>%
+							rename(
+								!!.element := `names((.)$x)`,
+								!!as.symbol(.x[1]) := `(.)$x`,
+								!!as.symbol(.x[2]) := `(.)$y`
+							) %>%
+							gather(Component, `Component value`,-!!.element)
+					}
+			)  %>%
+			distinct() %>%
+			spread(Component, `Component value`) %>%
+			setNames(c((.) %>% select(1) %>% colnames(),
+								 paste("Dim", (.) %>% select(-1) %>% colnames())
+			)) %>%
 
-      # Attach attributes
-      add_attr(input.df %>% attr("parameters"), "parameters")
-  }
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
+	}
 
 #' Add dimensionality information to a tibble using MDS
 #'
@@ -938,11 +937,11 @@ get_reduced_dimensions_MDS_bulk <-
 #' @import tibble
 #'
 #'
-#' @param input.df A tibble
-#' @param value_column A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .data A tibble
+#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param components A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param feature_column A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param elements_column A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
@@ -950,39 +949,39 @@ get_reduced_dimensions_MDS_bulk <-
 #'
 #' @export
 add_reduced_dimensions_MDS_bulk <-
-  function(input.df,
-           value_column ,
-           components = 1:2,
-           elements_column = NULL,
-           feature_column = NULL,
-           of_samples = T,
-           log_transform = T) {
+	function(.data,
+					 .value ,
+					 components = 1:2,
+					 .element = NULL,
+					 .feature = NULL,
+					 of_samples = T,
+					 log_transform = T) {
 
-    # Get column names
-    elements_column = enquo(elements_column)
-    feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
-    elements_column = col_names$elements_column
-    feature_column = col_names$feature_column
+		# Get column names
+		.element = enquo(.element)
+		.feature = enquo(.feature)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.element = col_names$.element
+		.feature = col_names$.feature
 
-    value_column = enquo(value_column)
+		.value = enquo(.value)
 
-    input.df %>%
-      left_join(
-        (.) %>%
-          get_reduced_dimensions_MDS_bulk(
-            value_column = !!value_column,
-            components = components,
-            elements_column = !!elements_column,
-            feature_column = !!feature_column,
-            log_transform = log_transform
-          ),
-        by = quo_name(elements_column)
-      ) %>%
+		.data %>%
+			left_join(
+				(.) %>%
+					get_reduced_dimensions_MDS_bulk(
+						.value = !!.value,
+						components = components,
+						.element = !!.element,
+						.feature = !!.feature,
+						log_transform = log_transform
+					),
+				by = quo_name(.element)
+			) %>%
 
-      # Attach attributes
-      add_attr(input.df %>% attr("parameters"), "parameters")
-  }
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
+	}
 
 #' Get principal component information to a tibble using PCA
 #'
@@ -990,11 +989,11 @@ add_reduced_dimensions_MDS_bulk <-
 #' @import tidyr
 #' @import tibble
 #'
-#' @param input.df A tibble
-#' @param value_column A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .data A tibble
+#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param components A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param feature_column A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param elements_column A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param scale A boolean
@@ -1004,102 +1003,102 @@ add_reduced_dimensions_MDS_bulk <-
 #'
 #' @export
 get_reduced_dimensions_PCA_bulk <-
-  function(input.df,
-           value_column ,
-           components = 1:2,
-           elements_column = NULL,
-           feature_column = NULL,
-           of_samples = T,
-           log_transform = T,
-           scale = T,
-           ...) {
+	function(.data,
+					 .value ,
+					 components = 1:2,
+					 .element = NULL,
+					 .feature = NULL,
+					 of_samples = T,
+					 log_transform = T,
+					 scale = T,
+					 ...) {
 
-    # Get column names
-    elements_column = enquo(elements_column)
-    feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
-    elements_column = col_names$elements_column
-    feature_column = col_names$feature_column
+		# Get column names
+		.element = enquo(.element)
+		.feature = enquo(.feature)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.element = col_names$.element
+		.feature = col_names$.feature
 
-    value_column = enquo(value_column)
+		.value = enquo(.value)
 
-    input.df %>%
+		.data %>%
 
-      # Through error if some counts are NA
-      error_if_counts_is_na(!!value_column) %>%
+			# Through error if some counts are NA
+			error_if_counts_is_na(!!.value) %>%
 
-      # Prepare data frame
-      distinct(!!feature_column,!!elements_column,!!value_column) %>%
+			# Prepare data frame
+			distinct(!!.feature,!!.element,!!.value) %>%
 
-      # Check if logtansform is needed
-      ifelse_pipe(log_transform,
-                  ~ .x %>% mutate(!!value_column := !!value_column %>% `+`(1) %>%  log())) %>%
+			# Check if logtansform is needed
+			ifelse_pipe(log_transform,
+									~ .x %>% mutate(!!.value := !!.value %>% `+`(1) %>%  log())) %>%
 
-      # Stop any column is not if not numeric or integer
-      ifelse_pipe(
-        (.) %>% select(!!value_column) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-        ~ stop("value_column must be numerical or integer")
-      ) %>%
+			# Stop any column is not if not numeric or integer
+			ifelse_pipe(
+				(.) %>% select(!!.value) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+				~ stop(".value must be numerical or integer")
+			) %>%
 
-      spread(!!elements_column,!!value_column) %>%
+			spread(!!.element,!!.value) %>%
 
-      drop_na %>% # Is this necessary?
+			drop_na %>% # Is this necessary?
 
-      # check that there are non-NA genes for enough samples
-      ifelse2_pipe(# First condition
-        (.) %>% nrow == 0,
+			# check that there are non-NA genes for enough samples
+			ifelse2_pipe(# First condition
+				(.) %>% nrow == 0,
 
-        # Second condition
-        (.) %>% nrow < 100,
+				# Second condition
+				(.) %>% nrow < 100,
 
-        # First function
-        ~ stop(
-          "In calculating correlation there is no gene that have non NA values is all samples"
-        ),
+				# First function
+				~ stop(
+					"In calculating correlation there is no gene that have non NA values is all samples"
+				),
 
-        # Second function
-        ~ {
-          warning(
-            "
-                  In calculating correlation there is < 100 genes that have non NA values is all samples.
-                  The correlation calculation would not be reliable,
-                  we suggest to partition the dataset for sample clusters.
-                  "
-          )
-          .x
-        }) %>%
+				# Second function
+				~ {
+					warning(
+						"
+						In calculating correlation there is < 100 genes that have non NA values is all samples.
+						The correlation calculation would not be reliable,
+						we suggest to partition the dataset for sample clusters.
+						"
+					)
+					.x
+				}) %>%
 
-      # Transform to matrix
-      as_matrix(rownames = !!feature_column, do_check = FALSE) %>%
+			# Transform to matrix
+			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
 
-      # Calculate principal components
-      prcomp(scale = scale, ...) %>%
+			# Calculate principal components
+			prcomp(scale = scale, ...) %>%
 
-      # Anonymous function - Prints fraction of variance
-      # input: PCA object
-      # output: PCA object
-      {
-        writeLines("Fraction of variance explained by the selected principal components")
+			# Anonymous function - Prints fraction of variance
+			# input: PCA object
+			# output: PCA object
+			{
+				writeLines("Fraction of variance explained by the selected principal components")
 
-        (.) %$% sdev %>% `^` (2) %>% # Eigen value
-          `/` (sum(.)) %>%
-          `[` (components) %>%
-          enframe() %>%
-          select(-name) %>%
-          rename(`Fraction of variance` = value) %>%
-          mutate(PC = components) %>%
-          print(n = 9999999)
+				(.) %$% sdev %>% `^` (2) %>% # Eigen value
+					`/` (sum(.)) %>%
+					`[` (components) %>%
+					enframe() %>%
+					select(-name) %>%
+					rename(`Fraction of variance` = value) %>%
+					mutate(PC = components) %>%
+					print(n = 9999999)
 
-        (.)
+				(.)
 
-      } %$%
+			} %$%
 
-      # Parse the PCA results to a tibble
-      rotation %>%
-      as_tibble(rownames = quo_name(elements_column)) %>%
-      select(!!elements_column, sprintf("PC%s", components))
+			# Parse the PCA results to a tibble
+			rotation %>%
+			as_tibble(rownames = quo_name(.element)) %>%
+			select(!!.element, sprintf("PC%s", components))
 
-  }
+	}
 
 #' Add principal component information to a tibble using PCA
 #'
@@ -1108,11 +1107,11 @@ get_reduced_dimensions_PCA_bulk <-
 #' @import tibble
 #'
 #'
-#' @param input.df A tibble
-#' @param value_column A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .data A tibble
+#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param components A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param feature_column A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param elements_column A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param scale A boolean
@@ -1122,40 +1121,40 @@ get_reduced_dimensions_PCA_bulk <-
 #'
 #' @export
 add_reduced_dimensions_PCA_bulk <-
-  function(input.df,
-           value_column ,
-           components = 1:2,
-           elements_column = NULL,
-           feature_column = NULL,
-           of_samples = T,
-           log_transform = T,
-           scale = T,
-           ...) {
+	function(.data,
+					 .value ,
+					 components = 1:2,
+					 .element = NULL,
+					 .feature = NULL,
+					 of_samples = T,
+					 log_transform = T,
+					 scale = T,
+					 ...) {
 
-    # Get column names
-    elements_column = enquo(elements_column)
-    feature_column = enquo(feature_column)
-    col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
-    elements_column = col_names$elements_column
-    feature_column = col_names$feature_column
+		# Get column names
+		.element = enquo(.element)
+		.feature = enquo(.feature)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.element = col_names$.element
+		.feature = col_names$.feature
 
-    value_column = enquo(value_column)
+		.value = enquo(.value)
 
-    input.df %>%
-      left_join(
-        (.) %>%
-          get_reduced_dimensions_PCA_bulk(
-            value_column = !!value_column,
-            components = components,
-            elements_column = !!elements_column,
-            feature_column = !!feature_column,
-            log_transform = log_transform,
-            scale = T,
-            ...
-          ),
-        by = quo_name(elements_column)
-      )
-  }
+		.data %>%
+			left_join(
+				(.) %>%
+					get_reduced_dimensions_PCA_bulk(
+						.value = !!.value,
+						components = components,
+						.element = !!.element,
+						.feature = !!.feature,
+						log_transform = log_transform,
+						scale = T,
+						...
+					),
+				by = quo_name(.element)
+			)
+	}
 
 #' Get rotated dimensions of two principal components or MDS dimension of choice, of an angle
 #'
@@ -1165,11 +1164,11 @@ add_reduced_dimensions_PCA_bulk <-
 #' @importFrom rlang quo_is_null
 #'
 #'
-#' @param input.df A tibble
+#' @param .data A tibble
 #' @param dimension_1_column A column symbol. The column of the dimension 1
 #' @param dimension_2_column   A column symbol. The column of the dimension 2
 #' @param rotation_degrees A real number between 0 and 360
-#' @param elements_column A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param of_samples A boolean
 #' @param dimension_1_column_rotated A column symbol. The column of the dimension 1 rotated
 #' @param dimension_2_column_rotated   A column symbol. The column of the dimension 2 rotated
@@ -1178,86 +1177,86 @@ add_reduced_dimensions_PCA_bulk <-
 #'
 #' @export
 get_rotated_dimensions =
-  function(input.df,
-           dimension_1_column,
-           dimension_2_column,
-           rotation_degrees,
-           elements_column = NULL,
-           of_samples = T,
-           dimension_1_column_rotated = NULL,
-           dimension_2_column_rotated = NULL) {
+	function(.data,
+					 dimension_1_column,
+					 dimension_2_column,
+					 rotation_degrees,
+					 .element = NULL,
+					 of_samples = T,
+					 dimension_1_column_rotated = NULL,
+					 dimension_2_column_rotated = NULL) {
 
-    # Get column names
-    elements_column = enquo(elements_column)
-    col_names = get_elements(input.df, elements_column)
-    elements_column = col_names$elements_column
+		# Get column names
+		.element = enquo(.element)
+		col_names = get_elements(.data, .element)
+		.element = col_names$.element
 
-    # Parse other colnames
-    dimension_1_column = enquo(dimension_1_column)
-    dimension_2_column = enquo(dimension_2_column)
-    dimension_1_column_rotated = enquo(dimension_1_column_rotated)
-    dimension_2_column_rotated = enquo(dimension_2_column_rotated)
+		# Parse other colnames
+		dimension_1_column = enquo(dimension_1_column)
+		dimension_2_column = enquo(dimension_2_column)
+		dimension_1_column_rotated = enquo(dimension_1_column_rotated)
+		dimension_2_column_rotated = enquo(dimension_2_column_rotated)
 
-    if(
-      input.df %>%
-      distinct(
-        !!elements_column,
-        !!dimension_1_column,
-        !!dimension_2_column) %>%
-      count(
-        !!elements_column,
-        !!dimension_1_column,
-        !!dimension_2_column) %>%
-      pull(n) %>%
-      max %>%
-      `>` (1)
-    )
-    stop(sprintf("%s must be unique for each row for the calculation of rotation", quo_name(elements_column)))
+		if(
+			.data %>%
+			distinct(
+				!!.element,
+				!!dimension_1_column,
+				!!dimension_2_column) %>%
+			count(
+				!!.element,
+				!!dimension_1_column,
+				!!dimension_2_column) %>%
+			pull(n) %>%
+			max %>%
+			`>` (1)
+		)
+		stop(sprintf("%s must be unique for each row for the calculation of rotation", quo_name(.element)))
 
-    # Set default col names for rotated dimensions if not set
-    if (quo_is_null(dimension_1_column_rotated))
-      dimension_1_column_rotated = as.symbol(sprintf(
-        "%s rotated %s",
-        quo_name(dimension_1_column),
-        rotation_degrees
-      ))
-    if (quo_is_null(dimension_2_column_rotated))
-      dimension_2_column_rotated = as.symbol(sprintf(
-        "%s rotated %s",
-        quo_name(dimension_2_column),
-        rotation_degrees
-      ))
+		# Set default col names for rotated dimensions if not set
+		if (quo_is_null(dimension_1_column_rotated))
+			dimension_1_column_rotated = as.symbol(sprintf(
+				"%s rotated %s",
+				quo_name(dimension_1_column),
+				rotation_degrees
+			))
+		if (quo_is_null(dimension_2_column_rotated))
+			dimension_2_column_rotated = as.symbol(sprintf(
+				"%s rotated %s",
+				quo_name(dimension_2_column),
+				rotation_degrees
+			))
 
-    # Function that rotates a 2D space of a arbitrary angle
-    rotation = function(m, d) {
-      r = d * pi / 180
-      ((dplyr::bind_rows(
-        c(`1` = cos(r), `2` = -sin(r)),
-        c(`1` = sin(r), `2` = cos(r))
-      ) %>% as_matrix) %*% m)
-    }
+		# Function that rotates a 2D space of a arbitrary angle
+		rotation = function(m, d) {
+			r = d * pi / 180
+			((dplyr::bind_rows(
+				c(`1` = cos(r), `2` = -sin(r)),
+				c(`1` = sin(r), `2` = cos(r))
+			) %>% as_matrix) %*% m)
+		}
 
-    # Sanity check of the angle selected
-    if (rotation_degrees %>% between(-360, 360) %>% `!`)
-      stop("rotation_degrees must be between -360 and 360")
+		# Sanity check of the angle selected
+		if (rotation_degrees %>% between(-360, 360) %>% `!`)
+			stop("rotation_degrees must be between -360 and 360")
 
-    # Return
-    input.df %>%
-      distinct(!!elements_column,
-               !!dimension_1_column,
-               !!dimension_2_column) %>%
-      as_matrix(rownames = !!elements_column) %>% t %>%
-      rotation(rotation_degrees) %>%
-      as_tibble() %>%
-      mutate(`rotated dimensions` =
-               c(
-                 quo_name(dimension_1_column_rotated),
-                 quo_name(dimension_2_column_rotated)
-               )) %>%
-      gather(!!elements_column, value,-`rotated dimensions`) %>%
-      spread(`rotated dimensions`, value)
+		# Return
+		.data %>%
+			distinct(!!.element,
+							 !!dimension_1_column,
+							 !!dimension_2_column) %>%
+			as_matrix(rownames = !!.element) %>% t %>%
+			rotation(rotation_degrees) %>%
+			as_tibble() %>%
+			mutate(`rotated dimensions` =
+						 	c(
+						 		quo_name(dimension_1_column_rotated),
+						 		quo_name(dimension_2_column_rotated)
+						 	)) %>%
+			gather(!!.element, value,-`rotated dimensions`) %>%
+			spread(`rotated dimensions`, value)
 
-  }
+	}
 
 #' Add Rotated dimensions of two principal components or MDS dimensions, of an angle
 #'
@@ -1267,11 +1266,11 @@ get_rotated_dimensions =
 #' @importFrom rlang quo_is_null
 #'
 #'
-#' @param input.df A tibble
+#' @param .data A tibble
 #' @param dimension_1_column A column symbol. The column of the dimension 1
 #' @param dimension_2_column   A column symbol. The column of the dimension 2
 #' @param rotation_degrees A real number between 0 and 360
-#' @param elements_column A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param of_samples A boolean
 #' @param dimension_1_column_rotated A column symbol. The column of the dimension 1 rotated
 #' @param dimension_2_column_rotated   A column symbol. The column of the dimension 2 rotated
@@ -1280,55 +1279,55 @@ get_rotated_dimensions =
 #'
 #' @export
 add_rotated_dimensions =
-  function(input.df,
-           dimension_1_column,
-           dimension_2_column,
-           rotation_degrees,
-           elements_column = NULL,
-           of_samples = T,
-           dimension_1_column_rotated = NULL,
-           dimension_2_column_rotated = NULL) {
+	function(.data,
+					 dimension_1_column,
+					 dimension_2_column,
+					 rotation_degrees,
+					 .element = NULL,
+					 of_samples = T,
+					 dimension_1_column_rotated = NULL,
+					 dimension_2_column_rotated = NULL) {
 
-    # Get column names
-    elements_column = enquo(elements_column)
-    col_names = get_elements(input.df, elements_column)
-    elements_column = col_names$elements_column
+		# Get column names
+		.element = enquo(.element)
+		col_names = get_elements(.data, .element)
+		.element = col_names$.element
 
-    # Parse other colnames
-    dimension_1_column = enquo(dimension_1_column)
-    dimension_2_column = enquo(dimension_2_column)
-    dimension_1_column_rotated = enquo(dimension_1_column_rotated)
-    dimension_2_column_rotated = enquo(dimension_2_column_rotated)
+		# Parse other colnames
+		dimension_1_column = enquo(dimension_1_column)
+		dimension_2_column = enquo(dimension_2_column)
+		dimension_1_column_rotated = enquo(dimension_1_column_rotated)
+		dimension_2_column_rotated = enquo(dimension_2_column_rotated)
 
-    # Set default col names for rotated dimensions if not set
-    if (quo_is_null(dimension_1_column_rotated))
-      dimension_1_column_rotated = as.symbol(sprintf(
-        "%s rotated %s",
-        quo_name(dimension_1_column),
-        rotation_degrees
-      ))
-    if (quo_is_null(dimension_2_column_rotated))
-      dimension_2_column_rotated = as.symbol(sprintf(
-        "%s rotated %s",
-        quo_name(dimension_2_column),
-        rotation_degrees
-      ))
+		# Set default col names for rotated dimensions if not set
+		if (quo_is_null(dimension_1_column_rotated))
+			dimension_1_column_rotated = as.symbol(sprintf(
+				"%s rotated %s",
+				quo_name(dimension_1_column),
+				rotation_degrees
+			))
+		if (quo_is_null(dimension_2_column_rotated))
+			dimension_2_column_rotated = as.symbol(sprintf(
+				"%s rotated %s",
+				quo_name(dimension_2_column),
+				rotation_degrees
+			))
 
-    input.df %>%
-      left_join(
-        (.) %>%
-          get_rotated_dimensions(
-            dimension_1_column = !!dimension_1_column,
-            dimension_2_column = !!dimension_2_column,
-            rotation_degrees = rotation_degrees,
-            elements_column = !!elements_column,
-            of_samples = of_samples,
-            dimension_1_column_rotated = !!dimension_1_column_rotated,
-            dimension_2_column_rotated = !!dimension_2_column_rotated
-          ),
-        by = quo_name(elements_column)
-      )
-  }
+		.data %>%
+			left_join(
+				(.) %>%
+					get_rotated_dimensions(
+						dimension_1_column = !!dimension_1_column,
+						dimension_2_column = !!dimension_2_column,
+						rotation_degrees = rotation_degrees,
+						.element = !!.element,
+						of_samples = of_samples,
+						dimension_1_column_rotated = !!dimension_1_column_rotated,
+						dimension_2_column_rotated = !!dimension_2_column_rotated
+					),
+				by = quo_name(.element)
+			)
+	}
 
 #' Aggregates multiple counts from the same samples (e.g., from isoforms)
 #' This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns
@@ -1336,10 +1335,10 @@ add_rotated_dimensions =
 #' @importFrom dplyr summarise_all
 #' @importFrom dplyr bind_rows
 #'
-#' @param input.df A tibble
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param aggregation_function A function for counts aggregation (e.g., sum)
 #' @param keep_integer A boolean
 #'
@@ -1347,96 +1346,96 @@ add_rotated_dimensions =
 #'
 #' @export
 aggregate_duplicated_transcripts_bulk =
-  function(input.df,
-           aggregation_function = sum,
-           sample_column = NULL,
-           transcript_column = NULL,
-           counts_column = NULL,
-           keep_integer = T) {
+	function(.data,
+					 aggregation_function = sum,
+					 .sample = NULL,
+					 .transcript = NULL,
+					 .abundance = NULL,
+					 keep_integer = T) {
 
-    # Get column names
-    sample_column = enquo(sample_column)
-    transcript_column = enquo(transcript_column)
-    counts_column = enquo(counts_column)
-    col_names = get_sample_transcript_counts(input.df, sample_column, transcript_column, counts_column)
-    sample_column = col_names$sample_column
-    transcript_column = col_names$transcript_column
-    counts_column = col_names$counts_column
+		# Get column names
+		.sample = enquo(.sample)
+		.transcript = enquo(.transcript)
+		.abundance = enquo(.abundance)
+		col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+		.sample = col_names$.sample
+		.transcript = col_names$.transcript
+		.abundance = col_names$.abundance
 
-    # Robust paste function that preserves NAs
-    paste3 <- function(..., sep = ", ") {
-      L <- list(...)
-      L <- lapply(L, function(x) {
-        x[is.na(x)] <- ""
-        x
-      })
-      ret <- gsub(paste0("(^", sep, "|", sep, "$)"),
-                  "",
-                  gsub(paste0(sep, sep), sep,
-                       do.call(paste, c(
-                         L, list(sep = sep)
-                       ))))
-      is.na(ret) <- ret == ""
-      ret
-    }
+		# Robust paste function that preserves NAs
+		paste3 <- function(..., sep = ", ") {
+			L <- list(...)
+			L <- lapply(L, function(x) {
+				x[is.na(x)] <- ""
+				x
+			})
+			ret <- gsub(paste0("(^", sep, "|", sep, "$)"),
+									"",
+									gsub(paste0(sep, sep), sep,
+											 do.call(paste, c(
+											 	L, list(sep = sep)
+											 ))))
+			is.na(ret) <- ret == ""
+			ret
+		}
 
-    # Through warning if there are logicals of factor in the data frame
-    # because they cannot be merged if they are not unique
-    if ((lapply(input.df, class) %>% unlist %in% c("logical", "factor")) %>% any) {
-      warning("for aggregation fctors and logical columns were converted to character")
-      writeLines("Converted to characters")
-      lapply(input.df, class) %>% unlist %>% `[` (. %in% c("logical", "factor") %>% which) %>% print
-    }
+		# Through warning if there are logicals of factor in the data frame
+		# because they cannot be merged if they are not unique
+		if ((lapply(.data, class) %>% unlist %in% c("logical", "factor")) %>% any) {
+			warning("for aggregation fctors and logical columns were converted to character")
+			writeLines("Converted to characters")
+			lapply(.data, class) %>% unlist %>% `[` (. %in% c("logical", "factor") %>% which) %>% print
+		}
 
-    # Select which are the numerical columns
-    numerical_columns = input.df %>% ungroup() %>% select_if(is.numeric) %>% select(-!!counts_column) %>% colnames() %>% c("n_aggr")
+		# Select which are the numerical columns
+		numerical_columns = .data %>% ungroup() %>% select_if(is.numeric) %>% select(-!!.abundance) %>% colnames() %>% c("n_aggr")
 
-    # ggregates read input.df over samples, concatenates other character columns, and averages other numeric columns
-    input.df %>%
+		# ggregates read .data over samples, concatenates other character columns, and averages other numeric columns
+		.data %>%
 
-      # Through error if some counts are NA
-      error_if_counts_is_na(!!counts_column) %>%
+			# Through error if some counts are NA
+			error_if_counts_is_na(!!.abundance) %>%
 
-      # transform logials and factors
-      mutate_if(is.factor, as.character) %>%
-      mutate_if(is.logical, as.character) %>%
+			# transform logials and factors
+			mutate_if(is.factor, as.character) %>%
+			mutate_if(is.logical, as.character) %>%
 
-      # Add the nuber of duplicates for each gene
-      left_join(
-        (.) %>% count(!!sample_column,!!transcript_column, name = "n_aggr"),
-        by = c(quo_name(sample_column), quo_name(transcript_column))
-      ) %>%
+			# Add the nuber of duplicates for each gene
+			left_join(
+				(.) %>% count(!!.sample,!!.transcript, name = "n_aggr"),
+				by = c(quo_name(.sample), quo_name(.transcript))
+			) %>%
 
-      # Anonymous function - binds the unique and the reduced genes,
-      # in the way we have to reduce redundancy just for the duplicated genes
-      # input: tibble
-      # output tibble distinct
-      {
-        dplyr::bind_rows(
-          # Unique symbols
-          (.) %>%
-            filter(n_aggr == 1),
+			# Anonymous function - binds the unique and the reduced genes,
+			# in the way we have to reduce redundancy just for the duplicated genes
+			# input: tibble
+			# output tibble distinct
+			{
+				dplyr::bind_rows(
+					# Unique symbols
+					(.) %>%
+						filter(n_aggr == 1),
 
-          # Duplicated symbols
-          (.) %>%
-            filter(n_aggr > 1) %>%
-            group_by(!!sample_column,!!transcript_column) %>%
-            mutate(
-              !!counts_column := !!counts_column %>% aggregation_function()
-            ) %>%
-            mutate_at(vars(numerical_columns), mean) %>%
-            mutate_at(
-              vars(-group_cols(),-!!counts_column,-!!numerical_columns),
-              list( ~ paste3(unique(.), collapse = ", "))
-            ) %>%
-            distinct()
-        )
-      } %>%
+					# Duplicated symbols
+					(.) %>%
+						filter(n_aggr > 1) %>%
+						group_by(!!.sample,!!.transcript) %>%
+						mutate(
+							!!.abundance := !!.abundance %>% aggregation_function()
+						) %>%
+						mutate_at(vars(numerical_columns), mean) %>%
+						mutate_at(
+							vars(-group_cols(),-!!.abundance,-!!numerical_columns),
+							list( ~ paste3(unique(.), collapse = ", "))
+						) %>%
+						distinct()
+				)
+			} %>%
 
-      # Rename column of number of duplicates for each gene
-      rename(`merged transcripts` = n_aggr)
+			# Rename column of number of duplicates for each gene
+			rename(`merged transcripts` = n_aggr)
 
-  }
+	}
 
 #' Drop redundant elements (e.g., samples) for which feature (e.g., genes) aboundances are correlated
 #'
@@ -1446,166 +1445,166 @@ aggregate_duplicated_transcripts_bulk =
 #' @importFrom widyr pairwise_cor
 #'
 #'
-#' @param input.df A tibble
-#' @param value_column A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .data A tibble
+#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param correlation_threshold A real number between 0 and 1
-#' @param feature_column A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param elements_column A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @return A tibble with redundant elemens removed
 #'
 #' @export
-drop_redundant_elements_through_correlation <- function(input.df,
-                                                        value_column,
-                                                        correlation_threshold = 0.9,
-                                                        elements_column = NULL,
-                                                        feature_column = NULL,
-                                                        of_samples = T,
-                                                        log_transform = F) {
+drop_redundant_elements_through_correlation <- function(.data,
+																												.value,
+																												correlation_threshold = 0.9,
+																												.element = NULL,
+																												.feature = NULL,
+																												of_samples = T,
+																												log_transform = F) {
 
-  # Get column names
-  elements_column = enquo(elements_column)
-  feature_column = enquo(feature_column)
-  col_names = get_elements_features(input.df, elements_column, feature_column, of_samples)
-  elements_column = col_names$elements_column
-  feature_column = col_names$feature_column
+	# Get column names
+	.element = enquo(.element)
+	.feature = enquo(.feature)
+	col_names = get_elements_features(.data, .element, .feature, of_samples)
+	.element = col_names$.element
+	.feature = col_names$.feature
 
-  value_column = enquo(value_column)
+	.value = enquo(.value)
 
-  # Get the redundant data frame
-  input.df.correlated =
-    input.df %>%
+	# Get the redundant data frame
+	.data.correlated =
+		.data %>%
 
-    # Stop if any counts is NA
-    error_if_counts_is_na(!!value_column) %>%
+		# Stop if any counts is NA
+		error_if_counts_is_na(!!.value) %>%
 
-    # Stop if there are duplicated transcripts
-    error_if_duplicated_genes(!!elements_column,!!feature_column,!!value_column) %>%
+		# Stop if there are duplicated transcripts
+		error_if_duplicated_genes(!!.element,!!.feature,!!.value) %>%
 
-    # Prepare the data frame
-    select(!!feature_column,!!elements_column,!!value_column) %>%
+		# Prepare the data frame
+		select(!!.feature,!!.element,!!.value) %>%
 
-    # Check if logtansform is needed
-    ifelse_pipe(log_transform,
-                ~ .x %>% mutate(!!value_column := !!value_column %>% `+`(1) %>%  log())) %>%
-    distinct() %>%
-    spread(!!elements_column,!!value_column) %>%
-    drop_na() %>%
+		# Check if logtansform is needed
+		ifelse_pipe(log_transform,
+								~ .x %>% mutate(!!.value := !!.value %>% `+`(1) %>%  log())) %>%
+		distinct() %>%
+		spread(!!.element,!!.value) %>%
+		drop_na() %>%
 
-    # check that there are non-NA genes for enough samples
-    ifelse2_pipe(# First condition
-      (.) %>% nrow == 0,
+		# check that there are non-NA genes for enough samples
+		ifelse2_pipe(# First condition
+			(.) %>% nrow == 0,
 
-      # Second condition
-      (.) %>% nrow < 100,
+			# Second condition
+			(.) %>% nrow < 100,
 
-      # First function
-      ~ stop(
-        "In calculating correlation there is no gene that have non NA values is all samples"
-      ),
+			# First function
+			~ stop(
+				"In calculating correlation there is no gene that have non NA values is all samples"
+			),
 
-      # Second function
-      ~ {
-        warning(
-          "
-                  In calculating correlation there is < 100 genes that have non NA values is all samples.
-                  The correlation calculation would not be reliable,
-                  we suggest to partition the dataset for sample clusters.
-                  "
-        )
-        .x
-      }) %>%
+			# Second function
+			~ {
+				warning(
+					"
+					In calculating correlation there is < 100 genes that have non NA values is all samples.
+					The correlation calculation would not be reliable,
+					we suggest to partition the dataset for sample clusters.
+					"
+				)
+				.x
+			}) %>%
 
-    # Prepare the data frame
-    gather(!!elements_column,!!value_column,-!!feature_column) %>%
-    rename(rc := !!value_column,
-           sample := !!elements_column,
-           transcript := !!feature_column) %>% # Is rename necessary?
-    mutate_if(is.factor, as.character) %>%
+		# Prepare the data frame
+		gather(!!.element,!!.value,-!!.feature) %>%
+		rename(rc := !!.value,
+					 sample := !!.element,
+					 transcript := !!.feature) %>% # Is rename necessary?
+		mutate_if(is.factor, as.character) %>%
 
-    # Run pairwise correlation and return a tibble
-    widyr::pairwise_cor(
-      sample,
-      transcript,
-      rc,
-      sort = T,
-      diag = FALSE,
-      upper = F
-    ) %>%
-    filter(correlation > correlation_threshold) %>%
-    distinct(item1) %>%
-    rename(!!elements_column := item1)
+		# Run pairwise correlation and return a tibble
+		widyr::pairwise_cor(
+			sample,
+			transcript,
+			rc,
+			sort = T,
+			diag = FALSE,
+			upper = F
+		) %>%
+		filter(correlation > correlation_threshold) %>%
+		distinct(item1) %>%
+		rename(!!.element := item1)
 
-  # Return non redudant data frame
-  input.df %>% anti_join(input.df.correlated)
+	# Return non redudant data frame
+	.data %>% anti_join(.data.correlated)
 }
 
 #' Identifies the closest pairs in a MDS contaxt and return one of them
 #'
-#' @param input.df A tibble
+#' @param .data A tibble
 #' @param Dim_a_column A column symbol. The column of one principal component
 #' @param Dim_b_column A column symbol. The column of another principal component
-#' @param elements_column A column symbol. The column that is represents entities to cluster (i.e., normally samples)
+#' @param .element A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param of_samples A boolean
 #'
 #' @return A tibble with pairs dropped
 #'
 #' @export
 drop_redundant_elements_though_reduced_dimensions <-
-  function(input.df,
-           Dim_a_column,
-           Dim_b_column,
-           elements_column = NULL,
-           of_samples = T) {
-    # This function identifies the closest pairs and return one of them
+	function(.data,
+					 Dim_a_column,
+					 Dim_b_column,
+					 .element = NULL,
+					 of_samples = T) {
+		# This function identifies the closest pairs and return one of them
 
-    # Get column names
-    elements_column = enquo(elements_column)
-    col_names = get_elements(input.df, elements_column)
-    elements_column = col_names$elements_column
+		# Get column names
+		.element = enquo(.element)
+		col_names = get_elements(.data, .element)
+		.element = col_names$.element
 
-    Dim_a_column = enquo(Dim_a_column)
-    Dim_b_column = enquo(Dim_b_column)
+		Dim_a_column = enquo(Dim_a_column)
+		Dim_b_column = enquo(Dim_b_column)
 
-    # Find redundant samples
-    input.df.redundant =
+		# Find redundant samples
+		.data.redundant =
 
-      # Calculate distances
-      input.df %>%
-      select(sample,!!Dim_a_column,!!Dim_b_column) %>%
-      distinct() %>%
-      as_matrix(rownames = !!elements_column) %>%
-      dist() %>%
+			# Calculate distances
+			.data %>%
+			select(sample,!!Dim_a_column,!!Dim_b_column) %>%
+			distinct() %>%
+			as_matrix(rownames = !!.element) %>%
+			dist() %>%
 
-      # Prepare matrix
-      as.matrix() %>% as_tibble(rownames = "sample a") %>%
-      gather(`sample b`, dist,-`sample a`) %>%
-      filter(`sample a` != `sample b`) %>%
+			# Prepare matrix
+			as.matrix() %>% as_tibble(rownames = "sample a") %>%
+			gather(`sample b`, dist,-`sample a`) %>%
+			filter(`sample a` != `sample b`) %>%
 
-      # Sort the elements of the two columns to avoid eliminating all samples
-      rowwise() %>%
-      mutate(
-        `sample 1` = c(`sample a`, `sample b`) %>% sort() %>% `[`(1),
-        `sample 2` = c(`sample a`, `sample b`) %>% sort() %>% `[`(2)
-      ) %>%
-      ungroup() %>%
-      select(`sample 1`, `sample 2`, dist) %>%
-      distinct() %>%
+			# Sort the elements of the two columns to avoid eliminating all samples
+			rowwise() %>%
+			mutate(
+				`sample 1` = c(`sample a`, `sample b`) %>% sort() %>% `[`(1),
+				`sample 2` = c(`sample a`, `sample b`) %>% sort() %>% `[`(2)
+			) %>%
+			ungroup() %>%
+			select(`sample 1`, `sample 2`, dist) %>%
+			distinct() %>%
 
-      # Select closestpairs
-      select_closest_pairs %>%
+			# Select closestpairs
+			select_closest_pairs %>%
 
-      # Select pair to keep
-      select(1) %>%
+			# Select pair to keep
+			select(1) %>%
 
-      # Set the column names
-      setNames(quo_name(elements_column))
+			# Set the column names
+			setNames(quo_name(.element))
 
-    # Drop samples that are correlated with others and return
-    input.df %>% anti_join(input.df.redundant)
-  }
+		# Drop samples that are correlated with others and return
+		.data %>% anti_join(.data.redundant)
+	}
 
 #' #' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
 #' #'
@@ -1642,50 +1641,50 @@ drop_redundant_elements_though_reduced_dimensions <-
 
 #' Get transcript column from ensembl gene id
 #'
-#' @param input.df A tibble
-#' @param ensembl_transcript_column A column symbol. The column that is represents ensembl gene id
+#' @param .data A tibble
+#' @param .ensembl A column symbol. The column that is represents ensembl gene id
 #'
 #' @return A tibble with added annotation
 #'
 #' @export
 get_symbol_from_ensembl <-
-  function(input.df, ensembl_transcript_column) {
-    ensembl_transcript_column = enquo(ensembl_transcript_column)
+	function(.data, .ensembl) {
+		.ensembl = enquo(.ensembl)
 
-    input.df %>%
-      select(!!ensembl_transcript_column) %>%
-      distinct() %>%
+		.data %>%
+			select(!!.ensembl) %>%
+			distinct() %>%
 
-      # Add name information
-      left_join(
-        ensembl_symbol_mapping %>%
-          distinct(ensembl_gene_id, hgnc_symbol, hg) %>%
-          rename(!!ensembl_transcript_column := ensembl_gene_id),
-        by = "ens"
-      )
+			# Add name information
+			left_join(
+				ensembl_symbol_mapping %>%
+					distinct(ensembl_gene_id, hgnc_symbol, hg) %>%
+					rename(!!.ensembl := ensembl_gene_id),
+				by = "ens"
+			)
 
-  }
+	}
 
 #' Add transcript column from ensembl gene id
 #'
-#' @param input.df A tibble
-#' @param ensembl_transcript_column A column symbol. The column that is represents ensembl gene id
+#' @param .data A tibble
+#' @param .ensembl A column symbol. The column that is represents ensembl gene id
 #'
 #' @return A tibble with added annotation
 #'
 #' @export
 add_symbol_from_ensembl <-
-  function(input.df, ensembl_transcript_column) {
-    ensembl_transcript_column = enquo(ensembl_transcript_column)
+	function(.data, .ensembl) {
+		.ensembl = enquo(.ensembl)
 
-    # Add new symbols column
-    input.df %>%
-      left_join((.) %>%
-                  get_symbol_from_ensembl(!!ensembl_transcript_column)) %>%
+		# Add new symbols column
+		.data %>%
+			left_join((.) %>%
+									get_symbol_from_ensembl(!!.ensembl)) %>%
 
-      # Attach attributes
-      add_attr(input.df %>% attr("parameters"), "parameters")
-  }
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
+	}
 
 #' Get cell type proportions from cibersort
 #'
@@ -1693,81 +1692,81 @@ add_symbol_from_ensembl <-
 #' @import preprocessCore
 #'
 #'
-#' @param input.df A tibble
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
 #'
 #' @export
-get_cell_type_proportions = function(input.df,
-                                     sample_column = NULL,
-                                     transcript_column = NULL,
-                                     counts_column = NULL, ...) {
+get_cell_type_proportions = function(.data,
+																		 .sample = NULL,
+																		 .transcript = NULL,
+																		 .abundance = NULL, ...) {
 
-  # Get column names
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
-  col_names = get_sample_transcript_counts(input.df, sample_column, transcript_column, counts_column)
-  sample_column = col_names$sample_column
-  transcript_column = col_names$transcript_column
-  counts_column = col_names$counts_column
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
-  # Check if package is installed, otherwise install
-  if ("e1071" %in% rownames(installed.packages()) == FALSE) {
-    writeLines("Installing e1071 needed for Cibersort")
-    install.packages("e1071", repos="https://cloud.r-project.org")
-  }
+	# Check if package is installed, otherwise install
+	if ("e1071" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing e1071 needed for Cibersort")
+		install.packages("e1071", repos="https://cloud.r-project.org")
+	}
 
-  # Check if package is installed, otherwise install
-  if ("preprocessCore" %in% rownames(installed.packages()) == FALSE) {
-    writeLines("Installing preprocessCore needed for Cibersort")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos="https://cloud.r-project.org")
-    BiocManager::install("preprocessCore")
+	# Check if package is installed, otherwise install
+	if ("preprocessCore" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing preprocessCore needed for Cibersort")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos="https://cloud.r-project.org")
+		BiocManager::install("preprocessCore")
 
-  }
+	}
 
-  # Load library which is optional for the whole package
-  #library(preprocessCore)
+	# Load library which is optional for the whole package
+	#library(preprocessCore)
 
-  # Check if there are enough genes for the signature
-  if(
-    (
-      input.df %>%
-      pull(!!transcript_column) %in% (X_cibersort %>% rownames)
-    ) %>%
-    which %>%
-    length %>%
-    `<` (50)
-  ) stop("You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe")
+	# Check if there are enough genes for the signature
+	if(
+		(
+			.data %>%
+			pull(!!.transcript) %in% (X_cibersort %>% rownames)
+		) %>%
+		which %>%
+		length %>%
+		`<` (50)
+	) stop("You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe")
 
-  input.df %>%
+	.data %>%
 
-    # Check if some transcripts are duplicated
-    error_if_duplicated_genes(!!sample_column,!!transcript_column,!!counts_column) %>%
+		# Check if some transcripts are duplicated
+		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
-    # Prepare data frame
-    distinct(!!sample_column,!!transcript_column,!!counts_column) %>%
-    spread(!!sample_column,!!counts_column) %>%
-    data.frame(row.names = 1, check.names = F) %>%
+		# Prepare data frame
+		distinct(!!.sample,!!.transcript,!!.abundance) %>%
+		spread(!!.sample,!!.abundance) %>%
+		data.frame(row.names = 1, check.names = F) %>%
 
-    # Run Cibersort through custom function
-    my_CIBERSORT(X_cibersort,	...) %$%
-    proportions %>%
+		# Run Cibersort through custom function
+		my_CIBERSORT(X_cibersort,	...) %$%
+		proportions %>%
 
-    # Parse results and return
-    as_tibble(rownames = quo_name(sample_column)) %>%
-    select(-`P-value`,-Correlation,-RMSE) %>%
-    setNames(c(quo_name(sample_column), (.) %>% select(-1) %>% colnames() %>% paste("type:", ., sep=" "))) %>%
-    #%>%
-    #gather(`Cell type`, proportion,-!!sample_column) %>%
+		# Parse results and return
+		as_tibble(rownames = quo_name(.sample)) %>%
+		select(-`P-value`,-Correlation,-RMSE) %>%
+		setNames(c(quo_name(.sample), (.) %>% select(-1) %>% colnames() %>% paste("type:", ., sep=" "))) %>%
+		#%>%
+		#gather(`Cell type`, proportion,-!!.sample) %>%
 
-    # Attach attributes
-    add_attr(input.df %>% attr("parameters"), "parameters")
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
 
 
 }
@@ -1777,42 +1776,42 @@ get_cell_type_proportions = function(input.df,
 #' @import parallel
 #'
 #'
-#' @param input.df A tibble
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
 #'
 #' @export
-add_cell_type_proportions = function(input.df,
-                                     sample_column = NULL,
-                                     transcript_column = NULL,
-                                     counts_column = NULL, ...) {
+add_cell_type_proportions = function(.data,
+																		 .sample = NULL,
+																		 .transcript = NULL,
+																		 .abundance = NULL, ...) {
 
-  # Get column names
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
-  col_names = get_sample_transcript_counts(input.df, sample_column, transcript_column, counts_column)
-  sample_column = col_names$sample_column
-  transcript_column = col_names$transcript_column
-  counts_column = col_names$counts_column
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
-  input.df %>%
+	.data %>%
 
-    # Add new annotation
-    left_join(
-      (.) %>%
-        get_cell_type_proportions(
-          sample_column = !!sample_column,
-          transcript_column = !!transcript_column,
-          counts_column = !!counts_column,
-          ...
-        ),
-      by = "sample"
-    )
+		# Add new annotation
+		left_join(
+			(.) %>%
+				get_cell_type_proportions(
+					.sample = !!.sample,
+					.transcript = !!.transcript,
+					.abundance = !!.abundance,
+					...
+				),
+			by = "sample"
+		)
 
 }
 
@@ -1823,139 +1822,139 @@ add_cell_type_proportions = function(input.df,
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #'
-#' @param input.df A tibble
-#' @param formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param ... Further parameters passed to the function sva::ComBat
 #'
 #' @return A tibble with adjusted counts
 #'
 #' @export
-get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
-                                                            formula,
-                                                            sample_column = NULL,
-                                                            transcript_column = NULL,
-                                                            counts_column = NULL,
-                                                            log_transform = T,
-                                                            ...) {
+get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
+																														.formula,
+																														.sample = NULL,
+																														.transcript = NULL,
+																														.abundance = NULL,
+																														log_transform = T,
+																														...) {
 
-  # Get column names
-  sample_column = enquo(sample_column)
-  transcript_column = enquo(transcript_column)
-  counts_column = enquo(counts_column)
-  col_names = get_sample_transcript_counts(input.df, sample_column, transcript_column, counts_column)
-  sample_column = col_names$sample_column
-  transcript_column = col_names$transcript_column
-  counts_column = col_names$counts_column
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
-  # Check that formula includes at least two covariates
-  if(parse_formula(formula) %>% length %>% `<` (2))
-    stop("The formula must contain two covariates, the first being the factor of interest, the second being the factor of unwanted variation")
+	# Check that .formula includes at least two covariates
+	if(parse_formula(.formula) %>% length %>% `<` (2))
+		stop("The .formula must contain two covariates, the first being the factor of interest, the second being the factor of unwanted variation")
 
-  # Check that formula includes no more than two covariates at the moment
-  if(parse_formula(formula) %>% length %>% `>` (3))
-    warning("Only the second covariate in the formula is adjusted for, at the moment")
+	# Check that .formula includes no more than two covariates at the moment
+	if(parse_formula(.formula) %>% length %>% `>` (3))
+		warning("Only the second covariate in the .formula is adjusted for, at the moment")
 
-  # New column name
-  value_adjusted = as.symbol(sprintf("%s adjusted",  quo_name(counts_column)))
+	# New column name
+	value_adjusted = as.symbol(sprintf("%s adjusted",  quo_name(.abundance)))
 
-  # Stop is any counts are NAs
-  input.df %>% error_if_counts_is_na(!!counts_column)
+	# Stop is any counts are NAs
+	.data %>% error_if_counts_is_na(!!.abundance)
 
-  df_for_combat <-
-    input.df %>%
-    select(!!transcript_column,
-           !!sample_column,
-           !!counts_column,
-           one_of(parse_formula(formula))) %>%
-    distinct() %>%
+	df_for_combat <-
+		.data %>%
+		select(!!.transcript,
+					 !!.sample,
+					 !!.abundance,
+					 one_of(parse_formula(.formula))) %>%
+		distinct() %>%
 
-    # Check if logtansform is needed
-    ifelse_pipe(log_transform,
-                ~ .x %>% mutate(!!counts_column := !!counts_column %>% `+`(1) %>%  log())) %>%
+		# Check if logtansform is needed
+		ifelse_pipe(log_transform,
+								~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
-    # Mark Filter low counts
-    mutate(
-      `filter out low counts` =
-        !!transcript_column %in%
-        add_normalised_counts_bulk.get_low_expressed(.,!!sample_column,!!transcript_column,!!counts_column)
-    )
+		# Mark Filter low counts
+		mutate(
+			`filter out low counts` =
+				!!.transcript %in%
+				add_normalised_counts_bulk.get_low_expressed(.,!!.sample,!!.transcript,!!.abundance)
+		)
 
-  # Create design matrix
-  design =
-    model.matrix(
-      object = as.formula("~" %>% paste0(parse_formula(formula)[1])),
-      # get first argument of the formula
-      data = df_for_combat %>% select(!!sample_column, one_of(parse_formula(formula))) %>% distinct %>% arrange(!!sample_column)
-    ) %>%
-    set_colnames(c("(Intercept)", parse_formula(formula)[1]))
+	# Create design matrix
+	design =
+		model.matrix(
+			object = as.formula("~" %>% paste0(parse_formula(.formula)[1])),
+			# get first argument of the .formula
+			data = df_for_combat %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
+		) %>%
+		set_colnames(c("(Intercept)", parse_formula(.formula)[1]))
 
-  # Check if package is installed, otherwise install
-  if ("sva" %in% rownames(installed.packages()) == FALSE) {
-    writeLines("Installing sva - Combat needed for adjustment for unwanted variation")
-    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos="https://cloud.r-project.org")
-    BiocManager::install("sva")
-  }
+	# Check if package is installed, otherwise install
+	if ("sva" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing sva - Combat needed for adjustment for unwanted variation")
+		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos="https://cloud.r-project.org")
+		BiocManager::install("sva")
+	}
 
-  df_for_combat %>%
+	df_for_combat %>%
 
-    # Filter low counts
-    filter(!`filter out low counts`) %>%
+		# Filter low counts
+		filter(!`filter out low counts`) %>%
 
-    # Select relevant info
-    distinct(!!transcript_column,!!sample_column,!!counts_column) %>%
+		# Select relevant info
+		distinct(!!.transcript,!!.sample,!!.abundance) %>%
 
-    # Stop any column is not if not numeric or integer
-    ifelse_pipe(
-      (.) %>% select(!!counts_column) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-      ~ stop("counts_column must be numerical or integer")
-    ) %>%
+		# Stop any column is not if not numeric or integer
+		ifelse_pipe(
+			(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+			~ stop(".abundance must be numerical or integer")
+		) %>%
 
-    spread(!!sample_column,!!counts_column) %>%
-    as_matrix(rownames = !!transcript_column,
-              do_check = FALSE) %>%
+		spread(!!.sample,!!.abundance) %>%
+		as_matrix(rownames = !!.transcript,
+							do_check = FALSE) %>%
 
-    # Run combat
-    sva::ComBat(
-      batch =
-        df_for_combat %>%
-        distinct(!!sample_column,!!as.symbol(parse_formula(formula)[2])) %>%
-        arrange(!!sample_column) %>%
-        pull(2),
-      mod = design,
-      ...
-    ) %>%
-    as_tibble(rownames = quo_name(transcript_column)) %>%
-    gather(!!sample_column,!!counts_column,-!!transcript_column) %>%
+		# Run combat
+		sva::ComBat(
+			batch =
+				df_for_combat %>%
+				distinct(!!.sample,!!as.symbol(parse_formula(.formula)[2])) %>%
+				arrange(!!.sample) %>%
+				pull(2),
+			mod = design,
+			...
+		) %>%
+		as_tibble(rownames = quo_name(.transcript)) %>%
+		gather(!!.sample,!!.abundance,-!!.transcript) %>%
 
-    # ReverseLog transform if tranformed in the first place
-    ifelse_pipe(
-      log_transform,
-      ~ .x %>%
-        mutate(!!counts_column := !!counts_column %>% exp %>% `-`(1)) %>%
-        mutate(
-          !!counts_column := ifelse(!!counts_column < 0, 0,!!counts_column)
-        ) %>%
-        mutate(!!counts_column := !!counts_column %>% as.integer)
-    ) %>%
+		# ReverseLog transform if tranformed in the first place
+		ifelse_pipe(
+			log_transform,
+			~ .x %>%
+				mutate(!!.abundance := !!.abundance %>% exp %>% `-`(1)) %>%
+				mutate(
+					!!.abundance := ifelse(!!.abundance < 0, 0,!!.abundance)
+				) %>%
+				mutate(!!.abundance := !!.abundance %>% as.integer)
+		) %>%
 
-    # Reset column names
-    rename(!!value_adjusted := !!counts_column)  %>%
+		# Reset column names
+		rename(!!value_adjusted := !!.abundance)  %>%
 
 
-    # Add filtering info
-    right_join(
-      df_for_combat %>%
-        distinct(
-          !!transcript_column,
-          !!sample_column,
-          `filter out low counts`
-        ),
-      by = c(quo_name(transcript_column), quo_name(sample_column))
-    )
+		# Add filtering info
+		right_join(
+			df_for_combat %>%
+				distinct(
+					!!.transcript,
+					!!.sample,
+					`filter out low counts`
+				),
+			by = c(quo_name(.transcript), quo_name(.sample))
+		)
 }
 
 #' Add adjusted count for some batch effect
@@ -1965,48 +1964,48 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #'
-#' @param input.df A tibble
-#' @param formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
-#' @param sample_column A character name of the sample column
-#' @param transcript_column A character name of the gene/transcript name column
-#' @param counts_column A character name of the count column
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param ... Further parameters passed to the function sva::ComBat
 #'
 #' @return A tibble with adjusted counts
 #'
 #' @export
-add_adjusted_counts_for_unwanted_variation_bulk <- function(input.df,
-                                                            formula,
-sample_column = NULL,
-transcript_column = NULL,
-counts_column = NULL,
-log_transform = T,
-...) {
+add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
+																														.formula,
+																														.sample = NULL,
+																														.transcript = NULL,
+																														.abundance = NULL,
+																														log_transform = T,
+																														...) {
 
-# Get column names
-sample_column = enquo(sample_column)
-transcript_column = enquo(transcript_column)
-counts_column = enquo(counts_column)
-col_names = get_sample_transcript_counts(input.df, sample_column, transcript_column, counts_column)
-sample_column = col_names$sample_column
-transcript_column = col_names$transcript_column
-counts_column = col_names$counts_column
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
-  input.df %>%
+	.data %>%
 
-    # Add adjsted column
-    left_join(
-      (.) %>%
-        get_adjusted_counts_for_unwanted_variation_bulk(
-          formula,
-          sample_column = !!sample_column,
-          transcript_column = !!transcript_column,
-          counts_column = !!counts_column,
-          log_transform = log_transform,
-          ...
-        ) ,
-      by = c(quo_name(transcript_column), quo_name(sample_column))
-    )
+		# Add adjsted column
+		left_join(
+			(.) %>%
+				get_adjusted_counts_for_unwanted_variation_bulk(
+					.formula,
+					.sample = !!.sample,
+					.transcript = !!.transcript,
+					.abundance = !!.abundance,
+					log_transform = log_transform,
+					...
+				) ,
+			by = c(quo_name(.transcript), quo_name(.sample))
+		)
 
 }

@@ -10,9 +10,9 @@ test_that("Creating tt object from tibble, number of parameters",{
       attr(
         create_tt_from_tibble_bulk(
           ttBulk::counts_mini,
-          sample_column = sample,
-          transcript_column = transcript,
-          counts_column = `count`
+          .sample = sample,
+          .transcript = transcript,
+          .abundance = `count`
         ) ,
       "parameters"
       )
@@ -27,9 +27,9 @@ test_that("Getting normalised counts - no object",{
   res =
     get_normalised_counts_bulk(
       ttBulk::counts_mini,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`
     )
 
   expect_equal(
@@ -51,9 +51,9 @@ test_that("Adding normalised counts - no object",{
   res =
     add_normalised_counts_bulk(
       ttBulk::counts_mini,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`
     )
 
   expect_equal(
@@ -75,9 +75,9 @@ test_that("Get differential trancript abundance - no object",{
     get_differential_transcript_abundance_bulk(
       ttBulk::counts_mini,
       ~ condition,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`
     )
 
   expect_equal(
@@ -98,9 +98,9 @@ test_that("Get cluster lables based on Kmeans - no object",{
   res =
     get_clusters_kmeans_bulk(
       ttBulk::counts_mini,
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript,
+      .value = `count`,
+      .element = sample,
+      .feature = transcript,
       number_of_clusters = 2
     )
 
@@ -121,9 +121,9 @@ test_that("Add cluster lables based on Kmeans - no object",{
   res =
     add_clusters_kmeans_bulk(
       ttBulk::counts_mini,
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript,
+      .value = `count`,
+      .element = sample,
+      .feature = transcript,
       number_of_clusters = 2
     )
 
@@ -144,9 +144,9 @@ test_that("Get reduced dimensions MDS - no object",{
   res =
     get_reduced_dimensions_MDS_bulk(
       ttBulk::counts_mini,
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript
+      .value = `count`,
+      .element = sample,
+      .feature = transcript
     )
 
   expect_equal(
@@ -167,9 +167,9 @@ test_that("Add reduced dimensions MDS - no object",{
   res =
     add_reduced_dimensions_MDS_bulk(
       ttBulk::counts_mini,
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript
+      .value = `count`,
+      .element = sample,
+      .feature = transcript
     )
 
   expect_equal(
@@ -190,9 +190,9 @@ test_that("Get reduced dimensions PCA - no object",{
   res =
     get_reduced_dimensions_PCA_bulk(
       ttBulk::counts_mini,
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript
+      .value = `count`,
+      .element = sample,
+      .feature = transcript
     )
 
   expect_equal(
@@ -213,9 +213,9 @@ test_that("Add reduced dimensions PCA - no object",{
   res =
     add_reduced_dimensions_PCA_bulk(
       ttBulk::counts_mini,
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript
+      .value = `count`,
+      .element = sample,
+      .feature = transcript
     )
 
   expect_equal(
@@ -236,9 +236,9 @@ test_that("Get rotated dimensions - no object",{
   res.pca =
     add_reduced_dimensions_PCA_bulk(
       ttBulk::counts_mini,
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript
+      .value = `count`,
+      .element = sample,
+      .feature = transcript
     )
 
   res =
@@ -247,7 +247,7 @@ test_that("Get rotated dimensions - no object",{
       dimension_1_column = PC1,
       dimension_2_column = PC2,
       rotation_degrees = 45,
-      elements_column = sample
+      .element = sample
     )
 
   expect_equal(
@@ -268,9 +268,9 @@ test_that("Add rotated dimensions - no object",{
   res.pca =
     add_reduced_dimensions_PCA_bulk(
       ttBulk::counts_mini,
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript
+      .value = `count`,
+      .element = sample,
+      .feature = transcript
     )
 
   res =
@@ -279,7 +279,7 @@ test_that("Add rotated dimensions - no object",{
       dimension_1_column = PC1,
       dimension_2_column = PC2,
       rotation_degrees = 45,
-      elements_column = sample
+      .element = sample
     )
 
   expect_equal(
@@ -300,9 +300,9 @@ test_that("Aggregate duplicated transcript - no object",{
   res =
     aggregate_duplicated_transcripts_bulk(
       ttBulk::counts_mini,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`
     )
 
   expect_equal(
@@ -322,9 +322,9 @@ test_that("Drop redundant correlated - no object",{
   res =
     drop_redundant_elements_through_correlation(
       ttBulk::counts_mini,
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript
+      .value = `count`,
+      .element = sample,
+      .feature = transcript
     )
 
   expect_equal(
@@ -345,7 +345,7 @@ test_that("Get symbol from ensambl - no object",{
   res =
     get_symbol_from_ensembl(
       ttBulk::counts_ensembl,
-      ensembl_transcript_column = ens
+      .ensembl = ens
     )
 
   expect_equal(
@@ -365,7 +365,7 @@ test_that("Add symbol from ensambl - no object",{
   res =
     add_symbol_from_ensembl(
       ttBulk::counts_ensembl,
-      ensembl_transcript_column = ens
+      .ensembl = ens
     )
 
   expect_equal(
@@ -385,9 +385,9 @@ test_that("Add symbol from ensambl - no object",{
 #   expect_error(
 #     get_cell_type_proportions(
 #       ttBulk::counts_mini,
-#       sample_column = sample,
-#       transcript_column = transcript,
-#       counts_column = `count`,
+#       .sample = sample,
+#       .transcript = transcript,
+#       .abundance = `count`,
 #       cores = 2
 #     ),
 #     "You have less than 50 genes that overlap the Cibersort signature"
@@ -399,9 +399,9 @@ test_that("Add symbol from ensambl - no object",{
 #         ttBulk::counts$sample %in%
 #           unique(ttBulk::counts_mini$sample),
 #         ],
-#       sample_column = sample,
-#       transcript_column = transcript,
-#       counts_column = `count`,
+#       .sample = sample,
+#       .transcript = transcript,
+#       .abundance = `count`,
 #       cores = 2
 #     )
 #
@@ -423,9 +423,9 @@ test_that("Add symbol from ensambl - no object",{
 #   expect_error(
 #     add_cell_type_proportions(
 #       ttBulk::counts_mini,
-#       sample_column = sample,
-#       transcript_column = transcript,
-#       counts_column = `count`,
+#       .sample = sample,
+#       .transcript = transcript,
+#       .abundance = `count`,
 #       cores = 2
 #     ),
 #     "You have less than 50 genes that overlap the Cibersort signature"
@@ -437,9 +437,9 @@ test_that("Add symbol from ensambl - no object",{
 #         ttBulk::counts$sample %in%
 #           unique(ttBulk::counts_mini$sample),
 #         ],
-#       sample_column = sample,
-#       transcript_column = transcript,
-#       counts_column = `count`,
+#       .sample = sample,
+#       .transcript = transcript,
+#       .abundance = `count`,
 #       cores = 2
 #     )
 #

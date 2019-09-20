@@ -4,17 +4,17 @@
 \alias{error_if_duplicated_genes}
 \title{Check whether there are duplicated genes/transcripts}
 \usage{
-error_if_duplicated_genes(input.df, sample_column = sample,
-  transcript_column = transcript, counts_column = `read count`)
+error_if_duplicated_genes(.data, .sample = sample,
+  .transcript = transcript, .abundance = `read count`)
 }
 \arguments{
-\item{input.df}{A tibble of read counts}
+\item{.data}{A tibble of read counts}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{A character name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{A character name of the transcript/gene column}
 
-\item{counts_column}{A character name of the read count column}
+\item{.abundance}{A character name of the read count column}
 }
 \description{
 Check whether there are duplicated genes/transcripts

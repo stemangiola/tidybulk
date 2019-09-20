@@ -2,16 +2,16 @@
 % Please edit documentation in R/utilities.R
 \name{parse_formula}
 \alias{parse_formula}
-\title{Formula parser}
+\title{.formula parser}
 \usage{
 parse_formula(fm)
 }
 \arguments{
-\item{fm}{A formula}
+\item{fm}{a formula}
 }
 \value{
 A character vector
 }
 \description{
-Formula parser
+.formula parser
 }
