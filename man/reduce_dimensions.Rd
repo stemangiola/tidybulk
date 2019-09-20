@@ -2,38 +2,69 @@
 % Please edit documentation in R/methods.R
 \name{reduce_dimensions}
 \alias{reduce_dimensions}
-\title{Find reduced dimensions}
+\title{Dimension reduction of the transcript abundance data}
 \usage{
-reduce_dimensions(input.df, value_column, method, components = 1:2,
-  elements_column = NULL, feature_column = NULL, of_samples = T,
+reduce_dimensions(.data, .value, method, components = 1:2,
+  .element = NULL, .feature = NULL, of_samples = T,
   log_transform = T, scale = T, action = "add", ...)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{value_column}{A character string. The column that contains the numeric value (i.e., normally counts)}
+\item{.value}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
 
-\item{method}{A character string}
+\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
 
 \item{components}{A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))}
 
-\item{elements_column}{A character string. The column that is used to calculate distance (i.e., normally samples)}
+\item{.element}{The name of the element column (normally samples).}
 
-\item{feature_column}{A character string. The column that is represents entities to cluster (i.e., normally genes)}
+\item{.feature}{The name of the feature column (normally transcripts/genes)}
 
-\item{of_samples}{if the input is tt object, this will indicate whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
-\item{scale}{A boolean for method="PCA"}
+\item{scale}{A boolean for method="PCA", this will be passed to the `prcomp` function. It is not included in the ... argument because although the default for `prcomp` if FALSE, it is advisable to set it as TRUE.}
 
-\item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).#'}
+\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function prcomp if you choose method="PCA"}
 }
 \value{
-A tibble with additional columns
+A tbl object with additional columns for the reduced dimensions
 }
 \description{
-Find reduced dimensions
+reduce_dimensions() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
+}
+\details{
+This function reduces the dimensions of the transcript abundances.
+It can use multi-dimensional scaling (MDS) of principal component analysis (PCA).
+}
+\examples{
+\donttest{
+
+
+library(GGally)
+
+counts.MDS =
+    counts \%>\%
+    reduce_dimensions(sample, transcript, count, method="MDS", components = 1:3)
+
+counts.MDS \%>\%
+    select(contains("Dim"), sample, `Cell type`) \%>\%
+    distinct() \%>\%
+    GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
+
+counts.PCA =
+    counts.norm \%>\%
+    reduce_dimensions(sample, transcript, count, method="PCA", components = 1:3)
+
+counts.PCA \%>\%
+   select(contains("PC"), sample, `Cell type`) \%>\%
+   distinct() \%>\%
+   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
+
+}
+
 }

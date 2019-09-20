@@ -4,12 +4,12 @@
 \alias{get_elements}
 \title{Get column names either from user or from attributes}
 \usage{
-get_elements(input.df, elements_column)
+get_elements(.data, .element)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
-\item{elements_column}{A character name of the sample column}
+\item{.element}{A character name of the sample column}
 }
 \value{
 A list of column enquo or error

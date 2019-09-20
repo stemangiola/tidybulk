@@ -4,17 +4,16 @@
 \alias{get_sample_transcript_counts}
 \title{Get column names either from user or from attributes}
 \usage{
-get_sample_transcript_counts(input.df, sample_column, transcript_column,
-  counts_column)
+get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{A character name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{A character name of the transcript/gene column}
 
-\item{counts_column}{A character name of the read count column}
+\item{.abundance}{A character name of the read count column}
 }
 \value{
 A list of column enquo or error

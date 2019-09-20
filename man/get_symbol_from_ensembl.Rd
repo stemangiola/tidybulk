@@ -36,12 +36,12 @@ get_ensembl_symbol_mapping <- function() {
 }
 Get transcript column from ensembl gene id}
 \usage{
-get_symbol_from_ensembl(input.df, ensembl_transcript_column)
+get_symbol_from_ensembl(.data, .ensembl)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
-\item{ensembl_transcript_column}{A column symbol. The column that is represents ensembl gene id}
+\item{.ensembl}{A column symbol. The column that is represents ensembl gene id}
 }
 \value{
 A tibble with added annotation

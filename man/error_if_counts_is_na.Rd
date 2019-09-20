@@ -4,12 +4,12 @@
 \alias{error_if_counts_is_na}
 \title{Check whether there are NA counts}
 \usage{
-error_if_counts_is_na(input.df, counts_column)
+error_if_counts_is_na(.data, .abundance)
 }
 \arguments{
-\item{input.df}{A tibble of read counts}
+\item{.data}{A tibble of read counts}
 
-\item{counts_column}{A character name of the read count column}
+\item{.abundance}{A character name of the read count column}
 }
 \description{
 Check whether there are NA counts

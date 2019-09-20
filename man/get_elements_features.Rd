@@ -4,15 +4,14 @@
 \alias{get_elements_features}
 \title{Get column names either from user or from attributes}
 \usage{
-get_elements_features(input.df, elements_column, feature_column,
-  of_samples)
+get_elements_features(.data, .element, .feature, of_samples)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
-\item{elements_column}{A character name of the sample column}
+\item{.element}{A character name of the sample column}
 
-\item{feature_column}{A character name of the gene/transcript name column}
+\item{.feature}{A character name of the transcript/gene column}
 
 \item{of_samples}{A boolean}
 }

@@ -9,9 +9,9 @@ test_that("Creating tt object from tibble, number of parameters, methods",{
       attr(
         create_ttBulk(
           ttBulk::counts_mini,
-          sample_column = sample,
-          transcript_column = transcript,
-          counts_column = `count`
+          .sample = sample,
+          .transcript = transcript,
+          .abundance = `count`
         ) ,
         "parameters"
       )
@@ -27,9 +27,9 @@ test_that("Test class identity of tt object",{
     class(
       create_ttBulk(
         ttBulk::counts_mini,
-        sample_column = sample,
-        transcript_column = transcript,
-        counts_column = `count`
+        .sample = sample,
+        .transcript = transcript,
+        .abundance = `count`
       )
     )[1],
     "ttBulk"
@@ -42,9 +42,9 @@ test_that("Getting normalised counts - no object",{
   res =
     normalise_counts(
       ttBulk::counts_mini,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`,
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`,
       action = "get"
     )
 
@@ -67,9 +67,9 @@ test_that("Adding normalised counts - no object",{
   res =
     normalise_counts(
       ttBulk::counts_mini,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`,
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`,
       action = "add"
     )
 
@@ -89,12 +89,12 @@ test_that("Adding normalised counts - no object",{
 test_that("Get differential trancript abundance - no object",{
 
   res =
-    annotate_differential_transcription(
+    test_differential_transcription(
       ttBulk::counts_mini,
       ~ condition,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`,
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`,
       action="get"
     )
 
@@ -114,12 +114,12 @@ test_that("Get differential trancript abundance - no object",{
 test_that("Add differential trancript abundance - no object",{
 
   res =
-    annotate_differential_transcription(
+    test_differential_transcription(
       ttBulk::counts_mini,
       ~ condition,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`,
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`,
       action="add"
     )
 
@@ -143,12 +143,12 @@ test_that("Get adjusted counts - no object",{
   cm$batch[cm$sample %in% c("SRR1740035", "SRR1740043")] = 1
 
   res =
-    adjust_counts(
+    adjust_abundance(
       cm,
       ~ condition + batch,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`,
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`,
       action="get"
     )
 
@@ -171,9 +171,9 @@ test_that("Get cluster lables based on Kmeans - no object",{
   res =
     annotate_clusters(
       ttBulk::counts_mini,
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript,
+      .value = `count`,
+      .element = sample,
+      .feature = transcript,
       number_of_clusters = 2,
       action="get"
     )
@@ -195,9 +195,9 @@ test_that("Add cluster lables based on Kmeans - no object",{
   res =
     annotate_clusters(
       ttBulk::counts_mini,
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript,
+      .value = `count`,
+      .element = sample,
+      .feature = transcript,
       number_of_clusters = 2,
       action="add"
     )
@@ -220,9 +220,9 @@ test_that("Get reduced dimensions MDS - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method = "MDS",
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript,
+      .value = `count`,
+      .element = sample,
+      .feature = transcript,
       action="get"
     )
 
@@ -245,9 +245,9 @@ test_that("Add reduced dimensions MDS - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method = "MDS",
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript,
+      .value = `count`,
+      .element = sample,
+      .feature = transcript,
       action="add"
     )
 
@@ -270,9 +270,9 @@ test_that("Get reduced dimensions PCA - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method="PCA",
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript,
+      .value = `count`,
+      .element = sample,
+      .feature = transcript,
       action="get"
     )
 
@@ -295,9 +295,9 @@ test_that("Add reduced dimensions PCA - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method="PCA",
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript,
+      .value = `count`,
+      .element = sample,
+      .feature = transcript,
       action="add"
     )
 
@@ -320,9 +320,9 @@ test_that("Get rotated dimensions - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method="PCA",
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript,
+      .value = `count`,
+      .element = sample,
+      .feature = transcript,
       action="add"
     )
 
@@ -332,7 +332,7 @@ test_that("Get rotated dimensions - no object",{
       dimension_1_column = PC1,
       dimension_2_column = PC2,
       rotation_degrees = 45,
-      elements_column = sample,
+      .element = sample,
       action="get"
     )
 
@@ -355,9 +355,9 @@ test_that("Add rotated dimensions - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method="PCA",
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript,
+      .value = `count`,
+      .element = sample,
+      .feature = transcript,
       action="add"
     )
 
@@ -367,7 +367,7 @@ test_that("Add rotated dimensions - no object",{
       dimension_1_column = PC1,
       dimension_2_column = PC2,
       rotation_degrees = 45,
-      elements_column = sample,
+      .element = sample,
       action="add"
     )
 
@@ -389,9 +389,9 @@ test_that("Aggregate duplicated transcript - no object",{
   res =
     aggregate_duplicates(
       ttBulk::counts_mini,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`
     )
 
   expect_equal(
@@ -412,9 +412,9 @@ test_that("Drop redundant correlated - no object",{
     drop_redundant(
       ttBulk::counts_mini,
       method = "correlation",
-      value_column = `count`,
-      elements_column = sample,
-      feature_column = transcript
+      .value = `count`,
+      .element = sample,
+      .feature = transcript
     )
 
   expect_equal(
@@ -435,7 +435,7 @@ test_that("Get symbol from ensambl - no object",{
   res =
     annotate_symbol(
       ttBulk::counts_ensembl,
-      ensembl_transcript_column = ens,
+      .ensembl = ens,
       action="get"
     )
 
@@ -456,7 +456,7 @@ test_that("Add symbol from ensambl - no object",{
   res =
     annotate_symbol(
       ttBulk::counts_ensembl,
-      ensembl_transcript_column = ens,
+      .ensembl = ens,
       action="add"
     )
 
@@ -477,16 +477,16 @@ test_that("Get cell type proportions - no object",{
   res =
     annotate_cell_type(
       ttBulk::counts_mini,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`,
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`,
       action="get", cores=2
     )
 
   expect_equal(
     as.numeric(res[1,2:5]),
     c(0.6223514, 0.2378625, 0.0000000 ,0.0000000),
-    tolerance=1e-6
+    tolerance=1e-3
   )
 
   expect_equal(
@@ -501,16 +501,16 @@ test_that("Add cell type proportions - no object",{
   res =
     annotate_cell_type(
       ttBulk::counts_mini,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`,
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`,
       action="add", cores=2
     )
 
   expect_equal(
     as.numeric(res[1,7:10]),
     c(0.6223514, 0.2378625, 0.0000000 ,0.0000000),
-    tolerance=1e-6
+    tolerance=1e-3
   )
 
   expect_equal(

@@ -4,12 +4,12 @@
 \alias{add_normalised_counts_bulk.calcNormFactor}
 \title{Calculate the norm factor with calcNormFactor from limma}
 \usage{
-add_normalised_counts_bulk.calcNormFactor(input.df, reference = NULL,
-  cpm_threshold = 0.5, prop = 3/4, sample_column = sample,
-  transcript_column = transcript, counts_column = count, method)
+add_normalised_counts_bulk.calcNormFactor(.data, reference = NULL,
+  cpm_threshold = 0.5, prop = 3/4, .sample = sample,
+  .transcript = transcript, .abundance = count, method)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
 \item{reference}{A reference matrix, not sure if used anymore}
 
@@ -17,11 +17,11 @@ add_normalised_counts_bulk.calcNormFactor(input.df, reference = NULL,
 
 \item{prop}{A number between 0 and 1}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{The name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{The name of the transcript/gene column}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{method}{A string character}
 }

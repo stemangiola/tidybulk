@@ -2,35 +2,54 @@
 % Please edit documentation in R/methods.R
 \name{normalise_counts}
 \alias{normalise_counts}
-\title{Get a tibble with normalised counts using TMM}
+\title{Normalise the counts of transcripts/genes}
 \usage{
-normalise_counts(input.df, sample_column = NULL,
-  transcript_column = NULL, counts_column = NULL,
-  cpm_threshold = 0.5, prop = 3/4, method = "TMM",
-  reference_selection_function = median, action = "add")
+normalise_counts(.data, .sample = NULL, .transcript = NULL,
+  .abundance = NULL, cpm_threshold = 0.5, prop = 3/4,
+  method = "TMM", reference_selection_function = median,
+  action = "add")
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{The name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{The name of the transcript/gene column}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{cpm_threshold}{A real positive number}
+\item{cpm_threshold}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure. The normalisation inference is then applied back to all unfiltered data.}
 
-\item{prop}{A number between 0 and 1}
+\item{prop}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.}
 
-\item{method}{A character string}
+\item{method}{A character string. The methods used by the function. The method is passed to the function `calcNormFactors` from edgeR package.}
 
-\item{reference_selection_function}{A fucntion median, or max for the fererence sample}
+\item{reference_selection_function}{A fucntion that is used to selecting the reference sample for normalisation. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.}
 
-\item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).}
+\item{action}{A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.}
 }
 \value{
-A tibble including additional columns
+A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
 }
 \description{
-Get a tibble with normalised counts using TMM
+normalise_counts() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and normalises the data for the library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+}
+\details{
+normalises the data for the library size
+(e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+Lowly transcribed transcripts/genes (defined with cpm_threshold and prop parameters)
+are filtered out from the normalisation procedure.
+The normalisation inference is then applied back to all unfiltered data.
+}
+\examples{
+\donttest{
+
+
+
+counts \%>\%
+    normalise_counts(sample, transcript, `count`)
+
+
+}
+
 }

@@ -4,17 +4,16 @@
 \alias{create_tt_from_tibble_bulk}
 \title{Create tt object from tibble}
 \usage{
-create_tt_from_tibble_bulk(input.df, sample_column, transcript_column,
-  counts_column)
+create_tt_from_tibble_bulk(.data, .sample, .transcript, .abundance)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{The name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{The name of the transcript/gene column}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{The name of the transcript/gene abundance column}
 }
 \value{
 A tibble with an additional column

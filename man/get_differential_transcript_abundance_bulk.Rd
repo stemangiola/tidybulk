@@ -4,20 +4,20 @@
 \alias{get_differential_transcript_abundance_bulk}
 \title{Get differential transcription information to a tibble using edgeR. At the moment only one covariate is accepted}
 \usage{
-get_differential_transcript_abundance_bulk(input.df, formula,
-  sample_column = NULL, transcript_column = NULL,
-  counts_column = NULL, significance_threshold = 0.05)
+get_differential_transcript_abundance_bulk(.data, .formula,
+  .sample = NULL, .transcript = NULL, .abundance = NULL,
+  significance_threshold = 0.05)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
-\item{formula}{a formula with no response variable, referring only to numeric variables}
+\item{.formula}{a formula with no response variable, referring only to numeric variables}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{The name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{The name of the transcript/gene column}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{significance_threshold}{A real between 0 and 1}
 }
