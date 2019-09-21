@@ -238,7 +238,7 @@ counts.norm.adj =
 	  left_join(
 	  	(.) %>%
 	  		distinct(sample) %>%
-	  		mutate(batch = sample(0:1, n(), replace = T))
+	  		mutate(batch = c(0,1,0,1,1))
 	  ) %>%
 	 	mutate(factor_of_interest = `Cell type` == "b_cell") %>%
 
