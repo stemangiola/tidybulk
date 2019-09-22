@@ -1629,7 +1629,7 @@ get_symbol_from_ensembl <-
 				ensembl_symbol_mapping %>%
 					distinct(ensembl_gene_id, hgnc_symbol, hg) %>%
 					rename(!!.ensembl := ensembl_gene_id),
-				by = "ens"
+				by = quo_name(.ensembl)
 			)
 
 	}
