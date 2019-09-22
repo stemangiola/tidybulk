@@ -4,20 +4,20 @@
 \alias{get_reduced_dimensions_PCA_bulk}
 \title{Get principal component information to a tibble using PCA}
 \usage{
-get_reduced_dimensions_PCA_bulk(input.df, value_column, components = 1:2,
-  elements_column = NULL, feature_column = NULL, of_samples = T,
+get_reduced_dimensions_PCA_bulk(.data, .value, components = 1:2,
+  .element = NULL, .feature = NULL, of_samples = T,
   log_transform = T, scale = T, ...)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
-\item{value_column}{A column symbol with the value the clustering is based on (e.g., `count`)}
+\item{.value}{A column symbol with the value the clustering is based on (e.g., `count`)}
 
 \item{components}{A integer vector corresponding to principal components of interest (e.g., 1:6)}
 
-\item{elements_column}{A column symbol. The column that is used to calculate distance (i.e., normally samples)}
+\item{.element}{A column symbol. The column that is used to calculate distance (i.e., normally samples)}
 
-\item{feature_column}{A column symbol. The column that is represents entities to cluster (i.e., normally genes)}
+\item{.feature}{A column symbol. The column that is represents entities to cluster (i.e., normally genes)}
 
 \item{of_samples}{A boolean}
 

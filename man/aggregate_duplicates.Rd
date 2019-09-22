@@ -2,30 +2,51 @@
 % Please edit documentation in R/methods.R
 \name{aggregate_duplicates}
 \alias{aggregate_duplicates}
-\title{Aggregates multiple counts from the same samples (e.g., from isoforms)
-This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns}
+\title{Aggregates multiple counts from the same samples (e.g., from isoforms), concatenates other character columns, and averages other numeric columns}
 \usage{
-aggregate_duplicates(input.df, aggregation_function = sum,
-  sample_column = NULL, transcript_column = NULL,
-  counts_column = NULL, keep_integer = T)
+aggregate_duplicates(.data, aggregation_function = sum, .sample = NULL,
+  .transcript = NULL, .abundance = NULL, keep_integer = T)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{aggregation_function}{A function for counts aggregation (e.g., sum)}
+\item{aggregation_function}{A function for counts aggregation (e.g., sum,  median, or mean)}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{The name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{The name of the transcript/gene column}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{keep_integer}{A boolean. Whether to force the aggregate counts to integer}
+\item{keep_integer}{A boolean. Whether to force the aggregated counts to integer}
 }
 \value{
-A tibble with aggregated genes and annotation
+A `tbl` object with aggregated transcript abundance and annotation
 }
 \description{
-Aggregates multiple counts from the same samples (e.g., from isoforms)
-This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns
+aggregate_duplicates() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.
+}
+\details{
+This function aggregates duplicated transcripts (e.g., isoforms, ensembl).
+For example, we often have to convert ensembl symbols to gene/transcript symbol,
+ but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble
+ and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and
+ returns a tibble with aggregate transcript with the same name. All the rest of the column
+ are appended, and factors and boolean are appended as characters.
+}
+\examples{
+\donttest{
+
+
+
+counts \%>\%
+    aggregate_duplicates(
+    sample,
+    transcript,
+    `count`,
+    aggregation_function = sum
+    )
+
+}
+
 }

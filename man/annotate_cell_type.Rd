@@ -2,28 +2,41 @@
 % Please edit documentation in R/methods.R
 \name{annotate_cell_type}
 \alias{annotate_cell_type}
-\title{Get cell type proportions from cibersort}
+\title{Get cell type proportions from samples}
 \usage{
-annotate_cell_type(input.df, sample_column = NULL,
-  transcript_column = NULL, counts_column = NULL, action = "add",
-  ...)
+annotate_cell_type(.data, .sample = NULL, .transcript = NULL,
+  .abundance = NULL, action = "add", ...)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{The name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{The name of the transcript/gene column}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).}
+\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function Cibersort}
 }
 \value{
-A tibble including additional columns
+A `tbl` object including additional columns for each cell type estimated
 }
 \description{
-Get cell type proportions from cibersort
+annotate_cell_type() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
+}
+\details{
+This function infers the cell type composition of our samples (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).
+}
+\examples{
+\donttest{
+
+
+
+	counts \%>\%
+	    annotate_cell_type(sample, transcript, `count`)
+
+}
+
 }

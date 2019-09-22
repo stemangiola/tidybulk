@@ -2,22 +2,42 @@
 % Please edit documentation in R/methods.R
 \name{create_ttBulk}
 \alias{create_ttBulk}
-\title{Create tt object from tibble}
+\title{Creates a `tt` object from a `tbl``}
 \usage{
-create_ttBulk(input.df, sample_column, transcript_column, counts_column)
+create_ttBulk(.data, .sample, .transcript, .abundance)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{The name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{The name of the transcript/gene column}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{The name of the transcript/gene abundance column}
 }
 \value{
-A tibble with an additional column
+A `ttBulk` object
 }
 \description{
-Create tt object from tibble
+create_tt() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+}
+\details{
+This function created a ttBulk object and is useful if you want
+to avoid to specify .sample, .transcript and .abundance arguments all the times.
+The ttBulk object have an attribute called parameters where these three
+arguments are stored as metadata. They can be extracted as attr(<object>, "parameters").
+}
+\examples{
+\donttest{
+
+
+
+my_tt =
+    ttBulk::counts \%>\%
+    create_ttBulk(sample, transcript, counts)
+
+class(my_tt)
+
+}
+
 }

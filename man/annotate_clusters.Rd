@@ -4,34 +4,50 @@
 \alias{annotate_clusters}
 \title{Get clusters of elements (e.g., samples or transcripts)}
 \usage{
-annotate_clusters(input.df, value_column, number_of_clusters,
-  elements_column = NULL, feature_column = NULL, method = "kmeans",
-  of_samples = T, log_transform = T, action = "add", ...)
+annotate_clusters(.data, .element = NULL, .feature = NULL, .value,
+  number_of_clusters, method = "kmeans", of_samples = T,
+  log_transform = T, action = "add", ...)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{value_column}{A character string. The column that contains the numeric value (i.e., normally counts)}
+\item{.element}{The name of the element column (normally samples).}
 
-\item{number_of_clusters}{A integer indicating how many clusters we are seeking}
+\item{.feature}{The name of the feature column (normally transcripts/genes)}
 
-\item{elements_column}{A character string. The column that is used to calculate distance (i.e., normally genes)}
+\item{.value}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
 
-\item{feature_column}{A character string. The column that is represents entities to cluster (i.e., normally samples)}
+\item{number_of_clusters}{A integer indicating how many clusters you are seeking for the method k-means.}
 
-\item{method}{A character string}
+\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
 
-\item{of_samples}{if the input is tt object, this will indicate whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
-\item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).}
+\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function kmeans}
 }
 \value{
-A tibble with additional columns
+A tbl object with additional columns with cluster labels
 }
 \description{
-Get clusters of elements (e.g., samples or transcripts)
+annotate_clusters() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and identify clusters in the data.
+}
+\details{
+identifies clusters in the data, normally of samples.
+This function returns a tibble with additional columns for the cluster annotation.
+At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
+}
+\examples{
+\donttest{
+
+
+
+counts \%>\%
+    annotate_clusters(sample, transcript, count,	number_of_clusters = 2)
+
+    }
+
 }

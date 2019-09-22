@@ -2,15 +2,15 @@
 % Please edit documentation in R/methods.R
 \name{rotate_dimensions}
 \alias{rotate_dimensions}
-\title{Calculate the rotated dimensions, of an arbitrary angle}
+\title{Rotate two dimensions (e.g., principal components) of an arbitrary angle}
 \usage{
-rotate_dimensions(input.df, dimension_1_column, dimension_2_column,
-  rotation_degrees, elements_column = NULL, of_samples = T,
+rotate_dimensions(.data, dimension_1_column, dimension_2_column,
+  rotation_degrees, .element = NULL, of_samples = T,
   dimension_1_column_rotated = NULL, dimension_2_column_rotated = NULL,
   action = "add")
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
 \item{dimension_1_column}{A character string. The column of the dimension 1}
 
@@ -18,19 +18,38 @@ rotate_dimensions(input.df, dimension_1_column, dimension_2_column,
 
 \item{rotation_degrees}{A real number between 0 and 360}
 
-\item{elements_column}{A character string. The column that is used to calculate distance (i.e., normally genes)}
+\item{.element}{The name of the element column (normally samples).}
 
-\item{of_samples}{if the input is tt object, this will indicate whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
 
-\item{dimension_1_column_rotated}{A character string. The column of the rotated dimension 1}
+\item{dimension_1_column_rotated}{A character string. The column of the rotated dimension 1 (optional)}
 
-\item{dimension_2_column_rotated}{A character string. The column of the rotated dimension 2}
+\item{dimension_2_column_rotated}{A character string. The column of the rotated dimension 2 (optional)}
 
-\item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).}
+\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
 \value{
-A tibble with additional rotated columns
+A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 }
 \description{
-Calculate the rotated dimensions, of an arbitrary angle
+rotate_dimensions() takes as imput a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
+}
+\details{
+This function to rotate two dimensions such as the reduced dimensions.
+}
+\examples{
+\donttest{
+
+
+
+counts.MDS.rotated =
+    counts.MDS \%>\%
+    rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45, .element = sample)
+
+counts.MDS.rotated \%>\%
+    distinct(sample, `Dim 1`,`Dim 2`, `Cell type`) \%>\%
+    ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type` )) +
+    geom_point()
+}
+
 }

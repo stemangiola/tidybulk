@@ -4,18 +4,17 @@
 \alias{add_normalised_counts_bulk.get_cpm}
 \title{Get count per million for TMM normalisation.}
 \usage{
-add_normalised_counts_bulk.get_cpm(input.df, sample_column = sample,
-  transcript_column = transcript, counts_column = count,
-  cpm_threshold = 0.5)
+add_normalised_counts_bulk.get_cpm(.data, .sample = sample,
+  .transcript = transcript, .abundance = count, cpm_threshold = 0.5)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{The name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{The name of the transcript/gene column}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{cpm_threshold}{A real positive number}
 }

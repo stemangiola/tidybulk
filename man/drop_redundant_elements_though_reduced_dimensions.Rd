@@ -4,17 +4,17 @@
 \alias{drop_redundant_elements_though_reduced_dimensions}
 \title{Identifies the closest pairs in a MDS contaxt and return one of them}
 \usage{
-drop_redundant_elements_though_reduced_dimensions(input.df, Dim_a_column,
-  Dim_b_column, elements_column = NULL, of_samples = T)
+drop_redundant_elements_though_reduced_dimensions(.data, Dim_a_column,
+  Dim_b_column, .element = NULL, of_samples = T)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
 \item{Dim_a_column}{A column symbol. The column of one principal component}
 
 \item{Dim_b_column}{A column symbol. The column of another principal component}
 
-\item{elements_column}{A column symbol. The column that is represents entities to cluster (i.e., normally samples)}
+\item{.element}{A column symbol. The column that is represents entities to cluster (i.e., normally samples)}
 
 \item{of_samples}{A boolean}
 }

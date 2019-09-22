@@ -74,7 +74,7 @@ counts.norm %>%
 ## ----mds, cache=TRUE-----------------------------------------------------
 counts.norm.MDS =
   counts.norm %>%
-  reduce_dimensions(value_column = `count normalised`, method="MDS" , elements_column = sample, feature_column = transcript, components = 1:3)
+  reduce_dimensions(.value = `count normalised`, method="MDS" , .element = sample, .feature = transcript, components = 1:3)
 
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 
@@ -89,7 +89,7 @@ counts.norm.MDS %>%
 ## ----pca, cache=TRUE-----------------------------------------------------
 counts.norm.PCA =
   counts.norm %>%
-  reduce_dimensions(value_column = `count normalised`, method="PCA" , elements_column = sample, feature_column = transcript, components = 1:3)
+  reduce_dimensions(.value = `count normalised`, method="PCA" , .element = sample, .feature = transcript, components = 1:3)
 
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 
@@ -102,7 +102,7 @@ counts.norm.PCA %>%
 ## ----rotate, cache=TRUE--------------------------------------------------
 counts.norm.MDS.rotated =
   counts.norm.MDS %>%
-	rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45, elements_column = sample)
+	rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45, .element = sample)
 
 ## ----plot_rotate_1, cache=TRUE-------------------------------------------
 counts.norm.MDS.rotated %>%
@@ -120,11 +120,11 @@ counts.norm.MDS.rotated %>%
 
 ## ----de, cache=TRUE------------------------------------------------------
 counts %>%
-	annotate_differential_transcription(
+	test_differential_transcription(
       ~ condition,
-      sample_column = sample,
-      transcript_column = transcript,
-      counts_column = `count`,
+      .sample = sample,
+      .transcript = transcript,
+      .abundance = `count`,
       action="get")
 
 ## ----adjust, cache=TRUE--------------------------------------------------
@@ -135,12 +135,12 @@ counts.norm.adj =
 	  left_join(
 	  	(.) %>%
 	  		distinct(sample) %>%
-	  		mutate(batch = sample(0:1, n(), replace = T))
+	  		mutate(batch = c(0,1,0,1,1))
 	  ) %>%
 	 	mutate(factor_of_interest = `Cell type` == "b_cell") %>%
 
 	  # Add covariate
-	  adjust_counts(
+	  adjust_abundance(
 	  	~ factor_of_interest + batch,
 	  	sample,
 	  	transcript,
@@ -170,16 +170,16 @@ counts.cibersort %>%
 
 ## ----cluster, cache=TRUE-------------------------------------------------
 counts.norm.cluster = counts.norm %>%
-  annotate_clusters(value_column = `count normalised`, elements_column = sample, feature_column = transcript,	number_of_clusters = 2 )
+  annotate_clusters(.value = `count normalised`, .element = sample, .feature = transcript,	number_of_clusters = 2 )
 
 counts.norm.cluster
 
 ## ----plot_cluster, cache=TRUE--------------------------------------------
  counts.norm.MDS %>%
   annotate_clusters(
-  	value_column = `count normalised`,
-  	elements_column = sample,
-  	feature_column = transcript,
+  	.value = `count normalised`,
+  	.element = sample,
+  	.feature = transcript,
   	number_of_clusters = 2
   ) %>%
 	distinct(sample, `Dim 1`, `Dim 2`, cluster) %>%
@@ -192,9 +192,9 @@ counts.norm.non_redundant =
 	counts.norm.MDS %>%
   drop_redundant(
   	method = "correlation",
-  	elements_column = sample,
-  	feature_column = transcript,
-  	value_column = `count normalised`
+  	.element = sample,
+  	.feature = transcript,
+  	.value = `count normalised`
   )
 
 ## ----plot_drop, cache=TRUE-----------------------------------------------
@@ -210,8 +210,8 @@ counts.norm.non_redundant =
 	counts.norm.MDS %>%
   drop_redundant(
   	method = "reduced_dimensions",
-  	elements_column = sample,
-  	feature_column = transcript,
+  	.element = sample,
+  	.feature = transcript,
   	Dim_a_column = `Dim 1`,
   	Dim_b_column = `Dim 2`
   )
@@ -243,10 +243,10 @@ counts_ensembl %>% annotate_symbol(ens)
 ## ---- cache=TRUE---------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	value_column = `count normalised`, 
+    	.value = `count normalised`, 
     	method="MDS" , 
-    	elements_column = sample, 
-    	feature_column = transcript, 
+    	.element = sample, 
+    	.feature = transcript, 
     	components = 1:3, 
     	action="add"
     )
@@ -254,10 +254,10 @@ counts_ensembl %>% annotate_symbol(ens)
 ## ---- cache=TRUE---------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	value_column = `count normalised`, 
+    	.value = `count normalised`, 
     	method="MDS" , 
-    	elements_column = sample, 
-    	feature_column = transcript, 
+    	.element = sample, 
+    	.feature = transcript, 
     	components = 1:3, 
     	action="get"
     )
