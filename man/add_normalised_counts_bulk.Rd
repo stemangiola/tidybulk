@@ -4,19 +4,18 @@
 \alias{add_normalised_counts_bulk}
 \title{Add a tibble with normalised counts using TMM}
 \usage{
-add_normalised_counts_bulk(input.df, sample_column = NULL,
-  transcript_column = NULL, counts_column = NULL,
-  cpm_threshold = 0.5, prop = 3/4, method = "TMM",
-  reference_selection_function = median)
+add_normalised_counts_bulk(.data, .sample = NULL, .transcript = NULL,
+  .abundance = NULL, cpm_threshold = 0.5, prop = 3/4,
+  method = "TMM", reference_selection_function = median)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A tibble}
 
-\item{sample_column}{A character name of the sample column}
+\item{.sample}{The name of the sample column}
 
-\item{transcript_column}{A character name of the gene/transcript name column}
+\item{.transcript}{The name of the transcript/gene column}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{cpm_threshold}{A real positive number}
 

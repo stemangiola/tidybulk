@@ -2,20 +2,33 @@
 % Please edit documentation in R/methods.R
 \name{annotate_symbol}
 \alias{annotate_symbol}
-\title{Add transcript column from ensembl gene id}
+\title{Add transcript symbol column from ensembl id}
 \usage{
-annotate_symbol(input.df, ensembl_transcript_column, action = "add")
+annotate_symbol(.data, .ensembl, action = "add")
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> |}
 
-\item{ensembl_transcript_column}{A character string. The column that is represents ensembl gene id}
+\item{.ensembl}{A character string. The column that is represents ensembl gene id}
 
-\item{action}{A character string. Whether to join the new information to the input tibble (add), or just get the non-redundant tibble with the new information (get).}
+\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
 \value{
-A tibble with added annotation
+A `tbl` object including additional columns for transcript symbol
 }
 \description{
-Add transcript column from ensembl gene id
+annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
+}
+\details{
+This is useful since different resources use ensembl IDs while others use gene symbol IDs.
+}
+\examples{
+\donttest{
+
+
+
+	counts_ensembl \%>\% annotate_symbol(ens)
+
+}
+
 }

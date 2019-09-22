@@ -4,12 +4,12 @@
 \alias{error_if_log_transformed}
 \title{Check whether a numeric vector has been log transformed}
 \usage{
-error_if_log_transformed(x, counts_column)
+error_if_log_transformed(x, .abundance)
 }
 \arguments{
 \item{x}{A numeric vector}
 
-\item{counts_column}{A character name of the count column}
+\item{.abundance}{A character name of the transcript/gene abundance column}
 }
 \description{
 Check whether a numeric vector has been log transformed

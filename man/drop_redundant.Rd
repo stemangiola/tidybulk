@@ -2,37 +2,62 @@
 % Please edit documentation in R/methods.R
 \name{drop_redundant}
 \alias{drop_redundant}
-\title{Drop redundant elements (e.g., samples) for which feature (e.g., genes) aboundances are correlated}
+\title{Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) aboundances are correlated}
 \usage{
-drop_redundant(input.df, method, elements_column = NULL,
-  of_samples = T, value_column, feature_column = NULL,
-  correlation_threshold = 0.9, log_transform = F, Dim_a_column,
-  Dim_b_column)
+drop_redundant(.data, method, .element = NULL, of_samples = T, .value,
+  .feature = NULL, correlation_threshold = 0.9, log_transform = F,
+  Dim_a_column, Dim_b_column)
 }
 \arguments{
-\item{input.df}{A tibble}
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{method}{A string character. Method used for calculating the redundancy (e.g., correlation, reduced_dimensions proximity)}
+\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
 
-\item{elements_column}{A character string. The column that is used to calculate distance (i.e., normally samples)}
+\item{.element}{The name of the element column (normally samples).}
 
-\item{of_samples}{if the input is tt object, this will indicate whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
 
-\item{value_column}{A character string. For correlation based calculation. The column that contains the numeric value (i.e., normally counts)}
+\item{.value}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
 
-\item{feature_column}{A character string. For correlation based calculation. The column that is represents entities to cluster (i.e., normally genes)}
+\item{.feature}{The name of the feature column (normally transcripts/genes)}
 
 \item{correlation_threshold}{A real number between 0 and 1. For correlation based calculation.}
 
-\item{log_transform}{A boolean. For correlation based calculation. Whether the value should be log-transformed (e.g., TRUE for RNA sequencing data).}
+\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
 \item{Dim_a_column}{A character string. For reduced_dimension based calculation. The column of one principal component}
 
 \item{Dim_b_column}{A character string. For reduced_dimension based calculation. The column of another principal component}
 }
 \value{
-A tibble with redundant elemens removed
+A tbl object with with dropped recundant elements (e.g., samples).
 }
 \description{
-Drop redundant elements (e.g., samples) for which feature (e.g., genes) aboundances are correlated
+drop_redundant() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., samples).
+}
+\details{
+This function removes redundant elements from the original data set (e.g., samples or transcripts). For example, if we want to define cell-type specific signatures with low sample redundancy. This function returns a tibble with dropped recundant elements (e.g., samples). Two redundancy estimation approaches are supported: (i) removal of highly correlated clusters of elements (keeping a representative) with method="correlation"; (ii) removal of most proximal element pairs in a reduced dimensional space.
+}
+\examples{
+\donttest{
+
+
+
+counts \%>\%
+    drop_redundant(
+	   .element = sample,
+	   .feature = transcript,
+	   	.value =  count,
+	   	method = "correlation"
+	   	)
+
+counts \%>\%
+    drop_redundant(
+	   .element = sample,
+	   .feature = transcript,
+	   	.value = count,
+	   	method = "reduced_dimensions"
+	   	)
+}
+
 }
