@@ -40,7 +40,7 @@ test_that("Test class identity of tt object",{
 test_that("Getting normalised counts - no object",{
 
   res =
-    normalise_counts(
+    normalise_abundance(
       ttBulk::counts_mini,
       .sample = sample,
       .transcript = transcript,
@@ -65,7 +65,7 @@ test_that("Getting normalised counts - no object",{
 test_that("Adding normalised counts - no object",{
 
   res =
-    normalise_counts(
+    normalise_abundance(
       ttBulk::counts_mini,
       .sample = sample,
       .transcript = transcript,

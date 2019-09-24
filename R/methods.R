@@ -65,13 +65,13 @@ create_ttBulk.tbl_df <- function(.data,
 
 #' Normalise the counts of transcripts/genes
 #'
-#' @description normalise_counts() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and normalises the data for the library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+#' @description normalise_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and normalises the data for the library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name normalise_counts
-#' @rdname normalise_counts
+#' @name normalise_abundance
+#' @rdname normalise_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
@@ -99,13 +99,13 @@ create_ttBulk.tbl_df <- function(.data,
 #'
 #'
 #' counts %>%
-#'     normalise_counts(sample, transcript, `count`)
+#'     normalise_abundance(sample, transcript, `count`)
 #'
 #'
 #'}
 #'
 #' @export
-normalise_counts <- function(.data,
+normalise_abundance <- function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
@@ -114,10 +114,10 @@ normalise_counts <- function(.data,
 														 method = "TMM",
 														 reference_selection_function = median,
 														 action = "add") {
-	UseMethod("normalise_counts", .data)
+	UseMethod("normalise_abundance", .data)
 }
 #' @export
-normalise_counts.default <-  function(.data,
+normalise_abundance.default <-  function(.data,
 																			.sample = NULL,
 																			.transcript = NULL,
 																			.abundance = NULL,
@@ -130,7 +130,7 @@ normalise_counts.default <-  function(.data,
 	print("This function cannot be applied to this object")
 }
 #' @export
-normalise_counts.tbl_df = normalise_counts.ttBulk <-
+normalise_abundance.tbl_df = normalise_abundance.ttBulk <-
 	function(.data,
 					 .sample = NULL,
 					 .transcript = NULL,
