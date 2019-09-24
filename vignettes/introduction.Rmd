@@ -115,11 +115,11 @@ counts.aggr
 
 # Normalise `counts`
 
-We may want to calculate the normalised counts for library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `normalise_counts` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`.
+We may want to calculate the normalised counts for library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `normalise_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`.
 
 ```{r normalise, cache=TRUE}
 counts.norm =  counts.aggr %>% 
-	normalise_counts(sample, transcript, `count`)
+	normalise_abundance(sample, transcript, `count`)
 
 counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
 ```
