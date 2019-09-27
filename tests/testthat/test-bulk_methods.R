@@ -174,7 +174,7 @@ test_that("Get cluster lables based on Kmeans - no object",{
       .value = `count`,
       .element = sample,
       .feature = transcript,
-      number_of_clusters = 2,
+      centers = 2,
       action="get"
     )
 
@@ -198,7 +198,7 @@ test_that("Add cluster lables based on Kmeans - no object",{
       .value = `count`,
       .element = sample,
       .feature = transcript,
-      number_of_clusters = 2,
+      centers = 2,
       action="add"
     )
 
