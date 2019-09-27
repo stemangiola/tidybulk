@@ -454,3 +454,41 @@ select_closest_pairs = function(df) {
   couples
 
 }
+
+#' Identify variable genes for dimensionality reduction
+#'
+#' @param .data A tibble
+#' @param .sample A character name of the sample column
+#' @param .transcript A character name of the transcript/gene column
+#' @param .abundance A character name of the read count column
+#' @param top An integer. How many top genes to select
+#'
+#'
+#' @return A tibble filtered genes
+#'
+#' @export
+filter_variable_transcripts = function(.data,
+                                      .sample = NULL,
+                                      .transcript = NULL,
+                                      .abundance = NULL,
+                                      top = 3000){
+
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+
+  writeLines(sprintf("Getting the %s most variable genes", top))
+
+  x =
+    .data %>%
+    distinct(!!.sample, !!.transcript, !!.abundance) %>%
+    spread(!!.sample, !!.abundance) %>%
+    as_matrix(rownames = quo_name(.transcript))
+
+  s <- rowMeans((x-rowMeans(x))^2)
+  o <- order(s,decreasing=TRUE)
+  x <- x[o[1L:top],,drop=FALSE]
+
+  .data %>% filter(!!.transcript %in% rownames(x))
+}
+

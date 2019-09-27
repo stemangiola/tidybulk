@@ -4,8 +4,8 @@
 \alias{get_reduced_dimensions_MDS_bulk}
 \title{Get dimensionality information to a tibble using MDS}
 \usage{
-get_reduced_dimensions_MDS_bulk(.data, .value, components = 1:2,
-  .element = NULL, .feature = NULL, of_samples = T,
+get_reduced_dimensions_MDS_bulk(.data, .value, .dims = 2,
+  .element = NULL, .feature = NULL, top = 500, of_samples = T,
   log_transform = T)
 }
 \arguments{
@@ -13,11 +13,13 @@ get_reduced_dimensions_MDS_bulk(.data, .value, components = 1:2,
 
 \item{.value}{A column symbol with the value the clustering is based on (e.g., `count`)}
 
-\item{components}{A integer vector corresponding to principal components of interest (e.g., 1:6)}
+\item{.dims}{A integer vector corresponding to principal components of interest (e.g., 1:6)}
 
 \item{.element}{A column symbol. The column that is used to calculate distance (i.e., normally samples)}
 
 \item{.feature}{A column symbol. The column that is represents entities to cluster (i.e., normally genes)}
+
+\item{top}{An integer. How many top genes to select}
 
 \item{of_samples}{A boolean}
 

@@ -837,9 +837,10 @@ add_clusters_kmeans_bulk <-
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param components A integer vector corresponding to principal components of interest (e.g., 1:6)
+#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
@@ -849,9 +850,10 @@ add_clusters_kmeans_bulk <-
 get_reduced_dimensions_MDS_bulk <-
 	function(.data,
 					 .value,
-					 components = 1:2,
+					 .dims = 2,
 					 .element = NULL,
 					 .feature = NULL,
+					 top = 500,
 					 of_samples = T,
 					 log_transform = T) {
 		# Get column names
@@ -862,6 +864,9 @@ get_reduced_dimensions_MDS_bulk <-
 		.feature = col_names$.feature
 
 		.value = enquo(.value)
+
+		# Get components from dims
+		components = 1:.dims
 
 		# Convert components to components list
 		if ((length(components) %% 2) != 0)
@@ -894,7 +899,7 @@ get_reduced_dimensions_MDS_bulk <-
 					) %>%
 					spread(!!.element, !!.value) %>%
 					as_matrix(rownames = !!.feature, do_check = FALSE) %>%
-					limma::plotMDS(dim.plot = .x, plot = F) %>%
+					limma::plotMDS(dim.plot = .x, plot = F, top = top) %>%
 
 					# Anonymous function
 					# input: MDS object
@@ -926,9 +931,10 @@ get_reduced_dimensions_MDS_bulk <-
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param components A integer vector corresponding to principal components of interest (e.g., 1:6)
+#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
@@ -938,9 +944,10 @@ get_reduced_dimensions_MDS_bulk <-
 add_reduced_dimensions_MDS_bulk <-
 	function(.data,
 					 .value ,
-					 components = 1:2,
+					 .dims = 2,
 					 .element = NULL,
 					 .feature = NULL,
+					 top = 500,
 					 of_samples = T,
 					 log_transform = T) {
 		# Get column names
@@ -957,9 +964,11 @@ add_reduced_dimensions_MDS_bulk <-
 				(.) %>%
 					get_reduced_dimensions_MDS_bulk(
 						.value = !!.value,
-						components = components,
+						.dims = .dims,
 						.element = !!.element,
 						.feature = !!.feature,
+						top = top,
+						of_samples = of_samples,
 						log_transform = log_transform
 					),
 				by = quo_name(.element)
@@ -977,9 +986,10 @@ add_reduced_dimensions_MDS_bulk <-
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param components A integer vector corresponding to principal components of interest (e.g., 1:6)
+#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param scale A boolean
@@ -991,9 +1001,10 @@ add_reduced_dimensions_MDS_bulk <-
 get_reduced_dimensions_PCA_bulk <-
 	function(.data,
 					 .value ,
-					 components = 1:2,
+					 .dims = 2,
 					 .element = NULL,
 					 .feature = NULL,
+					 top = 500,
 					 of_samples = T,
 					 log_transform = T,
 					 scale = T,
@@ -1006,6 +1017,9 @@ get_reduced_dimensions_PCA_bulk <-
 		.feature = col_names$.feature
 
 		.value = enquo(.value)
+
+		# Get components from dims
+		components = 1:.dims
 
 		.data %>%
 
@@ -1024,6 +1038,9 @@ get_reduced_dimensions_PCA_bulk <-
 				(.) %>% select(!!.value) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
 				~ stop(".value must be numerical or integer")
 			) %>%
+
+			# Filter most variable genes
+			filter_variable_transcripts(!!.element, !!.feature, !!.value, top) %>%
 
 			spread(!!.element, !!.value) %>%
 
@@ -1094,9 +1111,10 @@ get_reduced_dimensions_PCA_bulk <-
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param components A integer vector corresponding to principal components of interest (e.g., 1:6)
+#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param scale A boolean
@@ -1108,9 +1126,10 @@ get_reduced_dimensions_PCA_bulk <-
 add_reduced_dimensions_PCA_bulk <-
 	function(.data,
 					 .value ,
-					 components = 1:2,
+					 .dims = 2,
 					 .element = NULL,
 					 .feature = NULL,
+					 top = 500,
 					 of_samples = T,
 					 log_transform = T,
 					 scale = T,
@@ -1129,9 +1148,166 @@ add_reduced_dimensions_PCA_bulk <-
 				(.) %>%
 					get_reduced_dimensions_PCA_bulk(
 						.value = !!.value,
-						components = components,
+						.dims = .dims,
 						.element = !!.element,
 						.feature = !!.feature,
+						top = top,
+						of_samples = of_samples,
+						log_transform = log_transform,
+						scale = scale,
+						...
+					),
+				by = quo_name(.element)
+			)
+	}
+
+#' Get principal component information to a tibble using tSNE
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#'
+#' @param .data A tibble
+#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param top An integer. How many top genes to select
+#' @param of_samples A boolean
+#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param scale A boolean
+#' @param ... Further parameters passed to the function Rtsne
+#'
+#' @return A tibble with additional columns
+#'
+get_reduced_dimensions_TSNE_bulk <-
+	function(.data,
+					 .value ,
+					 .dims = 2,
+					 .element = NULL,
+					 .feature = NULL,
+					 top = 500,
+					 of_samples = T,
+					 log_transform = T,
+					 scale = T,
+					 ...) {
+		# Get column names
+		.element = enquo(.element)
+		.feature = enquo(.feature)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.element = col_names$.element
+		.feature = col_names$.feature
+
+		.value = enquo(.value)
+
+		# Evaluate ...
+		arguments <- list(...)
+		if(!"check_duplicates" %in% names(arguments)) arguments = arguments %>% c(check_duplicates = T)
+		if(!"verbose" %in% names(arguments))arguments = arguments %>% c(verbose = T)
+		if(!"dims" %in% names(arguments))arguments = arguments %>% c(dims = .dims)
+
+
+		# Check if package is installed, otherwise install
+		if ("Rtsne" %in% rownames(installed.packages()) == FALSE) {
+			writeLines("Installing Rtsne")
+			install.packages("Rtsne", repos = "https://cloud.r-project.org")
+		}
+
+		# Set perprexity to not be too high
+		if(!"perplexity" %in% names(arguments))
+			arguments = arguments %>% c(perplexity = ((.data %>% distinct(!!.element) %>% nrow %>% sum(- 1))/3/2) %>% floor() %>% min(30))
+
+		# If not enough samples stop
+		if(arguments$perplexity <= 2) stop("You don't have enough samples to run tSNE")
+
+		# Calculate the most variable genes, from plotMDS Limma
+
+
+		df_tsne =
+			.data %>%
+
+			# Check if duplicates
+			error_if_duplicated_genes(!!.element, !!.feature, !!.value)  %>%
+
+			# Filter NA symbol
+			filter(!!.feature %>% is.na %>% `!`) %>%
+
+			# Prepare data frame
+			distinct(!!.feature, !!.element, !!.value) %>%
+
+			# Check if logtansform is needed
+			ifelse_pipe(log_transform,
+									~ .x %>% mutate(!!.value := !!.value %>% `+`(1) %>%  log())) %>%
+
+			# Filter most variable genes
+			filter_variable_transcripts(!!.element, !!.feature, !!.value, top) %>%
+
+			spread(!!.feature, !!.value) %>%
+			# select(-sample) %>%
+			# distinct %>%
+			as_matrix(rownames = "sample")
+
+			do.call(Rtsne::Rtsne, c(list(df_tsne), arguments)) %$%
+			Y %>%
+			as_tibble(.name_repair = "minimal") %>%
+			setNames(c("tSNE 1", "tSNE 2")) %>%
+
+			# add element name
+			mutate(!!.element := df_tsne %>% rownames) %>%
+			select(!!.element, everything())
+
+	}
+
+#' Add principal component information to a tibble using tSNE
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#'
+#'
+#' @param .data A tibble
+#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param top An integer. How many top genes to select
+#' @param of_samples A boolean
+#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param scale A boolean
+#' @param ... Further parameters passed to the function tSNE
+#'
+#' @return A tibble with additional columns
+#'
+#'
+add_reduced_dimensions_TSNE_bulk <-
+	function(.data,
+					 .value ,
+					 .dims = 2,
+					 .element = NULL,
+					 .feature = NULL,
+					 top = 500,
+					 of_samples = T,
+					 log_transform = T,
+					 scale = T,
+					 ...) {
+		# Get column names
+		.element = enquo(.element)
+		.feature = enquo(.feature)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.element = col_names$.element
+		.feature = col_names$.feature
+
+		.value = enquo(.value)
+
+		.data %>%
+			left_join(
+				(.) %>%
+					get_reduced_dimensions_TSNE_bulk(
+						.value = !!.value,
+						.dims = .dims,
+						.element = !!.element,
+						.feature = !!.feature,
+						top = top,
 						log_transform = log_transform,
 						scale = T,
 						...
@@ -1139,6 +1315,7 @@ add_reduced_dimensions_PCA_bulk <-
 				by = quo_name(.element)
 			)
 	}
+
 
 #' Get rotated dimensions of two principal components or MDS dimension of choice, of an angle
 #'
@@ -1580,11 +1757,11 @@ drop_redundant_elements_though_reduced_dimensions <-
 #' #' @return A tibble with ensembl-transcript mapping
 #' #'
 #' get_ensembl_symbol_mapping <- function() {
-#'   # wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="hgnc_symbol"/> </Dataset> </Query>'
-#'   # wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="hgnc_symbol"/></Dataset></Query>'
+#'   # wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
+#'   # wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
 #'   read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
 #'               col_names = F) %>%
-#'     setNames(c("ensembl_transcript_id", "ensembl_gene_id", "hgnc_symbol")) %>%
+#'     setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
 #'     mutate(hg = "hg37") %>%
 #'     bind_rows(
 #'       read_table2(
@@ -1592,7 +1769,7 @@ drop_redundant_elements_though_reduced_dimensions <-
 #'         col_names = F
 #'       ) %>%
 #'         setNames(
-#'           c("ensembl_transcript_id", "ensembl_gene_id", "hgnc_symbol")
+#'           c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
 #'         ) %>%
 #'         mutate(hg = "hg38")
 #'     ) %>%
@@ -1628,7 +1805,8 @@ get_symbol_from_ensembl <-
 			left_join(
 				ensembl_symbol_mapping %>%
 					distinct(ensembl_gene_id, hgnc_symbol, hg) %>%
-					rename(!!.ensembl := ensembl_gene_id),
+					rename(!!.ensembl := ensembl_gene_id) %>%
+					rename( transcript = hgnc_symbol),
 				by = quo_name(.ensembl)
 			)
 

@@ -4,22 +4,24 @@
 \alias{reduce_dimensions}
 \title{Dimension reduction of the transcript abundance data}
 \usage{
-reduce_dimensions(.data, .value, method, components = 1:2,
-  .element = NULL, .feature = NULL, of_samples = T,
-  log_transform = T, scale = T, action = "add", ...)
+reduce_dimensions(.data, .value, method, .dims = 2, .element = NULL,
+  .feature = NULL, top = 500, of_samples = T, log_transform = T,
+  scale = T, action = "add", ...)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
 \item{.value}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
 
-\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
+\item{method}{A character string. The dimension reduction algorithm to use (PCA, MDS, tSNE).}
 
-\item{components}{A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))}
+\item{.dims}{A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))}
 
 \item{.element}{The name of the element column (normally samples).}
 
 \item{.feature}{The name of the feature column (normally transcripts/genes)}
+
+\item{top}{An integer. How many top genes to select for dimensionality reduction}
 
 \item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
 
@@ -29,7 +31,7 @@ reduce_dimensions(.data, .value, method, components = 1:2,
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
-\item{...}{Further parameters passed to the function prcomp if you choose method="PCA"}
+\item{...}{Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"}
 }
 \value{
 A tbl object with additional columns for the reduced dimensions
@@ -49,7 +51,7 @@ library(GGally)
 
 counts.MDS =
     counts \%>\%
-    reduce_dimensions(sample, transcript, count, method="MDS", components = 1:3)
+    reduce_dimensions(sample, transcript, count, method="MDS", .dims = 3)
 
 counts.MDS \%>\%
     select(contains("Dim"), sample, `Cell type`) \%>\%
@@ -58,7 +60,7 @@ counts.MDS \%>\%
 
 counts.PCA =
     counts.norm \%>\%
-    reduce_dimensions(sample, transcript, count, method="PCA", components = 1:3)
+    reduce_dimensions(sample, transcript, count, method="PCA", .dims = 3)
 
 counts.PCA \%>\%
    select(contains("PC"), sample, `Cell type`) \%>\%
