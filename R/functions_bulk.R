@@ -880,25 +880,26 @@ get_clusters_SNN_bulk <-
 			error_if_counts_is_na(!!.value) %>%
 
 			# Prepare data frame
-			distinct(!!.feature, !!.element, !!.value) %>%
+			distinct(!!.element, !!.feature, !!.value) %>%
 
 			# Check if log tranfrom is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% mutate(!!.value := !!.value %>%  `+`(1) %>%  log())) %>%
+			#ifelse_pipe(log_transform, ~ .x %>% mutate(!!.value := !!.value %>%  `+`(1) %>%  log())) %>%
 
 			# Prepare data frame for return
-			spread(!!.feature, !!.value)
+			spread(!!.element, !!.value)
 
 		my_df %>%
-			as_matrix(rownames = !!.element) %>%
-
-			dbscan::sNNclust(...) %$%
-			cluster %>%
-
-			as_tibble() %>%
-			setNames("cluster SNN") %>%
-			mutate(!!.element := my_df %>% pull(!!.element)) %>%
-			mutate(`cluster SNN` = `cluster SNN` %>% as.factor()) %>%
+			data.frame(row.names = quo_name(.feature)) %>%
+			Seurat::CreateSeuratObject() %>%
+			Seurat::ScaleData(display.progress = T, num.cores=4, do.par = TRUE) %>%
+			Seurat::FindVariableFeatures(selection.method = "vst") %>%
+			Seurat::RunPCA(npcs = 30) %>%
+			Seurat::FindNeighbors() %>%
+			Seurat::FindClusters(method = "igraph", ...) %>%
+			`[[` ("seurat_clusters") %>%
+			as_tibble(rownames=quo_name(.element)) %>%
+			rename(`cluster SNN` = seurat_clusters) %>%
+			mutate(!!.element := gsub("\\.", "-", !!.element)) %>%
 
 			# Attach attributes
 			add_attr(.data %>% attr("parameters"), "parameters")
