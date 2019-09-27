@@ -4,22 +4,22 @@
 \alias{drop_redundant}
 \title{Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) aboundances are correlated}
 \usage{
-drop_redundant(.data, method, .element = NULL, of_samples = T, .value,
-  .feature = NULL, correlation_threshold = 0.9, log_transform = F,
+drop_redundant(.data, .element = NULL, .feature = NULL, .value, method,
+  of_samples = T, correlation_threshold = 0.9, log_transform = F,
   Dim_a_column, Dim_b_column)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
-
 \item{.element}{The name of the element column (normally samples).}
 
-\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
+\item{.feature}{The name of the feature column (normally transcripts/genes)}
 
 \item{.value}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
 
-\item{.feature}{The name of the feature column (normally transcripts/genes)}
+\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
+
+\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{correlation_threshold}{A real number between 0 and 1. For correlation based calculation.}
 
