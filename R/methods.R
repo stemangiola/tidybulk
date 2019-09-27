@@ -183,7 +183,6 @@ normalise_abundance.tbl_df = normalise_abundance.ttBulk <-
 #' @param .feature The name of the feature column (normally transcripts/genes)
 #' @param .value The name of the column including the numerical value the clustering is based on (normally transcript abundance)
 #'
-#' @param centers A integer indicating how many clusters you are seeking for the method k-means.
 #' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
 #' @param of_samples A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
@@ -213,8 +212,7 @@ annotate_clusters <- function(.data,
 															.element = NULL,
 															.feature = NULL,
 															.value,
-															centers,
-															method = "kmeans",
+															method,
 															of_samples = T,
 															log_transform = T,
 															action = "add",
@@ -227,8 +225,7 @@ annotate_clusters.default <-  function(.data,
 																			 .element = NULL,
 																			 .feature = NULL,
 																			 .value,
-																			 centers,
-																			 method = "kmeans",
+																			 method,
 																			 of_samples = T,
 																			 log_transform = T,
 																			 action = "add",
@@ -243,8 +240,7 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
 					 .element = NULL,
 					 .feature = NULL,
 					 .value,
-					 centers,
-					 method = "kmeans",
+					 method ,
 					 of_samples = T,
 					 log_transform = T,
 					 action = "add",
@@ -260,7 +256,6 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
 				add_clusters_kmeans_bulk(
 					.data,
 					.value = !!.value,
-					centers = centers,
 					.element = !!.element,
 					.feature = !!.feature,
 					of_samples = of_samples,
@@ -271,7 +266,32 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
 				get_clusters_kmeans_bulk(
 					.data,
 					.value = !!.value,
-					centers = centers,
+					.element = !!.element,
+					.feature = !!.feature,
+					of_samples = of_samples,
+					log_transform = log_transform,
+					...
+				)
+			else
+				stop(
+					"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				)
+		}
+		else if (method == "SNN") {
+			if (action == "add")
+				add_clusters_SNN_bulk(
+					.data,
+					.value = !!.value,
+					.element = !!.element,
+					.feature = !!.feature,
+					of_samples = of_samples,
+					log_transform = log_transform,
+					...
+				)
+			else if (action == "get")
+				get_clusters_SNN_bulk(
+					.data,
+					.value = !!.value,
 					.element = !!.element,
 					.feature = !!.feature,
 					of_samples = of_samples,
