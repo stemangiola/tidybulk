@@ -101,7 +101,7 @@ test_that("Get cluster lables based on Kmeans - no object",{
       .value = `count`,
       .element = sample,
       .feature = transcript,
-      number_of_clusters = 2
+      centers = 2
     )
 
   expect_equal(
@@ -124,7 +124,7 @@ test_that("Add cluster lables based on Kmeans - no object",{
       .value = `count`,
       .element = sample,
       .feature = transcript,
-      number_of_clusters = 2
+      centers = 2
     )
 
   expect_equal(
@@ -138,6 +138,8 @@ test_that("Add cluster lables based on Kmeans - no object",{
   )
 
 })
+
+
 
 test_that("Get reduced dimensions MDS - no object",{
 
