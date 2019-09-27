@@ -5,8 +5,7 @@
 \title{Get clusters of elements (e.g., samples or transcripts)}
 \usage{
 annotate_clusters(.data, .element = NULL, .feature = NULL, .value,
-  centers, method = "kmeans", of_samples = T, log_transform = T,
-  action = "add", ...)
+  method, of_samples = T, log_transform = T, action = "add", ...)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
@@ -16,8 +15,6 @@ annotate_clusters(.data, .element = NULL, .feature = NULL, .value,
 \item{.feature}{The name of the feature column (normally transcripts/genes)}
 
 \item{.value}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
-
-\item{centers}{A integer indicating how many clusters you are seeking for the method k-means.}
 
 \item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
 

@@ -722,7 +722,6 @@ add_differential_transcript_abundance_bulk <- function(.data,
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
-#' @param centers A integer indicating how many clusters we are seeking
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param ... Further parameters passed to the function kmeans
 #'
@@ -734,7 +733,6 @@ get_clusters_kmeans_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 					 .value,
-					 centers,
 					 of_samples = T,
 					 log_transform = T,
 					 ...) {
@@ -786,7 +784,6 @@ get_clusters_kmeans_bulk <-
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
-#' @param centers A integer indicating how many clusters we are seeking
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param ... Further parameters passed to the function kmeans
 #'
@@ -798,7 +795,6 @@ add_clusters_kmeans_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 					 .value,
-					 centers,
 					 of_samples = T,
 					 log_transform = T,
 					 ...) {
@@ -816,7 +812,6 @@ add_clusters_kmeans_bulk <-
 				(.) %>%
 					get_clusters_kmeans_bulk(
 						.value = !!.value,
-						centers = centers,
 						.element = !!.element,
 						.feature = !!.feature,
 						log_transform = log_transform,
@@ -841,7 +836,6 @@ add_clusters_kmeans_bulk <-
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
-#' @param centers A integer indicating how many clusters we are seeking
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param ... Further parameters passed to the function kmeans
 #'
@@ -853,7 +847,6 @@ get_clusters_SNN_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 					 .value,
-					 centers,
 					 of_samples = T,
 					 log_transform = T,
 					 ...) {
@@ -918,7 +911,6 @@ get_clusters_SNN_bulk <-
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
-#' @param centers A integer indicating how many clusters we are seeking
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param ... Further parameters passed to the function kmeans
 #'
@@ -930,7 +922,6 @@ add_clusters_SNN_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 					 .value,
-					 centers,
 					 of_samples = T,
 					 log_transform = T,
 					 ...) {
@@ -948,7 +939,6 @@ add_clusters_SNN_bulk <-
 				(.) %>%
 					get_clusters_SNN_bulk(
 						.value = !!.value,
-						centers = centers,
 						.element = !!.element,
 						.feature = !!.feature,
 						log_transform = log_transform,
