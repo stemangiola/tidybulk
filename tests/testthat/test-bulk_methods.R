@@ -314,6 +314,33 @@ test_that("Add reduced dimensions PCA - no object",{
 
 })
 
+test_that("Add reduced dimensions tSNE - no object",{
+
+  set.seed(132)
+
+  res =
+    reduce_dimensions(
+      ttBulk::counts,
+      method="tSNE",
+      .value = `count`,
+      .element = sample,
+      .feature = transcript,
+      action="add"
+    )
+
+  expect_equal(
+    unique(res$`tSNE 1`)[1:4],
+    c( -32.88629, -32.64196, -32.76265, -32.78612),
+    tolerance=1e-6
+  )
+
+  expect_equal(
+    ncol(res),
+    8
+  )
+
+})
+
 test_that("Get rotated dimensions - no object",{
 
   res.pca =

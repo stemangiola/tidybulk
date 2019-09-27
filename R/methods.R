@@ -304,14 +304,15 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
 #' @param .feature The name of the feature column (normally transcripts/genes)
 #' @param .value The name of the column including the numerical value the clustering is based on (normally transcript abundance)
 #'
-#' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
+#' @param method A character string. The dimension reduction algorithm to use (PCA, MDS, tSNE).
+#' @param top An integer. How many top genes to select for dimensionality reduction
 #' @param of_samples A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column
-#' @param components A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
+#' @param .dims A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
 
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param scale A boolean for method="PCA", this will be passed to the `prcomp` function. It is not included in the ... argument because although the default for `prcomp` if FALSE, it is advisable to set it as TRUE.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
-#' @param ... Further parameters passed to the function prcomp if you choose method="PCA"
+#' @param ... Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"
 #'
 #' @details This function reduces the dimensions of the transcript abundances.
 #' It can use multi-dimensional scaling (MDS) of principal component analysis (PCA).
@@ -327,7 +328,7 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
 #'
 #' counts.MDS =
 #'     counts %>%
-#'     reduce_dimensions(sample, transcript, count, method="MDS", components = 1:3)
+#'     reduce_dimensions(sample, transcript, count, method="MDS", .dims = 3)
 #'
 #' counts.MDS %>%
 #'     select(contains("Dim"), sample, `Cell type`) %>%
@@ -336,7 +337,7 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
 #'
 #' counts.PCA =
 #'     counts.norm %>%
-#'     reduce_dimensions(sample, transcript, count, method="PCA", components = 1:3)
+#'     reduce_dimensions(sample, transcript, count, method="PCA", .dims = 3)
 #'
 #'counts.PCA %>%
 #'    select(contains("PC"), sample, `Cell type`) %>%
@@ -351,9 +352,10 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
 reduce_dimensions <- function(.data,
 															.value,
 															method,
-															components = 1:2,
+															.dims = 2,
 															.element = NULL,
 															.feature = NULL,
+															top = 500,
 															of_samples = T,
 															log_transform = T,
 															scale = T,
@@ -366,9 +368,10 @@ reduce_dimensions <- function(.data,
 reduce_dimensions.default <-  function(.data,
 																			 .value,
 																			 method,
-																			 components = 1:2,
+																			 .dims = 2,
 																			 .element = NULL,
 																			 .feature = NULL,
+																			 top = 500,
 																			 of_samples = T,
 																			 log_transform = T,
 																			 scale = T,
@@ -382,9 +385,10 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 	function(.data,
 					 .value,
 					 method,
-					 components = 1:2,
+					 .dims = 2,
 					 .element = NULL,
 					 .feature = NULL,
+					 top = 500,
 					 of_samples = T,
 					 log_transform = T,
 					 scale = T,
@@ -401,9 +405,10 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 				add_reduced_dimensions_MDS_bulk(
 					.data,
 					.value = !!.value,
-					components = components,
+					.dims = .dims,
 					.element = !!.element,
 					.feature = !!.feature,
+					top = top,
 					of_samples = of_samples,
 					log_transform = log_transform,
 					...
@@ -412,9 +417,10 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 				get_reduced_dimensions_MDS_bulk(
 					.data,
 					.value = !!.value,
-					components = components,
+					.dims = .dims,
 					.element = !!.element,
 					.feature = !!.feature,
+					top = top,
 					of_samples = of_samples,
 					log_transform = log_transform,
 					...
@@ -429,9 +435,10 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 				add_reduced_dimensions_PCA_bulk(
 					.data,
 					.value = !!.value,
-					components = components,
+					.dims = .dims,
 					.element = !!.element,
 					.feature = !!.feature,
+					top = top,
 					of_samples = of_samples,
 					log_transform = log_transform,
 					scale = scale,
@@ -441,9 +448,43 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 				get_reduced_dimensions_PCA_bulk(
 					.data,
 					.value = !!.value,
-					components = components,
+					.dims = .dims,
 					.element = !!.element,
 					.feature = !!.feature,
+					top = top,
+					of_samples = of_samples,
+					log_transform = log_transform,
+					scale = scale,
+					...
+				)
+			else
+				stop(
+					"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				)
+
+		}
+		else if (method == "tSNE") {
+			if (action == "add")
+				add_reduced_dimensions_TSNE_bulk(
+					.data,
+					.value = !!.value,
+					.dims = .dims,
+					.element = !!.element,
+					.feature = !!.feature,
+					top = top,
+					of_samples = of_samples,
+					log_transform = log_transform,
+					scale = scale,
+					...
+				)
+			else if (action == "get")
+				get_reduced_dimensions_TSNE_bulk(
+					.data,
+					.value = !!.value,
+					.dims = .dims,
+					.element = !!.element,
+					.feature = !!.feature,
+					top = top,
 					of_samples = of_samples,
 					log_transform = log_transform,
 					scale = scale,

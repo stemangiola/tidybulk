@@ -4,3 +4,4 @@
 ^doc$
 ^Meta$
 ^codecov\.yml$
+^dev
