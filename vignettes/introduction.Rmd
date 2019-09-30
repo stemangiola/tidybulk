@@ -200,7 +200,7 @@ counts.norm.tSNE %>%
 counts.norm.tSNE %>% 
 	select(contains("tSNE", ignore.case = F), sample, Call) %>%
 	distinct() %>%
-	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point()
+	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
 ```
 
 # Rotate `dimensions`

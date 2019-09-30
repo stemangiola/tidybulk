@@ -115,11 +115,11 @@ counts.aggr
 
 # Normalise `counts`
 
-We may want to calculate the normalised counts for library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `normalise_counts` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`.
+We may want to calculate the normalised counts for library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `normalise_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`.
 
 ```{r normalise, cache=TRUE}
 counts.norm =  counts.aggr %>% 
-	normalise_counts(sample, transcript, `count`)
+	normalise_abundance(sample, transcript, `count`)
 
 counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
 ```
@@ -143,7 +143,7 @@ We may want to reduce the dimensions of our data, for example using PCA or MDS a
 ```{r mds, cache=TRUE}
 counts.norm.MDS =
   counts.norm %>%
-  reduce_dimensions(.value = `count normalised`, method="MDS" , .element = sample, .feature = transcript, components = 1:3)
+  reduce_dimensions(.value = `count normalised`, method="MDS" , .element = sample, .feature = transcript, .dims = 3)
 
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 ```
@@ -164,7 +164,7 @@ counts.norm.MDS %>%
 ```{r pca, cache=TRUE}
 counts.norm.PCA =
   counts.norm %>%
-  reduce_dimensions(.value = `count normalised`, method="PCA" , .element = sample, .feature = transcript, components = 1:3)
+  reduce_dimensions(.value = `count normalised`, method="PCA" , .element = sample, .feature = transcript, .dims = 3)
 
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 ```
@@ -176,6 +176,31 @@ counts.norm.PCA %>%
 	select(contains("PC"), sample, `Cell type`) %>%
   distinct() %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
+```
+
+**tSNE**
+
+```{r tsne, cache=TRUE}
+counts.norm.tSNE =
+	ttBulk::breast_tcga_mini %>%
+	reduce_dimensions(
+		.value = `count normalised`, 
+		method = "tSNE", 
+		.element = sample, 
+		.feature = ens, 
+		top = 500, 
+		perplexity=10, 
+		pca_scale =T
+	) 
+
+counts.norm.tSNE %>% 
+	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	distinct()
+
+counts.norm.tSNE %>% 
+	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	distinct() %>%
+	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
 ```
 
 # Rotate `dimensions`
@@ -210,7 +235,7 @@ counts.norm.MDS.rotated %>%
   my_theme
 ```
 
-# Annotate `differential transcirption`
+# Annotate `differential transcription`
 
 We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). `test_differential_transcription` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate). 
 
@@ -227,8 +252,6 @@ counts %>%
 # Adjust `counts`
 
 We may want to adjust `counts` for (known) unwanted variation. `adjust_abundance` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation, and returns a tibble with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`. At the moment just an unwanted covariated is allowed at a time.
-
-**"## Standardizing Data across genes" is still in the cache?**
 
 ```{r adjust, cache=TRUE}
 counts.norm.adj =
@@ -289,7 +312,7 @@ We may want to cluster our data (e.g., using k-means sample-wise). `annotate_clu
 
 ```{r cluster, cache=TRUE}
 counts.norm.cluster = counts.norm %>%
-  annotate_clusters(.value = `count normalised`, .element = sample, .feature = transcript,	number_of_clusters = 2 )
+  annotate_clusters(.value = `count normalised`, .element = sample, .feature = transcript, method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 ```
@@ -302,10 +325,11 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
   	.value = `count normalised`,
   	.element = sample,
   	.feature = transcript,
-  	number_of_clusters = 2
+  	method="kmeans",
+  	centers = 2
   ) %>%
-	distinct(sample, `Dim 1`, `Dim 2`, cluster) %>%
-	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=cluster)) +
+	distinct(sample, `Dim 1`, `Dim 2`, `cluster kmeans`) %>%
+	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`cluster kmeans`)) +
   geom_point() +
   my_theme
 ```
@@ -411,7 +435,7 @@ We can add the MDS dimensions to the original data set
     	method="MDS" , 
     	.element = sample, 
     	.feature = transcript, 
-    	components = 1:3, 
+    	.dims = 3, 
     	action="add"
     )
 ```
@@ -426,7 +450,7 @@ We can get just the MDS dimensions relative to each sample
     	method="MDS" , 
     	.element = sample, 
     	.feature = transcript, 
-    	components = 1:3, 
+    	.dims = 3, 
     	action="get"
     )
 ```
