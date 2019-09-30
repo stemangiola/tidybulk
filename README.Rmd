@@ -147,6 +147,32 @@ counts.norm.PCA %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 ```
 
+**tSNE**
+
+```{r tsne, cache=TRUE}
+counts.norm.tSNE =
+	ttBulk::breast_tcga_mini %>%
+	reduce_dimensions(
+		.value = `count normalised`, 
+		method = "tSNE", 
+		.element = sample, 
+		.feature = ens, 
+		top = 500, 
+		perplexity=10, 
+		pca_scale =T
+	) 
+
+counts.norm.tSNE %>% 
+	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	distinct()
+
+counts.norm.tSNE %>% 
+	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	distinct() %>%
+	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
+```
+
+
 # Rotate `dimensions`
 
 We may want to rotate the reduced dimensions (or any two numeric columns really) of our data, of a set angle. `rotate_dimensions` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and an angle as arguments and returns a tibble with additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
@@ -256,7 +282,7 @@ We may want to cluster our data (e.g., using k-means sample-wise). `annotate_clu
 
 ```{r cluster, cache=TRUE}
 counts.norm.cluster = counts.norm %>%
-  annotate_clusters(.value = `count normalised`, .element = sample, .feature = transcript,	number_of_clusters = 2 )
+  annotate_clusters(.value = `count normalised`, .element = sample, .feature = transcript, method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 ```
@@ -266,13 +292,14 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
 ```{r plot_cluster, cache=TRUE}
  counts.norm.MDS %>%
   annotate_clusters(
-  	.value = `count normalised`,
   	.element = sample,
   	.feature = transcript,
-  	number_of_clusters = 2
+  	.value = `count normalised`,
+  	method="kmeans",
+  	centers = 2
   ) %>%
-	distinct(sample, `Dim 1`, `Dim 2`, cluster) %>%
-	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=cluster)) +
+	distinct(sample, `Dim 1`, `Dim 2`, `cluster kmeans`) %>%
+	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`cluster kmeans`)) +
   geom_point() +
   my_theme
 ```

@@ -4,22 +4,22 @@
 \alias{reduce_dimensions}
 \title{Dimension reduction of the transcript abundance data}
 \usage{
-reduce_dimensions(.data, .value, method, .dims = 2, .element = NULL,
-  .feature = NULL, top = 500, of_samples = T, log_transform = T,
+reduce_dimensions(.data, .element = NULL, .feature = NULL, .value,
+  method, .dims = 2, top = 500, of_samples = T, log_transform = T,
   scale = T, action = "add", ...)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+
+\item{.element}{The name of the element column (normally samples).}
+
+\item{.feature}{The name of the feature column (normally transcripts/genes)}
 
 \item{.value}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
 
 \item{method}{A character string. The dimension reduction algorithm to use (PCA, MDS, tSNE).}
 
 \item{.dims}{A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))}
-
-\item{.element}{The name of the element column (normally samples).}
-
-\item{.feature}{The name of the feature column (normally transcripts/genes)}
 
 \item{top}{An integer. How many top genes to select for dimensionality reduction}
 

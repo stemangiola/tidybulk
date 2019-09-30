@@ -4,20 +4,17 @@
 \alias{add_clusters_kmeans_bulk}
 \title{Add K-mean clusters to a tibble}
 \usage{
-add_clusters_kmeans_bulk(.data, .value, number_of_clusters,
-  .element = NULL, .feature = NULL, of_samples = T,
-  log_transform = T, ...)
+add_clusters_kmeans_bulk(.data, .element = NULL, .feature = NULL,
+  .value, of_samples = T, log_transform = T, ...)
 }
 \arguments{
 \item{.data}{A tibble}
 
-\item{.value}{A column symbol with the value the clustering is based on (e.g., `count`)}
-
-\item{number_of_clusters}{A integer indicating how many clusters we are seeking}
-
 \item{.element}{A column symbol. The column that is used to calculate distance (i.e., normally genes)}
 
 \item{.feature}{A column symbol. The column that is represents entities to cluster (i.e., normally samples)}
+
+\item{.value}{A column symbol with the value the clustering is based on (e.g., `count`)}
 
 \item{of_samples}{A boolean}
 

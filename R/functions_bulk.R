@@ -722,7 +722,6 @@ add_differential_transcript_abundance_bulk <- function(.data,
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
-#' @param number_of_clusters A integer indicating how many clusters we are seeking
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param ... Further parameters passed to the function kmeans
 #'
@@ -731,10 +730,9 @@ add_differential_transcript_abundance_bulk <- function(.data,
 #'
 get_clusters_kmeans_bulk <-
 	function(.data,
-					 .value,
-					 number_of_clusters,
 					 .element = NULL,
 					 .feature = NULL,
+					 .value,
 					 of_samples = T,
 					 log_transform = T,
 					 ...) {
@@ -762,12 +760,12 @@ get_clusters_kmeans_bulk <-
 			# Prepare data frame for return
 			spread(!!.feature, !!.value) %>%
 			as_matrix(rownames = !!.element) %>%
-			kmeans(centers = number_of_clusters, iter.max = 1000, ...) %$%
+			kmeans(iter.max = 1000, ...) %$%
 			cluster %>%
 			as.list() %>%
 			as_tibble() %>%
-			gather(!!.element, cluster) %>%
-			mutate(cluster = cluster %>% as.factor()) %>%
+			gather(!!.element, `cluster kmeans`) %>%
+			mutate(`cluster kmeans` = `cluster kmeans` %>% as.factor()) %>%
 
 			# Attach attributes
 			add_attr(.data %>% attr("parameters"), "parameters")
@@ -786,7 +784,6 @@ get_clusters_kmeans_bulk <-
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
-#' @param number_of_clusters A integer indicating how many clusters we are seeking
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param ... Further parameters passed to the function kmeans
 #'
@@ -795,10 +792,9 @@ get_clusters_kmeans_bulk <-
 #'
 add_clusters_kmeans_bulk <-
 	function(.data,
-					 .value,
-					 number_of_clusters,
 					 .element = NULL,
 					 .feature = NULL,
+					 .value,
 					 of_samples = T,
 					 log_transform = T,
 					 ...) {
@@ -816,7 +812,135 @@ add_clusters_kmeans_bulk <-
 				(.) %>%
 					get_clusters_kmeans_bulk(
 						.value = !!.value,
-						number_of_clusters = number_of_clusters,
+						.element = !!.element,
+						.feature = !!.feature,
+						log_transform = log_transform,
+						...
+					)
+			) %>%
+
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
+	}
+
+#' Get SNN shared nearest neighbour clusters to a tibble
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#'
+#'
+#' @param .data A tibble
+#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
+#' @param of_samples A boolean
+#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param ... Further parameters passed to the function kmeans
+#'
+#' @return A tibble with additional columns
+#'
+#' @export
+get_clusters_SNN_bulk <-
+	function(.data,
+					 .element = NULL,
+					 .feature = NULL,
+					 .value,
+					 of_samples = T,
+					 log_transform = T,
+					 ...) {
+		# Get column names
+		.element = enquo(.element)
+		.feature = enquo(.feature)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.element = col_names$.element
+		.feature = col_names$.feature
+
+		.value = enquo(.value)
+
+		# Check if package is installed, otherwise install
+		if ("Seurat" %in% rownames(installed.packages()) == FALSE) {
+			writeLines("Installing Seurat")
+			install.packages("Seurat", repos = "https://cloud.r-project.org")
+		}
+		if ("KernSmooth" %in% rownames(installed.packages()) == FALSE) {
+			writeLines("Installing KernSmooth")
+			install.packages("KernSmooth", repos = "https://cloud.r-project.org")
+		}
+
+		my_df =
+			.data %>%
+
+			# Through error if some counts are NA
+			error_if_counts_is_na(!!.value) %>%
+
+			# Prepare data frame
+			distinct(!!.element, !!.feature, !!.value) %>%
+
+			# Check if log tranfrom is needed
+			#ifelse_pipe(log_transform, ~ .x %>% mutate(!!.value := !!.value %>%  `+`(1) %>%  log())) %>%
+
+			# Prepare data frame for return
+			spread(!!.element, !!.value)
+
+		my_df %>%
+			data.frame(row.names = quo_name(.feature)) %>%
+			Seurat::CreateSeuratObject() %>%
+			Seurat::ScaleData(display.progress = T, num.cores=4, do.par = TRUE) %>%
+			Seurat::FindVariableFeatures(selection.method = "vst") %>%
+			Seurat::RunPCA(npcs = 30) %>%
+			Seurat::FindNeighbors() %>%
+			Seurat::FindClusters(method = "igraph", ...) %>%
+			`[[` ("seurat_clusters") %>%
+			as_tibble(rownames=quo_name(.element)) %>%
+			rename(`cluster SNN` = seurat_clusters) %>%
+			mutate(!!.element := gsub("\\.", "-", !!.element)) %>%
+
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
+	}
+
+#' Add SNN shared nearest neighbour clusters to a tibble
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom stats kmeans
+#'
+#'
+#' @param .data A tibble
+#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
+#' @param of_samples A boolean
+#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param ... Further parameters passed to the function kmeans
+#'
+#' @return A tibble with additional columns
+#'
+#' @export
+add_clusters_SNN_bulk <-
+	function(.data,
+					 .element = NULL,
+					 .feature = NULL,
+					 .value,
+					 of_samples = T,
+					 log_transform = T,
+					 ...) {
+		# Get column names
+		.element = enquo(.element)
+		.feature = enquo(.feature)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.element = col_names$.element
+		.feature = col_names$.feature
+
+		.value = enquo(.value)
+
+		.data %>%
+			left_join(
+				(.) %>%
+					get_clusters_SNN_bulk(
+						.value = !!.value,
 						.element = !!.element,
 						.feature = !!.feature,
 						log_transform = log_transform,
@@ -849,10 +973,10 @@ add_clusters_kmeans_bulk <-
 #'
 get_reduced_dimensions_MDS_bulk <-
 	function(.data,
-					 .value,
-					 .dims = 2,
 					 .element = NULL,
 					 .feature = NULL,
+					 .value,
+					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
 					 log_transform = T) {
@@ -943,10 +1067,10 @@ get_reduced_dimensions_MDS_bulk <-
 #'
 add_reduced_dimensions_MDS_bulk <-
 	function(.data,
-					 .value ,
-					 .dims = 2,
 					 .element = NULL,
 					 .feature = NULL,
+					 .value ,
+					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
 					 log_transform = T) {
@@ -1000,10 +1124,11 @@ add_reduced_dimensions_MDS_bulk <-
 #'
 get_reduced_dimensions_PCA_bulk <-
 	function(.data,
-					 .value ,
-					 .dims = 2,
 					 .element = NULL,
 					 .feature = NULL,
+
+					 .value ,
+					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
 					 log_transform = T,
@@ -1125,10 +1250,11 @@ get_reduced_dimensions_PCA_bulk <-
 #'
 add_reduced_dimensions_PCA_bulk <-
 	function(.data,
-					 .value ,
-					 .dims = 2,
 					 .element = NULL,
 					 .feature = NULL,
+
+					 .value ,
+					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
 					 log_transform = T,
@@ -1182,10 +1308,11 @@ add_reduced_dimensions_PCA_bulk <-
 #'
 get_reduced_dimensions_TSNE_bulk <-
 	function(.data,
-					 .value ,
-					 .dims = 2,
 					 .element = NULL,
 					 .feature = NULL,
+
+					 .value ,
+					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
 					 log_transform = T,
@@ -1281,10 +1408,11 @@ get_reduced_dimensions_TSNE_bulk <-
 #'
 add_reduced_dimensions_TSNE_bulk <-
 	function(.data,
-					 .value ,
-					 .dims = 2,
 					 .element = NULL,
 					 .feature = NULL,
+
+					 .value ,
+					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
 					 log_transform = T,
@@ -1499,10 +1627,11 @@ add_rotated_dimensions =
 #'
 aggregate_duplicated_transcripts_bulk =
 	function(.data,
-					 aggregation_function = sum,
 					 .sample = NULL,
 					 .transcript = NULL,
 					 .abundance = NULL,
+					 aggregation_function = sum,
+
 					 keep_integer = T) {
 		# Get column names
 		.sample = enquo(.sample)
@@ -1604,10 +1733,11 @@ aggregate_duplicated_transcripts_bulk =
 #'
 #'
 drop_redundant_elements_through_correlation <- function(.data,
-																												.value,
-																												correlation_threshold = 0.9,
 																												.element = NULL,
 																												.feature = NULL,
+																												.value,
+																												correlation_threshold = 0.9,
+
 																												of_samples = T,
 																												log_transform = F) {
 	# Get column names

@@ -4,20 +4,20 @@
 \alias{get_reduced_dimensions_PCA_bulk}
 \title{Get principal component information to a tibble using PCA}
 \usage{
-get_reduced_dimensions_PCA_bulk(.data, .value, .dims = 2,
-  .element = NULL, .feature = NULL, top = 500, of_samples = T,
+get_reduced_dimensions_PCA_bulk(.data, .element = NULL,
+  .feature = NULL, .value, .dims = 2, top = 500, of_samples = T,
   log_transform = T, scale = T, ...)
 }
 \arguments{
 \item{.data}{A tibble}
 
-\item{.value}{A column symbol with the value the clustering is based on (e.g., `count`)}
-
-\item{.dims}{A integer vector corresponding to principal components of interest (e.g., 1:6)}
-
 \item{.element}{A column symbol. The column that is used to calculate distance (i.e., normally samples)}
 
 \item{.feature}{A column symbol. The column that is represents entities to cluster (i.e., normally genes)}
+
+\item{.value}{A column symbol with the value the clustering is based on (e.g., `count`)}
+
+\item{.dims}{A integer vector corresponding to principal components of interest (e.g., 1:6)}
 
 \item{top}{An integer. How many top genes to select}
 

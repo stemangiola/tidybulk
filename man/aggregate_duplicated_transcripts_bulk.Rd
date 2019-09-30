@@ -5,20 +5,20 @@
 \title{Aggregates multiple counts from the same samples (e.g., from isoforms)
 This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns}
 \usage{
-aggregate_duplicated_transcripts_bulk(.data, aggregation_function = sum,
-  .sample = NULL, .transcript = NULL, .abundance = NULL,
+aggregate_duplicated_transcripts_bulk(.data, .sample = NULL,
+  .transcript = NULL, .abundance = NULL, aggregation_function = sum,
   keep_integer = T)
 }
 \arguments{
 \item{.data}{A tibble}
-
-\item{aggregation_function}{A function for counts aggregation (e.g., sum)}
 
 \item{.sample}{The name of the sample column}
 
 \item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{aggregation_function}{A function for counts aggregation (e.g., sum)}
 
 \item{keep_integer}{A boolean}
 }

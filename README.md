@@ -158,7 +158,7 @@ the reduced dimensions.
 ``` r
 counts.norm.MDS =
   counts.norm %>%
-  reduce_dimensions(.value = `count normalised`, method="MDS" , .element = sample, .feature = transcript, components = 1:3)
+  reduce_dimensions(.value = `count normalised`, method="MDS" , .element = sample, .feature = transcript, .dims = 3)
 
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 ```
@@ -195,16 +195,17 @@ counts.norm.MDS %>%
 ``` r
 counts.norm.PCA =
   counts.norm %>%
-  reduce_dimensions(.value = `count normalised`, method="PCA" , .element = sample, .feature = transcript, components = 1:3)
+  reduce_dimensions(.value = `count normalised`, method="PCA" , .element = sample, .feature = transcript, .dims = 3)
 ```
 
+    ## Getting the 500 most variable genes
     ## Fraction of variance explained by the selected principal components
     ## # A tibble: 3 x 2
     ##   `Fraction of variance`    PC
     ##                    <dbl> <int>
-    ## 1                 0.897      1
-    ## 2                 0.0475     2
-    ## 3                 0.0205     3
+    ## 1                  0.421     1
+    ## 2                  0.275     2
+    ## 3                  0.143     3
 
 ``` r
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
@@ -213,16 +214,16 @@ counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% disti
     ## # A tibble: 48 x 6
     ##    sample        PC1     PC2     PC3 `Cell type`       time 
     ##    <chr>       <dbl>   <dbl>   <dbl> <chr>             <chr>
-    ##  1 SRR1740034 -0.143 -0.131  -0.0746 b_cell            0 d  
-    ##  2 SRR1740035 -0.143 -0.131  -0.0742 b_cell            1 d  
-    ##  3 SRR1740036 -0.144 -0.130  -0.0718 b_cell            3 d  
-    ##  4 SRR1740037 -0.143 -0.130  -0.0719 b_cell            7 d  
-    ##  5 SRR1740038 -0.148  0.0471  0.191  dendritic_myeloid 0 d  
-    ##  6 SRR1740039 -0.148  0.0425  0.194  dendritic_myeloid 1 d  
-    ##  7 SRR1740040 -0.148  0.0466  0.189  dendritic_myeloid 3 d  
-    ##  8 SRR1740041 -0.148  0.0398  0.197  dendritic_myeloid 7 d  
-    ##  9 SRR1740042 -0.147  0.0741  0.192  monocyte          0 d  
-    ## 10 SRR1740043 -0.148  0.0720  0.183  monocyte          1 d  
+    ##  1 SRR1740034  0.104  0.0310 -0.314  b_cell            0 d  
+    ##  2 SRR1740035  0.104  0.0313 -0.316  b_cell            1 d  
+    ##  3 SRR1740036  0.103  0.0260 -0.317  b_cell            3 d  
+    ##  4 SRR1740037  0.105  0.0315 -0.315  b_cell            7 d  
+    ##  5 SRR1740038 -0.184 -0.0807 -0.127  dendritic_myeloid 0 d  
+    ##  6 SRR1740039 -0.181 -0.0953 -0.117  dendritic_myeloid 1 d  
+    ##  7 SRR1740040 -0.181 -0.0835 -0.128  dendritic_myeloid 3 d  
+    ##  8 SRR1740041 -0.181 -0.0865 -0.130  dendritic_myeloid 7 d  
+    ##  9 SRR1740042 -0.204 -0.0447 -0.0797 monocyte          0 d  
+    ## 10 SRR1740043 -0.199 -0.0610 -0.0803 monocyte          1 d  
     ## # … with 38 more rows
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is
@@ -236,6 +237,83 @@ counts.norm.PCA %>%
 ```
 
 ![](README_files/figure-gfm/plot_pca-1.png)<!-- -->
+
+**tSNE**
+
+``` r
+counts.norm.tSNE =
+    ttBulk::breast_tcga_mini %>%
+    reduce_dimensions(
+        .value = `count normalised`, 
+        method = "tSNE", 
+        .element = sample, 
+        .feature = ens, 
+        top = 500, 
+        perplexity=10, 
+        pca_scale =T
+    ) 
+```
+
+    ## Getting the 500 most variable genes
+    ## Performing PCA
+    ## Read the 836 x 50 data matrix successfully!
+    ## OpenMP is working. 1 threads.
+    ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
+    ## Computing input similarities...
+    ## Building tree...
+    ## Done in 0.08 seconds (sparsity = 0.054549)!
+    ## Learning embedding...
+    ## Iteration 50: error is 77.050637 (50 iterations in 0.17 seconds)
+    ## Iteration 100: error is 75.176424 (50 iterations in 0.12 seconds)
+    ## Iteration 150: error is 75.003686 (50 iterations in 0.11 seconds)
+    ## Iteration 200: error is 74.927248 (50 iterations in 0.11 seconds)
+    ## Iteration 250: error is 74.926579 (50 iterations in 0.11 seconds)
+    ## Iteration 300: error is 2.060540 (50 iterations in 0.11 seconds)
+    ## Iteration 350: error is 1.819486 (50 iterations in 0.11 seconds)
+    ## Iteration 400: error is 1.733705 (50 iterations in 0.11 seconds)
+    ## Iteration 450: error is 1.695327 (50 iterations in 0.11 seconds)
+    ## Iteration 500: error is 1.673284 (50 iterations in 0.11 seconds)
+    ## Iteration 550: error is 1.658643 (50 iterations in 0.12 seconds)
+    ## Iteration 600: error is 1.648497 (50 iterations in 0.12 seconds)
+    ## Iteration 650: error is 1.640757 (50 iterations in 0.13 seconds)
+    ## Iteration 700: error is 1.633566 (50 iterations in 0.12 seconds)
+    ## Iteration 750: error is 1.628328 (50 iterations in 0.12 seconds)
+    ## Iteration 800: error is 1.621698 (50 iterations in 0.12 seconds)
+    ## Iteration 850: error is 1.618489 (50 iterations in 0.12 seconds)
+    ## Iteration 900: error is 1.615272 (50 iterations in 0.12 seconds)
+    ## Iteration 950: error is 1.613625 (50 iterations in 0.12 seconds)
+    ## Iteration 1000: error is 1.609274 (50 iterations in 0.12 seconds)
+    ## Fitting performed in 2.38 seconds.
+
+``` r
+counts.norm.tSNE %>% 
+    select(contains("tSNE", ignore.case = F), sample, Call) %>%
+    distinct()
+```
+
+    ## # A tibble: 836 x 4
+    ##    `tSNE 1` `tSNE 2` sample                       Call  
+    ##       <dbl>    <dbl> <chr>                        <fct> 
+    ##  1  -50.3      -1.23 TCGA-A1-A0SB-01A-11R-A144-07 Normal
+    ##  2   14.5      10.6  TCGA-A1-A0SD-01A-11R-A115-07 LumA  
+    ##  3    4.27      9.04 TCGA-A1-A0SE-01A-11R-A084-07 LumA  
+    ##  4   -0.908    -1.70 TCGA-A1-A0SF-01A-11R-A144-07 LumA  
+    ##  5   12.2      30.2  TCGA-A1-A0SG-01A-11R-A144-07 LumA  
+    ##  6    7.46     19.0  TCGA-A1-A0SH-01A-11R-A084-07 LumA  
+    ##  7  -15.5      -6.99 TCGA-A1-A0SI-01A-11R-A144-07 LumB  
+    ##  8   16.4      16.2  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  
+    ##  9  -58.7      -8.15 TCGA-A1-A0SK-01A-12R-A084-07 Basal 
+    ## 10  -21.5      -2.24 TCGA-A1-A0SM-01A-11R-A084-07 LumA  
+    ## # … with 826 more rows
+
+``` r
+counts.norm.tSNE %>% 
+    select(contains("tSNE", ignore.case = F), sample, Call) %>%
+    distinct() %>%
+    ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
+```
+
+![](README_files/figure-gfm/tsne-1.png)<!-- -->
 
 # Rotate `dimensions`
 
@@ -279,7 +357,7 @@ counts.norm.MDS.rotated %>%
 
 ![](README_files/figure-gfm/plot_rotate_2-1.png)<!-- -->
 
-# Annotate `differential transcirption`
+# Annotate `differential transcription`
 
 We may want to test for differential transcription between sample-wise
 factors of interest (e.g., with edgeR).
@@ -324,8 +402,6 @@ factor of interest and the second covariate is the unwanted variation,
 and returns a tibble with additional columns for the adjusted counts as
 `<COUNT COLUMN> adjusted`. At the moment just an unwanted covariated is
 allowed at a time.
-
-**“\#\# Standardizing Data across genes” is still in the cache?**
 
 ``` r
 counts.norm.adj =
@@ -447,7 +523,7 @@ clustering methods.
 
 ``` r
 counts.norm.cluster = counts.norm %>%
-  annotate_clusters(.value = `count normalised`, .element = sample, .feature = transcript,  number_of_clusters = 2 )
+  annotate_clusters(.value = `count normalised`, .element = sample, .feature = transcript, method="kmeans", centers = 2 )
 
 counts.norm.cluster
 ```
@@ -467,7 +543,7 @@ counts.norm.cluster
     ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE                     1
     ## # … with 1,340,150 more rows, and 5 more variables: `count
     ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
-    ## #   counts` <lgl>, cluster <fct>
+    ## #   counts` <lgl>, `cluster kmeans` <fct>
 
 We can add cluster annotation to the MDS dimesion reduced data set and
 plot.
@@ -478,10 +554,11 @@ plot.
     .value = `count normalised`,
     .element = sample,
     .feature = transcript,
-    number_of_clusters = 2
+    method="kmeans",
+    centers = 2
   ) %>%
-    distinct(sample, `Dim 1`, `Dim 2`, cluster) %>%
-    ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=cluster)) +
+    distinct(sample, `Dim 1`, `Dim 2`, `cluster kmeans`) %>%
+    ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`cluster kmeans`)) +
   geom_point() +
   my_theme
 ```
@@ -640,7 +717,7 @@ data set
         method="MDS" , 
         .element = sample, 
         .feature = transcript, 
-        components = 1:3, 
+        .dims = 3, 
         action="add"
     )
 ```
@@ -672,7 +749,7 @@ sample
         method="MDS" , 
         .element = sample, 
         .feature = transcript, 
-        components = 1:3, 
+        .dims = 3, 
         action="get"
     )
 ```
