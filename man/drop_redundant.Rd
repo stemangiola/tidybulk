@@ -4,9 +4,9 @@
 \alias{drop_redundant}
 \title{Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) aboundances are correlated}
 \usage{
-drop_redundant(.data, .element = NULL, .feature = NULL, .value, method,
-  of_samples = T, correlation_threshold = 0.9, log_transform = F,
-  Dim_a_column, Dim_b_column)
+drop_redundant(.data, .element = NULL, .feature = NULL, .abundance,
+  method, of_samples = T, correlation_threshold = 0.9,
+  log_transform = F, Dim_a_column, Dim_b_column)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
@@ -15,7 +15,7 @@ drop_redundant(.data, .element = NULL, .feature = NULL, .value, method,
 
 \item{.feature}{The name of the feature column (normally transcripts/genes)}
 
-\item{.value}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
+\item{.abundance}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
 
 \item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
 
@@ -47,7 +47,7 @@ counts \%>\%
     drop_redundant(
 	   .element = sample,
 	   .feature = transcript,
-	   	.value =  count,
+	   	.abundance =  count,
 	   	method = "correlation"
 	   	)
 
@@ -55,7 +55,7 @@ counts \%>\%
     drop_redundant(
 	   .element = sample,
 	   .feature = transcript,
-	   	.value = count,
+	   	.abundance = count,
 	   	method = "reduced_dimensions"
 	   	)
 }

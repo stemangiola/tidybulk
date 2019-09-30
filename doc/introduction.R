@@ -74,7 +74,7 @@ counts.norm %>%
 ## ----mds, cache=TRUE-----------------------------------------------------
 counts.norm.MDS =
   counts.norm %>%
-  reduce_dimensions(.value = `count normalised`, method="MDS" , .element = sample, .feature = transcript, .dims = 3)
+  reduce_dimensions(.abundance = `count normalised`, method="MDS" , .element = sample, .feature = transcript, .dims = 3)
 
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 
@@ -89,7 +89,7 @@ counts.norm.MDS %>%
 ## ----pca, cache=TRUE-----------------------------------------------------
 counts.norm.PCA =
   counts.norm %>%
-  reduce_dimensions(.value = `count normalised`, method="PCA" , .element = sample, .feature = transcript, .dims = 3)
+  reduce_dimensions(.abundance = `count normalised`, method="PCA" , .element = sample, .feature = transcript, .dims = 3)
 
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 
@@ -103,7 +103,7 @@ counts.norm.PCA %>%
 counts.norm.tSNE =
 	ttBulk::breast_tcga_mini %>%
 	reduce_dimensions(
-		.value = `count normalised`, 
+		.abundance = `count normalised`, 
 		method = "tSNE", 
 		.element = sample, 
 		.feature = ens, 
@@ -192,14 +192,14 @@ counts.cibersort %>%
 
 ## ----cluster, cache=TRUE-------------------------------------------------
 counts.norm.cluster = counts.norm %>%
-  annotate_clusters(.value = `count normalised`, .element = sample, .feature = transcript, method="kmeans",	centers = 2 )
+  annotate_clusters(.abundance = `count normalised`, .element = sample, .feature = transcript, method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 
 ## ----plot_cluster, cache=TRUE--------------------------------------------
  counts.norm.MDS %>%
   annotate_clusters(
-  	.value = `count normalised`,
+  	.abundance = `count normalised`,
   	.element = sample,
   	.feature = transcript,
   	method="kmeans",
@@ -217,7 +217,7 @@ counts.norm.non_redundant =
   	method = "correlation",
   	.element = sample,
   	.feature = transcript,
-  	.value = `count normalised`
+  	.abundance = `count normalised`
   )
 
 ## ----plot_drop, cache=TRUE-----------------------------------------------
@@ -266,7 +266,7 @@ counts_ensembl %>% annotate_symbol(ens)
 ## ---- cache=TRUE---------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	.value = `count normalised`, 
+    	.abundance = `count normalised`, 
     	method="MDS" , 
     	.element = sample, 
     	.feature = transcript, 
@@ -277,7 +277,7 @@ counts_ensembl %>% annotate_symbol(ens)
 ## ---- cache=TRUE---------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	.value = `count normalised`, 
+    	.abundance = `count normalised`, 
     	method="MDS" , 
     	.element = sample, 
     	.feature = transcript, 

@@ -171,7 +171,7 @@ test_that("Get cluster lables based on Kmeans - no object",{
   res =
     annotate_clusters(
       ttBulk::counts_mini,
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript,
       method="kmeans",
@@ -196,7 +196,7 @@ test_that("Add cluster lables based on Kmeans - no object",{
   res =
     annotate_clusters(
       ttBulk::counts_mini,
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript,
       method="kmeans",
@@ -223,7 +223,7 @@ test_that("Get cluster lables based on SNN - no object",{
 			ttBulk::breast_tcga_mini,
 			.element = sample,
 			.feature = ens,
-			.value = `count normalised`,
+			.abundance = `count normalised`,
 			method="SNN",
 			resolution=0.8,
 			action="get"
@@ -248,7 +248,7 @@ test_that("Add cluster lables based on SNN - no object",{
 			ttBulk::breast_tcga_mini,
 			.element = sample,
 			.feature = ens,
-			.value = `count normalised`,
+			.abundance = `count normalised`,
 			method="SNN",
 			resolution=0.8,
 			action="add"
@@ -272,7 +272,7 @@ test_that("Get reduced dimensions MDS - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method = "MDS",
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript,
       action="get"
@@ -297,7 +297,7 @@ test_that("Add reduced dimensions MDS - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method = "MDS",
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript,
       action="add"
@@ -322,7 +322,7 @@ test_that("Get reduced dimensions PCA - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method="PCA",
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript,
       action="get"
@@ -347,7 +347,7 @@ test_that("Add reduced dimensions PCA - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method="PCA",
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript,
       action="add"
@@ -374,7 +374,7 @@ test_that("Add reduced dimensions tSNE - no object",{
     reduce_dimensions(
       ttBulk::counts,
       method="tSNE",
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript,
       action="add"
@@ -399,7 +399,7 @@ test_that("Get rotated dimensions - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method="PCA",
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript,
       action="add"
@@ -434,7 +434,7 @@ test_that("Add rotated dimensions - no object",{
     reduce_dimensions(
       ttBulk::counts_mini,
       method="PCA",
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript,
       action="add"
@@ -491,7 +491,7 @@ test_that("Drop redundant correlated - no object",{
     drop_redundant(
       ttBulk::counts_mini,
       method = "correlation",
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript
     )
