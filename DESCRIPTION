@@ -29,4 +29,7 @@ Suggests:
     utils,
     knitr,
     qpdf,
-    covr
+    covr,
+    Seurat,
+    KernSmooth,
+    Rtsne

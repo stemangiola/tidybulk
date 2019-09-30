@@ -183,7 +183,6 @@ normalise_abundance.tbl_df = normalise_abundance.ttBulk <-
 #' @param .feature The name of the feature column (normally transcripts/genes)
 #' @param .value The name of the column including the numerical value the clustering is based on (normally transcript abundance)
 #'
-#' @param number_of_clusters A integer indicating how many clusters you are seeking for the method k-means.
 #' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
 #' @param of_samples A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
@@ -203,7 +202,7 @@ normalise_abundance.tbl_df = normalise_abundance.ttBulk <-
 #'
 #'
 #' counts %>%
-#'     annotate_clusters(sample, transcript, count,	number_of_clusters = 2)
+#'     annotate_clusters(sample, transcript, count,	centers = 2)
 #'
 #'     }
 #'
@@ -213,8 +212,7 @@ annotate_clusters <- function(.data,
 															.element = NULL,
 															.feature = NULL,
 															.value,
-															number_of_clusters,
-															method = "kmeans",
+															method,
 															of_samples = T,
 															log_transform = T,
 															action = "add",
@@ -227,8 +225,7 @@ annotate_clusters.default <-  function(.data,
 																			 .element = NULL,
 																			 .feature = NULL,
 																			 .value,
-																			 number_of_clusters,
-																			 method = "kmeans",
+																			 method,
 																			 of_samples = T,
 																			 log_transform = T,
 																			 action = "add",
@@ -243,8 +240,7 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
 					 .element = NULL,
 					 .feature = NULL,
 					 .value,
-					 number_of_clusters,
-					 method = "kmeans",
+					 method ,
 					 of_samples = T,
 					 log_transform = T,
 					 action = "add",
@@ -260,7 +256,6 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
 				add_clusters_kmeans_bulk(
 					.data,
 					.value = !!.value,
-					number_of_clusters = number_of_clusters,
 					.element = !!.element,
 					.feature = !!.feature,
 					of_samples = of_samples,
@@ -271,7 +266,32 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
 				get_clusters_kmeans_bulk(
 					.data,
 					.value = !!.value,
-					number_of_clusters = number_of_clusters,
+					.element = !!.element,
+					.feature = !!.feature,
+					of_samples = of_samples,
+					log_transform = log_transform,
+					...
+				)
+			else
+				stop(
+					"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				)
+		}
+		else if (method == "SNN") {
+			if (action == "add")
+				add_clusters_SNN_bulk(
+					.data,
+					.value = !!.value,
+					.element = !!.element,
+					.feature = !!.feature,
+					of_samples = of_samples,
+					log_transform = log_transform,
+					...
+				)
+			else if (action == "get")
+				get_clusters_SNN_bulk(
+					.data,
+					.value = !!.value,
 					.element = !!.element,
 					.feature = !!.feature,
 					of_samples = of_samples,
@@ -350,11 +370,12 @@ annotate_clusters.tbl_df = annotate_clusters.ttBulk <-
 #'
 #'
 reduce_dimensions <- function(.data,
+															.element = NULL,
+															.feature = NULL,
 															.value,
 															method,
 															.dims = 2,
-															.element = NULL,
-															.feature = NULL,
+
 															top = 500,
 															of_samples = T,
 															log_transform = T,
@@ -366,11 +387,12 @@ reduce_dimensions <- function(.data,
 
 #' @export
 reduce_dimensions.default <-  function(.data,
+																			 .element = NULL,
+																			 .feature = NULL,
 																			 .value,
 																			 method,
 																			 .dims = 2,
-																			 .element = NULL,
-																			 .feature = NULL,
+
 																			 top = 500,
 																			 of_samples = T,
 																			 log_transform = T,
@@ -383,11 +405,12 @@ reduce_dimensions.default <-  function(.data,
 #' @export
 reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 	function(.data,
+					 .element = NULL,
+					 .feature = NULL,
 					 .value,
 					 method,
 					 .dims = 2,
-					 .element = NULL,
-					 .feature = NULL,
+
 					 top = 500,
 					 of_samples = T,
 					 log_transform = T,
@@ -674,12 +697,15 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 #'
 #'
 drop_redundant <- function(.data,
-													 method,
 													 .element = NULL,
+													 .feature = NULL,
+													 .value,
+													 method,
+
 													 of_samples = T,
 
-													 .value,
-													 .feature = NULL,
+
+
 													 correlation_threshold = 0.9,
 													 log_transform = F,
 
@@ -689,12 +715,15 @@ drop_redundant <- function(.data,
 }
 #' @export
 drop_redundant.default <-  function(.data,
-																		method,
 																		.element = NULL,
+																		.feature = NULL,
+																		.value,
+																		method,
+
 																		of_samples = T,
 
-																		.value,
-																		.feature = NULL,
+
+
 																		correlation_threshold = 0.9,
 																		log_transform = F,
 
@@ -705,17 +734,20 @@ drop_redundant.default <-  function(.data,
 }
 #' @export
 drop_redundant.tbl_df = drop_redundant.ttBulk <-  function(.data,
-																													 method,
 																													 .element = NULL,
+																													 .feature = NULL,
+																													 .value,
+																													 method,
+
 																													 of_samples = T,
 
-																													 .value,
-																													 .feature = NULL,
+
+
 																													 correlation_threshold = 0.9,
 																													 log_transform = F,
 
-																													 Dim_a_column = NULL,
-																													 Dim_b_column = NULL)
+																													 Dim_a_column,
+																													 Dim_b_column)
 {
 	# Make col names
 	.value = enquo(.value)

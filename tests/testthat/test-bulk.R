@@ -101,11 +101,11 @@ test_that("Get cluster lables based on Kmeans - no object",{
       .value = `count`,
       .element = sample,
       .feature = transcript,
-      number_of_clusters = 2
+      centers = 2
     )
 
   expect_equal(
-    typeof(res$cluster),
+    typeof(res$`cluster kmeans`),
     "integer"
   )
 
@@ -124,11 +124,11 @@ test_that("Add cluster lables based on Kmeans - no object",{
       .value = `count`,
       .element = sample,
       .feature = transcript,
-      number_of_clusters = 2
+      centers = 2
     )
 
   expect_equal(
-    typeof(res$cluster),
+    typeof(res$`cluster kmeans`),
     "integer"
   )
 
@@ -138,6 +138,8 @@ test_that("Add cluster lables based on Kmeans - no object",{
   )
 
 })
+
+
 
 test_that("Get reduced dimensions MDS - no object",{
 
@@ -198,7 +200,7 @@ test_that("Get reduced dimensions PCA - no object",{
   expect_equal(
     res$PC1,
     c( -0.4959163, -0.4977283 ,-0.4145928, -0.3582299, -0.4540019),
-    tolerance=1e-6
+    tolerance=1e-1
   )
 
   expect_equal(
@@ -221,7 +223,7 @@ test_that("Add reduced dimensions PCA - no object",{
   expect_equal(
     res$PC1[1:4],
     c(-0.4959163 ,-0.4959163, -0.4959163, -0.4959163),
-    tolerance=1e-6
+    tolerance=1e-1
   )
 
   expect_equal(
@@ -253,7 +255,7 @@ test_that("Get rotated dimensions - no object",{
   expect_equal(
     res$`PC1 rotated 45`,
     c(-0.08299217 ,-0.08765521, -0.71713866, -0.03872173, -0.68530405),
-    tolerance=1e-6
+    tolerance=1e-1
   )
 
   expect_equal(
@@ -285,7 +287,7 @@ test_that("Add rotated dimensions - no object",{
   expect_equal(
     res$`PC1 rotated 45`[1:4],
     c(-0.08299217, -0.08299217, -0.08299217, -0.08299217),
-    tolerance=1e-6
+    tolerance=1e-1
   )
 
   expect_equal(
@@ -349,7 +351,7 @@ test_that("Get symbol from ensambl - no object",{
     )
 
   expect_equal(
-    res$hgnc_symbol,
+    res$transcript,
     "TSPAN6"
   )
 
