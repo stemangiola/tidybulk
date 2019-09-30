@@ -60,7 +60,7 @@ counts.aggr
 
 ## ----normalise, cache=TRUE-----------------------------------------------
 counts.norm =  counts.aggr %>% 
-	normalise_counts(sample, transcript, `count`)
+	normalise_abundance(sample, transcript, `count`)
 
 counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
 
@@ -74,7 +74,7 @@ counts.norm %>%
 ## ----mds, cache=TRUE-----------------------------------------------------
 counts.norm.MDS =
   counts.norm %>%
-  reduce_dimensions(.value = `count normalised`, method="MDS" , .element = sample, .feature = transcript, components = 1:3)
+  reduce_dimensions(.value = `count normalised`, method="MDS" , .element = sample, .feature = transcript, .dims = 3)
 
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 
@@ -89,7 +89,7 @@ counts.norm.MDS %>%
 ## ----pca, cache=TRUE-----------------------------------------------------
 counts.norm.PCA =
   counts.norm %>%
-  reduce_dimensions(.value = `count normalised`, method="PCA" , .element = sample, .feature = transcript, components = 1:3)
+  reduce_dimensions(.value = `count normalised`, method="PCA" , .element = sample, .feature = transcript, .dims = 3)
 
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 
@@ -98,6 +98,28 @@ counts.norm.PCA %>%
 	select(contains("PC"), sample, `Cell type`) %>%
   distinct() %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
+
+## ----tsne, cache=TRUE----------------------------------------------------
+counts.norm.tSNE =
+	ttBulk::breast_tcga_mini %>%
+	reduce_dimensions(
+		.value = `count normalised`, 
+		method = "tSNE", 
+		.element = sample, 
+		.feature = ens, 
+		top = 500, 
+		perplexity=10, 
+		pca_scale =T
+	) 
+
+counts.norm.tSNE %>% 
+	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	distinct()
+
+counts.norm.tSNE %>% 
+	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	distinct() %>%
+	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
 
 ## ----rotate, cache=TRUE--------------------------------------------------
 counts.norm.MDS.rotated =
@@ -170,7 +192,7 @@ counts.cibersort %>%
 
 ## ----cluster, cache=TRUE-------------------------------------------------
 counts.norm.cluster = counts.norm %>%
-  annotate_clusters(.value = `count normalised`, .element = sample, .feature = transcript,	number_of_clusters = 2 )
+  annotate_clusters(.value = `count normalised`, .element = sample, .feature = transcript, method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 
@@ -180,10 +202,11 @@ counts.norm.cluster
   	.value = `count normalised`,
   	.element = sample,
   	.feature = transcript,
-  	number_of_clusters = 2
+  	method="kmeans",
+  	centers = 2
   ) %>%
-	distinct(sample, `Dim 1`, `Dim 2`, cluster) %>%
-	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=cluster)) +
+	distinct(sample, `Dim 1`, `Dim 2`, `cluster kmeans`) %>%
+	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`cluster kmeans`)) +
   geom_point() +
   my_theme
 
@@ -247,7 +270,7 @@ counts_ensembl %>% annotate_symbol(ens)
     	method="MDS" , 
     	.element = sample, 
     	.feature = transcript, 
-    	components = 1:3, 
+    	.dims = 3, 
     	action="add"
     )
 
@@ -258,7 +281,7 @@ counts_ensembl %>% annotate_symbol(ens)
     	method="MDS" , 
     	.element = sample, 
     	.feature = transcript, 
-    	components = 1:3, 
+    	.dims = 3, 
     	action="get"
     )
 
