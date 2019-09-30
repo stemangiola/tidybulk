@@ -22,3 +22,8 @@
 #'
 #'
 "ensembl_symbol_mapping"
+
+#' Data set
+#'
+#'
+"breast_tcga_mini"

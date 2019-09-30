@@ -828,7 +828,6 @@ add_clusters_kmeans_bulk <-
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
-#' @importFrom stats kmeans
 #'
 #'
 #' @param .data A tibble
@@ -860,11 +859,14 @@ get_clusters_SNN_bulk <-
 		.value = enquo(.value)
 
 		# Check if package is installed, otherwise install
-		if ("dbscan" %in% rownames(installed.packages()) == FALSE) {
-			writeLines("Installing dbscan")
-			install.packages("dbscan", repos = "https://cloud.r-project.org")
+		if ("Seurat" %in% rownames(installed.packages()) == FALSE) {
+			writeLines("Installing Seurat")
+			install.packages("Seurat", repos = "https://cloud.r-project.org")
 		}
-
+		if ("KernSmooth" %in% rownames(installed.packages()) == FALSE) {
+			writeLines("Installing KernSmooth")
+			install.packages("KernSmooth", repos = "https://cloud.r-project.org")
+		}
 
 		my_df =
 			.data %>%
