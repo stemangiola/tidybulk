@@ -98,7 +98,7 @@ test_that("Get cluster lables based on Kmeans - no object",{
   res =
     get_clusters_kmeans_bulk(
       ttBulk::counts_mini,
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript,
       centers = 2
@@ -121,7 +121,7 @@ test_that("Add cluster lables based on Kmeans - no object",{
   res =
     add_clusters_kmeans_bulk(
       ttBulk::counts_mini,
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript,
       centers = 2
@@ -146,7 +146,7 @@ test_that("Get reduced dimensions MDS - no object",{
   res =
     get_reduced_dimensions_MDS_bulk(
       ttBulk::counts_mini,
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript
     )
@@ -169,7 +169,7 @@ test_that("Add reduced dimensions MDS - no object",{
   res =
     add_reduced_dimensions_MDS_bulk(
       ttBulk::counts_mini,
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript
     )
@@ -192,7 +192,7 @@ test_that("Get reduced dimensions PCA - no object",{
   res =
     get_reduced_dimensions_PCA_bulk(
       ttBulk::counts_mini,
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript
     )
@@ -215,7 +215,7 @@ test_that("Add reduced dimensions PCA - no object",{
   res =
     add_reduced_dimensions_PCA_bulk(
       ttBulk::counts_mini,
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript
     )
@@ -238,7 +238,7 @@ test_that("Get rotated dimensions - no object",{
   res.pca =
     add_reduced_dimensions_PCA_bulk(
       ttBulk::counts_mini,
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript
     )
@@ -270,7 +270,7 @@ test_that("Add rotated dimensions - no object",{
   res.pca =
     add_reduced_dimensions_PCA_bulk(
       ttBulk::counts_mini,
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript
     )
@@ -324,7 +324,7 @@ test_that("Drop redundant correlated - no object",{
   res =
     drop_redundant_elements_through_correlation(
       ttBulk::counts_mini,
-      .value = `count`,
+      .abundance = `count`,
       .element = sample,
       .feature = transcript
     )

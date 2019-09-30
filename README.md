@@ -158,7 +158,7 @@ the reduced dimensions.
 ``` r
 counts.norm.MDS =
   counts.norm %>%
-  reduce_dimensions(.value = `count normalised`, method="MDS" , .element = sample, .feature = transcript, .dims = 3)
+  reduce_dimensions(.abundance = `count normalised`, method="MDS" , .element = sample, .feature = transcript, .dims = 3)
 
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 ```
@@ -195,7 +195,7 @@ counts.norm.MDS %>%
 ``` r
 counts.norm.PCA =
   counts.norm %>%
-  reduce_dimensions(.value = `count normalised`, method="PCA" , .element = sample, .feature = transcript, .dims = 3)
+  reduce_dimensions(.abundance = `count normalised`, method="PCA" , .element = sample, .feature = transcript, .dims = 3)
 ```
 
     ## Getting the 500 most variable genes
@@ -244,7 +244,7 @@ counts.norm.PCA %>%
 counts.norm.tSNE =
     ttBulk::breast_tcga_mini %>%
     reduce_dimensions(
-        .value = `count normalised`, 
+        .abundance = `count normalised`, 
         method = "tSNE", 
         .element = sample, 
         .feature = ens, 
@@ -261,29 +261,29 @@ counts.norm.tSNE =
     ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
     ## Computing input similarities...
     ## Building tree...
-    ## Done in 0.08 seconds (sparsity = 0.054549)!
+    ## Done in 0.14 seconds (sparsity = 0.054549)!
     ## Learning embedding...
-    ## Iteration 50: error is 77.050637 (50 iterations in 0.17 seconds)
-    ## Iteration 100: error is 75.176424 (50 iterations in 0.12 seconds)
-    ## Iteration 150: error is 75.003686 (50 iterations in 0.11 seconds)
-    ## Iteration 200: error is 74.927248 (50 iterations in 0.11 seconds)
-    ## Iteration 250: error is 74.926579 (50 iterations in 0.11 seconds)
-    ## Iteration 300: error is 2.060540 (50 iterations in 0.11 seconds)
+    ## Iteration 50: error is 77.050637 (50 iterations in 0.31 seconds)
+    ## Iteration 100: error is 75.176424 (50 iterations in 0.21 seconds)
+    ## Iteration 150: error is 75.003686 (50 iterations in 0.19 seconds)
+    ## Iteration 200: error is 74.927248 (50 iterations in 0.20 seconds)
+    ## Iteration 250: error is 74.926579 (50 iterations in 0.12 seconds)
+    ## Iteration 300: error is 2.060540 (50 iterations in 0.12 seconds)
     ## Iteration 350: error is 1.819486 (50 iterations in 0.11 seconds)
     ## Iteration 400: error is 1.733705 (50 iterations in 0.11 seconds)
     ## Iteration 450: error is 1.695327 (50 iterations in 0.11 seconds)
     ## Iteration 500: error is 1.673284 (50 iterations in 0.11 seconds)
     ## Iteration 550: error is 1.658643 (50 iterations in 0.12 seconds)
-    ## Iteration 600: error is 1.648497 (50 iterations in 0.12 seconds)
-    ## Iteration 650: error is 1.640757 (50 iterations in 0.13 seconds)
-    ## Iteration 700: error is 1.633566 (50 iterations in 0.12 seconds)
-    ## Iteration 750: error is 1.628328 (50 iterations in 0.12 seconds)
-    ## Iteration 800: error is 1.621698 (50 iterations in 0.12 seconds)
-    ## Iteration 850: error is 1.618489 (50 iterations in 0.12 seconds)
-    ## Iteration 900: error is 1.615272 (50 iterations in 0.12 seconds)
-    ## Iteration 950: error is 1.613625 (50 iterations in 0.12 seconds)
+    ## Iteration 600: error is 1.648497 (50 iterations in 0.11 seconds)
+    ## Iteration 650: error is 1.640757 (50 iterations in 0.11 seconds)
+    ## Iteration 700: error is 1.633566 (50 iterations in 0.11 seconds)
+    ## Iteration 750: error is 1.628328 (50 iterations in 0.11 seconds)
+    ## Iteration 800: error is 1.621698 (50 iterations in 0.11 seconds)
+    ## Iteration 850: error is 1.618489 (50 iterations in 0.11 seconds)
+    ## Iteration 900: error is 1.615272 (50 iterations in 0.11 seconds)
+    ## Iteration 950: error is 1.613625 (50 iterations in 0.11 seconds)
     ## Iteration 1000: error is 1.609274 (50 iterations in 0.12 seconds)
-    ## Fitting performed in 2.38 seconds.
+    ## Fitting performed in 2.71 seconds.
 
 ``` r
 counts.norm.tSNE %>% 
@@ -523,7 +523,7 @@ clustering methods.
 
 ``` r
 counts.norm.cluster = counts.norm %>%
-  annotate_clusters(.value = `count normalised`, .element = sample, .feature = transcript, method="kmeans", centers = 2 )
+  annotate_clusters(.abundance = `count normalised`, .element = sample, .feature = transcript, method="kmeans", centers = 2 )
 
 counts.norm.cluster
 ```
@@ -551,9 +551,9 @@ plot.
 ``` r
  counts.norm.MDS %>%
   annotate_clusters(
-    .value = `count normalised`,
     .element = sample,
     .feature = transcript,
+    .abundance = `count normalised`,
     method="kmeans",
     centers = 2
   ) %>%
@@ -589,7 +589,7 @@ counts.norm.non_redundant =
     method = "correlation",
     .element = sample,
     .feature = transcript,
-    .value = `count normalised`
+    .abundance = `count normalised`
   )
 ```
 
@@ -713,7 +713,7 @@ data set
 ``` r
   counts.norm %>%
     reduce_dimensions(
-        .value = `count normalised`, 
+        .abundance = `count normalised`, 
         method="MDS" , 
         .element = sample, 
         .feature = transcript, 
@@ -745,7 +745,7 @@ sample
 ``` r
   counts.norm %>%
     reduce_dimensions(
-        .value = `count normalised`, 
+        .abundance = `count normalised`, 
         method="MDS" , 
         .element = sample, 
         .feature = transcript, 

@@ -5,8 +5,8 @@
 \title{Add principal component information to a tibble using PCA}
 \usage{
 add_reduced_dimensions_PCA_bulk(.data, .element = NULL,
-  .feature = NULL, .value, .dims = 2, top = 500, of_samples = T,
-  log_transform = T, scale = T, ...)
+  .feature = NULL, .abundance, .dims = 2, top = 500,
+  of_samples = T, log_transform = T, scale = T, ...)
 }
 \arguments{
 \item{.data}{A tibble}
@@ -15,7 +15,7 @@ add_reduced_dimensions_PCA_bulk(.data, .element = NULL,
 
 \item{.feature}{A column symbol. The column that is represents entities to cluster (i.e., normally genes)}
 
-\item{.value}{A column symbol with the value the clustering is based on (e.g., `count`)}
+\item{.abundance}{A column symbol with the value the clustering is based on (e.g., `count`)}
 
 \item{.dims}{A integer vector corresponding to principal components of interest (e.g., 1:6)}
 

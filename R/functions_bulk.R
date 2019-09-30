@@ -718,7 +718,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 #'
 #'
 #' @param .data A tibble
-#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
@@ -732,7 +732,7 @@ get_clusters_kmeans_bulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
-					 .value,
+					 .abundance,
 					 of_samples = T,
 					 log_transform = T,
 					 ...) {
@@ -743,22 +743,22 @@ get_clusters_kmeans_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		.value = enquo(.value)
+		.abundance = enquo(.abundance)
 
 		.data %>%
 
 			# Through error if some counts are NA
-			error_if_counts_is_na(!!.value) %>%
+			error_if_counts_is_na(!!.abundance) %>%
 
 			# Prepare data frame
-			distinct(!!.feature, !!.element, !!.value) %>%
+			distinct(!!.feature, !!.element, !!.abundance) %>%
 
 			# Check if log tranfrom is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% mutate(!!.value := !!.value %>%  `+`(1) %>%  log())) %>%
+									~ .x %>% mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
 
 			# Prepare data frame for return
-			spread(!!.feature, !!.value) %>%
+			spread(!!.feature, !!.abundance) %>%
 			as_matrix(rownames = !!.element) %>%
 			kmeans(iter.max = 1000, ...) %$%
 			cluster %>%
@@ -780,7 +780,7 @@ get_clusters_kmeans_bulk <-
 #'
 #'
 #' @param .data A tibble
-#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
@@ -794,7 +794,7 @@ add_clusters_kmeans_bulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
-					 .value,
+					 .abundance,
 					 of_samples = T,
 					 log_transform = T,
 					 ...) {
@@ -805,13 +805,13 @@ add_clusters_kmeans_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		.value = enquo(.value)
+		.abundance = enquo(.abundance)
 
 		.data %>%
 			left_join(
 				(.) %>%
 					get_clusters_kmeans_bulk(
-						.value = !!.value,
+						.abundance = !!.abundance,
 						.element = !!.element,
 						.feature = !!.feature,
 						log_transform = log_transform,
@@ -831,7 +831,7 @@ add_clusters_kmeans_bulk <-
 #'
 #'
 #' @param .data A tibble
-#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
@@ -845,7 +845,7 @@ get_clusters_SNN_bulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
-					 .value,
+					 .abundance,
 					 of_samples = T,
 					 log_transform = T,
 					 ...) {
@@ -856,7 +856,7 @@ get_clusters_SNN_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		.value = enquo(.value)
+		.abundance = enquo(.abundance)
 
 		# Check if package is installed, otherwise install
 		if ("Seurat" %in% rownames(installed.packages()) == FALSE) {
@@ -872,16 +872,16 @@ get_clusters_SNN_bulk <-
 			.data %>%
 
 			# Through error if some counts are NA
-			error_if_counts_is_na(!!.value) %>%
+			error_if_counts_is_na(!!.abundance) %>%
 
 			# Prepare data frame
-			distinct(!!.element, !!.feature, !!.value) %>%
+			distinct(!!.element, !!.feature, !!.abundance) %>%
 
 			# Check if log tranfrom is needed
-			#ifelse_pipe(log_transform, ~ .x %>% mutate(!!.value := !!.value %>%  `+`(1) %>%  log())) %>%
+			#ifelse_pipe(log_transform, ~ .x %>% mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
 
 			# Prepare data frame for return
-			spread(!!.element, !!.value)
+			spread(!!.element, !!.abundance)
 
 		my_df %>%
 			data.frame(row.names = quo_name(.feature)) %>%
@@ -909,7 +909,7 @@ get_clusters_SNN_bulk <-
 #'
 #'
 #' @param .data A tibble
-#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
@@ -923,7 +923,7 @@ add_clusters_SNN_bulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
-					 .value,
+					 .abundance,
 					 of_samples = T,
 					 log_transform = T,
 					 ...) {
@@ -934,13 +934,13 @@ add_clusters_SNN_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		.value = enquo(.value)
+		.abundance = enquo(.abundance)
 
 		.data %>%
 			left_join(
 				(.) %>%
 					get_clusters_SNN_bulk(
-						.value = !!.value,
+						.abundance = !!.abundance,
 						.element = !!.element,
 						.feature = !!.feature,
 						log_transform = log_transform,
@@ -960,7 +960,7 @@ add_clusters_SNN_bulk <-
 #' @importFrom purrr map_dfr
 #'
 #' @param .data A tibble
-#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
@@ -975,7 +975,7 @@ get_reduced_dimensions_MDS_bulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
-					 .value,
+					 .abundance,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -987,7 +987,7 @@ get_reduced_dimensions_MDS_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		.value = enquo(.value)
+		.abundance = enquo(.abundance)
 
 		# Get components from dims
 		components = 1:.dims
@@ -1003,25 +1003,25 @@ get_reduced_dimensions_MDS_bulk <-
 				~ .data %>%
 
 					# Through error if some counts are NA
-					error_if_counts_is_na(!!.value) %>%
+					error_if_counts_is_na(!!.abundance) %>%
 
 					# Filter lowly transcribed (I have to avoid the use of normalising function)
-					add_normalised_counts_bulk(!!.element, !!.feature, !!.value) %>%
+					add_normalised_counts_bulk(!!.element, !!.feature, !!.abundance) %>%
 					filter(!`filter out low counts`) %>%
-					distinct(!!.feature, !!.element, !!.value) %>%
+					distinct(!!.feature, !!.element, !!.abundance) %>%
 
 					# Check if logtansform is needed
 					ifelse_pipe(
 						log_transform,
-						~ .x %>% mutate(!!.value := !!.value %>% `+`(1) %>%  log())
+						~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())
 					) %>%
 
 					# Stop any column is not if not numeric or integer
 					ifelse_pipe(
-						(.) %>% select(!!.value) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-						~ stop(".value must be numerical or integer")
+						(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+						~ stop(".abundance must be numerical or integer")
 					) %>%
-					spread(!!.element, !!.value) %>%
+					spread(!!.element, !!.abundance) %>%
 					as_matrix(rownames = !!.feature, do_check = FALSE) %>%
 					limma::plotMDS(dim.plot = .x, plot = F, top = top) %>%
 
@@ -1054,7 +1054,7 @@ get_reduced_dimensions_MDS_bulk <-
 #'
 #'
 #' @param .data A tibble
-#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
@@ -1069,7 +1069,7 @@ add_reduced_dimensions_MDS_bulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
-					 .value ,
+					 .abundance ,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -1081,13 +1081,13 @@ add_reduced_dimensions_MDS_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		.value = enquo(.value)
+		.abundance = enquo(.abundance)
 
 		.data %>%
 			left_join(
 				(.) %>%
 					get_reduced_dimensions_MDS_bulk(
-						.value = !!.value,
+						.abundance = !!.abundance,
 						.dims = .dims,
 						.element = !!.element,
 						.feature = !!.feature,
@@ -1109,7 +1109,7 @@ add_reduced_dimensions_MDS_bulk <-
 #' @import tibble
 #'
 #' @param .data A tibble
-#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
@@ -1127,7 +1127,7 @@ get_reduced_dimensions_PCA_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 
-					 .value ,
+					 .abundance ,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -1141,7 +1141,7 @@ get_reduced_dimensions_PCA_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		.value = enquo(.value)
+		.abundance = enquo(.abundance)
 
 		# Get components from dims
 		components = 1:.dims
@@ -1149,25 +1149,25 @@ get_reduced_dimensions_PCA_bulk <-
 		.data %>%
 
 			# Through error if some counts are NA
-			error_if_counts_is_na(!!.value) %>%
+			error_if_counts_is_na(!!.abundance) %>%
 
 			# Prepare data frame
-			distinct(!!.feature, !!.element, !!.value) %>%
+			distinct(!!.feature, !!.element, !!.abundance) %>%
 
 			# Check if logtansform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% mutate(!!.value := !!.value %>% `+`(1) %>%  log())) %>%
+									~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
-				(.) %>% select(!!.value) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-				~ stop(".value must be numerical or integer")
+				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+				~ stop(".abundance must be numerical or integer")
 			) %>%
 
 			# Filter most variable genes
-			filter_variable_transcripts(!!.element, !!.feature, !!.value, top) %>%
+			filter_variable_transcripts(!!.element, !!.feature, !!.abundance, top) %>%
 
-			spread(!!.element, !!.value) %>%
+			spread(!!.element, !!.abundance) %>%
 
 			drop_na %>% # Is this necessary?
 
@@ -1235,7 +1235,7 @@ get_reduced_dimensions_PCA_bulk <-
 #'
 #'
 #' @param .data A tibble
-#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
@@ -1253,7 +1253,7 @@ add_reduced_dimensions_PCA_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 
-					 .value ,
+					 .abundance ,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -1267,13 +1267,13 @@ add_reduced_dimensions_PCA_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		.value = enquo(.value)
+		.abundance = enquo(.abundance)
 
 		.data %>%
 			left_join(
 				(.) %>%
 					get_reduced_dimensions_PCA_bulk(
-						.value = !!.value,
+						.abundance = !!.abundance,
 						.dims = .dims,
 						.element = !!.element,
 						.feature = !!.feature,
@@ -1294,7 +1294,7 @@ add_reduced_dimensions_PCA_bulk <-
 #' @import tibble
 #'
 #' @param .data A tibble
-#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
@@ -1311,7 +1311,7 @@ get_reduced_dimensions_TSNE_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 
-					 .value ,
+					 .abundance ,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -1325,7 +1325,7 @@ get_reduced_dimensions_TSNE_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		.value = enquo(.value)
+		.abundance = enquo(.abundance)
 
 		# Evaluate ...
 		arguments <- list(...)
@@ -1354,22 +1354,22 @@ get_reduced_dimensions_TSNE_bulk <-
 			.data %>%
 
 			# Check if duplicates
-			error_if_duplicated_genes(!!.element, !!.feature, !!.value)  %>%
+			error_if_duplicated_genes(!!.element, !!.feature, !!.abundance)  %>%
 
 			# Filter NA symbol
 			filter(!!.feature %>% is.na %>% `!`) %>%
 
 			# Prepare data frame
-			distinct(!!.feature, !!.element, !!.value) %>%
+			distinct(!!.feature, !!.element, !!.abundance) %>%
 
 			# Check if logtansform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% mutate(!!.value := !!.value %>% `+`(1) %>%  log())) %>%
+									~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 			# Filter most variable genes
-			filter_variable_transcripts(!!.element, !!.feature, !!.value, top) %>%
+			filter_variable_transcripts(!!.element, !!.feature, !!.abundance, top) %>%
 
-			spread(!!.feature, !!.value) %>%
+			spread(!!.feature, !!.abundance) %>%
 			# select(-sample) %>%
 			# distinct %>%
 			as_matrix(rownames = "sample")
@@ -1393,7 +1393,7 @@ get_reduced_dimensions_TSNE_bulk <-
 #'
 #'
 #' @param .data A tibble
-#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
@@ -1411,7 +1411,7 @@ add_reduced_dimensions_TSNE_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 
-					 .value ,
+					 .abundance ,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -1425,13 +1425,13 @@ add_reduced_dimensions_TSNE_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		.value = enquo(.value)
+		.abundance = enquo(.abundance)
 
 		.data %>%
 			left_join(
 				(.) %>%
 					get_reduced_dimensions_TSNE_bulk(
-						.value = !!.value,
+						.abundance = !!.abundance,
 						.dims = .dims,
 						.element = !!.element,
 						.feature = !!.feature,
@@ -1722,7 +1722,7 @@ aggregate_duplicated_transcripts_bulk =
 #'
 #'
 #' @param .data A tibble
-#' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param correlation_threshold A real number between 0 and 1
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
@@ -1735,7 +1735,7 @@ aggregate_duplicated_transcripts_bulk =
 drop_redundant_elements_through_correlation <- function(.data,
 																												.element = NULL,
 																												.feature = NULL,
-																												.value,
+																												.abundance,
 																												correlation_threshold = 0.9,
 
 																												of_samples = T,
@@ -1747,26 +1747,26 @@ drop_redundant_elements_through_correlation <- function(.data,
 	.element = col_names$.element
 	.feature = col_names$.feature
 
-	.value = enquo(.value)
+	.abundance = enquo(.abundance)
 
 	# Get the redundant data frame
 	.data.correlated =
 		.data %>%
 
 		# Stop if any counts is NA
-		error_if_counts_is_na(!!.value) %>%
+		error_if_counts_is_na(!!.abundance) %>%
 
 		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.element, !!.feature, !!.value) %>%
+		error_if_duplicated_genes(!!.element, !!.feature, !!.abundance) %>%
 
 		# Prepare the data frame
-		select(!!.feature, !!.element, !!.value) %>%
+		select(!!.feature, !!.element, !!.abundance) %>%
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
-								~ .x %>% mutate(!!.value := !!.value %>% `+`(1) %>%  log())) %>%
+								~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 		distinct() %>%
-		spread(!!.element, !!.value) %>%
+		spread(!!.element, !!.abundance) %>%
 		drop_na() %>%
 
 		# check that there are non-NA genes for enough samples
@@ -1794,8 +1794,8 @@ drop_redundant_elements_through_correlation <- function(.data,
 			}) %>%
 
 		# Prepare the data frame
-		gather(!!.element, !!.value, -!!.feature) %>%
-		rename(rc := !!.value,
+		gather(!!.element, !!.abundance, -!!.feature) %>%
+		rename(rc := !!.abundance,
 					 sample := !!.element,
 					 transcript := !!.feature) %>% # Is rename necessary?
 		mutate_if(is.factor, as.character) %>%

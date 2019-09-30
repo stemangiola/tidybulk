@@ -5,7 +5,7 @@
 \title{Drop redundant elements (e.g., samples) for which feature (e.g., genes) aboundances are correlated}
 \usage{
 drop_redundant_elements_through_correlation(.data, .element = NULL,
-  .feature = NULL, .value, correlation_threshold = 0.9,
+  .feature = NULL, .abundance, correlation_threshold = 0.9,
   of_samples = T, log_transform = F)
 }
 \arguments{
@@ -15,7 +15,7 @@ drop_redundant_elements_through_correlation(.data, .element = NULL,
 
 \item{.feature}{A column symbol. The column that is represents entities to cluster (i.e., normally genes)}
 
-\item{.value}{A column symbol with the value the clustering is based on (e.g., `count`)}
+\item{.abundance}{A column symbol with the value the clustering is based on (e.g., `count`)}
 
 \item{correlation_threshold}{A real number between 0 and 1}
 

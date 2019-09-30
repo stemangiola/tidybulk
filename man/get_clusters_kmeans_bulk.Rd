@@ -5,7 +5,7 @@
 \title{Get K-mean clusters to a tibble}
 \usage{
 get_clusters_kmeans_bulk(.data, .element = NULL, .feature = NULL,
-  .value, of_samples = T, log_transform = T, ...)
+  .abundance, of_samples = T, log_transform = T, ...)
 }
 \arguments{
 \item{.data}{A tibble}
@@ -14,7 +14,7 @@ get_clusters_kmeans_bulk(.data, .element = NULL, .feature = NULL,
 
 \item{.feature}{A column symbol. The column that is represents entities to cluster (i.e., normally samples)}
 
-\item{.value}{A column symbol with the value the clustering is based on (e.g., `count`)}
+\item{.abundance}{A column symbol with the value the clustering is based on (e.g., `count`)}
 
 \item{of_samples}{A boolean}
 
