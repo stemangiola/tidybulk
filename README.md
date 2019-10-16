@@ -102,14 +102,14 @@ counts.aggr
 
 We may want to calculate the normalised counts for library size (e.g.,
 with TMM algorithm, Robinson and Oshlack
-doi.org/10.1186/gb-2010-11-3-r25). `normalise_abundance` takes a tibble,
+doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble,
 column names (as symbols; for `sample`, `transcript` and `count`) and a
 method as arguments and returns a tibble with additional columns with
 normalised data as `<NAME OF COUNT COLUMN> normalised`.
 
 ``` r
 counts.norm =  counts.aggr %>% 
-    normalise_abundance(sample, transcript, `count`)
+    scale_abundance(sample, transcript, `count`)
 
 counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
 ```
@@ -261,29 +261,29 @@ counts.norm.tSNE =
     ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
     ## Computing input similarities...
     ## Building tree...
-    ## Done in 0.14 seconds (sparsity = 0.054549)!
+    ## Done in 0.08 seconds (sparsity = 0.054549)!
     ## Learning embedding...
-    ## Iteration 50: error is 77.050637 (50 iterations in 0.31 seconds)
-    ## Iteration 100: error is 75.176424 (50 iterations in 0.21 seconds)
-    ## Iteration 150: error is 75.003686 (50 iterations in 0.19 seconds)
-    ## Iteration 200: error is 74.927248 (50 iterations in 0.20 seconds)
-    ## Iteration 250: error is 74.926579 (50 iterations in 0.12 seconds)
-    ## Iteration 300: error is 2.060540 (50 iterations in 0.12 seconds)
-    ## Iteration 350: error is 1.819486 (50 iterations in 0.11 seconds)
-    ## Iteration 400: error is 1.733705 (50 iterations in 0.11 seconds)
-    ## Iteration 450: error is 1.695327 (50 iterations in 0.11 seconds)
+    ## Iteration 50: error is 77.050637 (50 iterations in 0.16 seconds)
+    ## Iteration 100: error is 75.176424 (50 iterations in 0.11 seconds)
+    ## Iteration 150: error is 75.003686 (50 iterations in 0.10 seconds)
+    ## Iteration 200: error is 74.927248 (50 iterations in 0.11 seconds)
+    ## Iteration 250: error is 74.926579 (50 iterations in 0.11 seconds)
+    ## Iteration 300: error is 2.060540 (50 iterations in 0.10 seconds)
+    ## Iteration 350: error is 1.819486 (50 iterations in 0.10 seconds)
+    ## Iteration 400: error is 1.733705 (50 iterations in 0.10 seconds)
+    ## Iteration 450: error is 1.695327 (50 iterations in 0.10 seconds)
     ## Iteration 500: error is 1.673284 (50 iterations in 0.11 seconds)
-    ## Iteration 550: error is 1.658643 (50 iterations in 0.12 seconds)
+    ## Iteration 550: error is 1.658643 (50 iterations in 0.10 seconds)
     ## Iteration 600: error is 1.648497 (50 iterations in 0.11 seconds)
-    ## Iteration 650: error is 1.640757 (50 iterations in 0.11 seconds)
+    ## Iteration 650: error is 1.640757 (50 iterations in 0.12 seconds)
     ## Iteration 700: error is 1.633566 (50 iterations in 0.11 seconds)
     ## Iteration 750: error is 1.628328 (50 iterations in 0.11 seconds)
     ## Iteration 800: error is 1.621698 (50 iterations in 0.11 seconds)
-    ## Iteration 850: error is 1.618489 (50 iterations in 0.11 seconds)
+    ## Iteration 850: error is 1.618489 (50 iterations in 0.12 seconds)
     ## Iteration 900: error is 1.615272 (50 iterations in 0.11 seconds)
     ## Iteration 950: error is 1.613625 (50 iterations in 0.11 seconds)
-    ## Iteration 1000: error is 1.609274 (50 iterations in 0.12 seconds)
-    ## Fitting performed in 2.71 seconds.
+    ## Iteration 1000: error is 1.609274 (50 iterations in 0.11 seconds)
+    ## Fitting performed in 2.21 seconds.
 
 ``` r
 counts.norm.tSNE %>% 
@@ -360,16 +360,16 @@ counts.norm.MDS.rotated %>%
 # Annotate `differential transcription`
 
 We may want to test for differential transcription between sample-wise
-factors of interest (e.g., with edgeR).
-`test_differential_transcription` takes a tibble, column names (as
-symbols; for `sample`, `transcript` and `count`) and a formula
-representing the desired linear model as arguments and returns a tibble
-with additional columns for the statistics from the hypothesis test
-(e.g., log fold change, p-value and false discovery rate).
+factors of interest (e.g., with edgeR). `test_differential_abundance`
+takes a tibble, column names (as symbols; for `sample`, `transcript` and
+`count`) and a formula representing the desired linear model as
+arguments and returns a tibble with additional columns for the
+statistics from the hypothesis test (e.g., log fold change, p-value and
+false discovery rate).
 
 ``` r
 counts %>%
-    test_differential_transcription(
+    test_differential_abundance(
       ~ condition,
       .sample = sample,
       .transcript = transcript,
@@ -434,10 +434,10 @@ counts.norm.adj
     ## # A tibble: 1,340,160 x 4
     ##    transcript sample     `count normalised adjusted` `filter out low count…
     ##    <chr>      <chr>                            <int> <lgl>                 
-    ##  1 A1BG       SRR1740034                         152 FALSE                 
-    ##  2 A1BG-AS1   SRR1740034                          80 FALSE                 
+    ##  1 A1BG       SRR1740034                         134 FALSE                 
+    ##  2 A1BG-AS1   SRR1740034                          72 FALSE                 
     ##  3 A1CF       SRR1740034                          NA TRUE                  
-    ##  4 A2M        SRR1740034                           1 FALSE                 
+    ##  4 A2M        SRR1740034                           0 FALSE                 
     ##  5 A2M-AS1    SRR1740034                           0 FALSE                 
     ##  6 A2ML1      SRR1740034                           2 FALSE                 
     ##  7 A2MP1      SRR1740034                          NA TRUE                  
@@ -450,7 +450,7 @@ counts.norm.adj
 
 We may want to infer the cell type composition of our samples (with the
 algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).
-`annotate_cell_type` takes as arguments a tibble, column names (as
+`deconvolve_cellularity` takes as arguments a tibble, column names (as
 symbols; for `sample`, `transcript` and `count`) and returns a tibble
 with additional columns for the adjusted cell type proportions.
 
@@ -459,7 +459,7 @@ with additional columns for the adjusted cell type proportions.
 ``` r
 counts.cibersort =
     counts %>%
-    annotate_cell_type(sample, transcript, `count`, action="add", cores=2)
+    deconvolve_cellularity(sample, transcript, `count`, action="add", cores=2)
 
 counts.cibersort %>% select(sample, contains("type:")) %>% distinct()
 ```
@@ -513,7 +513,7 @@ counts.cibersort %>%
 # Annotate `clusters`
 
 We may want to cluster our data (e.g., using k-means sample-wise).
-`annotate_clusters` takes as arguments a tibble, column names (as
+`cluster_elements` takes as arguments a tibble, column names (as
 symbols; for `sample`, `transcript` and `count`) and returns a tibble
 with additional columns for the cluster annotation. At the moment only
 k-means clustering is supported, the plan is to introduce more
@@ -523,7 +523,7 @@ clustering methods.
 
 ``` r
 counts.norm.cluster = counts.norm %>%
-  annotate_clusters(.abundance = `count normalised`, .element = sample, .feature = transcript, method="kmeans", centers = 2 )
+  cluster_elements(.abundance = `count normalised`, .element = sample, .feature = transcript, method="kmeans",  centers = 2 )
 
 counts.norm.cluster
 ```
@@ -550,10 +550,10 @@ plot.
 
 ``` r
  counts.norm.MDS %>%
-  annotate_clusters(
+  cluster_elements(
+    .abundance = `count normalised`,
     .element = sample,
     .feature = transcript,
-    .abundance = `count normalised`,
     method="kmeans",
     centers = 2
   ) %>%
@@ -565,15 +565,92 @@ plot.
 
 ![](README_files/figure-gfm/plot_cluster-1.png)<!-- -->
 
+**SNN**
+
+``` r
+counts.norm.SNN =
+    counts.norm.tSNE %>%
+    cluster_elements(sample, ens, `count normalised`, method = "SNN")
+```
+
+    ## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+    ## 
+    ## Number of nodes: 836
+    ## Number of edges: 28808
+    ## 
+    ## Running Louvain algorithm...
+    ## Maximum modularity in 10 random starts: 0.6717
+    ## Number of communities: 6
+    ## Elapsed time: 0 seconds
+
+``` r
+counts.norm.SNN %>% 
+    select(contains("tSNE", ignore.case = F), `cluster SNN`, sample) %>%
+    distinct()
+```
+
+    ## # A tibble: 836 x 4
+    ##    `tSNE 1` `tSNE 2` `cluster SNN` sample                      
+    ##       <dbl>    <dbl> <fct>         <chr>                       
+    ##  1  -50.3      -1.23 3             TCGA-A1-A0SB-01A-11R-A144-07
+    ##  2   14.5      10.6  0             TCGA-A1-A0SD-01A-11R-A115-07
+    ##  3    4.27      9.04 4             TCGA-A1-A0SE-01A-11R-A084-07
+    ##  4   -0.908    -1.70 1             TCGA-A1-A0SF-01A-11R-A144-07
+    ##  5   12.2      30.2  2             TCGA-A1-A0SG-01A-11R-A144-07
+    ##  6    7.46     19.0  0             TCGA-A1-A0SH-01A-11R-A084-07
+    ##  7  -15.5      -6.99 0             TCGA-A1-A0SI-01A-11R-A144-07
+    ##  8   16.4      16.2  2             TCGA-A1-A0SJ-01A-11R-A084-07
+    ##  9  -58.7      -8.15 3             TCGA-A1-A0SK-01A-12R-A084-07
+    ## 10  -21.5      -2.24 5             TCGA-A1-A0SM-01A-11R-A084-07
+    ## # … with 826 more rows
+
+``` r
+counts.norm.SNN %>% 
+    select(contains("tSNE", ignore.case = F), `cluster SNN`, sample, Call) %>%
+    gather(source, Call, c("cluster SNN", "Call")) %>%
+    distinct() %>%
+    ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
+```
+
+![](README_files/figure-gfm/SNN-1.png)<!-- -->
+
+``` r
+# Do differential transcription between clusters
+counts.norm.SNN %>%
+    mutate(factor_of_interest = `cluster SNN` == 3) %>%
+    test_differential_abundance(
+    ~ factor_of_interest,
+    .sample = sample,
+    .transcript = ens,
+    .abundance = `count normalised`,
+    action="get"
+   )
+```
+
+    ## # A tibble: 3,000 x 8
+    ##    ens      logFC logCPM    LR    PValue       FDR is_de `filter out low c…
+    ##    <chr>    <dbl>  <dbl> <dbl>     <dbl>     <dbl> <lgl> <lgl>             
+    ##  1 ENSG000…  5.51   4.45 2341. 0.        0.        TRUE  FALSE             
+    ##  2 ENSG000…  5.31   3.15 1833. 0.        0.        TRUE  FALSE             
+    ##  3 ENSG000…  4.29   5.53 2862. 0.        0.        TRUE  FALSE             
+    ##  4 ENSG000…  3.38   5.72 1709. 0.        0.        TRUE  FALSE             
+    ##  5 ENSG000…  1.88   7.46 1916. 0.        0.        TRUE  FALSE             
+    ##  6 ENSG000…  3.05   5.43 1435. 4.62e-314 2.31e-311 TRUE  FALSE             
+    ##  7 ENSG000…  5.90   4.12 1418. 3.13e-310 1.34e-307 TRUE  FALSE             
+    ##  8 ENSG000…  4.44   4.37 1357. 4.69e-297 1.76e-294 TRUE  FALSE             
+    ##  9 ENSG000…  2.75   8.26 1250. 7.96e-274 2.65e-271 TRUE  FALSE             
+    ## 10 ENSG000…  2.28   7.01 1177. 5.13e-258 1.53e-255 TRUE  FALSE             
+    ## # … with 2,990 more rows
+
 # Drop `redundant`
 
 We may want to remove redundant elements from the original data set
 (e.g., samples or transcripts), for example if we want to define
 cell-type specific signatures with low sample redundancy.
-`drop_redundant` takes as arguments a tibble, column names (as symbols;
-for `sample`, `transcript` and `count`) and returns a tibble dropped
-recundant elements (e.g., samples). Two redundancy estimation approaches
-are supported:
+`remove_redundancy` takes as arguments a tibble, column names (as
+symbols; for `sample`, `transcript` and `count`) and returns a tibble
+dropped recundant elements (e.g., samples). Two redundancy estimation
+approaches are supported:
 
   - removal of highly correlated clusters of elements (keeping a
     representative) with method=“correlation”
@@ -585,7 +662,7 @@ are supported:
 ``` r
 counts.norm.non_redundant =
     counts.norm.MDS %>%
-  drop_redundant(
+  remove_redundancy(
     method = "correlation",
     .element = sample,
     .feature = transcript,
@@ -611,7 +688,7 @@ counts.norm.non_redundant %>%
 ``` r
 counts.norm.non_redundant =
     counts.norm.MDS %>%
-  drop_redundant(
+  remove_redundancy(
     method = "reduced_dimensions",
     .element = sample,
     .feature = transcript,
@@ -677,7 +754,7 @@ counts_ensembl %>% annotate_symbol(ens)
     ##  8 ENSG… 13            2678 TARGE… Acute Myeloid L… Primary Blood D…
     ##  9 ENSG… 13             751 TARGE… Acute Myeloid L… Primary Blood D…
     ## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D…
-    ## # … with 109 more rows, and 2 more variables: hgnc_symbol <chr>, hg <chr>
+    ## # … with 109 more rows, and 2 more variables: transcript <chr>, hg <chr>
 
 # ADD versus GET modes
 
