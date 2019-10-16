@@ -40,7 +40,7 @@ test_that("Test class identity of tt object",{
 test_that("Getting normalised counts - no object",{
 
   res =
-    normalise_abundance(
+    scale_abundance(
       ttBulk::counts_mini,
       .sample = sample,
       .transcript = transcript,
@@ -65,7 +65,7 @@ test_that("Getting normalised counts - no object",{
 test_that("Adding normalised counts - no object",{
 
   res =
-    normalise_abundance(
+    scale_abundance(
       ttBulk::counts_mini,
       .sample = sample,
       .transcript = transcript,
@@ -89,7 +89,7 @@ test_that("Adding normalised counts - no object",{
 test_that("Get differential trancript abundance - no object",{
 
   res =
-    test_differential_transcription(
+    test_differential_abundance(
       ttBulk::counts_mini,
       ~ condition,
       .sample = sample,
@@ -114,7 +114,7 @@ test_that("Get differential trancript abundance - no object",{
 test_that("Add differential trancript abundance - no object",{
 
   res =
-    test_differential_transcription(
+    test_differential_abundance(
       ttBulk::counts_mini,
       ~ condition,
       .sample = sample,
@@ -169,7 +169,7 @@ test_that("Get adjusted counts - no object",{
 test_that("Get cluster lables based on Kmeans - no object",{
 
   res =
-    annotate_clusters(
+    cluster_elements(
       ttBulk::counts_mini,
       .abundance = `count`,
       .element = sample,
@@ -194,7 +194,7 @@ test_that("Get cluster lables based on Kmeans - no object",{
 test_that("Add cluster lables based on Kmeans - no object",{
 
   res =
-    annotate_clusters(
+    cluster_elements(
       ttBulk::counts_mini,
       .abundance = `count`,
       .element = sample,
@@ -219,7 +219,7 @@ test_that("Add cluster lables based on Kmeans - no object",{
 test_that("Get cluster lables based on SNN - no object",{
 
 	res =
-		annotate_clusters(
+		cluster_elements(
 			ttBulk::breast_tcga_mini,
 			.element = sample,
 			.feature = ens,
@@ -244,7 +244,7 @@ test_that("Get cluster lables based on SNN - no object",{
 test_that("Add cluster lables based on SNN - no object",{
 
 	res =
-		annotate_clusters(
+		cluster_elements(
 			ttBulk::breast_tcga_mini,
 			.element = sample,
 			.feature = ens,
@@ -488,7 +488,7 @@ test_that("Aggregate duplicated transcript - no object",{
 test_that("Drop redundant correlated - no object",{
 
   res =
-    drop_redundant(
+    remove_redundancy(
       ttBulk::counts_mini,
       method = "correlation",
       .abundance = `count`,
@@ -554,7 +554,7 @@ test_that("Add symbol from ensambl - no object",{
 test_that("Get cell type proportions - no object",{
 
   res =
-    annotate_cell_type(
+    deconvolve_cellularity(
       ttBulk::counts_mini,
       .sample = sample,
       .transcript = transcript,
@@ -578,7 +578,7 @@ test_that("Get cell type proportions - no object",{
 test_that("Add cell type proportions - no object",{
 
   res =
-    annotate_cell_type(
+    deconvolve_cellularity(
       ttBulk::counts_mini,
       .sample = sample,
       .transcript = transcript,
