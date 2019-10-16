@@ -430,7 +430,7 @@ get_elements = function(.data, .element){
   }
 }
 
-#' Sub function of drop_redundant_elements_though_reduced_dimensions
+#' Sub function of remove_redundancy_elements_though_reduced_dimensions
 #'
 #' @param df A tibble
 #'

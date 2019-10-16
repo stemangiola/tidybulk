@@ -84,11 +84,11 @@ counts.aggr
 
 # Normalise `counts`
 
-We may want to calculate the normalised counts for library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `normalise_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`.
+We may want to calculate the normalised counts for library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`.
 
 ```{r normalise, cache=TRUE}
 counts.norm =  counts.aggr %>% 
-	normalise_abundance(sample, transcript, `count`)
+	scale_abundance(sample, transcript, `count`)
 
 counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
 ```
@@ -172,7 +172,6 @@ counts.norm.tSNE %>%
 	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
 ```
 
-
 # Rotate `dimensions`
 
 We may want to rotate the reduced dimensions (or any two numeric columns really) of our data, of a set angle. `rotate_dimensions` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and an angle as arguments and returns a tibble with additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
@@ -207,11 +206,11 @@ counts.norm.MDS.rotated %>%
 
 # Annotate `differential transcription`
 
-We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). `test_differential_transcription` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate). 
+We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). `test_differential_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate). 
 
 ```{r de, cache=TRUE}
 counts %>%
-	test_differential_transcription(
+	test_differential_abundance(
       ~ condition,
       .sample = sample,
       .transcript = transcript,
@@ -249,13 +248,13 @@ counts.norm.adj
 
 # Annotate `Cell type composition`
 
-We may want to infer the cell type composition of our samples (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337). `annotate_cell_type` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with additional columns for the adjusted  cell type proportions.
+We may want to infer the cell type composition of our samples (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337). `deconvolve_cellularity` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with additional columns for the adjusted  cell type proportions.
 
 **columns truncated**
 ```{r cibersort, cache=TRUE}
 counts.cibersort =
 	counts %>%
-	annotate_cell_type(sample, transcript, `count`, action="add", cores=2)
+	deconvolve_cellularity(sample, transcript, `count`, action="add", cores=2)
 
 counts.cibersort %>% select(sample, contains("type:")) %>% distinct()
 ```
@@ -276,13 +275,13 @@ counts.cibersort %>%
 
 # Annotate `clusters` 
 
-We may want to cluster our data (e.g., using k-means sample-wise). `annotate_clusters` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with additional columns for the cluster annotation. At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
+We may want to cluster our data (e.g., using k-means sample-wise). `cluster_elements` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with additional columns for the cluster annotation. At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
 
 **k-means**
 
 ```{r cluster, cache=TRUE}
 counts.norm.cluster = counts.norm %>%
-  annotate_clusters(.abundance = `count normalised`, .element = sample, .feature = transcript, method="kmeans",	centers = 2 )
+  cluster_elements(.abundance = `count normalised`, .element = sample, .feature = transcript, method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 ```
@@ -291,10 +290,10 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
 
 ```{r plot_cluster, cache=TRUE}
  counts.norm.MDS %>%
-  annotate_clusters(
+  cluster_elements(
+  	.abundance = `count normalised`,
   	.element = sample,
   	.feature = transcript,
-  	.abundance = `count normalised`,
   	method="kmeans",
   	centers = 2
   ) %>%
@@ -304,9 +303,41 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
   my_theme
 ```
 
+**SNN**
+
+```{r SNN, cache=TRUE}
+counts.norm.SNN =
+	counts.norm.tSNE %>%
+	cluster_elements(sample, ens, `count normalised`, method = "SNN")
+
+counts.norm.SNN %>% 
+	select(contains("tSNE", ignore.case = F), `cluster SNN`, sample) %>%
+	distinct()
+
+counts.norm.SNN %>% 
+	select(contains("tSNE", ignore.case = F), `cluster SNN`, sample, Call) %>%
+	gather(source, Call, c("cluster SNN", "Call")) %>%
+	distinct() %>%
+	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
+
+
+# Do differential transcription between clusters
+counts.norm.SNN %>%
+	mutate(factor_of_interest = `cluster SNN` == 3) %>%
+	test_differential_abundance(
+    ~ factor_of_interest,
+    .sample = sample,
+    .transcript = ens,
+    .abundance = `count normalised`,
+    action="get"
+   )
+```
+
+
+
 # Drop `redundant`
 
-We may want to remove redundant elements from the original data set (e.g., samples or transcripts), for example if we want to define cell-type specific signatures with low sample redundancy. `drop_redundant` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble dropped recundant elements (e.g., samples). Two redundancy estimation approaches are supported: 
+We may want to remove redundant elements from the original data set (e.g., samples or transcripts), for example if we want to define cell-type specific signatures with low sample redundancy. `remove_redundancy` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble dropped recundant elements (e.g., samples). Two redundancy estimation approaches are supported: 
 
 + removal of highly correlated clusters of elements (keeping a representative) with method="correlation"
 + removal of most proximal element pairs in a reduced dimensional space.
@@ -316,7 +347,7 @@ We may want to remove redundant elements from the original data set (e.g., sampl
 ```{r drop, cache=TRUE}
 counts.norm.non_redundant =
 	counts.norm.MDS %>%
-  drop_redundant(
+  remove_redundancy(
   	method = "correlation",
   	.element = sample,
   	.feature = transcript,
@@ -340,7 +371,7 @@ counts.norm.non_redundant %>%
 ```{r drop2, cache=TRUE}
 counts.norm.non_redundant =
 	counts.norm.MDS %>%
-  drop_redundant(
+  remove_redundancy(
   	method = "reduced_dimensions",
   	.element = sample,
   	.feature = transcript,

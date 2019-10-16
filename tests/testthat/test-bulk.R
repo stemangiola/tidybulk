@@ -322,7 +322,7 @@ test_that("Aggregate duplicated transcript - no object",{
 test_that("Drop redundant correlated - no object",{
 
   res =
-    drop_redundant_elements_through_correlation(
+    remove_redundancy_elements_through_correlation(
       ttBulk::counts_mini,
       .abundance = `count`,
       .element = sample,

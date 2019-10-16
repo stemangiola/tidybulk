@@ -1732,7 +1732,7 @@ aggregate_duplicated_transcripts_bulk =
 #' @return A tibble with redundant elemens removed
 #'
 #'
-drop_redundant_elements_through_correlation <- function(.data,
+remove_redundancy_elements_through_correlation <- function(.data,
 																												.element = NULL,
 																												.feature = NULL,
 																												.abundance,
@@ -1828,7 +1828,7 @@ drop_redundant_elements_through_correlation <- function(.data,
 #' @return A tibble with pairs dropped
 #'
 #'
-drop_redundant_elements_though_reduced_dimensions <-
+remove_redundancy_elements_though_reduced_dimensions <-
 	function(.data,
 					 Dim_a_column,
 					 Dim_b_column,

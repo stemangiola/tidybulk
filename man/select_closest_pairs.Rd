@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{select_closest_pairs}
 \alias{select_closest_pairs}
-\title{Sub function of drop_redundant_elements_though_reduced_dimensions}
+\title{Sub function of remove_redundancy_elements_though_reduced_dimensions}
 \usage{
 select_closest_pairs(df)
 }
@@ -13,5 +13,5 @@ select_closest_pairs(df)
 A tibble with pairs to drop
 }
 \description{
-Sub function of drop_redundant_elements_though_reduced_dimensions
+Sub function of remove_redundancy_elements_though_reduced_dimensions
 }
