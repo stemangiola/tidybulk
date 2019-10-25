@@ -4,9 +4,9 @@
 \alias{reduce_dimensions}
 \title{Dimension reduction of the transcript abundance data}
 \usage{
-reduce_dimensions(.data, .element = NULL, .feature = NULL, .abundance,
-  method, .dims = 2, top = 500, of_samples = T, log_transform = T,
-  scale = T, action = "add", ...)
+reduce_dimensions(.data, .element = NULL, .feature = NULL,
+  .abundance = NULL, method, .dims = 2, top = 500, of_samples = T,
+  log_transform = T, scale = T, action = "add", ...)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}

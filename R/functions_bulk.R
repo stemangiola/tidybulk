@@ -171,7 +171,10 @@ add_normalised_counts_bulk.get_cpm <- function(.data,
 				gather(!!.sample, cpm, -!!.transcript) %>%
 				mutate(cpm_threshold = cpm_threshold),
 			by = c(quo_name(.transcript), quo_name(.sample))
-		)
+		) %>%
+
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
 
 }
 
@@ -235,7 +238,10 @@ add_normalised_counts_bulk.get_low_expressed <- function(.data,
 
 		# Pull information
 		pull(!!.transcript) %>%
-		as.character()
+		as.character() %>%
+
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
 }
 
 
@@ -329,7 +335,10 @@ add_normalised_counts_bulk.calcNormFactor <- function(.data,
 		)
 
 	# Return
-	list(gene_to_exclude = gene_to_exclude, nf = nf)
+	list(gene_to_exclude = gene_to_exclude, nf = nf) %>%
+
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
 }
 
 #' Get a tibble with normalised counts using TMM
@@ -975,7 +984,7 @@ get_reduced_dimensions_MDS_bulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
-					 .abundance,
+					 .abundance = NULL,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -983,11 +992,11 @@ get_reduced_dimensions_MDS_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.abundance = enquo(.abundance)
+		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
 		.element = col_names$.element
 		.feature = col_names$.feature
-
-		.abundance = enquo(.abundance)
+		.abundance = col_names$.abundance
 
 		# Get components from dims
 		components = 1:.dims
@@ -1069,7 +1078,7 @@ add_reduced_dimensions_MDS_bulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
-					 .abundance ,
+					 .abundance = NULL,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -1077,11 +1086,11 @@ add_reduced_dimensions_MDS_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.abundance = enquo(.abundance)
+		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
 		.element = col_names$.element
 		.feature = col_names$.feature
-
-		.abundance = enquo(.abundance)
+		.abundance = col_names$.abundance
 
 		.data %>%
 			left_join(
@@ -1127,7 +1136,7 @@ get_reduced_dimensions_PCA_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 
-					 .abundance ,
+					 .abundance  = NULL,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -1137,11 +1146,11 @@ get_reduced_dimensions_PCA_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.abundance = enquo(.abundance)
+		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
 		.element = col_names$.element
 		.feature = col_names$.feature
-
-		.abundance = enquo(.abundance)
+		.abundance = col_names$.abundance
 
 		# Get components from dims
 		components = 1:.dims
@@ -1180,14 +1189,14 @@ get_reduced_dimensions_PCA_bulk <-
 
 				# First function
 				~ stop(
-					"In calculating correlation there is no gene that have non NA values is all samples"
+					"In calculating PCA there is no gene that have non NA values is all samples"
 				),
 
 				# Second function
 				~ {
 					warning(
 						"
-						In calculating correlation there is < 100 genes that have non NA values is all samples.
+						In PCA correlation there is < 100 genes that have non NA values is all samples.
 						The correlation calculation would not be reliable,
 						we suggest to partition the dataset for sample clusters.
 						"
@@ -1223,7 +1232,10 @@ get_reduced_dimensions_PCA_bulk <-
 			# Parse the PCA results to a tibble
 			rotation %>%
 			as_tibble(rownames = quo_name(.element)) %>%
-			select(!!.element, sprintf("PC%s", components))
+			select(!!.element, sprintf("PC%s", components)) %>%
+
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
 
 	}
 
@@ -1253,7 +1265,7 @@ add_reduced_dimensions_PCA_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 
-					 .abundance ,
+					 .abundance = NULL,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -1263,11 +1275,11 @@ add_reduced_dimensions_PCA_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.abundance = enquo(.abundance)
+		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
 		.element = col_names$.element
 		.feature = col_names$.feature
-
-		.abundance = enquo(.abundance)
+		.abundance = col_names$.abundance
 
 		.data %>%
 			left_join(
@@ -1284,7 +1296,10 @@ add_reduced_dimensions_PCA_bulk <-
 						...
 					),
 				by = quo_name(.element)
-			)
+			) %>%
+
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
 	}
 
 #' Get principal component information to a tibble using tSNE
@@ -1311,7 +1326,7 @@ get_reduced_dimensions_TSNE_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 
-					 .abundance ,
+					 .abundance = NULL,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -1321,11 +1336,11 @@ get_reduced_dimensions_TSNE_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.abundance = enquo(.abundance)
+		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
 		.element = col_names$.element
 		.feature = col_names$.feature
-
-		.abundance = enquo(.abundance)
+		.abundance = col_names$.abundance
 
 		# Evaluate ...
 		arguments <- list(...)
@@ -1362,6 +1377,18 @@ get_reduced_dimensions_TSNE_bulk <-
 			# Prepare data frame
 			distinct(!!.feature, !!.element, !!.abundance) %>%
 
+			# Check if data rectangular
+			ifelse_pipe(
+				(.) %>% count(!!.element) %>% count(n) %>% nrow %>% `>` (1),
+				~ {
+					warning("Some elements are missing some features, the data is not rectangular. Those features have been omitted")
+					.x %>%
+						add_count(!!.feature, name = "my_n") %>%
+						filter(my_n == max(my_n)) %>%
+						select(-my_n)
+				}
+			) %>%
+
 			# Check if logtansform is needed
 			ifelse_pipe(log_transform,
 									~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
@@ -1381,7 +1408,10 @@ get_reduced_dimensions_TSNE_bulk <-
 
 			# add element name
 			mutate(!!.element := df_tsne %>% rownames) %>%
-			select(!!.element, everything())
+			select(!!.element, everything()) %>%
+
+				# Attach attributes
+				add_attr(.data %>% attr("parameters"), "parameters")
 
 	}
 
@@ -1411,7 +1441,7 @@ add_reduced_dimensions_TSNE_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 
-					 .abundance ,
+					 .abundance = NULL,
 					 .dims = 2,
 					 top = 500,
 					 of_samples = T,
@@ -1421,11 +1451,11 @@ add_reduced_dimensions_TSNE_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
+		.abundance = enquo(.abundance)
+		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
 		.element = col_names$.element
 		.feature = col_names$.feature
-
-		.abundance = enquo(.abundance)
+		.abundance = col_names$.abundance
 
 		.data %>%
 			left_join(
@@ -1441,7 +1471,10 @@ add_reduced_dimensions_TSNE_bulk <-
 						...
 					),
 				by = quo_name(.element)
-			)
+			) %>%
+
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
 	}
 
 
@@ -1535,7 +1568,10 @@ get_rotated_dimensions =
 						 		quo_name(dimension_2_column_rotated)
 						 	)) %>%
 			gather(!!.element, value, -`rotated dimensions`) %>%
-			spread(`rotated dimensions`, value)
+			spread(`rotated dimensions`, value) %>%
+
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
 
 	}
 
@@ -1606,7 +1642,10 @@ add_rotated_dimensions =
 						dimension_2_column_rotated = !!dimension_2_column_rotated
 					),
 				by = quo_name(.element)
-			)
+			) %>%
+
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
 	}
 
 #' Aggregates multiple counts from the same samples (e.g., from isoforms)
@@ -1633,6 +1672,7 @@ aggregate_duplicated_transcripts_bulk =
 					 aggregation_function = sum,
 
 					 keep_integer = T) {
+
 		# Get column names
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
@@ -1709,7 +1749,10 @@ aggregate_duplicated_transcripts_bulk =
 								} %>%
 
 			# Rename column of number of duplicates for each gene
-			rename(`merged transcripts` = n_aggr)
+			rename(`merged transcripts` = n_aggr) %>%
+
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
 
 	}
 
@@ -1743,11 +1786,11 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
-	col_names = get_elements_features(.data, .element, .feature, of_samples)
+	.abundance = enquo(.abundance)
+	col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
 	.element = col_names$.element
 	.feature = col_names$.feature
-
-	.abundance = enquo(.abundance)
+	.abundance = col_names$.abundance
 
 	# Get the redundant data frame
 	.data.correlated =
@@ -1814,7 +1857,10 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		rename(!!.element := item1)
 
 	# Return non redudant data frame
-	.data %>% anti_join(.data.correlated)
+	.data %>% anti_join(.data.correlated) %>%
+
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
 }
 
 #' Identifies the closest pairs in a MDS contaxt and return one of them
@@ -1879,7 +1925,10 @@ remove_redundancy_elements_though_reduced_dimensions <-
 			setNames(quo_name(.element))
 
 		# Drop samples that are correlated with others and return
-		.data %>% anti_join(.data.redundant)
+		.data %>% anti_join(.data.redundant) %>%
+
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
 	}
 
 #' #' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
@@ -2090,7 +2139,10 @@ add_cell_type_proportions = function(.data,
 					...
 				),
 			by = "sample"
-		)
+		) %>%
+
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
 
 }
 
@@ -2228,7 +2280,10 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 				distinct(!!.transcript,!!.sample,
 								 `filter out low counts`),
 			by = c(quo_name(.transcript), quo_name(.sample))
-		)
+		)%>%
+
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
 }
 
 #' Add adjusted count for some batch effect
@@ -2279,6 +2334,29 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 					...
 				) ,
 			by = c(quo_name(.transcript), quo_name(.sample))
-		)
+		)%>%
+
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters")
+
+}
+
+#' Add cell type information on single cells
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @import Seurat
+#'
+#' @param .data A tt object
+#'
+#' @return A tt tt object
+#'
+#' @export
+merged_ttBulk_object = function(...){
+
+
+
+
 
 }

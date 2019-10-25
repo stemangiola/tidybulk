@@ -3,6 +3,22 @@ title: "ttBulk - tidyTranscriptomics"
 output: github_document
 ---
 
+<style>
+.column-left{
+  float: left;
+  width: 49%;
+  text-align: left;
+   font-size: 90%;
+}
+.column-right{
+  float: right;
+  width: 49%;
+  text-align: left;
+  font-size: 90%;
+  
+}
+</style>
+
 [![Build Status](https://travis-ci.org/stemangiola/ttBulk.svg?branch=master)](https://travis-ci.org/stemangiola/ttBulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/ttBulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/ttBulk?branch=master)
 
 A user-friendly grammar of bulk RNA sequencing data exploration and processing
@@ -45,7 +61,8 @@ ttBulk is a collection of wrapper functions for bulk tanscriptomic analyses that
 + annotation (and other info) columns
 
 ```{r}
-counts = ttBulk::counts
+counts = ttBulk(ttBulk::counts, sample, transcript, count)
+counts_tcga = ttBulk(ttBulk::breast_tcga_mini, sample, ens, count)
 counts 
 ```
 
@@ -67,33 +84,60 @@ In brief you can:
 
 ttBulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with aggregate transcript with the same name. All the rest of the column are appended, and factors and boolean are appended as characters.
 
+<div class="column-left">
+TidyTranscriptomics
 ```{r aggregate, cache=TRUE}
-counts.aggr = 
-  counts %>%
-  aggregate_duplicates(
-  	sample, 
-  	transcript, 
-  	`count`,  
-  	aggregation_function = sum
-  )
-
-counts.aggr 
-
-
+counts.aggr = counts %>% aggregate_duplicates()
 ```
+</div>
+<div class="column-right">
+Standard procedure
+```{r aggregate long, eval=FALSE}
+temp = data.frame(
+	symbol = dge_list$genes$symbol, 
+	dge_list$counts
+)
+dge_list.nr <- by(temp,	temp$symbol, 
+	function(df)
+		if(length(df[1,1])>0) 
+			matrixStats:::colSums(as.matrix(df[,-1])) 
+)
+dge_list.nr <- do.call("rbind", dge_list.nr)
+colnames(dge_list.nr) <- colnames(dge_list)
+```
+</div>
+<div style="clear:both;"></div>
 
 # Normalise `counts`
 
 We may want to calculate the normalised counts for library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`.
 
+<div class="column-left">
+TidyTranscriptomics
 ```{r normalise, cache=TRUE}
-counts.norm =  counts.aggr %>% 
-	scale_abundance(sample, transcript, `count`)
-
+counts.norm = counts.aggr %>% scale_abundance()
+```
+```{r, include=FALSE}
 counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
 ```
+</div>
+<div class="column-right">
+Standard procedure
+```{r normalise long, eval=FALSE}
+dgList <- calcNormFactors(dgList, method="TMM")
+dgList <- estimateCommonDisp(dgList)
+dgList <- estimateTagwiseDisp(dgList)
+norm_counts.table <- t(
+	t(dgList$pseudo.counts)*
+		(dgList$samples$norm.factors)
+)
+```
+</div>
+<div style="clear:both;"></div>
+
 
 We can easily plot the normalised density to check the normalisation outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type. 
+
 
 ```{r plot_normalise, cache=TRUE}
 counts.norm %>% 
@@ -109,38 +153,84 @@ We may want to reduce the dimensions of our data, for example using PCA or MDS a
 
 **MDS** (Robinson et al., 10.1093/bioinformatics/btp616)
 
+<div class="column-left">
+TidyTranscriptomics
 ```{r mds, cache=TRUE}
 counts.norm.MDS =
   counts.norm %>%
-  reduce_dimensions(.abundance = `count normalised`, method="MDS" , .element = sample, .feature = transcript, .dims = 3)
+  reduce_dimensions(method="MDS", .dims = 6)
 
-counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 ```
+</div>
+<div class="column-right">
+Standard procedure
+```{r, eval = FALSE}
+count_m_log = log(count_m + 1) 
+cmds1_2 = count_m_log %>% limma::plotMDS(dim.plot = 1:2, plot = F)
+cmds3_4 = count_m_log %>% limma::plotMDS(dim.plot = 3:4, plot = F)
+cmds5_6 = count_m_log %>% limma::plotMDS(dim.plot = 5:6, plot = F)
+
+
+cmds = cbind(
+	data.frame(cmds1_2$x, cmds1_2$y),
+	cbind(
+		data.frame(cmds3_4$x, cmds3_4$y),
+		data.frame(cmds5_6$x, cmds5_6$y)
+	)
+) %>%
+	setNames(sprintf("Dim %s", 1:6))
+cmds$cell_type = ttBulk::counts[
+	match(ttBulk::counts$sample, rownames(cmds)), 
+	"Cell type"
+]
+```
+</div>
+<div style="clear:both;"></div>
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type. 
 
 ```{r plot_mds, cache=TRUE}
+counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
+
 counts.norm.MDS %>%
 	select(contains("Dim"), sample, `Cell type`) %>%
   distinct() %>%
-  GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
+  GGally::ggpairs(columns = 1:6, ggplot2::aes(colour=`Cell type`))
 
 
 ```
 
 **PCA**
 
+<div class="column-left">
+TidyTranscriptomics
 ```{r pca, cache=TRUE}
 counts.norm.PCA =
   counts.norm %>%
-  reduce_dimensions(.abundance = `count normalised`, method="PCA" , .element = sample, .feature = transcript, .dims = 3)
-
-counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
+  reduce_dimensions(method="PCA", .dims = 6)
 ```
+</div>
+<div class="column-right">
+Standard procedure
+```{r,eval=FALSE}
+count_m_log = log(count_m + 1) 
+pc = count_m_log %>% prcomp(scale = TRUE)
+variance = pc$sdev^2 
+variance = (variance / sum(variance))[1:6] 
+pc$cell_type = ttBulk::counts[
+	match(ttBulk::counts$sample, rownames(pc)), 
+	"Cell type"
+]
+```
+</div>
+<div style="clear:both;"></div>
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type. 
 
 ```{r plot_pca, cache=TRUE}
+
+counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
+
 counts.norm.PCA %>%
 	select(contains("PC"), sample, `Cell type`) %>%
   distinct() %>%
@@ -148,20 +238,39 @@ counts.norm.PCA %>%
 ```
 
 **tSNE**
-
+<div class="column-left">
+TidyTranscriptomics
 ```{r tsne, cache=TRUE}
 counts.norm.tSNE =
-	ttBulk::breast_tcga_mini %>%
+	counts_tcga%>%
 	reduce_dimensions(
-		.abundance = `count normalised`, 
 		method = "tSNE", 
-		.element = sample, 
-		.feature = ens, 
-		top = 500, 
 		perplexity=10, 
 		pca_scale =T
 	) 
+```
+</div>
+<div class="column-right">
+Standard procedure
+```{r, eval=FALSE}
+count_m_log = log(count_m + 1) 
 
+tsne = Rtsne::Rtsne(
+	t(count_m_log), 
+	perplexity=10, 
+		pca_scale =T
+)$Y
+tsne$cell_type = ttBulk::counts[
+	match(ttBulk::counts$sample, rownames(tsne)), 
+	"Cell type"
+]
+```
+</div>
+<div style="clear:both;"></div>
+
+Plot
+
+```{r}
 counts.norm.tSNE %>% 
 	select(contains("tSNE", ignore.case = F), sample, Call) %>%
 	distinct()
@@ -175,12 +284,32 @@ counts.norm.tSNE %>%
 # Rotate `dimensions`
 
 We may want to rotate the reduced dimensions (or any two numeric columns really) of our data, of a set angle. `rotate_dimensions` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and an angle as arguments and returns a tibble with additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-
+<div class="column-left">
+TidyTranscriptomics
 ```{r rotate, cache=TRUE}
 counts.norm.MDS.rotated =
   counts.norm.MDS %>%
-	rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45, .element = sample)
+	rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45)
 ```
+</div>
+<div class="column-right">
+Standard procedure
+```{r, eval=FALSE}
+		rotation = function(m, d) {
+			r = d * pi / 180
+			((dplyr::bind_rows(
+				c(`1` = cos(r), `2` = -sin(r)),
+				c(`1` = sin(r), `2` = cos(r))
+			) %>% as_matrix) %*% m)
+		}
+mds_r = pca %>% rotation(rotation_degrees)
+mds_r$cell_type = ttBulk::counts[
+	match(ttBulk::counts$sample, rownames(mds_r)), 
+	"Cell type"
+]
+```
+</div>
+<div style="clear:both;"></div>
 
 **Original**
 On the x and y axes axis we have the first two reduced dimensions, data is coloured by cell type. 
@@ -204,19 +333,38 @@ counts.norm.MDS.rotated %>%
   my_theme
 ```
 
-# Annotate `differential transcription`
+# Test `differential transcription`
 
 We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). `test_differential_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate). 
-
+<div class="column-left">
+TidyTranscriptomics
 ```{r de, cache=TRUE}
 counts %>%
-	test_differential_abundance(
-      ~ condition,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`,
-      action="get")
+	test_differential_abundance( ~ condition, action="get")
 ```
+</div>
+<div class="column-right">
+Standard procedure
+```{r, eval=FALSE}
+design =
+		model.matrix(
+			object = .formula,
+			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
+		) %>%
+		magrittr::set_colnames(c("(Intercept)",
+														 (.) %>% colnames %>% `[` (-1)))
+
+edgeR::DGEList(counts = .) %>%
+		edgeR::calcNormFactors(method = "TMM") %>%
+		edgeR::estimateGLMCommonDisp(design) %>%
+		edgeR::estimateGLMTagwiseDisp(design) %>%
+		edgeR::glmFit(design) %>%
+		edgeR::glmLRT(coef = 2) %>%
+		edgeR::topTags(n = 999999) %$%
+		table
+```
+</div>
+<div style="clear:both;"></div>
 
 # Adjust `counts`
 

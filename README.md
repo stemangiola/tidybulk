@@ -1,6 +1,22 @@
 ttBulk - tidyTranscriptomics
 ================
 
+<style>
+.column-left{
+  float: left;
+  width: 49%;
+  text-align: left;
+   font-size: 90%;
+}
+.column-right{
+  float: right;
+  width: 49%;
+  text-align: left;
+  font-size: 90%;
+  
+}
+</style>
+
 [![Build
 Status](https://travis-ci.org/stemangiola/ttBulk.svg?branch=master)](https://travis-ci.org/stemangiola/ttBulk)
 [![Coverage
@@ -25,7 +41,7 @@ tibble with columns for
 <!-- end list -->
 
 ``` r
-counts = ttBulk::counts
+counts = ttBulk(ttBulk::counts, sample, transcript, count)
 counts 
 ```
 
@@ -64,39 +80,39 @@ tibble and column names (as symbols; for `sample`, `transcript` and
 with the same name. All the rest of the column are appended, and factors
 and boolean are appended as characters.
 
+<div class="column-left">
+
 ``` r
-counts.aggr = 
-  counts %>%
-  aggregate_duplicates(
-    sample, 
-    transcript, 
-    `count`,  
-    aggregation_function = sum
-  )
+counts.aggr = counts %>% aggregate_duplicates()
 ```
 
     ## Converted to characters
     ## condition 
     ## "logical"
 
+</div>
+
+<div class="column-right">
+
 ``` r
-counts.aggr 
+temp = data.frame(
+    symbol = dge_list$genes$symbol, 
+    dge_list$counts
+)
+dge_list.nr <- by(temp, temp$symbol, 
+    function(df)
+        if(length(df[1,1])>0) 
+            matrixStats:::colSums(as.matrix(df[,-1])) 
+)
+dge_list.nr <- do.call("rbind", dge_list.nr)
+colnames(dge_list.nr) <- colnames(dge_list)
 ```
 
-    ## # A tibble: 1,340,160 x 7
-    ##    sample   transcript  `Cell type` count time  condition `merged transcri…
-    ##    <chr>    <chr>       <chr>       <dbl> <chr> <chr>                 <dbl>
-    ##  1 SRR1740… DDX11L1     b_cell         17 0 d   TRUE                      1
-    ##  2 SRR1740… WASH7P      b_cell       3568 0 d   TRUE                      1
-    ##  3 SRR1740… MIR6859-1   b_cell         57 0 d   TRUE                      1
-    ##  4 SRR1740… MIR1302-2   b_cell          1 0 d   TRUE                      1
-    ##  5 SRR1740… FAM138A     b_cell          0 0 d   TRUE                      1
-    ##  6 SRR1740… OR4F5       b_cell          0 0 d   TRUE                      1
-    ##  7 SRR1740… LOC729737   b_cell       1764 0 d   TRUE                      1
-    ##  8 SRR1740… LOC1027251… b_cell         11 0 d   TRUE                      1
-    ##  9 SRR1740… WASH9P      b_cell       3590 0 d   TRUE                      1
-    ## 10 SRR1740… MIR6859-2   b_cell         40 0 d   TRUE                      1
-    ## # … with 1,340,150 more rows
+</div>
+
+<div style="clear:both;">
+
+</div>
 
 # Normalise `counts`
 
@@ -107,29 +123,31 @@ column names (as symbols; for `sample`, `transcript` and `count`) and a
 method as arguments and returns a tibble with additional columns with
 normalised data as `<NAME OF COUNT COLUMN> normalised`.
 
-``` r
-counts.norm =  counts.aggr %>% 
-    scale_abundance(sample, transcript, `count`)
+<div class="column-left">
 
-counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
+``` r
+counts.norm = counts.aggr %>% scale_abundance()
 ```
 
-    ## # A tibble: 1,340,160 x 11
-    ##    count `count normalis… `filter out low… sample transcript `Cell type`
-    ##    <dbl>            <dbl> <lgl>            <chr>  <chr>      <chr>      
-    ##  1   153          134.    FALSE            SRR17… A1BG       b_cell     
-    ##  2    83           72.7   FALSE            SRR17… A1BG-AS1   b_cell     
-    ##  3     1            0.876 TRUE             SRR17… A1CF       b_cell     
-    ##  4     1            0.876 FALSE            SRR17… A2M        b_cell     
-    ##  5     0            0     FALSE            SRR17… A2M-AS1    b_cell     
-    ##  6     3            2.63  FALSE            SRR17… A2ML1      b_cell     
-    ##  7     0            0     TRUE             SRR17… A2MP1      b_cell     
-    ##  8     0            0     FALSE            SRR17… A3GALT2    b_cell     
-    ##  9     4            3.50  TRUE             SRR17… A4GALT     b_cell     
-    ## 10     0            0     TRUE             SRR17… A4GNT      b_cell     
-    ## # … with 1,340,150 more rows, and 5 more variables: time <chr>,
-    ## #   condition <chr>, `merged transcripts` <dbl>, TMM <dbl>,
-    ## #   multiplier <dbl>
+</div>
+
+<div class="column-right">
+
+``` r
+dgList <- calcNormFactors(dgList, method="TMM")
+dgList <- estimateCommonDisp(dgList)
+dgList <- estimateTagwiseDisp(dgList)
+norm_counts.table <- t(
+    t(dgList$pseudo.counts)*
+        (dgList$samples$norm.factors)
+)
+```
+
+</div>
+
+<div style="clear:both;">
+
+</div>
 
 We can easily plot the normalised density to check the normalisation
 outcome. On the x axis we have the log scaled counts, on the y axes we
@@ -155,31 +173,67 @@ the reduced dimensions.
 
 **MDS** (Robinson et al., 10.1093/bioinformatics/btp616)
 
+<div class="column-left">
+
 ``` r
 counts.norm.MDS =
   counts.norm %>%
-  reduce_dimensions(.abundance = `count normalised`, method="MDS" , .element = sample, .feature = transcript, .dims = 3)
+  reduce_dimensions(method="MDS", .dims = 6)
+```
 
+</div>
+
+<div class="column-right">
+
+``` r
+count_m_log = log(count_m + 1) 
+cmds1_2 = count_m_log %>% limma::plotMDS(dim.plot = 1:2, plot = F)
+cmds3_4 = count_m_log %>% limma::plotMDS(dim.plot = 3:4, plot = F)
+cmds5_6 = count_m_log %>% limma::plotMDS(dim.plot = 5:6, plot = F)
+
+
+cmds = cbind(
+    data.frame(cmds1_2$x, cmds1_2$y),
+    cbind(
+        data.frame(cmds3_4$x, cmds3_4$y),
+        data.frame(cmds5_6$x, cmds5_6$y)
+    )
+) %>%
+    setNames(sprintf("Dim %s", 1:6))
+cmds$cell_type = ttBulk::counts[
+    match(ttBulk::counts$sample, rownames(cmds)), 
+    "Cell type"
+]
+```
+
+</div>
+
+<div style="clear:both;">
+
+</div>
+
+On the x and y axes axis we have the reduced dimensions 1 to 3, data is
+coloured by cell
+type.
+
+``` r
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 ```
 
-    ## # A tibble: 48 x 6
-    ##    sample     `Dim 1` `Dim 2` `Dim 3` `Cell type`       time 
-    ##    <chr>        <dbl>   <dbl>   <dbl> <chr>             <chr>
-    ##  1 SRR1740034    2.31   0.491 -3.01   b_cell            0 d  
-    ##  2 SRR1740035    2.29   0.427 -3.03   b_cell            1 d  
-    ##  3 SRR1740036    2.25   0.388 -2.92   b_cell            3 d  
-    ##  4 SRR1740037    2.29   0.420 -2.98   b_cell            7 d  
-    ##  5 SRR1740038   -1.46  -2.12  -0.163  dendritic_myeloid 0 d  
-    ##  6 SRR1740039   -1.38  -2.17  -0.0592 dendritic_myeloid 1 d  
-    ##  7 SRR1740040   -1.42  -2.12  -0.199  dendritic_myeloid 3 d  
-    ##  8 SRR1740041   -1.35  -2.18  -0.127  dendritic_myeloid 7 d  
-    ##  9 SRR1740042   -2.13  -2.05  -0.0695 monocyte          0 d  
-    ## 10 SRR1740043   -1.95  -1.96   0.0121 monocyte          1 d  
-    ## # … with 38 more rows
-
-On the x and y axes axis we have the reduced dimensions 1 to 3, data is
-coloured by cell type.
+    ## # A tibble: 48 x 9
+    ##    sample `Dim 1` `Dim 2` `Dim 3`  `Dim 4` `Dim 5` `Dim 6` `Cell type`
+    ##    <chr>    <dbl>   <dbl>   <dbl>    <dbl>   <dbl>   <dbl> <chr>      
+    ##  1 SRR17…    2.15   0.820  -3.02   0.255    0.118  -0.388  b_cell     
+    ##  2 SRR17…    2.15   0.702  -3.05   0.252    0.127  -0.454  b_cell     
+    ##  3 SRR17…    2.15   0.572  -2.95   0.391    0.103  -0.563  b_cell     
+    ##  4 SRR17…    2.12   0.782  -2.99   0.271    0.0860 -0.310  b_cell     
+    ##  5 SRR17…   -1.42  -2.21   -0.319 -0.0537  -1.18   -0.180  dendritic_…
+    ##  6 SRR17…   -1.34  -2.18   -0.236 -0.00772 -1.07   -0.0937 dendritic_…
+    ##  7 SRR17…   -1.36  -2.38   -0.325  0.0401  -1.35   -0.204  dendritic_…
+    ##  8 SRR17…   -1.31  -2.26   -0.292  0.0236  -1.16   -0.136  dendritic_…
+    ##  9 SRR17…   -2.12  -2.19   -0.204 -0.534    1.03   -0.227  monocyte   
+    ## 10 SRR17…   -1.94  -1.96   -0.153 -0.676    1.02   -0.178  monocyte   
+    ## # … with 38 more rows, and 1 more variable: time <chr>
 
 ``` r
 counts.norm.MDS %>%
