@@ -7,7 +7,7 @@ test_that("Creating tt object from tibble, number of parameters, methods",{
 
     length(
       attr(
-        create_ttBulk(
+        ttBulk(
           ttBulk::counts_mini,
           .sample = sample,
           .transcript = transcript,
@@ -25,7 +25,7 @@ test_that("Test class identity of tt object",{
 
   expect_equal(
     class(
-      create_ttBulk(
+      ttBulk(
         ttBulk::counts_mini,
         .sample = sample,
         .transcript = transcript,
@@ -261,7 +261,7 @@ test_that("Add cluster lables based on SNN - no object",{
 
 	expect_equal(
 		ncol(res),
-		5
+		6
 	)
 
 })

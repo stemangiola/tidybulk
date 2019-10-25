@@ -20,6 +20,19 @@ vignette: >
 <!-- } -->
 <!-- </style> -->
 
+<style>
+.column-left{
+  float: left;
+  width: 50%;
+  text-align: left;
+}
+.column-right{
+  float: right;
+  width: 50%;
+  text-align: right;
+}
+</style>
+
 ```{r, echo=FALSE, include=FALSE}
 library(knitr)
 #library(kableExtra)
@@ -27,6 +40,7 @@ knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
                       message = FALSE, cache.lazy = FALSE)
 #options(width = 120)
 options(pillar.min_title_chars = Inf)
+
 
 library(tibble)
 library(dplyr)
@@ -65,6 +79,16 @@ my_theme =
 
 <img src="../inst/logo.png" height="139px" width="120px" />
 
+<div class="column-left">
+```{r}
+head(mtcars)
+```
+</div>
+<div class="column-right">
+```{r}
+tail(mtcars)
+```
+</div>
 
 # Introduction
 
@@ -76,7 +100,7 @@ ttBulk is a collection of wrapper functions for bulk tanscriptomic analyses that
 + annotation (and other info) columns
 
 ```{r}
-counts = ttBulk::counts_mini
+counts = ttBulk(ttBulk::counts_mini, sample, transcript, count)
 counts 
 ```
 
@@ -99,14 +123,7 @@ In brief you can:
 ttBulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with aggregate transcript with the same name. All the rest of the column are appended, and factors and boolean are appended as characters.
 
 ```{r aggregate, cache=TRUE}
-counts.aggr = 
-  counts %>%
-  aggregate_duplicates(
-  	sample, 
-  	transcript, 
-  	`count`,  
-  	aggregation_function = sum
-  )
+counts.aggr =  counts %>% aggregate_duplicates( 	aggregation_function = sum )
 
 counts.aggr 
 
@@ -118,8 +135,7 @@ counts.aggr
 We may want to calculate the normalised counts for library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`.
 
 ```{r normalise, cache=TRUE}
-counts.norm =  counts.aggr %>% 
-	scale_abundance(sample, transcript, `count`)
+counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
 
 counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
 ```
@@ -141,9 +157,7 @@ We may want to reduce the dimensions of our data, for example using PCA or MDS a
 **MDS** (Robinson et al., 10.1093/bioinformatics/btp616)
 
 ```{r mds, cache=TRUE}
-counts.norm.MDS =
-  counts.norm %>%
-  reduce_dimensions(.abundance = `count normalised`, method="MDS" , .element = sample, .feature = transcript, .dims = 3)
+counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = `count normalised`, method="MDS", .dims = 3)
 
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 ```
@@ -162,9 +176,7 @@ counts.norm.MDS %>%
 **PCA**
 
 ```{r pca, cache=TRUE}
-counts.norm.PCA =
-  counts.norm %>%
-  reduce_dimensions(.abundance = `count normalised`, method="PCA" , .element = sample, .feature = transcript, .dims = 3)
+counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = `count normalised`, method="PCA" ,  .dims = 3)
 
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 ```
@@ -183,11 +195,10 @@ counts.norm.PCA %>%
 ```{r tsne, cache=TRUE}
 counts.norm.tSNE =
 	ttBulk::breast_tcga_mini %>%
+	ttBulk(sample, ens, `count`) %>%
 	reduce_dimensions(
 		.abundance = `count normalised`, 
 		method = "tSNE", 
-		.element = sample, 
-		.feature = ens, 
 		top = 500, 
 		perplexity=10, 
 		pca_scale =T
@@ -240,13 +251,7 @@ counts.norm.MDS.rotated %>%
 We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). `test_differential_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate). 
 
 ```{r de, cache=TRUE}
-counts %>%
-	test_differential_abundance(
-      ~ condition,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`,
-      action="get")
+counts %>%	test_differential_abundance(  ~ condition,  action="get")
 ```
 
 # Adjust `counts`
@@ -268,9 +273,7 @@ counts.norm.adj =
 	  # Add covariate
 	  adjust_abundance(
 	  	~ factor_of_interest + batch,
-	  	sample,
-	  	transcript,
-	  	`count normalised`,
+	  	.abundance = `count normalised`,
 	  	action = "get"
 	  )
 
@@ -285,7 +288,7 @@ We may want to infer the cell type composition of our samples (with the algorith
 ```{r cibersort, cache=TRUE}
 counts.cibersort =
 	counts %>%
-	deconvolve_cellularity(sample, transcript, `count`, action="add", cores=2)
+	deconvolve_cellularity(action="add", cores=2)
 
 counts.cibersort %>% select(sample, contains("type:")) %>% distinct()
 ```
@@ -312,7 +315,7 @@ We may want to cluster our data (e.g., using k-means sample-wise). `cluster_elem
 
 ```{r cluster, cache=TRUE}
 counts.norm.cluster = counts.norm %>%
-  cluster_elements(.abundance = `count normalised`, .element = sample, .feature = transcript, method="kmeans",	centers = 2 )
+  cluster_elements(.abundance = `count normalised`, method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 ```
@@ -323,8 +326,6 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
  counts.norm.MDS %>%
   cluster_elements(
   	.abundance = `count normalised`,
-  	.element = sample,
-  	.feature = transcript,
   	method="kmeans",
   	centers = 2
   ) %>%
@@ -337,10 +338,8 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
 
 **SNN**
 
-```{r tsne, cache=TRUE}
-counts.norm.SNN =
-	counts.norm.tSNE %>%
-	cluster_elements(sample, ens, `count normalised`, method = "SNN")
+```{r SNN, cache=TRUE}
+counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= `count normalised`, method = "SNN")
 
 counts.norm.SNN %>% 
 	select(contains("tSNE", ignore.case = F), `cluster SNN`, sample) %>%
@@ -358,9 +357,6 @@ counts.norm.SNN %>%
 	mutate(factor_of_interest = `cluster SNN` == 3) %>%
 	test_differential_abundance(
     ~ factor_of_interest,
-    .sample = sample,
-    .transcript = ens,
-    .abundance = `count normalised`,
     action="get"
    )
 ```
@@ -375,14 +371,7 @@ We may want to remove redundant elements from the original data set (e.g., sampl
 **Approach 1**
 
 ```{r drop, cache=TRUE}
-counts.norm.non_redundant =
-	counts.norm.MDS %>%
-  remove_redundancy(
-  	method = "correlation",
-  	.element = sample,
-  	.feature = transcript,
-  	.abundance = `count normalised`
-  )
+counts.norm.non_redundant = counts.norm.MDS %>%  remove_redundancy(	method = "correlation" )
 ```
 
 We can visualise how the reduced redundancy with the reduced dimentions look like

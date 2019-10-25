@@ -1,12 +1,12 @@
 #' Creates a `tt` object from a `tbl``
 #'
-#' @description create_tt() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @description ttBulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name create_ttBulk
-#' @rdname create_ttBulk
+#' @name ttBulk
+#' @rdname ttBulk
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
@@ -28,20 +28,20 @@
 #'
 #' my_tt =
 #'     ttBulk::counts %>%
-#'     create_ttBulk(sample, transcript, counts)
+#'     ttBulk(sample, transcript, counts)
 #'
 #' class(my_tt)
 #'
 #' }
-#'
-create_ttBulk <- function(.data,
+#' @export
+ttBulk <- function(.data,
 													.sample,
 													.transcript,
 													.abundance) {
-	UseMethod("create_ttBulk", .data)
+	UseMethod("ttBulk", .data)
 }
 #' @export
-create_ttBulk.default <- function(.data,
+ttBulk.default <- function(.data,
 																	.sample,
 																	.transcript,
 																	.abundance)
@@ -49,7 +49,7 @@ create_ttBulk.default <- function(.data,
 	print("This function cannot be applied to this object")
 }
 #' @export
-create_ttBulk.tbl_df <- function(.data,
+ttBulk.tbl_df <- function(.data,
 																 .sample,
 																 .transcript,
 																 .abundance)
@@ -372,7 +372,7 @@ cluster_elements.tbl_df = cluster_elements.ttBulk <-
 reduce_dimensions <- function(.data,
 															.element = NULL,
 															.feature = NULL,
-															.abundance,
+															.abundance = NULL,
 															method,
 															.dims = 2,
 
@@ -389,7 +389,7 @@ reduce_dimensions <- function(.data,
 reduce_dimensions.default <-  function(.data,
 																			 .element = NULL,
 																			 .feature = NULL,
-																			 .abundance,
+																			 .abundance = NULL,
 																			 method,
 																			 .dims = 2,
 
@@ -407,7 +407,7 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
-					 .abundance,
+					 .abundance = NULL,
 					 method,
 					 .dims = 2,
 
@@ -1249,3 +1249,133 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 				"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
+
+
+#' Join datasets
+#' @export
+bind_rows <- function(...) {
+	UseMethod("bind_rows")
+}
+
+#' @export
+bind_rows.default <-  function(...)
+{
+	dplyr::bind_rows(...)
+}
+
+#' @export
+bind_rows.ttBulk <- function(...)
+{
+
+	tts = dplyr:::flatten_bindable(rlang::dots_values(...))
+
+	par1 = tts[[1]] %>% attr("parameters") %>% unlist
+	par2 = tts[[2]] %>% attr("parameters") %>% unlist
+
+	# Parameters of the two objects must match
+	error_if_parameters_not_match(par1, par2)
+
+	par =
+		unique(c(par1 %>% names, par2 %>% names)) %>%
+		map(~ switch(par1[[.x]] %>% is.null %>% sum(1), par1[[.x]], par2[[.x]])) %>%
+		setNames(par1 %>% names)
+
+
+	dplyr::bind_rows(...) %>%
+
+		# Attach attributes
+		add_attr(par, "parameters")
+
+}
+
+
+#' Mutate datasets
+#' @export
+mutate <- function(.data, ...) {
+	UseMethod("mutate")
+}
+
+#' @export
+mutate.default <-  function(.data, ...)
+{
+	dplyr::mutate(.data, ...)
+}
+
+#' @export
+mutate.ttBulk <- function(.data, ...)
+{
+	.data %>%
+		drop_class(c("ttBulk", "tt")) %>%
+		dplyr::mutate(...) %>%
+
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters") %>%
+
+		# Add class
+		add_class("tt") %>%
+		add_class("ttBulk")
+
+
+}
+
+# Left join
+
+#' Join datasets
+#' @export
+left_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+											 ...)  {
+	UseMethod("left_join")
+}
+
+#' @export
+left_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+																...)
+{
+	dplyr::left_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
+}
+
+#' @export
+left_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+														...)
+{
+	x %>%
+		drop_class(c("ttBulk", "tt")) %>%
+		dplyr::left_join(y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...) %>%
+
+		# Attach attributes
+		add_attr(x %>% attr("parameters"), "parameters") %>%
+
+		# Add class
+		add_class("tt") %>%
+		add_class("ttBulk")
+
+}
+
+# distinct
+
+#' @export
+distinct <- function (.data, ..., .keep_all = FALSE)  {
+	UseMethod("distinct")
+}
+
+#' @export
+distinct.default <-  function (.data, ..., .keep_all = FALSE)
+{
+	dplyr::distinct(.data, ..., .keep_all = FALSE)
+}
+
+#' @export
+distinct.ttBulk <- function (.data, ..., .keep_all = FALSE)
+{
+	.data %>%
+		drop_class(c("ttBulk", "tt")) %>%
+		dplyr::distinct(.data, ..., .keep_all = .keep_all) %>%
+
+		# Attach attributes
+		add_attr(.data %>% attr("parameters"), "parameters") %>%
+
+		# Add class
+		add_class("tt") %>%
+		add_class("ttBulk")
+
+}
