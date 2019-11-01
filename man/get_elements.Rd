@@ -4,7 +4,7 @@
 \alias{get_elements}
 \title{Get column names either from user or from attributes}
 \usage{
-get_elements(.data, .element)
+get_elements(.data, .element, of_samples = T)
 }
 \arguments{
 \item{.data}{A tibble}

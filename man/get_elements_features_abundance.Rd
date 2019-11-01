@@ -5,7 +5,7 @@
 \title{Get column names either from user or from attributes}
 \usage{
 get_elements_features_abundance(.data, .element, .feature, .abundance,
-  of_samples)
+  of_samples = T)
 }
 \arguments{
 \item{.data}{A tibble}

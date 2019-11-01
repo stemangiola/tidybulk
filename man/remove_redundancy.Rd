@@ -4,9 +4,10 @@
 \alias{remove_redundancy}
 \title{Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) aboundances are correlated}
 \usage{
-remove_redundancy(.data, .element = NULL, .feature = NULL, .abundance,
-  method, of_samples = T, correlation_threshold = 0.9,
-  log_transform = F, Dim_a_column, Dim_b_column)
+remove_redundancy(.data, .element = NULL, .feature = NULL,
+  .abundance = NULL, method, of_samples = T,
+  correlation_threshold = 0.9, log_transform = F, Dim_a_column,
+  Dim_b_column)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}

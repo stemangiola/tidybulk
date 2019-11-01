@@ -5,7 +5,7 @@
 \title{Drop redundant elements (e.g., samples) for which feature (e.g., genes) aboundances are correlated}
 \usage{
 remove_redundancy_elements_through_correlation(.data, .element = NULL,
-  .feature = NULL, .abundance, correlation_threshold = 0.9,
+  .feature = NULL, .abundance = NULL, correlation_threshold = 0.9,
   of_samples = T, log_transform = F)
 }
 \arguments{
