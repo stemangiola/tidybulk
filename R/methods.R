@@ -211,7 +211,7 @@ scale_abundance.tbl_df = scale_abundance.ttBulk <-
 cluster_elements <- function(.data,
 															.element = NULL,
 															.feature = NULL,
-															.abundance,
+															.abundance = NULL,
 															method,
 															of_samples = T,
 															log_transform = T,
@@ -224,7 +224,7 @@ cluster_elements <- function(.data,
 cluster_elements.default <-  function(.data,
 																			 .element = NULL,
 																			 .feature = NULL,
-																			 .abundance,
+																			 .abundance = NULL,
 																			 method,
 																			 of_samples = T,
 																			 log_transform = T,
@@ -239,7 +239,7 @@ cluster_elements.tbl_df = cluster_elements.ttBulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
-					 .abundance,
+					 .abundance = NULL,
 					 method ,
 					 of_samples = T,
 					 log_transform = T,
@@ -699,7 +699,7 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 remove_redundancy <- function(.data,
 													 .element = NULL,
 													 .feature = NULL,
-													 .abundance,
+													 .abundance = NULL,
 													 method,
 
 													 of_samples = T,
@@ -717,7 +717,7 @@ remove_redundancy <- function(.data,
 remove_redundancy.default <-  function(.data,
 																		.element = NULL,
 																		.feature = NULL,
-																		.abundance,
+																		.abundance = NULL,
 																		method,
 
 																		of_samples = T,
@@ -736,7 +736,7 @@ remove_redundancy.default <-  function(.data,
 remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 																													 .element = NULL,
 																													 .feature = NULL,
-																													 .abundance,
+																													 .abundance = NULL,
 																													 method,
 
 																													 of_samples = T,
@@ -1369,7 +1369,7 @@ distinct.ttBulk <- function (.data, ..., .keep_all = FALSE)
 {
 	.data %>%
 		drop_class(c("ttBulk", "tt")) %>%
-		dplyr::distinct(.data, ..., .keep_all = .keep_all) %>%
+		dplyr::distinct(..., .keep_all = .keep_all) %>%
 
 		# Attach attributes
 		add_attr(.data %>% attr("parameters"), "parameters") %>%

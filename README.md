@@ -42,6 +42,7 @@ tibble with columns for
 
 ``` r
 counts = ttBulk(ttBulk::counts, sample, transcript, count)
+counts_tcga = ttBulk(ttBulk::breast_tcga_mini, sample, ens, count)
 counts 
 ```
 
@@ -82,6 +83,8 @@ and boolean are appended as characters.
 
 <div class="column-left">
 
+TidyTranscriptomics
+
 ``` r
 counts.aggr = counts %>% aggregate_duplicates()
 ```
@@ -93,6 +96,8 @@ counts.aggr = counts %>% aggregate_duplicates()
 </div>
 
 <div class="column-right">
+
+Standard procedure
 
 ``` r
 temp = data.frame(
@@ -125,6 +130,8 @@ normalised data as `<NAME OF COUNT COLUMN> normalised`.
 
 <div class="column-left">
 
+TidyTranscriptomics
+
 ``` r
 counts.norm = counts.aggr %>% scale_abundance()
 ```
@@ -132,6 +139,8 @@ counts.norm = counts.aggr %>% scale_abundance()
 </div>
 
 <div class="column-right">
+
+Standard procedure
 
 ``` r
 dgList <- calcNormFactors(dgList, method="TMM")
@@ -175,6 +184,8 @@ the reduced dimensions.
 
 <div class="column-left">
 
+TidyTranscriptomics
+
 ``` r
 counts.norm.MDS =
   counts.norm %>%
@@ -184,6 +195,8 @@ counts.norm.MDS =
 </div>
 
 <div class="column-right">
+
+Standard procedure
 
 ``` r
 count_m_log = log(count_m + 1) 
@@ -239,49 +252,80 @@ counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% dist
 counts.norm.MDS %>%
     select(contains("Dim"), sample, `Cell type`) %>%
   distinct() %>%
-  GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
+  GGally::ggpairs(columns = 1:6, ggplot2::aes(colour=`Cell type`))
 ```
 
 ![](README_files/figure-gfm/plot_mds-1.png)<!-- -->
 
 **PCA**
 
+<div class="column-left">
+
+TidyTranscriptomics
+
 ``` r
 counts.norm.PCA =
   counts.norm %>%
-  reduce_dimensions(.abundance = `count normalised`, method="PCA" , .element = sample, .feature = transcript, .dims = 3)
+  reduce_dimensions(method="PCA", .dims = 6)
 ```
 
     ## Getting the 500 most variable genes
     ## Fraction of variance explained by the selected principal components
-    ## # A tibble: 3 x 2
+    ## # A tibble: 6 x 2
     ##   `Fraction of variance`    PC
     ##                    <dbl> <int>
-    ## 1                  0.421     1
-    ## 2                  0.275     2
-    ## 3                  0.143     3
+    ## 1                 0.420      1
+    ## 2                 0.272      2
+    ## 3                 0.145      3
+    ## 4                 0.0809     4
+    ## 5                 0.0329     5
+    ## 6                 0.0247     6
+
+</div>
+
+<div class="column-right">
+
+Standard procedure
+
+``` r
+count_m_log = log(count_m + 1) 
+pc = count_m_log %>% prcomp(scale = TRUE)
+variance = pc$sdev^2 
+variance = (variance / sum(variance))[1:6] 
+pc$cell_type = ttBulk::counts[
+    match(ttBulk::counts$sample, rownames(pc)), 
+    "Cell type"
+]
+```
+
+</div>
+
+<div style="clear:both;">
+
+</div>
+
+On the x and y axes axis we have the reduced dimensions 1 to 3, data is
+coloured by cell
+type.
 
 ``` r
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 ```
 
-    ## # A tibble: 48 x 6
-    ##    sample        PC1     PC2     PC3 `Cell type`       time 
-    ##    <chr>       <dbl>   <dbl>   <dbl> <chr>             <chr>
-    ##  1 SRR1740034  0.104  0.0310 -0.314  b_cell            0 d  
-    ##  2 SRR1740035  0.104  0.0313 -0.316  b_cell            1 d  
-    ##  3 SRR1740036  0.103  0.0260 -0.317  b_cell            3 d  
-    ##  4 SRR1740037  0.105  0.0315 -0.315  b_cell            7 d  
-    ##  5 SRR1740038 -0.184 -0.0807 -0.127  dendritic_myeloid 0 d  
-    ##  6 SRR1740039 -0.181 -0.0953 -0.117  dendritic_myeloid 1 d  
-    ##  7 SRR1740040 -0.181 -0.0835 -0.128  dendritic_myeloid 3 d  
-    ##  8 SRR1740041 -0.181 -0.0865 -0.130  dendritic_myeloid 7 d  
-    ##  9 SRR1740042 -0.204 -0.0447 -0.0797 monocyte          0 d  
-    ## 10 SRR1740043 -0.199 -0.0610 -0.0803 monocyte          1 d  
+    ## # A tibble: 48 x 9
+    ##    sample     PC1     PC2     PC3     PC4     PC5    PC6 `Cell type`  time 
+    ##    <chr>    <dbl>   <dbl>   <dbl>   <dbl>   <dbl>  <dbl> <chr>        <chr>
+    ##  1 SRR174…  0.105  0.0246 -0.312  -0.120  0.0258  -0.152 b_cell       0 d  
+    ##  2 SRR174…  0.104  0.0240 -0.314  -0.114  0.0171  -0.151 b_cell       1 d  
+    ##  3 SRR174…  0.103  0.0189 -0.315  -0.111  0.00988 -0.155 b_cell       3 d  
+    ##  4 SRR174…  0.105  0.0252 -0.313  -0.110  0.0176  -0.154 b_cell       7 d  
+    ##  5 SRR174… -0.180 -0.0922 -0.129   0.114  0.0582  -0.134 dendritic_m… 0 d  
+    ##  6 SRR174… -0.178 -0.106  -0.118   0.117  0.0555  -0.129 dendritic_m… 1 d  
+    ##  7 SRR174… -0.177 -0.0968 -0.127   0.111  0.0616  -0.130 dendritic_m… 3 d  
+    ##  8 SRR174… -0.177 -0.0985 -0.131   0.121  0.0488  -0.136 dendritic_m… 7 d  
+    ##  9 SRR174… -0.201 -0.0561 -0.0864  0.0696 0.0884  -0.116 monocyte     0 d  
+    ## 10 SRR174… -0.196 -0.0704 -0.0842  0.0607 0.129   -0.109 monocyte     1 d  
     ## # … with 38 more rows
-
-On the x and y axes axis we have the reduced dimensions 1 to 3, data is
-coloured by cell type.
 
 ``` r
 counts.norm.PCA %>%
@@ -294,15 +338,16 @@ counts.norm.PCA %>%
 
 **tSNE**
 
+<div class="column-left">
+
+TidyTranscriptomics
+
 ``` r
 counts.norm.tSNE =
-    ttBulk::breast_tcga_mini %>%
+    counts_tcga%>%
+    scale_abundance() %>%
     reduce_dimensions(
-        .abundance = `count normalised`, 
         method = "tSNE", 
-        .element = sample, 
-        .feature = ens, 
-        top = 500, 
         perplexity=10, 
         pca_scale =T
     ) 
@@ -317,27 +362,55 @@ counts.norm.tSNE =
     ## Building tree...
     ## Done in 0.08 seconds (sparsity = 0.054549)!
     ## Learning embedding...
-    ## Iteration 50: error is 77.050637 (50 iterations in 0.16 seconds)
-    ## Iteration 100: error is 75.176424 (50 iterations in 0.11 seconds)
-    ## Iteration 150: error is 75.003686 (50 iterations in 0.10 seconds)
-    ## Iteration 200: error is 74.927248 (50 iterations in 0.11 seconds)
-    ## Iteration 250: error is 74.926579 (50 iterations in 0.11 seconds)
-    ## Iteration 300: error is 2.060540 (50 iterations in 0.10 seconds)
-    ## Iteration 350: error is 1.819486 (50 iterations in 0.10 seconds)
-    ## Iteration 400: error is 1.733705 (50 iterations in 0.10 seconds)
-    ## Iteration 450: error is 1.695327 (50 iterations in 0.10 seconds)
-    ## Iteration 500: error is 1.673284 (50 iterations in 0.11 seconds)
-    ## Iteration 550: error is 1.658643 (50 iterations in 0.10 seconds)
-    ## Iteration 600: error is 1.648497 (50 iterations in 0.11 seconds)
-    ## Iteration 650: error is 1.640757 (50 iterations in 0.12 seconds)
-    ## Iteration 700: error is 1.633566 (50 iterations in 0.11 seconds)
-    ## Iteration 750: error is 1.628328 (50 iterations in 0.11 seconds)
-    ## Iteration 800: error is 1.621698 (50 iterations in 0.11 seconds)
-    ## Iteration 850: error is 1.618489 (50 iterations in 0.12 seconds)
-    ## Iteration 900: error is 1.615272 (50 iterations in 0.11 seconds)
-    ## Iteration 950: error is 1.613625 (50 iterations in 0.11 seconds)
-    ## Iteration 1000: error is 1.609274 (50 iterations in 0.11 seconds)
-    ## Fitting performed in 2.21 seconds.
+    ## Iteration 50: error is 77.523664 (50 iterations in 0.16 seconds)
+    ## Iteration 100: error is 74.996020 (50 iterations in 0.10 seconds)
+    ## Iteration 150: error is 74.816843 (50 iterations in 0.10 seconds)
+    ## Iteration 200: error is 74.745748 (50 iterations in 0.10 seconds)
+    ## Iteration 250: error is 74.714131 (50 iterations in 0.10 seconds)
+    ## Iteration 300: error is 1.983237 (50 iterations in 0.08 seconds)
+    ## Iteration 350: error is 1.760860 (50 iterations in 0.09 seconds)
+    ## Iteration 400: error is 1.692875 (50 iterations in 0.09 seconds)
+    ## Iteration 450: error is 1.664520 (50 iterations in 0.10 seconds)
+    ## Iteration 500: error is 1.653552 (50 iterations in 0.09 seconds)
+    ## Iteration 550: error is 1.640540 (50 iterations in 0.09 seconds)
+    ## Iteration 600: error is 1.631591 (50 iterations in 0.09 seconds)
+    ## Iteration 650: error is 1.624956 (50 iterations in 0.09 seconds)
+    ## Iteration 700: error is 1.617466 (50 iterations in 0.09 seconds)
+    ## Iteration 750: error is 1.611980 (50 iterations in 0.09 seconds)
+    ## Iteration 800: error is 1.606719 (50 iterations in 0.09 seconds)
+    ## Iteration 850: error is 1.601315 (50 iterations in 0.08 seconds)
+    ## Iteration 900: error is 1.598099 (50 iterations in 0.09 seconds)
+    ## Iteration 950: error is 1.594431 (50 iterations in 0.09 seconds)
+    ## Iteration 1000: error is 1.594201 (50 iterations in 0.09 seconds)
+    ## Fitting performed in 1.90 seconds.
+
+</div>
+
+<div class="column-right">
+
+Standard procedure
+
+``` r
+count_m_log = log(count_m + 1) 
+
+tsne = Rtsne::Rtsne(
+    t(count_m_log), 
+    perplexity=10, 
+        pca_scale =T
+)$Y
+tsne$cell_type = ttBulk::counts[
+    match(ttBulk::counts$sample, rownames(tsne)), 
+    "Cell type"
+]
+```
+
+</div>
+
+<div style="clear:both;">
+
+</div>
+
+Plot
 
 ``` r
 counts.norm.tSNE %>% 
@@ -348,16 +421,16 @@ counts.norm.tSNE %>%
     ## # A tibble: 836 x 4
     ##    `tSNE 1` `tSNE 2` sample                       Call  
     ##       <dbl>    <dbl> <chr>                        <fct> 
-    ##  1  -50.3      -1.23 TCGA-A1-A0SB-01A-11R-A144-07 Normal
-    ##  2   14.5      10.6  TCGA-A1-A0SD-01A-11R-A115-07 LumA  
-    ##  3    4.27      9.04 TCGA-A1-A0SE-01A-11R-A084-07 LumA  
-    ##  4   -0.908    -1.70 TCGA-A1-A0SF-01A-11R-A144-07 LumA  
-    ##  5   12.2      30.2  TCGA-A1-A0SG-01A-11R-A144-07 LumA  
-    ##  6    7.46     19.0  TCGA-A1-A0SH-01A-11R-A084-07 LumA  
-    ##  7  -15.5      -6.99 TCGA-A1-A0SI-01A-11R-A144-07 LumB  
-    ##  8   16.4      16.2  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  
-    ##  9  -58.7      -8.15 TCGA-A1-A0SK-01A-12R-A084-07 Basal 
-    ## 10  -21.5      -2.24 TCGA-A1-A0SM-01A-11R-A084-07 LumA  
+    ##  1    25.3      7.64 TCGA-A1-A0SB-01A-11R-A144-07 Normal
+    ##  2    -3.40    -9.04 TCGA-A1-A0SD-01A-11R-A115-07 LumA  
+    ##  3     5.02    -8.78 TCGA-A1-A0SE-01A-11R-A084-07 LumA  
+    ##  4    12.5     -4.72 TCGA-A1-A0SF-01A-11R-A144-07 LumA  
+    ##  5     1.55   -18.7  TCGA-A1-A0SG-01A-11R-A144-07 LumA  
+    ##  6     3.34   -10.3  TCGA-A1-A0SH-01A-11R-A084-07 LumA  
+    ##  7     1.03    17.1  TCGA-A1-A0SI-01A-11R-A144-07 LumB  
+    ##  8    -7.72    -5.73 TCGA-A1-A0SJ-01A-11R-A084-07 LumA  
+    ##  9    32.3     18.1  TCGA-A1-A0SK-01A-12R-A084-07 Basal 
+    ## 10    -6.87    19.1  TCGA-A1-A0SM-01A-11R-A084-07 LumA  
     ## # … with 826 more rows
 
 ``` r
@@ -367,7 +440,7 @@ counts.norm.tSNE %>%
     ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
 ```
 
-![](README_files/figure-gfm/tsne-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 # Rotate `dimensions`
 
@@ -379,11 +452,42 @@ rotated dimensions. The rotated dimensions will be added to the original
 data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as
 specified in the input arguments.
 
+<div class="column-left">
+
+TidyTranscriptomics
+
 ``` r
 counts.norm.MDS.rotated =
   counts.norm.MDS %>%
-    rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45, .element = sample)
+    rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45)
 ```
+
+</div>
+
+<div class="column-right">
+
+Standard procedure
+
+``` r
+        rotation = function(m, d) {
+            r = d * pi / 180
+            ((dplyr::bind_rows(
+                c(`1` = cos(r), `2` = -sin(r)),
+                c(`1` = sin(r), `2` = cos(r))
+            ) %>% as_matrix) %*% m)
+        }
+mds_r = pca %>% rotation(rotation_degrees)
+mds_r$cell_type = ttBulk::counts[
+    match(ttBulk::counts$sample, rownames(mds_r)), 
+    "Cell type"
+]
+```
+
+</div>
+
+<div style="clear:both;">
+
+</div>
 
 **Original** On the x and y axes axis we have the first two reduced
 dimensions, data is coloured by cell type.
@@ -411,7 +515,7 @@ counts.norm.MDS.rotated %>%
 
 ![](README_files/figure-gfm/plot_rotate_2-1.png)<!-- -->
 
-# Annotate `differential transcription`
+# Test `differential transcription`
 
 We may want to test for differential transcription between sample-wise
 factors of interest (e.g., with edgeR). `test_differential_abundance`
@@ -421,14 +525,13 @@ arguments and returns a tibble with additional columns for the
 statistics from the hypothesis test (e.g., log fold change, p-value and
 false discovery rate).
 
+<div class="column-left">
+
+TidyTranscriptomics
+
 ``` r
 counts %>%
-    test_differential_abundance(
-      ~ condition,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`,
-      action="get")
+    test_differential_abundance( ~ condition, action="get")
 ```
 
     ## # A tibble: 27,920 x 8
@@ -445,6 +548,37 @@ counts %>%
     ##  9 BTNL9         6.34  3.83   43.1 5.09e-11 8.95e- 8 TRUE  FALSE           
     ## 10 SMIM3        -9.55  3.52   40.9 1.62e-10 2.56e- 7 TRUE  FALSE           
     ## # … with 27,910 more rows
+
+</div>
+
+<div class="column-right">
+
+Standard procedure
+
+``` r
+design =
+        model.matrix(
+            object = .formula,
+            data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
+        ) %>%
+        magrittr::set_colnames(c("(Intercept)",
+                                                         (.) %>% colnames %>% `[` (-1)))
+
+edgeR::DGEList(counts = .) %>%
+        edgeR::calcNormFactors(method = "TMM") %>%
+        edgeR::estimateGLMCommonDisp(design) %>%
+        edgeR::estimateGLMTagwiseDisp(design) %>%
+        edgeR::glmFit(design) %>%
+        edgeR::glmLRT(coef = 2) %>%
+        edgeR::topTags(n = 999999) %$%
+        table
+```
+
+</div>
+
+<div style="clear:both;">
+
+</div>
 
 # Adjust `counts`
 
@@ -472,9 +606,6 @@ counts.norm.adj =
       # Add covariate
       adjust_abundance(
         ~ factor_of_interest + batch,
-        sample,
-        transcript,
-        `count normalised`,
         action = "get"
       )
 ```
@@ -488,8 +619,8 @@ counts.norm.adj
     ## # A tibble: 1,340,160 x 4
     ##    transcript sample     `count normalised adjusted` `filter out low count…
     ##    <chr>      <chr>                            <int> <lgl>                 
-    ##  1 A1BG       SRR1740034                         134 FALSE                 
-    ##  2 A1BG-AS1   SRR1740034                          72 FALSE                 
+    ##  1 A1BG       SRR1740034                         130 FALSE                 
+    ##  2 A1BG-AS1   SRR1740034                          71 FALSE                 
     ##  3 A1CF       SRR1740034                          NA TRUE                  
     ##  4 A2M        SRR1740034                           0 FALSE                 
     ##  5 A2M-AS1    SRR1740034                           0 FALSE                 
@@ -513,7 +644,7 @@ with additional columns for the adjusted cell type proportions.
 ``` r
 counts.cibersort =
     counts %>%
-    deconvolve_cellularity(sample, transcript, `count`, action="add", cores=2)
+    deconvolve_cellularity(action="add", cores=2)
 
 counts.cibersort %>% select(sample, contains("type:")) %>% distinct()
 ```
@@ -576,13 +707,13 @@ clustering methods.
 **k-means**
 
 ``` r
-counts.norm.cluster = counts.norm %>%
-  cluster_elements(.abundance = `count normalised`, .element = sample, .feature = transcript, method="kmeans",  centers = 2 )
+counts.norm.cluster = counts.norm.MDS %>%
+  cluster_elements(method="kmeans", centers = 2 )
 
 counts.norm.cluster
 ```
 
-    ## # A tibble: 1,340,160 x 12
+    ## # A tibble: 1,340,160 x 18
     ##    sample transcript `Cell type` count time  condition `merged transcr…
     ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>                <dbl>
     ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE                     1
@@ -595,22 +726,16 @@ counts.norm.cluster
     ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE                     1
     ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE                     1
     ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE                     1
-    ## # … with 1,340,150 more rows, and 5 more variables: `count
+    ## # … with 1,340,150 more rows, and 11 more variables: `count
     ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
-    ## #   counts` <lgl>, `cluster kmeans` <fct>
+    ## #   counts` <lgl>, `Dim 1` <dbl>, `Dim 2` <dbl>, `Dim 3` <dbl>, `Dim
+    ## #   4` <dbl>, `Dim 5` <dbl>, `Dim 6` <dbl>, `cluster kmeans` <fct>
 
 We can add cluster annotation to the MDS dimesion reduced data set and
 plot.
 
 ``` r
- counts.norm.MDS %>%
-  cluster_elements(
-    .abundance = `count normalised`,
-    .element = sample,
-    .feature = transcript,
-    method="kmeans",
-    centers = 2
-  ) %>%
+ counts.norm.cluster %>%
     distinct(sample, `Dim 1`, `Dim 2`, `cluster kmeans`) %>%
     ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`cluster kmeans`)) +
   geom_point() +
@@ -624,7 +749,7 @@ plot.
 ``` r
 counts.norm.SNN =
     counts.norm.tSNE %>%
-    cluster_elements(sample, ens, `count normalised`, method = "SNN")
+    cluster_elements(method = "SNN")
 ```
 
     ## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
@@ -646,16 +771,16 @@ counts.norm.SNN %>%
     ## # A tibble: 836 x 4
     ##    `tSNE 1` `tSNE 2` `cluster SNN` sample                      
     ##       <dbl>    <dbl> <fct>         <chr>                       
-    ##  1  -50.3      -1.23 3             TCGA-A1-A0SB-01A-11R-A144-07
-    ##  2   14.5      10.6  0             TCGA-A1-A0SD-01A-11R-A115-07
-    ##  3    4.27      9.04 4             TCGA-A1-A0SE-01A-11R-A084-07
-    ##  4   -0.908    -1.70 1             TCGA-A1-A0SF-01A-11R-A144-07
-    ##  5   12.2      30.2  2             TCGA-A1-A0SG-01A-11R-A144-07
-    ##  6    7.46     19.0  0             TCGA-A1-A0SH-01A-11R-A084-07
-    ##  7  -15.5      -6.99 0             TCGA-A1-A0SI-01A-11R-A144-07
-    ##  8   16.4      16.2  2             TCGA-A1-A0SJ-01A-11R-A084-07
-    ##  9  -58.7      -8.15 3             TCGA-A1-A0SK-01A-12R-A084-07
-    ## 10  -21.5      -2.24 5             TCGA-A1-A0SM-01A-11R-A084-07
+    ##  1    25.3      7.64 3             TCGA-A1-A0SB-01A-11R-A144-07
+    ##  2    -3.40    -9.04 0             TCGA-A1-A0SD-01A-11R-A115-07
+    ##  3     5.02    -8.78 4             TCGA-A1-A0SE-01A-11R-A084-07
+    ##  4    12.5     -4.72 1             TCGA-A1-A0SF-01A-11R-A144-07
+    ##  5     1.55   -18.7  2             TCGA-A1-A0SG-01A-11R-A144-07
+    ##  6     3.34   -10.3  0             TCGA-A1-A0SH-01A-11R-A084-07
+    ##  7     1.03    17.1  0             TCGA-A1-A0SI-01A-11R-A144-07
+    ##  8    -7.72    -5.73 2             TCGA-A1-A0SJ-01A-11R-A084-07
+    ##  9    32.3     18.1  3             TCGA-A1-A0SK-01A-12R-A084-07
+    ## 10    -6.87    19.1  5             TCGA-A1-A0SM-01A-11R-A084-07
     ## # … with 826 more rows
 
 ``` r
@@ -674,9 +799,6 @@ counts.norm.SNN %>%
     mutate(factor_of_interest = `cluster SNN` == 3) %>%
     test_differential_abundance(
     ~ factor_of_interest,
-    .sample = sample,
-    .transcript = ens,
-    .abundance = `count normalised`,
     action="get"
    )
 ```
@@ -716,12 +838,7 @@ approaches are supported:
 ``` r
 counts.norm.non_redundant =
     counts.norm.MDS %>%
-  remove_redundancy(
-    method = "correlation",
-    .element = sample,
-    .feature = transcript,
-    .abundance = `count normalised`
-  )
+  remove_redundancy(    method = "correlation" )
 ```
 
 We can visualise how the reduced redundancy with the reduced dimentions
@@ -744,8 +861,6 @@ counts.norm.non_redundant =
     counts.norm.MDS %>%
   remove_redundancy(
     method = "reduced_dimensions",
-    .element = sample,
-    .feature = transcript,
     Dim_a_column = `Dim 1`,
     Dim_b_column = `Dim 2`
   )

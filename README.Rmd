@@ -243,6 +243,7 @@ TidyTranscriptomics
 ```{r tsne, cache=TRUE}
 counts.norm.tSNE =
 	counts_tcga%>%
+	scale_abundance() %>%
 	reduce_dimensions(
 		method = "tSNE", 
 		perplexity=10, 
@@ -385,9 +386,6 @@ counts.norm.adj =
 	  # Add covariate
 	  adjust_abundance(
 	  	~ factor_of_interest + batch,
-	  	sample,
-	  	transcript,
-	  	`count normalised`,
 	  	action = "get"
 	  )
 
@@ -402,7 +400,7 @@ We may want to infer the cell type composition of our samples (with the algorith
 ```{r cibersort, cache=TRUE}
 counts.cibersort =
 	counts %>%
-	deconvolve_cellularity(sample, transcript, `count`, action="add", cores=2)
+	deconvolve_cellularity(action="add", cores=2)
 
 counts.cibersort %>% select(sample, contains("type:")) %>% distinct()
 ```
@@ -428,8 +426,8 @@ We may want to cluster our data (e.g., using k-means sample-wise). `cluster_elem
 **k-means**
 
 ```{r cluster, cache=TRUE}
-counts.norm.cluster = counts.norm %>%
-  cluster_elements(.abundance = `count normalised`, .element = sample, .feature = transcript, method="kmeans",	centers = 2 )
+counts.norm.cluster = counts.norm.MDS %>%
+  cluster_elements(method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 ```
@@ -437,14 +435,7 @@ counts.norm.cluster
 We can add cluster annotation to the MDS dimesion reduced data set and plot.
 
 ```{r plot_cluster, cache=TRUE}
- counts.norm.MDS %>%
-  cluster_elements(
-  	.abundance = `count normalised`,
-  	.element = sample,
-  	.feature = transcript,
-  	method="kmeans",
-  	centers = 2
-  ) %>%
+ counts.norm.cluster %>%
 	distinct(sample, `Dim 1`, `Dim 2`, `cluster kmeans`) %>%
 	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`cluster kmeans`)) +
   geom_point() +
@@ -456,7 +447,7 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
 ```{r SNN, cache=TRUE}
 counts.norm.SNN =
 	counts.norm.tSNE %>%
-	cluster_elements(sample, ens, `count normalised`, method = "SNN")
+	cluster_elements(method = "SNN")
 
 counts.norm.SNN %>% 
 	select(contains("tSNE", ignore.case = F), `cluster SNN`, sample) %>%
@@ -474,9 +465,6 @@ counts.norm.SNN %>%
 	mutate(factor_of_interest = `cluster SNN` == 3) %>%
 	test_differential_abundance(
     ~ factor_of_interest,
-    .sample = sample,
-    .transcript = ens,
-    .abundance = `count normalised`,
     action="get"
    )
 ```
@@ -495,12 +483,7 @@ We may want to remove redundant elements from the original data set (e.g., sampl
 ```{r drop, cache=TRUE}
 counts.norm.non_redundant =
 	counts.norm.MDS %>%
-  remove_redundancy(
-  	method = "correlation",
-  	.element = sample,
-  	.feature = transcript,
-  	.abundance = `count normalised`
-  )
+  remove_redundancy(	method = "correlation" )
 ```
 
 We can visualise how the reduced redundancy with the reduced dimentions look like
@@ -521,8 +504,6 @@ counts.norm.non_redundant =
 	counts.norm.MDS %>%
   remove_redundancy(
   	method = "reduced_dimensions",
-  	.element = sample,
-  	.feature = transcript,
   	Dim_a_column = `Dim 1`,
   	Dim_b_column = `Dim 2`
   )

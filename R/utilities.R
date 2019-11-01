@@ -142,9 +142,7 @@ error_if_duplicated_genes <- function(.data,
   .abundance = enquo(.abundance)
 
   duplicates <-
-    .data %>%
-    select(!!.sample,!!.transcript,!!.abundance) %>%
-    distinct() %>%
+    distinct( .data, !!.sample,!!.transcript,!!.abundance) %>%
     count(!!.sample,!!.transcript) %>%
     filter(n > 1) %>%
     arrange(n %>% desc())
@@ -351,13 +349,49 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
 #' @importFrom rlang quo_is_symbol
 #'
 #' @param .data A tibble
+#' @param .sample A character name of the sample column
+#' @param .transcript A character name of the transcript/gene column
+#'
+#' @return A list of column enquo or error
+get_sample_transcript = function(.data, .sample, .transcript){
+
+
+  my_stop = function() {
+    stop("
+        The fucntion does not know what your sample, transcript and counts columns are.\n
+        You have to either enter those as symbols (e.g., `sample`), \n
+        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
+      ")
+  }
+
+  if( .sample %>% quo_is_symbol() ) .sample = .sample
+  else if(".sample" %in% (.data %>% attr("parameters") %>% names))
+    .sample =  attr(.data, "parameters")$.sample
+  else my_stop()
+
+  if( .transcript %>% quo_is_symbol() ) .transcript = .transcript
+  else if(".transcript" %in% (.data %>% attr("parameters") %>% names))
+    .transcript =  attr(.data, "parameters")$.transcript
+  else my_stop()
+
+
+  list(.sample = .sample, .transcript = .transcript)
+
+}
+
+
+#' Get column names either from user or from attributes
+#'
+#' @importFrom rlang quo_is_symbol
+#'
+#' @param .data A tibble
 #' @param .element A character name of the sample column
 #' @param .feature A character name of the transcript/gene column
 #' @param of_samples A boolean
 #'
 #' @return A list of column enquo or error
 #'
-get_elements_features = function(.data, .element, .feature, of_samples){
+get_elements_features = function(.data, .element, .feature, of_samples = T){
 
   # If setted by the user, enquo those
   if(
@@ -411,7 +445,7 @@ get_elements_features = function(.data, .element, .feature, of_samples){
 #' @return A list of column enquo or error
 #'
 #' @export
-get_elements_features_abundance = function(.data, .element, .feature, .abundance, of_samples){
+get_elements_features_abundance = function(.data, .element, .feature, .abundance, of_samples = T){
 
   my_stop = function() {
     stop("
@@ -451,7 +485,7 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
 #' @param .element A character name of the sample column
 #'
 #' @return A list of column enquo or error
-get_elements = function(.data, .element){
+get_elements = function(.data, .element, of_samples = T){
 
   # If setted by the user, enquo those
   if(
@@ -472,6 +506,49 @@ get_elements = function(.data, .element){
           of_samples %>% `!` %>% sum(1),
           attr(.data, "parameters")$.sample,
           attr(.data, "parameters")$.transcript
+        )
+      ))
+    # Else through error
+    else
+      stop("
+        The fucntion does not know what your elements (e.g., sample) are.\n
+        You have to either enter those as symbols (e.g., `sample`), \n
+        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
+      ")
+  }
+}
+
+#' Get column names either from user or from attributes
+#'
+#' @importFrom rlang quo_is_symbol
+#'
+#' @param .data A tibble
+#' @param .abundance A character name of the abundance column
+#'
+#' @return A list of column enquo or error
+get_abundance_norm_if_exists = function(.data, .abundance){
+
+  # If setted by the user, enquo those
+  if(
+    .abundance %>% quo_is_symbol()
+  )
+    return(list(
+      .abundance = .abundance
+    ))
+
+  # Otherwise check if attribute exists
+  else {
+
+    # If so, take them from the attribute
+    if(.data %>% attr("parameters") %>% is.null %>% `!`)
+
+      return(list(
+        .abundance =  switch(
+          (".abundance_norm" %in% (.data %>% attr("parameters") %>% names) &
+             quo_name(.data %>% attr("parameters") %$% .abundance_norm) %in% (.data %>% colnames)
+           ) %>% `!` %>% sum(1),
+          attr(.data, "parameters")$.abundance_norm,
+          attr(.data, "parameters")$.abundance
         )
       ))
     # Else through error

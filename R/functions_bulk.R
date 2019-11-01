@@ -466,7 +466,8 @@ get_normalised_counts_bulk <- function(.data,
 		)
 
 	# Return
-	df %>%
+	df_norm =
+		df %>%
 		mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
 		left_join(nf, by = quo_name(.sample)) %>%
 
@@ -480,11 +481,20 @@ get_normalised_counts_bulk <- function(.data,
 		dplyr::select(-!!.abundance, -tot, -tot_filt) %>%
 		dplyr::rename(TMM = nf) %>%
 		#setNames(c("sample", "gene", sprintf("%s normalised", .data %>% select(!!.abundance) %>% colnames), colnames(.)[4:ncol(.)])) %>%
-		arrange(!!.sample, !!.transcript) %>%
-		#dplyr::select(-!!.sample,-!!.transcript) %>%
+		arrange(!!.sample, !!.transcript)
+		#dplyr::select(-!!.sample,-!!.transcript)
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		df_norm %>%
+			add_attr(
+				.data %>%
+					attr("parameters") %>%
+					c(
+						.abundance_norm =
+							(function(x, v) enquo(v))(x, !!value_normalised)
+						),
+				"parameters"
+			)
 
 }
 
@@ -524,26 +534,32 @@ add_normalised_counts_bulk <- function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+
+	.data_norm =
+		.data %>%
+		get_normalised_counts_bulk(
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			cpm_threshold = cpm_threshold,
+			prop = prop,
+			method = method,
+			reference_selection_function = reference_selection_function
+		) %>%
+		select(-contains(quo_name(.sample)),-contains(quo_name(.transcript)))
+
 	.data %>%
 		arrange(!!.sample, !!.transcript) %>%
 
 		# Add normalised data set
 		bind_cols(
-			.data %>%
-				get_normalised_counts_bulk(
-					.sample = !!.sample,
-					.transcript = !!.transcript,
-					.abundance = !!.abundance,
-					cpm_threshold = cpm_threshold,
-					prop = prop,
-					method = method,
-					reference_selection_function = reference_selection_function
-				) %>%
+			.data_norm %>%
 				select(-contains(quo_name(.sample)),-contains(quo_name(.transcript)))
-		) %>%
+		)		%>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		add_attr(.data_norm %>% attr("parameters"), "parameters")
+
 }
 
 
@@ -741,7 +757,7 @@ get_clusters_kmeans_bulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
-					 .abundance,
+					 .abundance = NULL,
 					 of_samples = T,
 					 log_transform = T,
 					 ...) {
@@ -752,7 +768,10 @@ get_clusters_kmeans_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
+		# Get normalised abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
+		col_names = get_abundance_norm_if_exists(.data, .abundance)
+		.abundance = col_names$.abundance
 
 		.data %>%
 
@@ -865,7 +884,10 @@ get_clusters_SNN_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
+		# Get normalised abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
+		col_names = get_abundance_norm_if_exists(.data, .abundance)
+		.abundance = col_names$.abundance
 
 		# Check if package is installed, otherwise install
 		if ("Seurat" %in% rownames(installed.packages()) == FALSE) {
@@ -992,10 +1014,13 @@ get_reduced_dimensions_MDS_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		.abundance = enquo(.abundance)
-		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
 		.element = col_names$.element
 		.feature = col_names$.feature
+
+		# Get normalised abundance if present, otherwise get abundance
+		.abundance = enquo(.abundance)
+		col_names = get_abundance_norm_if_exists(.data, .abundance)
 		.abundance = col_names$.abundance
 
 		# Get components from dims
@@ -1146,10 +1171,13 @@ get_reduced_dimensions_PCA_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		.abundance = enquo(.abundance)
-		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
 		.element = col_names$.element
 		.feature = col_names$.feature
+
+		# Get normalised abundance if present, otherwise get abundance
+		.abundance = enquo(.abundance)
+		col_names = get_abundance_norm_if_exists(.data, .abundance)
 		.abundance = col_names$.abundance
 
 		# Get components from dims
@@ -1336,10 +1364,13 @@ get_reduced_dimensions_TSNE_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		.abundance = enquo(.abundance)
-		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
+		col_names = get_elements_features(.data, .element, .feature, of_samples)
 		.element = col_names$.element
 		.feature = col_names$.feature
+
+		# Get normalised abundance if present, otherwise get abundance
+		.abundance = enquo(.abundance)
+		col_names = get_abundance_norm_if_exists(.data, .abundance)
 		.abundance = col_names$.abundance
 
 		# Evaluate ...
@@ -1708,7 +1739,21 @@ aggregate_duplicated_transcripts_bulk =
 		}
 
 		# Select which are the numerical columns
-		numerical_columns = .data %>% ungroup() %>% select_if(is.numeric) %>% select(-!!.abundance) %>% colnames() %>% c("n_aggr")
+		numerical_columns =
+			.data %>%
+			ungroup() %>%
+			select_if(is.numeric) %>%
+			select(-!!.abundance) %>%
+
+			# If normalised add the column to the exclusion
+			ifelse_pipe(
+				(".abundance_norm" %in% (.data %>% attr("parameters") %>% names) &&
+				 	quo_name(.data %>% attr("parameters") %$% .abundance_norm) %in% (.data %>% colnames)
+				),
+				~ .x %>% select(-!!(.data %>% attr("parameters") %$% .abundance_norm))
+			)	%>%
+			colnames() %>%
+			c("n_aggr")
 
 		# ggregates read .data over samples, concatenates other character columns, and averages other numeric columns
 		.data %>%
@@ -1739,9 +1784,21 @@ aggregate_duplicated_transcripts_bulk =
 											filter(n_aggr > 1) %>%
 											group_by(!!.sample, !!.transcript) %>%
 											mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
+
+											# If normalised abundance exists aggragate that as well
+											ifelse_pipe(
+												(".abundance_norm" %in% (.data %>% attr("parameters") %>% names) &&
+												 	quo_name(.data %>% attr("parameters") %$% .abundance_norm) %in% (.data %>% colnames)
+												),
+												~ {
+													.abundance_norm = .data %>% attr("parameters") %$% .abundance_norm
+													.x %>% mutate(!!.abundance_norm := !!.abundance_norm %>% aggregation_function())
+												}
+											) %>%
+
 											mutate_at(vars(numerical_columns), mean) %>%
 											mutate_at(
-												vars(-group_cols(), -!!.abundance, -!!numerical_columns),
+												vars(-group_cols(), - contains(quo_name(.abundance)), -!!numerical_columns),
 												list(~ paste3(unique(.), collapse = ", "))
 											) %>%
 											distinct()
@@ -1778,7 +1835,7 @@ aggregate_duplicated_transcripts_bulk =
 remove_redundancy_elements_through_correlation <- function(.data,
 																												.element = NULL,
 																												.feature = NULL,
-																												.abundance,
+																												.abundance = NULL,
 																												correlation_threshold = 0.9,
 
 																												of_samples = T,
@@ -2174,10 +2231,13 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	col_names = get_sample_transcript(.data, .sample, .transcript)
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
+
+	# Get normalised abundance if present, otherwise get abundance
+	.abundance = enquo(.abundance)
+	col_names = get_abundance_norm_if_exists(.data, .abundance)
 	.abundance = col_names$.abundance
 
 	# Check that .formula includes at least two covariates
@@ -2314,10 +2374,13 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	col_names = get_sample_transcript(.data, .sample, .transcript)
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
+
+	# Get normalised abundance if present, otherwise get abundance
+	.abundance = enquo(.abundance)
+	col_names = get_abundance_norm_if_exists(.data, .abundance)
 	.abundance = col_names$.abundance
 
 	.data %>%
@@ -2346,7 +2409,6 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
-#' @import Seurat
 #'
 #' @param .data A tt object
 #'

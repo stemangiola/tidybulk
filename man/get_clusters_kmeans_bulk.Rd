@@ -5,7 +5,7 @@
 \title{Get K-mean clusters to a tibble}
 \usage{
 get_clusters_kmeans_bulk(.data, .element = NULL, .feature = NULL,
-  .abundance, of_samples = T, log_transform = T, ...)
+  .abundance = NULL, of_samples = T, log_transform = T, ...)
 }
 \arguments{
 \item{.data}{A tibble}
