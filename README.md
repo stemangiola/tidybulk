@@ -46,20 +46,21 @@ counts_tcga = ttBulk(ttBulk::breast_tcga_mini, sample, ens, count)
 counts 
 ```
 
-    ## # A tibble: 1,340,160 x 6
-    ##    sample     transcript   `Cell type` count time  condition
-    ##    <chr>      <chr>        <chr>       <dbl> <chr> <lgl>    
-    ##  1 SRR1740034 DDX11L1      b_cell         17 0 d   TRUE     
-    ##  2 SRR1740034 WASH7P       b_cell       3568 0 d   TRUE     
-    ##  3 SRR1740034 MIR6859-1    b_cell         57 0 d   TRUE     
-    ##  4 SRR1740034 MIR1302-2    b_cell          1 0 d   TRUE     
-    ##  5 SRR1740034 FAM138A      b_cell          0 0 d   TRUE     
-    ##  6 SRR1740034 OR4F5        b_cell          0 0 d   TRUE     
-    ##  7 SRR1740034 LOC729737    b_cell       1764 0 d   TRUE     
-    ##  8 SRR1740034 LOC102725121 b_cell         11 0 d   TRUE     
-    ##  9 SRR1740034 WASH9P       b_cell       3590 0 d   TRUE     
-    ## 10 SRR1740034 MIR6859-2    b_cell         40 0 d   TRUE     
-    ## # … with 1,340,150 more rows
+    ## # A tibble: 1,340,160 x 8
+    ##    sample transcript `Cell type` count time  condition batch
+    ##    <chr>  <chr>      <chr>       <dbl> <chr> <lgl>     <int>
+    ##  1 SRR17… DDX11L1    b_cell         17 0 d   TRUE          0
+    ##  2 SRR17… WASH7P     b_cell       3568 0 d   TRUE          0
+    ##  3 SRR17… MIR6859-1  b_cell         57 0 d   TRUE          0
+    ##  4 SRR17… MIR1302-2  b_cell          1 0 d   TRUE          0
+    ##  5 SRR17… FAM138A    b_cell          0 0 d   TRUE          0
+    ##  6 SRR17… OR4F5      b_cell          0 0 d   TRUE          0
+    ##  7 SRR17… LOC729737  b_cell       1764 0 d   TRUE          0
+    ##  8 SRR17… LOC102725… b_cell         11 0 d   TRUE          0
+    ##  9 SRR17… WASH9P     b_cell       3590 0 d   TRUE          0
+    ## 10 SRR17… MIR6859-2  b_cell         40 0 d   TRUE          0
+    ## # … with 1,340,150 more rows, and 1 more variable:
+    ## #   factor_of_interest <lgl>
 
 In brief you can: + Going from BAM/SAM to a tidy data frame of counts
 (FeatureCounts) + Adding gene symbols from ensembl IDs + Aggregating
@@ -70,7 +71,7 @@ Adding batch adjusted counts (Combat) + Eliminating redunant samples
 and/or genes + Clustering samples and/or genes with kmeans + Adding
 tissue composition (Cibersort)
 
-# Aggregate `transcripts`
+# Aggregate duplicated `transcripts`
 
 ttBulk provide the `aggregate_duplicates` function to aggregate
 duplicated transcripts (e.g., isoforms, ensembl). For example, we often
@@ -85,13 +86,9 @@ and boolean are appended as characters.
 
 TidyTranscriptomics
 
-``` r
+``` r yellow
 counts.aggr = counts %>% aggregate_duplicates()
 ```
-
-    ## Converted to characters
-    ## condition 
-    ## "logical"
 
 </div>
 
@@ -119,7 +116,7 @@ colnames(dge_list.nr) <- colnames(dge_list)
 
 </div>
 
-# Normalise `counts`
+# Scale `counts`
 
 We may want to calculate the normalised counts for library size (e.g.,
 with TMM algorithm, Robinson and Oshlack
@@ -143,6 +140,12 @@ counts.norm = counts.aggr %>% scale_abundance()
 Standard procedure
 
 ``` r
+library(edgeR)
+
+myCPM <- cpm(count_m)
+keep <- rowSums(myCPM > 0.5) >= 2
+count_m.keep <- count_m[keep,]
+[...]
 dgList <- calcNormFactors(dgList, method="TMM")
 dgList <- estimateCommonDisp(dgList)
 dgList <- estimateTagwiseDisp(dgList)
@@ -199,10 +202,12 @@ counts.norm.MDS =
 Standard procedure
 
 ``` r
+library(limma)
+
 count_m_log = log(count_m + 1) 
-cmds1_2 = count_m_log %>% limma::plotMDS(dim.plot = 1:2, plot = F)
-cmds3_4 = count_m_log %>% limma::plotMDS(dim.plot = 3:4, plot = F)
-cmds5_6 = count_m_log %>% limma::plotMDS(dim.plot = 5:6, plot = F)
+cmds1_2 = count_m_log %>% plotMDS(dim.plot = 1:2, plot = F)
+cmds3_4 = count_m_log %>% plotMDS(dim.plot = 3:4, plot = F)
+cmds5_6 = count_m_log %>% plotMDS(dim.plot = 5:6, plot = F)
 
 
 cmds = cbind(
@@ -269,18 +274,6 @@ counts.norm.PCA =
   reduce_dimensions(method="PCA", .dims = 6)
 ```
 
-    ## Getting the 500 most variable genes
-    ## Fraction of variance explained by the selected principal components
-    ## # A tibble: 6 x 2
-    ##   `Fraction of variance`    PC
-    ##                    <dbl> <int>
-    ## 1                 0.420      1
-    ## 2                 0.272      2
-    ## 3                 0.145      3
-    ## 4                 0.0809     4
-    ## 5                 0.0329     5
-    ## 6                 0.0247     6
-
 </div>
 
 <div class="column-right">
@@ -292,8 +285,8 @@ count_m_log = log(count_m + 1)
 pc = count_m_log %>% prcomp(scale = TRUE)
 variance = pc$sdev^2 
 variance = (variance / sum(variance))[1:6] 
-pc$cell_type = ttBulk::counts[
-    match(ttBulk::counts$sample, rownames(pc)), 
+pc$cell_type = counts[
+    match(counts$sample, rownames(pc)), 
     "Cell type"
 ]
 ```
@@ -353,37 +346,6 @@ counts.norm.tSNE =
     ) 
 ```
 
-    ## Getting the 500 most variable genes
-    ## Performing PCA
-    ## Read the 836 x 50 data matrix successfully!
-    ## OpenMP is working. 1 threads.
-    ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
-    ## Computing input similarities...
-    ## Building tree...
-    ## Done in 0.08 seconds (sparsity = 0.054549)!
-    ## Learning embedding...
-    ## Iteration 50: error is 77.523664 (50 iterations in 0.16 seconds)
-    ## Iteration 100: error is 74.996020 (50 iterations in 0.10 seconds)
-    ## Iteration 150: error is 74.816843 (50 iterations in 0.10 seconds)
-    ## Iteration 200: error is 74.745748 (50 iterations in 0.10 seconds)
-    ## Iteration 250: error is 74.714131 (50 iterations in 0.10 seconds)
-    ## Iteration 300: error is 1.983237 (50 iterations in 0.08 seconds)
-    ## Iteration 350: error is 1.760860 (50 iterations in 0.09 seconds)
-    ## Iteration 400: error is 1.692875 (50 iterations in 0.09 seconds)
-    ## Iteration 450: error is 1.664520 (50 iterations in 0.10 seconds)
-    ## Iteration 500: error is 1.653552 (50 iterations in 0.09 seconds)
-    ## Iteration 550: error is 1.640540 (50 iterations in 0.09 seconds)
-    ## Iteration 600: error is 1.631591 (50 iterations in 0.09 seconds)
-    ## Iteration 650: error is 1.624956 (50 iterations in 0.09 seconds)
-    ## Iteration 700: error is 1.617466 (50 iterations in 0.09 seconds)
-    ## Iteration 750: error is 1.611980 (50 iterations in 0.09 seconds)
-    ## Iteration 800: error is 1.606719 (50 iterations in 0.09 seconds)
-    ## Iteration 850: error is 1.601315 (50 iterations in 0.08 seconds)
-    ## Iteration 900: error is 1.598099 (50 iterations in 0.09 seconds)
-    ## Iteration 950: error is 1.594431 (50 iterations in 0.09 seconds)
-    ## Iteration 1000: error is 1.594201 (50 iterations in 0.09 seconds)
-    ## Fitting performed in 1.90 seconds.
-
 </div>
 
 <div class="column-right">
@@ -421,16 +383,16 @@ counts.norm.tSNE %>%
     ## # A tibble: 836 x 4
     ##    `tSNE 1` `tSNE 2` sample                       Call  
     ##       <dbl>    <dbl> <chr>                        <fct> 
-    ##  1    25.3      7.64 TCGA-A1-A0SB-01A-11R-A144-07 Normal
-    ##  2    -3.40    -9.04 TCGA-A1-A0SD-01A-11R-A115-07 LumA  
-    ##  3     5.02    -8.78 TCGA-A1-A0SE-01A-11R-A084-07 LumA  
-    ##  4    12.5     -4.72 TCGA-A1-A0SF-01A-11R-A144-07 LumA  
-    ##  5     1.55   -18.7  TCGA-A1-A0SG-01A-11R-A144-07 LumA  
-    ##  6     3.34   -10.3  TCGA-A1-A0SH-01A-11R-A084-07 LumA  
-    ##  7     1.03    17.1  TCGA-A1-A0SI-01A-11R-A144-07 LumB  
-    ##  8    -7.72    -5.73 TCGA-A1-A0SJ-01A-11R-A084-07 LumA  
-    ##  9    32.3     18.1  TCGA-A1-A0SK-01A-12R-A084-07 Basal 
-    ## 10    -6.87    19.1  TCGA-A1-A0SM-01A-11R-A084-07 LumA  
+    ##  1  -32.4      16.1  TCGA-A1-A0SB-01A-11R-A144-07 Normal
+    ##  2    1.63     -8.93 TCGA-A1-A0SD-01A-11R-A115-07 LumA  
+    ##  3    9.11     -3.71 TCGA-A1-A0SE-01A-11R-A084-07 LumA  
+    ##  4    2.39      6.32 TCGA-A1-A0SF-01A-11R-A144-07 LumA  
+    ##  5  -16.1     -19.5  TCGA-A1-A0SG-01A-11R-A144-07 LumA  
+    ##  6    9.26     -5.48 TCGA-A1-A0SH-01A-11R-A084-07 LumA  
+    ##  7   -5.90     26.8  TCGA-A1-A0SI-01A-11R-A144-07 LumB  
+    ##  8    0.815   -11.5  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  
+    ##  9  -36.3      23.1  TCGA-A1-A0SK-01A-12R-A084-07 Basal 
+    ## 10   -7.19     19.4  TCGA-A1-A0SM-01A-11R-A084-07 LumA  
     ## # … with 826 more rows
 
 ``` r
@@ -469,16 +431,16 @@ counts.norm.MDS.rotated =
 Standard procedure
 
 ``` r
-        rotation = function(m, d) {
-            r = d * pi / 180
-            ((dplyr::bind_rows(
-                c(`1` = cos(r), `2` = -sin(r)),
-                c(`1` = sin(r), `2` = cos(r))
-            ) %>% as_matrix) %*% m)
-        }
+rotation = function(m, d) {
+    r = d * pi / 180
+    ((bind_rows(
+        c(`1` = cos(r), `2` = -sin(r)),
+        c(`1` = sin(r), `2` = cos(r))
+    ) %>% as_matrix) %*% m)
+}
 mds_r = pca %>% rotation(rotation_degrees)
-mds_r$cell_type = ttBulk::counts[
-    match(ttBulk::counts$sample, rownames(mds_r)), 
+mds_r$cell_type = counts[
+    match(counts$sample, rownames(mds_r)), 
     "Cell type"
 ]
 ```
@@ -515,7 +477,7 @@ counts.norm.MDS.rotated %>%
 
 ![](README_files/figure-gfm/plot_rotate_2-1.png)<!-- -->
 
-# Test `differential transcription`
+# Test `differential abundance`
 
 We may want to test for differential transcription between sample-wise
 factors of interest (e.g., with edgeR). `test_differential_abundance`
@@ -530,8 +492,44 @@ false discovery rate).
 TidyTranscriptomics
 
 ``` r
-counts %>%
+counts.de = 
+    counts %>%
     test_differential_abundance( ~ condition, action="get")
+```
+
+</div>
+
+<div class="column-right">
+
+Standard procedure
+
+``` r
+library(edgeR)
+
+design =
+        model.matrix(
+            object = .formula,
+            data = df_for_edgeR 
+        ) 
+
+DGEList(counts = counts) %>%
+        calcNormFactors(method = "TMM") %>%
+        estimateGLMCommonDisp(design) %>%
+        estimateGLMTagwiseDisp(design) %>%
+        glmFit(design) %>%
+        glmLRT(coef = 2) %>%
+        topTags(n = 999999) %$%
+        table
+```
+
+</div>
+
+<div style="clear:both;">
+
+</div>
+
+``` r
+counts.de
 ```
 
     ## # A tibble: 27,920 x 8
@@ -549,37 +547,6 @@ counts %>%
     ## 10 SMIM3        -9.55  3.52   40.9 1.62e-10 2.56e- 7 TRUE  FALSE           
     ## # … with 27,910 more rows
 
-</div>
-
-<div class="column-right">
-
-Standard procedure
-
-``` r
-design =
-        model.matrix(
-            object = .formula,
-            data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
-        ) %>%
-        magrittr::set_colnames(c("(Intercept)",
-                                                         (.) %>% colnames %>% `[` (-1)))
-
-edgeR::DGEList(counts = .) %>%
-        edgeR::calcNormFactors(method = "TMM") %>%
-        edgeR::estimateGLMCommonDisp(design) %>%
-        edgeR::estimateGLMTagwiseDisp(design) %>%
-        edgeR::glmFit(design) %>%
-        edgeR::glmLRT(coef = 2) %>%
-        edgeR::topTags(n = 999999) %$%
-        table
-```
-
-</div>
-
-<div style="clear:both;">
-
-</div>
-
 # Adjust `counts`
 
 We may want to adjust `counts` for (known) unwanted variation.
@@ -591,47 +558,56 @@ and returns a tibble with additional columns for the adjusted counts as
 `<COUNT COLUMN> adjusted`. At the moment just an unwanted covariated is
 allowed at a time.
 
+<div class="column-left">
+
+TidyTranscriptomics
+
 ``` r
 counts.norm.adj =
-    counts.norm %>%
-
-      # Add fake batch and factor of interest
-      left_join(
-        (.) %>%
-            distinct(sample) %>%
-            mutate(batch = sample(0:1, n(), replace = T))
-      ) %>%
-        mutate(factor_of_interest = `Cell type` == "b_cell") %>%
-
-      # Add covariate
-      adjust_abundance(
-        ~ factor_of_interest + batch,
-        action = "get"
-      )
+    counts.norm %>% adjust_abundance(
+        ~ factor_of_interest + batch,   
+        action = "get" 
+)
 ```
 
-    ## Standardizing Data across genes
+</div>
+
+<div class="column-right">
+
+Standard procedure
 
 ``` r
-counts.norm.adj
+library(sva)
+
+count_m_log = log(count_m + 1) 
+
+design =
+        model.matrix(
+            object = ~ factor_of_interest + batch,
+            data = annotation
+        ) 
+
+count_m_log.sva = 
+    ComBat(
+            batch = design[,2],
+            mod = design,
+            ...
+        ) 
+
+count_m_log.sva = ceiling(exp(count_m_log.sva) -1)
+count_m_log.sva$cell_type = counts[
+    match(counts$sample, rownames(count_m_log.sva)), 
+    "Cell type"
+]
 ```
 
-    ## # A tibble: 1,340,160 x 4
-    ##    transcript sample     `count normalised adjusted` `filter out low count…
-    ##    <chr>      <chr>                            <int> <lgl>                 
-    ##  1 A1BG       SRR1740034                         130 FALSE                 
-    ##  2 A1BG-AS1   SRR1740034                          71 FALSE                 
-    ##  3 A1CF       SRR1740034                          NA TRUE                  
-    ##  4 A2M        SRR1740034                           0 FALSE                 
-    ##  5 A2M-AS1    SRR1740034                           0 FALSE                 
-    ##  6 A2ML1      SRR1740034                           2 FALSE                 
-    ##  7 A2MP1      SRR1740034                          NA TRUE                  
-    ##  8 A3GALT2    SRR1740034                           0 FALSE                 
-    ##  9 A4GALT     SRR1740034                          NA TRUE                  
-    ## 10 A4GNT      SRR1740034                          NA TRUE                  
-    ## # … with 1,340,150 more rows
+</div>
 
-# Annotate `Cell type composition`
+<div style="clear:both;">
+
+</div>
+
+# Deconvolve `Cell type composition`
 
 We may want to infer the cell type composition of our samples (with the
 algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).
@@ -639,40 +615,41 @@ algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).
 symbols; for `sample`, `transcript` and `count`) and returns a tibble
 with additional columns for the adjusted cell type proportions.
 
-**columns truncated**
+<div class="column-left">
+
+TidyTranscriptomics
 
 ``` r
-counts.cibersort =
+counts.cibersort = 
     counts %>%
     deconvolve_cellularity(action="add", cores=2)
-
-counts.cibersort %>% select(sample, contains("type:")) %>% distinct()
 ```
 
-    ## # A tibble: 48 x 23
-    ##    sample `type: B cells … `type: B cells … `type: Plasma c…
-    ##    <chr>             <dbl>            <dbl>            <dbl>
-    ##  1 SRR17…            0.632          0.247                  0
-    ##  2 SRR17…            0.656          0.235                  0
-    ##  3 SRR17…            0.620          0.245                  0
-    ##  4 SRR17…            0.586          0.287                  0
-    ##  5 SRR17…            0              0.0177                 0
-    ##  6 SRR17…            0              0.0133                 0
-    ##  7 SRR17…            0              0.00699                0
-    ##  8 SRR17…            0              0                      0
-    ##  9 SRR17…            0              0                      0
-    ## 10 SRR17…            0              0                      0
-    ## # … with 38 more rows, and 19 more variables: `type: T cells CD8` <dbl>,
-    ## #   `type: T cells CD4 naive` <dbl>, `type: T cells CD4 memory
-    ## #   resting` <dbl>, `type: T cells CD4 memory activated` <dbl>, `type: T
-    ## #   cells follicular helper` <dbl>, `type: T cells regulatory
-    ## #   (Tregs)` <dbl>, `type: T cells gamma delta` <dbl>, `type: NK cells
-    ## #   resting` <dbl>, `type: NK cells activated` <dbl>, `type:
-    ## #   Monocytes` <dbl>, `type: Macrophages M0` <dbl>, `type: Macrophages
-    ## #   M1` <dbl>, `type: Macrophages M2` <dbl>, `type: Dendritic cells
-    ## #   resting` <dbl>, `type: Dendritic cells activated` <dbl>, `type: Mast
-    ## #   cells resting` <dbl>, `type: Mast cells activated` <dbl>, `type:
-    ## #   Eosinophils` <dbl>, `type: Neutrophils` <dbl>
+</div>
+
+<div class="column-right">
+
+Standard procedure
+
+``` r
+source(‘CIBERSORT.R’)
+count_m %>% write.table("mixture_file.txt")
+results <- CIBERSORT(
+    "sig_matrix_file.txt",
+    "mixture_file.txt", 
+    perm=100, QN=TRUE
+)
+results$cell_type = ttBulk::counts[
+    match(ttBulk::counts$sample, rownames(results)), 
+    "Cell type"
+]
+```
+
+</div>
+
+<div style="clear:both;">
+
+</div>
 
 With the new annotated data frame, we can plot the distributions of cell
 types across samples, and compare them with the nominal cell type labels
@@ -695,7 +672,7 @@ counts.cibersort %>%
 
 ![](README_files/figure-gfm/plot_cibersort-1.png)<!-- -->
 
-# Annotate `clusters`
+# Cluster `samples`
 
 We may want to cluster our data (e.g., using k-means sample-wise).
 `cluster_elements` takes as arguments a tibble, column names (as
@@ -706,30 +683,38 @@ clustering methods.
 
 **k-means**
 
+<div class="column-left">
+
+TidyTranscriptomics
+
 ``` r
 counts.norm.cluster = counts.norm.MDS %>%
   cluster_elements(method="kmeans", centers = 2 )
-
-counts.norm.cluster
 ```
 
-    ## # A tibble: 1,340,160 x 18
-    ##    sample transcript `Cell type` count time  condition `merged transcr…
-    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>                <dbl>
-    ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE                     1
-    ##  2 SRR17… A1BG-AS1   b_cell         83 0 d   TRUE                     1
-    ##  3 SRR17… A1CF       b_cell          1 0 d   TRUE                     1
-    ##  4 SRR17… A2M        b_cell          1 0 d   TRUE                     1
-    ##  5 SRR17… A2M-AS1    b_cell          0 0 d   TRUE                     1
-    ##  6 SRR17… A2ML1      b_cell          3 0 d   TRUE                     1
-    ##  7 SRR17… A2MP1      b_cell          0 0 d   TRUE                     1
-    ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE                     1
-    ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE                     1
-    ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE                     1
-    ## # … with 1,340,150 more rows, and 11 more variables: `count
-    ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
-    ## #   counts` <lgl>, `Dim 1` <dbl>, `Dim 2` <dbl>, `Dim 3` <dbl>, `Dim
-    ## #   4` <dbl>, `Dim 5` <dbl>, `Dim 6` <dbl>, `cluster kmeans` <fct>
+</div>
+
+<div class="column-right">
+
+Standard procedure
+
+``` r
+count_m_log = log(count_m + 1) 
+
+k = kmeans(count_m_log, iter.max = 1000, ...)
+cluster = k$cluster
+
+cluster$cell_type = ttBulk::counts[
+    match(ttBulk::counts$sample, rownames(cluster)), 
+    c("Cell type", "Dim 1", "Dim 2")
+]
+```
+
+</div>
+
+<div style="clear:both;">
+
+</div>
 
 We can add cluster annotation to the MDS dimesion reduced data set and
 plot.
@@ -746,21 +731,48 @@ plot.
 
 **SNN**
 
+<div class="column-left">
+
+TidyTranscriptomics
+
 ``` r
 counts.norm.SNN =
     counts.norm.tSNE %>%
     cluster_elements(method = "SNN")
 ```
 
-    ## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
-    ## 
-    ## Number of nodes: 836
-    ## Number of edges: 28808
-    ## 
-    ## Running Louvain algorithm...
-    ## Maximum modularity in 10 random starts: 0.6717
-    ## Number of communities: 6
-    ## Elapsed time: 0 seconds
+</div>
+
+<div class="column-right">
+
+Standard procedure
+
+``` r
+library(Seurat)
+
+snn = CreateSeuratObject(count_m)
+snn = ScaleData(
+    snn, display.progress = T, 
+    num.cores=4, do.par = TRUE
+)
+snn = FindVariableFeatures(snn, selection.method = "vst") 
+snn = FindVariableFeatures(snn, selection.method = "vst")
+snn = RunPCA(snn, npcs = 30)
+snn = FindNeighbors(snn)
+snn = FindClusters(snn, method = "igraph", ...)
+snn = snn[["seurat_clusters"]]
+
+snn$cell_type = ttBulk::counts[
+    match(ttBulk::counts$sample, rownames(snn)), 
+    c("Cell type", "Dim 1", "Dim 2")
+]
+```
+
+</div>
+
+<div style="clear:both;">
+
+</div>
 
 ``` r
 counts.norm.SNN %>% 
@@ -771,16 +783,16 @@ counts.norm.SNN %>%
     ## # A tibble: 836 x 4
     ##    `tSNE 1` `tSNE 2` `cluster SNN` sample                      
     ##       <dbl>    <dbl> <fct>         <chr>                       
-    ##  1    25.3      7.64 3             TCGA-A1-A0SB-01A-11R-A144-07
-    ##  2    -3.40    -9.04 0             TCGA-A1-A0SD-01A-11R-A115-07
-    ##  3     5.02    -8.78 4             TCGA-A1-A0SE-01A-11R-A084-07
-    ##  4    12.5     -4.72 1             TCGA-A1-A0SF-01A-11R-A144-07
-    ##  5     1.55   -18.7  2             TCGA-A1-A0SG-01A-11R-A144-07
-    ##  6     3.34   -10.3  0             TCGA-A1-A0SH-01A-11R-A084-07
-    ##  7     1.03    17.1  0             TCGA-A1-A0SI-01A-11R-A144-07
-    ##  8    -7.72    -5.73 2             TCGA-A1-A0SJ-01A-11R-A084-07
-    ##  9    32.3     18.1  3             TCGA-A1-A0SK-01A-12R-A084-07
-    ## 10    -6.87    19.1  5             TCGA-A1-A0SM-01A-11R-A084-07
+    ##  1  -32.4      16.1  3             TCGA-A1-A0SB-01A-11R-A144-07
+    ##  2    1.63     -8.93 0             TCGA-A1-A0SD-01A-11R-A115-07
+    ##  3    9.11     -3.71 4             TCGA-A1-A0SE-01A-11R-A084-07
+    ##  4    2.39      6.32 1             TCGA-A1-A0SF-01A-11R-A144-07
+    ##  5  -16.1     -19.5  2             TCGA-A1-A0SG-01A-11R-A144-07
+    ##  6    9.26     -5.48 0             TCGA-A1-A0SH-01A-11R-A084-07
+    ##  7   -5.90     26.8  0             TCGA-A1-A0SI-01A-11R-A144-07
+    ##  8    0.815   -11.5  2             TCGA-A1-A0SJ-01A-11R-A084-07
+    ##  9  -36.3      23.1  3             TCGA-A1-A0SK-01A-12R-A084-07
+    ## 10   -7.19     19.4  5             TCGA-A1-A0SM-01A-11R-A084-07
     ## # … with 826 more rows
 
 ``` r
@@ -791,7 +803,7 @@ counts.norm.SNN %>%
     ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
 ```
 
-![](README_files/figure-gfm/SNN-1.png)<!-- -->
+![](README_files/figure-gfm/SNN_plot-1.png)<!-- -->
 
 ``` r
 # Do differential transcription between clusters
@@ -818,7 +830,7 @@ counts.norm.SNN %>%
     ## 10 ENSG000…  2.28   7.01 1177. 5.13e-258 1.53e-255 TRUE  FALSE             
     ## # … with 2,990 more rows
 
-# Drop `redundant`
+# Drop `redundant` transcripts
 
 We may want to remove redundant elements from the original data set
 (e.g., samples or transcripts), for example if we want to define
@@ -835,11 +847,50 @@ approaches are supported:
 
 **Approach 1**
 
+<div class="column-left">
+
+TidyTranscriptomics
+
 ``` r
 counts.norm.non_redundant =
     counts.norm.MDS %>%
   remove_redundancy(    method = "correlation" )
 ```
+
+</div>
+
+<div class="column-right">
+
+Standard procedure
+
+``` r
+library(widyr)
+
+.data.correlated = 
+    pairwise_cor(
+        counts,
+        sample,
+        transcript,
+        rc,
+        sort = T,
+        diag = FALSE,
+        upper = F
+    ) %>%
+    filter(correlation > correlation_threshold) %>%
+    distinct(item1) %>%
+    rename(!!.element := item1)
+
+# Return non redudant data frame
+counts %>% anti_join(.data.correlated) %>%
+    spread(sample, rc, - transcript) %>%
+    left_join(annotation)
+```
+
+</div>
+
+<div style="clear:both;">
+
+</div>
 
 We can visualise how the reduced redundancy with the reduced dimentions
 look like
@@ -936,20 +987,21 @@ respectively. For example, from this data set
   counts.norm 
 ```
 
-    ## # A tibble: 1,340,160 x 11
-    ##    sample transcript `Cell type` count time  condition `merged transcr…
-    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>                <dbl>
-    ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE                     1
-    ##  2 SRR17… A1BG-AS1   b_cell         83 0 d   TRUE                     1
-    ##  3 SRR17… A1CF       b_cell          1 0 d   TRUE                     1
-    ##  4 SRR17… A2M        b_cell          1 0 d   TRUE                     1
-    ##  5 SRR17… A2M-AS1    b_cell          0 0 d   TRUE                     1
-    ##  6 SRR17… A2ML1      b_cell          3 0 d   TRUE                     1
-    ##  7 SRR17… A2MP1      b_cell          0 0 d   TRUE                     1
-    ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE                     1
-    ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE                     1
-    ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE                     1
-    ## # … with 1,340,150 more rows, and 4 more variables: `count
+    ## # A tibble: 1,340,160 x 13
+    ##    sample transcript `Cell type` count time  condition batch
+    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <dbl>
+    ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE          0
+    ##  2 SRR17… A1BG-AS1   b_cell         83 0 d   TRUE          0
+    ##  3 SRR17… A1CF       b_cell          1 0 d   TRUE          0
+    ##  4 SRR17… A2M        b_cell          1 0 d   TRUE          0
+    ##  5 SRR17… A2M-AS1    b_cell          0 0 d   TRUE          0
+    ##  6 SRR17… A2ML1      b_cell          3 0 d   TRUE          0
+    ##  7 SRR17… A2MP1      b_cell          0 0 d   TRUE          0
+    ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE          0
+    ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE          0
+    ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE          0
+    ## # … with 1,340,150 more rows, and 6 more variables:
+    ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, `count
     ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
     ## #   counts` <lgl>
 
@@ -968,20 +1020,21 @@ data set
     )
 ```
 
-    ## # A tibble: 1,340,160 x 14
-    ##    sample transcript `Cell type` count time  condition `merged transcr…
-    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>                <dbl>
-    ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE                     1
-    ##  2 SRR17… A1BG-AS1   b_cell         83 0 d   TRUE                     1
-    ##  3 SRR17… A1CF       b_cell          1 0 d   TRUE                     1
-    ##  4 SRR17… A2M        b_cell          1 0 d   TRUE                     1
-    ##  5 SRR17… A2M-AS1    b_cell          0 0 d   TRUE                     1
-    ##  6 SRR17… A2ML1      b_cell          3 0 d   TRUE                     1
-    ##  7 SRR17… A2MP1      b_cell          0 0 d   TRUE                     1
-    ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE                     1
-    ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE                     1
-    ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE                     1
-    ## # … with 1,340,150 more rows, and 7 more variables: `count
+    ## # A tibble: 1,340,160 x 16
+    ##    sample transcript `Cell type` count time  condition batch
+    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <dbl>
+    ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE          0
+    ##  2 SRR17… A1BG-AS1   b_cell         83 0 d   TRUE          0
+    ##  3 SRR17… A1CF       b_cell          1 0 d   TRUE          0
+    ##  4 SRR17… A2M        b_cell          1 0 d   TRUE          0
+    ##  5 SRR17… A2M-AS1    b_cell          0 0 d   TRUE          0
+    ##  6 SRR17… A2ML1      b_cell          3 0 d   TRUE          0
+    ##  7 SRR17… A2MP1      b_cell          0 0 d   TRUE          0
+    ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE          0
+    ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE          0
+    ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE          0
+    ## # … with 1,340,150 more rows, and 9 more variables:
+    ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, `count
     ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
     ## #   counts` <lgl>, `Dim 1` <dbl>, `Dim 2` <dbl>, `Dim 3` <dbl>
 
