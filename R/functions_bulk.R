@@ -1684,6 +1684,7 @@ add_rotated_dimensions =
 #'
 #' @importFrom dplyr summarise_all
 #' @importFrom dplyr bind_rows
+#' @importFrom magrittr %$%
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
