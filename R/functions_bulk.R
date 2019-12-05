@@ -1435,7 +1435,7 @@ get_reduced_dimensions_TSNE_bulk <-
 			do.call(Rtsne::Rtsne, c(list(df_tsne), arguments)) %$%
 			Y %>%
 			as_tibble(.name_repair = "minimal") %>%
-			setNames(c("tSNE 1", "tSNE 2")) %>%
+			setNames(c("tSNE1", "tSNE2")) %>%
 
 			# add element name
 			mutate(!!.element := df_tsne %>% rownames) %>%
