@@ -2404,6 +2404,51 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 }
 
+#' Identify variable genes for dimensionality reduction
+#'
+#' @param .data A tibble
+#' @param .sample A character name of the sample column
+#' @param .transcript A character name of the transcript/gene column
+#' @param .abundance A character name of the read count column
+#' @param top An integer. How many top genes to select
+#'
+#'
+#' @return A tibble filtered genes
+#'
+#' @export
+filter_variable_transcripts = function(.data,
+																			 .sample = NULL,
+																			 .transcript = NULL,
+																			 .abundance = NULL,
+																			 top = 500){
+
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	col_names = get_sample_transcript(.data, .sample, .transcript)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+
+	# Get normalised abundance if present, otherwise get abundance
+	.abundance = enquo(.abundance)
+	col_names = get_abundance_norm_if_exists(.data, .abundance)
+	.abundance = col_names$.abundance
+
+	writeLines(sprintf("Getting the %s most variable genes", top))
+
+	x =
+		.data %>%
+		distinct(!!.sample, !!.transcript, !!.abundance) %>%
+		spread(!!.sample, !!.abundance) %>%
+		as_matrix(rownames = quo_name(.transcript))
+
+	s <- rowMeans((x-rowMeans(x))^2)
+	o <- order(s,decreasing=TRUE)
+	x <- x[o[1L:top],,drop=FALSE]
+
+	.data %>% filter(!!.transcript %in% rownames(x))
+}
+
 #' Add cell type information on single cells
 #'
 #' @import dplyr
