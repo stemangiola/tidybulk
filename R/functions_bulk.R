@@ -2294,6 +2294,11 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 		# Filter low counts
 		filter(!`filter out low counts`) %>%
+		{
+			# Give warning of filtering
+			writeLines("Combat is applied excluding `filter out low counts`, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts ")
+			(.)
+		} %>%
 
 		# Select relevant info
 		distinct(!!.transcript, !!.sample, !!.abundance) %>%
