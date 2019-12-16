@@ -54,7 +54,7 @@ create_tt_from_tibble_bulk = function(.data,
 #'
 #' @return A tibble of gene counts
 #'
-#'
+#' @export
 create_tt_from_bam_sam_bulk <-
 	function(file_names, genome = "hg38", ...) {
 		# This function uses Subread to count the gene features,
@@ -92,7 +92,7 @@ create_tt_from_bam_sam_bulk <-
 																	AnnotationDbi::mapIds(
 																		org.Hs.eg.db::org.Hs.eg.db,
 																		keys = as.character(dge$genes$GeneID),
-																		column = "transcript",
+																		column = "SYMBOL",
 																		keytype = "ENTREZID",
 																		multiVals = "first"
 																	)
@@ -732,6 +732,172 @@ add_differential_transcript_abundance_bulk <- function(.data,
 
 		# Attach attributes
 		add_attr(.data %>% attr("parameters"), "parameters")
+}
+
+symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
+
+	# Get column names
+	.transcript = enquo(.transcript)
+	.sample = enquo(.sample)
+	col_names = get_sample_transcript(.data, .sample, .transcript)
+	.transcript = col_names$.transcript
+
+	# Check if package is installed, otherwise install
+	if ("org.Hs.eg.db" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("org.Hs.eg.db")
+	}
+
+	.data %>%
+		left_join(
+
+			# Get entrez mapping 1:1
+			mapIds(org.Hs.eg.db, .data %>% distinct(!!.transcript) %>% pull(1), 'ENTREZID', 'SYMBOL') %>%
+			enframe(name = quo_name(.transcript), value = "entrez") %>%
+			filter(entrez %>% is.na %>% `!`) %>%
+			group_by(!!.transcript) %>%
+			slice(1) %>%
+			ungroup()
+		)
+
+}
+
+#' Get differential transcription information to a tibble using edgeR. At the moment only one covariate is accepted
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#'
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param significance_threshold A real between 0 and 1
+#'
+#' @return A tibble with edgeR results
+#'
+#' @export
+analyse_gene_enrichment_bulk_EGSEA <- function(.data,
+																											 .formula,
+																											 .sample = NULL,
+																											 .transcript = NULL,
+																											 .abundance = NULL,
+																		 										contrasts = NULL,
+																		 									 species,
+																		 									cores = 10) {
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
+
+	# distinct_at is not released yet for dplyr, thus we have to use this trick
+	df_for_edgeR <- .data %>%
+
+		# Stop if any counts is NA
+		error_if_counts_is_na(!!.abundance) %>%
+
+		# Stop if there are duplicated transcripts
+		error_if_duplicated_genes(!!.sample, !!.transcript, !!.abundance) %>%
+
+		# Prepare the data frame
+		select(!!.transcript,!!.sample,!!.abundance,
+					 one_of(parse_formula(.formula))) %>%
+		distinct() %>%
+
+		# Add entrez from symbol
+		symbol_to_entrez() %>%
+		filter(entrez %>% is.na %>% `!`)
+
+	# Check if at least two samples for each group
+	if (df_for_edgeR %>%
+			select(!!.sample, one_of(parse_formula(.formula))) %>%
+			distinct %>%
+			count(!!as.symbol(parse_formula(.formula))) %>%
+			distinct(n) %>%
+			pull(1) %>%
+			min %>%
+			`<` (2))
+		stop("You need at least two replicated for each condition for EGSEA to work")
+
+	# Create design matrix
+	design =
+		model.matrix(
+			object = .formula,
+			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
+		) %>%
+		magrittr::set_colnames(c("(Intercept)",
+														 (.) %>% colnames %>% `[` (-1)))
+
+	# Check if package is installed, otherwise install
+	if ("EGSEA" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing EGSEA needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("EGSEA")
+	}
+
+	df_for_edgeR.filt <-
+		df_for_edgeR %>%
+		select(!!.transcript, !!.sample, !!.abundance, entrez) %>%
+		mutate(
+			`filter out low counts` = !!.transcript %in% add_normalised_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
+		) %>%
+		filter(!`filter out low counts`) %>%
+
+		# Make sure transcrpt names are adjacent
+		arrange(!!.transcript)
+
+	dge =
+		df_for_edgeR.filt %>%
+		select(entrez, !!.sample, !!.abundance) %>%
+		spread(!!.sample, !!.abundance) %>%
+		as_matrix(rownames = entrez) %>%
+		edgeR::DGEList(counts = .)
+
+	idx = buildIdx(entrezIDs=rownames(dge), species=species)
+
+ res =
+ 	dge %>%
+
+		# Calculate weights
+		limma::voom(design, plot=FALSE) %>%
+
+		# Execute EGSEA
+		egsea(
+			contrasts=contrasts,
+			gs.annots=idx,
+			# symbolsMap=
+			# 	df_for_edgeR.filt %>%
+			# 	select(entrez, !!.transcript) %>%
+			# 	distinct() %>%
+			# 	arrange(match(entrez, rownames(dge))) %>%
+			# 	setNames(c("FeatureID", "Symbols")),
+			baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
+			sort.by="med.rank",
+			num.threads = cores
+		)
+
+ res@results %>%
+ 	map2_dfr(
+ 		res@results %>% names,
+ 		~ .x[[1]][[1]] %>%
+ 			as_tibble(rownames = "pathway") %>%
+ 			mutate(data_base = .y)
+ 	) %>%
+ 	arrange(med.rank) %>%
+ 	select(data_base, pathway, everything())
+
+
 }
 
 #' Get K-mean clusters to a tibble
