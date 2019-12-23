@@ -4,9 +4,15 @@
 \alias{test_differential_abundance}
 \title{Add differential transcription information to a tbl using edgeR.}
 \usage{
-test_differential_abundance(.data, .formula, .sample = NULL,
-  .transcript = NULL, .abundance = NULL,
-  significance_threshold = 0.05, action = "add")
+test_differential_abundance(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  significance_threshold = 0.05,
+  action = "add"
+)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}

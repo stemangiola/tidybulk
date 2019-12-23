@@ -4,9 +4,17 @@
 \alias{cluster_elements}
 \title{Get clusters of elements (e.g., samples or transcripts)}
 \usage{
-cluster_elements(.data, .element = NULL, .feature = NULL,
-  .abundance = NULL, method, of_samples = T, log_transform = T,
-  action = "add", ...)
+cluster_elements(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  of_samples = T,
+  log_transform = T,
+  action = "add",
+  ...
+)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}

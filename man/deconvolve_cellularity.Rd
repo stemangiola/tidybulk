@@ -4,8 +4,14 @@
 \alias{deconvolve_cellularity}
 \title{Get cell type proportions from samples}
 \usage{
-deconvolve_cellularity(.data, .sample = NULL, .transcript = NULL,
-  .abundance = NULL, action = "add", ...)
+deconvolve_cellularity(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  action = "add",
+  ...
+)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}

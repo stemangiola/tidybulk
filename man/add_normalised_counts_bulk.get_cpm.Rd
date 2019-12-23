@@ -4,8 +4,13 @@
 \alias{add_normalised_counts_bulk.get_cpm}
 \title{Get count per million for TMM normalisation.}
 \usage{
-add_normalised_counts_bulk.get_cpm(.data, .sample = sample,
-  .transcript = transcript, .abundance = count, cpm_threshold = 0.5)
+add_normalised_counts_bulk.get_cpm(
+  .data,
+  .sample = sample,
+  .transcript = transcript,
+  .abundance = count,
+  cpm_threshold = 0.5
+)
 }
 \arguments{
 \item{.data}{A tibble}

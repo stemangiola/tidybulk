@@ -4,9 +4,18 @@
 \alias{add_reduced_dimensions_TSNE_bulk}
 \title{Add principal component information to a tibble using tSNE}
 \usage{
-add_reduced_dimensions_TSNE_bulk(.data, .element = NULL,
-  .feature = NULL, .abundance = NULL, .dims = 2, top = 500,
-  of_samples = T, log_transform = T, scale = T, ...)
+add_reduced_dimensions_TSNE_bulk(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  .dims = 2,
+  top = 500,
+  of_samples = T,
+  log_transform = T,
+  scale = T,
+  ...
+)
 }
 \arguments{
 \item{.data}{A tibble}

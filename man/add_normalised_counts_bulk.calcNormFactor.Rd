@@ -4,9 +4,16 @@
 \alias{add_normalised_counts_bulk.calcNormFactor}
 \title{Calculate the norm factor with calcNormFactor from limma}
 \usage{
-add_normalised_counts_bulk.calcNormFactor(.data, reference = NULL,
-  cpm_threshold = 0.5, prop = 3/4, .sample = sample,
-  .transcript = transcript, .abundance = count, method)
+add_normalised_counts_bulk.calcNormFactor(
+  .data,
+  reference = NULL,
+  cpm_threshold = 0.5,
+  prop = 3/4,
+  .sample = sample,
+  .transcript = transcript,
+  .abundance = count,
+  method
+)
 }
 \arguments{
 \item{.data}{A tibble}

@@ -4,9 +4,16 @@
 \alias{get_reduced_dimensions_MDS_bulk}
 \title{Get dimensionality information to a tibble using MDS}
 \usage{
-get_reduced_dimensions_MDS_bulk(.data, .element = NULL,
-  .feature = NULL, .abundance = NULL, .dims = 2, top = 500,
-  of_samples = T, log_transform = T)
+get_reduced_dimensions_MDS_bulk(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  .dims = 2,
+  top = 500,
+  of_samples = T,
+  log_transform = T
+)
 }
 \arguments{
 \item{.data}{A tibble}

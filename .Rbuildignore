@@ -5,3 +5,4 @@
 ^Meta$
 ^codecov\.yml$
 ^dev
+^README_cache

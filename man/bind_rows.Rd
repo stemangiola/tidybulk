@@ -6,6 +6,9 @@
 \usage{
 bind_rows(...)
 }
+\arguments{
+\item{...}{Data frames to combine}
+}
 \description{
 Join datasets
 }

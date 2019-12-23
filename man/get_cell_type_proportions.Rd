@@ -4,8 +4,13 @@
 \alias{get_cell_type_proportions}
 \title{Get cell type proportions from cibersort}
 \usage{
-get_cell_type_proportions(.data, .sample = NULL, .transcript = NULL,
-  .abundance = NULL, ...)
+get_cell_type_proportions(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  ...
+)
 }
 \arguments{
 \item{.data}{A tibble}

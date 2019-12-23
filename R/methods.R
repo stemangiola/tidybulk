@@ -1251,7 +1251,87 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 	}
 
 
+#' Identify variable transcripts
+#'
+#' @description filter_variable() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name filter_variable
+#' @rdname filter_variable
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param top Integer. Number of top transcript to consider
+#'
+#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#'
+#'
+#'
+#'
+#' @examples
+#'\donttest{
+#'
+#'
+#'
+#' 	filter_variable(
+#' 	    sample,
+#' 	    transcript,
+#' 	    `count`,
+#' 	    top = 500
+#' 	)
+#'
+#'}
+#'
+#' @export
+#'
+filter_variable <- function(.data,
+																				.sample = NULL,
+																				.transcript = NULL,
+																				.abundance = NULL,
+																				top = 500) {
+	UseMethod("filter_variable", .data)
+}
+#' @export
+filter_variable.default <-  function(.data,
+																			 .sample = NULL,
+																			 .transcript = NULL,
+																			 .abundance = NULL,
+																			 top = 500)
+{
+	print("This function cannot be applied to this object")
+}
+#' @export
+filter_variable.tbl_df = filter_variable.ttBulk <-
+	function(.data,
+					 .sample = NULL,
+					 .transcript = NULL,
+					 .abundance = NULL,
+					 top = 500)
+	{
+		# Make col names
+		.sample = enquo(.sample)
+		.transcript = enquo(.transcript)
+		.abundance = enquo(.abundance)
+
+		filter_variable_transcripts(
+				.data,
+				.sample = !!.sample,
+				.transcript = !!.transcript,
+				.abundance = !!.abundance,
+				top = top
+			)
+	}
+
 #' Join datasets
+#'
+#' @param ... Data frames to combine
+#'
 #' @export
 bind_rows <- function(...) {
 	UseMethod("bind_rows")
@@ -1290,6 +1370,10 @@ bind_rows.ttBulk <- function(...)
 
 
 #' Mutate datasets
+#'
+#' @param .data A tbl. (See dplyr)
+#' @param ... Data frames to combine (See dplyr)
+#'
 #' @export
 mutate <- function(.data, ...) {
 	UseMethod("mutate")
@@ -1321,9 +1405,17 @@ mutate.ttBulk <- function(.data, ...)
 # Left join
 
 #' Join datasets
+#'
+#' @param x tbls to join. (See dplyr)
+#' @param y tbls to join. (See dplyr)
+#' @param by A character vector of variables to join by. (See dplyr)
+#' @param copy If x and y are not from the same data source, and copy is TRUE, then y will be copied into the same src as x. (See dplyr)
+#' @param suffix If there are non-joined duplicate variables in x and y, these suffixes will be added to the output to disambiguate them. Should be a character vector of length 2. (See dplyr)
+#' @param ... Data frames to combine (See dplyr)
+#'
+#'
 #' @export
-left_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-											 ...)  {
+left_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
 	UseMethod("left_join")
 }
 
@@ -1351,8 +1443,11 @@ left_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".
 
 }
 
-# distinct
-
+#' distinct
+#' @param .data A tbl. (See dplyr)
+#' @param ... Data frames to combine (See dplyr)
+#' @param .keep_all If TRUE, keep all variables in .data. If a combination of ... is not distinct, this keeps the first row of values. (See dplyr)
+#'
 #' @export
 distinct <- function (.data, ..., .keep_all = FALSE)  {
 	UseMethod("distinct")
