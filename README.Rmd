@@ -118,9 +118,7 @@ TidyTranscriptomics
 ```{r normalise, cache=TRUE}
 counts.norm = counts.aggr %>% scale_abundance()
 ```
-```{r, include=FALSE}
-counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
-```
+
 </div>
 <div class="column-right">
 Standard procedure
@@ -142,6 +140,10 @@ norm_counts.table <- t(
 </div>
 <div style="clear:both;"></div>
 
+```{r, include=FALSE}
+counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
+```
+
 
 We can easily plot the normalised density to check the normalisation outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type. 
 
@@ -153,6 +155,42 @@ counts.norm %>%
 	scale_x_log10() +
 	my_theme
 ```
+
+# Filter `variable transcripts`
+
+We may want to identify and filter variable transcripts.
+
+<div class="column-left">
+TidyTranscriptomics
+```{r filter variable, cache=TRUE}
+counts.norm.variable = counts.norm %>% filter_variable()
+```
+</div>
+<div class="column-right">
+Standard procedure
+```{r filter variable long, eval=FALSE}
+library(edgeR)
+
+x = norm_counts.table
+
+s <- rowMeans((x-rowMeans(x))^2)
+o <- order(s,decreasing=TRUE)
+x <- x[o[1L:top],,drop=FALSE]
+
+norm_counts.table = norm_counts.table[rownames(x)] 
+
+norm_counts.table$cell_type = ttBulk::counts[
+	match(
+		ttBulk::counts$sample,
+		rownames(norm_counts.table)
+	), 
+	"Cell type"
+]
+```
+
+</div>
+<div style="clear:both;"></div>
+
 
 # Reduce `dimensions`
 

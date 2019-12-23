@@ -6,6 +6,11 @@
 \usage{
 mutate(.data, ...)
 }
+\arguments{
+\item{.data}{A tbl. (See dplyr)}
+
+\item{...}{Data frames to combine (See dplyr)}
+}
 \description{
 Mutate datasets
 }

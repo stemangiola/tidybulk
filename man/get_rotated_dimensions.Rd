@@ -4,9 +4,16 @@
 \alias{get_rotated_dimensions}
 \title{Get rotated dimensions of two principal components or MDS dimension of choice, of an angle}
 \usage{
-get_rotated_dimensions(.data, dimension_1_column, dimension_2_column,
-  rotation_degrees, .element = NULL, of_samples = T,
-  dimension_1_column_rotated = NULL, dimension_2_column_rotated = NULL)
+get_rotated_dimensions(
+  .data,
+  dimension_1_column,
+  dimension_2_column,
+  rotation_degrees,
+  .element = NULL,
+  of_samples = T,
+  dimension_1_column_rotated = NULL,
+  dimension_2_column_rotated = NULL
+)
 }
 \arguments{
 \item{.data}{A tibble}

@@ -4,8 +4,13 @@
 \alias{remove_redundancy_elements_though_reduced_dimensions}
 \title{Identifies the closest pairs in a MDS contaxt and return one of them}
 \usage{
-remove_redundancy_elements_though_reduced_dimensions(.data, Dim_a_column,
-  Dim_b_column, .element = NULL, of_samples = T)
+remove_redundancy_elements_though_reduced_dimensions(
+  .data,
+  Dim_a_column,
+  Dim_b_column,
+  .element = NULL,
+  of_samples = T
+)
 }
 \arguments{
 \item{.data}{A tibble}

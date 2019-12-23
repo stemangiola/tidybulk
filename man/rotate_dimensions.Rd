@@ -4,10 +4,17 @@
 \alias{rotate_dimensions}
 \title{Rotate two dimensions (e.g., principal components) of an arbitrary angle}
 \usage{
-rotate_dimensions(.data, dimension_1_column, dimension_2_column,
-  rotation_degrees, .element = NULL, of_samples = T,
-  dimension_1_column_rotated = NULL, dimension_2_column_rotated = NULL,
-  action = "add")
+rotate_dimensions(
+  .data,
+  dimension_1_column,
+  dimension_2_column,
+  rotation_degrees,
+  .element = NULL,
+  of_samples = T,
+  dimension_1_column_rotated = NULL,
+  dimension_2_column_rotated = NULL,
+  action = "add"
+)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}

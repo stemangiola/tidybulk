@@ -4,10 +4,17 @@
 \alias{scale_abundance}
 \title{Normalise the counts of transcripts/genes}
 \usage{
-scale_abundance(.data, .sample = NULL, .transcript = NULL,
-  .abundance = NULL, cpm_threshold = 0.5, prop = 3/4,
-  method = "TMM", reference_selection_function = median,
-  action = "add")
+scale_abundance(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  cpm_threshold = 0.5,
+  prop = 3/4,
+  method = "TMM",
+  reference_selection_function = median,
+  action = "add"
+)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}

@@ -86,6 +86,30 @@ test_that("Adding normalised counts - no object",{
 
 })
 
+test_that("filter variable - no object",{
+
+	res =
+		filter_variable(
+			ttBulk::counts_mini,
+			.sample = sample,
+			.transcript = transcript,
+			.abundance = `count`,
+			top = 5
+		)
+
+	expect_equal(
+		nrow(res),
+		25,
+		tolerance=1e-6
+	)
+
+	expect_equal(
+		head(res$transcript),
+		c("MS4A1", "IGHM" , "CD37",  "IL7R" , "FCN1",  "MS4A1")
+	)
+
+})
+
 test_that("Get differential trancript abundance - no object",{
 
   res =
@@ -381,14 +405,14 @@ test_that("Add reduced dimensions tSNE - no object",{
     )
 
   expect_equal(
-    typeof(res$`tSNE 1`),
+    typeof(res$`tSNE1`),
     "double",
     tolerance=1e-1
   )
 
   expect_equal(
     ncol(res),
-    8
+    10
   )
 
 })

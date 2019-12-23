@@ -4,8 +4,13 @@
 \alias{add_cell_type_proportions}
 \title{Add cell type proportions from cibersort}
 \usage{
-add_cell_type_proportions(.data, .sample = NULL, .transcript = NULL,
-  .abundance = NULL, ...)
+add_cell_type_proportions(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  ...
+)
 }
 \arguments{
 \item{.data}{A tibble}

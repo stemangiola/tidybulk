@@ -175,6 +175,54 @@ counts.norm %>%
 
 ![](README_files/figure-gfm/plot_normalise-1.png)<!-- -->
 
+# Filter `variable transcripts`
+
+We may want to identify and filter variable transcripts.
+
+<div class="column-left">
+
+TidyTranscriptomics
+
+``` r
+counts.norm.variable = counts.norm %>% filter_variable()
+```
+
+    ## Getting the 500 most variable genes
+
+</div>
+
+<div class="column-right">
+
+Standard procedure
+
+``` r
+library(edgeR)
+
+x = norm_counts.table
+
+s <- rowMeans((x-rowMeans(x))^2)
+o <- order(s,decreasing=TRUE)
+x <- x[o[1L:top],,drop=FALSE]
+
+norm_counts.table = norm_counts.table[rownames(x)] 
+
+norm_counts.table$cell_type = ttBulk::counts[
+    match(
+        ttBulk::counts$sample,
+        rownames(norm_counts.table)
+    ), 
+    "Cell type"
+]
+```
+
+\`\`\`
+
+</div>
+
+<div style="clear:both;">
+
+</div>
+
 # Reduce `dimensions`
 
 We may want to reduce the dimensions of our data, for example using PCA

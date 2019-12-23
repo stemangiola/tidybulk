@@ -79,17 +79,6 @@ my_theme =
 
 <img src="../inst/logo.png" height="139px" width="120px" />
 
-<div class="column-left">
-```{r}
-head(mtcars)
-```
-</div>
-<div class="column-right">
-```{r}
-tail(mtcars)
-```
-</div>
-
 # Introduction
 
 ttBulk is a collection of wrapper functions for bulk tanscriptomic analyses that follows the "tidy" paradigm. The data structure is a tibble with columns for 
@@ -211,7 +200,7 @@ counts.norm.tSNE %>%
 counts.norm.tSNE %>% 
 	select(contains("tSNE", ignore.case = F), sample, Call) %>%
 	distinct() %>%
-	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
+	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
 
 # Rotate `dimensions`
@@ -349,7 +338,7 @@ counts.norm.SNN %>%
 	select(contains("tSNE", ignore.case = F), `cluster SNN`, sample, Call) %>%
 	gather(source, Call, c("cluster SNN", "Call")) %>%
 	distinct() %>%
-	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
+	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
 
 
 # Do differential transcription between clusters

@@ -4,9 +4,16 @@
 \alias{add_normalised_counts_bulk}
 \title{Add a tibble with normalised counts using TMM}
 \usage{
-add_normalised_counts_bulk(.data, .sample = NULL, .transcript = NULL,
-  .abundance = NULL, cpm_threshold = 0.5, prop = 3/4,
-  method = "TMM", reference_selection_function = median)
+add_normalised_counts_bulk(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  cpm_threshold = 0.5,
+  prop = 3/4,
+  method = "TMM",
+  reference_selection_function = median
+)
 }
 \arguments{
 \item{.data}{A tibble}
