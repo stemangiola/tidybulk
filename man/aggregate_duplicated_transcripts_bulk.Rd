@@ -5,9 +5,14 @@
 \title{Aggregates multiple counts from the same samples (e.g., from isoforms)
 This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns}
 \usage{
-aggregate_duplicated_transcripts_bulk(.data, .sample = NULL,
-  .transcript = NULL, .abundance = NULL, aggregation_function = sum,
-  keep_integer = T)
+aggregate_duplicated_transcripts_bulk(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  aggregation_function = sum,
+  keep_integer = T
+)
 }
 \arguments{
 \item{.data}{A tibble}

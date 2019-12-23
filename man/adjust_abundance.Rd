@@ -4,8 +4,16 @@
 \alias{adjust_abundance}
 \title{Adjust transcript abundance for unwanted variation}
 \usage{
-adjust_abundance(.data, .formula, .sample = NULL, .transcript = NULL,
-  .abundance = NULL, log_transform = T, action = "add", ...)
+adjust_abundance(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  log_transform = T,
+  action = "add",
+  ...
+)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}

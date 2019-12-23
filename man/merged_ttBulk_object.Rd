@@ -7,7 +7,7 @@
 merged_ttBulk_object(...)
 }
 \arguments{
-\item{.data}{A tt object}
+\item{...}{Argument to pass to bind_rows}
 }
 \value{
 A tt tt object

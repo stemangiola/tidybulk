@@ -2461,7 +2461,7 @@ filter_variable_transcripts = function(.data,
 #' @import tidyr
 #' @import tibble
 #'
-#' @param .data A tt object
+#' @param ... Argument to pass to bind_rows
 #'
 #' @return A tt tt object
 #'
