@@ -10,6 +10,8 @@ get_elements(.data, .element, of_samples = T)
 \item{.data}{A tibble}
 
 \item{.element}{A character name of the sample column}
+
+\item{of_samples}{A boolean}
 }
 \value{
 A list of column enquo or error

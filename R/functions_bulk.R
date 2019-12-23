@@ -1601,7 +1601,7 @@ get_reduced_dimensions_TSNE_bulk <-
 			do.call(Rtsne::Rtsne, c(list(df_tsne), arguments)) %$%
 			Y %>%
 			as_tibble(.name_repair = "minimal") %>%
-			setNames(c("tSNE 1", "tSNE 2")) %>%
+			setNames(c("tSNE1", "tSNE2")) %>%
 
 			# add element name
 			mutate(!!.element := df_tsne %>% rownames) %>%
@@ -1850,6 +1850,7 @@ add_rotated_dimensions =
 #'
 #' @importFrom dplyr summarise_all
 #' @importFrom dplyr bind_rows
+#' @importFrom magrittr %$%
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2626,7 +2627,7 @@ filter_variable_transcripts = function(.data,
 #' @import tidyr
 #' @import tibble
 #'
-#' @param .data A tt object
+#' @param ... Argument to pass to bind_rows
 #'
 #' @return A tt tt object
 #'

@@ -4,8 +4,15 @@
 \alias{add_clusters_SNN_bulk}
 \title{Add SNN shared nearest neighbour clusters to a tibble}
 \usage{
-add_clusters_SNN_bulk(.data, .element = NULL, .feature = NULL,
-  .abundance, of_samples = T, log_transform = T, ...)
+add_clusters_SNN_bulk(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance,
+  of_samples = T,
+  log_transform = T,
+  ...
+)
 }
 \arguments{
 \item{.data}{A tibble}

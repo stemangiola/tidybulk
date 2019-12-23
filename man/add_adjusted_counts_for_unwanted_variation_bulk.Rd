@@ -4,9 +4,15 @@
 \alias{add_adjusted_counts_for_unwanted_variation_bulk}
 \title{Add adjusted count for some batch effect}
 \usage{
-add_adjusted_counts_for_unwanted_variation_bulk(.data, .formula,
-  .sample = NULL, .transcript = NULL, .abundance = NULL,
-  log_transform = T, ...)
+add_adjusted_counts_for_unwanted_variation_bulk(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  log_transform = T,
+  ...
+)
 }
 \arguments{
 \item{.data}{A tibble}

@@ -4,9 +4,14 @@
 \alias{get_differential_transcript_abundance_bulk}
 \title{Get differential transcription information to a tibble using edgeR. At the moment only one covariate is accepted}
 \usage{
-get_differential_transcript_abundance_bulk(.data, .formula,
-  .sample = NULL, .transcript = NULL, .abundance = NULL,
-  significance_threshold = 0.05)
+get_differential_transcript_abundance_bulk(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  significance_threshold = 0.05
+)
 }
 \arguments{
 \item{.data}{A tibble}
