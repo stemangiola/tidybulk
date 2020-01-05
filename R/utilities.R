@@ -350,6 +350,40 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
 #'
 #' @param .data A tibble
 #' @param .sample A character name of the sample column
+#' @param .abundance A character name of the read count column
+#'
+#' @return A list of column enquo or error
+get_sample_counts = function(.data, .sample, .abundance){
+
+
+  my_stop = function() {
+    stop("
+        The fucntion does not know what your sample, transcript and counts columns are.\n
+        You have to either enter those as symbols (e.g., `sample`), \n
+        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
+      ")
+  }
+
+  if( .sample %>% quo_is_symbol() ) .sample = .sample
+  else if(".sample" %in% (.data %>% attr("parameters") %>% names))
+    .sample =  attr(.data, "parameters")$.sample
+  else my_stop()
+
+  if( .abundance %>% quo_is_symbol() ) .abundance = .abundance
+  else if(".abundance" %in% (.data %>% attr("parameters") %>% names))
+    .abundance = attr(.data, "parameters")$.abundance
+  else my_stop()
+
+  list(.sample = .sample, .abundance = .abundance)
+
+}
+
+#' Get column names either from user or from attributes
+#'
+#' @importFrom rlang quo_is_symbol
+#'
+#' @param .data A tibble
+#' @param .sample A character name of the sample column
 #' @param .transcript A character name of the transcript/gene column
 #'
 #' @return A list of column enquo or error

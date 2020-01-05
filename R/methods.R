@@ -1328,6 +1328,106 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 			)
 	}
 
+
+#' Analise gene enrichment with EGSEA
+#'
+#' @description analise_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name analise_gene_enrichment
+#' @rdname analise_gene_enrichment
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .formula A formula with no response variable, representing the desired linear model
+#' @param .sample The name of the sample column
+#' @param .entrez The ENTREZ doce of the transcripts/genes
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param contrasts = NULL,
+#' @param species A character. For example, human or mouse
+#' @param cores An integer. The number of cores available
+#'
+#'
+#' @details This wrapper execute gene enrichment analyses of the dataset
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#' \donttest{
+#'
+#'
+#'
+#' 	analise_gene_enrichment(
+#'			input_df,
+#'			~ condition,
+#'			.sample = a,
+#'			.entrez = d,
+#'			.abundance = c,
+#'			species="human"
+#'		)
+#'
+#'}
+#'
+#' @export
+#'
+#'
+analise_gene_enrichment <- function(.data,
+																		.formula,
+																		.sample = NULL,
+																		.entrez,
+																		.abundance = NULL,
+																		contrasts = NULL,
+																		species,
+																		cores = 10) {
+	UseMethod("analise_gene_enrichment", .data)
+}
+#' @export
+analise_gene_enrichment.default <-  function(.data,
+																						 .formula,
+																						 .sample = NULL,
+																						 .entrez,
+																						 .abundance = NULL,
+																						 contrasts = NULL,
+																						 species,
+																						 cores = 10)
+{
+	print("This function cannot be applied to this object")
+}
+#' @export
+analise_gene_enrichment.tbl_df = analise_gene_enrichment.ttBulk <-
+	function(.data,
+					 .formula,
+					 .sample = NULL,
+					 .entrez,
+					 .abundance = NULL,
+					 contrasts = NULL,
+					 species,
+					 cores = 10)	{
+		# Make col names
+		.sample = enquo(.sample)
+		.abundance = enquo(.abundance)
+		.entrez = enquo(.entrez)
+
+			analyse_gene_enrichment_bulk_EGSEA(.data,
+																				 .formula,
+																				 .sample = !!.sample,
+																				 .entrez = !!.entrez,
+																				 .abundance = !!.abundance,
+																				 contrasts = contrasts,
+																				 species = species,
+																				 cores = cores)
+
+
+
+	}
+
+
+
+
 #' Join datasets
 #'
 #' @param ... Data frames to combine

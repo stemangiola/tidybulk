@@ -280,7 +280,7 @@ add_normalised_counts_bulk.calcNormFactor <- function(.data,
 	gene_to_exclude <-
 		add_normalised_counts_bulk.get_low_expressed(
 			.data %>%
-				filter(sample != "reference"),
+				filter(!!.sample != "reference"),
 			!!.sample,
 			!!.transcript,
 			!!.abundance,
@@ -324,6 +324,8 @@ add_normalised_counts_bulk.calcNormFactor <- function(.data,
 				method = method
 			)
 		) %>%
+
+		setNames(c(quo_name(.sample), "nf")) %>%
 
 		# Add the statistics about the number of genes filtered
 		dplyr::left_join(
@@ -480,7 +482,6 @@ get_normalised_counts_bulk <- function(.data,
 		dplyr::mutate(`filter out low counts` = !!.transcript %in% nf_obj$gene_to_exclude) %>%
 		dplyr::select(-!!.abundance, -tot, -tot_filt) %>%
 		dplyr::rename(TMM = nf) %>%
-		#setNames(c("sample", "gene", sprintf("%s normalised", .data %>% select(!!.abundance) %>% colnames), colnames(.)[4:ncol(.)])) %>%
 		arrange(!!.sample, !!.transcript)
 		#dplyr::select(-!!.sample,-!!.transcript)
 
@@ -563,7 +564,7 @@ add_normalised_counts_bulk <- function(.data,
 }
 
 
-#' Get differential transcription information to a tibble using edgeR. At the moment only one covariate is accepted
+#' Get differential transcription information to a tibble using edgeR.
 #'
 #' @import dplyr
 #' @import tidyr
@@ -682,7 +683,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		add_attr(.data %>% attr("parameters"), "parameters")
 }
 
-#' Add differential transcription information to a tibble using edgeR. At the moment only one covariate is accepted
+#' Add differential transcription information to a tibble using edgeR.
 #'
 #' @import dplyr
 #' @import tidyr
@@ -734,6 +735,15 @@ add_differential_transcript_abundance_bulk <- function(.data,
 		add_attr(.data %>% attr("parameters"), "parameters")
 }
 
+
+#' Get ENTREZ id from gene SYMBOL
+#'
+#' @param .data A tt or tbl object.
+#' @param .transcript A character. The name of the ene symbol column.
+#' @param .sample The name of the sample column
+#'
+#' @export
+#'
 symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 
 	# Get column names
@@ -754,7 +764,7 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 		left_join(
 
 			# Get entrez mapping 1:1
-			mapIds(org.Hs.eg.db, .data %>% distinct(!!.transcript) %>% pull(1), 'ENTREZID', 'SYMBOL') %>%
+			AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db, .data %>% distinct(!!.transcript) %>% pull(1), 'ENTREZID', 'SYMBOL') %>%
 			enframe(name = quo_name(.transcript), value = "entrez") %>%
 			filter(entrez %>% is.na %>% `!`) %>%
 			group_by(!!.transcript) %>%
@@ -764,7 +774,7 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 
 }
 
-#' Get differential transcription information to a tibble using edgeR. At the moment only one covariate is accepted
+#' Get differential transcription information to a tibble using edgeR.
 #'
 #' @import dplyr
 #' @import tidyr
@@ -773,12 +783,14 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 #'
 #'
 #'
-#' @param .data A tibble
-#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .formula A formula with no response variable, representing the desired linear model
 #' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
+#' @param .entrez The ENTREZ doce of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param significance_threshold A real between 0 and 1
+#' @param contrasts = NULL,
+#' @param species A character. For example, human or mouse
+#' @param cores An integer. The number of cores available
 #'
 #' @return A tibble with edgeR results
 #'
@@ -786,19 +798,19 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 																											 .formula,
 																											 .sample = NULL,
-																											 .transcript = NULL,
+																											 .entrez,
 																											 .abundance = NULL,
 																		 										contrasts = NULL,
 																		 									 species,
 																		 									cores = 10) {
 	# Get column names
 	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	col_names = get_sample_counts(.data, .sample, .abundance)
 	.sample = col_names$.sample
-	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
+
+	.entrez = enquo(.entrez)
 
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
@@ -807,16 +819,15 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 		error_if_counts_is_na(!!.abundance) %>%
 
 		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample, !!.transcript, !!.abundance) %>%
+		error_if_duplicated_genes(!!.sample, !!.entrez, !!.abundance) %>%
 
 		# Prepare the data frame
-		select(!!.transcript,!!.sample,!!.abundance,
+		select(!!.entrez,!!.sample,!!.abundance,
 					 one_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# Add entrez from symbol
-		symbol_to_entrez() %>%
-		filter(entrez %>% is.na %>% `!`)
+		filter(!!.entrez %>% is.na %>% `!`)
 
 	# Check if at least two samples for each group
 	if (df_for_edgeR %>%
@@ -838,33 +849,42 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 		magrittr::set_colnames(c("(Intercept)",
 														 (.) %>% colnames %>% `[` (-1)))
 
+	# # Check if package is installed, otherwise install
+	# if ("EGSEA" %in% rownames(installed.packages()) == FALSE) {
+	# 	writeLines("Installing EGSEA needed for differential transcript abundance analyses")
+	# 	if (!requireNamespace("BiocManager", quietly = TRUE))
+	# 		install.packages("BiocManager", repos = "https://cloud.r-project.org")
+	# 	BiocManager::install("EGSEA")
+	# }
+
 	# Check if package is installed, otherwise install
 	if ("EGSEA" %in% rownames(installed.packages()) == FALSE) {
-		writeLines("Installing EGSEA needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("EGSEA")
+		writeLines("EGSEA not installed. Please install it with.")
+		writeLines("BiocManager::install(\"EGSEA\")")
+	}
+	if(!"EGSEA" %in% (.packages())){
+		writeLines("EGSEA package not loaded. Please run library(\"ESGEA\")")
 	}
 
 	df_for_edgeR.filt <-
 		df_for_edgeR %>%
-		select(!!.transcript, !!.sample, !!.abundance, entrez) %>%
+		select(!!.entrez, !!.sample, !!.abundance) %>%
 		mutate(
-			`filter out low counts` = !!.transcript %in% add_normalised_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
+			`filter out low counts` = !!.entrez %in% add_normalised_counts_bulk.get_low_expressed(., !!.sample, !!.entrez, !!.abundance)
 		) %>%
 		filter(!`filter out low counts`) %>%
 
 		# Make sure transcrpt names are adjacent
-		arrange(!!.transcript)
+		arrange(!!.entrez)
 
 	dge =
 		df_for_edgeR.filt %>%
-		select(entrez, !!.sample, !!.abundance) %>%
+		select(!!.entrez, !!.sample, !!.abundance) %>%
 		spread(!!.sample, !!.abundance) %>%
-		as_matrix(rownames = entrez) %>%
+		as_matrix(rownames = !!.entrez) %>%
 		edgeR::DGEList(counts = .)
 
-	idx = buildIdx(entrezIDs=rownames(dge), species=species)
+	idx =  buildIdx(entrezIDs=rownames(dge), species=species)
 
  res =
  	dge %>%
@@ -873,7 +893,7 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 		limma::voom(design, plot=FALSE) %>%
 
 		# Execute EGSEA
-		egsea(
+ 		egsea(
 			contrasts=contrasts,
 			gs.annots=idx,
 			# symbolsMap=
@@ -1596,7 +1616,7 @@ get_reduced_dimensions_TSNE_bulk <-
 			spread(!!.feature, !!.abundance) %>%
 			# select(-sample) %>%
 			# distinct %>%
-			as_matrix(rownames = "sample")
+			as_matrix(rownames = quo_name(.element))
 
 			do.call(Rtsne::Rtsne, c(list(df_tsne), arguments)) %$%
 			Y %>%
@@ -2119,7 +2139,7 @@ remove_redundancy_elements_though_reduced_dimensions <-
 
 			# Calculate distances
 			.data %>%
-			select(sample, !!Dim_a_column, !!Dim_b_column) %>%
+			select(!!.element, !!Dim_a_column, !!Dim_b_column) %>%
 			distinct() %>%
 			as_matrix(rownames = !!.element) %>%
 			dist() %>%
@@ -2362,7 +2382,7 @@ add_cell_type_proportions = function(.data,
 					.abundance = !!.abundance,
 					...
 				),
-			by = "sample"
+			by = quo_name(.sample)
 		) %>%
 
 		# Attach attributes
