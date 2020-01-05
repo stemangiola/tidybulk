@@ -1,5 +1,10 @@
 context('Bulk methods')
 
+input_df = setNames(ttBulk::counts_mini, c("a", "b", "Cell type", "c",  "time" , "condition"))
+
+input_df_breast = setNames(ttBulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
+
+
 
 test_that("Creating tt object from tibble, number of parameters, methods",{
 
@@ -8,10 +13,10 @@ test_that("Creating tt object from tibble, number of parameters, methods",{
     length(
       attr(
         ttBulk(
-          ttBulk::counts_mini,
-          .sample = sample,
-          .transcript = transcript,
-          .abundance = `count`
+          input_df,
+          .sample = a,
+          .transcript = b,
+          .abundance = c
         ) ,
         "parameters"
       )
@@ -26,10 +31,10 @@ test_that("Test class identity of tt object",{
   expect_equal(
     class(
       ttBulk(
-        ttBulk::counts_mini,
-        .sample = sample,
-        .transcript = transcript,
-        .abundance = `count`
+        input_df,
+        .sample = a,
+        .transcript = b,
+        .abundance = c
       )
     )[1],
     "ttBulk"
@@ -41,10 +46,10 @@ test_that("Getting normalised counts - no object",{
 
   res =
     scale_abundance(
-      ttBulk::counts_mini,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`,
+      input_df,
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
       action = "get"
     )
 
@@ -66,10 +71,10 @@ test_that("Adding normalised counts - no object",{
 
   res =
     scale_abundance(
-      ttBulk::counts_mini,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`,
+      input_df,
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
       action = "add"
     )
 
@@ -81,7 +86,7 @@ test_that("Adding normalised counts - no object",{
 
   expect_equal(
     ncol(res),
-    10
+    9
   )
 
 })
@@ -90,10 +95,10 @@ test_that("filter variable - no object",{
 
 	res =
 		filter_variable(
-			ttBulk::counts_mini,
-			.sample = sample,
-			.transcript = transcript,
-			.abundance = `count`,
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
 			top = 5
 		)
 
@@ -104,7 +109,7 @@ test_that("filter variable - no object",{
 	)
 
 	expect_equal(
-		head(res$transcript),
+		head(res$b),
 		c("MS4A1", "IGHM" , "CD37",  "IL7R" , "FCN1",  "MS4A1")
 	)
 
@@ -114,11 +119,11 @@ test_that("Get differential trancript abundance - no object",{
 
   res =
     test_differential_abundance(
-      ttBulk::counts_mini,
+      input_df,
       ~ condition,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`,
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
       action="get"
     )
 
@@ -139,11 +144,11 @@ test_that("Add differential trancript abundance - no object",{
 
   res =
     test_differential_abundance(
-      ttBulk::counts_mini,
+      input_df,
       ~ condition,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`,
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
       action="add"
     )
 
@@ -160,24 +165,78 @@ test_that("Add differential trancript abundance - no object",{
 
 })
 
+test_that("Get entrez from symbol - no object",{
+
+	res =
+		symbol_to_entrez(input_df, .transcript = b, .sample = a)
+
+	expect_equal(
+		res$entrez[1:4],
+		c( "7293",  "9651",  "23569" ,"5081" )
+	)
+
+})
+
+# test_that("Get gene enrichment - no object",{
+#
+# 	if ("EGSEA" %in% rownames(installed.packages()) == FALSE) {
+# 		writeLines("Installing EGSEA needed for differential transcript abundance analyses")
+# 		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos = "https://cloud.r-project.org")
+# 		BiocManager::install("EGSEA")
+# 	}
+#
+# 	library(EGSEA)
+#
+# 	res =
+# 		analise_gene_enrichment(
+# 			aggregate_duplicates(
+# 				dplyr::rename(symbol_to_entrez(
+# 					#dplyr::filter(input_df, grepl("^B", b)),
+# 					input_df,
+# 					.transcript = b, .sample = a), d = entrez
+# 				),
+# 				.transcript = d,
+# 				.sample = a,
+# 				.abundance = c
+# 			),
+# 			~ condition,
+# 			.sample = a,
+# 			.entrez = d,
+# 			.abundance = c,
+# 			species="human"
+# 		)
+#
+# 	expect_equal(
+# 		res$pathway[1:4],
+# 		c("GNF2_HCK"    ,  "GSE10325_LUPUS_BCELL_VS_LUPUS_MYELOID_DN"   ,"Amino sugar and nucleotide sugar metabolism", "Phagosome"  )
+# 	)
+#
+# 	expect_equal(
+# 		ncol(res),
+# 		20
+# 	)
+#
+# })
+#
+
 test_that("Get adjusted counts - no object",{
 
-  cm = ttBulk::counts_mini
+  cm = input_df
   cm$batch = 0
-  cm$batch[cm$sample %in% c("SRR1740035", "SRR1740043")] = 1
+  cm$batch[cm$a %in% c("SRR1740035", "SRR1740043")] = 1
 
   res =
     adjust_abundance(
       cm,
       ~ condition + batch,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`,
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
       action="get"
     )
 
   expect_equal(
-    unique(res$`count adjusted`)[c(1, 2, 3, 5)],
+    unique(res$`c adjusted`)[c(1, 2, 3, 5)],
     c( 6, 1014,   25 ,   0),
     tolerance=1e-6
   )
@@ -194,10 +253,10 @@ test_that("Get cluster lables based on Kmeans - no object",{
 
   res =
     cluster_elements(
-      ttBulk::counts_mini,
-      .abundance = `count`,
-      .element = sample,
-      .feature = transcript,
+      input_df,
+      .abundance = c,
+      .element = a,
+      .feature = b,
       method="kmeans",
       centers = 2,
       action="get"
@@ -219,10 +278,10 @@ test_that("Add cluster lables based on Kmeans - no object",{
 
   res =
     cluster_elements(
-      ttBulk::counts_mini,
-      .abundance = `count`,
-      .element = sample,
-      .feature = transcript,
+      input_df,
+      .abundance = c,
+      .element = a,
+      .feature = b,
       method="kmeans",
       centers = 2,
       action="add"
@@ -244,10 +303,10 @@ test_that("Get cluster lables based on SNN - no object",{
 
 	res =
 		cluster_elements(
-			ttBulk::breast_tcga_mini,
-			.element = sample,
-			.feature = ens,
-			.abundance = `count normalised`,
+			input_df_breast,
+			.element = a,
+			.feature = b,
+			.abundance = `c norm`,
 			method="SNN",
 			resolution=0.8,
 			action="get"
@@ -269,10 +328,10 @@ test_that("Add cluster lables based on SNN - no object",{
 
 	res =
 		cluster_elements(
-			ttBulk::breast_tcga_mini,
-			.element = sample,
-			.feature = ens,
-			.abundance = `count normalised`,
+			input_df_breast,
+			.element = a,
+			.feature = b,
+			.abundance = `c norm`,
 			method="SNN",
 			resolution=0.8,
 			action="add"
@@ -294,11 +353,11 @@ test_that("Get reduced dimensions MDS - no object",{
 
   res =
     reduce_dimensions(
-      ttBulk::counts_mini,
+      input_df,
       method = "MDS",
-      .abundance = `count`,
-      .element = sample,
-      .feature = transcript,
+      .abundance = c,
+      .element = a,
+      .feature = b,
       action="get"
     )
 
@@ -319,11 +378,11 @@ test_that("Add reduced dimensions MDS - no object",{
 
   res =
     reduce_dimensions(
-      ttBulk::counts_mini,
+      input_df,
       method = "MDS",
-      .abundance = `count`,
-      .element = sample,
-      .feature = transcript,
+      .abundance = c,
+      .element = a,
+      .feature = b,
       action="add"
     )
 
@@ -344,11 +403,11 @@ test_that("Get reduced dimensions PCA - no object",{
 
   res =
     reduce_dimensions(
-      ttBulk::counts_mini,
+      input_df,
       method="PCA",
-      .abundance = `count`,
-      .element = sample,
-      .feature = transcript,
+      .abundance = c,
+      .element = a,
+      .feature = b,
       action="get"
     )
 
@@ -369,11 +428,11 @@ test_that("Add reduced dimensions PCA - no object",{
 
   res =
     reduce_dimensions(
-      ttBulk::counts_mini,
+      input_df,
       method="PCA",
-      .abundance = `count`,
-      .element = sample,
-      .feature = transcript,
+      .abundance = c,
+      .element = a,
+      .feature = b,
       action="add"
     )
 
@@ -396,11 +455,11 @@ test_that("Add reduced dimensions tSNE - no object",{
 
   res =
     reduce_dimensions(
-      ttBulk::counts,
+    	setNames(ttBulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) ,
       method="tSNE",
-      .abundance = `count`,
-      .element = sample,
-      .feature = transcript,
+      .abundance = c,
+      .element = a,
+      .feature = b,
       action="add"
     )
 
@@ -421,11 +480,11 @@ test_that("Get rotated dimensions - no object",{
 
   res.pca =
     reduce_dimensions(
-      ttBulk::counts_mini,
+      input_df,
       method="PCA",
-      .abundance = `count`,
-      .element = sample,
-      .feature = transcript,
+      .abundance = c,
+      .element = a,
+      .feature = b,
       action="add"
     )
 
@@ -435,7 +494,7 @@ test_that("Get rotated dimensions - no object",{
       dimension_1_column = PC1,
       dimension_2_column = PC2,
       rotation_degrees = 45,
-      .element = sample,
+      .element = a,
       action="get"
     )
 
@@ -456,11 +515,11 @@ test_that("Add rotated dimensions - no object",{
 
   res.pca =
     reduce_dimensions(
-      ttBulk::counts_mini,
+      input_df,
       method="PCA",
-      .abundance = `count`,
-      .element = sample,
-      .feature = transcript,
+      .abundance = c,
+      .element = a,
+      .feature = b,
       action="add"
     )
 
@@ -470,7 +529,7 @@ test_that("Add rotated dimensions - no object",{
       dimension_1_column = PC1,
       dimension_2_column = PC2,
       rotation_degrees = 45,
-      .element = sample,
+      .element = a,
       action="add"
     )
 
@@ -491,14 +550,14 @@ test_that("Aggregate duplicated transcript - no object",{
 
   res =
     aggregate_duplicates(
-      ttBulk::counts_mini,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`
+      input_df,
+      .sample = a,
+      .transcript = b,
+      .abundance = c
     )
 
   expect_equal(
-    res$transcript[1:4],
+    res$b[1:4],
     c( "TNFRSF4", "PLCH2" ,  "PADI4" ,  "PAX7"   )
   )
 
@@ -513,11 +572,11 @@ test_that("Drop redundant correlated - no object",{
 
   res =
     remove_redundancy(
-      ttBulk::counts_mini,
+      input_df,
       method = "correlation",
-      .abundance = `count`,
-      .element = sample,
-      .feature = transcript
+      .abundance = c,
+      .element = a,
+      .feature = b
     )
 
   expect_equal(
@@ -579,10 +638,10 @@ test_that("Get cell type proportions - no object",{
 
   res =
     deconvolve_cellularity(
-      ttBulk::counts_mini,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`,
+      input_df,
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
       action="get", cores=2
     )
 
@@ -603,10 +662,10 @@ test_that("Add cell type proportions - no object",{
 
   res =
     deconvolve_cellularity(
-      ttBulk::counts_mini,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`,
+      input_df,
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
       action="add", cores=2
     )
 
