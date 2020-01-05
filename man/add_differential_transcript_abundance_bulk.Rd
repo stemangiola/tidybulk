@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_bulk.R
 \name{add_differential_transcript_abundance_bulk}
 \alias{add_differential_transcript_abundance_bulk}
-\title{Add differential transcription information to a tibble using edgeR. At the moment only one covariate is accepted}
+\title{Add differential transcription information to a tibble using edgeR.}
 \usage{
 add_differential_transcript_abundance_bulk(
   .data,
@@ -30,5 +30,5 @@ add_differential_transcript_abundance_bulk(
 A tibble with differential_transcript_abundance results
 }
 \description{
-Add differential transcription information to a tibble using edgeR. At the moment only one covariate is accepted
+Add differential transcription information to a tibble using edgeR.
 }
