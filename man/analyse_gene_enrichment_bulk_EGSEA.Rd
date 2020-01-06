@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_bulk.R
 \name{analyse_gene_enrichment_bulk_EGSEA}
 \alias{analyse_gene_enrichment_bulk_EGSEA}
-\title{Get differential transcription information to a tibble using edgeR.}
+\title{Get gene enrichment analyses using EGSEA}
 \usage{
 analyse_gene_enrichment_bulk_EGSEA(
   .data,
@@ -10,7 +10,7 @@ analyse_gene_enrichment_bulk_EGSEA(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
-  contrasts = NULL,
+  .contrasts = NULL,
   species,
   cores = 10
 )
@@ -26,7 +26,7 @@ analyse_gene_enrichment_bulk_EGSEA(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{contrasts}{= NULL,}
+\item{.contrasts}{= NULL,}
 
 \item{species}{A character. For example, human or mouse}
 
@@ -36,5 +36,5 @@ analyse_gene_enrichment_bulk_EGSEA(
 A tibble with edgeR results
 }
 \description{
-Get differential transcription information to a tibble using edgeR.
+Get gene enrichment analyses using EGSEA
 }

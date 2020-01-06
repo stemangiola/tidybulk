@@ -10,7 +10,7 @@ analise_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
-  contrasts = NULL,
+  .contrasts = NULL,
   species,
   cores = 10
 )
@@ -26,7 +26,7 @@ analise_gene_enrichment(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{contrasts}{= NULL,}
+\item{.contrasts}{= NULL,}
 
 \item{species}{A character. For example, human or mouse}
 

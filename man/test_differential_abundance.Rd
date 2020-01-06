@@ -10,6 +10,8 @@ test_differential_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
+  .coef = 2,
+  .contrasts = NULL,
   significance_threshold = 0.05,
   action = "add"
 )
@@ -24,6 +26,10 @@ test_differential_abundance(
 \item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{.coef}{An integer. See edgeR specifications}
+
+\item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`}
 
 \item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
 
