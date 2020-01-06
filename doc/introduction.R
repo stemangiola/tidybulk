@@ -1,10 +1,11 @@
-## ---- echo=FALSE, include=FALSE------------------------------------------
+## ---- echo=FALSE, include=FALSE-----------------------------------------------
 library(knitr)
 #library(kableExtra)
 knitr::opts_chunk$set(cache = TRUE, warning = FALSE, 
                       message = FALSE, cache.lazy = FALSE)
 #options(width = 120)
 options(pillar.min_title_chars = Inf)
+
 
 library(tibble)
 library(dplyr)
@@ -37,48 +38,38 @@ my_theme =
 # 	ttBulk::counts %>% 
 # 	filter(transcript %in% (ttBulk::X_cibersort %>% rownames)) %>% 
 # 	filter(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058", "SRR1740043", "SRR1740067")) %>%
-# 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), T, F))
+# 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
 
-## ------------------------------------------------------------------------
-counts = ttBulk::counts_mini
+## -----------------------------------------------------------------------------
+counts = ttBulk(ttBulk::counts_mini, sample, transcript, count)
 counts 
 
-## ----aggregate, cache=TRUE-----------------------------------------------
-counts.aggr = 
-  counts %>%
-  aggregate_duplicates(
-  	sample, 
-  	transcript, 
-  	`count`,  
-  	aggregation_function = sum
-  )
+## ----aggregate, cache=TRUE----------------------------------------------------
+counts.aggr =  counts %>% aggregate_duplicates( 	aggregation_function = sum )
 
 counts.aggr 
 
 
 
-## ----normalise, cache=TRUE-----------------------------------------------
-counts.norm =  counts.aggr %>% 
-	normalise_abundance(sample, transcript, `count`)
+## ----normalise, cache=TRUE----------------------------------------------------
+counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
 
 counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
 
-## ----plot_normalise, cache=TRUE------------------------------------------
+## ----plot_normalise, cache=TRUE-----------------------------------------------
 counts.norm %>% 
 	ggplot(aes(`count normalised` + 1, group=sample, color=`Cell type`)) +
 	geom_density() + 
 	scale_x_log10() +
 	my_theme
 
-## ----mds, cache=TRUE-----------------------------------------------------
-counts.norm.MDS =
-  counts.norm %>%
-  reduce_dimensions(.abundance = `count normalised`, method="MDS" , .element = sample, .feature = transcript, .dims = 3)
+## ----mds, cache=TRUE----------------------------------------------------------
+counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = `count normalised`, method="MDS", .dims = 3)
 
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 
-## ----plot_mds, cache=TRUE------------------------------------------------
+## ----plot_mds, cache=TRUE-----------------------------------------------------
 counts.norm.MDS %>%
 	select(contains("Dim"), sample, `Cell type`) %>%
   distinct() %>%
@@ -86,70 +77,61 @@ counts.norm.MDS %>%
 
 
 
-## ----pca, cache=TRUE-----------------------------------------------------
-counts.norm.PCA =
-  counts.norm %>%
-  reduce_dimensions(.abundance = `count normalised`, method="PCA" , .element = sample, .feature = transcript, .dims = 3)
+## ----pca, cache=TRUE----------------------------------------------------------
+counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = `count normalised`, method="PCA" ,  .dims = 3)
 
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 
-## ----plot_pca, cache=TRUE------------------------------------------------
+## ----plot_pca, cache=TRUE-----------------------------------------------------
 counts.norm.PCA %>%
 	select(contains("PC"), sample, `Cell type`) %>%
   distinct() %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 
-## ----tsne, cache=TRUE----------------------------------------------------
+## ----tsne, cache=TRUE---------------------------------------------------------
 counts.norm.tSNE =
 	ttBulk::breast_tcga_mini %>%
+	ttBulk(sample, ens, `count`) %>%
 	reduce_dimensions(
 		.abundance = `count normalised`, 
 		method = "tSNE", 
-		.element = sample, 
-		.feature = ens, 
 		top = 500, 
 		perplexity=10, 
-		pca_scale =T
+		pca_scale =TRUE
 	) 
 
 counts.norm.tSNE %>% 
-	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct()
 
 counts.norm.tSNE %>% 
-	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct() %>%
-	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
+	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 
-## ----rotate, cache=TRUE--------------------------------------------------
+## ----rotate, cache=TRUE-------------------------------------------------------
 counts.norm.MDS.rotated =
   counts.norm.MDS %>%
 	rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45, .element = sample)
 
-## ----plot_rotate_1, cache=TRUE-------------------------------------------
+## ----plot_rotate_1, cache=TRUE------------------------------------------------
 counts.norm.MDS.rotated %>%
 	distinct(sample, `Dim 1`,`Dim 2`, `Cell type`) %>%
 	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type` )) +
   geom_point() +
   my_theme
 
-## ----plot_rotate_2, cache=TRUE-------------------------------------------
+## ----plot_rotate_2, cache=TRUE------------------------------------------------
 counts.norm.MDS.rotated %>%
 	distinct(sample, `Dim 1 rotated 45`,`Dim 2 rotated 45`, `Cell type`) %>%
 	ggplot(aes(x=`Dim 1 rotated 45`, y=`Dim 2 rotated 45`, color=`Cell type` )) +
   geom_point() +
   my_theme
 
-## ----de, cache=TRUE------------------------------------------------------
-counts %>%
-	test_differential_transcription(
-      ~ condition,
-      .sample = sample,
-      .transcript = transcript,
-      .abundance = `count`,
-      action="get")
+## ----de, cache=TRUE-----------------------------------------------------------
+counts %>%	test_differential_abundance(  ~ condition,  action="get")
 
-## ----adjust, cache=TRUE--------------------------------------------------
+## ----adjust, cache=TRUE-------------------------------------------------------
 counts.norm.adj =
 	counts.norm %>%
 
@@ -164,22 +146,20 @@ counts.norm.adj =
 	  # Add covariate
 	  adjust_abundance(
 	  	~ factor_of_interest + batch,
-	  	sample,
-	  	transcript,
-	  	`count normalised`,
+	  	.abundance = `count normalised`,
 	  	action = "get"
 	  )
 
 counts.norm.adj
 
-## ----cibersort, cache=TRUE-----------------------------------------------
+## ----cibersort, cache=TRUE----------------------------------------------------
 counts.cibersort =
 	counts %>%
-	annotate_cell_type(sample, transcript, `count`, action="add", cores=2)
+	deconvolve_cellularity(action="add", cores=2)
 
 counts.cibersort %>% select(sample, contains("type:")) %>% distinct()
 
-## ----plot_cibersort, cache=TRUE------------------------------------------
+## ----plot_cibersort, cache=TRUE-----------------------------------------------
 counts.cibersort %>%
 	select(contains("type:"), everything()) %>%
 	gather(`Cell type inferred`, `proportion`, 1:22) %>%
@@ -190,18 +170,16 @@ counts.cibersort %>%
   my_theme +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
 
-## ----cluster, cache=TRUE-------------------------------------------------
+## ----cluster, cache=TRUE------------------------------------------------------
 counts.norm.cluster = counts.norm %>%
-  annotate_clusters(.abundance = `count normalised`, .element = sample, .feature = transcript, method="kmeans",	centers = 2 )
+  cluster_elements(.abundance = `count normalised`, method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 
-## ----plot_cluster, cache=TRUE--------------------------------------------
+## ----plot_cluster, cache=TRUE-------------------------------------------------
  counts.norm.MDS %>%
-  annotate_clusters(
+  cluster_elements(
   	.abundance = `count normalised`,
-  	.element = sample,
-  	.feature = transcript,
   	method="kmeans",
   	centers = 2
   ) %>%
@@ -210,17 +188,32 @@ counts.norm.cluster
   geom_point() +
   my_theme
 
-## ----drop, cache=TRUE----------------------------------------------------
-counts.norm.non_redundant =
-	counts.norm.MDS %>%
-  drop_redundant(
-  	method = "correlation",
-  	.element = sample,
-  	.feature = transcript,
-  	.abundance = `count normalised`
-  )
+## ----SNN, cache=TRUE----------------------------------------------------------
+counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= `count normalised`, method = "SNN")
 
-## ----plot_drop, cache=TRUE-----------------------------------------------
+counts.norm.SNN %>% 
+	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample) %>%
+	distinct()
+
+counts.norm.SNN %>% 
+	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
+	gather(source, Call, c("cluster SNN", "Call")) %>%
+	distinct() %>%
+	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
+
+
+# Do differential transcription between clusters
+counts.norm.SNN %>%
+	mutate(factor_of_interest = `cluster SNN` == 3) %>%
+	test_differential_abundance(
+    ~ factor_of_interest,
+    action="get"
+   )
+
+## ----drop, cache=TRUE---------------------------------------------------------
+counts.norm.non_redundant = counts.norm.MDS %>%  remove_redundancy(	method = "correlation" )
+
+## ----plot_drop, cache=TRUE----------------------------------------------------
 counts.norm.non_redundant %>%
 	distinct(sample, `Dim 1`, `Dim 2`, `Cell type`) %>%
 	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type`)) +
@@ -228,10 +221,10 @@ counts.norm.non_redundant %>%
   my_theme
 
 
-## ----drop2, cache=TRUE---------------------------------------------------
+## ----drop2, cache=TRUE--------------------------------------------------------
 counts.norm.non_redundant =
 	counts.norm.MDS %>%
-  drop_redundant(
+  remove_redundancy(
   	method = "reduced_dimensions",
   	.element = sample,
   	.feature = transcript,
@@ -239,7 +232,7 @@ counts.norm.non_redundant =
   	Dim_b_column = `Dim 2`
   )
 
-## ----plot_drop2, cache=TRUE----------------------------------------------
+## ----plot_drop2, cache=TRUE---------------------------------------------------
 counts.norm.non_redundant %>%
 	distinct(sample, `Dim 1`, `Dim 2`, `Cell type`) %>%
 	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type`)) +
@@ -247,23 +240,23 @@ counts.norm.non_redundant %>%
   my_theme
 
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  counts = bam_sam_to_featureCounts_tibble(
 #  	file_names,
 #  	genome = "hg38",
-#  	isPairedEnd = T,
-#  	requireBothEndsMapped = T,
-#  	checkFragLength = F,
-#  	useMetaFeatures = T
+#  	isPairedEnd = TRUE,
+#  	requireBothEndsMapped = TRUE,
+#  	checkFragLength = FALSE,
+#  	useMetaFeatures = TRUE
 #  )
 
-## ----ensembl, cache=TRUE-------------------------------------------------
+## ----ensembl, cache=TRUE------------------------------------------------------
 counts_ensembl %>% annotate_symbol(ens)
 
-## ---- cache=TRUE---------------------------------------------------------
+## ---- cache=TRUE--------------------------------------------------------------
   counts.norm 
 
-## ---- cache=TRUE---------------------------------------------------------
+## ---- cache=TRUE--------------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
     	.abundance = `count normalised`, 
@@ -274,7 +267,7 @@ counts_ensembl %>% annotate_symbol(ens)
     	action="add"
     )
 
-## ---- cache=TRUE---------------------------------------------------------
+## ---- cache=TRUE--------------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
     	.abundance = `count normalised`, 
@@ -285,6 +278,6 @@ counts_ensembl %>% annotate_symbol(ens)
     	action="get"
     )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 sessionInfo()
 

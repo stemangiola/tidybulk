@@ -13,6 +13,9 @@ error_if_wrong_input(.data, list_input, expected_type)
 
 \item{expected_type}{A character string}
 }
+\value{
+A tbl
+}
 \description{
 Check whether there are NA counts
 }

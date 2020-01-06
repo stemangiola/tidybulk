@@ -10,7 +10,7 @@ aggregate_duplicates(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  keep_integer = T
+  keep_integer = TRUE
 )
 }
 \arguments{
@@ -41,18 +41,14 @@ For example, we often have to convert ensembl symbols to gene/transcript symbol,
  are appended, and factors and boolean are appended as characters.
 }
 \examples{
-\donttest{
 
-
-
-counts \%>\%
     aggregate_duplicates(
+    ttBulk::counts_mini,
     sample,
     transcript,
     `count`,
     aggregation_function = sum
     )
 
-}
 
 }

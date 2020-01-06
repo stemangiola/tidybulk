@@ -20,6 +20,9 @@ error_if_duplicated_genes(
 
 \item{.abundance}{A character name of the read count column}
 }
+\value{
+A tbl
+}
 \description{
 Check whether there are duplicated genes/transcripts
 }

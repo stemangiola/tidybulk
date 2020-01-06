@@ -33,17 +33,16 @@ filter_variable() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> 
 At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
 }
 \examples{
-\donttest{
 
 
 
 	filter_variable(
+	ttBulk::counts_mini,
 	    sample,
 	    transcript,
 	    `count`,
 	    top = 500
 	)
 
-}
 
 }

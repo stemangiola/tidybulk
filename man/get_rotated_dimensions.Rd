@@ -10,7 +10,7 @@ get_rotated_dimensions(
   dimension_2_column,
   rotation_degrees,
   .element = NULL,
-  of_samples = T,
+  of_samples = TRUE,
   dimension_1_column_rotated = NULL,
   dimension_2_column_rotated = NULL
 )

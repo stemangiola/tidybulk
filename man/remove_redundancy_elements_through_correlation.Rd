@@ -10,8 +10,8 @@ remove_redundancy_elements_through_correlation(
   .feature = NULL,
   .abundance = NULL,
   correlation_threshold = 0.9,
-  of_samples = T,
-  log_transform = F
+  of_samples = TRUE,
+  log_transform = FALSE
 )
 }
 \arguments{

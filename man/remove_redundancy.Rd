@@ -10,9 +10,9 @@ remove_redundancy(
   .feature = NULL,
   .abundance = NULL,
   method,
-  of_samples = T,
+  of_samples = TRUE,
   correlation_threshold = 0.9,
-  log_transform = F,
+  log_transform = FALSE,
   Dim_a_column,
   Dim_b_column
 )
@@ -48,25 +48,25 @@ remove_redundancy() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT
 This function removes redundant elements from the original data set (e.g., samples or transcripts). For example, if we want to define cell-type specific signatures with low sample redundancy. This function returns a tibble with dropped recundant elements (e.g., samples). Two redundancy estimation approaches are supported: (i) removal of highly correlated clusters of elements (keeping a representative) with method="correlation"; (ii) removal of most proximal element pairs in a reduced dimensional space.
 }
 \examples{
-\donttest{
 
 
 
-counts \%>\%
-    remove_redundancy(
+   remove_redundancy(
+    ttBulk::counts_mini,
 	   .element = sample,
 	   .feature = transcript,
 	   	.abundance =  count,
 	   	method = "correlation"
 	   	)
 
-counts \%>\%
-    remove_redundancy(
-	   .element = sample,
-	   .feature = transcript,
-	   	.abundance = count,
-	   	method = "reduced_dimensions"
-	   	)
-}
+counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+
+remove_redundancy(
+	counts.MDS,
+	Dim_a_column = `Dim 1`,
+	Dim_b_column = `Dim 2`,
+	.element = sample,
+  method = "reduced_dimensions"
+)
 
 }

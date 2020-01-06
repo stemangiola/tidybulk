@@ -4,6 +4,7 @@
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr %>%
+#' @importFrom purrr reduce
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -54,7 +55,6 @@ create_tt_from_tibble_bulk = function(.data,
 #'
 #' @return A tibble of gene counts
 #'
-#' @export
 create_tt_from_bam_sam_bulk <-
 	function(file_names, genome = "hg38", ...) {
 		# This function uses Subread to count the gene features,
@@ -79,7 +79,7 @@ create_tt_from_bam_sam_bulk <-
 																edgeR::DGEList(
 																	counts = (.)$counts,
 																	genes = (.)$annotation[, c("GeneID", "Length")],
-																	samples = (.) %$% stat %>% as_tibble() %>% gather(sample, temp, -Status) %>% spread(Status, temp)
+																	samples = (.)$stat %>% as_tibble() %>% gather(sample, temp, -Status) %>% spread(Status, temp)
 																)
 															} %>%
 
@@ -123,6 +123,8 @@ create_tt_from_bam_sam_bulk <-
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats median
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -184,7 +186,8 @@ add_normalised_counts_bulk.get_cpm <- function(.data,
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
-#'
+#' @importFrom rlang :=
+#' @importFrom stats median
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -221,7 +224,7 @@ add_normalised_counts_bulk.get_low_expressed <- function(.data,
 			!!.abundance :=
 				ifelse(
 					!!.abundance %>% is.na(),
-					!!.abundance %>% median(na.rm = T) %>% as.integer(),
+					!!.abundance %>% median(na.rm = TRUE) %>% as.integer(),
 					!!.abundance
 				)
 		) %>%
@@ -250,6 +253,8 @@ add_normalised_counts_bulk.get_low_expressed <- function(.data,
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats setNames
 #'
 #' @param .data A tibble
 #' @param reference A reference matrix, not sure if used anymore
@@ -331,7 +336,7 @@ add_normalised_counts_bulk.calcNormFactor <- function(.data,
 		dplyr::left_join(
 			df.filt %>%
 				dplyr::group_by(!!.sample) %>%
-				dplyr::summarise(tot_filt = sum(!!.abundance, na.rm = T)) %>%
+				dplyr::summarise(tot_filt = sum(!!.abundance, na.rm = TRUE)) %>%
 				dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))),
 			by = quo_name(.sample)
 		)
@@ -349,7 +354,8 @@ add_normalised_counts_bulk.calcNormFactor <- function(.data,
 #' @import tidyr
 #' @import tibble
 #' @importFrom magrittr equals
-#'
+#' @importFrom rlang :=
+#' @importFrom stats median
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -444,7 +450,7 @@ get_normalised_counts_bulk <- function(.data,
 		left_join(
 			df %>%
 				group_by(!!.sample) %>%
-				summarise(tot = sum(!!.abundance, na.rm = T)) %>%
+				summarise(tot = sum(!!.abundance, na.rm = TRUE)) %>%
 				mutate(!!.sample := as.factor(as.character(!!.sample))),
 			by = quo_name(.sample)
 		) %>%
@@ -504,7 +510,7 @@ get_normalised_counts_bulk <- function(.data,
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
-#'
+#' @importFrom stats median
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -570,7 +576,7 @@ add_normalised_counts_bulk <- function(.data,
 #' @import tidyr
 #' @import tibble
 #' @importFrom magrittr set_colnames
-#'
+#' @importFrom stats model.matrix
 #'
 #'
 #' @param .data A tibble
@@ -584,7 +590,6 @@ add_normalised_counts_bulk <- function(.data,
 #'
 #' @return A tibble with edgeR results
 #'
-#' @export
 get_differential_transcript_abundance_bulk <- function(.data,
 																											 .formula,
 																											 .sample = NULL,
@@ -791,6 +796,12 @@ add_differential_transcript_abundance_bulk <- function(.data,
 #' @param .transcript A character. The name of the ene symbol column.
 #' @param .sample The name of the sample column
 #'
+#' @return A tbl
+#'
+#' @examples
+#'
+#' symbol_to_entrez(ttBulk::counts_mini, .transcript = transcript, .sample = sample)
+#'
 #' @export
 #'
 symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
@@ -829,7 +840,8 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 #' @import tidyr
 #' @import tibble
 #' @importFrom magrittr set_colnames
-#'
+#' @importFrom purrr map2_dfr
+#' @importFrom stats model.matrix
 #'
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
@@ -843,7 +855,6 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 #'
 #' @return A tibble with edgeR results
 #'
-#' @export
 analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 																											 .formula,
 																											 .sample = NULL,
@@ -912,7 +923,7 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 		writeLines("BiocManager::install(\"EGSEA\")")
 	}
 	if(!"EGSEA" %in% (.packages())){
-		writeLines("EGSEA package not loaded. Please run library(\"ESGEA\")")
+		writeLines("EGSEA package not loaded. Please run library(\"EGSEA\")")
 	}
 
 	df_for_edgeR.filt <-
@@ -975,7 +986,7 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 #' @import tidyr
 #' @import tibble
 #' @importFrom stats kmeans
-#'
+#' @importFrom rlang :=
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -993,8 +1004,8 @@ get_clusters_kmeans_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 					 .abundance = NULL,
-					 of_samples = T,
-					 log_transform = T,
+					 of_samples = TRUE,
+					 log_transform = TRUE,
 					 ...) {
 		# Get column names
 		.element = enquo(.element)
@@ -1058,8 +1069,8 @@ add_clusters_kmeans_bulk <-
 					 .element = NULL,
 					 .feature = NULL,
 					 .abundance,
-					 of_samples = T,
-					 log_transform = T,
+					 of_samples = TRUE,
+					 log_transform = TRUE,
 					 ...) {
 		# Get column names
 		.element = enquo(.element)
@@ -1091,7 +1102,7 @@ add_clusters_kmeans_bulk <-
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
-#'
+#' @importFrom rlang :=
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1103,14 +1114,13 @@ add_clusters_kmeans_bulk <-
 #'
 #' @return A tibble with additional columns
 #'
-#' @export
 get_clusters_SNN_bulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
 					 .abundance,
-					 of_samples = T,
-					 log_transform = T,
+					 of_samples = TRUE,
+					 log_transform = TRUE,
 					 ...) {
 		# Get column names
 		.element = enquo(.element)
@@ -1152,7 +1162,7 @@ get_clusters_SNN_bulk <-
 		my_df %>%
 			data.frame(row.names = quo_name(.feature)) %>%
 			Seurat::CreateSeuratObject() %>%
-			Seurat::ScaleData(display.progress = T, num.cores=4, do.par = TRUE) %>%
+			Seurat::ScaleData(display.progress = TRUE, num.cores=4, do.par = TRUE) %>%
 			Seurat::FindVariableFeatures(selection.method = "vst") %>%
 			Seurat::RunPCA(npcs = 30) %>%
 			Seurat::FindNeighbors() %>%
@@ -1184,14 +1194,13 @@ get_clusters_SNN_bulk <-
 #'
 #' @return A tibble with additional columns
 #'
-#' @export
 add_clusters_SNN_bulk <-
 	function(.data,
 					 .element = NULL,
 					 .feature = NULL,
 					 .abundance,
-					 of_samples = T,
-					 log_transform = T,
+					 of_samples = TRUE,
+					 log_transform = TRUE,
 					 ...) {
 		# Get column names
 		.element = enquo(.element)
@@ -1224,6 +1233,8 @@ add_clusters_SNN_bulk <-
 #' @import tidyr
 #' @import tibble
 #' @importFrom purrr map_dfr
+#' @importFrom rlang :=
+#' @importFrom stats setNames
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1244,8 +1255,8 @@ get_reduced_dimensions_MDS_bulk <-
 					 .abundance = NULL,
 					 .dims = 2,
 					 top = 500,
-					 of_samples = T,
-					 log_transform = T) {
+					 of_samples = TRUE,
+					 log_transform = TRUE) {
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1292,7 +1303,7 @@ get_reduced_dimensions_MDS_bulk <-
 					) %>%
 					spread(!!.element, !!.abundance) %>%
 					as_matrix(rownames = !!.feature, do_check = FALSE) %>%
-					limma::plotMDS(dim.plot = .x, plot = F, top = top) %>%
+					limma::plotMDS(dim.plot = .x, plot = FALSE, top = top) %>%
 
 					# Anonymous function
 					# input: MDS object
@@ -1308,7 +1319,7 @@ get_reduced_dimensions_MDS_bulk <-
 			distinct() %>%
 			spread(Component, `Component value`) %>%
 			setNames(c((.) %>% select(1) %>% colnames(),
-								 paste("Dim", (.) %>% select(-1) %>% colnames())
+								 paste0("Dim", (.) %>% select(-1) %>% colnames())
 			)) %>%
 
 			# Attach attributes
@@ -1341,8 +1352,8 @@ add_reduced_dimensions_MDS_bulk <-
 					 .abundance = NULL,
 					 .dims = 2,
 					 top = 500,
-					 of_samples = T,
-					 log_transform = T) {
+					 of_samples = TRUE,
+					 log_transform = TRUE) {
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1376,6 +1387,8 @@ add_reduced_dimensions_MDS_bulk <-
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats prcomp
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1399,9 +1412,9 @@ get_reduced_dimensions_PCA_bulk <-
 					 .abundance  = NULL,
 					 .dims = 2,
 					 top = 500,
-					 of_samples = T,
-					 log_transform = T,
-					 scale = T,
+					 of_samples = TRUE,
+					 log_transform = TRUE,
+					 scale = TRUE,
 					 ...) {
 		# Get column names
 		.element = enquo(.element)
@@ -1531,9 +1544,9 @@ add_reduced_dimensions_PCA_bulk <-
 					 .abundance = NULL,
 					 .dims = 2,
 					 top = 500,
-					 of_samples = T,
-					 log_transform = T,
-					 scale = T,
+					 of_samples = TRUE,
+					 log_transform = TRUE,
+					 scale = TRUE,
 					 ...) {
 		# Get column names
 		.element = enquo(.element)
@@ -1570,6 +1583,8 @@ add_reduced_dimensions_PCA_bulk <-
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats setNames
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1592,9 +1607,9 @@ get_reduced_dimensions_TSNE_bulk <-
 					 .abundance = NULL,
 					 .dims = 2,
 					 top = 500,
-					 of_samples = T,
-					 log_transform = T,
-					 scale = T,
+					 of_samples = TRUE,
+					 log_transform = TRUE,
+					 scale = TRUE,
 					 ...) {
 		# Get column names
 		.element = enquo(.element)
@@ -1610,8 +1625,8 @@ get_reduced_dimensions_TSNE_bulk <-
 
 		# Evaluate ...
 		arguments <- list(...)
-		if(!"check_duplicates" %in% names(arguments)) arguments = arguments %>% c(check_duplicates = T)
-		if(!"verbose" %in% names(arguments))arguments = arguments %>% c(verbose = T)
+		if(!"check_duplicates" %in% names(arguments)) arguments = arguments %>% c(check_duplicates = TRUE)
+		if(!"verbose" %in% names(arguments))arguments = arguments %>% c(verbose = TRUE)
 		if(!"dims" %in% names(arguments))arguments = arguments %>% c(dims = .dims)
 
 
@@ -1710,9 +1725,9 @@ add_reduced_dimensions_TSNE_bulk <-
 					 .abundance = NULL,
 					 .dims = 2,
 					 top = 500,
-					 of_samples = T,
-					 log_transform = T,
-					 scale = T,
+					 of_samples = TRUE,
+					 log_transform = TRUE,
+					 scale = TRUE,
 					 ...) {
 		# Get column names
 		.element = enquo(.element)
@@ -1733,7 +1748,7 @@ add_reduced_dimensions_TSNE_bulk <-
 						.feature = !!.feature,
 						top = top,
 						log_transform = log_transform,
-						scale = T,
+						scale = TRUE,
 						...
 					),
 				by = quo_name(.element)
@@ -1770,7 +1785,7 @@ get_rotated_dimensions =
 					 dimension_2_column,
 					 rotation_degrees,
 					 .element = NULL,
-					 of_samples = T,
+					 of_samples = TRUE,
 					 dimension_1_column_rotated = NULL,
 					 dimension_2_column_rotated = NULL) {
 		# Get column names
@@ -1867,7 +1882,7 @@ add_rotated_dimensions =
 					 dimension_2_column,
 					 rotation_degrees,
 					 .element = NULL,
-					 of_samples = T,
+					 of_samples = TRUE,
 					 dimension_1_column_rotated = NULL,
 					 dimension_2_column_rotated = NULL) {
 		# Get column names
@@ -1920,6 +1935,7 @@ add_rotated_dimensions =
 #' @importFrom dplyr summarise_all
 #' @importFrom dplyr bind_rows
 #' @importFrom magrittr %$%
+#' @importFrom rlang :=
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -1938,7 +1954,7 @@ aggregate_duplicated_transcripts_bulk =
 					 .abundance = NULL,
 					 aggregation_function = sum,
 
-					 keep_integer = T) {
+					 keep_integer = TRUE) {
 
 		# Get column names
 		.sample = enquo(.sample)
@@ -2055,7 +2071,7 @@ aggregate_duplicated_transcripts_bulk =
 #' @import tidyr
 #' @import tibble
 #' @importFrom widyr pairwise_cor
-#'
+#' @importFrom rlang :=
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -2074,8 +2090,8 @@ remove_redundancy_elements_through_correlation <- function(.data,
 																												.abundance = NULL,
 																												correlation_threshold = 0.9,
 
-																												of_samples = T,
-																												log_transform = F) {
+																												of_samples = TRUE,
+																												log_transform = FALSE) {
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
@@ -2141,9 +2157,9 @@ remove_redundancy_elements_through_correlation <- function(.data,
 			sample,
 			transcript,
 			rc,
-			sort = T,
+			sort = TRUE,
 			diag = FALSE,
-			upper = F
+			upper = FALSE
 		) %>%
 		filter(correlation > correlation_threshold) %>%
 		distinct(item1) %>%
@@ -2157,6 +2173,9 @@ remove_redundancy_elements_through_correlation <- function(.data,
 }
 
 #' Identifies the closest pairs in a MDS contaxt and return one of them
+#'
+#' @importFrom stats setNames
+#' @importFrom stats dist
 #'
 #' @param .data A tibble
 #' @param Dim_a_column A column symbol. The column of one principal component
@@ -2172,7 +2191,7 @@ remove_redundancy_elements_though_reduced_dimensions <-
 					 Dim_a_column,
 					 Dim_b_column,
 					 .element = NULL,
-					 of_samples = T) {
+					 of_samples = TRUE) {
 		# This function identifies the closest pairs and return one of them
 
 		# Get column names
@@ -2232,13 +2251,13 @@ remove_redundancy_elements_though_reduced_dimensions <-
 #'   # wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
 #'   # wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
 #'   read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
-#'               col_names = F) %>%
+#'               col_names = FALSE) %>%
 #'     setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
 #'     mutate(hg = "hg37") %>%
 #'     bind_rows(
 #'       read_table2(
 #'         "~/third_party_sofware/ensembl_mapping/mapping_38.txt",
-#'         col_names = F
+#'         col_names = FALSE
 #'       ) %>%
 #'         setNames(
 #'           c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
@@ -2309,7 +2328,7 @@ add_symbol_from_ensembl <-
 #'
 #' @import parallel
 #' @import preprocessCore
-#'
+#' @importFrom stats setNames
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2370,7 +2389,7 @@ get_cell_type_proportions = function(.data,
 		# Prepare data frame
 		distinct(!!.sample, !!.transcript, !!.abundance) %>%
 		spread(!!.sample, !!.abundance) %>%
-		data.frame(row.names = 1, check.names = F) %>%
+		data.frame(row.names = 1, check.names = FALSE) %>%
 
 		# Run Cibersort through custom function
 		my_CIBERSORT(X_cibersort,	...) %$%
@@ -2445,6 +2464,8 @@ add_cell_type_proportions = function(.data,
 #' @import tidyr
 #' @import tibble
 #' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom stats as.formula
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
@@ -2462,7 +2483,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 																														.sample = NULL,
 																														.transcript = NULL,
 																														.abundance = NULL,
-																														log_transform = T,
+																														log_transform = TRUE,
 																														...) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -2610,7 +2631,7 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 																														.sample = NULL,
 																														.transcript = NULL,
 																														.abundance = NULL,
-																														log_transform = T,
+																														log_transform = TRUE,
 																														...) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -2656,7 +2677,6 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 #'
 #' @return A tibble filtered genes
 #'
-#' @export
 filter_variable_transcripts = function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
@@ -2700,7 +2720,6 @@ filter_variable_transcripts = function(.data,
 #'
 #' @return A tt tt object
 #'
-#' @export
 merged_ttBulk_object = function(...){
 
 

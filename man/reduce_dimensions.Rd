@@ -12,9 +12,9 @@ reduce_dimensions(
   method,
   .dims = 2,
   top = 500,
-  of_samples = T,
-  log_transform = T,
-  scale = T,
+  of_samples = TRUE,
+  log_transform = TRUE,
+  scale = TRUE,
   action = "add",
   ...
 )
@@ -55,29 +55,14 @@ This function reduces the dimensions of the transcript abundances.
 It can use multi-dimensional scaling (MDS) of principal component analysis (PCA).
 }
 \examples{
-\donttest{
 
 
-library(GGally)
 
-counts.MDS =
-    counts \%>\%
-    reduce_dimensions(sample, transcript, count, method="MDS", .dims = 3)
+counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 
-counts.MDS \%>\%
-    select(contains("Dim"), sample, `Cell type`) \%>\%
-    distinct() \%>\%
-    GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 
-counts.PCA =
-    counts.norm \%>\%
-    reduce_dimensions(sample, transcript, count, method="PCA", .dims = 3)
+counts.PCA =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="PCA", .dims = 3)
 
-counts.PCA \%>\%
-   select(contains("PC"), sample, `Cell type`) \%>\%
-   distinct() \%>\%
-   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 
-}
 
 }

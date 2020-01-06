@@ -23,12 +23,9 @@ annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> 
 This is useful since different resources use ensembl IDs while others use gene symbol IDs.
 }
 \examples{
-\donttest{
 
 
+	annotate_symbol(ttBulk::counts_ensembl, ens)
 
-	counts_ensembl \%>\% annotate_symbol(ens)
-
-}
 
 }

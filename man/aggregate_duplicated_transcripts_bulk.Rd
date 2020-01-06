@@ -11,7 +11,7 @@ aggregate_duplicated_transcripts_bulk(
   .transcript = NULL,
   .abundance = NULL,
   aggregation_function = sum,
-  keep_integer = T
+  keep_integer = TRUE
 )
 }
 \arguments{

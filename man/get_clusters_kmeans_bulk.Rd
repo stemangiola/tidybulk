@@ -9,8 +9,8 @@ get_clusters_kmeans_bulk(
   .element = NULL,
   .feature = NULL,
   .abundance = NULL,
-  of_samples = T,
-  log_transform = T,
+  of_samples = TRUE,
+  log_transform = TRUE,
   ...
 )
 }

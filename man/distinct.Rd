@@ -13,6 +13,15 @@ distinct(.data, ..., .keep_all = FALSE)
 
 \item{.keep_all}{If TRUE, keep all variables in .data. If a combination of ... is not distinct, this keeps the first row of values. (See dplyr)}
 }
+\value{
+A tt object
+}
 \description{
 distinct
+}
+\examples{
+
+distinct(ttBulk::counts_mini)
+
+
 }

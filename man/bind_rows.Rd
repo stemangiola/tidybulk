@@ -9,6 +9,15 @@ bind_rows(...)
 \arguments{
 \item{...}{Data frames to combine}
 }
+\value{
+A tt object
+}
 \description{
 Join datasets
+}
+\examples{
+
+bind_rows(ttBulk::counts_mini, ttBulk::counts_mini)
+
+
 }

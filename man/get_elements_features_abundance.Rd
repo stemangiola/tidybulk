@@ -9,7 +9,7 @@ get_elements_features_abundance(
   .element,
   .feature,
   .abundance,
-  of_samples = T
+  of_samples = TRUE
 )
 }
 \arguments{

@@ -11,6 +11,9 @@ error_if_log_transformed(x, .abundance)
 
 \item{.abundance}{A character name of the transcript/gene abundance column}
 }
+\value{
+NA
+}
 \description{
 Check whether a numeric vector has been log transformed
 }

@@ -10,7 +10,7 @@ adjust_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  log_transform = T,
+  log_transform = TRUE,
   action = "add",
   ...
 )
@@ -42,17 +42,21 @@ adjust_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT>
 This function adjusts the abundance for (known) unwanted variation. At the moment just an unwanted covariated is allowed at a time.
 }
 \examples{
-\donttest{
 
 
 
-adjust_abundance(
-    ~ factor_of_interest + batch,
-    sample,
-    transcript,
-    `count`
+cm = ttBulk::counts_mini
+cm$batch = 0
+cm$batch[cm$a \%in\% c("SRR1740035", "SRR1740043")] = 1
+
+res =
+	adjust_abundance(
+		cm,
+	~ condition + batch,
+	.sample = sample,
+	.transcript = transcript,
+	.abundance = abundance
 )
 
-}
 
 }

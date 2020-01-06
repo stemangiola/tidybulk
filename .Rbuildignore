@@ -6,3 +6,4 @@
 ^codecov\.yml$
 ^dev
 ^README_cache
+^.git

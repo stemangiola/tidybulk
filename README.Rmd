@@ -213,9 +213,9 @@ Standard procedure
 library(limma)
 
 count_m_log = log(count_m + 1) 
-cmds1_2 = count_m_log %>% plotMDS(dim.plot = 1:2, plot = F)
-cmds3_4 = count_m_log %>% plotMDS(dim.plot = 3:4, plot = F)
-cmds5_6 = count_m_log %>% plotMDS(dim.plot = 5:6, plot = F)
+cmds1_2 = count_m_log %>% plotMDS(dim.plot = 1:2, plot = FALSE)
+cmds3_4 = count_m_log %>% plotMDS(dim.plot = 3:4, plot = FALSE)
+cmds5_6 = count_m_log %>% plotMDS(dim.plot = 5:6, plot = FALSE)
 
 
 cmds = cbind(
@@ -294,7 +294,7 @@ counts.norm.tSNE =
 	reduce_dimensions(
 		method = "tSNE", 
 		perplexity=10, 
-		pca_scale =T
+		pca_scale =TRUE
 	) 
 ```
 
@@ -308,7 +308,7 @@ count_m_log = log(count_m + 1)
 tsne = Rtsne::Rtsne(
 	t(count_m_log), 
 	perplexity=10, 
-		pca_scale =T
+		pca_scale =TRUE
 )$Y
 tsne$cell_type = ttBulk::counts[
 	match(ttBulk::counts$sample, rownames(tsne)), 
@@ -322,11 +322,11 @@ Plot
 
 ```{r}
 counts.norm.tSNE %>% 
-	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct()
 
 counts.norm.tSNE %>% 
-	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct() %>%
 	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
 ```
@@ -571,7 +571,7 @@ library(Seurat)
 
 snn = CreateSeuratObject(count_m)
 snn = ScaleData(
-	snn, display.progress = T, 
+	snn, display.progress = TRUE, 
 	num.cores=4, do.par = TRUE
 )
 snn = FindVariableFeatures(snn, selection.method = "vst") 
@@ -592,11 +592,11 @@ snn$cell_type = ttBulk::counts[
 
 ```{r SNN_plot, cache=TRUE}
 counts.norm.SNN %>% 
-	select(contains("tSNE", ignore.case = F), `cluster SNN`, sample) %>%
+	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample) %>%
 	distinct()
 
 counts.norm.SNN %>% 
-	select(contains("tSNE", ignore.case = F), `cluster SNN`, sample, Call) %>%
+	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
 	gather(source, Call, c("cluster SNN", "Call")) %>%
 	distinct() %>%
 	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
@@ -639,9 +639,9 @@ library(widyr)
 		sample,
 		transcript,
 		rc,
-		sort = T,
+		sort = TRUE,
 		diag = FALSE,
-		upper = F
+		upper = FALSE
 	) %>%
 	filter(correlation > correlation_threshold) %>%
 	distinct(item1) %>%
@@ -704,10 +704,10 @@ We can calculate gene counts (using FeatureCounts; Liao Y et al., 10.1093/nar/gk
 counts = bam_sam_to_featureCounts_tibble(
 	file_names, 
 	genome = "hg38",
-	isPairedEnd = T,
-	requireBothEndsMapped = T,
-	checkFragLength = F,
-	useMetaFeatures = T
+	isPairedEnd = TRUE,
+	requireBothEndsMapped = TRUE,
+	checkFragLength = FALSE,
+	useMetaFeatures = TRUE
 )
 ```
 

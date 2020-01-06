@@ -49,14 +49,10 @@ are filtered out from the normalisation procedure.
 The normalisation inference is then applied back to all unfiltered data.
 }
 \examples{
-\donttest{
 
 
-
-counts \%>\%
-    scale_abundance(sample, transcript, `count`)
+ scale_abundance(ttBulk::counts_mini,  sample, transcript, `count`)
 
 
-}
 
 }

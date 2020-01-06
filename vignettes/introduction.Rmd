@@ -73,7 +73,7 @@ my_theme =
 # 	ttBulk::counts %>% 
 # 	filter(transcript %in% (ttBulk::X_cibersort %>% rownames)) %>% 
 # 	filter(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058", "SRR1740043", "SRR1740067")) %>%
-# 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), T, F))
+# 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
 ```
 
@@ -190,15 +190,15 @@ counts.norm.tSNE =
 		method = "tSNE", 
 		top = 500, 
 		perplexity=10, 
-		pca_scale =T
+		pca_scale =TRUE
 	) 
 
 counts.norm.tSNE %>% 
-	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct()
 
 counts.norm.tSNE %>% 
-	select(contains("tSNE", ignore.case = F), sample, Call) %>%
+	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct() %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
@@ -331,11 +331,11 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
 counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= `count normalised`, method = "SNN")
 
 counts.norm.SNN %>% 
-	select(contains("tSNE", ignore.case = F), `cluster SNN`, sample) %>%
+	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample) %>%
 	distinct()
 
 counts.norm.SNN %>% 
-	select(contains("tSNE", ignore.case = F), `cluster SNN`, sample, Call) %>%
+	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
 	gather(source, Call, c("cluster SNN", "Call")) %>%
 	distinct() %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
@@ -411,10 +411,10 @@ We can calculate gene counts (using FeatureCounts; Liao Y et al., 10.1093/nar/gk
 counts = bam_sam_to_featureCounts_tibble(
 	file_names, 
 	genome = "hg38",
-	isPairedEnd = T,
-	requireBothEndsMapped = T,
-	checkFragLength = F,
-	useMetaFeatures = T
+	isPairedEnd = TRUE,
+	requireBothEndsMapped = TRUE,
+	checkFragLength = FALSE,
+	useMetaFeatures = TRUE
 )
 ```
 
