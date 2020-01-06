@@ -45,17 +45,15 @@ test_differential_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <
 At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
 }
 \examples{
-\donttest{
-
 
 
 	test_differential_abundance(
+	 ttBulk::counts_mini,
 	    ~ condition,
 	    sample,
 	    transcript,
 	    `count`
 	)
 
-}
 
 }

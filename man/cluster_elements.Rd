@@ -10,8 +10,8 @@ cluster_elements(
   .feature = NULL,
   .abundance = NULL,
   method,
-  of_samples = T,
-  log_transform = T,
+  of_samples = TRUE,
+  log_transform = TRUE,
   action = "add",
   ...
 )
@@ -47,13 +47,8 @@ This function returns a tibble with additional columns for the cluster annotatio
 At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
 }
 \examples{
-\donttest{
 
 
-
-counts \%>\%
-    cluster_elements(sample, transcript, count,	centers = 2)
-
-    }
+    cluster_elements(ttBulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
 
 }

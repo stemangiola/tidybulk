@@ -28,15 +28,12 @@ The ttBulk object have an attribute called parameters where these three
 arguments are stored as metadata. They can be extracted as attr(<object>, "parameters").
 }
 \examples{
-\donttest{
 
 
 
-my_tt =
-    ttBulk::counts \%>\%
-    ttBulk(sample, transcript, counts)
 
-class(my_tt)
+my_tt =  ttBulk(ttBulk::counts_mini, sample, transcript, counts)
 
-}
+
+
 }

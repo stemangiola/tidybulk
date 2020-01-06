@@ -31,6 +31,7 @@
 
 # Core algorithm of Cibersort
 #' @importFrom parallel mclapply
+#' @importFrom stats cor
 #'
 #'
 #Core algorithm
@@ -56,7 +57,7 @@ CoreAlg <- function(X, y, cores = 3){
     #if(i==2){nus <- 0.998}
     #if(i==3){nus <- 0.999}
 
-    model<-e1071::svm(X,y,type="nu-regression",kernel="linear",nu=nus,scale=F)
+    model<-e1071::svm(X,y,type="nu-regression",kernel="linear",nu=nus,scale=FALSE)
     model
   }
 
@@ -132,6 +133,8 @@ CoreAlg <- function(X, y, cores = 3){
 
 }
 
+#' @importFrom stats sd
+#'
 doPerm <- function(perm, X, Y, cores = 3){
 
 
@@ -162,6 +165,7 @@ doPerm <- function(perm, X, Y, cores = 3){
   newList <- list("dist" = dist)
 }
 
+#' @importFrom stats sd
 my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
 
 
@@ -175,8 +179,8 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
   ## This is needed to make the two tables consistent in gene
   ###################################
 
-  X <- X[order(rownames(X)),,drop=F]
-  Y <- Y[order(rownames(Y)),,drop=F]
+  X <- X[order(rownames(X)),,drop=FALSE]
+  Y <- Y[order(rownames(Y)),,drop=FALSE]
 
   P <- perm #number of permutations
 
@@ -197,9 +201,9 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
   Xgns <- row.names(X)
   Ygns <- row.names(Y)
   YintX <- Ygns %in% Xgns
-  Y <- Y[YintX,,drop=F]
+  Y <- Y[YintX,,drop=FALSE]
   XintY <- Xgns %in% row.names(Y)
-  X <- X[XintY,,drop=F]
+  X <- X[XintY,,drop=FALSE]
 
   #standardize sig matrix
   X <- (X - mean(X)) / sd(as.vector(X))
@@ -253,12 +257,12 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
   }
 
   #save results
-  #write.table(rbind(header,output), file="CIBERSORT-Results.txt", sep="\t", row.names=F, col.names=F, quote=F)
+  #write.table(rbind(header,output), file="CIBERSORT-Results.txt", sep="\t", row.names=FALSE, col.names=FALSE, quote=FALSE)
 
   #return matrix object containing all results
   obj <- rbind(header,output)
-  obj <- obj[,-1, drop=F]
-  obj <- obj[-1,, drop=F]
+  obj <- obj[,-1, drop=FALSE]
+  obj <- obj[-1,, drop=FALSE]
   obj <- matrix(as.numeric(unlist(obj)),nrow=nrow(obj))
   rownames(obj) <- colnames(Y)
   colnames(obj) <- c(colnames(X),"P-value","Correlation","RMSE")

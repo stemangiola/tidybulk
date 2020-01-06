@@ -22,17 +22,14 @@
 #'
 #'
 #' @examples
-#' \donttest{
 #'
 #'
 #'
-#' my_tt =
-#'     ttBulk::counts %>%
-#'     ttBulk(sample, transcript, counts)
 #'
-#' class(my_tt)
+#' my_tt =  ttBulk(ttBulk::counts_mini, sample, transcript, counts)
 #'
-#' }
+#'
+#'
 #' @export
 ttBulk <- function(.data,
 													.sample,
@@ -69,6 +66,7 @@ ttBulk.tbl_df <- function(.data,
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
+#' @importFrom stats median
 #'
 #' @name scale_abundance
 #' @rdname scale_abundance
@@ -94,15 +92,12 @@ ttBulk.tbl_df <- function(.data,
 #'
 #'
 #' @examples
-#' \donttest{
+
 #'
 #'
-#'
-#' counts %>%
-#'     scale_abundance(sample, transcript, `count`)
+#'  scale_abundance(ttBulk::counts_mini,  sample, transcript, `count`)
 #'
 #'
-#'}
 #'
 #' @export
 scale_abundance <- function(.data,
@@ -197,14 +192,9 @@ scale_abundance.tbl_df = scale_abundance.ttBulk <-
 #'
 #'
 #' @examples
-#' \donttest{
 #'
 #'
-#'
-#' counts %>%
-#'     cluster_elements(sample, transcript, count,	centers = 2)
-#'
-#'     }
+#'     cluster_elements(ttBulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
 #'
 #' @export
 #'
@@ -213,8 +203,8 @@ cluster_elements <- function(.data,
 															.feature = NULL,
 															.abundance = NULL,
 															method,
-															of_samples = T,
-															log_transform = T,
+															of_samples = TRUE,
+															log_transform = TRUE,
 															action = "add",
 															...) {
 	UseMethod("cluster_elements", .data)
@@ -226,8 +216,8 @@ cluster_elements.default <-  function(.data,
 																			 .feature = NULL,
 																			 .abundance = NULL,
 																			 method,
-																			 of_samples = T,
-																			 log_transform = T,
+																			 of_samples = TRUE,
+																			 log_transform = TRUE,
 																			 action = "add",
 																			 ...)
 {
@@ -241,8 +231,8 @@ cluster_elements.tbl_df = cluster_elements.ttBulk <-
 					 .feature = NULL,
 					 .abundance = NULL,
 					 method ,
-					 of_samples = T,
-					 log_transform = T,
+					 of_samples = TRUE,
+					 log_transform = TRUE,
 					 action = "add",
 					 ...)
 	{
@@ -304,7 +294,7 @@ cluster_elements.tbl_df = cluster_elements.ttBulk <-
 				)
 		}
 		else
-			stop("the only supported method is \"kmeans\" ")
+			stop("the only supported methods are \"kmeans\" or \"SNN\" ")
 
 	}
 
@@ -341,30 +331,15 @@ cluster_elements.tbl_df = cluster_elements.ttBulk <-
 #'
 #'
 #' @examples
-#' \donttest{
 #'
 #'
-#' library(GGally)
 #'
-#' counts.MDS =
-#'     counts %>%
-#'     reduce_dimensions(sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 #'
-#' counts.MDS %>%
-#'     select(contains("Dim"), sample, `Cell type`) %>%
-#'     distinct() %>%
-#'     GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 #'
-#' counts.PCA =
-#'     counts.norm %>%
-#'     reduce_dimensions(sample, transcript, count, method="PCA", .dims = 3)
+#' counts.PCA =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="PCA", .dims = 3)
 #'
-#'counts.PCA %>%
-#'    select(contains("PC"), sample, `Cell type`) %>%
-#'    distinct() %>%
-#'    GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 #'
-#'}
 #'
 #' @export
 #'
@@ -377,9 +352,9 @@ reduce_dimensions <- function(.data,
 															.dims = 2,
 
 															top = 500,
-															of_samples = T,
-															log_transform = T,
-															scale = T,
+															of_samples = TRUE,
+															log_transform = TRUE,
+															scale = TRUE,
 															action = "add",
 															...) {
 	UseMethod("reduce_dimensions", .data)
@@ -394,9 +369,9 @@ reduce_dimensions.default <-  function(.data,
 																			 .dims = 2,
 
 																			 top = 500,
-																			 of_samples = T,
-																			 log_transform = T,
-																			 scale = T,
+																			 of_samples = TRUE,
+																			 log_transform = TRUE,
+																			 scale = TRUE,
 																			 action = "add",
 																			 ...)
 {
@@ -412,9 +387,9 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 					 .dims = 2,
 
 					 top = 500,
-					 of_samples = T,
-					 log_transform = T,
-					 scale = T,
+					 of_samples = TRUE,
+					 log_transform = TRUE,
+					 scale = TRUE,
 					 action = "add",
 					 ...)
 	{
@@ -553,19 +528,11 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 #'
 #'
 #' @examples
-#' \donttest{
 #'
+#' counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 #'
+#' counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 #'
-#' counts.MDS.rotated =
-#'     counts.MDS %>%
-#'     rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45, .element = sample)
-#'
-#' counts.MDS.rotated %>%
-#'     distinct(sample, `Dim 1`,`Dim 2`, `Cell type`) %>%
-#'     ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type` )) +
-#'     geom_point()
-#'}
 #'
 #' @export
 #'
@@ -574,7 +541,7 @@ rotate_dimensions <- function(.data,
 															dimension_2_column,
 															rotation_degrees,
 															.element = NULL,
-															of_samples = T,
+															of_samples = TRUE,
 															dimension_1_column_rotated = NULL,
 															dimension_2_column_rotated = NULL,
 															action = "add") {
@@ -587,7 +554,7 @@ rotate_dimensions.default <-  function(.data,
 																			 dimension_2_column,
 																			 rotation_degrees,
 																			 .element = NULL,
-																			 of_samples = T,
+																			 of_samples = TRUE,
 																			 dimension_1_column_rotated = NULL,
 																			 dimension_2_column_rotated = NULL,
 																			 action = "add")
@@ -602,7 +569,7 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 					 dimension_2_column,
 					 rotation_degrees,
 					 .element = NULL,
-					 of_samples = T,
+					 of_samples = TRUE,
 					 dimension_1_column_rotated = NULL,
 					 dimension_2_column_rotated = NULL,
 					 action =
@@ -667,31 +634,32 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 #' @param Dim_a_column A character string. For reduced_dimension based calculation. The column of one principal component
 #' @param Dim_b_column A character string. For reduced_dimension based calculation. The column of another principal component
 #'
+#'
 #' @details This function removes redundant elements from the original data set (e.g., samples or transcripts). For example, if we want to define cell-type specific signatures with low sample redundancy. This function returns a tibble with dropped recundant elements (e.g., samples). Two redundancy estimation approaches are supported: (i) removal of highly correlated clusters of elements (keeping a representative) with method="correlation"; (ii) removal of most proximal element pairs in a reduced dimensional space.
 #'
 #' @return A tbl object with with dropped recundant elements (e.g., samples).
 #'
 #' @examples
-#' \donttest{
 #'
 #'
 #'
-#' counts %>%
-#'     remove_redundancy(
+#'    remove_redundancy(
+#'     ttBulk::counts_mini,
 #' 	   .element = sample,
 #' 	   .feature = transcript,
 #' 	   	.abundance =  count,
 #' 	   	method = "correlation"
 #' 	   	)
 #'
-#' counts %>%
-#'     remove_redundancy(
-#' 	   .element = sample,
-#' 	   .feature = transcript,
-#' 	   	.abundance = count,
-#' 	   	method = "reduced_dimensions"
-#' 	   	)
-#'}
+#' counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#'
+#' remove_redundancy(
+#' 	counts.MDS,
+#' 	Dim_a_column = `Dim 1`,
+#' 	Dim_b_column = `Dim 2`,
+#' 	.element = sample,
+#'   method = "reduced_dimensions"
+#' )
 #'
 #' @export
 #'
@@ -702,12 +670,12 @@ remove_redundancy <- function(.data,
 													 .abundance = NULL,
 													 method,
 
-													 of_samples = T,
+													 of_samples = TRUE,
 
 
 
 													 correlation_threshold = 0.9,
-													 log_transform = F,
+													 log_transform = FALSE,
 
 													 Dim_a_column,
 													 Dim_b_column) {
@@ -720,12 +688,12 @@ remove_redundancy.default <-  function(.data,
 																		.abundance = NULL,
 																		method,
 
-																		of_samples = T,
+																		of_samples = TRUE,
 
 
 
 																		correlation_threshold = 0.9,
-																		log_transform = F,
+																		log_transform = FALSE,
 
 																		Dim_a_column,
 																		Dim_b_column)
@@ -739,12 +707,12 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 																													 .abundance = NULL,
 																													 method,
 
-																													 of_samples = T,
+																													 of_samples = TRUE,
 
 
 
 																													 correlation_threshold = 0.9,
-																													 log_transform = F,
+																													 log_transform = FALSE,
 
 																													 Dim_a_column,
 																													 Dim_b_column)
@@ -812,18 +780,22 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 #'
 #'
 #' @examples
-#' \donttest{
 #'
 #'
 #'
-#' adjust_abundance(
-#'     ~ factor_of_interest + batch,
-#'     sample,
-#'     transcript,
-#'     `count`
-#' )
+#' cm = ttBulk::counts_mini
+#' cm$batch = 0
+#' cm$batch[cm$a %in% c("SRR1740035", "SRR1740043")] = 1
 #'
-#'}
+#' res =
+#' 	adjust_abundance(
+#' 		cm,
+#'		~ condition + batch,
+#'		.sample = sample,
+#'		.transcript = transcript,
+#'		.abundance = abundance
+#'	)
+#'
 #'
 #' @export
 #'
@@ -833,7 +805,7 @@ adjust_abundance <- function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
-														 log_transform = T,
+														 log_transform = TRUE,
 														 action = "add",
 														 ...) {
 	UseMethod("adjust_abundance", .data)
@@ -844,7 +816,7 @@ adjust_abundance.default <-  function(.data,
 																			.sample = NULL,
 																			.transcript = NULL,
 																			.abundance = NULL,
-																			log_transform = T,
+																			log_transform = TRUE,
 																			action = "add",
 																			...)
 {
@@ -857,7 +829,7 @@ adjust_abundance.tbl_df = adjust_abundance.ttBulk <-
 					 .sample = NULL,
 					 .transcript = NULL,
 					 .abundance = NULL,
-					 log_transform = T,
+					 log_transform = TRUE,
 					 action = "add",
 					 ...)
 	{
@@ -924,19 +896,15 @@ adjust_abundance.tbl_df = adjust_abundance.ttBulk <-
 #'
 #'
 #' @examples
-#' \donttest{
 #'
-#'
-#'
-#' counts %>%
 #'     aggregate_duplicates(
+#'     ttBulk::counts_mini,
 #'     sample,
 #'     transcript,
 #'     `count`,
 #'     aggregation_function = sum
 #'     )
 #'
-#'}
 #'
 #' @export
 #'
@@ -946,7 +914,7 @@ aggregate_duplicates <- function(.data,
 																 .sample = NULL,
 																 .transcript = NULL,
 																 .abundance = NULL,
-																 keep_integer = T) {
+																 keep_integer = TRUE) {
 	UseMethod("aggregate_duplicates", .data)
 }
 
@@ -956,7 +924,7 @@ aggregate_duplicates.default <-  function(.data,
 																					.sample = NULL,
 																					.transcript = NULL,
 																					.abundance = NULL,
-																					keep_integer = T)
+																					keep_integer = TRUE)
 {
 	print("This function cannot be applied to this object")
 }
@@ -968,7 +936,7 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 					 .sample = NULL,
 					 .transcript = NULL,
 					 .abundance = NULL,
-					 keep_integer = T)  {
+					 keep_integer = TRUE)  {
 		# Make col names
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
@@ -981,7 +949,7 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			keep_integer = T
+			keep_integer = TRUE
 		)
 	}
 
@@ -1012,14 +980,10 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 #'
 #'
 #' @examples
-#' \donttest{
 #'
 #'
+#' deconvolve_cellularity(ttBulk::counts, sample, transcript, `count`)
 #'
-#' 	counts %>%
-#' 	    deconvolve_cellularity(sample, transcript, `count`)
-#'
-#'}
 #'
 #' @export
 #'
@@ -1101,13 +1065,10 @@ deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
 #'
 #'
 #' @examples
-#' \donttest{
 #'
 #'
+#' 	annotate_symbol(ttBulk::counts_ensembl, ens)
 #'
-#' 	counts_ensembl %>% annotate_symbol(ens)
-#'
-#'}
 #'
 #' @export
 #'
@@ -1177,18 +1138,16 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 #'
 #'
 #' @examples
-#'\donttest{
-#'
 #'
 #'
 #' 	test_differential_abundance(
+#' 	 ttBulk::counts_mini,
 #' 	    ~ condition,
 #' 	    sample,
 #' 	    transcript,
 #' 	    `count`
 #' 	)
 #'
-#'}
 #'
 #' @export
 #'
@@ -1286,18 +1245,17 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 #'
 #'
 #' @examples
-#'\donttest{
 #'
 #'
 #'
 #' 	filter_variable(
+#' 	ttBulk::counts_mini,
 #' 	    sample,
 #' 	    transcript,
 #' 	    `count`,
 #' 	    top = 500
 #' 	)
 #'
-#'}
 #'
 #' @export
 #'
@@ -1370,14 +1328,17 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 #' @examples
 #' \donttest{
 #'
+#' df_entrez = symbol_to_entrez(ttBulk::counts_mini, .transcript = transcript, .sample = sample)
+#' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 #'
+#' library("EGSEA")
 #'
 #' 	analise_gene_enrichment(
-#'			input_df,
+#'			df_entrez,
 #'			~ condition,
-#'			.sample = a,
-#'			.entrez = d,
-#'			.abundance = c,
+#'			.sample = sample,
+#'			.entrez = entrez,
+#'			.abundance = count,
 #'			species="human"
 #'		)
 #'
@@ -1441,7 +1402,17 @@ analise_gene_enrichment.tbl_df = analise_gene_enrichment.ttBulk <-
 
 #' Join datasets
 #'
+#' @importFrom purrr map
+#' @importFrom stats setNames
+#'
 #' @param ... Data frames to combine
+#'
+#' @return A tt object
+#'
+#' @examples
+#'
+#' bind_rows(ttBulk::counts_mini, ttBulk::counts_mini)
+#'
 #'
 #' @export
 bind_rows <- function(...) {
@@ -1485,6 +1456,7 @@ bind_rows.ttBulk <- function(...)
 #' @param .data A tbl. (See dplyr)
 #' @param ... Data frames to combine (See dplyr)
 #'
+#' @return A tt object
 #' @export
 mutate <- function(.data, ...) {
 	UseMethod("mutate")
@@ -1524,6 +1496,7 @@ mutate.ttBulk <- function(.data, ...)
 #' @param suffix If there are non-joined duplicate variables in x and y, these suffixes will be added to the output to disambiguate them. Should be a character vector of length 2. (See dplyr)
 #' @param ... Data frames to combine (See dplyr)
 #'
+#' @return A tt object
 #'
 #' @export
 left_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
@@ -1558,6 +1531,13 @@ left_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".
 #' @param .data A tbl. (See dplyr)
 #' @param ... Data frames to combine (See dplyr)
 #' @param .keep_all If TRUE, keep all variables in .data. If a combination of ... is not distinct, this keeps the first row of values. (See dplyr)
+#'
+#' @return A tt object
+#'
+#' @examples
+#'
+#' distinct(ttBulk::counts_mini)
+#'
 #'
 #' @export
 distinct <- function (.data, ..., .keep_all = FALSE)  {

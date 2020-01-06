@@ -70,6 +70,10 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
 #'
 #' @return A matrix
 #'
+#' @examples
+#'
+#' as_matrix(head(dplyr::select(ttBulk::counts_mini, transcript, count)), rownames=transcript)
+#'
 #' @export
 as_matrix <- function(tbl,
                       rownames = NULL,
@@ -112,6 +116,7 @@ as_matrix <- function(tbl,
 #' @param x A numeric vector
 #' @param .abundance A character name of the transcript/gene abundance column
 #'
+#' @return NA
 error_if_log_transformed <- function(x, .abundance) {
   .abundance = enquo(.abundance)
 
@@ -133,6 +138,8 @@ error_if_log_transformed <- function(x, .abundance) {
 #' @param .sample A character name of the sample column
 #' @param .transcript A character name of the transcript/gene column
 #' @param .abundance A character name of the read count column
+#'
+#' @return A tbl
 error_if_duplicated_genes <- function(.data,
                                       .sample = `sample`,
                                       .transcript = `transcript`,
@@ -165,9 +172,11 @@ error_if_duplicated_genes <- function(.data,
 #' @import tidyr
 #' @import tibble
 #'
-#'
 #' @param .data A tibble of read counts
 #' @param .abundance A character name of the read count column
+#'
+#' @return A tbl
+#'
 error_if_counts_is_na = function(.data, .abundance) {
   .abundance = enquo(.abundance)
 
@@ -184,11 +193,14 @@ error_if_counts_is_na = function(.data, .abundance) {
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
+#' @importFrom purrr map
 #'
 #'
 #' @param .data A tibble of read counts
 #' @param list_input A list
 #' @param expected_type A character string
+#'
+#' @return A tbl
 #'
 error_if_wrong_input = function(.data, list_input, expected_type) {
 
@@ -212,6 +224,8 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
 
 #' .formula parser
 #'
+#' @importFrom stats terms
+#'
 #' @param fm a formula
 #' @return A character vector
 #'
@@ -224,6 +238,9 @@ parse_formula <- function(fm) {
 }
 
 #' Scale design matrix
+#'
+#' @importFrom stats setNames
+#' @importFrom stats cov
 #'
 #' @param df A tibble
 #' @param .formula a formula
@@ -278,6 +295,8 @@ drop_class = function(var, name) {
 #' @param x An array
 #' @param values An array
 #' @param before A boolean
+#'
+#' @return An array
 #'
 prepend = function (x, values, before = 1)
 {
@@ -425,7 +444,7 @@ get_sample_transcript = function(.data, .sample, .transcript){
 #'
 #' @return A list of column enquo or error
 #'
-get_elements_features = function(.data, .element, .feature, of_samples = T){
+get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
 
   # If setted by the user, enquo those
   if(
@@ -478,8 +497,7 @@ get_elements_features = function(.data, .element, .feature, of_samples = T){
 #'
 #' @return A list of column enquo or error
 #'
-#' @export
-get_elements_features_abundance = function(.data, .element, .feature, .abundance, of_samples = T){
+get_elements_features_abundance = function(.data, .element, .feature, .abundance, of_samples = TRUE){
 
   my_stop = function() {
     stop("
@@ -520,7 +538,7 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
 #' @param of_samples A boolean
 #'
 #' @return A list of column enquo or error
-get_elements = function(.data, .element, of_samples = T){
+get_elements = function(.data, .element, of_samples = TRUE){
 
   # If setted by the user, enquo those
   if(
@@ -597,6 +615,8 @@ get_abundance_norm_if_exists = function(.data, .abundance){
 }
 
 #' Sub function of remove_redundancy_elements_though_reduced_dimensions
+#'
+#' @importFrom stats dist
 #'
 #' @param df A tibble
 #'

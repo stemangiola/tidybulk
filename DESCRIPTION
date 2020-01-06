@@ -1,7 +1,7 @@
 Package: ttBulk
 Type: Package
-Title: Friendly tidy wrappers for facilitating transcriptional analyses
-Version: 0.1.0
+Title: Friendly tidy wrappers for streamlined bulk transcriptional analyses
+Version: 1.0.0
 Author: Stefano Mangiola
 Maintainer: Stefano Mangiola <mangiolastefano@gmail.com>
 Description: This is a collection of utility function that allow to perform exploration of and calculations to RNA sequencing data, in a tidy and pipe-friendly fashion. 
@@ -10,10 +10,10 @@ Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 7.0.2
-biocViews:
+biocViews: AssayDomain, Infrastructure
 Biarch: true
-Depends: R (>= 3.5.0)
-Imports: tibble, dplyr, magrittr, tidyr, ggplot2, readr, widyr, foreach, rlang, purrr,	preprocessCore
+Depends: R (>= 3.6.0)
+Imports: tibble, dplyr, magrittr, tidyr, widyr, rlang, purrr,	preprocessCore, stats, parallel
 Suggests: 
     parallel,
     testthat,
@@ -32,4 +32,5 @@ Suggests:
     covr,
     Seurat,
     KernSmooth,
-    Rtsne
+    Rtsne,
+    EGSEA

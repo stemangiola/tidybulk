@@ -13,6 +13,14 @@ symbol_to_entrez(.data, .transcript = NULL, .sample = NULL)
 
 \item{.sample}{The name of the sample column}
 }
+\value{
+A tbl
+}
 \description{
 Get ENTREZ id from gene SYMBOL
+}
+\examples{
+
+symbol_to_entrez(ttBulk::counts_mini, .transcript = transcript, .sample = sample)
+
 }

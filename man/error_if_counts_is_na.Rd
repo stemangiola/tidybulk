@@ -11,6 +11,9 @@ error_if_counts_is_na(.data, .abundance)
 
 \item{.abundance}{A character name of the read count column}
 }
+\value{
+A tbl
+}
 \description{
 Check whether there are NA counts
 }

@@ -9,7 +9,7 @@ remove_redundancy_elements_though_reduced_dimensions(
   Dim_a_column,
   Dim_b_column,
   .element = NULL,
-  of_samples = T
+  of_samples = TRUE
 )
 }
 \arguments{

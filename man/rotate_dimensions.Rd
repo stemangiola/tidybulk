@@ -10,7 +10,7 @@ rotate_dimensions(
   dimension_2_column,
   rotation_degrees,
   .element = NULL,
-  of_samples = T,
+  of_samples = TRUE,
   dimension_1_column_rotated = NULL,
   dimension_2_column_rotated = NULL,
   action = "add"
@@ -45,18 +45,10 @@ rotate_dimensions() takes as imput a `tbl` formatted as | <DIMENSION 1> | <DIMEN
 This function to rotate two dimensions such as the reduced dimensions.
 }
 \examples{
-\donttest{
 
+counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 
+counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 
-counts.MDS.rotated =
-    counts.MDS \%>\%
-    rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45, .element = sample)
-
-counts.MDS.rotated \%>\%
-    distinct(sample, `Dim 1`,`Dim 2`, `Cell type`) \%>\%
-    ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type` )) +
-    geom_point()
-}
 
 }

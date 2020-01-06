@@ -19,6 +19,9 @@ left_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 
 \item{...}{Data frames to combine (See dplyr)}
 }
+\value{
+A tt object
+}
 \description{
 Join datasets
 }

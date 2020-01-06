@@ -11,6 +11,9 @@ mutate(.data, ...)
 
 \item{...}{Data frames to combine (See dplyr)}
 }
+\value{
+A tt object
+}
 \description{
 Mutate datasets
 }

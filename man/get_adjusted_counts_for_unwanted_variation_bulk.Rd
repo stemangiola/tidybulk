@@ -10,7 +10,7 @@ get_adjusted_counts_for_unwanted_variation_bulk(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  log_transform = T,
+  log_transform = TRUE,
   ...
 )
 }

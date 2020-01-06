@@ -11,8 +11,8 @@ add_reduced_dimensions_MDS_bulk(
   .abundance = NULL,
   .dims = 2,
   top = 500,
-  of_samples = T,
-  log_transform = T
+  of_samples = TRUE,
+  log_transform = TRUE
 )
 }
 \arguments{

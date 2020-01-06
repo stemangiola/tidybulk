@@ -13,6 +13,9 @@ prepend(x, values, before = 1)
 
 \item{before}{A boolean}
 }
+\value{
+An array
+}
 \description{
 From rlang deprecated
 }
