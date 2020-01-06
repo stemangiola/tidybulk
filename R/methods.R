@@ -1164,7 +1164,8 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#'
+#' @param .coef An integer. See edgeR specifications
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
@@ -1196,6 +1197,8 @@ test_differential_abundance <- function(.data,
 																						.sample = NULL,
 																						.transcript = NULL,
 																						.abundance = NULL,
+																				.coef = 2,
+																				.contrasts = NULL,
 																						significance_threshold = 0.05,
 																						action = "add") {
 	UseMethod("test_differential_abundance", .data)
@@ -1206,6 +1209,8 @@ test_differential_abundance.default <-  function(.data,
 																										 .sample = NULL,
 																										 .transcript = NULL,
 																										 .abundance = NULL,
+																								 .coef = 2,
+																								 .contrasts = NULL,
 																										 significance_threshold = 0.05,
 																										 action = "add")
 {
@@ -1218,6 +1223,8 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 					 .sample = NULL,
 					 .transcript = NULL,
 					 .abundance = NULL,
+					 .coef = 2,
+					 .contrasts = NULL,
 					 significance_threshold = 0.05,
 					 action = "add")
 	{
@@ -1233,6 +1240,8 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 				.sample = !!.sample,
 				.transcript = !!.transcript,
 				.abundance = !!.abundance,
+				.coef = .coef,
+				.contrasts = .contrasts,
 				significance_threshold = significance_threshold
 			)
 		else if (action == "get")
@@ -1242,6 +1251,8 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 				.sample = !!.sample,
 				.transcript = !!.transcript,
 				.abundance = !!.abundance,
+				.coef = .coef,
+				.contrasts = .contrasts,
 				significance_threshold = significance_threshold
 			)
 		else
@@ -1344,7 +1355,7 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 #' @param .sample The name of the sample column
 #' @param .entrez The ENTREZ doce of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param contrasts = NULL,
+#' @param .contrasts = NULL,
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
 #'
@@ -1380,7 +1391,7 @@ analise_gene_enrichment <- function(.data,
 																		.sample = NULL,
 																		.entrez,
 																		.abundance = NULL,
-																		contrasts = NULL,
+																		.contrasts = NULL,
 																		species,
 																		cores = 10) {
 	UseMethod("analise_gene_enrichment", .data)
@@ -1391,7 +1402,7 @@ analise_gene_enrichment.default <-  function(.data,
 																						 .sample = NULL,
 																						 .entrez,
 																						 .abundance = NULL,
-																						 contrasts = NULL,
+																						 .contrasts = NULL,
 																						 species,
 																						 cores = 10)
 {
@@ -1404,7 +1415,7 @@ analise_gene_enrichment.tbl_df = analise_gene_enrichment.ttBulk <-
 					 .sample = NULL,
 					 .entrez,
 					 .abundance = NULL,
-					 contrasts = NULL,
+					 .contrasts = NULL,
 					 species,
 					 cores = 10)	{
 		# Make col names
@@ -1417,7 +1428,7 @@ analise_gene_enrichment.tbl_df = analise_gene_enrichment.ttBulk <-
 																				 .sample = !!.sample,
 																				 .entrez = !!.entrez,
 																				 .abundance = !!.abundance,
-																				 contrasts = contrasts,
+																				 .contrasts = .contrasts,
 																				 species = species,
 																				 cores = cores)
 

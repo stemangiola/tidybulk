@@ -578,16 +578,20 @@ add_normalised_counts_bulk <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param .coef An integer. See edgeR specifications
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
 #'
 #' @return A tibble with edgeR results
 #'
-#'
+#' @export
 get_differential_transcript_abundance_bulk <- function(.data,
 																											 .formula,
 																											 .sample = NULL,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
+																											 .coef = 2,
+																											 .contrasts = NULL,
 																											 significance_threshold = 0.05) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -634,9 +638,17 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		model.matrix(
 			object = .formula,
 			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
-		) %>%
-		magrittr::set_colnames(c("(Intercept)",
-														 (.) %>% colnames %>% `[` (-1)))
+		)
+	#%>%
+	#	magrittr::set_colnames(c("(Intercept)",	 (.) %>% colnames %>% `[` (-1)))
+
+	my_contrasts =
+		.contrasts %>%
+		ifelse_pipe(
+			length(.) > 0,
+			~ limma::makeContrasts(contrasts = .x, levels=design),
+			~ NULL
+		)
 
 	# Check if package is installed, otherwise install
 	if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
@@ -653,6 +665,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			`filter out low counts` = !!.transcript %in% add_normalised_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
 		)
 
+
 	df_for_edgeR.filt %>%
 		filter(!`filter out low counts`) %>%
 		select(!!.transcript, !!.sample, !!.abundance) %>%
@@ -663,21 +676,51 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		edgeR::estimateGLMCommonDisp(design) %>%
 		edgeR::estimateGLMTagwiseDisp(design) %>%
 		edgeR::glmFit(design) %>%
-		edgeR::glmLRT(coef = 2) %>%
-		edgeR::topTags(n = 999999) %$%
-		table %>%
-		as_tibble(rownames = quo_name(.transcript)) %>%
 
-		# Mark DE genes
-		mutate(is_de = FDR < significance_threshold) %>%
+		# If I have multiple .contrasts merge the results
+		ifelse_pipe(
+			my_contrasts %>% is.null | ncol(my_contrasts) < 2,
+
+			# Simple comparison
+			~ .x %>%
+				edgeR::glmLRT(coef = .coef, contrast = my_contrasts) %>%
+				edgeR::topTags(n = 999999) %$%
+				table %>%
+				as_tibble(rownames = quo_name(.transcript)) %>%
+
+				# Mark DE genes
+				mutate(is_de = FDR < significance_threshold) 	%>%
+
+				# Arrange
+				arrange(FDR),
+
+			# Multiple comparisons
+			~ {
+				edgeR_obj = .x
+
+				1:ncol(my_contrasts) %>%
+					map_dfr(
+						~ edgeR_obj %>%
+							edgeR::glmLRT(coef = .coef, contrast = my_contrasts[,.x]) %>%
+							edgeR::topTags(n = 999999) %$%
+							table %>%
+							as_tibble(rownames = quo_name(.transcript)) %>%
+							mutate(constrast = colnames(my_contrasts)[.x]) %>%
+
+							# Mark DE genes
+							mutate(is_de = FDR < significance_threshold)
+					) %>%
+					pivot_wider(values_from = -c(!!.transcript, constrast), names_from = constrast)
+			}
+		)	 %>%
+
+
 
 		# Add filtering info
 		full_join(df_for_edgeR.filt %>%
 								select(!!.transcript, `filter out low counts`) %>%
 								distinct()) %>%
 
-		# Arrange
-		arrange(FDR) %>%
 
 		# Attach attributes
 		add_attr(.data %>% attr("parameters"), "parameters")
@@ -696,6 +739,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param .coef An integer. See edgeR specifications
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
 #'
 #' @return A tibble with differential_transcript_abundance results
@@ -706,6 +751,8 @@ add_differential_transcript_abundance_bulk <- function(.data,
 																											 .sample = NULL,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
+																											 .coef = 2,
+																											 .contrasts = NULL,
 																											 significance_threshold = 0.05) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -724,6 +771,8 @@ add_differential_transcript_abundance_bulk <- function(.data,
 					.sample = !!.sample,
 					.transcript = !!.transcript,
 					.abundance = !!.abundance,
+					.coef = .coef,
+					.contrasts = .contrasts,
 					significance_threshold = significance_threshold
 				)
 		) %>%
@@ -774,7 +823,7 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 
 }
 
-#' Get differential transcription information to a tibble using edgeR.
+#' Get gene enrichment analyses using EGSEA
 #'
 #' @import dplyr
 #' @import tidyr
@@ -788,7 +837,7 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 #' @param .sample The name of the sample column
 #' @param .entrez The ENTREZ doce of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param contrasts = NULL,
+#' @param .contrasts = NULL,
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
 #'
@@ -800,7 +849,7 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 																											 .sample = NULL,
 																											 .entrez,
 																											 .abundance = NULL,
-																		 										contrasts = NULL,
+																		 										.contrasts = NULL,
 																		 									 species,
 																		 									cores = 10) {
 	# Get column names
@@ -894,7 +943,7 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 
 		# Execute EGSEA
  		egsea(
-			contrasts=contrasts,
+			contrasts=.contrasts,
 			gs.annots=idx,
 			# symbolsMap=
 			# 	df_for_edgeR.filt %>%

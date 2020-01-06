@@ -10,6 +10,8 @@ get_differential_transcript_abundance_bulk(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
+  .coef = 2,
+  .contrasts = NULL,
   significance_threshold = 0.05
 )
 }
@@ -23,6 +25,10 @@ get_differential_transcript_abundance_bulk(
 \item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{.coef}{An integer. See edgeR specifications}
+
+\item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`}
 
 \item{significance_threshold}{A real between 0 and 1}
 }

@@ -140,6 +140,33 @@ test_that("Get differential trancript abundance - no object",{
 
 })
 
+test_that("Get differential trancript abundance - no object - with contrasts",{
+
+	res =
+		test_differential_abundance(
+			input_df,
+			~ 0 + condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			.contrasts = c( "conditionTRUE - conditionFALSE",  "conditionFALSE - conditionTRUE"),
+			action="get"
+		)
+
+	expect_equal(
+		unique(res$`logFC_conditionTRUE - conditionFALSE`)[1:4],
+		c(-12.48201, -12.10269, -11.48896, -13.44406),
+		tolerance=1e-6
+	)
+
+	expect_equal(
+		ncol(res),
+		14
+	)
+
+})
+
+
 test_that("Add differential trancript abundance - no object",{
 
   res =
