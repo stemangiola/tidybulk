@@ -13,7 +13,7 @@ RoxygenNote: 7.0.2
 biocViews: AssayDomain, Infrastructure
 Biarch: true
 Depends: R (>= 3.6.0)
-Imports: tibble, dplyr, magrittr, tidyr, widyr, rlang, purrr,	preprocessCore, stats, parallel
+Imports: tibble, dplyr, magrittr, tidyr, widyr, rlang, purrr, ggplot2,	preprocessCore, stats, parallel
 Suggests: 
     parallel,
     testthat,

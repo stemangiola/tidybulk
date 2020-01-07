@@ -5,6 +5,7 @@
 #' @importFrom rlang enquo
 #' @importFrom magrittr %>%
 #' @importFrom purrr reduce
+#' @import ggplot2
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
