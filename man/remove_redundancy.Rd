@@ -63,8 +63,8 @@ counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, 
 
 remove_redundancy(
 	counts.MDS,
-	Dim_a_column = `Dim 1`,
-	Dim_b_column = `Dim 2`,
+	Dim_a_column = `Dim1`,
+	Dim_b_column = `Dim2`,
 	.element = sample,
   method = "reduced_dimensions"
 )
