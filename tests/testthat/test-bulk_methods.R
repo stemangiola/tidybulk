@@ -389,7 +389,7 @@ test_that("Get reduced dimensions MDS - no object",{
     )
 
   expect_equal(
-    res$`Dim 1`,
+    res$`Dim1`,
     c(1.4048441,  1.3933490, -2.0138120 , 0.8832354, -1.6676164),
     tolerance=1e-6
   )
@@ -414,7 +414,7 @@ test_that("Add reduced dimensions MDS - no object",{
     )
 
   expect_equal(
-    (res$`Dim 1`)[1:4],
+    (res$`Dim1`)[1:4],
     c( 1.404844, 1.404844, 1.404844, 1.404844),
     tolerance=1e-6
   )
@@ -669,7 +669,7 @@ test_that("Get cell type proportions - no object",{
       .sample = a,
       .transcript = b,
       .abundance = c,
-      action="get", cores=2
+      action="get", cores=1
     )
 
   expect_equal(
@@ -693,7 +693,7 @@ test_that("Add cell type proportions - no object",{
       .sample = a,
       .transcript = b,
       .abundance = c,
-      action="add", cores=2
+      action="add", cores=1
     )
 
   expect_equal(

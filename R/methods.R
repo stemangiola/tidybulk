@@ -655,8 +655,8 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 #'
 #' remove_redundancy(
 #' 	counts.MDS,
-#' 	Dim_a_column = `Dim 1`,
-#' 	Dim_b_column = `Dim 2`,
+#' 	Dim_a_column = `Dim1`,
+#' 	Dim_b_column = `Dim2`,
 #' 	.element = sample,
 #'   method = "reduced_dimensions"
 #' )
@@ -785,7 +785,7 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 #'
 #' cm = ttBulk::counts_mini
 #' cm$batch = 0
-#' cm$batch[cm$a %in% c("SRR1740035", "SRR1740043")] = 1
+#' cm$batch[cm$sample %in% c("SRR1740035", "SRR1740043")] = 1
 #'
 #' res =
 #' 	adjust_abundance(
@@ -793,7 +793,7 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 #'		~ condition + batch,
 #'		.sample = sample,
 #'		.transcript = transcript,
-#'		.abundance = abundance
+#'		.abundance = count
 #'	)
 #'
 #'
@@ -982,7 +982,7 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 #' @examples
 #'
 #'
-#' deconvolve_cellularity(ttBulk::counts, sample, transcript, `count`)
+#' deconvolve_cellularity(ttBulk::counts, sample, transcript, `count`, cores = 2)
 #'
 #'
 #' @export
