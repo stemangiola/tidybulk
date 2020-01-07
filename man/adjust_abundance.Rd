@@ -47,7 +47,7 @@ This function adjusts the abundance for (known) unwanted variation. At the momen
 
 cm = ttBulk::counts_mini
 cm$batch = 0
-cm$batch[cm$a \%in\% c("SRR1740035", "SRR1740043")] = 1
+cm$batch[cm$sample \%in\% c("SRR1740035", "SRR1740043")] = 1
 
 res =
 	adjust_abundance(
@@ -55,7 +55,7 @@ res =
 	~ condition + batch,
 	.sample = sample,
 	.transcript = transcript,
-	.abundance = abundance
+	.abundance = count
 )
 
 
