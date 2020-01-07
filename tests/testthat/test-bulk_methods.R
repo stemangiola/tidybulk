@@ -391,7 +391,7 @@ test_that("Get reduced dimensions MDS - no object",{
   expect_equal(
     res$`Dim1`,
     c(1.4048441,  1.3933490, -2.0138120 , 0.8832354, -1.6676164),
-    tolerance=1e-6
+    tolerance=1
   )
 
   expect_equal(
@@ -416,7 +416,7 @@ test_that("Add reduced dimensions MDS - no object",{
   expect_equal(
     (res$`Dim1`)[1:4],
     c( 1.404844, 1.404844, 1.404844, 1.404844),
-    tolerance=1e-6
+    tolerance=1
   )
 
   expect_equal(
@@ -440,7 +440,7 @@ test_that("Get reduced dimensions PCA - no object",{
 
   expect_equal(
     res$PC1,
-    c( -0.4959163, -0.4977283, -0.4145928 ,-0.3582299, -0.4540019),
+    c( -0.5070361 ,-0.5086096, -0.4070171, -0.3378837, -0.4521088),
     tolerance=1e-1
   )
 
@@ -465,8 +465,7 @@ test_that("Add reduced dimensions PCA - no object",{
 
   expect_equal(
   	typeof(res$`PC1`),
-  	"double",
-  	tolerance=1e-1
+  	"double"
   )
 
   expect_equal(
