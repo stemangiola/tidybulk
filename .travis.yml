@@ -8,6 +8,9 @@ r:
 env:
 - R_QPDF=true
 
-script: "sbt clean coverage test"
+r_github_packages:
+  - r-lib/covr
 
-after_success: "sbt coveralls"
+after_success:
+    - tar -C .. -xf $PKG_TARBALL
+    - xvfb-run Rscript -e 'covr::codecov(type=c("tests", "vignettes", "examples"))'
