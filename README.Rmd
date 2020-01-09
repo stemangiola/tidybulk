@@ -3,22 +3,6 @@ title: "ttBulk - tidyTranscriptomics"
 output: github_document
 ---
 
-<style>
-.column-left{
-  float: left;
-  width: 49%;
-  text-align: left;
-   font-size: 90%;
-}
-.column-right{
-  float: right;
-  width: 49%;
-  text-align: left;
-  font-size: 90%;
-  
-}
-</style>
-
 [![Build Status](https://travis-ci.org/stemangiola/ttBulk.svg?branch=master)](https://travis-ci.org/stemangiola/ttBulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/ttBulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/ttBulk?branch=master)
 
 A user-friendly grammar of bulk RNA sequencing data exploration and processing
@@ -225,7 +209,7 @@ cmds = cbind(
 		data.frame(cmds5_6$x, cmds5_6$y)
 	)
 ) %>%
-	setNames(sprintf("Dim %s", 1:6))
+	setNames(sprintf("Dim%s", 1:6))
 cmds$cell_type = ttBulk::counts[
 	match(ttBulk::counts$sample, rownames(cmds)), 
 	"Cell type"
@@ -339,7 +323,7 @@ TidyTranscriptomics
 ```{r rotate, cache=TRUE}
 counts.norm.MDS.rotated =
   counts.norm.MDS %>%
-	rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45)
+	rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45)
 ```
 </div>
 <div class="column-right">
@@ -366,8 +350,8 @@ On the x and y axes axis we have the first two reduced dimensions, data is colou
 
 ```{r plot_rotate_1, cache=TRUE}
 counts.norm.MDS.rotated %>%
-	distinct(sample, `Dim 1`,`Dim 2`, `Cell type`) %>%
-	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type` )) +
+	distinct(sample, `Dim1`,`Dim2`, `Cell type`) %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type` )) +
   geom_point() +
   my_theme
 ```
@@ -377,8 +361,8 @@ On the x and y axes axis we have the first two reduced dimensions rotated of 45 
 
 ```{r plot_rotate_2, cache=TRUE}
 counts.norm.MDS.rotated %>%
-	distinct(sample, `Dim 1 rotated 45`,`Dim 2 rotated 45`, `Cell type`) %>%
-	ggplot(aes(x=`Dim 1 rotated 45`, y=`Dim 2 rotated 45`, color=`Cell type` )) +
+	distinct(sample, `Dim1 rotated 45`,`Dim2 rotated 45`, `Cell type`) %>%
+	ggplot(aes(x=`Dim1 rotated 45`, y=`Dim2 rotated 45`, color=`Cell type` )) +
   geom_point() +
   my_theme
 ```
@@ -537,7 +521,7 @@ cluster = k$cluster
 
 cluster$cell_type = ttBulk::counts[
 	match(ttBulk::counts$sample, rownames(cluster)), 
-	c("Cell type", "Dim 1", "Dim 2")
+	c("Cell type", "Dim1", "Dim2")
 ]
 
 ```
@@ -548,8 +532,8 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
 
 ```{r plot_cluster, cache=TRUE}
  counts.norm.cluster %>%
-	distinct(sample, `Dim 1`, `Dim 2`, `cluster kmeans`) %>%
-	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`cluster kmeans`)) +
+	distinct(sample, `Dim1`, `Dim2`, `cluster kmeans`) %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster kmeans`)) +
   geom_point() +
   my_theme
 ```
@@ -583,7 +567,7 @@ snn = snn[["seurat_clusters"]]
 
 snn$cell_type = ttBulk::counts[
 	match(ttBulk::counts$sample, rownames(snn)), 
-	c("Cell type", "Dim 1", "Dim 2")
+	c("Cell type", "Dim1", "Dim2")
 ]
 
 ```
@@ -662,8 +646,8 @@ We can visualise how the reduced redundancy with the reduced dimentions look lik
 
 ```{r plot_drop, cache=TRUE}
 counts.norm.non_redundant %>%
-	distinct(sample, `Dim 1`, `Dim 2`, `Cell type`) %>%
-	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type`)) +
+	distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
 
@@ -676,8 +660,8 @@ counts.norm.non_redundant =
 	counts.norm.MDS %>%
   remove_redundancy(
   	method = "reduced_dimensions",
-  	Dim_a_column = `Dim 1`,
-  	Dim_b_column = `Dim 2`
+  	Dim_a_column = `Dim1`,
+  	Dim_b_column = `Dim2`
   )
 ```
 
@@ -685,8 +669,8 @@ We can visualise MDS reduced dimensions of the samples with the closest pair rem
 
 ```{r plot_drop2, cache=TRUE}
 counts.norm.non_redundant %>%
-	distinct(sample, `Dim 1`, `Dim 2`, `Cell type`) %>%
-	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type`)) +
+	distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
 
