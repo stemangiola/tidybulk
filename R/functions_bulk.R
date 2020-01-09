@@ -2674,7 +2674,7 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 #' @param .transcript A character name of the transcript/gene column
 #' @param .abundance A character name of the read count column
 #' @param top An integer. How many top genes to select
-#'
+#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @return A tibble filtered genes
 #'
@@ -2682,7 +2682,8 @@ filter_variable_transcripts = function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
-																			 top = 500){
+																			 top = 500,
+																			 log_transform = TRUE){
 
 	# Get column names
 	.sample = enquo(.sample)
@@ -2701,14 +2702,20 @@ filter_variable_transcripts = function(.data,
 	x =
 		.data %>%
 		distinct(!!.sample, !!.transcript, !!.abundance) %>%
+
+		# Check if logtansform is needed
+		ifelse_pipe(log_transform,
+								~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+
 		spread(!!.sample, !!.abundance) %>%
 		as_matrix(rownames = quo_name(.transcript))
 
 	s <- rowMeans((x-rowMeans(x))^2)
 	o <- order(s,decreasing=TRUE)
 	x <- x[o[1L:top],,drop=FALSE]
+	variable_trancripts = rownames(x)
 
-	.data %>% filter(!!.transcript %in% rownames(x))
+	.data %>% filter(!!.transcript %in% variable_trancripts)
 }
 
 #' Add cell type information on single cells

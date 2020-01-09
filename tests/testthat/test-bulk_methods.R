@@ -4,8 +4,6 @@ input_df = setNames(ttBulk::counts_mini, c("a", "b", "Cell type", "c",  "time" ,
 
 input_df_breast = setNames(ttBulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
 
-
-
 test_that("Creating tt object from tibble, number of parameters, methods",{
 
   expect_equal(
@@ -110,7 +108,7 @@ test_that("filter variable - no object",{
 
 	expect_equal(
 		head(res$b),
-		c("MS4A1", "IGHM" , "CD37",  "IL7R" , "FCN1",  "MS4A1")
+		c("TCL1A", "IGHD",  "IGHM",  "IGKC",  "FCN1",  "TCL1A")
 	)
 
 })

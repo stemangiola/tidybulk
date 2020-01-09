@@ -9,7 +9,8 @@ filter_variable(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  top = 500
+  top = 500,
+  log_transform = TRUE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ filter_variable(
 \item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{top}{Integer. Number of top transcript to consider}
+
+\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
