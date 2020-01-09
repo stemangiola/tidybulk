@@ -1236,6 +1236,7 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param top Integer. Number of top transcript to consider
+#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
 #'
@@ -1263,7 +1264,8 @@ filter_variable <- function(.data,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL,
-																				top = 500) {
+																				top = 500,
+														log_transform = TRUE) {
 	UseMethod("filter_variable", .data)
 }
 #' @export
@@ -1271,7 +1273,8 @@ filter_variable.default <-  function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
-																			 top = 500)
+																			 top = 500,
+																		 log_transform = TRUE)
 {
 	print("This function cannot be applied to this object")
 }
@@ -1281,7 +1284,8 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 					 .sample = NULL,
 					 .transcript = NULL,
 					 .abundance = NULL,
-					 top = 500)
+					 top = 500,
+					 log_transform = TRUE)
 	{
 		# Make col names
 		.sample = enquo(.sample)
@@ -1293,7 +1297,8 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 				.sample = !!.sample,
 				.transcript = !!.transcript,
 				.abundance = !!.abundance,
-				top = top
+				top = top,
+				log_transform = log_transform
 			)
 	}
 

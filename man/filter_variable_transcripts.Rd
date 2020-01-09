@@ -9,7 +9,8 @@ filter_variable_transcripts(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  top = 500
+  top = 500,
+  log_transform = TRUE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ filter_variable_transcripts(
 \item{.abundance}{A character name of the read count column}
 
 \item{top}{An integer. How many top genes to select}
+
+\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A tibble filtered genes
