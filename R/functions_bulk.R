@@ -111,7 +111,7 @@ create_tt_from_bam_sam_bulk <-
 																		(.) %$% genes %>% select(GeneID, transcript) %>% as_tibble(),
 																		(.) %$% samples %>% as_tibble()
 																	),
-																	left_join
+																	dplyr::left_join
 																) %>%
 																	rename(entrez = GeneID) %>%
 																	mutate(entrez = entrez %>% as.character())
@@ -161,7 +161,7 @@ add_normalised_counts_bulk.get_cpm <- function(.data,
 
 	# Add cmp and cmp threshold to the data set, and return
 	.data %>%
-		left_join(
+		dplyr::left_join(
 			(.) %>%
 				select(-contains("ct")) %>%
 				select(!!.transcript, !!.sample, !!.abundance) %>%
@@ -448,7 +448,7 @@ get_normalised_counts_bulk <- function(.data,
 
 	# Calculate normalization factors
 	nf <- nf_obj$nf %>%
-		left_join(
+		dplyr::left_join(
 			df %>%
 				group_by(!!.sample) %>%
 				summarise(tot = sum(!!.abundance, na.rm = TRUE)) %>%
@@ -478,7 +478,7 @@ get_normalised_counts_bulk <- function(.data,
 	df_norm =
 		df %>%
 		mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
-		left_join(nf, by = quo_name(.sample)) %>%
+		dplyr::left_join(nf, by = quo_name(.sample)) %>%
 
 		# Calculate normalised values
 		mutate(!!value_normalised := !!.abundance * multiplier) %>%
@@ -770,7 +770,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 	.abundance = col_names$.abundance
 
 	.data %>%
-		left_join(
+		dplyr::left_join(
 			(.) %>%
 				get_differential_transcript_abundance_bulk(
 					.formula,
@@ -822,7 +822,7 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 	}
 
 	.data %>%
-		left_join(
+		dplyr::left_join(
 
 			# Get entrez mapping 1:1
 			AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db, .data %>% distinct(!!.transcript) %>% pull(1), 'ENTREZID', 'SYMBOL') %>%
@@ -1083,7 +1083,7 @@ add_clusters_kmeans_bulk <-
 		.abundance = enquo(.abundance)
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_clusters_kmeans_bulk(
 						.abundance = !!.abundance,
@@ -1213,7 +1213,7 @@ add_clusters_SNN_bulk <-
 		.abundance = enquo(.abundance)
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_clusters_SNN_bulk(
 						.abundance = !!.abundance,
@@ -1365,7 +1365,7 @@ add_reduced_dimensions_MDS_bulk <-
 		.abundance = col_names$.abundance
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_reduced_dimensions_MDS_bulk(
 						.abundance = !!.abundance,
@@ -1559,7 +1559,7 @@ add_reduced_dimensions_PCA_bulk <-
 		.abundance = col_names$.abundance
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_reduced_dimensions_PCA_bulk(
 						.abundance = !!.abundance,
@@ -1740,7 +1740,7 @@ add_reduced_dimensions_TSNE_bulk <-
 		.abundance = col_names$.abundance
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_reduced_dimensions_TSNE_bulk(
 						.abundance = !!.abundance,
@@ -1912,7 +1912,7 @@ add_rotated_dimensions =
 			))
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_rotated_dimensions(
 						dimension_1_column = !!dimension_1_column,
@@ -2019,7 +2019,7 @@ aggregate_duplicated_transcripts_bulk =
 			mutate_if(is.logical, as.character) %>%
 
 			# Add the nuber of duplicates for each gene
-			left_join((.) %>% count(!!.sample, !!.transcript, name = "n_aggr"),
+			dplyr::left_join((.) %>% count(!!.sample, !!.transcript, name = "n_aggr"),
 								by = c(quo_name(.sample), quo_name(.transcript))) %>%
 
 			# Anonymous function - binds the unique and the reduced genes,
@@ -2294,7 +2294,7 @@ get_symbol_from_ensembl <-
 			distinct() %>%
 
 			# Add name information
-			left_join(
+			dplyr::left_join(
 				ensembl_symbol_mapping %>%
 					distinct(ensembl_gene_id, hgnc_symbol, hg) %>%
 					rename(!!.ensembl := ensembl_gene_id) %>%
@@ -2318,7 +2318,7 @@ add_symbol_from_ensembl <-
 
 		# Add new symbols column
 		.data %>%
-			left_join((.) %>%
+			dplyr::left_join((.) %>%
 									get_symbol_from_ensembl(!!.ensembl)) %>%
 
 			# Attach attributes
@@ -2443,7 +2443,7 @@ add_cell_type_proportions = function(.data,
 	.data %>%
 
 		# Add new annotation
-		left_join(
+		dplyr::left_join(
 			(.) %>%
 				get_cell_type_proportions(
 					.sample = !!.sample,
@@ -2649,7 +2649,7 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 	.data %>%
 
 		# Add adjsted column
-		left_join(
+		dplyr::left_join(
 			(.) %>%
 				get_adjusted_counts_for_unwanted_variation_bulk(
 					.formula,
