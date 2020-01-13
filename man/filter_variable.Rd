@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods.R
 \name{filter_variable}
 \alias{filter_variable}
-\title{Identify variable transcripts}
+\title{Filter variable transcripts}
 \usage{
 filter_variable(
   .data,
