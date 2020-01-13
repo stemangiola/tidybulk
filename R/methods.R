@@ -1221,7 +1221,7 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 	}
 
 
-#' Identify variable transcripts
+#' Filter variable transcripts
 #'
 #' @description filter_variable() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -1302,6 +1302,94 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 			)
 	}
 
+
+#' Filter abundant transcripts
+#'
+#' @description filter_abundant() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#' @importFrom dplyr filter
+#'
+#' @name filter_abundant
+#' @rdname filter_abundant
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param top Integer. Number of top transcript to consider
+#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#'
+#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#'
+#' 	filter_abundant(
+#' 	ttBulk::counts_mini,
+#' 	    sample,
+#' 	    transcript,
+#' 	    `count`
+#' 	)
+#'
+#'
+#' @export
+#'
+filter_abundant <- function(.data,
+														.sample = NULL,
+														.transcript = NULL,
+														.abundance = NULL,
+														cpm_threshold = 0.5,
+														prop = 3 / 4) {
+	UseMethod("filter_abundant", .data)
+}
+#' @export
+filter_abundant.default <-  function(.data,
+																		 .sample = NULL,
+																		 .transcript = NULL,
+																		 .abundance = NULL,
+																		 cpm_threshold = 0.5,
+																		 prop = 3 / 4)
+{
+	print("This function cannot be applied to this object")
+}
+#' @export
+filter_abundant.tbl_df = filter_abundant.ttBulk <-
+	function(.data,
+					 .sample = NULL,
+					 .transcript = NULL,
+					 .abundance = NULL,
+					 cpm_threshold = 0.5,
+					 prop = 3 / 4)
+	{
+		# Make col names
+		.sample = enquo(.sample)
+		.transcript = enquo(.transcript)
+		.abundance = enquo(.abundance)
+
+		abundant =
+			add_normalised_counts_bulk.get_low_expressed(.data,
+																								 .sample = !!.sample,
+																								 .transcript = !!.transcript,
+																								 .abundance = !!.abundance,
+																														 cpm_threshold = cpm_threshold,
+																														 prop = prop)
+
+		.data %>%
+
+			# Filter
+			dplyr::filter(!!.transcript %in% abundant %>% `!`) %>%
+
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
+	}
 
 #' Analise gene enrichment with EGSEA
 #'
