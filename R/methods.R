@@ -1521,7 +1521,7 @@ left_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".
 {
 	x %>%
 		drop_class(c("ttBulk", "tt")) %>%
-		dplyr::left_join(y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...) %>%
+		dplyr::left_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
 
 		# Attach attributes
 		add_attr(x %>% attr("parameters"), "parameters") %>%
