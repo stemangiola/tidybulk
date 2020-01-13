@@ -705,3 +705,24 @@ test_that("Add cell type proportions - no object",{
   )
 
 })
+
+test_that("filter abundant - no object",{
+
+	res =
+		filter_abundant(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c
+		)
+
+	expect_equal(
+		res$b[1:4],
+		c("TNFRSF4", "PLCH2" ,  "PADI4" ,  "CDA"    )
+	)
+
+	expect_equal(	ncol(res),	6	)
+
+	expect_equal(	nrow(res),	2220	)
+
+})
