@@ -22,9 +22,9 @@ filter_abundant(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{top}{Integer. Number of top transcript to consider}
+\item{cpm_threshold}{A real positive number}
 
-\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{prop}{A number between 0 and 1}
 }
 \value{
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
