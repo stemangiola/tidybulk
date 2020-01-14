@@ -1318,8 +1318,8 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param top Integer. Number of top transcript to consider
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param cpm_threshold A real positive number
+#' @param prop A number between 0 and 1
 #'
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
 #'
