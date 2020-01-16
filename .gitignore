@@ -8,4 +8,5 @@ vignettes/introduction_cache*
 ttBulk.Rproj
 Meta
 doc
-dev
+dev/*csv
+dev/*rds
