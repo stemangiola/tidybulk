@@ -36,7 +36,7 @@ siberg_iterative = function(x) {
 data_hierarchy =
 	ARMET::tree %>%
 	data.tree::Clone() %>%
-	ARMET::ToDataFrameTypeColFull(T, "name") %>%
+	ARMET::ToDataFrameTypeColFull(TRUE, "name") %>%
 	pivot_longer(cols = -name, names_to = "level", values_to = "Cell type category", names_prefix = "level_") %>%
 	drop_na() %>%
 	mutate(level = as.integer(level) -1) %>%
@@ -50,7 +50,7 @@ counts =
 	dir(
 		path = path,
 		pattern="cellTypes_",
-		full.names = T
+		full.names = TRUE
 	) %>%
 	future_map_dfr(
 		~ read_csv(.x) %>%

@@ -43,7 +43,7 @@ tt =
 	left_join(
 		tibble(
 			transcript = (.) %>% distinct(transcript) %>% pull(1),
-			symbol = flybaseR::id.converter((.) %>% distinct(transcript) %>% pull(1), symbols = T, convert.into = "genes")
+			symbol = flybaseR::id.converter((.) %>% distinct(transcript) %>% pull(1), symbols = TRUE, convert.into = "genes")
 		)
 	) %>%
 
@@ -151,6 +151,6 @@ tt_test %>%
 		.vertical = symbol,
 		.abundance = `count normalised adjusted`,
 		annotation = c(condition, type),
-		log_transform = T
+		log_transform = TRUE
 	)
 
