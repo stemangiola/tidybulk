@@ -27,3 +27,13 @@
 #'
 #'
 "breast_tcga_mini"
+
+#' GO
+#'
+#'
+"GO"
+
+#' flybaseIDs
+#'
+#'
+"flybaseIDs"
