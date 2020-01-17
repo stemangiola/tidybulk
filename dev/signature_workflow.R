@@ -36,7 +36,7 @@ siberg_iterative = function(x) {
 data_hierarchy =
 	ARMET::tree %>%
 	data.tree::Clone() %>%
-	ARMET::ToDataFrameTypeColFull(F, "name") %>%
+	ARMET::ToDataFrameTypeColFull(T, "name") %>%
 	pivot_longer(cols = -name, names_to = "level", values_to = "Cell type category", names_prefix = "level_") %>%
 	drop_na() %>%
 	mutate(level = as.integer(level) -1) %>%
@@ -83,13 +83,10 @@ counts_proc %>% saveRDS("dev/counts_proc.rds", compress = "gzip")
 counts_ct =
 	counts_proc %>%
 
-	# Setup Cell type category names
-	inner_join(data_hierarchy) %>%
-
 	# Eliminate genes that are not in all cell types
 	inner_join(
 		(.) %>%
-			distinct(symbol, `Cell type category`) %>%
+			distinct(symbol, `Cell type formatted`) %>%
 			count(symbol) %>%
 			filter(n == max(n))
 	)
@@ -98,7 +95,7 @@ counts_ct =
 bimodality =
 
 	counts_ct %>%
-	nest(data = -c(`Cell type category`, symbol, level)) %>%
+	nest(data = -c(`Cell type formatted`, symbol)) %>%
 	mutate(	bimodality_NB =
 		future_map(
 			data,
@@ -137,3 +134,11 @@ counts_ct_bm %>%
       axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
     )
 
+# Identify markers
+
+# Setup Cell type category names
+inner_join(data_hierarchy) %>%
+
+
+
+counts_ct_bm %>% filter(level==1) %>% distinct(`Cell type category`)

@@ -146,11 +146,11 @@ tt_test %>%
 # Heatmap
 tt_test %>%
 	filter(FDR < 0.05 & abs(logFC) > 2) %>%
-	mutate(`Log adj count` = `count normalised adjusted` %>% `+` (1) %>% log) %>%
 	tidyHeatmap::plot_heatmap(
 		.horizontal = sample,
 		.vertical = symbol,
-		.abundance = `Log adj count`,
-		annotation = c(condition, type)
+		.abundance = `count normalised adjusted`,
+		annotation = c(condition, type),
+		log_transform = T
 	)
 
