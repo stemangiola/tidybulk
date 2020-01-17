@@ -726,3 +726,9 @@ test_that("filter abundant - no object",{
 	expect_equal(	nrow(res),	2220	)
 
 })
+
+test_that("nest - no object",{
+
+	expect_equal(	class(nest(ttBulk(input_df, a, b, c), data = a))[1],	"data.frame"	)
+
+})
