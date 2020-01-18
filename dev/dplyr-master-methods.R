@@ -74,7 +74,7 @@ arrange.ttBulk <- function(.data, ..., .by_group = FALSE) {
 
   .data %>%
     drop_class(c("ttBulk", "tt")) %>%
-    dplyr::arrange(.data, ..., .by_group = .by_group) %>%
+    dplyr::arrange( ..., .by_group = .by_group) %>%
 
     # Attach attributes
     add_attr(.data %>% attr("parameters"), "parameters") %>%
@@ -433,7 +433,7 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 {
   .data %>%
     drop_class(c("ttBulk", "tt")) %>%
-    dplyr::filter(.data, ..., .preserve = .preserve) %>%
+    dplyr::filter( ..., .preserve = .preserve) %>%
 
     # Attach attributes
     add_attr(.data %>% attr("parameters"), "parameters") %>%
@@ -561,7 +561,7 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 {
   .data %>%
     drop_class(c("ttBulk", "tt")) %>%
-    dplyr::filter(.data, ..., .preserve = .preserve) %>%
+    dplyr::filter(..., .preserve = .preserve) %>%
 
     # Attach attributes
     add_attr(.data %>% attr("parameters"), "parameters") %>%
@@ -572,15 +572,117 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 
 }
 ############# END ADDED TTBULK #####################################
-group_by <- function(.data, ..., .add = FALSE, .drop = group_by_drop_default(.data)) {
+
+#' Group by one or more variables
+#'
+#' @description
+#' Most data operations are done on groups defined by variables.
+#' `group_by()` takes an existing tbl and converts it into a grouped tbl
+#' where operations are performed "by group". `ungroup()` removes grouping.
+#'
+#' @family grouping functions
+#' @inheritParams arrange
+#' @param ... In `group_by()`, variables or computations to group by.
+#'   In `ungroup()`, variables to remove from the grouping.
+#' @param .add When `FALSE`, the default, `group_by()` will
+#'   override existing groups. To add to the existing groups, use
+#'   `.add = TRUE`.
+#'
+#'   This argument was previously called `add`, but that prevented
+#'   creating a new grouping variable called `add`, and conflicts with
+#'   our naming conventions.
+#' @param .drop When `.drop = TRUE`, empty groups are dropped. See [group_by_drop_default()] for
+#'   what the default value is for this argument.
+#' @return A [grouped data frame][grouped_df()], unless the combination of `...` and `add`
+#'   yields a non empty set of grouping columns, a regular (ungrouped) data frame
+#'   otherwise.
+#' @section Methods:
+#' These function are **generic**s, which means that packages can provide
+#' implementations (methods) for other classes. See the documentation of
+#' individual methods for extra arguments and differences in behaviour.
+#'
+#' Methods available in currently loaded packages:
+#'
+#' * `group_by()`: \Sexpr[stage=render,results=rd]{dplyr:::methods_rd("group_by")}.
+#' * `ungroup()`: \Sexpr[stage=render,results=rd]{dplyr:::methods_rd("ungroup")}.
+#' @export
+#' @examples
+#' by_cyl <- mtcars %>% group_by(cyl)
+#'
+#' # grouping doesn't change how the data looks (apart from listing
+#' # how it's grouped):
+#' by_cyl
+#'
+#' # It changes how it acts with the other dplyr verbs:
+#' by_cyl %>% summarise(
+#'   disp = mean(disp),
+#'   hp = mean(hp)
+#' )
+#' by_cyl %>% filter(disp == max(disp))
+#'
+#' # Each call to summarise() removes a layer of grouping
+#' by_vs_am <- mtcars %>% group_by(vs, am)
+#' by_vs <- by_vs_am %>% summarise(n = n())
+#' by_vs
+#' by_vs %>% summarise(n = sum(n))
+#'
+#' # To removing grouping, use ungroup
+#' by_vs %>%
+#'   ungroup() %>%
+#'   summarise(n = sum(n))
+#'
+#' # You can group by expressions: this is just short-hand for
+#' # a mutate() followed by a group_by()
+#' mtcars %>% group_by(vsam = vs + am)
+#'
+#' # By default, group_by() overrides existing grouping
+#' by_cyl %>%
+#'   group_by(vs, am) %>%
+#'   group_vars()
+#'
+#' # Use add = TRUE to instead append
+#' by_cyl %>%
+#'   group_by(vs, am, .add = TRUE) %>%
+#'   group_vars()
+#'
+#'
+#' # when factors are involved, groups can be empty
+#' tbl <- tibble(
+#'   x = 1:10,
+#'   y = factor(rep(c("a", "c"), each  = 5), levels = c("a", "b", "c"))
+#' )
+#' tbl %>%
+#'   group_by(y) %>%
+#'   group_rows()
+############# START ADDED TTBULK #####################################
+#' @export
+group_by <- function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))  {
   UseMethod("group_by")
 }
 
 #' @export
-group_by.data.frame <- function(.data, ..., .add = FALSE, .drop = group_by_drop_default(.data)) {
-  groups <- group_by_prepare(.data, ..., .add = .add)
-  grouped_df(groups$data, groups$group_names, .drop)
+group_by.default <-  function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))
+{
+  dplyr::group_by(.data, ..., .add = .add, .drop = .drop)
 }
+
+#' @export
+group_by.ttBulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))
+{
+  .data %>%
+    drop_class(c("ttBulk", "tt")) %>%
+    dplyr::group_by( ..., .add = .add, .drop = .drop) %>%
+
+    # Attach attributes
+    add_attr(.data %>% attr("parameters"), "parameters") %>%
+
+    # Add class
+    add_class("tt") %>%
+    add_class("ttBulk")
+
+}
+############# END ADDED TTBULK #####################################
+
 
 #' @rdname group_by
 #' @export
@@ -588,227 +690,188 @@ group_by.data.frame <- function(.data, ..., .add = FALSE, .drop = group_by_drop_
 ungroup <- function(x, ...) {
   UseMethod("ungroup")
 }
+############# START ADDED TTBULK #####################################
 
 #' @export
-ungroup.grouped_df <- function(x, ...) {
-  if (missing(...)) {
-    as_tibble(x)
-  } else {
-    old_groups <- group_vars(x)
-    to_remove <- tidyselect::vars_select(names(x), ...)
+ungroup.ttBulk <- function (.data, ...)
+{
+  .data %>%
+    drop_class(c("ttBulk", "tt")) %>%
+    dplyr::ungroup( ...) %>%
 
-    new_groups <- setdiff(old_groups, to_remove)
-    group_by(x, !!!syms(new_groups))
-  }
-}
+    # Attach attributes
+    add_attr(.data %>% attr("parameters"), "parameters") %>%
 
-#' @export
-ungroup.rowwise_df <- function(x, ...) {
-  ellipsis::check_dots_empty()
-  as_tibble(x)
-}
+    # Add class
+    add_class("tt") %>%
+    add_class("ttBulk")
 
-#' @export
-ungroup.data.frame <- function(x, ...) {
-  ellipsis::check_dots_empty()
-  x
 }
+############# END ADDED TTBULK #####################################
 
-#' Group by a selection of variables
-#'
-#' These [scoped] variants of [group_by()] group a data frame by a
-#' selection of variables. Like [group_by()], they have optional
-#' [mutate] semantics.
-#'
-#' @family grouping functions
-#' @inheritParams scoped
-#' @inheritParams group_by
-#' @param .add See [group_by()]
-#'
+############# START ADDED TTBULK #####################################
+
+#' @importFrom dplyr group_by_all
 #' @export
-#'
-#' @section Grouping variables:
-#'
-#' Existing grouping variables are maintained, even if not included in
-#' the selection.
-#'
-#' @examples
-#' # Group a data frame by all variables:
-#' group_by_all(mtcars)
-#'
-#' # Group by variables selected with a predicate:
-#' group_by_if(iris, is.factor)
-#'
-#' # Group by variables selected by name:
-#' group_by_at(mtcars, vars(vs, am))
-#'
-#' # Like group_by(), the scoped variants have optional mutate
-#' # semantics. This provide a shortcut for group_by() + mutate():
-#' d <- tibble(x=c(1,1,2,2), y=c(1,2,1,2))
-#' group_by_all(d, as.factor)
-#' group_by_if(iris, is.factor, as.character)
-group_by_all <- function(.tbl, .funs = list(), ..., .add = FALSE, .drop = group_by_drop_default(.tbl)) {
-  funs <- manip_all(.tbl, .funs, enquo(.funs), caller_env(), ...)
-  if (!length(funs)) {
-    funs <- syms(tbl_vars(.tbl))
-  }
-  .group_by_static_drop(.tbl, !!!funs, .add = .add, .drop = .drop)
-}
-#' @rdname group_by_all
+dplyr::group_by_all
+
+#' @importFrom dplyr group_by_at
 #' @export
-group_by_at <- function(.tbl, .vars, .funs = list(), ..., .add = FALSE, .drop = group_by_drop_default(.tbl)) {
-  funs <- manip_at(.tbl, .vars, .funs, enquo(.funs), caller_env(), .include_group_vars = TRUE, ...)
-  if (!length(funs)) {
-    funs <- tbl_at_syms(.tbl, .vars, .include_group_vars = TRUE)
-  }
-  .group_by_static_drop(.tbl, !!!funs, .add = .add, .drop = .drop)
-}
-#' @rdname group_by_all
+dplyr::group_by_at
+
+#' @importFrom dplyr group_by_if
 #' @export
-group_by_if <- function(.tbl, .predicate, .funs = list(), ..., .add = FALSE, .drop = group_by_drop_default(.tbl)) {
-  funs <- manip_if(.tbl, .predicate, .funs, enquo(.funs), caller_env(), .include_group_vars = TRUE, ...)
-  if (!length(funs)) {
-    funs <- tbl_if_syms(.tbl, .predicate, .include_group_vars = TRUE)
-  }
-  .group_by_static_drop(.tbl, !!!funs, .add = .add, .drop = .drop)
-}
-#' Summarise multiple columns
+dplyr::group_by_if
+
+############# END ADDED TTBULK #####################################
+
+#' Summarise each group to fewer rows
 #'
 #' @description
+#' `summarise()` creates a new data frame. It will have one (or more) rows for
+#' each combination of grouping variables; if there are no grouping variables,
+#' the output will have a single row summarising all observations in the input.
+#' It will contain one column for each grouping variable and one column
+#' for each of the summary statistics that you have specified.
 #'
-#' \Sexpr[results=rd, stage=render]{lifecycle::badge("maturing")}
+#' `summarise()` and `summarize()` are synonyms.
 #'
-#' The [scoped] variants of [summarise()] make it easy to apply the same
-#' transformation to multiple variables.
-#' There are three variants.
-#'  * `summarise_all()` affects every variable
-#'  * `summarise_at()` affects variables selected with a character vector or
-#'   vars()
-#'  * `summarise_if()` affects variables selected with a predicate function
+#' @section Useful functions:
 #'
-#' @inheritParams scoped
-#' @param .cols This argument has been renamed to `.vars` to fit
-#'   dplyr's terminology and is deprecated.
-#' @return A data frame. By default, the newly created columns have the shortest
-#'   names needed to uniquely identify the output. To force inclusion of a name,
-#'   even when not needed, name the input (see examples for details).
-#' @seealso [The other scoped verbs][scoped], [vars()]
+#' * Center: [mean()], [median()]
+#' * Spread: [sd()], [IQR()], [mad()]
+#' * Range: [min()], [max()], [quantile()]
+#' * Position: [first()], [last()], [nth()],
+#' * Count: [n()], [n_distinct()]
+#' * Logical: [any()], [all()]
 #'
-#' @section Grouping variables:
+#' @section Backend variations:
 #'
-#' If applied on a grouped tibble, these operations are *not* applied
-#' to the grouping variables. The behaviour depends on whether the
-#' selection is **implicit** (`all` and `if` selections) or
-#' **explicit** (`at` selections).
+#' The data frame backend supports creating a variable and using it in the
+#' same summary. This means that previously created summary variables can be
+#' further transformed or combined within the summary, as in [mutate()].
+#' However, it also means that summary variables with the same names as previous
+#' variables overwrite them, making those variables unavailable to later summary
+#' variables.
 #'
-#' * Grouping variables covered by explicit selections in
-#'   `summarise_at()` are always an error. Add `-group_cols()` to the
-#'   [vars()] selection to avoid this:
+#' This behaviour may not be supported in other backends. To avoid unexpected
+#' results, consider using new names for your summary variables, especially when
+#' creating multiple summaries.
 #'
-#'   ```
-#'   data %>%
-#'     summarise_at(vars(-group_cols(), ...), myoperation)
-#'   ```
+#' @export
+#' @inheritParams arrange
+#' @param ... <[`tidy-eval`][dplyr_tidy_eval]> Name-value pairs of summary
+#'   functions. The name will be the name of the variable in the result.
 #'
-#'   Or remove `group_vars()` from the character vector of column names:
+#'   The value can be:
 #'
-#'   ```
-#'   nms <- setdiff(nms, group_vars(data))
-#'   data %>% summarise_at(nms, myoperation)
-#'   ```
+#'   * A vector of length 1, e.g. `min(x)`, `n()`, or `sum(is.na(y))`.
+#'   * A vector of length `n`, e.g. `quantile()`.
+#'   * A data frame, to add multiple columns from a single expression.
+#' @family single table verbs
+#' @return
+#' An object _usually_ of the same type as `.data`.
 #'
-#' * Grouping variables covered by implicit selections are silently
-#'   ignored by `summarise_all()` and `summarise_if()`.
+#' * The rows come from the underlying `group_keys()`.
+#' * The columns are a combination of the grouping keys and the summary
+#'   expressions that you provide.
+#' * If `x` is grouped by more than one variable, the output will be another
+#'   [grouped_df] with the right-most group removed.
+#' * If `x` is grouped by one variable, or is not grouped, the output will
+#'   be a [tibble].
+#' * Data frame attributes are **not** preserved, because `summarise()`
+#'   fundamentally creates a new data frame.
+#' @section Methods:
+#' This function is a **generic**, which means that packages can provide
+#' implementations (methods) for other classes. See the documentation of
+#' individual methods for extra arguments and differences in behaviour.
 #'
-#' @section Naming:
-#'
-#' The names of the new columns are derived from the names of the
-#' input variables and the names of the functions.
-#'
-#' - if there is only one unnamed function (i.e. if `.funs` is an unnamed list
-#'   of length one),
-#'   the names of the input variables are used to name the new columns;
-#'
-#' - for `_at` functions, if there is only one unnamed variable (i.e.,
-#'   if `.vars` is of the form `vars(a_single_column)`) and `.funs` has length
-#'   greater than one,
-#'   the names of the functions are used to name the new columns;
-#'
-#' - otherwise, the new names are created by
-#'   concatenating the names of the input variables and the names of the
-#'   functions, separated with an underscore `"_"`.
-#'
-#' The `.funs` argument can be a named or unnamed list.
-#' If a function is unnamed and the name cannot be derived automatically,
-#' a name of the form "fn#" is used.
-#' Similarly, [vars()] accepts named and unnamed arguments.
-#' If a variable in `.vars` is named, a new column by that name will be created.
-#'
-#' Name collisions in the new columns are disambiguated using a unique suffix.
-#'
-#' @section Life cycle:
-#'
-#' The functions are maturing, because the naming scheme and the
-#' disambiguation algorithm are subject to change in dplyr 0.9.0.
-#'
+#' The following methods are currently available in loaded packages:
+#' \Sexpr[stage=render,results=rd]{dplyr:::methods_rd("summarise")}.
 #' @examples
-#' by_species <- iris %>%
-#'   group_by(Species)
+#' # A summary applied to ungrouped tbl returns a single row
+#' mtcars %>%
+#'   summarise(mean = mean(disp), n = n())
 #'
+#' # Usually, you'll want to group first
+#' mtcars %>%
+#'   group_by(cyl) %>%
+#'   summarise(mean = mean(disp), n = n())
 #'
-#' # The _at() variants directly support strings:
-#' starwars %>%
-#'   summarise_at(c("height", "mass"), mean, na.rm = TRUE)
+#' # dplyr 1.0.0 allows to summarise to more than one value:
+#' mtcars %>%
+#'    group_by(cyl) %>%
+#'    summarise(qs = quantile(disp, c(0.25, 0.75)), prob = c(0.25, 0.75))
 #'
-#' # You can also supply selection helpers to _at() functions but you have
-#' # to quote them with vars():
-#' starwars %>%
-#'   summarise_at(vars(height:mass), mean, na.rm = TRUE)
+#' # You use a data frame to create multiple columns so you can wrap
+#' # this up into a function:
+#' my_quantile <- function(x, probs) {
+#'   tibble(x = quantile(x, probs), probs = probs)
+#' }
+#' mtcars %>%
+#'   group_by(cyl) %>%
+#'   summarise(my_quantile(disp, c(0.25, 0.75)))
 #'
-#' # The _if() variants apply a predicate function (a function that
-#' # returns TRUE or FALSE) to determine the relevant subset of
-#' # columns. Here we apply mean() to the numeric columns:
-#' starwars %>%
-#'   summarise_if(is.numeric, mean, na.rm = TRUE)
+#' # Each summary call removes one grouping level (since that group
+#' # is now just a single row)
+#' mtcars %>%
+#'   group_by(cyl, vs) %>%
+#'   summarise(cyl_n = n()) %>%
+#'   group_vars()
 #'
-#' # If you want to apply multiple transformations, pass a list of
-#' # functions. When there are multiple functions, they create new
-#' # variables instead of modifying the variables in place:
-#' by_species %>%
-#'   summarise_all(list(min, max))
+#' # BEWARE: reusing variables may lead to unexpected results
+#' mtcars %>%
+#'   group_by(cyl) %>%
+#'   summarise(disp = mean(disp), sd = sd(disp))
 #'
-#' # Note how the new variables include the function name, in order to
-#' # keep things distinct. Passing purrr-style lambdas often creates
-#' # better default names:
-#' by_species %>%
-#'   summarise_all(list(~min(.), ~max(.)))
-#'
-#' # When that's not good enough, you can also supply the names explicitly:
-#' by_species %>%
-#'   summarise_all(list(min = min, max = max))
-#'
-#' # When there's only one function in the list, it modifies existing
-#' # variables in place. Give it a name to create new variables instead:
-#' by_species %>% summarise_all(list(med = median))
-#' by_species %>% summarise_all(list(Q3 = quantile), probs = 0.75)
+#' # Refer to column names stored as strings with the `.data` pronoun:
+#' var <- "mass"
+#' summarise(starwars, avg = mean(.data[[var]], na.rm = TRUE))
+#' # Learn more in ?dplyr_tidy_eval
+############# START ADDED TTBULK #####################################
 #' @export
-summarise_all <- function(.tbl, .funs, ...) {
-  funs <- manip_all(.tbl, .funs, enquo(.funs), caller_env(), ...)
-  summarise(.tbl, !!!funs)
+summarise <- function (.data, ...)  {
+  UseMethod("summarise")
 }
-#' @rdname summarise_all
+
 #' @export
-summarise_if <- function(.tbl, .predicate, .funs, ...) {
-  funs <- manip_if(.tbl, .predicate, .funs, enquo(.funs), caller_env(), ...)
-  summarise(.tbl, !!!funs)
+summarise.default <-  function (.data, ...)
+{
+  dplyr::summarise(.data, ...)
 }
-#' @rdname summarise_all
+
 #' @export
-summarise_at <- function(.tbl, .vars, .funs, ..., .cols = NULL) {
-  .vars <- check_dot_cols(.vars, .cols)
-  funs <- manip_at(.tbl, .vars, .funs, enquo(.funs), caller_env(), ...)
-  summarise(.tbl, !!!funs)
+summarise.ttBulk <- function (.data, ...)
+{
+  .data %>%
+    drop_class(c("ttBulk", "tt")) %>%
+    dplyr::summarise( ...) %>%
+
+    # Attach attributes
+    add_attr(.data %>% attr("parameters"), "parameters") %>%
+
+    # Add class
+    add_class("tt") %>%
+    add_class("ttBulk")
+
 }
+############# END ADDED TTBULK #####################################
+
+############# START ADDED TTBULK #####################################
+
+#' @importFrom dplyr summarize_all
+#' @export
+dplyr::summarize_all
+
+#' @importFrom dplyr summarize_at
+#' @export
+dplyr::summarize_at
+
+#' @importFrom dplyr summarize_if
+#' @export
+dplyr::summarize_if
+
+############# END ADDED TTBULK #####################################
 
 #' @rdname summarise_all
 #' @export
@@ -820,244 +883,190 @@ summarize_if <- summarise_if
 #' @export
 summarize_at <- summarise_at
 
-#' Mutate multiple columns
+#' Create, modify, and delete columns
 #'
-#' @description
+#' `mutate()` adds new variables and preserves existing ones;
+#' `transmute()` adds new variables and drops existing ones.
+#' New variables overwrite existing variables of the same name.
+#' Variables can be removed by setting their value to `NULL`.
 #'
-#' \Sexpr[results=rd, stage=render]{lifecycle::badge("maturing")}
+#' @section Useful mutate functions:
 #'
-#' The [scoped] variants of [mutate()] and [transmute()] make it easy to apply
-#' the same transformation to multiple variables. There are three variants:
-#'  * _all affects every variable
-#'  * _at affects variables selected with a character vector or vars()
-#'  * _if affects variables selected with a predicate function:
+#' * [`+`], [`-`], [log()], etc., for their usual mathematical meanings
 #'
-#' @inheritParams scoped
-#' @inheritParams summarise_all
-#' @return A data frame. By default, the newly created columns have the shortest
-#'   names needed to uniquely identify the output. To force inclusion of a name,
-#'   even when not needed, name the input (see examples for details).
-#' @seealso [The other scoped verbs][scoped], [vars()]
+#' * [lead()], [lag()]
 #'
-#' @section Grouping variables:
+#' * [dense_rank()], [min_rank()], [percent_rank()], [row_number()],
+#'   [cume_dist()], [ntile()]
 #'
-#' If applied on a grouped tibble, these operations are *not* applied
-#' to the grouping variables. The behaviour depends on whether the
-#' selection is **implicit** (`all` and `if` selections) or
-#' **explicit** (`at` selections).
+#' * [cumsum()], [cummean()], [cummin()], [cummax()], [cumany()], [cumall()]
 #'
-#' * Grouping variables covered by explicit selections in
-#'   `mutate_at()` and `transmute_at()` are always an error. Add
-#'   `-group_cols()` to the [vars()] selection to avoid this:
+#' * [na_if()], [coalesce()]
 #'
-#'   ```
-#'   data %>% mutate_at(vars(-group_cols(), ...), myoperation)
-#'   ```
+#' * [if_else()], [recode()], [case_when()]
 #'
-#'   Or remove `group_vars()` from the character vector of column names:
+#' @section Grouped tibbles:
 #'
-#'   ```
-#'   nms <- setdiff(nms, group_vars(data))
-#'   data %>% mutate_at(vars, myoperation)
-#'   ```
+#' Because mutating expressions are computed within groups, they may
+#' yield different results on grouped tibbles. This will be the case
+#' as soon as an aggregating, lagging, or ranking function is
+#' involved. Compare this ungrouped mutate:
 #'
-#' * Grouping variables covered by implicit selections are ignored by
-#'   `mutate_all()`, `transmute_all()`, `mutate_if()`, and
-#'   `transmute_if()`.
+#' ```
+#' starwars %>%
+#'   mutate(mass / mean(mass, na.rm = TRUE)) %>%
+#'   pull()
+#' ```
 #'
-#' @inheritSection summarise_all Naming
-#' @inheritSection summarise_all Life cycle
+#' With the grouped equivalent:
 #'
-#' @examples
-#' iris <- as_tibble(iris)
+#' ```
+#' starwars %>%
+#'   group_by(gender) %>%
+#'   mutate(mass / mean(mass, na.rm = TRUE)) %>%
+#'   pull()
+#' ```
 #'
-#' # All variants can be passed functions and additional arguments,
-#' # purrr-style. The _at() variants directly support strings. Here
-#' # we'll scale the variables `height` and `mass`:
-#' scale2 <- function(x, na.rm = FALSE) (x - mean(x, na.rm = na.rm)) / sd(x, na.rm)
-#' starwars %>% mutate_at(c("height", "mass"), scale2)
+#' The former normalises `mass` by the global average whereas the
+#' latter normalises by the averages within gender levels.
 #'
-#' # You can pass additional arguments to the function:
-#' starwars %>% mutate_at(c("height", "mass"), scale2, na.rm = TRUE)
-#'
-#' # You can also pass formulas to create functions on the spot, purrr-style:
-#' starwars %>% mutate_at(c("height", "mass"), ~scale2(., na.rm = TRUE))
-#'
-#' # You can also supply selection helpers to _at() functions but you have
-#' # to quote them with vars():
-#' iris %>% mutate_at(vars(matches("Sepal")), log)
-#'
-#' # The _if() variants apply a predicate function (a function that
-#' # returns TRUE or FALSE) to determine the relevant subset of
-#' # columns. Here we divide all the numeric columns by 100:
-#' starwars %>% mutate_if(is.numeric, scale2, na.rm = TRUE)
-#'
-#' # mutate_if() is particularly useful for transforming variables from
-#' # one type to another
-#' iris %>% mutate_if(is.factor, as.character)
-#' iris %>% mutate_if(is.double, as.integer)
-#'
-#'
-#' # Multiple transformations ----------------------------------------
-#'
-#' # If you want to apply multiple transformations, pass a list of
-#' # functions. When there are multiple functions, they create new
-#' # variables instead of modifying the variables in place:
-#' iris %>% mutate_if(is.numeric, list(scale2, log))
-#'
-#' # The list can contain purrr-style formulas:
-#' iris %>% mutate_if(is.numeric, list(~scale2(.), ~log(.)))
-#'
-#' # Note how the new variables include the function name, in order to
-#' # keep things distinct. The default names are not always helpful
-#' # but you can also supply explicit names:
-#' iris %>% mutate_if(is.numeric, list(scale = scale2, log = log))
-#'
-#' # When there's only one function in the list, it modifies existing
-#' # variables in place. Give it a name to instead create new variables:
-#' iris %>% mutate_if(is.numeric, list(scale2))
-#' iris %>% mutate_if(is.numeric, list(scale = scale2))
 #' @export
-mutate_all <- function(.tbl, .funs, ...) {
-  check_grouped(.tbl, "mutate", "all", alt = TRUE)
-  funs <- manip_all(.tbl, .funs, enquo(.funs), caller_env(), ...)
-  mutate(.tbl, !!!funs)
-}
-#' @rdname mutate_all
-#' @export
-mutate_if <- function(.tbl, .predicate, .funs, ...) {
-  check_grouped(.tbl, "mutate", "if")
-  funs <- manip_if(.tbl, .predicate, .funs, enquo(.funs), caller_env(), ...)
-  mutate(.tbl, !!!funs)
-}
-#' @rdname mutate_all
-#' @export
-mutate_at <- function(.tbl, .vars, .funs, ..., .cols = NULL) {
-  .vars <- check_dot_cols(.vars, .cols)
-  funs <- manip_at(.tbl, .vars, .funs, enquo(.funs), caller_env(), .include_group_vars = TRUE, ...)
-  mutate(.tbl, !!!funs)
-}
-
-#' Count observations by group
+#' @inheritParams arrange
+#' @param ... <[`tidy-eval`][dplyr_tidy_eval]> Name-value pairs.
+#'   The name gives the name of the column in the output.
 #'
-#' @description
-#' `count()` lets you quickly count the unique values of a variable, or
-#' unique combinations of multiple variables. `tally()` is a lower-level
-#' helper that works on already grouped data. Both can perform weighted counts,
-#' if you give `wt` the name of a variable to weight by.
+#'   The value can be:
 #'
-#' `count()` and `tally()` are shortcuts for `summarise()`; `add_count()`
-#' and `add_tally()` perform the identical operations but use `mutate()`
-#' instead of `summarise()` so that they add a new column with group-wise
-#' counts.
+#'   * A vector of length 1, which will be recycled to the correct length.
+#'   * A vector the same length as the current group (or the whole data frame
+#'     if ungrouped).
+#'   * `NULL`, to remove the column.
+#'   * A data frame or tibble, to create multiple columns in the output.
 #'
-#' @param x A data frame, data frame extension (e.g. a tibble), or a
-#'   lazy data frame (e.g. from dbplyr or dtplyr).
-#' @param ... <[`tidy-eval`][dplyr_tidy_eval]> Variables to group by.
-#' @param wt <[`tidy-eval`][dplyr_tidy_eval]> If omitted, will count the number of rows.
-#'   If specified, will perform a "weighted" tally by summing the (non-missing)
-#'   values of variable `wt`.
-#'
-#'   If omitted, and column `n` exists, it will automatically be used as a
-#'   weighting variable, although you will have to specify `name` to provide
-#'   a new name for the output.
-#' @param sort If `TRUE` will sort output in descending order of `n`.
-#' @param name The name of the new column in the output.
-#'
-#'   If omitted, it will default to `n`. If there's already a column called `n`,
-#'   it will error, and require you to specify the name.
-#' @param .drop For `count()`: if `FALSE` will include counts for empty groups
-#'   (i.e. for levels of factors that don't exist in the data). Deprecated for
-#'   `add_count()` since it didn't actually affect the output.
+#' @family single table verbs
 #' @return
-#' An object of the same type as `.data`. `count()` and `add_count()`
-#' group transiently, so the output has the same groups as the input.
-#' @export
+#' An object of the same type as `.data`.
+#'
+#' For `mutate()`:
+#'
+#' * Rows are not affected.
+#' * Existing columns will be preserved unless explicitly modified.
+#' * New columns will be added to the right of existing columns.
+#' * Columns given value `NULL` will be removed
+#' * Groups will be recomputed if a grouping variable is mutated.
+#' * Data frame attributes are preserved.
+#'
+#' For `transmute()`:
+#'
+#' * Rows are not affected.
+#' * Apart from grouping variables, existing columns will be remove unless
+#'   explicitly kept.
+#' * Column order matches order of expressions.
+#' * Groups will be recomputed if a grouping variable is mutated.
+#' * Data frame attributes are preserved.
+#' @section Methods:
+#' These function are **generic**s, which means that packages can provide
+#' implementations (methods) for other classes. See the documentation of
+#' individual methods for extra arguments and differences in behaviour.
+#'
+#' Methods available in currently loaded packages:
+#'
+#' * `mutate()`: \Sexpr[stage=render,results=rd]{dplyr:::methods_rd("mutate")}.
+#' * `transmute()`: \Sexpr[stage=render,results=rd]{dplyr:::methods_rd("transmute")}.
 #' @examples
-#' # count() is a convenient way to get a sense of the distribution of
-#' # values in a dataset
-#' starwars %>% count(species)
-#' starwars %>% count(species, sort = TRUE)
-#'
-#' # use the `wt` argument to perform a weighted count. This is useful
-#' # when the data has already been aggregated once
-#' df <- tribble(
-#'   ~name,    ~gender,   ~runs,
-#'   "Max",    "male",       10,
-#'   "Sandra", "female",      1,
-#'   "Susan",  "female",      4
+#' # Newly created variables are available immediately
+#' mtcars %>% as_tibble() %>% mutate(
+#'   cyl2 = cyl * 2,
+#'   cyl4 = cyl2 * 2
 #' )
-#' # counts rows:
-#' df %>% count(gender)
-#' # counts runs:
-#' df %>% count(gender, wt = runs)
 #'
-#' # tally() is a lower-level function that assumes you've done the grouping
-#' starwars %>% tally()
-#' starwars %>% group_by(species) %>% tally()
+#' # As well as adding new variables, you can use mutate() to
+#' # remove variables and modify existing variables.
+#' mtcars %>% as_tibble() %>% mutate(
+#'   mpg = NULL,
+#'   disp = disp * 0.0163871 # convert to litres
+#' )
 #'
-#' # both count() and tally() have add_ variants that work like
-#' # mutate() instead of summarise
-#' df %>% add_count(gender, wt = runs)
-#' df %>% add_tally(wt = runs)
-tally <- function(x, wt = NULL, sort = FALSE, name = NULL) {
-  n <- tally_n(x, {{ wt }})
-  name <- check_name(x, name)
-  out <- summarise(x, !!name := !!n)
-
-  if (sort) {
-    arrange(out, desc(!!sym(name)))
-  } else {
-    out
-  }
-}
-
-#' @rdname tally
+#' # window functions are useful for grouped mutates
+#' mtcars %>%
+#'  group_by(cyl) %>%
+#'  mutate(rank = min_rank(desc(mpg)))
+#' # see `vignette("window-functions")` for more details
+#'
+#' # mutate() vs transmute --------------------------
+#' # mutate() keeps all existing variables
+#' mtcars %>%
+#'   mutate(displ_l = disp / 61.0237)
+#'
+#' # transmute keeps only the variables you create
+#' mtcars %>%
+#'   transmute(displ_l = disp / 61.0237)
+#'
+#' # Grouping ----------------------------------------
+#' # The mutate operation may yield different results on grouped
+#' # tibbles because the expressions are computed within groups.
+#' # The following normalises `mass` by the global average:
+#' starwars %>%
+#'   mutate(mass / mean(mass, na.rm = TRUE)) %>%
+#'   pull()
+#'
+#' # Whereas this normalises `mass` by the averages within gender
+#' # levels:
+#' starwars %>%
+#'   group_by(gender) %>%
+#'   mutate(mass / mean(mass, na.rm = TRUE)) %>%
+#'   pull()
+#'
+#' # Indirection ----------------------------------------
+#' # Refer to column names stored as strings with the `.data` pronoun:
+#' vars <- c("mass", "height")
+#' mutate(starwars, prod = .data[[vars[[1]]]] * .data[[vars[[2]]]])
+#' # Learn more in ?dplyr_tidy_eval
+############# START ADDED TTBULK #####################################
 #' @export
-add_tally <- function(x, wt = NULL, sort = FALSE, name = NULL) {
-  n <- tally_n(x, {{ wt }})
-  name <- check_name(x, name)
-  out <- mutate(x, !!name := !!n)
-
-  if (sort) {
-    arrange(out, desc(!!sym(name)))
-  } else {
-    out
-  }
+mutate <- function(.data, ...) {
+  UseMethod("mutate")
 }
 
 #' @export
-#' @rdname tally
-count <- function(x, ..., wt = NULL, sort = FALSE, name = NULL, .drop = group_by_drop_default(x)) {
-
-  if (!missing(...)) {
-    out <- group_by(x, ..., .add = TRUE, .drop = .drop)
-  } else {
-    out <- x
-  }
-
-  out <- tally(out, wt = !!enquo(wt), sort = sort, name = name)
-  dplyr_reconstruct(out, x)
+mutate.default <-  function(.data, ...)
+{
+  dplyr::mutate(.data, ...)
 }
 
-#' @rdname tally
 #' @export
-add_count <- function(x, ..., wt = NULL, sort = FALSE, name = NULL, .drop = deprecated()) {
-  if (!missing(.drop)) {
-    lifecycle::deprecate_warn("1.0.0", "add_count(.drop = )")
-  }
+mutate.ttBulk <- function(.data, ...)
+{
+  .data %>%
+    drop_class(c("ttBulk", "tt")) %>%
+    dplyr::mutate(...) %>%
 
-  if (!missing(...)) {
-    out <- group_by(x, ..., .add = TRUE)
-  } else {
-    out <- x
-  }
-  out <- add_tally(out, wt = !!enquo(wt), sort = sort, name = name)
+    # Attach attributes
+    add_attr(.data %>% attr("parameters"), "parameters") %>%
 
-  name <- check_name(x, name)
-  x[[name]] <- out[[name]]
-  x
+    # Add class
+    add_class("tt") %>%
+    add_class("ttBulk")
+
+
 }
+############# END ADDED TTBULK #####################################
+
+############# START ADDED TTBULK #####################################
+
+#' @importFrom dplyr mutate_all
+#' @export
+dplyr::mutate_all
+
+#' @importFrom dplyr mutate_at
+#' @export
+dplyr::mutate_at
+
+#' @importFrom dplyr mutate_if
+#' @export
+dplyr::mutate_if
+
+############# END ADDED TTBULK #####################################
 
 #' Rename columns
 #'
@@ -1089,20 +1098,36 @@ add_count <- function(x, ..., wt = NULL, sort = FALSE, name = NULL, .drop = depr
 #' @examples
 #' iris <- as_tibble(iris) # so it prints a little nicer
 #' rename(iris, petal_length = Petal.Length)
+############# START ADDED TTBULK #####################################
 #' @export
 rename <- function(.data, ...) {
   UseMethod("rename")
 }
 
 #' @export
-rename.data.frame <- function(.data, ...) {
-  loc <- tidyselect::eval_rename(expr(c(...)), .data)
-  # eval_rename() only returns changes
-  names <- names(.data)
-  names[loc] <- names(loc)
-
-  set_names(.data, names)
+rename.default <-  function(.data, ...)
+{
+  dplyr::rename(.data, ...)
 }
+
+#' @export
+rename.ttBulk <- function(.data, ...)
+{
+  .data %>%
+    drop_class(c("ttBulk", "tt")) %>%
+    dplyr::rename(...) %>%
+
+    # Attach attributes
+    add_attr(.data %>% attr("parameters"), "parameters") %>%
+
+    # Add class
+    add_class("tt") %>%
+    add_class("ttBulk")
+
+
+}
+############# END ADDED TTBULK #####################################
+
 #' Group input by rows
 #'
 #' \Sexpr[results=rd, stage=render]{lifecycle::badge("questioning")}
@@ -1127,160 +1152,33 @@ rename.data.frame <- function(.data, ...) {
 #' df_done <- df %>% rowwise() %>% do(i = seq(.$x, .$y))
 #' df_done
 #' df_done %>% summarise(n = length(i))
-rowwise <- function(data) {
-  abort_if_not(is.data.frame(data))
-
-  structure(data, class = c("rowwise_df", "tbl_df", "tbl", "data.frame"))
-}
-
-# Do ---------------------------------------------------------------------------
-
+############# START ADDED TTBULK #####################################
 #' @export
-do.rowwise_df <- function(.data, ...) {
-  # Create ungroup version of data frame suitable for subsetting
-  group_data <- ungroup(.data)
-
-  args <- enquos(...)
-  named <- named_args(args)
-
-  # Create new environment, inheriting from parent, with an active binding
-  # for . that resolves to the current subset. `_i` is found in environment
-  # of this function because of usual scoping rules.
-  mask <- new_data_mask(new_environment())
-  current_row <- function() lapply(group_data[`_i`, , drop = FALSE], "[[", 1)
-  env_bind_do_pronouns(mask, current_row)
-
-  n <- nrow(.data)
-  m <- length(args)
-
-  out <- replicate(m, vector("list", n), simplify = FALSE)
-  names(out) <- names(args)
-  p <- progress_estimated(n * m, min_time = 2)
-
-  for (`_i` in seq_len(n)) {
-    for (j in seq_len(m)) {
-      out[[j]][`_i`] <- list(eval_tidy(args[[j]], mask))
-      p$tick()$print()
-    }
-  }
-
-  if (!named) {
-    label_output_dataframe(NULL, out, groups(.data), group_by_drop_default(.data))
-  } else {
-    label_output_list(NULL, out, groups(.data))
-  }
-}
-#' Sample n rows from a table
-#'
-#' @description
-#' \Sexpr[results=rd, stage=render]{lifecycle::badge("retired")}
-#' `sample_n()` and `sample_frac()` have been retired in favour of
-#' [slice_sample()]. While they will not be deprecated in the near future,
-#' retirement means that we will only perform critical bug fixes, so we recommend
-#' moving to the newer alternative.
-#'
-#' These functions were retired because we realised it was more convenient to
-#' have two mutually exclusive arguments to one function, rather than two
-#' separate functions. This also made it to clean up a few other smaller
-#' design issues with `sample_n()`/`sample_frac`:
-#'
-#' * The connection to `slice()` was not obvious.
-#' * The name of the first argument, `tbl`, is inconsistent with other
-#'   single table verbs which use `.data`.
-#' * The `size` argument uses tidy evaluation, which is surprising and
-#'   undocumented.
-#' * It was easier to remove the deprecated `.env` argument.
-#' * `...` was in a suboptimal position.
-#'
-#' @keywords internal
-#' @param tbl A data.frame.
-#' @param size <[`tidy-select`][dplyr_tidy_select]>
-#'   For `sample_n()`, the number of rows to select.
-#'   For `sample_frac()`, the fraction of rows to select.
-#'   If `tbl` is grouped, `size` applies to each group.
-#' @param replace Sample with or without replacement?
-#' @param weight <[`tidy-select`][dplyr_tidy_select]> Sampling weights.
-#'   This must evaluate to a vector of non-negative numbers the same length as
-#'   the input. Weights are automatically standardised to sum to 1.
-#' @param .env DEPRECATED.
-#' @param ... ignored
-#' @examples
-#' by_cyl <- mtcars %>% group_by(cyl)
-#'
-#' # sample_n() -> slice_sample() ----------------------------------------------
-#' sample_n(mtcars, 10)
-#' sample_n(mtcars, 50, replace = TRUE)
-#' sample_n(mtcars, 10, weight = mpg)
-#'
-#' # Changes:
-#' # * explicitly name the `n` argument,
-#' # * the `weight` argument is now `weight_by`.
-#'
-#' slice_sample(mtcars, n = 10)
-#' slice_sample(mtcars, n = 50, replace = TRUE)
-#' slice_sample(mtcars, n = 10, weight_by = mpg)
-#'
-#' # Note that sample_n() would error if n was bigger than the group size
-#' # slice_sample() will just use the available rows for consistency with
-#' # the other slice helpers like slice_head()
-#'
-#' # sample_frac() -> slice_sample() -------------------------------------------
-#' sample_frac(mtcars)
-#' sample_frac(mtcars, replace = TRUE)
-#'
-#' # Changes:
-#' # * use prop = 1 to randomly sample all rows
-#'
-#' slice_sample(mtcars, prop = 1)
-#' slice_sample(mtcars, prop = 1, replace = TRUE)
-#'
-#' @export
-sample_n <- function(tbl, size, replace = FALSE, weight = NULL, .env = NULL, ...) {
-  UseMethod("sample_n")
+rowwise <- function(.data) {
+  UseMethod("rowwise")
 }
 
 #' @export
-sample_n.default <- function(tbl, size, replace = FALSE, weight = NULL,
-                             .env = parent.frame(), ...) {
-  bad_args("tbl", "must be a data frame, not {friendly_type_of(tbl)}")
+rowwise.default <-  function(.data)
+{
+  dplyr::rowwise(.data)
 }
 
 #' @export
-sample_n.data.frame <- function(tbl, size, replace = FALSE,
-                                weight = NULL, .env = NULL, ...) {
-  if (!is_null(.env)) {
-    inform("`.env` is deprecated and no longer has any effect")
-  }
+rowwise.ttBulk <- function(.data)
+{
+  .data %>%
+    drop_class(c("ttBulk", "tt")) %>%
+    dplyr::rowwise() %>%
 
-  size <- enquo(size)
-  weight <- enquo(weight)
+    # Attach attributes
+    add_attr(.data %>% attr("parameters"), "parameters") %>%
 
-  slice(tbl, sample.int(n(), check_size(!!size, n(), replace = replace), replace = replace, prob = !!weight))
+    # Add class
+    add_class("tt") %>%
+    add_class("ttBulk")
+
+
 }
-
-#' @rdname sample_n
-#' @export
-sample_frac <- function(tbl, size = 1, replace = FALSE, weight = NULL, .env = NULL, ...) {
-  UseMethod("sample_frac")
-}
-
-#' @export
-sample_frac.default <- function(tbl, size = 1, replace = FALSE, weight = NULL,
-                                .env = parent.frame(), ...) {
-  bad_args("tbl", "must be a data frame, not {friendly_type_of(tbl)}")
-}
-
-#' @export
-sample_frac.data.frame <- function(tbl, size = 1, replace = FALSE,
-                                   weight = NULL, .env = NULL, ...) {
-  if (!is_null(.env)) {
-    inform("`.env` is deprecated and no longer has any effect")
-  }
-
-  size <- enquo(size)
-  weight <- enquo(weight)
-
-  slice(tbl, sample.int(n(), round(n() * check_frac(!!size, replace = replace)), replace = replace, prob = !!weight))
-}
-
+############# END ADDED TTBULK #####################################
 

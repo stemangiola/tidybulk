@@ -167,7 +167,7 @@ add_normalised_counts_bulk.get_cpm <- function(.data,
 				select(!!.transcript, !!.sample, !!.abundance) %>%
 				spread(!!.sample, !!.abundance) %>%
 				drop_na() %>%
-				do(bind_cols(
+				do(dplyr::bind_cols(
 					!!.transcript := (.) %>% pull(!!.transcript),
 					tibble::as_tibble((.) %>% select(-!!.transcript) %>% edgeR::cpm())
 				)) %>%
@@ -221,7 +221,7 @@ add_normalised_counts_bulk.get_low_expressed <- function(.data,
 		tidyr::spread(!!.sample, !!.abundance) %>%
 		gather(!!.sample, !!.abundance, -!!.transcript) %>%
 		group_by(!!.transcript) %>%
-		mutate(
+		dplyr::mutate(
 			!!.abundance :=
 				ifelse(
 					!!.abundance %>% is.na(),
@@ -419,7 +419,7 @@ get_normalised_counts_bulk <- function(.data,
 		#setNames(c("!!.sample", "gene", "count")) %>%
 
 		# Set samples and genes as factors
-		mutate(!!.sample := factor(!!.sample),
+		dplyr::mutate(!!.sample := factor(!!.sample),
 					 !!.transcript := factor(!!.transcript))
 
 	# Get norm factor object
@@ -452,7 +452,8 @@ get_normalised_counts_bulk <- function(.data,
 			df %>%
 				group_by(!!.sample) %>%
 				summarise(tot = sum(!!.abundance, na.rm = TRUE)) %>%
-				mutate(!!.sample := as.factor(as.character(!!.sample))),
+				ungroup() %>%
+				dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))),
 			by = quo_name(.sample)
 		) %>%
 		mutate(multiplier =
@@ -477,11 +478,11 @@ get_normalised_counts_bulk <- function(.data,
 	# Return
 	df_norm =
 		df %>%
-		mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
+		dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
 		dplyr::left_join(nf, by = quo_name(.sample)) %>%
 
 		# Calculate normalised values
-		mutate(!!value_normalised := !!.abundance * multiplier) %>%
+		dplyr::mutate(!!value_normalised := !!.abundance * multiplier) %>%
 
 		# Format df for join
 		dplyr::select(!!.sample,!!.transcript,!!value_normalised,
@@ -492,17 +493,17 @@ get_normalised_counts_bulk <- function(.data,
 		arrange(!!.sample, !!.transcript)
 		#dplyr::select(-!!.sample,-!!.transcript)
 
-		# Attach attributes
-		df_norm %>%
-			add_attr(
-				.data %>%
-					attr("parameters") %>%
-					c(
-						.abundance_norm =
-							(function(x, v) enquo(v))(x, !!value_normalised)
-						),
-				"parameters"
-			)
+	# Attach attributes
+	df_norm %>%
+		add_attr(
+			.data %>%
+				attr("parameters") %>%
+				c(
+					.abundance_norm =
+						(function(x, v) enquo(v))(x, !!value_normalised)
+					),
+			"parameters"
+		)
 
 }
 
@@ -1030,7 +1031,7 @@ get_clusters_kmeans_bulk <-
 
 			# Check if log tranfrom is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
 
 			# Prepare data frame for return
 			spread(!!.feature, !!.abundance) %>%
@@ -1155,7 +1156,7 @@ get_clusters_SNN_bulk <-
 			distinct(!!.element, !!.feature, !!.abundance) %>%
 
 			# Check if log tranfrom is needed
-			#ifelse_pipe(log_transform, ~ .x %>% mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
+			#ifelse_pipe(log_transform, ~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
 
 			# Prepare data frame for return
 			spread(!!.element, !!.abundance)
@@ -1171,7 +1172,7 @@ get_clusters_SNN_bulk <-
 			`[[` ("seurat_clusters") %>%
 			as_tibble(rownames=quo_name(.element)) %>%
 			rename(`cluster SNN` = seurat_clusters) %>%
-			mutate(!!.element := gsub("\\.", "-", !!.element)) %>%
+			dplyr::mutate(!!.element := gsub("\\.", "-", !!.element)) %>%
 
 			# Attach attributes
 			add_attr(.data %>% attr("parameters"), "parameters")
@@ -1294,7 +1295,7 @@ get_reduced_dimensions_MDS_bulk <-
 					# Check if logtansform is needed
 					ifelse_pipe(
 						log_transform,
-						~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())
+						~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())
 					) %>%
 
 					# Stop any column is not if not numeric or integer
@@ -1311,7 +1312,7 @@ get_reduced_dimensions_MDS_bulk <-
 					# output: tibble
 					{
 						tibble(names((.)$x), (.)$x, (.)$y) %>%
-							rename(
+							dplyr::rename(
 								!!.element := `names((.)$x)`,!!as.symbol(.x[1]) := `(.)$x`,!!as.symbol(.x[2]) := `(.)$y`
 							) %>%
 							gather(Component, `Component value`, -!!.element)
@@ -1442,7 +1443,7 @@ get_reduced_dimensions_PCA_bulk <-
 
 			# Check if logtansform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
@@ -1673,7 +1674,7 @@ get_reduced_dimensions_TSNE_bulk <-
 
 			# Check if logtansform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 			# Filter most variable genes
 			filter_variable_transcripts(!!.element, !!.feature, !!.abundance, top) %>%
@@ -1689,7 +1690,7 @@ get_reduced_dimensions_TSNE_bulk <-
 			setNames(c("tSNE1", "tSNE2")) %>%
 
 			# add element name
-			mutate(!!.element := df_tsne %>% rownames) %>%
+				dplyr::mutate(!!.element := df_tsne %>% rownames) %>%
 			select(!!.element, everything()) %>%
 
 				# Attach attributes
@@ -2036,7 +2037,7 @@ aggregate_duplicated_transcripts_bulk =
 										(.) %>%
 											filter(n_aggr > 1) %>%
 											group_by(!!.sample, !!.transcript) %>%
-											mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
+											dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
 
 											# If normalised abundance exists aggragate that as well
 											ifelse_pipe(
@@ -2045,7 +2046,7 @@ aggregate_duplicated_transcripts_bulk =
 												),
 												~ {
 													.abundance_norm = .data %>% attr("parameters") %$% .abundance_norm
-													.x %>% mutate(!!.abundance_norm := !!.abundance_norm %>% aggregation_function())
+													.x %>% dplyr::mutate(!!.abundance_norm := !!.abundance_norm %>% aggregation_function())
 												}
 											) %>%
 
@@ -2117,7 +2118,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
-								~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 		distinct() %>%
 		spread(!!.element, !!.abundance) %>%
 		drop_na() %>%
@@ -2148,7 +2149,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 
 		# Prepare the data frame
 		gather(!!.element, !!.abundance, -!!.feature) %>%
-		rename(rc := !!.abundance,
+		dplyr::rename(rc := !!.abundance,
 					 sample := !!.element,
 					 transcript := !!.feature) %>% # Is rename necessary?
 		mutate_if(is.factor, as.character) %>%
@@ -2164,7 +2165,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		) %>%
 		filter(correlation > correlation_threshold) %>%
 		distinct(item1) %>%
-		rename(!!.element := item1)
+		dplyr::rename(!!.element := item1)
 
 	# Return non redudant data frame
 	.data %>% anti_join(.data.correlated) %>%
@@ -2297,7 +2298,7 @@ get_symbol_from_ensembl <-
 			dplyr::left_join(
 				ensembl_symbol_mapping %>%
 					distinct(ensembl_gene_id, hgnc_symbol, hg) %>%
-					rename(!!.ensembl := ensembl_gene_id) %>%
+					dplyr::rename(!!.ensembl := ensembl_gene_id) %>%
 					rename( transcript = hgnc_symbol),
 				by = quo_name(.ensembl)
 			)
@@ -2522,7 +2523,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
-								~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 		# Mark Filter low counts
 		mutate(
@@ -2588,14 +2589,13 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		ifelse_pipe(
 			log_transform,
 			~ .x %>%
-				mutate(!!.abundance := !!.abundance %>% exp %>% `-`(1)) %>%
-				mutate(!!.abundance := ifelse(!!.abundance < 0, 0, !!.abundance)) %>%
-				mutate(!!.abundance := !!.abundance %>% as.integer)
+				dplyr::mutate(!!.abundance := !!.abundance %>% exp %>% `-`(1)) %>%
+				dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0, !!.abundance)) %>%
+				dplyr::mutate(!!.abundance := !!.abundance %>% as.integer)
 		) %>%
 
 		# Reset column names
-		rename(!!value_adjusted := !!.abundance)  %>%
-
+		dplyr::rename(!!value_adjusted := !!.abundance)  %>%
 
 		# Add filtering info
 		right_join(
@@ -2705,7 +2705,7 @@ filter_variable_transcripts = function(.data,
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
-								~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 		spread(!!.sample, !!.abundance) %>%
 		as_matrix(rownames = quo_name(.transcript))
