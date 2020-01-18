@@ -1,6 +1,8 @@
 
 #' Arrange rows by column values
 #'
+#' See \code{dpyr::\link[dpyr:arrange]{arrange}} for details.
+#'
 #' @description
 #' `arrange()` order the rows of a data frame rows by the values of selected
 #' columns.
@@ -58,15 +60,32 @@ arrange <- function(.data, ..., .by_group = FALSE) {
 #'   grouped data frames only.
 #' @rdname arrange
 #' @export
-arrange.data.frame <- function(.data, ..., .by_group = FALSE) {
-  if (missing(...)) {
-    return(.data)
-  }
+#'
+############# START ADDED TTBULK ###################################
 
-  loc <- arrange_rows(.data, ..., .by_group = .by_group)
-  dplyr_row_slice(.data, loc)
+arrange.default <- function(.data, ..., .by_group = FALSE) {
+
+  dplyr::arrange(.data, ..., .by_group = .by_group)
+
 }
 
+#' @export
+arrange.ttBulk <- function(.data, ..., .by_group = FALSE) {
+
+  .data %>%
+    drop_class(c("ttBulk", "tt")) %>%
+    dplyr::arrange(.data, ..., .by_group = .by_group) %>%
+
+    # Attach attributes
+    add_attr(.data %>% attr("parameters"), "parameters") %>%
+
+    # Add class
+    add_class("tt") %>%
+    add_class("ttBulk")
+
+}
+
+############# END ADDED TTBULK #####################################
 
 #' Efficiently bind multiple data frames by row and column
 #'
@@ -160,272 +179,439 @@ NULL
 
 #' @export
 #' @rdname bind
+#' @export
+#'
+############# START ADDED TTBULK #####################################
+
 bind_rows <- function(..., .id = NULL) {
-  dots <- dots_values(...)
-  if (length(dots) == 1 && is.list(dots[[1]]) && !is.data.frame(dots[[1]])) {
-    dots <- dots[[1]]
-  }
-  dataframe_ish <- function(.x) {
-    is.data.frame(.x) || (vec_is(.x) && !is.null(names(.x)))
-  }
-  dots <- keep(
-    flatten_if(dots, function(.x) is.list(.x) && !is.data.frame(.x)),
-    function(.x) !is.null(.x)
-  )
-
-  dots <- keep(dots, function(.x) !is.null(.x))
-  dots <- flatten_if(dots, function(.x) is.list(.x) && !dataframe_ish(.x))
-
-  if (!is_null(.id)) {
-    if (!(is_string(.id))) {
-      bad_args(".id", "must be a scalar string, ",
-        "not {friendly_type_of(.id)} of length {length(.id)}"
-      )
-    }
-    if (!all(have_name(dots) | map_lgl(dots, is_empty))) {
-      dots <- compact(dots)
-      names(dots) <- seq_along(dots)
-    }
-  }
-  if (!is.null(names(dots)) && !all(map_lgl(dots, dataframe_ish))) {
-    dots <- list(as_tibble(dots))
-  }
-
-  for (i in seq_along(dots)) {
-    .x <- dots[[i]]
-    if (!is.data.frame(.x) && !vec_is(.x)) {
-      abort(glue("Argument {i} must be a data frame or a named atomic vector"))
-    }
-
-    if (is.null(names(.x))) {
-      abort(glue("Argument {i} must have names"))
-    }
-  }
-
-  dots <- map(dots, function(.x) if(is.data.frame(.x)) .x else tibble(!!!as.list(.x)))
-  result <- vec_rbind(!!!dots, .names_to = .id)
-  if (length(dots) && is_tibble(first <- dots[[1L]])) {
-    if (is_grouped_df(first)) {
-      result <- grouped_df(result, group_vars(first), group_by_drop_default(first))
-    } else {
-      class(result) <- class(first)
-    }
-  }
-  result
+  UseMethod("bind_rows")
 }
+
+#' @export
+bind_rows.default <-  function(..., .id = NULL)
+{
+  dplyr::bind_rows(..., .id = .id)
+}
+
+#' @export
+bind_rows.ttBulk <- function(..., .id = NULL)
+{
+
+  tts = dplyr:::flatten_bindable(rlang::dots_values(...))
+
+  par1 = tts[[1]] %>% attr("parameters") %>% unlist
+  par2 = tts[[2]] %>% attr("parameters") %>% unlist
+
+  # Parameters of the two objects must match
+  error_if_parameters_not_match(par1, par2)
+
+  par =
+    unique(c(par1 %>% names, par2 %>% names)) %>%
+    map(~ switch(par1[[.x]] %>% is.null %>% sum(1), par1[[.x]], par2[[.x]])) %>%
+    setNames(par1 %>% names)
+
+
+  dplyr::bind_rows(..., .id = .id) %>%
+
+    # Attach attributes
+    add_attr(par, "parameters")
+
+}
+
+############# END ADDED TTBULK #####################################
 
 #' @export
 #' @rdname bind
-bind_cols <- function(...) {
-  dots <- dots_values(...)
-  not_null <- function(.x) !is.null(.x)
-  dots <- keep(dots, not_null)
+############# START ADDED TTBULK #####################################
 
-  # nothing to bind, return a dummy tibble
-  if (!length(dots)) {
-    return(tibble())
-  }
-
-  # Before things are squashed, we need
-  # some information about the "first" data frame
-  if (is.data.frame(dots[[1]]) || !is.list(dots[[1]])) {
-    first <- dots[[1]]
-  } else {
-    first <- dots[[1]][[1]]
-  }
-
-  dots <- squash_if(dots, function(.x) is.list(.x) && !is.data.frame(.x))
-  dots <- keep(dots, not_null)
-  if (!length(dots)) {
-    return(tibble())
-  }
-
-  res <- vec_cbind(!!!dots)
-  if (length(dots)) {
-    if (is_grouped_df(first)) {
-      res <- grouped_df(res, group_vars(first), group_by_drop_default(first))
-    } else if(inherits(first, "rowwise_df")){
-      res <- rowwise(res)
-    } else if(is_tibble(first) || !is.data.frame(first)) {
-      res <- as_tibble(res)
-    }
-  }
-  res
+bind_cols <- function(..., .id = NULL) {
+  UseMethod("bind_cols")
 }
 
-#' Arrange rows by a selection of variables
+#' @export
+bind_cols.default <-  function(..., .id = NULL)
+{
+  dplyr::bind_cols(..., .id = .id)
+}
+
+#' @export
+bind_cols.ttBulk <- function(..., .id = NULL)
+{
+
+  tts = dplyr:::flatten_bindable(rlang::dots_values(...))
+
+  dplyr::bind_cols(..., .id = .id) %>%
+
+    # Attach attributes
+    add_attr(tts[[1]] %>% attr("parameters") , "parameters")
+
+}
+
+############# END ADDED TTBULK #####################################
+############# START ADDED TTBULK #####################################
+
+#' @importFrom dplyr arrange_all
+#' @export
+dplyr::arrange_all
+
+#' @importFrom dplyr arrange_at
+#' @export
+dplyr::arrange_at
+
+#' @importFrom dplyr arrange_if
+#' @export
+dplyr::arrange_if
+
+############# END ADDED TTBULK #####################################
+############# START ADDED TTBULK #####################################
+
+#' distinct
+#' @param .data A tbl. (See dplyr)
+#' @param ... Data frames to combine (See dplyr)
+#' @param .keep_all If TRUE, keep all variables in .data. If a combination of ... is not distinct, this keeps the first row of values. (See dplyr)
 #'
-#' These [scoped] variants of [arrange()] sort a data frame by a
-#' selection of variables. Like [arrange()], you can modify the
-#' variables before ordering with the `.funs` argument.
+#' @return A tt object
 #'
-#' @inheritParams scoped
+#' @examples
+#'
+#' distinct(ttBulk::counts_mini)
+#'
+#'
+#' @export
+distinct <- function (.data, ..., .keep_all = FALSE)  {
+  UseMethod("distinct")
+}
+
+#' @export
+distinct.default <-  function (.data, ..., .keep_all = FALSE)
+{
+  dplyr::distinct(.data, ..., .keep_all = FALSE)
+}
+
+#' @export
+distinct.ttBulk <- function (.data, ..., .keep_all = FALSE)
+{
+  .data %>%
+    drop_class(c("ttBulk", "tt")) %>%
+    dplyr::distinct(..., .keep_all = .keep_all) %>%
+
+    # Attach attributes
+    add_attr(.data %>% attr("parameters"), "parameters") %>%
+
+    # Add class
+    add_class("tt") %>%
+    add_class("ttBulk")
+
+}
+############# END ADDED TTBULK #####################################
+
+############# START ADDED TTBULK #####################################
+
+#' @importFrom dplyr distinct_all
+#' @export
+dplyr::distinct_all
+
+#' @importFrom dplyr distinct_at
+#' @export
+dplyr::distinct_at
+
+#' @importFrom dplyr distinct_if
+#' @export
+dplyr::distinct_if
+
+############# END ADDED TTBULK #####################################
+
+#' Subset rows using column values
+#'
+#' `filter()` retains the rows where the conditions you provide a `TRUE`. Note
+#' that, unlike base subsetting with `[`, rows where the condition evaluates
+#' to `NA` are dropped.
+#'
+#' dplyr is not yet smart enough to optimise filtering optimisation
+#' on grouped datasets that don't need grouped calculations. For this reason,
+#' filtering is often considerably faster on [ungroup()]ed data.
+#'
+#' @section Useful filter functions:
+#'
+#' * [`==`], [`>`], [`>=`] etc
+#' * [`&`], [`|`], [`!`], [xor()]
+#' * [is.na()]
+#' * [between()], [near()]
+#'
+#' @section Grouped tibbles:
+#'
+#' Because filtering expressions are computed within groups, they may
+#' yield different results on grouped tibbles. This will be the case
+#' as soon as an aggregating, lagging, or ranking function is
+#' involved. Compare this ungrouped filtering:
+#'
+#' ```
+#' starwars %>% filter(mass > mean(mass, na.rm = TRUE))
+#' ```
+#'
+#' With the grouped equivalent:
+#'
+#' ```
+#' starwars %>% group_by(gender) %>% filter(mass > mean(mass, na.rm = TRUE))
+#' ```
+#'
+#' The former keeps rows with `mass` greater than the global average
+#' whereas the latter keeps rows with `mass` greater than the gender
+#'
+#' average.
+#' @family single table verbs
 #' @inheritParams arrange
-#'
-#' @section Grouping variables:
-#'
-#' The grouping variables that are part of the selection participate
-#' in the sorting of the data frame.
-#'
-#' @export
-#' @examples
-#' df <- as_tibble(mtcars)
-#' df
-#' arrange_all(df)
-#'
-#' # You can supply a function that will be applied before taking the
-#' # ordering of the variables. The variables of the sorted tibble
-#' # keep their original values.
-#' arrange_all(df, desc)
-#' arrange_all(df, list(~desc(.)))
-arrange_all <- function(.tbl, .funs = list(), ..., .by_group = FALSE) {
-  funs <- manip_all(.tbl, .funs, enquo(.funs), caller_env(), .include_group_vars = TRUE, ...)
-  if (!length(funs)) {
-    funs <- syms(tbl_vars(.tbl))
-  }
-  arrange(.tbl, !!!funs, .by_group = .by_group)
-}
-#' @rdname arrange_all
-#' @export
-arrange_at <- function(.tbl, .vars, .funs = list(), ..., .by_group = FALSE) {
-  funs <- manip_at(.tbl, .vars, .funs, enquo(.funs), caller_env(), .include_group_vars = TRUE, ...)
-  if (!length(funs)) {
-    funs <- tbl_at_syms(.tbl, .vars, .include_group_vars = TRUE)
-  }
-  arrange(.tbl, !!!funs, .by_group = .by_group)
-}
-#' @rdname arrange_all
-#' @export
-arrange_if <- function(.tbl, .predicate, .funs = list(), ..., .by_group = FALSE) {
-  funs <- manip_if(.tbl, .predicate, .funs, enquo(.funs), caller_env(), .include_group_vars = TRUE, ...)
-  if (!length(funs)) {
-    funs <- tbl_if_syms(.tbl, .predicate, .include_group_vars = TRUE)
-  }
-  arrange(.tbl, !!!funs, .by_group = .by_group)
-}
-#' Select distinct rows by a selection of variables
-#'
-#' These [scoped] variants of [distinct()] extract distinct rows by a
-#' selection of variables. Like `distinct()`, you can modify the
-#' variables before ordering with the `.funs` argument.
-#'
-#' @param .keep_all If `TRUE`, keep all variables in `.data`.
-#'   If a combination of `...` is not distinct, this keeps the
-#'   first row of values.
-#' @inheritParams scoped
-#' @export
-#'
-#' @section Grouping variables:
-#'
-#' The grouping variables that are part of the selection are taken
-#' into account to determine distinct rows.
-#'
-#' @examples
-#' df <- tibble(x = rep(2:5, each = 2) / 2, y = rep(2:3, each = 4) / 2)
-#' df
-#' distinct_all(df)
-#' distinct_at(df, vars(x,y))
-#' distinct_if(df, is.numeric)
-#'
-#' # You can supply a function that will be applied before extracting the distinct values
-#' # The variables of the sorted tibble keep their original values.
-#' distinct_all(df, round)
-#' arrange_all(df, list(~round(.)))
-distinct_all <- function(.tbl, .funs = list(), ..., .keep_all = FALSE) {
-  funs <- manip_all(.tbl, .funs, enquo(.funs), caller_env(), .include_group_vars = TRUE, ...)
-  if (!length(funs)) {
-    funs <- syms(tbl_vars(.tbl))
-  }
-  distinct(.tbl, !!!funs, .keep_all = .keep_all)
-}
-#' @rdname distinct_all
-#' @export
-distinct_at <- function(.tbl, .vars, .funs = list(), ..., .keep_all = FALSE) {
-  funs <- manip_at(.tbl, .vars, .funs, enquo(.funs), caller_env(), .include_group_vars = TRUE, ...)
-  if (!length(funs)) {
-    funs <- tbl_at_syms(.tbl, .vars, .include_group_vars = TRUE)
-  }
-  distinct(.tbl, !!!funs, .keep_all = .keep_all)
-}
-#' @rdname distinct_all
-#' @export
-distinct_if <- function(.tbl, .predicate, .funs = list(), ..., .keep_all = FALSE) {
-  funs <- manip_if(.tbl, .predicate, .funs, enquo(.funs), caller_env(), .include_group_vars = TRUE, ...)
-  if (!length(funs)) {
-    funs <- tbl_if_syms(.tbl, .predicate, .include_group_vars = TRUE)
-  }
-  distinct(.tbl, !!!funs, .keep_all = .keep_all)
-}
-#' Filter within a selection of variables
-#'
-#' These [scoped] filtering verbs apply a predicate expression to a
-#' selection of variables. The predicate expression should be quoted
-#' with [all_vars()] or [any_vars()] and should mention the pronoun
-#' `.` to refer to variables.
-#'
-#' @inheritParams scoped
-#' @param .vars_predicate A quoted predicate expression as returned by
-#'   [all_vars()] or [any_vars()].
-#'
-#'   Can also be a function or purrr-like formula. In this case, the
-#'   intersection of the results is taken by default and there's
-#'   currently no way to request the union.
+#' @param ... <[`tidy-eval`][dplyr_tidy_eval]> Logical predicates defined in
+#'   terms of the variables in `.data`.
+#'   Multiple conditions are combined with `&`. Only rows where the
+#'   condition evaluates to `TRUE` are kept.
 #' @param .preserve when `FALSE` (the default), the grouping structure
 #'   is recalculated based on the resulting data, otherwise it is kept as is.
+#' @return
+#' An object of the same type as `.data`.
+#'
+#' * Rows are a subset of the input, but appear in the same order.
+#' * Columns are not modified.
+#' * The number of groups may be reduced (if `.preserve` is not `TRUE`).
+#' * Data frame attributes are preserved.
+#' @section Methods:
+#' This function is a **generic**, which means that packages can provide
+#' implementations (methods) for other classes. See the documentation of
+#' individual methods for extra arguments and differences in behaviour.
+#'
+#' The following methods are currently available in loaded packages:
+#' \Sexpr[stage=render,results=rd]{dplyr:::methods_rd("filter")}.
+#' @seealso [filter_all()], [filter_if()] and [filter_at()].
 #' @export
-#'
-#' @section Grouping variables:
-#'
-#' The grouping variables that are part of the selection are taken
-#' into account to determine filtered rows.
-#'
 #' @examples
-#' # While filter() accepts expressions with specific variables, the
-#' # scoped filter verbs take an expression with the pronoun `.` and
-#' # replicate it over all variables. This expression should be quoted
-#' # with all_vars() or any_vars():
-#' all_vars(is.na(.))
-#' any_vars(is.na(.))
+#' filter(starwars, species == "Human")
+#' filter(starwars, mass > 1000)
+#'
+#' # Multiple criteria
+#' filter(starwars, hair_color == "none" & eye_color == "black")
+#' filter(starwars, hair_color == "none" | eye_color == "black")
+#'
+#' # Multiple arguments are equivalent to and
+#' filter(starwars, hair_color == "none", eye_color == "black")
 #'
 #'
-#' # You can take the intersection of the replicated expressions:
-#' filter_all(mtcars, all_vars(. > 150))
+#' # The filtering operation may yield different results on grouped
+#' # tibbles because the expressions are computed within groups.
+#' #
+#' # The following filters rows where `mass` is greater than the
+#' # global average:
+#' starwars %>% filter(mass > mean(mass, na.rm = TRUE))
 #'
-#' # Or the union:
-#' filter_all(mtcars, any_vars(. > 150))
-#'
-#'
-#' # You can vary the selection of columns on which to apply the
-#' # predicate. filter_at() takes a vars() specification:
-#' filter_at(mtcars, vars(starts_with("d")), any_vars((. %% 2) == 0))
-#'
-#' # And filter_if() selects variables with a predicate function:
-#' filter_if(mtcars, ~ all(floor(.) == .), all_vars(. != 0))
+#' # Whereas this keeps rows with `mass` greater than the gender
+#' # average:
+#' starwars %>% group_by(gender) %>% filter(mass > mean(mass, na.rm = TRUE))
 #'
 #'
-#' # We're working on a new syntax to allow functions instead,
-#' # including purrr-like lambda functions. This is already
-#' # operational, but there's currently no way to specify the union of
-#' # the predicate results:
-#' mtcars %>% filter_at(vars(hp, vs), ~ . %% 2 == 0)
-filter_all <- function(.tbl, .vars_predicate, .preserve = FALSE) {
-  syms <- syms(tbl_vars(.tbl))
-  pred <- apply_filter_syms(.vars_predicate, syms, .tbl)
-  filter(.tbl, !!pred, .preserve = .preserve)
-}
-#' @rdname filter_all
+#' # Refer to column names stored as strings with the `.data` pronoun:
+#' vars <- c("mass", "height")
+#' cond <- c(80, 150)
+#' starwars %>%
+#'   filter(
+#'     .data[[vars[[1]]]] > cond[[1]],
+#'     .data[[vars[[2]]]] > cond[[2]]
+#'   )
+#' # Learn more in ?dplyr_tidy_eval
+############# START ADDED TTBULK #####################################
 #' @export
-filter_if <- function(.tbl, .predicate, .vars_predicate, .preserve = FALSE) {
-  syms <- tbl_if_syms(.tbl, .predicate, .include_group_vars = TRUE)
-  pred <- apply_filter_syms(.vars_predicate, syms, .tbl)
-  filter(.tbl, !!pred, .preserve = .preserve)
+filter <- function (.data, ..., .preserve = FALSE)  {
+  UseMethod("filter")
 }
-#' @rdname filter_all
+
 #' @export
-filter_at <- function(.tbl, .vars, .vars_predicate, .preserve = FALSE) {
-  syms <- tbl_at_syms(.tbl, .vars, .include_group_vars = TRUE)
-  pred <- apply_filter_syms(.vars_predicate, syms, .tbl)
-  filter(.tbl, !!pred, .preserve = .preserve)
+filter.default <-  function (.data, ..., .preserve = FALSE)
+{
+  dplyr::filter(.data, ..., .preserve = .preserve)
+}
+
+#' @export
+filter.ttBulk <- function (.data, ..., .preserve = FALSE)
+{
+  .data %>%
+    drop_class(c("ttBulk", "tt")) %>%
+    dplyr::filter(.data, ..., .preserve = .preserve) %>%
+
+    # Attach attributes
+    add_attr(.data %>% attr("parameters"), "parameters") %>%
+
+    # Add class
+    add_class("tt") %>%
+    add_class("ttBulk")
+
+}
+############# END ADDED TTBULK #####################################
+
+
+############# START ADDED TTBULK #####################################
+
+#' @importFrom dplyr filter_all
+#' @export
+dplyr::filter_all
+
+#' @importFrom dplyr filter_at
+#' @export
+dplyr::filter_at
+
+#' @importFrom dplyr filter_if
+#' @export
+dplyr::filter_if
+
+############# END ADDED TTBULK #####################################
+
+#' Group by one or more variables
+#'
+#' @description
+#' Most data operations are done on groups defined by variables.
+#' `group_by()` takes an existing tbl and converts it into a grouped tbl
+#' where operations are performed "by group". `ungroup()` removes grouping.
+#'
+#' @family grouping functions
+#' @inheritParams arrange
+#' @param ... In `group_by()`, variables or computations to group by.
+#'   In `ungroup()`, variables to remove from the grouping.
+#' @param .add When `FALSE`, the default, `group_by()` will
+#'   override existing groups. To add to the existing groups, use
+#'   `.add = TRUE`.
+#'
+#'   This argument was previously called `add`, but that prevented
+#'   creating a new grouping variable called `add`, and conflicts with
+#'   our naming conventions.
+#' @param .drop When `.drop = TRUE`, empty groups are dropped. See [group_by_drop_default()] for
+#'   what the default value is for this argument.
+#' @return A [grouped data frame][grouped_df()], unless the combination of `...` and `add`
+#'   yields a non empty set of grouping columns, a regular (ungrouped) data frame
+#'   otherwise.
+#' @section Methods:
+#' These function are **generic**s, which means that packages can provide
+#' implementations (methods) for other classes. See the documentation of
+#' individual methods for extra arguments and differences in behaviour.
+#'
+#' Methods available in currently loaded packages:
+#'
+#' * `group_by()`: \Sexpr[stage=render,results=rd]{dplyr:::methods_rd("group_by")}.
+#' * `ungroup()`: \Sexpr[stage=render,results=rd]{dplyr:::methods_rd("ungroup")}.
+#' @export
+#' @examples
+#' by_cyl <- mtcars %>% group_by(cyl)
+#'
+#' # grouping doesn't change how the data looks (apart from listing
+#' # how it's grouped):
+#' by_cyl
+#'
+#' # It changes how it acts with the other dplyr verbs:
+#' by_cyl %>% summarise(
+#'   disp = mean(disp),
+#'   hp = mean(hp)
+#' )
+#' by_cyl %>% filter(disp == max(disp))
+#'
+#' # Each call to summarise() removes a layer of grouping
+#' by_vs_am <- mtcars %>% group_by(vs, am)
+#' by_vs <- by_vs_am %>% summarise(n = n())
+#' by_vs
+#' by_vs %>% summarise(n = sum(n))
+#'
+#' # To removing grouping, use ungroup
+#' by_vs %>%
+#'   ungroup() %>%
+#'   summarise(n = sum(n))
+#'
+#' # You can group by expressions: this is just short-hand for
+#' # a mutate() followed by a group_by()
+#' mtcars %>% group_by(vsam = vs + am)
+#'
+#' # By default, group_by() overrides existing grouping
+#' by_cyl %>%
+#'   group_by(vs, am) %>%
+#'   group_vars()
+#'
+#' # Use add = TRUE to instead append
+#' by_cyl %>%
+#'   group_by(vs, am, .add = TRUE) %>%
+#'   group_vars()
+#'
+#'
+#' # when factors are involved, groups can be empty
+#' tbl <- tibble(
+#'   x = 1:10,
+#'   y = factor(rep(c("a", "c"), each  = 5), levels = c("a", "b", "c"))
+#' )
+#' tbl %>%
+#'   group_by(y) %>%
+#'   group_rows()
+#'
+############# START ADDED TTBULK #####################################
+#' @export
+filter <- function (.data, ..., .preserve = FALSE)  {
+  UseMethod("filter")
+}
+
+#' @export
+filter.default <-  function (.data, ..., .preserve = FALSE)
+{
+  dplyr::filter(.data, ..., .preserve = .preserve)
+}
+
+#' @export
+filter.ttBulk <- function (.data, ..., .preserve = FALSE)
+{
+  .data %>%
+    drop_class(c("ttBulk", "tt")) %>%
+    dplyr::filter(.data, ..., .preserve = .preserve) %>%
+
+    # Attach attributes
+    add_attr(.data %>% attr("parameters"), "parameters") %>%
+
+    # Add class
+    add_class("tt") %>%
+    add_class("ttBulk")
+
+}
+############# END ADDED TTBULK #####################################
+group_by <- function(.data, ..., .add = FALSE, .drop = group_by_drop_default(.data)) {
+  UseMethod("group_by")
+}
+
+#' @export
+group_by.data.frame <- function(.data, ..., .add = FALSE, .drop = group_by_drop_default(.data)) {
+  groups <- group_by_prepare(.data, ..., .add = .add)
+  grouped_df(groups$data, groups$group_names, .drop)
+}
+
+#' @rdname group_by
+#' @export
+#' @param x A [tbl()]
+ungroup <- function(x, ...) {
+  UseMethod("ungroup")
+}
+
+#' @export
+ungroup.grouped_df <- function(x, ...) {
+  if (missing(...)) {
+    as_tibble(x)
+  } else {
+    old_groups <- group_vars(x)
+    to_remove <- tidyselect::vars_select(names(x), ...)
+
+    new_groups <- setdiff(old_groups, to_remove)
+    group_by(x, !!!syms(new_groups))
+  }
+}
+
+#' @export
+ungroup.rowwise_df <- function(x, ...) {
+  ellipsis::check_dots_empty()
+  as_tibble(x)
+}
+
+#' @export
+ungroup.data.frame <- function(x, ...) {
+  ellipsis::check_dots_empty()
+  x
 }
 
 #' Group by a selection of variables

@@ -318,7 +318,7 @@ prepend = function (x, values, before = 1)
 #' @return A tibble with an additional attribute
 add_class = function(var, name) {
 
-  class(var) <- prepend(class(var),name)
+  if(!name %in% class(var)) class(var) <- prepend(class(var),name)
 
   var
 }
@@ -641,5 +641,7 @@ select_closest_pairs = function(df) {
 
 }
 
-
+#' @importFrom magrittr %>%
+#' @export
+magrittr::`%>%`
 
