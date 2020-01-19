@@ -26,7 +26,7 @@
 #'
 #'
 #'
-#' my_tt =  ttBulk(ttBulk::counts_mini, sample, transcript, counts)
+#' my_tt =  ttBulk(ttBulk::counts_mini, sample, transcript, count)
 #'
 #'
 #'
@@ -55,6 +55,9 @@ ttBulk.tbl_df <- function(.data,
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+
+	# Validate data frame
+	validation(.data,!!.sample,!!.transcript,!!.abundance)
 
 	create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance)
 
@@ -140,6 +143,9 @@ scale_abundance.tbl_df = scale_abundance.ttBulk <-
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
+
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
 
 		if (action == "add")
 			add_normalised_counts_bulk(
@@ -240,6 +246,9 @@ cluster_elements.tbl_df = cluster_elements.ttBulk <-
 		.abundance = enquo(.abundance)
 		.element = enquo(.element)
 		.feature = enquo(.feature)
+
+		# Validate data frame
+		validation(.data,!!.element,!!.feature,!!.abundance)
 
 		if (method == "kmeans") {
 			if (action == "add")
@@ -397,6 +406,9 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 		.abundance = enquo(.abundance)
 		.element = enquo(.element)
 		.feature = enquo(.feature)
+
+		# Validate data frame
+		validation(.data,!!.element,!!.feature,!!.abundance)
 
 		if (method == "MDS") {
 			if (action == "add")
@@ -725,7 +737,11 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 	Dim_a_column = enquo(Dim_a_column)
 	Dim_b_column = enquo(Dim_b_column)
 
-	if (method == "correlation")
+	if (method == "correlation"){
+
+		# Validate data frame
+		validation(.data,!!.element,!!.feature,!!.abundance)
+
 		remove_redundancy_elements_through_correlation(
 			.data,
 			.abundance = !!.abundance,
@@ -735,7 +751,12 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 			of_samples = of_samples,
 			log_transform = log_transform
 		)
-	else if (method == "reduced_dimensions")
+	}
+	else if (method == "reduced_dimensions"){
+
+		# Validate data frame
+		# MISSING because feature not needed. I should build a custom funtion.
+
 		remove_redundancy_elements_though_reduced_dimensions(
 			.data,
 			Dim_a_column = !!Dim_a_column,
@@ -743,6 +764,7 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 			.element = !!.element,
 			of_samples = of_samples
 		)
+	}
 	else
 		stop(
 			"method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)"
@@ -837,6 +859,9 @@ adjust_abundance.tbl_df = adjust_abundance.ttBulk <-
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
+
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
 
 		if (action == "add")
 			add_adjusted_counts_for_unwanted_variation_bulk(
@@ -942,6 +967,8 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
 
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
 
 		aggregate_duplicated_transcripts_bulk(
 			.data,
@@ -1017,6 +1044,9 @@ deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
+
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
 
 		if (action == "add")
 			add_cell_type_proportions(
@@ -1192,6 +1222,9 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
 
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
+
 		if (action == "add")
 			add_differential_transcript_abundance_bulk(
 				.data,
@@ -1292,6 +1325,9 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
 
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
+
 		filter_variable_transcripts(
 				.data,
 				.sample = !!.sample,
@@ -1373,6 +1409,9 @@ filter_abundant.tbl_df = filter_abundant.ttBulk <-
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
+
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
 
 		abundant =
 			add_normalised_counts_bulk.get_low_expressed(.data,
@@ -1477,58 +1516,21 @@ analise_gene_enrichment.tbl_df = analise_gene_enrichment.ttBulk <-
 		.abundance = enquo(.abundance)
 		.entrez = enquo(.entrez)
 
-			analyse_gene_enrichment_bulk_EGSEA(.data,
-																				 .formula,
-																				 .sample = !!.sample,
-																				 .entrez = !!.entrez,
-																				 .abundance = !!.abundance,
-																				 .contrasts = .contrasts,
-																				 species = species,
-																				 cores = cores)
+		# Validate data frame
+		validation(.data,!!.sample,!!.entrez)
+
+		analyse_gene_enrichment_bulk_EGSEA(.data,
+																			 .formula,
+																			 .sample = !!.sample,
+																			 .entrez = !!.entrez,
+																			 .abundance = !!.abundance,
+																			 .contrasts = .contrasts,
+																			 species = species,
+																			 cores = cores)
 
 
 
 	}
 
 
-#' nest
-#' @param .data A tbl. (See tidyr)
-#' @param ... Name-variable pairs of the form new_col = c(col1, col2, col3) (See tidyr)
-#'
-#' @return A tt object
-#'
-#' @examples
-#'
-#' nest(ttBulk(ttBulk::counts_mini, sample, transcript, count), data = -transcript)
-#'
-#'
-#' @export
-nest <- function (.data, ...)  {
-	UseMethod("nest")
-}
 
-#' @export
-nest.default <-  function (.data, ...)
-{
-	tidyr::nest(.data, ...)
-}
-
-#' @export
-nest.ttBulk <- function (.data, ...)
-{
-	warning("nest is not fully supported yet by ttBulk. The nested data frame has been reverted to tbl")
-
-	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
-		tidyr::nest(...)
-
-	#   %>%
-	#
-	# 	# Attach attributes
-	# 	add_attr(.data %>% attr("parameters"), "parameters") %>%
-	#
-	# 	# Add class
-	# 	add_class("tt") %>%
-	# 	add_class("ttBulk")
-
-}

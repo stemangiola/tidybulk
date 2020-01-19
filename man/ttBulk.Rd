@@ -32,7 +32,7 @@ arguments are stored as metadata. They can be extracted as attr(<object>, "param
 
 
 
-my_tt =  ttBulk(ttBulk::counts_mini, sample, transcript, counts)
+my_tt =  ttBulk(ttBulk::counts_mini, sample, transcript, count)
 
 
 
