@@ -641,6 +641,18 @@ select_closest_pairs = function(df) {
 
 }
 
+#' This function is needed for DE in case the matrix is not rectangular, but includes NA
+fill_NA_with_row_median = function(.matrix){
+
+  if(length(which(rowSums(is.na(.matrix)) > 0)) > 0)
+    rbind(
+      .matrix[rowSums(is.na(.matrix)) == 0,],
+      apply(.matrix[rowSums(is.na(.matrix)) > 0,], 1, FUN = function(.x) { .x[is.na(.x)] = median(.x, na.rm = T); .x}) %>% t
+    )
+  else
+    .matrix
+}
+
 #' @importFrom magrittr %>%
 #' @export
 magrittr::`%>%`

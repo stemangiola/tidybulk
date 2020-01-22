@@ -57,7 +57,7 @@ ttBulk.tbl_df <- function(.data,
 	.abundance = enquo(.abundance)
 
 	# Validate data frame
-	validation(.data,!!.sample,!!.transcript,!!.abundance)
+	validation(.data,!!.sample,!!.transcript,!!.abundance, skip_dupli_check = T)
 
 	create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance)
 
@@ -968,7 +968,7 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 		.abundance = enquo(.abundance)
 
 		# Validate data frame
-		validation(.data,!!.sample,!!.transcript,!!.abundance)
+		validation(.data,!!.sample,!!.transcript,!!.abundance, skip_dupli_check = T)
 
 		aggregate_duplicated_transcripts_bulk(
 			.data,
@@ -1158,6 +1158,7 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
+#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
@@ -1189,6 +1190,8 @@ test_differential_abundance <- function(.data,
 																				.coef = 2,
 																				.contrasts = NULL,
 																						significance_threshold = 0.05,
+																				fill_missing_values = F,
+
 																						action = "add") {
 	UseMethod("test_differential_abundance", .data)
 }
@@ -1201,6 +1204,7 @@ test_differential_abundance.default <-  function(.data,
 																								 .coef = 2,
 																								 .contrasts = NULL,
 																										 significance_threshold = 0.05,
+																								 fill_missing_values = F,
 																										 action = "add")
 {
 	print("This function cannot be applied to this object")
@@ -1215,6 +1219,7 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 					 .coef = 2,
 					 .contrasts = NULL,
 					 significance_threshold = 0.05,
+					 fill_missing_values = F,
 					 action = "add")
 	{
 		# Make col names
@@ -1234,7 +1239,8 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 				.abundance = !!.abundance,
 				.coef = .coef,
 				.contrasts = .contrasts,
-				significance_threshold = significance_threshold
+				significance_threshold = significance_threshold,
+				fill_missing_values = fill_missing_values
 			)
 		else if (action == "get")
 			get_differential_transcript_abundance_bulk(
@@ -1245,7 +1251,8 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 				.abundance = !!.abundance,
 				.coef = .coef,
 				.contrasts = .contrasts,
-				significance_threshold = significance_threshold
+				significance_threshold = significance_threshold,
+				fill_missing_values = fill_missing_values
 			)
 		else
 			stop(
