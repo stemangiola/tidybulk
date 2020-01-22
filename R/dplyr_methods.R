@@ -1050,15 +1050,13 @@ inner_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		
 }
 
 #' @export
-inner_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-																 ...)
+inner_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),				 ...)
 {
 	dplyr::inner_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 }
 
 #' @export
-inner_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-															 ...)
+inner_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)
 {
 	x %>%
 		drop_class(c("ttBulk", "tt")) %>%
