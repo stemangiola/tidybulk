@@ -12,7 +12,8 @@ add_differential_transcript_abundance_bulk(
   .abundance = NULL,
   .coef = 2,
   .contrasts = NULL,
-  significance_threshold = 0.05
+  significance_threshold = 0.05,
+  fill_missing_values = F
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ add_differential_transcript_abundance_bulk(
 \item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`}
 
 \item{significance_threshold}{A real between 0 and 1}
+
+\item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
 }
 \value{
 A tibble with differential_transcript_abundance results

@@ -13,6 +13,7 @@ test_differential_abundance(
   .coef = 2,
   .contrasts = NULL,
   significance_threshold = 0.05,
+  fill_missing_values = F,
   action = "add"
 )
 }
@@ -32,6 +33,8 @@ test_differential_abundance(
 \item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`}
 
 \item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
+
+\item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
