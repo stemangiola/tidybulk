@@ -589,6 +589,7 @@ add_normalised_counts_bulk <- function(.data,
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
+#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #'
 #' @return A tibble with edgeR results
 #'
@@ -599,7 +600,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .abundance = NULL,
 																											 .coef = 2,
 																											 .contrasts = NULL,
-																											 significance_threshold = 0.05) {
+																											 significance_threshold = 0.05,
+																											 fill_missing_values = F) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -627,7 +629,13 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		# Prepare the data frame
 		select(!!.transcript,!!.sample,!!.abundance,
 					 one_of(parse_formula(.formula))) %>%
-		distinct()
+		distinct() %>%
+
+		# Check if data rectangular
+		ifelse_pipe(
+			(.) %>% check_if_data_rectangular( !!.sample, !!.transcript, !!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		)
 
 	# Check if at least two samples for each group
 	if (df_for_edgeR %>%
@@ -646,6 +654,9 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			object = .formula,
 			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
+
+	# Print the design column names in case I want constrasts
+	writeLines(sprintf("The design column names are \"%s\" in case you are interested in constrasts", design %>% colnames %>% paste(collapse=", ")))
 	#%>%
 	#	magrittr::set_colnames(c("(Intercept)",	 (.) %>% colnames %>% `[` (-1)))
 
@@ -672,12 +683,18 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			`filter out low counts` = !!.transcript %in% add_normalised_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
 		)
 
-
 	df_for_edgeR.filt %>%
 		filter(!`filter out low counts`) %>%
 		select(!!.transcript, !!.sample, !!.abundance) %>%
 		spread(!!.sample, !!.abundance) %>%
 		as_matrix(rownames = !!.transcript) %>%
+
+		# If fill missing values
+		ifelse_pipe(
+			fill_missing_values,
+			~ .x %>% fill_NA_with_row_median
+		) %>%
+
 		edgeR::DGEList(counts = .) %>%
 		edgeR::calcNormFactors(method = "TMM") %>%
 		edgeR::estimateGLMCommonDisp(design) %>%
@@ -749,6 +766,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
+#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #'
 #' @return A tibble with differential_transcript_abundance results
 #'
@@ -760,7 +778,8 @@ add_differential_transcript_abundance_bulk <- function(.data,
 																											 .abundance = NULL,
 																											 .coef = 2,
 																											 .contrasts = NULL,
-																											 significance_threshold = 0.05) {
+																											 significance_threshold = 0.05,
+																											 fill_missing_values = F) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -780,7 +799,8 @@ add_differential_transcript_abundance_bulk <- function(.data,
 					.abundance = !!.abundance,
 					.coef = .coef,
 					.contrasts = .contrasts,
-					significance_threshold = significance_threshold
+					significance_threshold = significance_threshold,
+					fill_missing_values = fill_missing_values
 				)
 		) %>%
 
@@ -1662,14 +1682,8 @@ get_reduced_dimensions_TSNE_bulk <-
 
 			# Check if data rectangular
 			ifelse_pipe(
-				(.) %>% count(!!.element) %>% count(n) %>% nrow %>% `>` (1),
-				~ {
-					warning("Some elements are missing some features, the data is not rectangular. Those features have been omitted")
-					.x %>%
-						add_count(!!.feature, name = "my_n") %>%
-						filter(my_n == max(my_n)) %>%
-						select(-my_n)
-				}
+				(.) %>% check_if_data_rectangular( !!.element, !!.feature, !!.abundance, type = "soft"),
+				~ .x %>% eliminate_sparse_transcripts(!!.feature)
 			) %>%
 
 			# Check if logtansform is needed
@@ -2296,7 +2310,7 @@ get_symbol_from_ensembl <-
 
 			# Add name information
 			dplyr::left_join(
-				ensembl_symbol_mapping %>%
+				ttBulk::ensembl_symbol_mapping %>%
 					distinct(ensembl_gene_id, hgnc_symbol, hg) %>%
 					dplyr::rename(!!.ensembl := ensembl_gene_id) %>%
 					rename( transcript = hgnc_symbol),
