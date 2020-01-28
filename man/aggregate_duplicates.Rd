@@ -6,23 +6,23 @@
 \usage{
 aggregate_duplicates(
   .data,
-  aggregation_function = sum,
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
+  aggregation_function = sum,
   keep_integer = TRUE
 )
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{aggregation_function}{A function for counts aggregation (e.g., sum,  median, or mean)}
-
 \item{.sample}{The name of the sample column}
 
 \item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{aggregation_function}{A function for counts aggregation (e.g., sum,  median, or mean)}
 
 \item{keep_integer}{A boolean. Whether to force the aggregated counts to integer}
 }

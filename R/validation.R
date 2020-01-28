@@ -164,7 +164,7 @@ validation_default = function(.data,
 															.transcript,
 															.abundance,
 															type = "hard",
-															skip_dupli_check = F) {
+															skip_dupli_check = FALSE) {
 	# Parse column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -233,7 +233,7 @@ validation <- function(.data,
 											 .transcript = NULL,
 											 .abundance = NULL,
 											 type = "hard",
-											 skip_dupli_check = F) {
+											 skip_dupli_check = FALSE) {
 	UseMethod("validation", .data)
 }
 
@@ -244,7 +244,7 @@ validation.ttBulk = function(.data,
 														 .transcript = NULL,
 														 .abundance = NULL,
 														 type = "hard",
-														 skip_dupli_check = F) {
+														 skip_dupli_check = FALSE) {
 	# Check if attribute is present
 	is_attr = check_if_attribute_present(.data)
 	if (type == "hard" &

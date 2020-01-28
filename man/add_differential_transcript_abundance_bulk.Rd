@@ -13,7 +13,7 @@ add_differential_transcript_abundance_bulk(
   .coef = 2,
   .contrasts = NULL,
   significance_threshold = 0.05,
-  fill_missing_values = F
+  fill_missing_values = FALSE
 )
 }
 \arguments{

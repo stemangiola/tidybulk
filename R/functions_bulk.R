@@ -601,7 +601,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .coef = 2,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
-																											 fill_missing_values = F) {
+																											 fill_missing_values = FALSE) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -779,7 +779,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 																											 .coef = 2,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
-																											 fill_missing_values = F) {
+																											 fill_missing_values = FALSE) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2092,6 +2092,7 @@ aggregate_duplicated_transcripts_bulk =
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param correlation_threshold A real number between 0 and 1
+#' @param top An integer. How many top genes to select
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param of_samples A boolean
@@ -2105,7 +2106,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 																												.feature = NULL,
 																												.abundance = NULL,
 																												correlation_threshold = 0.9,
-
+																												top = Inf,
 																												of_samples = TRUE,
 																												log_transform = FALSE) {
 	# Get column names
@@ -2129,6 +2130,9 @@ remove_redundancy_elements_through_correlation <- function(.data,
 
 		# Prepare the data frame
 		select(!!.feature, !!.element, !!.abundance) %>%
+
+		# Filter variable genes
+		filter_variable_transcripts(!!.element, !!.feature, !!.abundance, top = top) %>%
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
@@ -2259,40 +2263,61 @@ remove_redundancy_elements_though_reduced_dimensions <-
 			add_attr(.data %>% attr("parameters"), "parameters")
 	}
 
-#' #' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
-#' #'
-#' #' @return A tibble with ensembl-transcript mapping
-#' #'
-#' get_ensembl_symbol_mapping <- function() {
-#'   # wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
-#'   # wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
-#'   read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
-#'               col_names = FALSE) %>%
-#'     setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
-#'     mutate(hg = "hg37") %>%
-#'     bind_rows(
-#'       read_table2(
-#'         "~/third_party_sofware/ensembl_mapping/mapping_38.txt",
-#'         col_names = FALSE
-#'       ) %>%
-#'         setNames(
-#'           c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
-#'         ) %>%
-#'         mutate(hg = "hg38")
-#'     ) %>%
-#'     drop_na() %>%
-#'     select(-ensembl_transcript_id) %>%
-#'     group_by(ensembl_gene_id) %>%
-#'     arrange(hg %>% desc()) %>%
-#'     slice(1) %>%
-#'     ungroup() %>%
-#'     {
-#'       (.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping.csv")
-#'       (.)
-#'     }
-#' }
+# #' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
+# #'
+# #' @return A tibble with ensembl-transcript mapping
+# #'
+# get_ensembl_symbol_mapping <- function() {
+#   # wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
+#   # wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
+#   all =
+#   	read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
+#               col_names = FALSE) %>%
+#     setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
+#     mutate(hg = "hg37") %>%
+#     bind_rows(
+#       read_table2(
+#         "~/third_party_sofware/ensembl_mapping/mapping_38.txt",
+#         col_names = FALSE
+#       ) %>%
+#         setNames(
+#           c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
+#         ) %>%
+#         mutate(hg = "hg38")
+#     ) %>%
+#     drop_na()
+#
+#
+#   bind_rows(
+#   	# Gene annotation
+#   	all %>%
+# 		select(-ensembl_transcript_id) %>%
+# 		group_by(ensembl_gene_id) %>%
+# 		arrange(hg %>% desc()) %>%
+# 		slice(1) %>%
+# 		ungroup() %>%
+# 		rename(ensembl_id = ensembl_gene_id),
+#
+# 		# Transcript annotation
+# 		all %>%
+# 		select(-ensembl_gene_id) %>%
+# 		group_by(ensembl_transcript_id) %>%
+# 		arrange(hg %>% desc()) %>%
+# 		slice(1) %>%
+# 		ungroup() %>%
+# 		rename(ensembl_id = ensembl_transcript_id)
+#   ) %>%
+#
+#   # Write to file and return
+#   {
+#     (.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping.csv")
+#     (.)
+#   }
+# }
 
-#' Get transcript column from ensembl gene id
+#' get_symbol_from_ensembl
+#'
+#' @description Get transcript column from ensembl gene id
 #'
 #' @param .data A tibble
 #' @param .ensembl A column symbol. The column that is represents ensembl gene id
@@ -2311,9 +2336,9 @@ get_symbol_from_ensembl <-
 			# Add name information
 			dplyr::left_join(
 				ttBulk::ensembl_symbol_mapping %>%
-					distinct(ensembl_gene_id, hgnc_symbol, hg) %>%
-					dplyr::rename(!!.ensembl := ensembl_gene_id) %>%
-					rename( transcript = hgnc_symbol),
+					distinct(ensembl_id, transcript, hg) %>%
+					dplyr::rename(!!.ensembl := ensembl_id) %>%
+					rename( transcript = transcript),
 				by = quo_name(.ensembl)
 			)
 
@@ -2710,6 +2735,9 @@ filter_variable_transcripts = function(.data,
 	.abundance = enquo(.abundance)
 	col_names = get_abundance_norm_if_exists(.data, .abundance)
 	.abundance = col_names$.abundance
+
+	# Manage Inf
+	top = min(top, .data %>% distinct(!!.transcript) %>% nrow)
 
 	writeLines(sprintf("Getting the %s most variable genes", top))
 

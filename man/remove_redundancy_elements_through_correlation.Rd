@@ -10,6 +10,7 @@ remove_redundancy_elements_through_correlation(
   .feature = NULL,
   .abundance = NULL,
   correlation_threshold = 0.9,
+  top = Inf,
   of_samples = TRUE,
   log_transform = FALSE
 )
@@ -24,6 +25,8 @@ remove_redundancy_elements_through_correlation(
 \item{.abundance}{A column symbol with the value the clustering is based on (e.g., `count`)}
 
 \item{correlation_threshold}{A real number between 0 and 1}
+
+\item{top}{An integer. How many top genes to select}
 
 \item{of_samples}{A boolean}
 

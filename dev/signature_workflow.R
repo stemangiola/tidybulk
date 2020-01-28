@@ -81,7 +81,8 @@ counts =
 
 	# Select level 3
 	inner_join(data_hierarchy) %>%
-	filter(level==3)
+	filter(level==3) %>%
+	filter(!`Cell type category` %in% c("t_cell", "b_cell"))
 
 counts_proc =
 	counts %>%
@@ -93,36 +94,30 @@ counts_proc =
 	aggregate_duplicates(aggregation_function = sum) %>%
 
 	# Normalise
-	scale_abundance() %>%
+	scale_abundance()
 
-	# Remove redundant samples
-	inner_join(
-			filter_variable((.), top = 1000) %>%
-			remove_redundancy(method="correlation", correlation_threshold = 0.95) %>%
-				distinct(sample)
+
+# Remove redundancy
+counts_non_red =
+	counts_proc %>%
+	remove_redundancy(
+		method="correlation",
+		correlation_threshold = 0.99,
+		top=1000
 	)
 
-counts_proc %>% saveRDS("dev/counts_proc.rds", compress = "gzip")
+counts_non_red %>% saveRDS("dev/counts_non_red.rds", compress = "gzip")
 
-counts_proc = readRDS("dev/counts_proc.rds")
+counts_non_red = readRDS("dev/counts_non_red.rds")
 
 counts_ct =
-	counts_proc %>%
+	counts_non_red %>%
 
 	# Eliminate genes that are not in all cell types
 	inner_join((.) %>%
 						 	distinct(symbol, `Cell type formatted`) %>%
 						 	count(symbol) %>%
-						 	filter(n == max(n))) %>%
-
-	# Eliminate cell types with just one sample
-	inner_join(
-		(.) %>%
-			distinct(`Cell type formatted`, sample) %>%
-			count(`Cell type formatted`) %>%
-			filter(n > 1) %>%
-			select(`Cell type formatted`)
-	)
+						 	filter(n == max(n)))
 
 # # Calculate bimodality
 # bimodality =
@@ -144,56 +139,62 @@ counts_ct =
 #
 # bimodality %>% saveRDS("bimodality.rds")
 
-# bimodality = readRDS("bimodality.rds")
+bimodality = readRDS("bimodality.rds")
+
+# Assign values and filter
+counts_ct_bm =
+	counts_ct %>%
+	left_join(bimodality) %>%
+
+	# Too bimodal
+	filter((bimodality_NB > 0.8 & bimodality_NB_diff > 20) | bimodality_NB_diff > 100)
+
 #
-# # Assign values
-# counts_ct_bm = counts_ct %>% left_join(bimodality)
-#
-# # Plots and Study
-# counts_ct_bm %>%
-#
-# 	reduce_dimensions(sample, symbol, `count normalised`, method = "tSNE") %>%
-# 	select(contains("tSNE"), `Data base`, `Cell type formatted`) %>%
-# 	distinct %>%
-# 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color = `Cell type formatted`)) + geom_point(size =
-# 																																											2) +
-# 	theme_bw() +
-# 	theme(
-# 		panel.border = element_blank(),
-# 		axis.line = element_line(),
-# 		panel.grid.major = element_line(size = 0.2),
-# 		panel.grid.minor = element_line(size = 0.1),
-# 		text = element_text(size = 12),
-# 		legend.position = "bottom",
-# 		aspect.ratio = 1,
-# 		#axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-# 		strip.background = element_blank(),
-# 		axis.title.x  = element_text(margin = margin(
-# 			t = 10,
-# 			r = 10,
-# 			b = 10,
-# 			l = 10
-# 		)),
-# 		axis.title.y  = element_text(margin = margin(
-# 			t = 10,
-# 			r = 10,
-# 			b = 10,
-# 			l = 10
-# 		))
-# 	)
-#
-# # Identify markers
-#
-# # Setup Cell type category names
-# counts_light = counts_ct_bm %>% inner_join(data_hierarchy) %>% filter(level ==
-# 																																				3) %>% distinct(level, `Cell type category`, sample, symbol, count)
-# counts_light %>% saveRDS("dev/counts_light.rds")
+# Plots and Study
+counts_ct_bm %>%
+
+	reduce_dimensions(sample, symbol, `count normalised`, method = "tSNE") %>%
+	select(contains("tSNE"), `Data base`, `Cell type formatted`) %>%
+	distinct %>%
+	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color = `Cell type formatted`)) +
+	geom_point(size =2) +
+	theme_bw() +
+	theme(
+		panel.border = element_blank(),
+		axis.line = element_line(),
+		panel.grid.major = element_line(size = 0.2),
+		panel.grid.minor = element_line(size = 0.1),
+		text = element_text(size = 12),
+		legend.position = "bottom",
+		aspect.ratio = 1,
+		#axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+		strip.background = element_blank(),
+		axis.title.x  = element_text(margin = margin(
+			t = 10,
+			r = 10,
+			b = 10,
+			l = 10
+		)),
+		axis.title.y  = element_text(margin = margin(
+			t = 10,
+			r = 10,
+			b = 10,
+			l = 10
+		))
+	)
+
+# Identify markers
+
+# Setup Cell type category names
+counts_light = counts_ct_bm %>% distinct(level, `Cell type category`, sample, symbol, count)
+counts_light %>% saveRDS("dev/counts_light.rds")
 
 counts_light = readRDS("dev/counts_light.rds")
 
 
 markers =
 	counts_light %>%
+	filter(!`Cell type category` %in% c("t_cell", "b_cell")) %>%
 	distinct(`Cell type category`) %>%
 	pull(1) %>%
 	gtools::permutations(n = length(.), r = 2, v = .) %>%
@@ -207,7 +208,7 @@ markers =
 									 		test_differential_abundance(
 									 			~ 0 + ct,
 									 			.contrasts = sprintf("ct%s - ct%s", .x, .y),
-									 			fill_missing_values = T,
+									 			fill_missing_values = TRUE,
 									 			action = "get"
 									 		) %>%
 									 		filter(logFC > 0 & logFC > 2) %>%
@@ -223,7 +224,7 @@ markers %>%
 	mutate(de = map(de, ~.x %>% slice(1))) %>%
 	unnest(de) %>%
 	filter(ct1=="monocyte") %>%
-	unite(pair, c("ct1", "ct2"), remove = F, sep = "\n") %>%
+	unite(pair, c("ct1", "ct2"), remove = FALSE, sep = "\n") %>%
 	gather(which, `Cell type category`, ct1, ct2) %>%
 	left_join(counts_light, by = c("symbol", "Cell type category")) %>%
 	ggplot(aes(y = count + 1, x = `Cell type category`)) +

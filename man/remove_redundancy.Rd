@@ -12,6 +12,7 @@ remove_redundancy(
   method,
   of_samples = TRUE,
   correlation_threshold = 0.9,
+  top = Inf,
   log_transform = FALSE,
   Dim_a_column,
   Dim_b_column
@@ -31,6 +32,8 @@ remove_redundancy(
 \item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{correlation_threshold}{A real number between 0 and 1. For correlation based calculation.}
+
+\item{top}{An integer. How many top genes to select for correlation based method}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 

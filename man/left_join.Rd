@@ -25,3 +25,9 @@ A tt object
 \description{
 Left join datasets
 }
+\examples{
+
+annotation = ttBulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
+ttBulk::counts \%>\% left_join(annotation)
+
+}

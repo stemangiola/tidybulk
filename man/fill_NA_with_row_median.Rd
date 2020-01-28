@@ -6,6 +6,12 @@
 \usage{
 fill_NA_with_row_median(.matrix)
 }
+\arguments{
+\item{.matrix}{A matrix}
+}
+\value{
+A matrix
+}
 \description{
 This function is needed for DE in case the matrix is not rectangular, but includes NA
 }

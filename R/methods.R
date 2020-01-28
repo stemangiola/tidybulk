@@ -57,10 +57,45 @@ ttBulk.tbl_df <- function(.data,
 	.abundance = enquo(.abundance)
 
 	# Validate data frame
-	validation(.data,!!.sample,!!.transcript,!!.abundance, skip_dupli_check = T)
+	validation(.data,!!.sample,!!.transcript,!!.abundance, skip_dupli_check = TRUE)
 
 	create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance)
 
+}
+
+#' Creates a `tt` object from a list of file names of BAM/SAM
+#'
+#' @description ttBulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name ttBulk_SAM_BAM
+#' @rdname ttBulk_SAM_BAM
+#'
+#' @param file_names A character vector
+#' @param genome A character string
+#' @param ... Further parameters passed to the function Rsubread::featureCounts
+#'
+#' @details This function is based on FeatureCounts package. This function created a ttBulk object and is useful if you want
+#' to avoid to specify .sample, .transcript and .abundance arguments all the times.
+#' The ttBulk object have an attribute called parameters where these three
+#' arguments are stored as metadata. They can be extracted as attr(<object>, "parameters").
+#'
+#' @return A `ttBulk` object
+#'
+#'
+#'
+#'
+#'
+#' @export
+ttBulk_SAM_BAM <- function(file_names, genome = "hg38", ...) {
+	UseMethod("ttBulk_SAM_BAM", .data)
+}
+#' @export
+ttBulk_SAM_BAM.default <- function(file_names, genome = "hg38", ...)
+{
+	create_tt_from_bam_sam_bulk(file_names, genome = genome, ...)
 }
 
 #' Normalise the counts of transcripts/genes
@@ -643,6 +678,7 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 #' @param of_samples A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param correlation_threshold A real number between 0 and 1. For correlation based calculation.
+#' @param top An integer. How many top genes to select for correlation based method
 #' @param Dim_a_column A character string. For reduced_dimension based calculation. The column of one principal component
 #' @param Dim_b_column A character string. For reduced_dimension based calculation. The column of another principal component
 #'
@@ -687,6 +723,7 @@ remove_redundancy <- function(.data,
 
 
 													 correlation_threshold = 0.9,
+													 top = Inf,
 													 log_transform = FALSE,
 
 													 Dim_a_column,
@@ -705,6 +742,7 @@ remove_redundancy.default <-  function(.data,
 
 
 																		correlation_threshold = 0.9,
+																		top = Inf,
 																		log_transform = FALSE,
 
 																		Dim_a_column,
@@ -724,6 +762,7 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 
 
 																													 correlation_threshold = 0.9,
+																													 top = Inf,
 																													 log_transform = FALSE,
 
 																													 Dim_a_column,
@@ -748,6 +787,7 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 			.element = !!.element,
 			.feature = !!.feature,
 			correlation_threshold = correlation_threshold,
+			top = top,
 			of_samples = of_samples,
 			log_transform = log_transform
 		)
@@ -935,20 +975,22 @@ adjust_abundance.tbl_df = adjust_abundance.ttBulk <-
 #'
 #'
 aggregate_duplicates <- function(.data,
-																 aggregation_function = sum,
+
 																 .sample = NULL,
 																 .transcript = NULL,
 																 .abundance = NULL,
+																 aggregation_function = sum,
 																 keep_integer = TRUE) {
 	UseMethod("aggregate_duplicates", .data)
 }
 
 #' @export
 aggregate_duplicates.default <-  function(.data,
-																					aggregation_function = sum,
+
 																					.sample = NULL,
 																					.transcript = NULL,
 																					.abundance = NULL,
+																					aggregation_function = sum,
 																					keep_integer = TRUE)
 {
 	print("This function cannot be applied to this object")
@@ -957,10 +999,11 @@ aggregate_duplicates.default <-  function(.data,
 #' @export
 aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 	function(.data,
-					 aggregation_function = sum,
+
 					 .sample = NULL,
 					 .transcript = NULL,
 					 .abundance = NULL,
+					 aggregation_function = sum,
 					 keep_integer = TRUE)  {
 		# Make col names
 		.sample = enquo(.sample)
@@ -968,14 +1011,15 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 		.abundance = enquo(.abundance)
 
 		# Validate data frame
-		validation(.data,!!.sample,!!.transcript,!!.abundance, skip_dupli_check = T)
+		validation(.data,!!.sample,!!.transcript,!!.abundance, skip_dupli_check = TRUE)
 
 		aggregate_duplicated_transcripts_bulk(
 			.data,
-			aggregation_function = aggregation_function,
+
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
+			aggregation_function = aggregation_function,
 			keep_integer = TRUE
 		)
 	}
@@ -1190,7 +1234,7 @@ test_differential_abundance <- function(.data,
 																				.coef = 2,
 																				.contrasts = NULL,
 																						significance_threshold = 0.05,
-																				fill_missing_values = F,
+																				fill_missing_values = FALSE,
 
 																						action = "add") {
 	UseMethod("test_differential_abundance", .data)
@@ -1204,7 +1248,7 @@ test_differential_abundance.default <-  function(.data,
 																								 .coef = 2,
 																								 .contrasts = NULL,
 																										 significance_threshold = 0.05,
-																								 fill_missing_values = F,
+																								 fill_missing_values = FALSE,
 																										 action = "add")
 {
 	print("This function cannot be applied to this object")
@@ -1219,7 +1263,7 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 					 .coef = 2,
 					 .contrasts = NULL,
 					 significance_threshold = 0.05,
-					 fill_missing_values = F,
+					 fill_missing_values = FALSE,
 					 action = "add")
 	{
 		# Make col names
