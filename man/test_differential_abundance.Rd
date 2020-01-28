@@ -13,7 +13,7 @@ test_differential_abundance(
   .coef = 2,
   .contrasts = NULL,
   significance_threshold = 0.05,
-  fill_missing_values = F,
+  fill_missing_values = FALSE,
   action = "add"
 )
 }

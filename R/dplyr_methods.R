@@ -1005,6 +1005,12 @@ rowwise.ttBulk <- function(.data)
 #' @return A tt object
 #'
 #' @export
+#'
+#' @examples
+#'
+#' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
+#' ttBulk::counts %>% left_join(annotation)
+#'
 left_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
 	UseMethod("left_join")
 }
@@ -1044,6 +1050,11 @@ left_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".
 #'
 #' @return A tt object
 #'
+#' @examples
+#'
+#' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
+#' ttBulk::counts %>% inner_join(annotation)
+#'
 #' @export
 inner_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
 	UseMethod("inner_join")
@@ -1081,6 +1092,11 @@ inner_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", "
 #' @param ... Data frames to combine (See dplyr)
 #'
 #' @return A tt object
+#'
+#' @examples
+#'
+#' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
+#' ttBulk::counts %>% right_join(annotation)
 #'
 #' @export
 right_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
@@ -1122,6 +1138,11 @@ right_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", "
 #' @param ... Data frames to combine (See dplyr)
 #'
 #' @return A tt object
+#'
+#' @examples
+#'
+#' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
+#' ttBulk::counts %>% full_join(annotation)
 #'
 #' @export
 full_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {

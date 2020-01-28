@@ -25,3 +25,9 @@ A tt object
 \description{
 Inner join datasets
 }
+\examples{
+
+annotation = ttBulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
+ttBulk::counts \%>\% inner_join(annotation)
+
+}

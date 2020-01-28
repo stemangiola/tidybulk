@@ -25,3 +25,9 @@ A tt object
 \description{
 Full join datasets
 }
+\examples{
+
+annotation = ttBulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
+ttBulk::counts \%>\% full_join(annotation)
+
+}

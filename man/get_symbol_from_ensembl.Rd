@@ -2,39 +2,7 @@
 % Please edit documentation in R/functions_bulk.R
 \name{get_symbol_from_ensembl}
 \alias{get_symbol_from_ensembl}
-\title{#' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
-#'
-#' @return A tibble with ensembl-transcript mapping
-#'
-get_ensembl_symbol_mapping <- function() {
-  # wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
-  # wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
-  read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
-              col_names = FALSE) %>%
-    setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
-    mutate(hg = "hg37") %>%
-    bind_rows(
-      read_table2(
-        "~/third_party_sofware/ensembl_mapping/mapping_38.txt",
-        col_names = FALSE
-      ) %>%
-        setNames(
-          c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
-        ) %>%
-        mutate(hg = "hg38")
-    ) %>%
-    drop_na() %>%
-    select(-ensembl_transcript_id) %>%
-    group_by(ensembl_gene_id) %>%
-    arrange(hg %>% desc()) %>%
-    slice(1) %>%
-    ungroup() %>%
-    {
-      (.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping.csv")
-      (.)
-    }
-}
-Get transcript column from ensembl gene id}
+\title{get_symbol_from_ensembl}
 \usage{
 get_symbol_from_ensembl(.data, .ensembl)
 }
@@ -47,37 +15,5 @@ get_symbol_from_ensembl(.data, .ensembl)
 A tibble with added annotation
 }
 \description{
-#' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
-#'
-#' @return A tibble with ensembl-transcript mapping
-#'
-get_ensembl_symbol_mapping <- function() {
-  # wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
-  # wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
-  read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
-              col_names = FALSE) %>%
-    setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
-    mutate(hg = "hg37") %>%
-    bind_rows(
-      read_table2(
-        "~/third_party_sofware/ensembl_mapping/mapping_38.txt",
-        col_names = FALSE
-      ) %>%
-        setNames(
-          c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
-        ) %>%
-        mutate(hg = "hg38")
-    ) %>%
-    drop_na() %>%
-    select(-ensembl_transcript_id) %>%
-    group_by(ensembl_gene_id) %>%
-    arrange(hg %>% desc()) %>%
-    slice(1) %>%
-    ungroup() %>%
-    {
-      (.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping.csv")
-      (.)
-    }
-}
 Get transcript column from ensembl gene id
 }
