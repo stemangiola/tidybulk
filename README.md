@@ -1,26 +1,6 @@
 ttBulk - tidyTranscriptomics
 ================
 
-<style>
-.column-left{
-  float: left;
-  width: 49%;
-  text-align: left;
-   font-size: 90%;
-}
-.column-right{
-  float: right;
-  width: 49%;
-  text-align: left;
-  font-size: 90%;
-  
-}
-</style>
-
-[![Build
-Status](https://travis-ci.org/stemangiola/ttBulk.svg?branch=master)](https://travis-ci.org/stemangiola/ttBulk)
-[![Coverage
-Status](https://coveralls.io/repos/github/stemangiola/ttBulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/ttBulk?branch=master)
 
 A user-friendly grammar of bulk RNA sequencing data exploration and
 processing
