@@ -1,11 +1,15 @@
 ---
-title: "ttBulk - tidyTranscriptomics"
+title: "ttBulk - part of tidyTranscriptomics"
 output: github_document
 ---
 
+<!---
+
 [![Build Status](https://travis-ci.org/stemangiola/ttBulk.svg?branch=master)](https://travis-ci.org/stemangiola/ttBulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/ttBulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/ttBulk?branch=master)
 
-A user-friendly grammar of bulk RNA sequencing data exploration and processing
+-->
+
+A tidy and user-friendly grammar of bulk RNA sequencing data exploration and analysis
 
 #  <img src="inst/logo.png" height="139px" width="120px" />
 
@@ -312,7 +316,7 @@ counts.norm.tSNE %>%
 counts.norm.tSNE %>% 
 	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct() %>%
-	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
+	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
 
 # Rotate `dimensions`
@@ -583,7 +587,7 @@ counts.norm.SNN %>%
 	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
 	gather(source, Call, c("cluster SNN", "Call")) %>%
 	distinct() %>%
-	ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
+	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
 
 
 # Do differential transcription between clusters

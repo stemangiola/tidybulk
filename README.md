@@ -1,29 +1,14 @@
-ttBulk - tidyTranscriptomics
+ttBulk - part of tidyTranscriptomics
 ================
 
-<style>
-.column-left{
-  float: left;
-  width: 49%;
-  text-align: left;
-   font-size: 90%;
-}
-.column-right{
-  float: right;
-  width: 49%;
-  text-align: left;
-  font-size: 90%;
-  
-}
-</style>
+<!---
 
-[![Build
-Status](https://travis-ci.org/stemangiola/ttBulk.svg?branch=master)](https://travis-ci.org/stemangiola/ttBulk)
-[![Coverage
-Status](https://coveralls.io/repos/github/stemangiola/ttBulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/ttBulk?branch=master)
+[![Build Status](https://travis-ci.org/stemangiola/ttBulk.svg?branch=master)](https://travis-ci.org/stemangiola/ttBulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/ttBulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/ttBulk?branch=master)
 
-A user-friendly grammar of bulk RNA sequencing data exploration and
-processing
+-->
+
+A tidy and user-friendly grammar of bulk RNA sequencing data exploration
+and analysis
 
 # <img src="inst/logo.png" height="139px" width="120px" />
 
@@ -47,20 +32,19 @@ counts
 ```
 
     ## # A tibble: 1,340,160 x 8
-    ##    sample transcript `Cell type` count time  condition batch
-    ##    <chr>  <chr>      <chr>       <dbl> <chr> <lgl>     <int>
-    ##  1 SRR17… DDX11L1    b_cell         17 0 d   TRUE          0
-    ##  2 SRR17… WASH7P     b_cell       3568 0 d   TRUE          0
-    ##  3 SRR17… MIR6859-1  b_cell         57 0 d   TRUE          0
-    ##  4 SRR17… MIR1302-2  b_cell          1 0 d   TRUE          0
-    ##  5 SRR17… FAM138A    b_cell          0 0 d   TRUE          0
-    ##  6 SRR17… OR4F5      b_cell          0 0 d   TRUE          0
-    ##  7 SRR17… LOC729737  b_cell       1764 0 d   TRUE          0
-    ##  8 SRR17… LOC102725… b_cell         11 0 d   TRUE          0
-    ##  9 SRR17… WASH9P     b_cell       3590 0 d   TRUE          0
-    ## 10 SRR17… MIR6859-2  b_cell         40 0 d   TRUE          0
-    ## # … with 1,340,150 more rows, and 1 more variable:
-    ## #   factor_of_interest <lgl>
+    ##    sample   transcript  `Cell type` count time  condition batch factor_of_inter…
+    ##    <chr>    <chr>       <chr>       <dbl> <chr> <lgl>     <int> <lgl>           
+    ##  1 SRR1740… DDX11L1     b_cell         17 0 d   TRUE          0 TRUE            
+    ##  2 SRR1740… WASH7P      b_cell       3568 0 d   TRUE          0 TRUE            
+    ##  3 SRR1740… MIR6859-1   b_cell         57 0 d   TRUE          0 TRUE            
+    ##  4 SRR1740… MIR1302-2   b_cell          1 0 d   TRUE          0 TRUE            
+    ##  5 SRR1740… FAM138A     b_cell          0 0 d   TRUE          0 TRUE            
+    ##  6 SRR1740… OR4F5       b_cell          0 0 d   TRUE          0 TRUE            
+    ##  7 SRR1740… LOC729737   b_cell       1764 0 d   TRUE          0 TRUE            
+    ##  8 SRR1740… LOC1027251… b_cell         11 0 d   TRUE          0 TRUE            
+    ##  9 SRR1740… WASH9P      b_cell       3590 0 d   TRUE          0 TRUE            
+    ## 10 SRR1740… MIR6859-2   b_cell         40 0 d   TRUE          0 TRUE            
+    ## # … with 1,340,150 more rows
 
 In brief you can: + Going from BAM/SAM to a tidy data frame of counts
 (FeatureCounts) + Adding gene symbols from ensembl IDs + Aggregating
@@ -215,8 +199,6 @@ norm_counts.table$cell_type = ttBulk::counts[
 ]
 ```
 
-\`\`\`
-
 </div>
 
 <div style="clear:both;">
@@ -253,9 +235,9 @@ Standard procedure
 library(limma)
 
 count_m_log = log(count_m + 1) 
-cmds1_2 = count_m_log %>% plotMDS(dim.plot = 1:2, plot = F)
-cmds3_4 = count_m_log %>% plotMDS(dim.plot = 3:4, plot = F)
-cmds5_6 = count_m_log %>% plotMDS(dim.plot = 5:6, plot = F)
+cmds1_2 = count_m_log %>% plotMDS(dim.plot = 1:2, plot = FALSE)
+cmds3_4 = count_m_log %>% plotMDS(dim.plot = 3:4, plot = FALSE)
+cmds5_6 = count_m_log %>% plotMDS(dim.plot = 5:6, plot = FALSE)
 
 
 cmds = cbind(
@@ -265,7 +247,7 @@ cmds = cbind(
         data.frame(cmds5_6$x, cmds5_6$y)
     )
 ) %>%
-    setNames(sprintf("Dim %s", 1:6))
+    setNames(sprintf("Dim%s", 1:6))
 cmds$cell_type = ttBulk::counts[
     match(ttBulk::counts$sample, rownames(cmds)), 
     "Cell type"
@@ -287,19 +269,19 @@ counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% dist
 ```
 
     ## # A tibble: 48 x 9
-    ##    sample `Dim 1` `Dim 2` `Dim 3`  `Dim 4` `Dim 5` `Dim 6` `Cell type`
-    ##    <chr>    <dbl>   <dbl>   <dbl>    <dbl>   <dbl>   <dbl> <chr>      
-    ##  1 SRR17…    2.15   0.820  -3.02   0.255    0.118  -0.388  b_cell     
-    ##  2 SRR17…    2.15   0.702  -3.05   0.252    0.127  -0.454  b_cell     
-    ##  3 SRR17…    2.15   0.572  -2.95   0.391    0.103  -0.563  b_cell     
-    ##  4 SRR17…    2.12   0.782  -2.99   0.271    0.0860 -0.310  b_cell     
-    ##  5 SRR17…   -1.42  -2.21   -0.319 -0.0537  -1.18   -0.180  dendritic_…
-    ##  6 SRR17…   -1.34  -2.18   -0.236 -0.00772 -1.07   -0.0937 dendritic_…
-    ##  7 SRR17…   -1.36  -2.38   -0.325  0.0401  -1.35   -0.204  dendritic_…
-    ##  8 SRR17…   -1.31  -2.26   -0.292  0.0236  -1.16   -0.136  dendritic_…
-    ##  9 SRR17…   -2.12  -2.19   -0.204 -0.534    1.03   -0.227  monocyte   
-    ## 10 SRR17…   -1.94  -1.96   -0.153 -0.676    1.02   -0.178  monocyte   
-    ## # … with 38 more rows, and 1 more variable: time <chr>
+    ##    sample      Dim1   Dim2   Dim3     Dim4    Dim5    Dim6 `Cell type`     time 
+    ##    <chr>      <dbl>  <dbl>  <dbl>    <dbl>   <dbl>   <dbl> <chr>           <chr>
+    ##  1 SRR1740034  2.15  0.820 -3.02   0.255    0.118  -0.388  b_cell          0 d  
+    ##  2 SRR1740035  2.15  0.702 -3.05   0.252    0.127  -0.454  b_cell          1 d  
+    ##  3 SRR1740036  2.15  0.572 -2.95   0.391    0.103  -0.563  b_cell          3 d  
+    ##  4 SRR1740037  2.12  0.782 -2.99   0.271    0.0860 -0.310  b_cell          7 d  
+    ##  5 SRR1740038 -1.42 -2.21  -0.319 -0.0537  -1.18   -0.180  dendritic_myel… 0 d  
+    ##  6 SRR1740039 -1.34 -2.18  -0.236 -0.00772 -1.07   -0.0937 dendritic_myel… 1 d  
+    ##  7 SRR1740040 -1.36 -2.38  -0.325  0.0401  -1.35   -0.204  dendritic_myel… 3 d  
+    ##  8 SRR1740041 -1.31 -2.26  -0.292  0.0236  -1.16   -0.136  dendritic_myel… 7 d  
+    ##  9 SRR1740042 -2.12 -2.19  -0.204 -0.534    1.03   -0.227  monocyte        0 d  
+    ## 10 SRR1740043 -1.94 -1.96  -0.153 -0.676    1.02   -0.178  monocyte        1 d  
+    ## # … with 38 more rows
 
 ``` r
 counts.norm.MDS %>%
@@ -354,18 +336,18 @@ counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% disti
 ```
 
     ## # A tibble: 48 x 9
-    ##    sample     PC1     PC2     PC3     PC4     PC5    PC6 `Cell type`  time 
-    ##    <chr>    <dbl>   <dbl>   <dbl>   <dbl>   <dbl>  <dbl> <chr>        <chr>
-    ##  1 SRR174…  0.105  0.0246 -0.312  -0.120  0.0258  -0.152 b_cell       0 d  
-    ##  2 SRR174…  0.104  0.0240 -0.314  -0.114  0.0171  -0.151 b_cell       1 d  
-    ##  3 SRR174…  0.103  0.0189 -0.315  -0.111  0.00988 -0.155 b_cell       3 d  
-    ##  4 SRR174…  0.105  0.0252 -0.313  -0.110  0.0176  -0.154 b_cell       7 d  
-    ##  5 SRR174… -0.180 -0.0922 -0.129   0.114  0.0582  -0.134 dendritic_m… 0 d  
-    ##  6 SRR174… -0.178 -0.106  -0.118   0.117  0.0555  -0.129 dendritic_m… 1 d  
-    ##  7 SRR174… -0.177 -0.0968 -0.127   0.111  0.0616  -0.130 dendritic_m… 3 d  
-    ##  8 SRR174… -0.177 -0.0985 -0.131   0.121  0.0488  -0.136 dendritic_m… 7 d  
-    ##  9 SRR174… -0.201 -0.0561 -0.0864  0.0696 0.0884  -0.116 monocyte     0 d  
-    ## 10 SRR174… -0.196 -0.0704 -0.0842  0.0607 0.129   -0.109 monocyte     1 d  
+    ##    sample        PC1     PC2     PC3    PC4     PC5    PC6 `Cell type`     time 
+    ##    <chr>       <dbl>   <dbl>   <dbl>  <dbl>   <dbl>  <dbl> <chr>           <chr>
+    ##  1 SRR1740034  0.129  0.155  -0.113  0.268  -0.0980 0.0894 b_cell          0 d  
+    ##  2 SRR1740035  0.128  0.156  -0.117  0.269  -0.0892 0.0872 b_cell          1 d  
+    ##  3 SRR1740036  0.129  0.154  -0.119  0.268  -0.0858 0.0938 b_cell          3 d  
+    ##  4 SRR1740037  0.127  0.157  -0.120  0.266  -0.0921 0.0888 b_cell          7 d  
+    ##  5 SRR1740038 -0.172 -0.0673 -0.177  0.0718 -0.140  0.0845 dendritic_myel… 0 d  
+    ##  6 SRR1740039 -0.171 -0.0822 -0.172  0.0703 -0.143  0.0750 dendritic_myel… 1 d  
+    ##  7 SRR1740040 -0.169 -0.0741 -0.174  0.0759 -0.149  0.0713 dendritic_myel… 3 d  
+    ##  8 SRR1740041 -0.169 -0.0728 -0.182  0.0739 -0.142  0.0801 dendritic_myel… 7 d  
+    ##  9 SRR1740042 -0.191 -0.0445 -0.101  0.0579 -0.111  0.0873 monocyte        0 d  
+    ## 10 SRR1740043 -0.188 -0.0550 -0.0930 0.0629 -0.145  0.0671 monocyte        1 d  
     ## # … with 38 more rows
 
 ``` r
@@ -390,7 +372,7 @@ counts.norm.tSNE =
     reduce_dimensions(
         method = "tSNE", 
         perplexity=10, 
-        pca_scale =T
+        pca_scale =TRUE
     ) 
 ```
 
@@ -406,7 +388,7 @@ count_m_log = log(count_m + 1)
 tsne = Rtsne::Rtsne(
     t(count_m_log), 
     perplexity=10, 
-        pca_scale =T
+        pca_scale =TRUE
 )$Y
 tsne$cell_type = ttBulk::counts[
     match(ttBulk::counts$sample, rownames(tsne)), 
@@ -424,30 +406,30 @@ Plot
 
 ``` r
 counts.norm.tSNE %>% 
-    select(contains("tSNE", ignore.case = F), sample, Call) %>%
+    select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
     distinct()
 ```
 
-    ## # A tibble: 836 x 4
-    ##    `tSNE 1` `tSNE 2` sample                       Call  
-    ##       <dbl>    <dbl> <chr>                        <fct> 
-    ##  1  -32.4      16.1  TCGA-A1-A0SB-01A-11R-A144-07 Normal
-    ##  2    1.63     -8.93 TCGA-A1-A0SD-01A-11R-A115-07 LumA  
-    ##  3    9.11     -3.71 TCGA-A1-A0SE-01A-11R-A084-07 LumA  
-    ##  4    2.39      6.32 TCGA-A1-A0SF-01A-11R-A144-07 LumA  
-    ##  5  -16.1     -19.5  TCGA-A1-A0SG-01A-11R-A144-07 LumA  
-    ##  6    9.26     -5.48 TCGA-A1-A0SH-01A-11R-A084-07 LumA  
-    ##  7   -5.90     26.8  TCGA-A1-A0SI-01A-11R-A144-07 LumB  
-    ##  8    0.815   -11.5  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  
-    ##  9  -36.3      23.1  TCGA-A1-A0SK-01A-12R-A084-07 Basal 
-    ## 10   -7.19     19.4  TCGA-A1-A0SM-01A-11R-A084-07 LumA  
-    ## # … with 826 more rows
+    ## # A tibble: 251 x 4
+    ##     tSNE1   tSNE2 sample                       Call 
+    ##     <dbl>   <dbl> <chr>                        <fct>
+    ##  1  -7.92  -1.32  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2   4.19   4.38  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3 -14.1   -5.50  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4   1.66  -7.27  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5  -3.99  -4.53  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6   5.99  -0.366 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7  25.5   16.5   TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8   4.94  -6.73  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9   6.05  -7.32  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10  -2.97 -16.1   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ## # … with 241 more rows
 
 ``` r
 counts.norm.tSNE %>% 
-    select(contains("tSNE", ignore.case = F), sample, Call) %>%
+    select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
     distinct() %>%
-    ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
+    ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
@@ -469,7 +451,7 @@ TidyTranscriptomics
 ``` r
 counts.norm.MDS.rotated =
   counts.norm.MDS %>%
-    rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45)
+    rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45)
 ```
 
 </div>
@@ -504,8 +486,8 @@ dimensions, data is coloured by cell type.
 
 ``` r
 counts.norm.MDS.rotated %>%
-    distinct(sample, `Dim 1`,`Dim 2`, `Cell type`) %>%
-    ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type` )) +
+    distinct(sample, `Dim1`,`Dim2`, `Cell type`) %>%
+    ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type` )) +
   geom_point() +
   my_theme
 ```
@@ -517,8 +499,8 @@ dimensions rotated of 45 degrees, data is coloured by cell type.
 
 ``` r
 counts.norm.MDS.rotated %>%
-    distinct(sample, `Dim 1 rotated 45`,`Dim 2 rotated 45`, `Cell type`) %>%
-    ggplot(aes(x=`Dim 1 rotated 45`, y=`Dim 2 rotated 45`, color=`Cell type` )) +
+    distinct(sample, `Dim1 rotated 45`,`Dim2 rotated 45`, `Cell type`) %>%
+    ggplot(aes(x=`Dim1 rotated 45`, y=`Dim2 rotated 45`, color=`Cell type` )) +
   geom_point() +
   my_theme
 ```
@@ -581,18 +563,18 @@ counts.de
 ```
 
     ## # A tibble: 27,920 x 8
-    ##    transcript   logFC logCPM    LR   PValue      FDR is_de `filter out low…
-    ##    <chr>        <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>           
-    ##  1 ANKRD18DP     4.82 -0.995 122.  1.88e-28 2.97e-24 TRUE  FALSE           
-    ##  2 SCIN          4.83 -0.463 113.  2.07e-26 1.64e-22 TRUE  FALSE           
-    ##  3 IGLL3P        5.34 -0.623  89.5 3.13e-21 1.65e-17 TRUE  FALSE           
-    ##  4 RNGTT         2.36  4.74   60.7 6.67e-15 2.63e-11 TRUE  FALSE           
-    ##  5 LOC1019293…   2.90  0.612  54.5 1.54e-13 4.86e-10 TRUE  FALSE           
-    ##  6 STAG3         2.55  3.21   52.9 3.58e-13 9.43e-10 TRUE  FALSE           
-    ##  7 GIMAP4      -11.0   7.71   51.2 8.26e-13 1.87e- 9 TRUE  FALSE           
-    ##  8 GRAMD1B      -5.87  4.20   43.3 4.61e-11 8.95e- 8 TRUE  FALSE           
-    ##  9 BTNL9         6.34  3.83   43.1 5.09e-11 8.95e- 8 TRUE  FALSE           
-    ## 10 SMIM3        -9.55  3.52   40.9 1.62e-10 2.56e- 7 TRUE  FALSE           
+    ##    transcript    logFC logCPM    LR   PValue      FDR is_de `filter out low cou…
+    ##    <chr>         <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>               
+    ##  1 ANKRD18DP      4.82 -0.995 122.  1.88e-28 2.97e-24 TRUE  FALSE               
+    ##  2 SCIN           4.83 -0.463 113.  2.07e-26 1.64e-22 TRUE  FALSE               
+    ##  3 IGLL3P         5.34 -0.623  89.5 3.13e-21 1.65e-17 TRUE  FALSE               
+    ##  4 RNGTT          2.36  4.74   60.7 6.67e-15 2.63e-11 TRUE  FALSE               
+    ##  5 LOC101929322   2.90  0.612  54.5 1.54e-13 4.86e-10 TRUE  FALSE               
+    ##  6 STAG3          2.55  3.21   52.9 3.58e-13 9.43e-10 TRUE  FALSE               
+    ##  7 GIMAP4       -11.0   7.71   51.2 8.26e-13 1.87e- 9 TRUE  FALSE               
+    ##  8 GRAMD1B       -5.87  4.20   43.3 4.61e-11 8.95e- 8 TRUE  FALSE               
+    ##  9 BTNL9          6.34  3.83   43.1 5.09e-11 8.95e- 8 TRUE  FALSE               
+    ## 10 SMIM3         -9.55  3.52   40.9 1.62e-10 2.56e- 7 TRUE  FALSE               
     ## # … with 27,910 more rows
 
 # Adjust `counts`
@@ -754,7 +736,7 @@ cluster = k$cluster
 
 cluster$cell_type = ttBulk::counts[
     match(ttBulk::counts$sample, rownames(cluster)), 
-    c("Cell type", "Dim 1", "Dim 2")
+    c("Cell type", "Dim1", "Dim2")
 ]
 ```
 
@@ -769,8 +751,8 @@ plot.
 
 ``` r
  counts.norm.cluster %>%
-    distinct(sample, `Dim 1`, `Dim 2`, `cluster kmeans`) %>%
-    ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`cluster kmeans`)) +
+    distinct(sample, `Dim1`, `Dim2`, `cluster kmeans`) %>%
+    ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster kmeans`)) +
   geom_point() +
   my_theme
 ```
@@ -800,7 +782,7 @@ library(Seurat)
 
 snn = CreateSeuratObject(count_m)
 snn = ScaleData(
-    snn, display.progress = T, 
+    snn, display.progress = TRUE, 
     num.cores=4, do.par = TRUE
 )
 snn = FindVariableFeatures(snn, selection.method = "vst") 
@@ -812,7 +794,7 @@ snn = snn[["seurat_clusters"]]
 
 snn$cell_type = ttBulk::counts[
     match(ttBulk::counts$sample, rownames(snn)), 
-    c("Cell type", "Dim 1", "Dim 2")
+    c("Cell type", "Dim1", "Dim2")
 ]
 ```
 
@@ -824,31 +806,31 @@ snn$cell_type = ttBulk::counts[
 
 ``` r
 counts.norm.SNN %>% 
-    select(contains("tSNE", ignore.case = F), `cluster SNN`, sample) %>%
+    select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample) %>%
     distinct()
 ```
 
-    ## # A tibble: 836 x 4
-    ##    `tSNE 1` `tSNE 2` `cluster SNN` sample                      
-    ##       <dbl>    <dbl> <fct>         <chr>                       
-    ##  1  -32.4      16.1  3             TCGA-A1-A0SB-01A-11R-A144-07
-    ##  2    1.63     -8.93 0             TCGA-A1-A0SD-01A-11R-A115-07
-    ##  3    9.11     -3.71 4             TCGA-A1-A0SE-01A-11R-A084-07
-    ##  4    2.39      6.32 1             TCGA-A1-A0SF-01A-11R-A144-07
-    ##  5  -16.1     -19.5  2             TCGA-A1-A0SG-01A-11R-A144-07
-    ##  6    9.26     -5.48 0             TCGA-A1-A0SH-01A-11R-A084-07
-    ##  7   -5.90     26.8  0             TCGA-A1-A0SI-01A-11R-A144-07
-    ##  8    0.815   -11.5  2             TCGA-A1-A0SJ-01A-11R-A084-07
-    ##  9  -36.3      23.1  3             TCGA-A1-A0SK-01A-12R-A084-07
-    ## 10   -7.19     19.4  5             TCGA-A1-A0SM-01A-11R-A084-07
-    ## # … with 826 more rows
+    ## # A tibble: 251 x 4
+    ##     tSNE1   tSNE2 `cluster SNN` sample                      
+    ##     <dbl>   <dbl> <fct>         <chr>                       
+    ##  1  -7.92  -1.32  0             TCGA-A1-A0SD-01A-11R-A115-07
+    ##  2   4.19   4.38  2             TCGA-A1-A0SF-01A-11R-A144-07
+    ##  3 -14.1   -5.50  1             TCGA-A1-A0SG-01A-11R-A144-07
+    ##  4   1.66  -7.27  0             TCGA-A1-A0SH-01A-11R-A084-07
+    ##  5  -3.99  -4.53  0             TCGA-A1-A0SI-01A-11R-A144-07
+    ##  6   5.99  -0.366 1             TCGA-A1-A0SJ-01A-11R-A084-07
+    ##  7  25.5   16.5   3             TCGA-A1-A0SK-01A-12R-A084-07
+    ##  8   4.94  -6.73  2             TCGA-A1-A0SM-01A-11R-A084-07
+    ##  9   6.05  -7.32  2             TCGA-A1-A0SN-01A-11R-A144-07
+    ## 10  -2.97 -16.1   1             TCGA-A1-A0SQ-01A-21R-A144-07
+    ## # … with 241 more rows
 
 ``` r
 counts.norm.SNN %>% 
-    select(contains("tSNE", ignore.case = F), `cluster SNN`, sample, Call) %>%
+    select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
     gather(source, Call, c("cluster SNN", "Call")) %>%
     distinct() %>%
-    ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
+    ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
 ```
 
 ![](README_files/figure-gfm/SNN_plot-1.png)<!-- -->
@@ -863,20 +845,22 @@ counts.norm.SNN %>%
    )
 ```
 
-    ## # A tibble: 3,000 x 8
-    ##    ens      logFC logCPM    LR    PValue       FDR is_de `filter out low c…
-    ##    <chr>    <dbl>  <dbl> <dbl>     <dbl>     <dbl> <lgl> <lgl>             
-    ##  1 ENSG000…  5.51   4.45 2341. 0.        0.        TRUE  FALSE             
-    ##  2 ENSG000…  5.31   3.15 1833. 0.        0.        TRUE  FALSE             
-    ##  3 ENSG000…  4.29   5.53 2862. 0.        0.        TRUE  FALSE             
-    ##  4 ENSG000…  3.38   5.72 1709. 0.        0.        TRUE  FALSE             
-    ##  5 ENSG000…  1.88   7.46 1916. 0.        0.        TRUE  FALSE             
-    ##  6 ENSG000…  3.05   5.43 1435. 4.62e-314 2.31e-311 TRUE  FALSE             
-    ##  7 ENSG000…  5.90   4.12 1418. 3.13e-310 1.34e-307 TRUE  FALSE             
-    ##  8 ENSG000…  4.44   4.37 1357. 4.69e-297 1.76e-294 TRUE  FALSE             
-    ##  9 ENSG000…  2.75   8.26 1250. 7.96e-274 2.65e-271 TRUE  FALSE             
-    ## 10 ENSG000…  2.28   7.01 1177. 5.13e-258 1.53e-255 TRUE  FALSE             
-    ## # … with 2,990 more rows
+    ## The design column names are "(Intercept), factor_of_interestTRUE" in case you are interested in constrasts
+
+    ## # A tibble: 500 x 8
+    ##    ens           logFC logCPM    LR   PValue      FDR is_de `filter out low cou…
+    ##    <chr>         <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>               
+    ##  1 ENSG00000186…  6.05   7.91  431. 7.68e-96 3.83e-93 TRUE  FALSE               
+    ##  2 ENSG00000111…  2.83   9.58  385. 8.13e-86 2.03e-83 TRUE  FALSE               
+    ##  3 ENSG00000181…  7.77   9.01  368. 5.83e-82 9.70e-80 TRUE  FALSE               
+    ##  4 ENSG00000140…  2.58   9.50  322. 6.01e-72 7.50e-70 TRUE  FALSE               
+    ##  5 ENSG00000065…  1.49  10.2   297. 1.32e-66 1.32e-64 TRUE  FALSE               
+    ##  6 ENSG00000137…  3.75   8.21  295. 4.87e-66 4.05e-64 TRUE  FALSE               
+    ##  7 ENSG00000124…  4.50   8.51  286. 4.21e-64 3.00e-62 TRUE  FALSE               
+    ##  8 ENSG00000196…  4.76   6.92  274. 1.23e-61 7.68e-60 TRUE  FALSE               
+    ##  9 ENSG00000091… -5.64  11.1   259. 3.18e-58 1.76e-56 TRUE  FALSE               
+    ## 10 ENSG00000092…  2.80   8.33  248. 7.37e-56 3.68e-54 TRUE  FALSE               
+    ## # … with 490 more rows
 
 # Drop `redundant` transcripts
 
@@ -905,6 +889,8 @@ counts.norm.non_redundant =
   remove_redundancy(    method = "correlation" )
 ```
 
+    ## Getting the 27920 most variable genes
+
 </div>
 
 <div class="column-right">
@@ -920,9 +906,9 @@ library(widyr)
         sample,
         transcript,
         rc,
-        sort = T,
+        sort = TRUE,
         diag = FALSE,
-        upper = F
+        upper = FALSE
     ) %>%
     filter(correlation > correlation_threshold) %>%
     distinct(item1) %>%
@@ -945,8 +931,8 @@ look like
 
 ``` r
 counts.norm.non_redundant %>%
-    distinct(sample, `Dim 1`, `Dim 2`, `Cell type`) %>%
-    ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type`)) +
+    distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+    ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
 ```
@@ -960,8 +946,8 @@ counts.norm.non_redundant =
     counts.norm.MDS %>%
   remove_redundancy(
     method = "reduced_dimensions",
-    Dim_a_column = `Dim 1`,
-    Dim_b_column = `Dim 2`
+    Dim_a_column = `Dim1`,
+    Dim_b_column = `Dim2`
   )
 ```
 
@@ -970,8 +956,8 @@ pair removed.
 
 ``` r
 counts.norm.non_redundant %>%
-    distinct(sample, `Dim 1`, `Dim 2`, `Cell type`) %>%
-    ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type`)) +
+    distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+    ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
 ```
@@ -993,10 +979,10 @@ tidy structure (similar to counts).
 counts = bam_sam_to_featureCounts_tibble(
     file_names, 
     genome = "hg38",
-    isPairedEnd = T,
-    requireBothEndsMapped = T,
-    checkFragLength = F,
-    useMetaFeatures = T
+    isPairedEnd = TRUE,
+    requireBothEndsMapped = TRUE,
+    checkFragLength = FALSE,
+    useMetaFeatures = TRUE
 )
 ```
 
@@ -1010,19 +996,19 @@ counts_ensembl %>% annotate_symbol(ens)
 ```
 
     ## # A tibble: 119 x 8
-    ##    ens   iso   `read count` sample cases_0_project… cases_0_samples…
-    ##    <chr> <chr>        <dbl> <chr>  <chr>            <chr>           
-    ##  1 ENSG… 13             144 TARGE… Acute Myeloid L… Primary Blood D…
-    ##  2 ENSG… 13              72 TARGE… Acute Myeloid L… Primary Blood D…
-    ##  3 ENSG… 13               0 TARGE… Acute Myeloid L… Primary Blood D…
-    ##  4 ENSG… 13            1099 TARGE… Acute Myeloid L… Primary Blood D…
-    ##  5 ENSG… 13              11 TARGE… Acute Myeloid L… Primary Blood D…
-    ##  6 ENSG… 13               2 TARGE… Acute Myeloid L… Primary Blood D…
-    ##  7 ENSG… 13               3 TARGE… Acute Myeloid L… Primary Blood D…
-    ##  8 ENSG… 13            2678 TARGE… Acute Myeloid L… Primary Blood D…
-    ##  9 ENSG… 13             751 TARGE… Acute Myeloid L… Primary Blood D…
-    ## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D…
-    ## # … with 109 more rows, and 2 more variables: transcript <chr>, hg <chr>
+    ##    ens   iso   `read count` sample cases_0_project… cases_0_samples… transcript
+    ##    <chr> <chr>        <dbl> <chr>  <chr>            <chr>            <chr>     
+    ##  1 ENSG… 13             144 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+    ##  2 ENSG… 13              72 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+    ##  3 ENSG… 13               0 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+    ##  4 ENSG… 13            1099 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+    ##  5 ENSG… 13              11 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+    ##  6 ENSG… 13               2 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+    ##  7 ENSG… 13               3 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+    ##  8 ENSG… 13            2678 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+    ##  9 ENSG… 13             751 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+    ## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+    ## # … with 109 more rows, and 1 more variable: hg <chr>
 
 # ADD versus GET modes
 
@@ -1036,21 +1022,20 @@ respectively. For example, from this data set
 ```
 
     ## # A tibble: 1,340,160 x 13
-    ##    sample transcript `Cell type` count time  condition batch
-    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <dbl>
-    ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE          0
-    ##  2 SRR17… A1BG-AS1   b_cell         83 0 d   TRUE          0
-    ##  3 SRR17… A1CF       b_cell          1 0 d   TRUE          0
-    ##  4 SRR17… A2M        b_cell          1 0 d   TRUE          0
-    ##  5 SRR17… A2M-AS1    b_cell          0 0 d   TRUE          0
-    ##  6 SRR17… A2ML1      b_cell          3 0 d   TRUE          0
-    ##  7 SRR17… A2MP1      b_cell          0 0 d   TRUE          0
-    ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE          0
-    ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE          0
-    ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE          0
-    ## # … with 1,340,150 more rows, and 6 more variables:
-    ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, `count
-    ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
+    ##    sample transcript `Cell type` count time  condition batch factor_of_inter…
+    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <dbl> <chr>           
+    ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE          0 TRUE            
+    ##  2 SRR17… A1BG-AS1   b_cell         83 0 d   TRUE          0 TRUE            
+    ##  3 SRR17… A1CF       b_cell          1 0 d   TRUE          0 TRUE            
+    ##  4 SRR17… A2M        b_cell          1 0 d   TRUE          0 TRUE            
+    ##  5 SRR17… A2M-AS1    b_cell          0 0 d   TRUE          0 TRUE            
+    ##  6 SRR17… A2ML1      b_cell          3 0 d   TRUE          0 TRUE            
+    ##  7 SRR17… A2MP1      b_cell          0 0 d   TRUE          0 TRUE            
+    ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE          0 TRUE            
+    ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE          0 TRUE            
+    ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE          0 TRUE            
+    ## # … with 1,340,150 more rows, and 5 more variables: `merged transcripts` <dbl>,
+    ## #   `count normalised` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
     ## #   counts` <lgl>
 
 **action=“add”** (Default) We can add the MDS dimensions to the original
@@ -1069,22 +1054,21 @@ data set
 ```
 
     ## # A tibble: 1,340,160 x 16
-    ##    sample transcript `Cell type` count time  condition batch
-    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <dbl>
-    ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE          0
-    ##  2 SRR17… A1BG-AS1   b_cell         83 0 d   TRUE          0
-    ##  3 SRR17… A1CF       b_cell          1 0 d   TRUE          0
-    ##  4 SRR17… A2M        b_cell          1 0 d   TRUE          0
-    ##  5 SRR17… A2M-AS1    b_cell          0 0 d   TRUE          0
-    ##  6 SRR17… A2ML1      b_cell          3 0 d   TRUE          0
-    ##  7 SRR17… A2MP1      b_cell          0 0 d   TRUE          0
-    ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE          0
-    ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE          0
-    ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE          0
-    ## # … with 1,340,150 more rows, and 9 more variables:
-    ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, `count
-    ## #   normalised` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
-    ## #   counts` <lgl>, `Dim 1` <dbl>, `Dim 2` <dbl>, `Dim 3` <dbl>
+    ##    sample transcript `Cell type` count time  condition batch factor_of_inter…
+    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <dbl> <chr>           
+    ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE          0 TRUE            
+    ##  2 SRR17… A1BG-AS1   b_cell         83 0 d   TRUE          0 TRUE            
+    ##  3 SRR17… A1CF       b_cell          1 0 d   TRUE          0 TRUE            
+    ##  4 SRR17… A2M        b_cell          1 0 d   TRUE          0 TRUE            
+    ##  5 SRR17… A2M-AS1    b_cell          0 0 d   TRUE          0 TRUE            
+    ##  6 SRR17… A2ML1      b_cell          3 0 d   TRUE          0 TRUE            
+    ##  7 SRR17… A2MP1      b_cell          0 0 d   TRUE          0 TRUE            
+    ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE          0 TRUE            
+    ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE          0 TRUE            
+    ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE          0 TRUE            
+    ## # … with 1,340,150 more rows, and 8 more variables: `merged transcripts` <dbl>,
+    ## #   `count normalised` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
+    ## #   counts` <lgl>, Dim1 <dbl>, Dim2 <dbl>, Dim3 <dbl>
 
 **action=“get”** We can get just the MDS dimensions relative to each
 sample
@@ -1102,16 +1086,16 @@ sample
 ```
 
     ## # A tibble: 48 x 4
-    ##    sample     `Dim 1` `Dim 2` `Dim 3`
-    ##    <chr>        <dbl>   <dbl>   <dbl>
-    ##  1 SRR1740034    2.31   0.491 -3.01  
-    ##  2 SRR1740035    2.29   0.427 -3.03  
-    ##  3 SRR1740036    2.25   0.388 -2.92  
-    ##  4 SRR1740037    2.29   0.420 -2.98  
-    ##  5 SRR1740038   -1.46  -2.12  -0.163 
-    ##  6 SRR1740039   -1.38  -2.17  -0.0592
-    ##  7 SRR1740040   -1.42  -2.12  -0.199 
-    ##  8 SRR1740041   -1.35  -2.18  -0.127 
-    ##  9 SRR1740042   -2.13  -2.05  -0.0695
-    ## 10 SRR1740043   -1.95  -1.96   0.0121
+    ##    sample      Dim1   Dim2    Dim3
+    ##    <chr>      <dbl>  <dbl>   <dbl>
+    ##  1 SRR1740034  2.31  0.491 -3.01  
+    ##  2 SRR1740035  2.29  0.427 -3.03  
+    ##  3 SRR1740036  2.25  0.388 -2.92  
+    ##  4 SRR1740037  2.29  0.420 -2.98  
+    ##  5 SRR1740038 -1.46 -2.12  -0.163 
+    ##  6 SRR1740039 -1.38 -2.17  -0.0592
+    ##  7 SRR1740040 -1.42 -2.12  -0.199 
+    ##  8 SRR1740041 -1.35 -2.18  -0.127 
+    ##  9 SRR1740042 -2.13 -2.05  -0.0695
+    ## 10 SRR1740043 -1.95 -1.96   0.0121
     ## # … with 38 more rows
