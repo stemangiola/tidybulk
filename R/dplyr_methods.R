@@ -1019,7 +1019,7 @@ left_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 
 left_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 																...)
 {
-	dplyr::left_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
+	dplyr::left_join(x, y, by = by, copy = copy, suffix = suffix, ...)
 }
 
 #' @export
@@ -1063,7 +1063,7 @@ inner_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		
 #' @export
 inner_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),				 ...)
 {
-	dplyr::inner_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
+	dplyr::inner_join(x, y, by = by, copy = copy, suffix = suffix, ...)
 }
 
 #' @export
@@ -1107,7 +1107,7 @@ right_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		
 right_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 																 ...)
 {
-	dplyr::right_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
+	dplyr::right_join(x, y, by = by, copy = copy, suffix = suffix, ...)
 }
 
 #' @export
@@ -1153,7 +1153,7 @@ full_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 
 full_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 																 ...)
 {
-	dplyr::full_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
+	dplyr::full_join(x, y, by = by, copy = copy, suffix = suffix, ...)
 }
 
 #' @export
