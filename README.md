@@ -7,6 +7,15 @@ processing
 
 # <img src="inst/logo.png" height="139px" width="120px" />
 
+# Installation
+
+Due to Bioconductor submission requiring R \>= 4.0 you need to install
+the **dev** branch
+
+``` r
+devtools::install_github("stemangiola/ttBulk@dev")
+```
+
 # Introduction
 
 ttBulk is a collection of wrapper functions for bulk tanscriptomic
@@ -430,7 +439,7 @@ counts.norm.tSNE %>%
     ggplot(aes(x = `tSNE 1`, y = `tSNE 2`, color=Call)) + geom_point() + my_theme
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 # Rotate `dimensions`
 
