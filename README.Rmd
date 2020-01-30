@@ -40,6 +40,16 @@ my_theme =
 
 ```
 
+# Installation
+
+Due to Bioconductor submission requiring R >= 4.0 you need to install the **dev** branch
+
+```{r, eval=FALSE}
+
+devtools::install_github("stemangiola/ttBulk@dev")
+
+```
+
 # Introduction
 
 ttBulk is a collection of wrapper functions for bulk tanscriptomic analyses that follows the "tidy" paradigm. The data structure is a tibble with columns for 
