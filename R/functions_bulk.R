@@ -2375,6 +2375,7 @@ add_symbol_from_ensembl <-
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
@@ -2384,6 +2385,7 @@ get_cell_type_proportions = function(.data,
 																		 .sample = NULL,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
+																		 reference = X_cibersort,
 																		 ...) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -2414,13 +2416,17 @@ get_cell_type_proportions = function(.data,
 
 	# Check if there are enough genes for the signature
 	if ((.data %>%
-			 pull(!!.transcript) %in% (X_cibersort %>% rownames)) %>%
+			 pull(!!.transcript) %in% (reference %>% rownames)) %>%
 			which %>%
 			length %>%
 			`<` (50))
 		stop(
 			"You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
 		)
+
+	# Check if rownames exist
+	if(reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% `!` %>% any)
+		stop("ttBulk says: your reference has non-numeric/integer columns.")
 
 	.data %>%
 
@@ -2433,7 +2439,7 @@ get_cell_type_proportions = function(.data,
 		data.frame(row.names = 1, check.names = FALSE) %>%
 
 		# Run Cibersort through custom function
-		my_CIBERSORT(X_cibersort,	...) %$%
+		my_CIBERSORT(reference,	...) %$%
 		proportions %>%
 
 		# Parse results and return
@@ -2461,6 +2467,7 @@ get_cell_type_proportions = function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
@@ -2470,6 +2477,7 @@ add_cell_type_proportions = function(.data,
 																		 .sample = NULL,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
+																		 reference = X_cibersort,
 																		 ...) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -2489,6 +2497,7 @@ add_cell_type_proportions = function(.data,
 					.sample = !!.sample,
 					.transcript = !!.transcript,
 					.abundance = !!.abundance,
+					reference = reference,
 					...
 				),
 			by = quo_name(.sample)
