@@ -2365,17 +2365,47 @@ add_symbol_from_ensembl <-
 			add_attr(.data %>% attr("parameters"), "parameters")
 	}
 
+#' Perform linear equation system analysis through llsr
+#'
+#' @importFrom stats lsfit
+#'
+#' @param mix A data frame
+#' @param reference A data frame
+#'
+#' @return A data frame
+#'
+#'
+run_llsr = function(mix, reference){
+
+	# Get common markers
+	markers = intersect(rownames(mix), rownames(reference))
+
+	X <- (reference[markers,,drop=FALSE])
+	Y <- (mix[markers,, drop=FALSE])
+
+	results <- t(data.frame(lsfit(X, Y)$coefficients)[-1,,drop=FALSE])
+	results[results<0] <- 0
+	results <- results/apply(results, 1, sum)
+	rownames(results) = colnames(Y)
+
+	results
+}
+
+
 #' Get cell type proportions from cibersort
 #'
 #' @import parallel
 #' @import preprocessCore
 #' @importFrom stats setNames
+#' @importFrom rlang dots_list
+#' @importFrom magrittr equals
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
+#' @param method A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
@@ -2386,6 +2416,7 @@ get_cell_type_proportions = function(.data,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
 																		 reference = X_cibersort,
+																		 method = "cibersort",
 																		 ...) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -2428,6 +2459,9 @@ get_cell_type_proportions = function(.data,
 	if(reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% `!` %>% any)
 		stop("ttBulk says: your reference has non-numeric/integer columns.")
 
+	# Get the dots arguments
+	dots_args = rlang::dots_list(...)
+
 	.data %>%
 
 		# Check if some transcripts are duplicated
@@ -2438,16 +2472,29 @@ get_cell_type_proportions = function(.data,
 		spread(!!.sample, !!.abundance) %>%
 		data.frame(row.names = 1, check.names = FALSE) %>%
 
-		# Run Cibersort through custom function
-		my_CIBERSORT(reference,	...) %$%
-		proportions %>%
+		# Run Cibersort or llsr through custom function, depending on method choice
+		ifelse2_pipe(
+			method %>% tolower %>% equals("cibersort"),
+			method %>% tolower %>% equals("llsr"),
+
+			# Execute do.call because I have to deal with ...
+			~ do.call(my_CIBERSORT, list(Y = .x, X = reference) %>% c(dots_args)) %$%
+				proportions %>%
+				as_tibble(rownames = quo_name(.sample)) %>%
+				select(-`P-value`, -Correlation, -RMSE),
+
+			# Don't need to execute do.call
+			~ .x %>%
+				run_llsr(reference) %>%
+				as_tibble(rownames = quo_name(.sample)),
+
+			~ stop("ttBulk syas: please choose between cibersort and llsr methods")
+		)	 %>%
 
 		# Parse results and return
-		as_tibble(rownames = quo_name(.sample)) %>%
-		select(-`P-value`, -Correlation, -RMSE) %>%
 		setNames(c(
 			quo_name(.sample),
-			(.) %>% select(-1) %>% colnames() %>% paste("type:", ., sep = " ")
+			(.) %>% select(-1) %>% colnames() %>% sprintf("%s: %s", method, .)
 		)) %>%
 		#%>%
 		#gather(`Cell type`, proportion,-!!.sample) %>%
@@ -2468,6 +2515,7 @@ get_cell_type_proportions = function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
+#' @param method A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
@@ -2478,6 +2526,7 @@ add_cell_type_proportions = function(.data,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
 																		 reference = X_cibersort,
+																		 method = "cibersort",
 																		 ...) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -2498,6 +2547,7 @@ add_cell_type_proportions = function(.data,
 					.transcript = !!.transcript,
 					.abundance = !!.abundance,
 					reference = reference,
+					method = method,
 					...
 				),
 			by = quo_name(.sample)

@@ -10,6 +10,7 @@ add_cell_type_proportions(
   .transcript = NULL,
   .abundance = NULL,
   reference = X_cibersort,
+  method = "cibersort",
   ...
 )
 }
@@ -23,6 +24,8 @@ add_cell_type_proportions(
 \item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{reference}{A data frame. The transcript/cell_type data frame of integer transcript abundance}
+
+\item{method}{A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.}
 
 \item{...}{Further parameters passed to the function Cibersort}
 }

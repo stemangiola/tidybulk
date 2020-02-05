@@ -502,7 +502,7 @@ With the new annotated data frame, we can plot the distributions of cell types a
 
 ```{r plot_cibersort, cache=TRUE}
 counts.cibersort %>%
-	select(contains("type:"), everything()) %>%
+	select(contains("cibersort:"), everything()) %>%
 	gather(`Cell type inferred`, `proportion`, 1:22) %>%
   distinct(sample, `Cell type`, `Cell type inferred`, proportion) %>%
   ggplot(aes(x=`Cell type inferred`, y=proportion, fill=`Cell type`)) +
