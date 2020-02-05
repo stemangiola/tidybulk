@@ -163,7 +163,12 @@ add_normalised_counts_bulk.get_cpm <- function(.data,
 	.data %>%
 		dplyr::left_join(
 			(.) %>%
-				select(-contains("ct")) %>%
+
+				######################################################################
+				# I don't know what this was for, but is dangerous. Delete after check
+				# select(-contains("ct")) %>%
+				######################################################################
+
 				select(!!.transcript, !!.sample, !!.abundance) %>%
 				spread(!!.sample, !!.abundance) %>%
 				drop_na() %>%
@@ -638,7 +643,16 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		)
 
 	# Check if at least two samples for each group
-	if (df_for_edgeR %>%
+	if (
+
+		# If I have some discrete covariates
+		df_for_edgeR %>%
+		select(one_of(parse_formula(.formula))) %>%
+		select_if(function(col) is.character(col) | is.factor(col)) %>%
+		ncol %>% `>` (0) &
+
+		# If I have at least 2 samples per group
+		df_for_edgeR %>%
 			select(!!.sample, one_of(parse_formula(.formula))) %>%
 			distinct %>%
 			count(!!as.symbol(parse_formula(.formula))) %>%
@@ -656,7 +670,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		)
 
 	# Print the design column names in case I want constrasts
-	writeLines(sprintf("The design column names are \"%s\" in case you are interested in constrasts", design %>% colnames %>% paste(collapse=", ")))
+	message(sprintf("The design column names are \"%s\" in case you are interested in constrasts", design %>% colnames %>% paste(collapse=", ")))
+
 	#%>%
 	#	magrittr::set_colnames(c("(Intercept)",	 (.) %>% colnames %>% `[` (-1)))
 
