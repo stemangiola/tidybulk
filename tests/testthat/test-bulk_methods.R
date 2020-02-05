@@ -660,6 +660,7 @@ test_that("Add symbol from ensambl - no object",{
 
 test_that("Get cell type proportions - no object",{
 
+	# Cibersort
   res =
     deconvolve_cellularity(
       input_df,
@@ -678,6 +679,28 @@ test_that("Get cell type proportions - no object",{
   expect_equal(
     ncol(res),
     23
+  )
+
+  # LLSR
+  res =
+  	deconvolve_cellularity(
+  		input_df,
+  		.sample = a,
+  		.transcript = b,
+  		.abundance = c,
+  		method = "llsr",
+  		action="get", cores=1
+  	)
+
+  expect_equal(
+  	as.numeric(res[1,2:5]),
+  	c(0.6702025807, 0.0000000000, 0.0000000000, 0.0005272016),
+  	tolerance=1e-3
+  )
+
+  expect_equal(
+  	ncol(res),
+  	23
   )
 
 })

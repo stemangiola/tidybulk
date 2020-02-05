@@ -1040,6 +1040,7 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
+#' @param method A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function Cibersort
 #'
@@ -1063,6 +1064,7 @@ deconvolve_cellularity <- function(.data,
 															 .transcript = NULL,
 															 .abundance = NULL,
 															 reference = X_cibersort,
+															 method = "cibersort",
 															 action = "add",
 															 ...) {
 	UseMethod("deconvolve_cellularity", .data)
@@ -1073,6 +1075,7 @@ deconvolve_cellularity.default <-  function(.data,
 																				.transcript = NULL,
 																				.abundance = NULL,
 																				reference = X_cibersort,
+																				method = "cibersort",
 																				action = "add",
 																				...)
 {
@@ -1085,6 +1088,7 @@ deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
 					 .transcript = NULL,
 					 .abundance = NULL,
 					 reference = X_cibersort,
+					 method = "cibersort",
 					 action = "add",
 					 ...)  {
 		# Make col names
@@ -1102,6 +1106,7 @@ deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
 				.transcript = !!.transcript,
 				.abundance = !!.abundance,
 				reference = reference,
+				method = method,
 				...
 			)
 		else if (action == "get")
@@ -1111,6 +1116,7 @@ deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
 				.transcript = !!.transcript,
 				.abundance = !!.abundance,
 				reference = reference,
+				method = method,
 				...
 			)
 		else

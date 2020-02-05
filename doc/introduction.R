@@ -12,9 +12,7 @@ library(dplyr)
 library(magrittr) 
 library(tidyr)
 library(ggplot2)
-library(readr)
 library(widyr) 
-library(foreach)
 library(rlang) 
 library(purrr)
 library(ttBulk)
@@ -112,19 +110,19 @@ counts.norm.tSNE %>%
 ## ----rotate, cache=TRUE-------------------------------------------------------
 counts.norm.MDS.rotated =
   counts.norm.MDS %>%
-	rotate_dimensions(`Dim 1`, `Dim 2`, rotation_degrees = 45, .element = sample)
+	rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 
 ## ----plot_rotate_1, cache=TRUE------------------------------------------------
 counts.norm.MDS.rotated %>%
-	distinct(sample, `Dim 1`,`Dim 2`, `Cell type`) %>%
-	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type` )) +
+	distinct(sample, `Dim1`,`Dim2`, `Cell type`) %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type` )) +
   geom_point() +
   my_theme
 
 ## ----plot_rotate_2, cache=TRUE------------------------------------------------
 counts.norm.MDS.rotated %>%
-	distinct(sample, `Dim 1 rotated 45`,`Dim 2 rotated 45`, `Cell type`) %>%
-	ggplot(aes(x=`Dim 1 rotated 45`, y=`Dim 2 rotated 45`, color=`Cell type` )) +
+	distinct(sample, `Dim1 rotated 45`,`Dim2 rotated 45`, `Cell type`) %>%
+	ggplot(aes(x=`Dim1 rotated 45`, y=`Dim2 rotated 45`, color=`Cell type` )) +
   geom_point() +
   my_theme
 
@@ -157,11 +155,11 @@ counts.cibersort =
 	counts %>%
 	deconvolve_cellularity(action="add", cores=2)
 
-counts.cibersort %>% select(sample, contains("type:")) %>% distinct()
+counts.cibersort %>% select(sample, contains("cibersort:")) %>% distinct()
 
 ## ----plot_cibersort, cache=TRUE-----------------------------------------------
 counts.cibersort %>%
-	select(contains("type:"), everything()) %>%
+	select(contains("cibersort:"), everything()) %>%
 	gather(`Cell type inferred`, `proportion`, 1:22) %>%
   distinct(sample, `Cell type`, `Cell type inferred`, proportion) %>%
   ggplot(aes(x=`Cell type inferred`, y=proportion, fill=`Cell type`)) +
@@ -183,8 +181,8 @@ counts.norm.cluster
   	method="kmeans",
   	centers = 2
   ) %>%
-	distinct(sample, `Dim 1`, `Dim 2`, `cluster kmeans`) %>%
-	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`cluster kmeans`)) +
+	distinct(sample, `Dim1`, `Dim2`, `cluster kmeans`) %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster kmeans`)) +
   geom_point() +
   my_theme
 
@@ -215,8 +213,8 @@ counts.norm.non_redundant = counts.norm.MDS %>%  remove_redundancy(	method = "co
 
 ## ----plot_drop, cache=TRUE----------------------------------------------------
 counts.norm.non_redundant %>%
-	distinct(sample, `Dim 1`, `Dim 2`, `Cell type`) %>%
-	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type`)) +
+	distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
 
@@ -228,14 +226,14 @@ counts.norm.non_redundant =
   	method = "reduced_dimensions",
   	.element = sample,
   	.feature = transcript,
-  	Dim_a_column = `Dim 1`,
-  	Dim_b_column = `Dim 2`
+  	Dim_a_column = `Dim1`,
+  	Dim_b_column = `Dim2`
   )
 
 ## ----plot_drop2, cache=TRUE---------------------------------------------------
 counts.norm.non_redundant %>%
-	distinct(sample, `Dim 1`, `Dim 2`, `Cell type`) %>%
-	ggplot(aes(x=`Dim 1`, y=`Dim 2`, color=`Cell type`)) +
+	distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
 
