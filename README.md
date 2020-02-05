@@ -420,18 +420,18 @@ counts.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##     tSNE1   tSNE2 sample                       Call 
-    ##     <dbl>   <dbl> <chr>                        <fct>
-    ##  1  -7.92  -1.32  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2   4.19   4.38  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3 -14.1   -5.50  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4   1.66  -7.27  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5  -3.99  -4.53  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6   5.99  -0.366 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7  25.5   16.5   TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8   4.94  -6.73  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9   6.05  -7.32  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  -2.97 -16.1   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##      tSNE1   tSNE2 sample                       Call 
+    ##      <dbl>   <dbl> <chr>                        <fct>
+    ##  1  -9.95    5.92  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2   4.67    0.147 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3 -14.6    14.3   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4  -6.87   -9.59  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5 -12.2     1.73  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6   2.59    7.15  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7  40.7    -7.21  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8  -0.811 -16.9   TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9  -1.84  -15.8   TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10 -25.9    17.0   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -699,7 +699,7 @@ proportions. The data is facetted and coloured by nominal cell types
 
 ``` r
 counts.cibersort %>%
-    select(contains("type:"), everything()) %>%
+    select(contains("cibersort:"), everything()) %>%
     gather(`Cell type inferred`, `proportion`, 1:22) %>%
   distinct(sample, `Cell type`, `Cell type inferred`, proportion) %>%
   ggplot(aes(x=`Cell type inferred`, y=proportion, fill=`Cell type`)) +
@@ -820,18 +820,18 @@ counts.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##     tSNE1   tSNE2 `cluster SNN` sample                      
-    ##     <dbl>   <dbl> <fct>         <chr>                       
-    ##  1  -7.92  -1.32  0             TCGA-A1-A0SD-01A-11R-A115-07
-    ##  2   4.19   4.38  2             TCGA-A1-A0SF-01A-11R-A144-07
-    ##  3 -14.1   -5.50  1             TCGA-A1-A0SG-01A-11R-A144-07
-    ##  4   1.66  -7.27  0             TCGA-A1-A0SH-01A-11R-A084-07
-    ##  5  -3.99  -4.53  0             TCGA-A1-A0SI-01A-11R-A144-07
-    ##  6   5.99  -0.366 1             TCGA-A1-A0SJ-01A-11R-A084-07
-    ##  7  25.5   16.5   3             TCGA-A1-A0SK-01A-12R-A084-07
-    ##  8   4.94  -6.73  2             TCGA-A1-A0SM-01A-11R-A084-07
-    ##  9   6.05  -7.32  2             TCGA-A1-A0SN-01A-11R-A144-07
-    ## 10  -2.97 -16.1   1             TCGA-A1-A0SQ-01A-21R-A144-07
+    ##      tSNE1   tSNE2 `cluster SNN` sample                      
+    ##      <dbl>   <dbl> <fct>         <chr>                       
+    ##  1  -9.95    5.92  0             TCGA-A1-A0SD-01A-11R-A115-07
+    ##  2   4.67    0.147 2             TCGA-A1-A0SF-01A-11R-A144-07
+    ##  3 -14.6    14.3   1             TCGA-A1-A0SG-01A-11R-A144-07
+    ##  4  -6.87   -9.59  0             TCGA-A1-A0SH-01A-11R-A084-07
+    ##  5 -12.2     1.73  0             TCGA-A1-A0SI-01A-11R-A144-07
+    ##  6   2.59    7.15  1             TCGA-A1-A0SJ-01A-11R-A084-07
+    ##  7  40.7    -7.21  3             TCGA-A1-A0SK-01A-12R-A084-07
+    ##  8  -0.811 -16.9   2             TCGA-A1-A0SM-01A-11R-A084-07
+    ##  9  -1.84  -15.8   2             TCGA-A1-A0SN-01A-11R-A144-07
+    ## 10 -25.9    17.0   1             TCGA-A1-A0SQ-01A-21R-A144-07
     ## # … with 241 more rows
 
 ``` r
