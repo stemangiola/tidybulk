@@ -9,7 +9,7 @@ output: github_document
 
 -->
 
-A tidy and user-friendly grammar of bulk RNA sequencing data exploration and analysis
+A a modular framework and a tidy data structure for bulk transcriptional analyses. This package is part of a tidy transcriptomics suite for tidy and user-friendly grammar of RNA sequencing data exploration and analysis. A wide range of analyses are included in convenient wrappers, including: resolving duplicate gene symbol (e.g., isoforms), scaling (normalisation), identifying variable transcripts, removal of know unwanted variation, differential transcript abundance analyses (differential expression), reducing data dimensionality (MDS, PCA and tSNE), clustering (SNN and kmeans), gene enrichment analyses, remove redundancy (either samples or transcripts).
 
 #  <img src="inst/logo.png" height="139px" width="120px" />
 
