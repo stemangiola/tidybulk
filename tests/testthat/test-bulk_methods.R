@@ -136,6 +136,58 @@ test_that("Get differential trancript abundance - no object",{
     8
   )
 
+  # Continuous covariate
+  sam = distinct(input_df, a)
+  sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
+
+  res =
+  	test_differential_abundance(
+  		left_join(input_df, sam),
+  		~ condition_cont,
+  		.sample = a,
+  		.transcript = b,
+  		.abundance = c,
+  		action="get"
+  	)
+
+  expect_equal(
+  	unique(res$logFC)[1:4],
+  	c(-4.403626, -4.390714, -4.746695, -4.467572),
+  	tolerance=1e-6
+  )
+
+  expect_equal(
+  	ncol(res),
+  	8
+  )
+
+  # Just one covariate error
+  expect_error(
+  	test_differential_abundance(
+  		filter(input_df, condition),
+  		~ condition,
+  		.sample = a,
+  		.transcript = b,
+  		.abundance = c,
+  		action="get"
+  	),
+  	"Design matrix not of full rank"
+  )
+
+  # Just one sample per covariate error
+  expect_error(
+  	test_differential_abundance(
+  		filter(input_df, a %in% c("SRR1740034", "SRR1740035", "SRR1740043", "SRR1740058")),
+  		~ condition,
+  		.sample = a,
+  		.transcript = b,
+  		.abundance = c,
+  		action="get"
+  	),
+  	"You need at least two replicated"
+  )
+
+
 })
 
 test_that("Get differential trancript abundance - no object - with contrasts",{
