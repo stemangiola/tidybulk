@@ -648,7 +648,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		# If I have some discrete covariates
 		df_for_edgeR %>%
 		select(one_of(parse_formula(.formula))) %>%
-		select_if(function(col) is.character(col) | is.factor(col)) %>%
+		select_if(function(col) is.character(col) | is.factor(col) | is.logical(col)) %>%
 		ncol %>% `>` (0) &
 
 		# If I have at least 2 samples per group
