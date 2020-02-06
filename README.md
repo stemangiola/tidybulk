@@ -7,7 +7,7 @@ ttBulk - part of tidyTranscriptomics
 
 -->
 
-A a modular framework and a tidy data structure for bulk transcriptional
+A modular framework and a tidy data structure for bulk transcriptional
 analyses. This package is part of a tidy transcriptomics suite for tidy
 and user-friendly grammar of RNA sequencing data exploration and
 analysis. A wide range of analyses are included in convenient wrappers,
