@@ -6,4 +6,8 @@
 ^codecov\.yml$
 ^dev$
 ^README_cache$
+^README_files$
+README.Rmd
 ^.git$
+.coveralls.yml
+.travis.yml
