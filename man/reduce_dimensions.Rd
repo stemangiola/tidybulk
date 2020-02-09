@@ -51,6 +51,8 @@ A tbl object with additional columns for the reduced dimensions
 reduce_dimensions() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
 }
 \details{
+\lifecycle{maturing}
+
 This function reduces the dimensions of the transcript abundances.
 It can use multi-dimensional scaling (MDS) of principal component analysis (PCA).
 }

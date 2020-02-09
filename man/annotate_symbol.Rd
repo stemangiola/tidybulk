@@ -20,6 +20,8 @@ A `tbl` object including additional columns for transcript symbol
 annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
 }
 \details{
+\lifecycle{maturing}
+
 This is useful since different resources use ensembl IDs while others use gene symbol IDs.
 }
 \examples{

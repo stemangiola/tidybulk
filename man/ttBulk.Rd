@@ -22,6 +22,8 @@ A `ttBulk` object
 ttBulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 }
 \details{
+\lifecycle{maturing}
+
 This function created a ttBulk object and is useful if you want
 to avoid to specify .sample, .transcript and .abundance arguments all the times.
 The ttBulk object have an attribute called parameters where these three

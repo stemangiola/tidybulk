@@ -42,6 +42,8 @@ A tbl object with additional columns with normalised data as `<NAME OF COUNT COL
 scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and normalises the data for the library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 }
 \details{
+\lifecycle{maturing}
+
 normalises the data for the library size
 (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 Lowly transcribed transcripts/genes (defined with cpm_threshold and prop parameters)

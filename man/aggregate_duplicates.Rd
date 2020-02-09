@@ -33,6 +33,8 @@ A `tbl` object with aggregated transcript abundance and annotation
 aggregate_duplicates() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.
 }
 \details{
+\lifecycle{maturing}
+
 This function aggregates duplicated transcripts (e.g., isoforms, ensembl).
 For example, we often have to convert ensembl symbols to gene/transcript symbol,
  but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble
