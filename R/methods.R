@@ -1,5 +1,7 @@
 #' Creates a `tt` object from a `tbl``
 #'
+#' \lifecycle{maturing}
+#'
 #' @description ttBulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
 #' @importFrom rlang enquo
@@ -65,6 +67,8 @@ ttBulk.tbl_df <- function(.data,
 
 #' Creates a `tt` object from a list of file names of BAM/SAM
 #'
+#' \lifecycle{maturing}
+#'
 #' @description ttBulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
 #' @importFrom rlang enquo
@@ -100,6 +104,8 @@ ttBulk_SAM_BAM.default <- function(file_names, genome = "hg38", ...)
 
 #' Normalise the counts of transcripts/genes
 #'
+#' \lifecycle{maturing}
+#'
 #' @description scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and normalises the data for the library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #'
 #' @importFrom rlang enquo
@@ -130,7 +136,6 @@ ttBulk_SAM_BAM.default <- function(file_names, genome = "hg38", ...)
 #'
 #'
 #' @examples
-
 #'
 #'
 #'  scale_abundance(ttBulk::counts_mini,  sample, transcript, `count`)
@@ -205,6 +210,8 @@ scale_abundance.tbl_df = scale_abundance.ttBulk <-
 	}
 
 #' Get clusters of elements (e.g., samples or transcripts)
+#'
+#' \lifecycle{maturing}
 #'
 #' @description cluster_elements() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and identify clusters in the data.
 #'
@@ -344,6 +351,8 @@ cluster_elements.tbl_df = cluster_elements.ttBulk <-
 
 
 #' Dimension reduction of the transcript abundance data
+#'
+#' \lifecycle{maturing}
 #'
 #' @description reduce_dimensions() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
 #'
@@ -550,6 +559,8 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 
 #' Rotate two dimensions (e.g., principal components) of an arbitrary angle
 #'
+#' \lifecycle{maturing}
+#'
 #' @description rotate_dimensions() takes as imput a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
 #'
 #' @importFrom rlang enquo
@@ -660,6 +671,8 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 
 
 #' Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) aboundances are correlated
+#'
+#' \lifecycle{maturing}
 #'
 #' @description remove_redundancy() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., samples).
 #'
@@ -816,6 +829,8 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 
 #' Adjust transcript abundance for unwanted variation
 #'
+#' \lifecycle{maturing}
+#'
 #' @description adjust_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column..
 #'
 #' @importFrom rlang enquo
@@ -932,6 +947,8 @@ adjust_abundance.tbl_df = adjust_abundance.ttBulk <-
 
 #' Aggregates multiple counts from the same samples (e.g., from isoforms), concatenates other character columns, and averages other numeric columns
 #'
+#' \lifecycle{maturing}
+#'
 #' @description aggregate_duplicates() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.
 #'
 #' @importFrom rlang enquo
@@ -1026,6 +1043,8 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 
 
 #' Get cell type proportions from samples
+#'
+#' \lifecycle{maturing}
 #'
 #' @description deconvolve_cellularity() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
 #'
@@ -1129,6 +1148,8 @@ deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
 
 #' Add transcript symbol column from ensembl id
 #'
+#' \lifecycle{maturing}
+#'
 #' @description annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
@@ -1196,6 +1217,8 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 
 
 #' Add differential transcription information to a tbl using edgeR.
+#'
+#' \lifecycle{maturing}
 #'
 #' @description test_differential_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -1318,6 +1341,8 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 
 #' Filter variable transcripts
 #'
+#' \lifecycle{maturing}
+#'
 #' @description filter_variable() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
@@ -1402,6 +1427,8 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 
 
 #' Filter abundant transcripts
+#'
+#' \lifecycle{maturing}
 #'
 #' @description filter_abundant() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -1493,6 +1520,8 @@ filter_abundant.tbl_df = filter_abundant.ttBulk <-
 	}
 
 #' Analise gene enrichment with EGSEA
+#'
+#' \lifecycle{maturing}
 #'
 #' @description analise_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
 #'
