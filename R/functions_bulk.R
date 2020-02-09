@@ -795,6 +795,11 @@ add_differential_transcript_abundance_bulk <- function(.data,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
 																											 fill_missing_values = FALSE) {
+
+	# Comply with CRAN NOTES
+	. = NULL
+	FDR = NULL
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -900,6 +905,10 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 																		 										.contrasts = NULL,
 																		 									 species,
 																		 									cores = 10) {
+
+	# Comply with CRAN NOTES
+	. = NULL
+
 	# Get column names
 	.sample = enquo(.sample)
 	.abundance = enquo(.abundance)
@@ -1109,6 +1118,10 @@ add_clusters_kmeans_bulk <-
 					 of_samples = TRUE,
 					 log_transform = TRUE,
 					 ...) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1294,6 +1307,10 @@ get_reduced_dimensions_MDS_bulk <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1391,6 +1408,10 @@ add_reduced_dimensions_MDS_bulk <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1453,6 +1474,10 @@ get_reduced_dimensions_PCA_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1585,6 +1610,10 @@ add_reduced_dimensions_PCA_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1648,6 +1677,10 @@ get_reduced_dimensions_TSNE_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1760,6 +1793,10 @@ add_reduced_dimensions_TSNE_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1916,6 +1953,10 @@ add_rotated_dimensions =
 					 of_samples = TRUE,
 					 dimension_1_column_rotated = NULL,
 					 dimension_2_column_rotated = NULL) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		col_names = get_elements(.data, .element)
@@ -1986,6 +2027,9 @@ aggregate_duplicated_transcripts_bulk =
 					 aggregation_function = sum,
 
 					 keep_integer = TRUE) {
+
+		# Comply with CRAN NOTES
+		. = NULL
 
 		# Get column names
 		.sample = enquo(.sample)
@@ -2124,6 +2168,10 @@ remove_redundancy_elements_through_correlation <- function(.data,
 																												top = Inf,
 																												of_samples = TRUE,
 																												log_transform = FALSE) {
+
+	# Comply with CRAN NOTES
+	. = NULL
+
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
@@ -2369,6 +2417,10 @@ get_symbol_from_ensembl <-
 #'
 add_symbol_from_ensembl <-
 	function(.data, .ensembl) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		.ensembl = enquo(.ensembl)
 
 		# Add new symbols column
@@ -2543,6 +2595,10 @@ add_cell_type_proportions = function(.data,
 																		 reference = X_cibersort,
 																		 method = "cibersort",
 																		 ...) {
+
+	# Comply with CRAN NOTES
+	. = NULL
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2747,6 +2803,10 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 																														.abundance = NULL,
 																														log_transform = TRUE,
 																														...) {
+
+	# Comply with CRAN NOTES
+	. = NULL
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
