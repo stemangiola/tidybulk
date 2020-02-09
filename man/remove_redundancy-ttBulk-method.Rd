@@ -18,6 +18,29 @@
   Dim_b_column
 )
 }
+\arguments{
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+
+\item{.element}{The name of the element column (normally samples).}
+
+\item{.feature}{The name of the feature column (normally transcripts/genes)}
+
+\item{.abundance}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
+
+\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
+
+\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
+
+\item{correlation_threshold}{A real number between 0 and 1. For correlation based calculation.}
+
+\item{top}{An integer. How many top genes to select for correlation based method}
+
+\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+
+\item{Dim_a_column}{A character string. For reduced_dimension based calculation. The column of one principal component}
+
+\item{Dim_b_column}{A character string. For reduced_dimension based calculation. The column of another principal component}
+}
 \description{
 remove_redundancy
 }

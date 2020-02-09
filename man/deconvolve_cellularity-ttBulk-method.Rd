@@ -15,6 +15,23 @@
   ...
 )
 }
+\arguments{
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+
+\item{.sample}{The name of the sample column}
+
+\item{.transcript}{The name of the transcript/gene column}
+
+\item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{reference}{A data frame. The transcript/cell_type data frame of integer transcript abundance}
+
+\item{method}{A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.}
+
+\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+
+\item{...}{Further parameters passed to the function Cibersort}
+}
 \description{
 deconvolve_cellularity
 }

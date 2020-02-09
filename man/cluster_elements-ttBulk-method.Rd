@@ -16,6 +16,25 @@
   ...
 )
 }
+\arguments{
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+
+\item{.element}{The name of the element column (normally samples).}
+
+\item{.feature}{The name of the feature column (normally transcripts/genes)}
+
+\item{.abundance}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
+
+\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
+
+\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
+
+\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+
+\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+
+\item{...}{Further parameters passed to the function kmeans}
+}
 \description{
 cluster_elements
 }

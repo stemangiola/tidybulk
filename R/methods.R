@@ -57,11 +57,13 @@ setGeneric("ttBulk", function(.data,
   create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance)
 }
 #' ttBulk
-#' @export
+#' @inheritParams ttBulk
+#' 
 setMethod("ttBulk", "spec_tbl_df", .ttBulk)
 
 #' ttBulk
-#' @export
+#' @inheritParams ttBulk
+#' 
 setMethod("ttBulk", "tbl_df", .ttBulk)
 
 
@@ -98,7 +100,7 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 setGeneric("ttBulk_SAM_BAM", function(file_names, genome = "hg38", ...) standardGeneric("ttBulk_SAM_BAM"))
 
 #' ttBulk_SAM_BAM
-#' @export
+#' @inheritParams ttBulk_SAM_BAM
 setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	function(file_names, genome = "hg38", ...) create_tt_from_bam_sam_bulk(file_names = file_names, genome = genome, ...))
 
 #' Normalise the counts of transcripts/genes
@@ -195,15 +197,15 @@ setGeneric("scale_abundance", function(.data,
 }
 
 #' scale_abundance
-#' @export
+#' @inheritParams scale_abundance
 setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
 
 #' scale_abundance
-#' @export
+#' @inheritParams scale_abundance
 setMethod("scale_abundance", "tbl_df", .scale_abundance)
 
 #' scale_abundance
-#' @export
+#' @inheritParams scale_abundance
 setMethod("scale_abundance", "ttBulk", .scale_abundance)
 
 
@@ -330,15 +332,15 @@ setGeneric("cluster_elements", function(.data,
 }
   
 #' cluster_elements
-#' @export
+#' @inheritParams cluster_elements
 setMethod("cluster_elements", "spec_tbl_df", .cluster_elements)
 
 #' cluster_elements
-#' @export
+#' @inheritParams cluster_elements
 setMethod("cluster_elements", "tbl_df", .cluster_elements)
 
 #' cluster_elements
-#' @export
+#' @inheritParams cluster_elements
 setMethod("cluster_elements", "ttBulk", .cluster_elements)
 
 
@@ -529,15 +531,15 @@ setGeneric("reduce_dimensions", function(.data,
 }
   
 #' reduce_dimensions
-#' @export
+#' @inheritParams reduce_dimensions
 setMethod("reduce_dimensions", "spec_tbl_df", .reduce_dimensions)
 
 #' reduce_dimensions
-#' @export
+#' @inheritParams reduce_dimensions
 setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 
 #' reduce_dimensions
-#' @export
+#' @inheritParams reduce_dimensions
 setMethod("reduce_dimensions", "ttBulk", .reduce_dimensions)
 
 
@@ -637,15 +639,15 @@ setGeneric("rotate_dimensions", function(.data,
 	}
 
 #' rotate_dimensions  
-#' @export
+#' @inheritParams rotate_dimensions
 setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
 
 #' rotate_dimensions  
-#' @export
+#' @inheritParams rotate_dimensions
 setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 
 #' rotate_dimensions  
-#' @export
+#' @inheritParams rotate_dimensions
 setMethod("rotate_dimensions", "ttBulk", .rotate_dimensions)
 
 
@@ -783,15 +785,15 @@ setGeneric("remove_redundancy", function(.data,
 }
 
 #' remove_redundancy
-#' @export
+#' @inheritParams remove_redundancy
 setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 
 #' remove_redundancy
-#' @export
+#' @inheritParams remove_redundancy
 setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 
 #' remove_redundancy
-#' @export
+#' @inheritParams remove_redundancy
 setMethod("remove_redundancy", "ttBulk", .remove_redundancy)
 
 
@@ -898,15 +900,15 @@ setGeneric("adjust_abundance", function(.data,
 	}
   
 #' adjust_abundance
-#' @export
+#' @inheritParams adjust_abundance
 setMethod("adjust_abundance", "spec_tbl_df", .adjust_abundance)
 
 #' adjust_abundance
-#' @export
+#' @inheritParams adjust_abundance
 setMethod("adjust_abundance", "tbl_df", .adjust_abundance)
 
 #' adjust_abundance
-#' @export
+#' @inheritParams adjust_abundance
 setMethod("adjust_abundance", "ttBulk", .adjust_abundance)
 
 
@@ -991,15 +993,15 @@ setGeneric("aggregate_duplicates", function(.data,
 	}
 
 #' aggregate_duplicates
-#' @export
+#' @inheritParams aggregate_duplicates
 setMethod("aggregate_duplicates", "spec_tbl_df", .aggregate_duplicates)
 
 #' aggregate_duplicates
-#' @export
+#' @inheritParams aggregate_duplicates
 setMethod("aggregate_duplicates", "tbl_df", .aggregate_duplicates)
 
 #' aggregate_duplicates
-#' @export
+#' @inheritParams aggregate_duplicates
 setMethod("aggregate_duplicates", "ttBulk", .aggregate_duplicates)
 
 
@@ -1091,15 +1093,15 @@ setGeneric("deconvolve_cellularity", function(.data,
 	}
 
 #' deconvolve_cellularity
-#' @export
+#' @inheritParams deconvolve_cellularity
 setMethod("deconvolve_cellularity", "spec_tbl_df", .deconvolve_cellularity)
 
 #' deconvolve_cellularity
-#' @export
+#' @inheritParams deconvolve_cellularity
 setMethod("deconvolve_cellularity", "tbl_df", .deconvolve_cellularity)
 
 #' deconvolve_cellularity
-#' @export
+#' @inheritParams deconvolve_cellularity
 setMethod("deconvolve_cellularity", "ttBulk", .deconvolve_cellularity)
 
 #' Add transcript symbol column from ensembl id
@@ -1161,15 +1163,15 @@ setGeneric("annotate_symbol", function(.data,
 	}
 
 #' annotate_symbol
-#' @export
+#' @inheritParams annotate_symbol
 setMethod("annotate_symbol", "spec_tbl_df", .annotate_symbol)
 
 #' annotate_symbol
-#' @export
+#' @inheritParams annotate_symbol
 setMethod("annotate_symbol", "tbl_df", .annotate_symbol)
 
 #' annotate_symbol
-#' @export
+#' @inheritParams annotate_symbol
 setMethod("annotate_symbol", "ttBulk", .annotate_symbol)
 
 
@@ -1279,15 +1281,15 @@ setGeneric("test_differential_abundance", function(.data,
 	}
 
 #' test_differential_abundance
-#' @export
+#' @inheritParams test_differential_abundance
 setMethod("test_differential_abundance", "spec_tbl_df", .test_differential_abundance)
 
 #' test_differential_abundance
-#' @export
+#' @inheritParams test_differential_abundance
 setMethod("test_differential_abundance", "tbl_df", .test_differential_abundance)
 
 #' test_differential_abundance
-#' @export
+#' @inheritParams test_differential_abundance
 setMethod("test_differential_abundance", "ttBulk", .test_differential_abundance)
 
 #' Filter variable transcripts
@@ -1364,15 +1366,15 @@ setGeneric("filter_variable", function(.data,
 	}
   
 #' filter_variable
-#' @export
+#' @inheritParams filter_variable
 setMethod("filter_variable", "spec_tbl_df", .filter_variable)
 
 #' filter_variable
-#' @export
+#' @inheritParams filter_variable
 setMethod("filter_variable", "tbl_df", .filter_variable)
 
 #' filter_variable
-#' @export
+#' @inheritParams filter_variable
 setMethod("filter_variable", "ttBulk", .filter_variable)
 
 
@@ -1457,15 +1459,15 @@ setGeneric("filter_abundant", function(.data,
 	}
 
 #' filter_abundant
-#' @export
+#' @inheritParams filter_abundant
 setMethod("filter_abundant", "spec_tbl_df", .filter_abundant)
 
 #' filter_abundant
-#' @export
+#' @inheritParams filter_abundant
 setMethod("filter_abundant", "tbl_df", .filter_abundant)
 
 #' filter_abundant
-#' @export
+#' @inheritParams filter_abundant
 setMethod("filter_abundant", "ttBulk", .filter_abundant)
 
 #' Analise gene enrichment with EGSEA
@@ -1558,13 +1560,13 @@ setGeneric("analise_gene_enrichment", function(.data,
 	}
 
 #' analise_gene_enrichment
-#' @export
+#' @inheritParams analise_gene_enrichment
 setMethod("analise_gene_enrichment", "spec_tbl_df", .analise_gene_enrichment)
 
 #' analise_gene_enrichment
-#' @export
+#' @inheritParams analise_gene_enrichment
 setMethod("analise_gene_enrichment", "tbl_df", .analise_gene_enrichment)
 
 #' analise_gene_enrichment
-#' @export
+#' @inheritParams analise_gene_enrichment
 setMethod("analise_gene_enrichment", "ttBulk", .analise_gene_enrichment)
