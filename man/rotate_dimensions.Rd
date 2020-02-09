@@ -42,6 +42,8 @@ A tbl object with additional columns for the reduced dimensions. additional colu
 rotate_dimensions() takes as imput a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
 }
 \details{
+\lifecycle{maturing}
+
 This function to rotate two dimensions such as the reduced dimensions.
 }
 \examples{

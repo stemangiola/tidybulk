@@ -39,6 +39,8 @@ A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjus
 adjust_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column..
 }
 \details{
+\lifecycle{maturing}
+
 This function adjusts the abundance for (known) unwanted variation. At the moment just an unwanted covariated is allowed at a time.
 }
 \examples{

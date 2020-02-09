@@ -39,6 +39,8 @@ A `tbl` object
 analise_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
 }
 \details{
+\lifecycle{maturing}
+
 This wrapper execute gene enrichment analyses of the dataset
 }
 \examples{

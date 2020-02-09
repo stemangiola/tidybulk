@@ -45,6 +45,8 @@ A `tbl` with additional columns for the statistics from the hypothesis test (e.g
 test_differential_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 }
 \details{
+\lifecycle{maturing}
+
 At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
 }
 \examples{
