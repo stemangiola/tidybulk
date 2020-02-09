@@ -6,6 +6,13 @@
 \usage{
 \S4method{ttBulk_SAM_BAM}{character,character}(file_names, genome = "hg38", ...)
 }
+\arguments{
+\item{file_names}{A character vector}
+
+\item{genome}{A character string}
+
+\item{...}{Further parameters passed to the function Rsubread::featureCounts}
+}
 \description{
 ttBulk_SAM_BAM
 }

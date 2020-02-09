@@ -6,6 +6,13 @@
 \usage{
 \S4method{annotate_symbol}{tbl_df}(.data, .ensembl, action = "add")
 }
+\arguments{
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> |}
+
+\item{.ensembl}{A character string. The column that is represents ensembl gene id}
+
+\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+}
 \description{
 annotate_symbol
 }

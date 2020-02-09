@@ -16,6 +16,25 @@
   action = "add"
 )
 }
+\arguments{
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+
+\item{dimension_1_column}{A character string. The column of the dimension 1}
+
+\item{dimension_2_column}{A character string. The column of the dimension 2}
+
+\item{rotation_degrees}{A real number between 0 and 360}
+
+\item{.element}{The name of the element column (normally samples).}
+
+\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
+
+\item{dimension_1_column_rotated}{A character string. The column of the rotated dimension 1 (optional)}
+
+\item{dimension_2_column_rotated}{A character string. The column of the rotated dimension 2 (optional)}
+
+\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+}
 \description{
 rotate_dimensions
 }

@@ -17,6 +17,27 @@
   action = "add"
 )
 }
+\arguments{
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+
+\item{.formula}{A formula with no response variable, representing the desired linear model}
+
+\item{.sample}{The name of the sample column}
+
+\item{.transcript}{The name of the transcript/gene column}
+
+\item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{.coef}{An integer. See edgeR specifications}
+
+\item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`}
+
+\item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
+
+\item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
+
+\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+}
 \description{
 test_differential_abundance
 }

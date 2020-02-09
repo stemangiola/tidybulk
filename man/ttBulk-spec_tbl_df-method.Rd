@@ -6,6 +6,15 @@
 \usage{
 \S4method{ttBulk}{spec_tbl_df}(.data, .sample, .transcript, .abundance)
 }
+\arguments{
+\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+
+\item{.sample}{The name of the sample column}
+
+\item{.transcript}{The name of the transcript/gene column}
+
+\item{.abundance}{The name of the transcript/gene abundance column}
+}
 \description{
 ttBulk
 }
