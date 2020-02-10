@@ -4,7 +4,13 @@
 \alias{create_tt_from_tibble_bulk}
 \title{Create tt object from tibble}
 \usage{
-create_tt_from_tibble_bulk(.data, .sample, .transcript, .abundance)
+create_tt_from_tibble_bulk(
+  .data,
+  .sample,
+  .transcript,
+  .abundance,
+  .abundance_normalised = NULL
+)
 }
 \arguments{
 \item{.data}{A tibble}

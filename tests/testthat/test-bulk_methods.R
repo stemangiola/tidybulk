@@ -810,7 +810,7 @@ test_that("nest - no object",{
 
 test_that("ttBulk SummarizedExperiment conversion",{
 
-	res = ttBulk::se %>% ttBulk
+	res = ttBulk(ttBulk::se)
 
 	expect_equal(	class(res)[1],	"ttBulk"	)
 
@@ -827,3 +827,26 @@ test_that("ttBulk SummarizedExperiment conversion",{
 	expect_equal(	ncol(res),	8	)
 
 })
+
+test_that("ttBulk SummarizedExperiment normalisation",{
+
+	res = ttBulk(ttBulk:::ttBulk_to_SummarizedExperiment(scale_abundance(ttBulk(se))))
+
+	expect_equal(
+		res[1:4,]$`counts normalised`,
+		c(1327.286584 , 859.307120 , 898.641600  ,  2.017153),
+		tolerance=1e-6
+	)
+
+	expect_equal(	nrow(res),	800	)
+
+	expect_equal(	ncol(res),	16	)
+
+
+	res = rlang::quo_name(attr(res, "parameters")[[4]])
+
+	expect_equal( res,	"counts normalised"	)
+
+})
+
+

@@ -597,10 +597,11 @@ get_abundance_norm_if_exists = function(.data, .abundance){
 
       return(list(
         .abundance =  switch(
-          (".abundance_norm" %in% (.data %>% attr("parameters") %>% names) &
-             quo_name(.data %>% attr("parameters") %$% .abundance_norm) %in% (.data %>% colnames)
+          (".abundance_normalised" %in% (.data %>% attr("parameters") %>% names) &
+             # .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
+             quo_name(.data %>% attr("parameters") %$% .abundance_normalised) %in% (.data %>% colnames)
            ) %>% `!` %>% sum(1),
-          attr(.data, "parameters")$.abundance_norm,
+          attr(.data, "parameters")$.abundance_normalised,
           attr(.data, "parameters")$.abundance
         )
       ))
@@ -743,6 +744,17 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance)
   )
 }
 
+#'ttBulk_to_SummarizedExperiment
+#'
+#' @importFrom SummarizedExperiment SummarizedExperiment
+#'
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#'
+#' @return A SummarizedExperiment
+#'
 ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL){
 
   # Get column names
@@ -755,17 +767,18 @@ ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = N
   .abundance = col_names$.abundance
 
   # If present get the normalised abundance
-  .abundance_norm =
+  .abundance_normalised =
     .data %>%
     ifelse_pipe(
-      ".abundance_norm" %in% ((.) %>% attr("parameters") %>% names) &&
-         quo_name((.) %>% attr("parameters") %$% .abundance_norm) %in% ((.) %>% colnames),
-      ~ .x %>% attr("parameters") %$% .abundance_norm,
+      ".abundance_normalised" %in% ((.) %>% attr("parameters") %>% names) &&
+        # .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
+         quo_name((.) %>% attr("parameters") %$% .abundance_normalised) %in% ((.) %>% colnames),
+      ~ .x %>% attr("parameters") %$% .abundance_normalised,
       ~ NULL
     )
 
   # Get which columns are sample wise and which are feature wise
-  col_direction =get_x_y_annotation_columns(.data, sample, feature, abundance)
+  col_direction =get_x_y_annotation_columns(.data, !!.sample, !!.transcript, !!.abundance)
   sample_cols = col_direction$horizontal
   feature_cols = col_direction$vertical %>% setdiff(sample_cols)
 
@@ -775,7 +788,7 @@ ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = N
 
   assays =
     .data %>%
-    select(!!.sample, !!.transcript, !!.abundance, !!.abundance_norm) %>%
+    select(!!.sample, !!.transcript, !!.abundance, !!.abundance_normalised) %>%
     distinct() %>%
     gather(assay, .a, -!!.transcript, -!!.sample) %>%
     nest(data = -assay) %>%

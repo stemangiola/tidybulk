@@ -4,7 +4,7 @@
 \alias{ttBulk,spec_tbl_df-method}
 \title{ttBulk}
 \usage{
-\S4method{ttBulk}{spec_tbl_df}(.data, .sample, .transcript, .abundance)
+\S4method{ttBulk}{spec_tbl_df}(.data, .sample, .transcript, .abundance, .abundance_normalised = NULL)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
