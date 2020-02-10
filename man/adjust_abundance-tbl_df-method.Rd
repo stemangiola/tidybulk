@@ -32,6 +32,9 @@
 
 \item{...}{Further parameters passed to the function sva::ComBat}
 }
+\value{
+A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
+}
 \description{
 adjust_abundance
 }

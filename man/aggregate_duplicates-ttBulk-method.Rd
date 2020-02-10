@@ -26,6 +26,9 @@
 
 \item{keep_integer}{A boolean. Whether to force the aggregated counts to integer}
 }
+\value{
+A `tbl` object with aggregated transcript abundance and annotation
+}
 \description{
 aggregate_duplicates
 }

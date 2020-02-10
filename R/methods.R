@@ -34,7 +34,7 @@ setOldClass("ttBulk")
 #' @docType methods
 #' @rdname ttBulk-methods
 #' @export
-#' 
+#'
 setGeneric("ttBulk", function(.data,
                               .sample,
                               .transcript,
@@ -45,25 +45,27 @@ setGeneric("ttBulk", function(.data,
                    .sample,
                    .transcript,
                    .abundance) {
-  
+
   # Make col names
   .sample = enquo(.sample)
   .transcript = enquo(.transcript)
   .abundance = enquo(.abundance)
-  
+
   # Validate data frame
   validation(.data,!!.sample,!!.transcript,!!.abundance, skip_dupli_check = TRUE)
-  
+
   create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance)
 }
 #' ttBulk
 #' @inheritParams ttBulk
-#' 
+#' @return A `ttBulk` object
+#'
 setMethod("ttBulk", "spec_tbl_df", .ttBulk)
 
 #' ttBulk
 #' @inheritParams ttBulk
-#' 
+#' @return A `ttBulk` object
+#'
 setMethod("ttBulk", "tbl_df", .ttBulk)
 
 
@@ -96,11 +98,13 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 #' @docType methods
 #' @rdname ttBulk_SAM_BAM-methods
 #' @export
-#' 
+#'
 setGeneric("ttBulk_SAM_BAM", function(file_names, genome = "hg38", ...) standardGeneric("ttBulk_SAM_BAM"))
 
 #' ttBulk_SAM_BAM
 #' @inheritParams ttBulk_SAM_BAM
+#' @return A `ttBulk` object
+#'
 setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	function(file_names, genome = "hg38", ...) create_tt_from_bam_sam_bulk(file_names = file_names, genome = genome, ...))
 
 #' Normalise the counts of transcripts/genes
@@ -170,10 +174,10 @@ setGeneric("scale_abundance", function(.data,
   .sample = enquo(.sample)
   .transcript = enquo(.transcript)
   .abundance = enquo(.abundance)
-  
+
   # Validate data frame
   validation(.data,!!.sample,!!.transcript,!!.abundance)
-  
+
   if (action == "add")
     add_normalised_counts_bulk(
       .data,!!.sample,!!.transcript,!!.abundance,
@@ -198,14 +202,20 @@ setGeneric("scale_abundance", function(.data,
 
 #' scale_abundance
 #' @inheritParams scale_abundance
+#' @return A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
+#'
 setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
+#' @return A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
+#'
 setMethod("scale_abundance", "tbl_df", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
+#' @return A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
+#'
 setMethod("scale_abundance", "ttBulk", .scale_abundance)
 
 
@@ -270,10 +280,10 @@ setGeneric("cluster_elements", function(.data,
   .abundance = enquo(.abundance)
   .element = enquo(.element)
   .feature = enquo(.feature)
-  
+
   # Validate data frame
   validation(.data,!!.element,!!.feature,!!.abundance)
-  
+
   if (method == "kmeans") {
     if (action == "add")
       add_clusters_kmeans_bulk(
@@ -328,22 +338,26 @@ setGeneric("cluster_elements", function(.data,
   }
   else
     stop("the only supported methods are \"kmeans\" or \"SNN\" ")
-  
+
 }
-  
+
 #' cluster_elements
 #' @inheritParams cluster_elements
+#' @return A tbl object with additional columns with cluster labels
+#'
 setMethod("cluster_elements", "spec_tbl_df", .cluster_elements)
 
 #' cluster_elements
 #' @inheritParams cluster_elements
+#' @return A tbl object with additional columns with cluster labels
+#'
 setMethod("cluster_elements", "tbl_df", .cluster_elements)
 
 #' cluster_elements
 #' @inheritParams cluster_elements
+#' @return A tbl object with additional columns with cluster labels
+#'
 setMethod("cluster_elements", "ttBulk", .cluster_elements)
-
-
 
 
 #' Dimension reduction of the transcript abundance data
@@ -413,7 +427,7 @@ setGeneric("reduce_dimensions", function(.data,
                                 .abundance = NULL,
                                 method,
                                 .dims = 2,
-                                
+
                                 top = 500,
                                 of_samples = TRUE,
                                 log_transform = TRUE,
@@ -425,10 +439,10 @@ setGeneric("reduce_dimensions", function(.data,
   .abundance = enquo(.abundance)
   .element = enquo(.element)
   .feature = enquo(.feature)
-  
+
   # Validate data frame
   validation(.data,!!.element,!!.feature,!!.abundance)
-  
+
   if (method == "MDS") {
     if (action == "add")
       add_reduced_dimensions_MDS_bulk(
@@ -490,7 +504,7 @@ setGeneric("reduce_dimensions", function(.data,
       stop(
         "action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
       )
-    
+
   }
   else if (method == "tSNE") {
     if (action == "add")
@@ -523,23 +537,26 @@ setGeneric("reduce_dimensions", function(.data,
       stop(
         "action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
       )
-    
+
   }
   else
     stop("method must be either \"MDS\" or \"PCA\"")
-  
+
 }
-  
+
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions
 setMethod("reduce_dimensions", "spec_tbl_df", .reduce_dimensions)
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions
 setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions
 setMethod("reduce_dimensions", "ttBulk", .reduce_dimensions)
 
 
@@ -638,16 +655,19 @@ setGeneric("rotate_dimensions", function(.data,
 			)
 	}
 
-#' rotate_dimensions  
+#' rotate_dimensions
 #' @inheritParams rotate_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
 
-#' rotate_dimensions  
+#' rotate_dimensions
 #' @inheritParams rotate_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 
-#' rotate_dimensions  
+#' rotate_dimensions
 #' @inheritParams rotate_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "ttBulk", .rotate_dimensions)
 
 
@@ -786,14 +806,17 @@ setGeneric("remove_redundancy", function(.data,
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
+#' @return A tbl object with with dropped recundant elements (e.g., samples).
 setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
+#' @return A tbl object with with dropped recundant elements (e.g., samples).
 setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
+#' @return A tbl object with with dropped recundant elements (e.g., samples).
 setMethod("remove_redundancy", "ttBulk", .remove_redundancy)
 
 
@@ -898,17 +921,20 @@ setGeneric("adjust_abundance", function(.data,
 				"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
-  
+
 #' adjust_abundance
 #' @inheritParams adjust_abundance
+#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
 setMethod("adjust_abundance", "spec_tbl_df", .adjust_abundance)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
+#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
 setMethod("adjust_abundance", "tbl_df", .adjust_abundance)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
+#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
 setMethod("adjust_abundance", "ttBulk", .adjust_abundance)
 
 
@@ -994,14 +1020,17 @@ setGeneric("aggregate_duplicates", function(.data,
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
+#' @return A `tbl` object with aggregated transcript abundance and annotation
 setMethod("aggregate_duplicates", "spec_tbl_df", .aggregate_duplicates)
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
+#' @return A `tbl` object with aggregated transcript abundance and annotation
 setMethod("aggregate_duplicates", "tbl_df", .aggregate_duplicates)
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
+#' @return A `tbl` object with aggregated transcript abundance and annotation
 setMethod("aggregate_duplicates", "ttBulk", .aggregate_duplicates)
 
 
@@ -1094,14 +1123,17 @@ setGeneric("deconvolve_cellularity", function(.data,
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
+#' @return A `tbl` object including additional columns for each cell type estimated
 setMethod("deconvolve_cellularity", "spec_tbl_df", .deconvolve_cellularity)
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
+#' @return A `tbl` object including additional columns for each cell type estimated
 setMethod("deconvolve_cellularity", "tbl_df", .deconvolve_cellularity)
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
+#' @return A `tbl` object including additional columns for each cell type estimated
 setMethod("deconvolve_cellularity", "ttBulk", .deconvolve_cellularity)
 
 #' Add transcript symbol column from ensembl id
@@ -1164,14 +1196,17 @@ setGeneric("annotate_symbol", function(.data,
 
 #' annotate_symbol
 #' @inheritParams annotate_symbol
+#' @return A `tbl` object including additional columns for transcript symbol
 setMethod("annotate_symbol", "spec_tbl_df", .annotate_symbol)
 
 #' annotate_symbol
 #' @inheritParams annotate_symbol
+#' @return A `tbl` object including additional columns for transcript symbol
 setMethod("annotate_symbol", "tbl_df", .annotate_symbol)
 
 #' annotate_symbol
 #' @inheritParams annotate_symbol
+#' @return A `tbl` object including additional columns for transcript symbol
 setMethod("annotate_symbol", "ttBulk", .annotate_symbol)
 
 
@@ -1282,14 +1317,17 @@ setGeneric("test_differential_abundance", function(.data,
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_abundance", "spec_tbl_df", .test_differential_abundance)
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_abundance", "tbl_df", .test_differential_abundance)
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_abundance", "ttBulk", .test_differential_abundance)
 
 #' Filter variable transcripts
@@ -1364,17 +1402,20 @@ setGeneric("filter_variable", function(.data,
 				log_transform = log_transform
 			)
 	}
-  
+
 #' filter_variable
 #' @inheritParams filter_variable
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("filter_variable", "spec_tbl_df", .filter_variable)
 
 #' filter_variable
 #' @inheritParams filter_variable
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("filter_variable", "tbl_df", .filter_variable)
 
 #' filter_variable
 #' @inheritParams filter_variable
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("filter_variable", "ttBulk", .filter_variable)
 
 
@@ -1460,14 +1501,17 @@ setGeneric("filter_abundant", function(.data,
 
 #' filter_abundant
 #' @inheritParams filter_abundant
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("filter_abundant", "spec_tbl_df", .filter_abundant)
 
 #' filter_abundant
 #' @inheritParams filter_abundant
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("filter_abundant", "tbl_df", .filter_abundant)
 
 #' filter_abundant
 #' @inheritParams filter_abundant
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("filter_abundant", "ttBulk", .filter_abundant)
 
 #' Analise gene enrichment with EGSEA
@@ -1561,12 +1605,15 @@ setGeneric("analise_gene_enrichment", function(.data,
 
 #' analise_gene_enrichment
 #' @inheritParams analise_gene_enrichment
+#' @return A `tbl` object
 setMethod("analise_gene_enrichment", "spec_tbl_df", .analise_gene_enrichment)
 
 #' analise_gene_enrichment
 #' @inheritParams analise_gene_enrichment
+#' @return A `tbl` object
 setMethod("analise_gene_enrichment", "tbl_df", .analise_gene_enrichment)
 
 #' analise_gene_enrichment
 #' @inheritParams analise_gene_enrichment
+#' @return A `tbl` object
 setMethod("analise_gene_enrichment", "ttBulk", .analise_gene_enrichment)

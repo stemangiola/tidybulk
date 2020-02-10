@@ -44,6 +44,9 @@
 
 \item{...}{Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"}
 }
+\value{
+A tbl object with additional columns for the reduced dimensions
+}
 \description{
 reduce_dimensions
 }

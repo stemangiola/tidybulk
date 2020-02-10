@@ -35,6 +35,9 @@
 
 \item{...}{Further parameters passed to the function kmeans}
 }
+\value{
+A tbl object with additional columns with cluster labels
+}
 \description{
 cluster_elements
 }

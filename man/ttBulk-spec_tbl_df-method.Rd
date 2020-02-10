@@ -15,6 +15,9 @@
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 }
+\value{
+A `ttBulk` object
+}
 \description{
 ttBulk
 }

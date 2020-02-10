@@ -32,6 +32,9 @@
 
 \item{...}{Further parameters passed to the function Cibersort}
 }
+\value{
+A `tbl` object including additional columns for each cell type estimated
+}
 \description{
 deconvolve_cellularity
 }

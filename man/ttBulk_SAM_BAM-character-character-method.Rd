@@ -13,6 +13,9 @@
 
 \item{...}{Further parameters passed to the function Rsubread::featureCounts}
 }
+\value{
+A `ttBulk` object
+}
 \description{
 ttBulk_SAM_BAM
 }
