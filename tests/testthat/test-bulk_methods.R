@@ -807,3 +807,23 @@ test_that("nest - no object",{
 	expect_equal(	class(nest(ttBulk(input_df, a, b, c), data = a))[1],	"data.frame"	)
 
 })
+
+test_that("ttBulk SummarizedExperiment conversion",{
+
+	res = ttBulk::se %>% ttBulk
+
+	expect_equal(	class(res)[1],	"ttBulk"	)
+
+	expect_equal(	nrow(res),	800	)
+
+	expect_equal(	ncol(res),	12	)
+
+	res = res %>% ttBulk:::ttBulk_to_SummarizedExperiment()
+
+	expect_equal(	class(res)[1],	"SummarizedExperiment"	)
+
+	expect_equal(	nrow(res),	100	)
+
+	expect_equal(	ncol(res),	8	)
+
+})

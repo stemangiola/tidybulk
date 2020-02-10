@@ -32,3 +32,8 @@
 #'
 #'
 "flybaseIDs"
+
+#' SummarizedExperiment
+#'
+#'
+"se"
