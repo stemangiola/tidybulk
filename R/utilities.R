@@ -668,3 +668,124 @@ tibble::tibble
 #' @importFrom tibble as_tibble
 #' @export
 tibble::as_tibble
+
+#' get_x_y_annotation_columns
+#'
+#' @importFrom magrittr equals
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .horizontal The name of the column horizontally presented in the heatmap
+#' @param .vertical The name of the column vertically presented in the heatmap
+#' @param .abundance The name of the transcript/gene abundance column
+#'
+#' @return A list
+#'
+get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance){
+
+
+  # Comply with CRAN NOTES
+  . = NULL
+
+  # Make col names
+  .horizontal = enquo(.horizontal)
+  .vertical = enquo(.vertical)
+  .abundance = enquo(.abundance)
+
+  # x-annotation df
+  n_x = .data %>% distinct(!!.horizontal) %>% nrow
+  n_y = .data %>% distinct(!!.vertical) %>% nrow
+
+  list(
+
+    # Horizontal
+    horizontal=
+      .data %>%
+      select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
+      colnames %>%
+      map(
+        ~
+          .x %>%
+          ifelse_pipe(
+            .data %>%
+              distinct(!!.horizontal, !!as.symbol(.x)) %>%
+              nrow %>%
+              equals(n_x),
+            ~ .x,
+            ~ NULL
+          )
+      ) %>%
+
+      # Drop NULL
+      {	(.)[lengths((.)) != 0]	} %>%
+      unlist,
+
+    vertical=
+      .data %>%
+      select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
+      colnames %>%
+      map(
+        ~
+          .x %>%
+          ifelse_pipe(
+            .data %>%
+              distinct(!!.vertical, !!as.symbol(.x)) %>%
+              nrow %>%
+              equals(n_y),
+            ~ .x,
+            ~ NULL
+          )
+      ) %>%
+
+      # Drop NULL
+      {	(.)[lengths((.)) != 0]	} %>%
+      unlist
+
+  )
+}
+
+ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL){
+
+  # Get column names
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+  col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+  .sample = col_names$.sample
+  .transcript = col_names$.transcript
+  .abundance = col_names$.abundance
+
+  # If present get the normalised abundance
+  .abundance_norm =
+    .data %>%
+    ifelse_pipe(
+      ".abundance_norm" %in% ((.) %>% attr("parameters") %>% names) &&
+         quo_name((.) %>% attr("parameters") %$% .abundance_norm) %in% ((.) %>% colnames),
+      ~ .x %>% attr("parameters") %$% .abundance_norm,
+      ~ NULL
+    )
+
+  # Get which columns are sample wise and which are feature wise
+  col_direction =get_x_y_annotation_columns(.data, sample, feature, abundance)
+  sample_cols = col_direction$horizontal
+  feature_cols = col_direction$vertical %>% setdiff(sample_cols)
+
+  colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% { DataFrame((.) %>% select(-!!.sample), row.names = (.) %>% pull(!!.sample)) }
+
+  rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% { DataFrame((.) %>% select(-!!.transcript), row.names = (.) %>% pull(!!.transcript)) }
+
+  assays =
+    .data %>%
+    select(!!.sample, !!.transcript, !!.abundance, !!.abundance_norm) %>%
+    distinct() %>%
+    gather(assay, .a, -!!.transcript, -!!.sample) %>%
+    nest(data = -assay) %>%
+    mutate(data = data %>%  map(~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))))
+
+  # Build the object
+  SummarizedExperiment(
+    assays=assays %>% pull(data) %>% setNames(assays$assay),
+    rowData = rowData,
+    colData = colData
+ )
+
+}

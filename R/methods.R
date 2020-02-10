@@ -1,6 +1,10 @@
 setOldClass("spec_tbl_df")
 setOldClass("ttBulk")
 
+#' @import SummarizedExperiment
+setClass("SummarizedExperiment")
+setClass("RangedSummarizedExperiment")
+
 #' Creates a `tt` object from a `tbl``
 #'
 #' \lifecycle{maturing}
@@ -70,7 +74,38 @@ setMethod("ttBulk", "spec_tbl_df", .ttBulk)
 #'
 setMethod("ttBulk", "tbl_df", .ttBulk)
 
+.ttBulk_se = function(.data,
+											 .sample,
+											 .transcript,
+											 .abundance){
 
+	assays(.data)$counts %>%
+		as_tibble(rownames = "feature") %>%
+		gather(sample, abundance, -feature) %>%
+		left_join(
+			rowData(.data) %>% as.data.frame() %>% as_tibble(rownames = "feature"),
+			by = "feature"
+		) %>%
+		left_join(
+			colData(.data) %>% as_tibble(rownames="sample"),
+			by = "sample"
+		) %>%
+		mutate_if(is.character, as.factor) %>%
+		ttBulk(sample, feature, abundance)
+
+}
+
+#' ttBulk
+#' @inheritParams ttBulk
+#' @return A `ttBulk` object
+#'
+setMethod("ttBulk", "SummarizedExperiment", .ttBulk_se)
+
+#' ttBulk
+#' @inheritParams ttBulk
+#' @return A `ttBulk` object
+#'
+setMethod("ttBulk", "RangedSummarizedExperiment", .ttBulk_se)
 
 
 #' Creates a `tt` object from a list of file names of BAM/SAM
