@@ -26,6 +26,9 @@
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
+\value{
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+}
 \description{
 filter_variable
 }

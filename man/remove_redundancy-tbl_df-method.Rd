@@ -41,6 +41,9 @@
 
 \item{Dim_b_column}{A character string. For reduced_dimension based calculation. The column of another principal component}
 }
+\value{
+A tbl object with with dropped recundant elements (e.g., samples).
+}
 \description{
 remove_redundancy
 }

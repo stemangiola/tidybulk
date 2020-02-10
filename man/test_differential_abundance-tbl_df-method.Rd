@@ -38,6 +38,9 @@
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
+\value{
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+}
 \description{
 test_differential_abundance
 }

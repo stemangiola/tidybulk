@@ -32,6 +32,9 @@
 
 \item{cores}{An integer. The number of cores available}
 }
+\value{
+A `tbl` object
+}
 \description{
 analise_gene_enrichment
 }
