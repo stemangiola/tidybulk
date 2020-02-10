@@ -4,7 +4,6 @@
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr %>%
-#' @importFrom purrr reduce
 #' @import ggplot2
 #'
 #' @param .data A tibble
@@ -18,19 +17,15 @@
 create_tt_from_tibble_bulk = function(.data,
 																			.sample,
 																			.transcript,
-																			.abundance) {
+																			.abundance,
+																			.abundance_normalised = NULL) {
 	# Make col names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	.abundance_normalised = enquo(.abundance_normalised)
 
 	.data %>%
-
-		# # Check input types
-		# error_if_wrong_input(
-		#   as.list(environment()),
-		#   c("spec_tbl_df",  "quosure",  "quosure",  "quosure")
-		# ) %>%
 
 		# Add parameters attribute
 		add_attr(
@@ -38,7 +33,13 @@ create_tt_from_tibble_bulk = function(.data,
 				.sample = .sample,
 				.transcript = .transcript,
 				.abundance = .abundance
-			),
+			) %>%
+
+				# If .abundance_normalised is not NULL add it to parameters
+				ifelse_pipe(.abundance_normalised %>% quo_is_symbol,
+										~ .x %>% c(
+											list(.abundance_normalised = .abundance_normalised)
+										)),
 			"parameters"
 		) %>%
 
@@ -49,6 +50,8 @@ create_tt_from_tibble_bulk = function(.data,
 
 
 #' Convert bam/sam files to a tidy gene transcript counts data frame
+#'
+#' @importFrom purrr reduce
 #'
 #' @param file_names A character vector
 #' @param genome A character string
@@ -504,7 +507,7 @@ get_normalised_counts_bulk <- function(.data,
 			.data %>%
 				attr("parameters") %>%
 				c(
-					.abundance_norm =
+					.abundance_normalised =
 						(function(x, v) enquo(v))(x, !!value_normalised)
 					),
 			"parameters"
@@ -2074,10 +2077,11 @@ aggregate_duplicated_transcripts_bulk =
 
 			# If normalised add the column to the exclusion
 			ifelse_pipe(
-				(".abundance_norm" %in% (.data %>% attr("parameters") %>% names) &&
-				 	quo_name(.data %>% attr("parameters") %$% .abundance_norm) %in% (.data %>% colnames)
+				(".abundance_normalised" %in% (.data %>% attr("parameters") %>% names) &&
+				 	# .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
+				 	quo_name(.data %>% attr("parameters") %$% .abundance_normalised) %in% (.data %>% colnames)
 				),
-				~ .x %>% select(-!!(.data %>% attr("parameters") %$% .abundance_norm))
+				~ .x %>% select(-!!(.data %>% attr("parameters") %$% .abundance_normalised))
 			)	%>%
 			colnames() %>%
 			c("n_aggr")
@@ -2114,12 +2118,13 @@ aggregate_duplicated_transcripts_bulk =
 
 											# If normalised abundance exists aggragate that as well
 											ifelse_pipe(
-												(".abundance_norm" %in% (.data %>% attr("parameters") %>% names) &&
-												 	quo_name(.data %>% attr("parameters") %$% .abundance_norm) %in% (.data %>% colnames)
+												(".abundance_normalised" %in% (.data %>% attr("parameters") %>% names) &&
+												 	# .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
+												 	quo_name(.data %>% attr("parameters") %$% .abundance_normalised) %in% (.data %>% colnames)
 												),
 												~ {
-													.abundance_norm = .data %>% attr("parameters") %$% .abundance_norm
-													.x %>% dplyr::mutate(!!.abundance_norm := !!.abundance_norm %>% aggregation_function())
+													.abundance_normalised = .data %>% attr("parameters") %$% .abundance_normalised
+													.x %>% dplyr::mutate(!!.abundance_normalised := !!.abundance_normalised %>% aggregation_function())
 												}
 											) %>%
 

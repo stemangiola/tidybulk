@@ -1,9 +1,7 @@
 setOldClass("spec_tbl_df")
 setOldClass("ttBulk")
 
-#' @import SummarizedExperiment
-setClass("SummarizedExperiment")
-setClass("RangedSummarizedExperiment")
+
 
 #' Creates a `tt` object from a `tbl``
 #'
@@ -44,23 +42,26 @@ setClass("RangedSummarizedExperiment")
 setGeneric("ttBulk", function(.data,
                               .sample,
                               .transcript,
-                              .abundance) standardGeneric("ttBulk"))
+                              .abundance,
+															.abundance_normalised = NULL) standardGeneric("ttBulk"))
 
 # Set internal
 .ttBulk = function(.data,
                    .sample,
                    .transcript,
-                   .abundance) {
+                   .abundance,
+									 .abundance_normalised = NULL) {
 
   # Make col names
   .sample = enquo(.sample)
   .transcript = enquo(.transcript)
   .abundance = enquo(.abundance)
+  .abundance_normalised = enquo(.abundance_normalised)
 
   # Validate data frame
   validation(.data,!!.sample,!!.transcript,!!.abundance, skip_dupli_check = TRUE)
 
-  create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance)
+  create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance, !!.abundance_normalised)
 }
 #' ttBulk
 #' @inheritParams ttBulk
@@ -69,6 +70,8 @@ setGeneric("ttBulk", function(.data,
 setMethod("ttBulk", "spec_tbl_df", .ttBulk)
 
 #' ttBulk
+#'
+#'
 #' @inheritParams ttBulk
 #' @return A `ttBulk` object
 #'
@@ -77,11 +80,33 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 .ttBulk_se = function(.data,
 											 .sample,
 											 .transcript,
-											 .abundance){
+											 .abundance,
+											.abundance_normalised = NULL){
 
-	assays(.data)$counts %>%
-		as_tibble(rownames = "feature") %>%
-		gather(sample, abundance, -feature) %>%
+
+	# Set normalised col names
+	norm_col =
+		assays(.data)[1] %>% names %>% paste("normalised") %>%
+		ifelse_pipe(
+			(.) %in% names(assays(.data)),
+			~ as.symbol(.x),
+			~ NULL
+		)
+
+	# Do donversion
+	assays(.data) %>%
+		as.list() %>%
+		map2(
+			assays(.data) %>%  names,
+			~ .x %>%
+				as_tibble(rownames = "feature") %>%
+				gather(sample, !!.y, -feature)
+		) %>%
+
+		# Join the assays
+		purrr::reduce(dplyr::left_join, by = c("sample", "feature")) %>%
+
+		# Attach annotation
 		left_join(
 			rowData(.data) %>% as.data.frame() %>% as_tibble(rownames = "feature"),
 			by = "feature"
@@ -91,11 +116,30 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 			by = "sample"
 		) %>%
 		mutate_if(is.character, as.factor) %>%
-		ttBulk(sample, feature, abundance)
+		ttBulk(
+			sample,
+			feature,
+			!!as.symbol(assays(.data)[1] %>%  names),
+
+			# Normalised counts if any
+			!!norm_col
+		)
 
 }
 
 #' ttBulk
+#'
+#' @importFrom tibble as_tibble
+#' @importFrom purrr reduce
+#' @import dplyr
+#' @import tidyr
+#' @importFrom SummarizedExperiment assays
+#' @importFrom SummarizedExperiment rowData
+#' @importFrom SummarizedExperiment colData
+#' @importFrom S4Vectors DataFrame
+#' @importFrom purrr map2
+#'
+#'
 #' @inheritParams ttBulk
 #' @return A `ttBulk` object
 #'

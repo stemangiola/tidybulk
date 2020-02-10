@@ -5,7 +5,7 @@
 \alias{ttBulk}
 \title{Creates a `tt` object from a `tbl``}
 \usage{
-ttBulk(.data, .sample, .transcript, .abundance)
+ttBulk(.data, .sample, .transcript, .abundance, .abundance_normalised = NULL)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}

@@ -4,7 +4,7 @@
 \alias{ttBulk,SummarizedExperiment-method}
 \title{ttBulk}
 \usage{
-\S4method{ttBulk}{SummarizedExperiment}(.data, .sample, .transcript, .abundance)
+\S4method{ttBulk}{SummarizedExperiment}(.data, .sample, .transcript, .abundance, .abundance_normalised = NULL)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}

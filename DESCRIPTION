@@ -44,7 +44,9 @@ Suggests:
     Seurat,
     KernSmooth,
     Rtsne,
-    EGSEA
+    EGSEA,
+    SummarizedExperiment,
+    S4Vectors
 VignetteBuilder: 
     knitr
 RdMacros: 
