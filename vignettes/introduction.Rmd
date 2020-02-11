@@ -74,8 +74,8 @@ my_theme =
 # 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
 # se_mini
-# se_mini = ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts_mini, sample, transcript, count)
-# se_breast_tcga_mini = ttBulk:::ttBulk_to_SummarizedExperiment( ttBulk::breast_tcga_mini, sample, ens, `count`)
+#se_mini = ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts_mini, sample, transcript, count)
+se_breast_tcga_mini = ttBulk:::ttBulk_to_SummarizedExperiment( ttBulk::breast_tcga_mini, sample, ens, `count`)
 se.cibersort = 
 	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) 
 se.norm.batch = 
@@ -126,7 +126,7 @@ counts.aggr =  counts %>% aggregate_duplicates( 	aggregation_function = sum )
 counts.aggr 
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r aggregate se, cache=TRUE}
 se.aggr =  se_mini %>% aggregate_duplicates( 	aggregation_function = sum )
 
@@ -154,7 +154,7 @@ counts.norm %>%
 	my_theme
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r normalise se, cache=TRUE}
 se.norm =  se.aggr %>% scale_abundance(method="TMM")
 
@@ -182,7 +182,7 @@ counts.norm.MDS %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r mds se, cache=TRUE}
 se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = `count normalised`, method="MDS", .dims = 3)
 
@@ -206,7 +206,7 @@ counts.norm.PCA %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r pca se, cache=TRUE}
 se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = `count normalised`, method="PCA" ,  .dims = 3)
 
@@ -242,7 +242,7 @@ counts.norm.tSNE %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r tsne se, cache=TRUE}
 se.norm.tSNE = 
 	se_breast_tcga_mini %>%
@@ -288,7 +288,7 @@ counts.norm.MDS.rotated %>%
   my_theme
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r rotate se, cache=TRUE}
 se.norm.MDS %>%
 rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
@@ -302,7 +302,7 @@ We may want to test for differential transcription between sample-wise factors o
 counts %>%	test_differential_abundance(  ~ condition,  action="get")
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r de se, cache=TRUE}
 se_mini %>%	test_differential_abundance(  ~ condition)
 ```
@@ -338,7 +338,7 @@ counts.norm.adj =
 counts.norm.adj
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r adjust se, cache=TRUE}
 se.norm.batch %>%
   adjust_abundance(
@@ -374,7 +374,7 @@ counts.cibersort %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 
 
 ```{r cibersort se, cache=TRUE}
@@ -411,7 +411,7 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
   my_theme
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r cluster se, cache=TRUE}
 se.norm %>%
   cluster_elements(.abundance = `count normalised`, method="kmeans",	centers = 2 )
@@ -443,7 +443,7 @@ counts.norm.SNN %>%
    )
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r SNN se, cache=TRUE}
 se.norm.tSNE %>%	cluster_elements(.abundance= `count normalised`, method = "SNN")
 ```
@@ -472,7 +472,7 @@ counts.norm.non_redundant %>%
 
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r drop se, cache=TRUE}
 se.norm.MDS %>%  remove_redundancy(	method = "correlation" )
 ```
@@ -502,7 +502,7 @@ counts.norm.non_redundant %>%
 
 ```
 
-Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
+All functions are also directly compatible with `SummarizedExperiment`. 
 ```{r drop2 se, cache=TRUE}
 
 se.norm.MDS %>%
