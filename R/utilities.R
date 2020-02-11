@@ -597,10 +597,11 @@ get_abundance_norm_if_exists = function(.data, .abundance){
 
       return(list(
         .abundance =  switch(
-          (".abundance_norm" %in% (.data %>% attr("parameters") %>% names) &
-             quo_name(.data %>% attr("parameters") %$% .abundance_norm) %in% (.data %>% colnames)
+          (".abundance_normalised" %in% (.data %>% attr("parameters") %>% names) &&
+             # .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
+             quo_name(.data %>% attr("parameters") %$% .abundance_normalised) %in% (.data %>% colnames)
            ) %>% `!` %>% sum(1),
-          attr(.data, "parameters")$.abundance_norm,
+          attr(.data, "parameters")$.abundance_normalised,
           attr(.data, "parameters")$.abundance
         )
       ))
@@ -617,6 +618,7 @@ get_abundance_norm_if_exists = function(.data, .abundance){
 #' Sub function of remove_redundancy_elements_though_reduced_dimensions
 #'
 #' @importFrom stats dist
+#' @importFrom utils head
 #'
 #' @param df A tibble
 #'
@@ -668,3 +670,116 @@ tibble::tibble
 #' @importFrom tibble as_tibble
 #' @export
 tibble::as_tibble
+
+#' get_x_y_annotation_columns
+#'
+#' @importFrom magrittr equals
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .horizontal The name of the column horizontally presented in the heatmap
+#' @param .vertical The name of the column vertically presented in the heatmap
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .abundance_normalised The name of the transcript/gene normalised abundance column
+#'
+#' @description This function recognise what are the sample-wise columns and transcrip-wise columns
+#'
+#' @return A list
+#'
+get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance, .abundance_normalised){
+
+
+  # Comply with CRAN NOTES
+  . = NULL
+
+  # Make col names
+  .horizontal = enquo(.horizontal)
+  .vertical = enquo(.vertical)
+  .abundance = enquo(.abundance)
+  .abundance_normalised = enquo(.abundance_normalised)
+
+  # x-annotation df
+  n_x = .data %>% distinct(!!.horizontal) %>% nrow
+  n_y = .data %>% distinct(!!.vertical) %>% nrow
+
+  # Sample wise columns
+  horizontal_cols=
+    .data %>%
+    select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
+    colnames %>%
+    map(
+      ~
+        .x %>%
+        ifelse_pipe(
+          .data %>%
+            distinct(!!.horizontal, !!as.symbol(.x)) %>%
+            nrow %>%
+            equals(n_x),
+          ~ .x,
+          ~ NULL
+        )
+    ) %>%
+
+    # Drop NULL
+    {	(.)[lengths((.)) != 0]	} %>%
+    unlist
+
+  # Transcript wise columns
+  vertical_cols=
+    .data %>%
+    select(-!!.horizontal, -!!.vertical, -!!.abundance, -horizontal_cols) %>%
+    colnames %>%
+    map(
+      ~
+        .x %>%
+        ifelse_pipe(
+          .data %>%
+            distinct(!!.vertical, !!as.symbol(.x)) %>%
+            nrow %>%
+            equals(n_y),
+          ~ .x,
+          ~ NULL
+        )
+    ) %>%
+
+    # Drop NULL
+    {	(.)[lengths((.)) != 0]	} %>%
+    unlist
+
+  # Counts wise columns, at the moment normalised counts is treated as special and not accounted for here
+  counts_cols =
+    .data %>%
+    select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
+
+    # Exclude horizontal
+    ifelse_pipe(!is.null(horizontal_cols),  ~ .x %>% select(-horizontal_cols)) %>%
+
+    # Exclude vertical
+    ifelse_pipe(!is.null(vertical_cols),  ~ .x %>% select(-vertical_cols)) %>%
+
+    # Exclude normalised counts if exist
+    ifelse_pipe(.abundance_normalised %>% quo_is_symbol,  ~ .x %>% select(-!!.abundance_normalised) ) %>%
+
+    # Select colnames
+    colnames %>%
+
+    # select columns
+    map(
+      ~
+        .x %>%
+        ifelse_pipe(
+          .data %>%
+            distinct(!!.vertical, !!.horizontal, !!as.symbol(.x)) %>%
+            nrow %>%
+            equals(n_x * n_y),
+          ~ .x,
+          ~ NULL
+        )
+    ) %>%
+
+    # Drop NULL
+    {	(.)[lengths((.)) != 0]	} %>%
+    unlist
+
+  list(  horizontal_cols = horizontal_cols,  vertical_cols = vertical_cols, counts_cols = counts_cols )
+}
+

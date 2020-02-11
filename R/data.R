@@ -32,3 +32,13 @@
 #'
 #'
 "flybaseIDs"
+
+#' SummarizedExperiment
+#'
+#'
+"se"
+
+#' SummarizedExperiment mini for vignette
+#'
+#'
+"se_mini"

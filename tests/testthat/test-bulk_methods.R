@@ -107,8 +107,8 @@ test_that("filter variable - no object",{
 	)
 
 	expect_equal(
-		head(res$b),
-		c("TCL1A", "IGHD",  "IGHM",  "IGKC",  "FCN1",  "TCL1A")
+		sort(unique(res$b)),
+		c("FCN1",  "IGHD",  "IGHM",  "IGKC",  "TCL1A")
 	)
 
 })
@@ -230,8 +230,8 @@ test_that("Add differential trancript abundance - no object",{
     )
 
   expect_equal(
-    unique(res$logFC)[1:4],
-    c(-12.10269, -12.48201, -11.48896, -13.44406),
+  	pull(filter(distinct(res, b, logFC), b %in% c("HK3", "FCN1", "CLEC7A", "FAM198B")) , "logFC"),
+    c(-12.10269, -12.48201 ,-11.48896, -13.44406),
     tolerance=1e-6
   )
 
@@ -756,7 +756,7 @@ test_that("Get cell type proportions - no object",{
   )
 
 })
-#
+
 test_that("Add cell type proportions - no object",{
 
   res =
@@ -807,3 +807,5 @@ test_that("nest - no object",{
 	expect_equal(	class(nest(ttBulk(input_df, a, b, c), data = a))[1],	"data.frame"	)
 
 })
+
+
