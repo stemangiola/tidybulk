@@ -107,8 +107,8 @@ test_that("filter variable - no object",{
 	)
 
 	expect_equal(
-		head(res$b),
-		c("TCL1A", "IGHD",  "IGHM",  "IGKC",  "FCN1",  "TCL1A")
+		sort(unique(res$b)),
+		c("FCN1",  "IGHD",  "IGHM",  "IGKC",  "TCL1A")
 	)
 
 })
@@ -230,8 +230,8 @@ test_that("Add differential trancript abundance - no object",{
     )
 
   expect_equal(
-    unique(res$logFC)[1:4],
-    c(-12.10269, -12.48201, -11.48896, -13.44406),
+  	pull(filter(distinct(res, b, logFC), b %in% c("HK3", "FCN1", "CLEC7A", "FAM198B")) , "logFC"),
+    c(-12.10269, -12.48201 ,-11.48896, -13.44406),
     tolerance=1e-6
   )
 
@@ -756,7 +756,7 @@ test_that("Get cell type proportions - no object",{
   )
 
 })
-#
+
 test_that("Add cell type proportions - no object",{
 
   res =
@@ -805,47 +805,6 @@ test_that("filter abundant - no object",{
 test_that("nest - no object",{
 
 	expect_equal(	class(nest(ttBulk(input_df, a, b, c), data = a))[1],	"data.frame"	)
-
-})
-
-test_that("ttBulk SummarizedExperiment conversion",{
-
-	res = ttBulk(ttBulk::se)
-
-	expect_equal(	class(res)[1],	"ttBulk"	)
-
-	expect_equal(	nrow(res),	800	)
-
-	expect_equal(	ncol(res),	12	)
-
-	res = res %>% ttBulk:::ttBulk_to_SummarizedExperiment()
-
-	expect_equal(	class(res)[1],	"SummarizedExperiment"	)
-
-	expect_equal(	nrow(res),	100	)
-
-	expect_equal(	ncol(res),	8	)
-
-})
-
-test_that("ttBulk SummarizedExperiment normalisation",{
-
-	res = ttBulk(ttBulk:::ttBulk_to_SummarizedExperiment(scale_abundance(ttBulk(se))))
-
-	expect_equal(
-		res[1:4,]$`counts normalised`,
-		c(1327.286584 , 859.307120 , 898.641600  ,  2.017153),
-		tolerance=1e-6
-	)
-
-	expect_equal(	nrow(res),	800	)
-
-	expect_equal(	ncol(res),	16	)
-
-
-	res = rlang::quo_name(attr(res, "parameters")[[4]])
-
-	expect_equal( res,	"counts normalised"	)
 
 })
 

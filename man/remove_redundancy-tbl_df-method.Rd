@@ -14,8 +14,8 @@
   correlation_threshold = 0.9,
   top = Inf,
   log_transform = FALSE,
-  Dim_a_column,
-  Dim_b_column
+  Dim_a_column = NULL,
+  Dim_b_column = NULL
 )
 }
 \arguments{
