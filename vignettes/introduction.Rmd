@@ -76,6 +76,12 @@ my_theme =
 # se_mini
 # se_mini = ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts_mini, sample, transcript, count)
 # se_breast_tcga_mini = ttBulk:::ttBulk_to_SummarizedExperiment( ttBulk::breast_tcga_mini, sample, ens, `count`)
+se.cibersort = 
+	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) 
+se.norm.batch = 
+	
+	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) %>%
+	scale_abundance()
 ```
 
 <img src="../inst/logo.png" height="139px" width="120px" />
@@ -318,11 +324,6 @@ counts.norm.batch =
 	  ) %>%
 	 	mutate(factor_of_interest = `Cell type` == "b_cell") 
 
-se.norm.batch = 
-	
-	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) %>%
-	scale_abundance()
-
 ```
 
 ```{r adjust, cache=TRUE}
@@ -375,12 +376,6 @@ counts.cibersort %>%
 
 Although the full power of ttBulk approach is in the `tibble` representation of the data, all functions are directly compatible with `SummarizedExperiment`
 
-```{r, echo=FALSE, include=FALSE}
-
-se.cibersort = 
-	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) 
-
-```
 
 ```{r cibersort se, cache=TRUE}
 
