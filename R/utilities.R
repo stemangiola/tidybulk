@@ -597,7 +597,7 @@ get_abundance_norm_if_exists = function(.data, .abundance){
 
       return(list(
         .abundance =  switch(
-          (".abundance_normalised" %in% (.data %>% attr("parameters") %>% names) &
+          (".abundance_normalised" %in% (.data %>% attr("parameters") %>% names) &&
              # .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
              quo_name(.data %>% attr("parameters") %$% .abundance_normalised) %in% (.data %>% colnames)
            ) %>% `!` %>% sum(1),
@@ -618,6 +618,7 @@ get_abundance_norm_if_exists = function(.data, .abundance){
 #' Sub function of remove_redundancy_elements_though_reduced_dimensions
 #'
 #' @importFrom stats dist
+#' @importFrom utils head
 #'
 #' @param df A tibble
 #'
@@ -678,10 +679,13 @@ tibble::as_tibble
 #' @param .horizontal The name of the column horizontally presented in the heatmap
 #' @param .vertical The name of the column vertically presented in the heatmap
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param .abundance_normalised The name of the transcript/gene normalised abundance column
+#'
+#' @description This function recognise what are the sample-wise columns and transcrip-wise columns
 #'
 #' @return A list
 #'
-get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance){
+get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance, .abundance_normalised){
 
 
   # Comply with CRAN NOTES
@@ -691,114 +695,91 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance)
   .horizontal = enquo(.horizontal)
   .vertical = enquo(.vertical)
   .abundance = enquo(.abundance)
+  .abundance_normalised = enquo(.abundance_normalised)
 
   # x-annotation df
   n_x = .data %>% distinct(!!.horizontal) %>% nrow
   n_y = .data %>% distinct(!!.vertical) %>% nrow
 
-  list(
+  # Sample wise columns
+  horizontal_cols=
+    .data %>%
+    select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
+    colnames %>%
+    map(
+      ~
+        .x %>%
+        ifelse_pipe(
+          .data %>%
+            distinct(!!.horizontal, !!as.symbol(.x)) %>%
+            nrow %>%
+            equals(n_x),
+          ~ .x,
+          ~ NULL
+        )
+    ) %>%
 
-    # Horizontal
-    horizontal=
-      .data %>%
-      select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
-      colnames %>%
-      map(
-        ~
-          .x %>%
-          ifelse_pipe(
-            .data %>%
-              distinct(!!.horizontal, !!as.symbol(.x)) %>%
-              nrow %>%
-              equals(n_x),
-            ~ .x,
-            ~ NULL
-          )
-      ) %>%
+    # Drop NULL
+    {	(.)[lengths((.)) != 0]	} %>%
+    unlist
 
-      # Drop NULL
-      {	(.)[lengths((.)) != 0]	} %>%
-      unlist,
+  # Transcript wise columns
+  vertical_cols=
+    .data %>%
+    select(-!!.horizontal, -!!.vertical, -!!.abundance, -horizontal_cols) %>%
+    colnames %>%
+    map(
+      ~
+        .x %>%
+        ifelse_pipe(
+          .data %>%
+            distinct(!!.vertical, !!as.symbol(.x)) %>%
+            nrow %>%
+            equals(n_y),
+          ~ .x,
+          ~ NULL
+        )
+    ) %>%
 
-    vertical=
-      .data %>%
-      select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
-      colnames %>%
-      map(
-        ~
-          .x %>%
-          ifelse_pipe(
-            .data %>%
-              distinct(!!.vertical, !!as.symbol(.x)) %>%
-              nrow %>%
-              equals(n_y),
-            ~ .x,
-            ~ NULL
-          )
-      ) %>%
+    # Drop NULL
+    {	(.)[lengths((.)) != 0]	} %>%
+    unlist
 
-      # Drop NULL
-      {	(.)[lengths((.)) != 0]	} %>%
-      unlist
+  # Counts wise columns, at the moment normalised counts is treated as special and not accounted for here
+  counts_cols =
+    .data %>%
+    select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
 
-  )
+    # Exclude horizontal
+    ifelse_pipe(!is.null(horizontal_cols),  ~ .x %>% select(-horizontal_cols)) %>%
+
+    # Exclude vertical
+    ifelse_pipe(!is.null(vertical_cols),  ~ .x %>% select(-vertical_cols)) %>%
+
+    # Exclude normalised counts if exist
+    ifelse_pipe(.abundance_normalised %>% quo_is_symbol,  ~ .x %>% select(-!!.abundance_normalised) ) %>%
+
+    # Select colnames
+    colnames %>%
+
+    # select columns
+    map(
+      ~
+        .x %>%
+        ifelse_pipe(
+          .data %>%
+            distinct(!!.vertical, !!.horizontal, !!as.symbol(.x)) %>%
+            nrow %>%
+            equals(n_x * n_y),
+          ~ .x,
+          ~ NULL
+        )
+    ) %>%
+
+    # Drop NULL
+    {	(.)[lengths((.)) != 0]	} %>%
+    unlist
+
+  list(  horizontal_cols = horizontal_cols,  vertical_cols = vertical_cols, counts_cols = counts_cols )
 }
 
-#'ttBulk_to_SummarizedExperiment
-#'
-#' @importFrom SummarizedExperiment SummarizedExperiment
-#'
-#' @param .data A tibble
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
-#'
-#' @return A SummarizedExperiment
-#'
-ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL){
-
-  # Get column names
-  .sample = enquo(.sample)
-  .transcript = enquo(.transcript)
-  .abundance = enquo(.abundance)
-  col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
-  .sample = col_names$.sample
-  .transcript = col_names$.transcript
-  .abundance = col_names$.abundance
-
-  # If present get the normalised abundance
-  .abundance_normalised =
-    .data %>%
-    ifelse_pipe(
-      ".abundance_normalised" %in% ((.) %>% attr("parameters") %>% names) &&
-        # .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
-         quo_name((.) %>% attr("parameters") %$% .abundance_normalised) %in% ((.) %>% colnames),
-      ~ .x %>% attr("parameters") %$% .abundance_normalised,
-      ~ NULL
-    )
-
-  # Get which columns are sample wise and which are feature wise
-  col_direction =get_x_y_annotation_columns(.data, !!.sample, !!.transcript, !!.abundance)
-  sample_cols = col_direction$horizontal
-  feature_cols = col_direction$vertical %>% setdiff(sample_cols)
-
-  colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% { DataFrame((.) %>% select(-!!.sample), row.names = (.) %>% pull(!!.sample)) }
-
-  rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% { DataFrame((.) %>% select(-!!.transcript), row.names = (.) %>% pull(!!.transcript)) }
-
-  assays =
-    .data %>%
-    select(!!.sample, !!.transcript, !!.abundance, !!.abundance_normalised) %>%
-    distinct() %>%
-    gather(assay, .a, -!!.transcript, -!!.sample) %>%
-    nest(data = -assay) %>%
-    mutate(data = data %>%  map(~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))))
-
-  # Build the object
-  SummarizedExperiment(
-    assays=assays %>% pull(data) %>% setNames(assays$assay),
-    rowData = rowData,
-    colData = colData
- )
-
-}

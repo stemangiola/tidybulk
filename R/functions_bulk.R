@@ -10,6 +10,7 @@
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param .abundance_normalised The name of the transcript/gene normalised abundance column
 #'
 #' @return A tibble with an additional column
 #'
@@ -212,9 +213,14 @@ add_normalised_counts_bulk.get_low_expressed <- function(.data,
 																												 .abundance = `count`,
 																												 cpm_threshold = 0.5,
 																												 prop = 3 / 4) {
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
 	if (cpm_threshold < 0)
 		stop("The parameter cpm_threshold must be > 0")
@@ -365,6 +371,8 @@ add_normalised_counts_bulk.calcNormFactor <- function(.data,
 #' @importFrom magrittr equals
 #' @importFrom rlang :=
 #' @importFrom stats median
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -587,6 +595,8 @@ add_normalised_counts_bulk <- function(.data,
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #'
 #' @param .data A tibble
@@ -887,6 +897,8 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 #' @importFrom magrittr set_colnames
 #' @importFrom purrr map2_dfr
 #' @importFrom stats model.matrix
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
@@ -1056,6 +1068,12 @@ get_clusters_kmeans_bulk <-
 					 of_samples = TRUE,
 					 log_transform = TRUE,
 					 ...) {
+
+		# Check if centers is in dots
+		dots_args = rlang::dots_list(...)
+		if("centers" %in% names(dots_args) %>% `!`)
+			stop("ttBulk says: for kmeans you need to provide the \"centers\" integer argument")
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1083,7 +1101,11 @@ get_clusters_kmeans_bulk <-
 			# Prepare data frame for return
 			spread(!!.feature, !!.abundance) %>%
 			as_matrix(rownames = !!.element) %>%
-			kmeans(iter.max = 1000, ...) %$%
+
+			# Wrap the do.call because of the centers check
+			{
+				do.call(kmeans, list(x = (.), iter.max = 1000) %>% c(dots_args) )
+			}	 %$%
 			cluster %>%
 			as.list() %>%
 			as_tibble() %>%
@@ -1156,6 +1178,8 @@ add_clusters_kmeans_bulk <-
 #' @import tidyr
 #' @import tibble
 #' @importFrom rlang :=
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1654,6 +1678,8 @@ add_reduced_dimensions_PCA_bulk <-
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1749,7 +1775,7 @@ get_reduced_dimensions_TSNE_bulk <-
 			# distinct %>%
 			as_matrix(rownames = quo_name(.element))
 
-			do.call(Rtsne::Rtsne, c(list(df_tsne), arguments)) %$%
+		do.call(Rtsne::Rtsne, c(list(df_tsne), arguments)) %$%
 			Y %>%
 			as_tibble(.name_repair = "minimal") %>%
 			setNames(c("tSNE1", "tSNE2")) %>%
@@ -2471,6 +2497,8 @@ run_llsr = function(mix, reference){
 #' @importFrom stats setNames
 #' @importFrom rlang dots_list
 #' @importFrom magrittr equals
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2642,6 +2670,8 @@ add_cell_type_proportions = function(.data,
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
@@ -2899,20 +2929,64 @@ filter_variable_transcripts = function(.data,
 	.data %>% filter(!!.transcript %in% variable_trancripts)
 }
 
-#' Add cell type information on single cells
+#'ttBulk_to_SummarizedExperiment
 #'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
+#' @importFrom SummarizedExperiment SummarizedExperiment
+#' @importFrom SummarizedExperiment assay
+#' @importFrom utils data
 #'
-#' @param ... Argument to pass to bind_rows
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #'
-#' @return A tt tt object
+#' @return A SummarizedExperiment
 #'
-merged_ttBulk_object = function(...){
+ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL){
 
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
+	# If present get the normalised abundance
+	.abundance_normalised =
+		.data %>%
+		ifelse_pipe(
+			".abundance_normalised" %in% ((.) %>% attr("parameters") %>% names) &&
+				# .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
+				quo_name((.) %>% attr("parameters") %$% .abundance_normalised) %in% ((.) %>% colnames),
+			~ .x %>% attr("parameters") %$% .abundance_normalised,
+			~ NULL
+		)
 
+	# Get which columns are sample wise and which are feature wise
+	col_direction = get_x_y_annotation_columns(.data, !!.sample, !!.transcript, !!.abundance, !!.abundance_normalised)
+	sample_cols = col_direction$horizontal_cols
+	feature_cols = col_direction$vertical_cols
+	counts_cols = col_direction$counts_cols
 
+	colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% arrange(!!.sample) %>% { DataFrame((.) %>% select(-!!.sample), row.names = (.) %>% pull(!!.sample)) }
+
+	rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% arrange(!!.transcript) %>% { DataFrame((.) %>% select(-!!.transcript), row.names = (.) %>% pull(!!.transcript)) }
+
+	assays =
+		.data %>%
+		select(!!.sample, !!.transcript, !!.abundance, !!.abundance_normalised, counts_cols) %>%
+		distinct() %>%
+		gather(`assay`, .a, -!!.transcript, -!!.sample) %>%
+		nest(`data` = -`assay`) %>%
+		mutate(`data` = `data` %>%  map(~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))))
+
+	# Build the object
+	SummarizedExperiment(
+		assays=assays %>% pull(`data`) %>% setNames(assays$assay),
+		rowData = rowData,
+		colData = colData
+	)
 
 }

@@ -24,9 +24,12 @@ Imports:
     ggplot2,
     preprocessCore,
     stats,
-    lifecycle
-Suggests:
+    lifecycle,
+    SummarizedExperiment,
+    S4Vectors,
     parallel,
+    utils
+Suggests:
     testthat,
     AnnotationDbi,
     BiocManager,
@@ -37,16 +40,13 @@ Suggests:
     org.Hs.eg.db,
     sva,
     GGally,
-    utils,
     knitr,
     qpdf,
     covr,
     Seurat,
     KernSmooth,
     Rtsne,
-    EGSEA,
-    SummarizedExperiment,
-    S4Vectors
+    EGSEA
 VignetteBuilder: 
     knitr
 RdMacros: 
