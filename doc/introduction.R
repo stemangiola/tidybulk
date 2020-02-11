@@ -38,6 +38,15 @@ my_theme =
 # 	filter(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058", "SRR1740043", "SRR1740067")) %>%
 # 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
+# se_mini
+#se_mini = ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts_mini, sample, transcript, count)
+se_breast_tcga_mini = ttBulk:::ttBulk_to_SummarizedExperiment( ttBulk::breast_tcga_mini, sample, ens, `count`)
+se.cibersort = 
+	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) 
+se.norm.batch = 
+	
+	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) %>%
+	scale_abundance()
 
 ## -----------------------------------------------------------------------------
 counts = ttBulk(ttBulk::counts_mini, sample, transcript, count)
@@ -48,7 +57,10 @@ counts.aggr =  counts %>% aggregate_duplicates( 	aggregation_function = sum )
 
 counts.aggr 
 
+## ----aggregate se, cache=TRUE-------------------------------------------------
+se.aggr =  se_mini %>% aggregate_duplicates( 	aggregation_function = sum )
 
+se.aggr 
 
 ## ----normalise, cache=TRUE----------------------------------------------------
 counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
@@ -62,6 +74,11 @@ counts.norm %>%
 	scale_x_log10() +
 	my_theme
 
+## ----normalise se, cache=TRUE-------------------------------------------------
+se.norm =  se.aggr %>% scale_abundance(method="TMM")
+
+se.norm 
+
 ## ----mds, cache=TRUE----------------------------------------------------------
 counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = `count normalised`, method="MDS", .dims = 3)
 
@@ -73,7 +90,10 @@ counts.norm.MDS %>%
   distinct() %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 
+## ----mds se, cache=TRUE-------------------------------------------------------
+se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = `count normalised`, method="MDS", .dims = 3)
 
+se.norm.MDS
 
 ## ----pca, cache=TRUE----------------------------------------------------------
 counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = `count normalised`, method="PCA" ,  .dims = 3)
@@ -86,10 +106,19 @@ counts.norm.PCA %>%
   distinct() %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 
+## ----pca se, cache=TRUE-------------------------------------------------------
+se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = `count normalised`, method="PCA" ,  .dims = 3)
+
+se.norm.PCA 
+
+## ---- echo=FALSE, include=FALSE-----------------------------------------------
+tt_tcga_breast = 
+	ttBulk::breast_tcga_mini %>%
+	ttBulk(sample, ens, `count`)
+
 ## ----tsne, cache=TRUE---------------------------------------------------------
 counts.norm.tSNE =
-	ttBulk::breast_tcga_mini %>%
-	ttBulk(sample, ens, `count`) %>%
+	tt_tcga_breast %>%
 	reduce_dimensions(
 		.abundance = `count normalised`, 
 		method = "tSNE", 
@@ -106,6 +135,18 @@ counts.norm.tSNE %>%
 	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct() %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
+
+## ----tsne se, cache=TRUE------------------------------------------------------
+se.norm.tSNE = 
+	se_breast_tcga_mini %>%
+	reduce_dimensions(
+		.abundance = `count normalised`, 
+		method = "tSNE", 
+		top = 500, 
+		perplexity=10, 
+		pca_scale =TRUE
+	) 
+se.norm.tSNE
 
 ## ----rotate, cache=TRUE-------------------------------------------------------
 counts.norm.MDS.rotated =
@@ -126,11 +167,18 @@ counts.norm.MDS.rotated %>%
   geom_point() +
   my_theme
 
+## ----rotate se, cache=TRUE----------------------------------------------------
+se.norm.MDS %>%
+rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
+
 ## ----de, cache=TRUE-----------------------------------------------------------
 counts %>%	test_differential_abundance(  ~ condition,  action="get")
 
-## ----adjust, cache=TRUE-------------------------------------------------------
-counts.norm.adj =
+## ----de se, cache=TRUE--------------------------------------------------------
+se_mini %>%	test_differential_abundance(  ~ condition)
+
+## ---- echo=FALSE, include=FALSE-----------------------------------------------
+counts.norm.batch = 
 	counts.norm %>%
 
 	  # Add fake batch and factor of interest
@@ -139,9 +187,12 @@ counts.norm.adj =
 	  		distinct(sample) %>%
 	  		mutate(batch = c(0,1,0,1,1))
 	  ) %>%
-	 	mutate(factor_of_interest = `Cell type` == "b_cell") %>%
+	 	mutate(factor_of_interest = `Cell type` == "b_cell") 
 
-	  # Add covariate
+
+## ----adjust, cache=TRUE-------------------------------------------------------
+counts.norm.adj =
+	counts.norm.batch %>%
 	  adjust_abundance(
 	  	~ factor_of_interest + batch,
 	  	.abundance = `count normalised`,
@@ -149,6 +200,13 @@ counts.norm.adj =
 	  )
 
 counts.norm.adj
+
+## ----adjust se, cache=TRUE----------------------------------------------------
+se.norm.batch %>%
+  adjust_abundance(
+  	~ factor_of_interest + batch,
+  	.abundance = `count normalised`
+  )
 
 ## ----cibersort, cache=TRUE----------------------------------------------------
 counts.cibersort =
@@ -168,6 +226,11 @@ counts.cibersort %>%
   my_theme +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
 
+## ----cibersort se, cache=TRUE-------------------------------------------------
+
+se.cibersort %>% deconvolve_cellularity(cores=2)
+
+
 ## ----cluster, cache=TRUE------------------------------------------------------
 counts.norm.cluster = counts.norm %>%
   cluster_elements(.abundance = `count normalised`, method="kmeans",	centers = 2 )
@@ -185,6 +248,11 @@ counts.norm.cluster
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster kmeans`)) +
   geom_point() +
   my_theme
+
+## ----cluster se, cache=TRUE---------------------------------------------------
+se.norm %>%
+  cluster_elements(.abundance = `count normalised`, method="kmeans",	centers = 2 )
+
 
 ## ----SNN, cache=TRUE----------------------------------------------------------
 counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= `count normalised`, method = "SNN")
@@ -208,6 +276,9 @@ counts.norm.SNN %>%
     action="get"
    )
 
+## ----SNN se, cache=TRUE-------------------------------------------------------
+se.norm.tSNE %>%	cluster_elements(.abundance= `count normalised`, method = "SNN")
+
 ## ----drop, cache=TRUE---------------------------------------------------------
 counts.norm.non_redundant = counts.norm.MDS %>%  remove_redundancy(	method = "correlation" )
 
@@ -218,6 +289,9 @@ counts.norm.non_redundant %>%
   geom_point() +
   my_theme
 
+
+## ----drop se, cache=TRUE------------------------------------------------------
+se.norm.MDS %>%  remove_redundancy(	method = "correlation" )
 
 ## ----drop2, cache=TRUE--------------------------------------------------------
 counts.norm.non_redundant =
@@ -237,6 +311,17 @@ counts.norm.non_redundant %>%
   geom_point() +
   my_theme
 
+
+## ----drop2 se, cache=TRUE-----------------------------------------------------
+
+se.norm.MDS %>%
+remove_redundancy(
+	method = "reduced_dimensions",
+	.element = sample,
+	.feature = transcript,
+	Dim_a_column = `Dim1`,
+	Dim_b_column = `Dim2`
+)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  counts = bam_sam_to_featureCounts_tibble(
