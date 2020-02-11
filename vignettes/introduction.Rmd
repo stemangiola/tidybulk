@@ -73,6 +73,15 @@ my_theme =
 # 	filter(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058", "SRR1740043", "SRR1740067")) %>%
 # 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
+# se_mini
+#se_mini = ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts_mini, sample, transcript, count)
+se_breast_tcga_mini = ttBulk:::ttBulk_to_SummarizedExperiment( ttBulk::breast_tcga_mini, sample, ens, `count`)
+se.cibersort = 
+	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) 
+se.norm.batch = 
+	
+	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) %>%
+	scale_abundance()
 ```
 
 <img src="../inst/logo.png" height="139px" width="120px" />
@@ -105,6 +114,8 @@ In brief you can:
 + Clustering samples and/or genes with kmeans
 + Adding tissue composition (Cibersort)
 
+**All ttBulk methods are directly compatible with SummarizedExperiment as well.**
+
 # Aggregate `transcripts`
 
 ttBulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with aggregate transcript with the same name. All the rest of the column are appended, and factors and boolean are appended as characters.
@@ -113,8 +124,13 @@ ttBulk provide the `aggregate_duplicates` function to aggregate duplicated trans
 counts.aggr =  counts %>% aggregate_duplicates( 	aggregation_function = sum )
 
 counts.aggr 
+```
 
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r aggregate se, cache=TRUE}
+se.aggr =  se_mini %>% aggregate_duplicates( 	aggregation_function = sum )
 
+se.aggr 
 ```
 
 # Normalise `counts`
@@ -127,6 +143,7 @@ counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
 counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
 ```
 
+
 We can easily plot the normalised density to check the normalisation outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type. 
 
 ```{r plot_normalise, cache=TRUE}
@@ -135,6 +152,13 @@ counts.norm %>%
 	geom_density() + 
 	scale_x_log10() +
 	my_theme
+```
+
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r normalise se, cache=TRUE}
+se.norm =  se.aggr %>% scale_abundance(method="TMM")
+
+se.norm 
 ```
 
 # Reduce `dimensions`
@@ -156,8 +180,13 @@ counts.norm.MDS %>%
 	select(contains("Dim"), sample, `Cell type`) %>%
   distinct() %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
+```
 
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r mds se, cache=TRUE}
+se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = `count normalised`, method="MDS", .dims = 3)
 
+se.norm.MDS
 ```
 
 **PCA**
@@ -177,12 +206,24 @@ counts.norm.PCA %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 ```
 
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r pca se, cache=TRUE}
+se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = `count normalised`, method="PCA" ,  .dims = 3)
+
+se.norm.PCA 
+```
+
 **tSNE**
+
+```{r, echo=FALSE, include=FALSE}
+tt_tcga_breast = 
+	ttBulk::breast_tcga_mini %>%
+	ttBulk(sample, ens, `count`)
+```
 
 ```{r tsne, cache=TRUE}
 counts.norm.tSNE =
-	ttBulk::breast_tcga_mini %>%
-	ttBulk(sample, ens, `count`) %>%
+	tt_tcga_breast %>%
 	reduce_dimensions(
 		.abundance = `count normalised`, 
 		method = "tSNE", 
@@ -199,6 +240,20 @@ counts.norm.tSNE %>%
 	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct() %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
+```
+
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r tsne se, cache=TRUE}
+se.norm.tSNE = 
+	se_breast_tcga_mini %>%
+	reduce_dimensions(
+		.abundance = `count normalised`, 
+		method = "tSNE", 
+		top = 500, 
+		perplexity=10, 
+		pca_scale =TRUE
+	) 
+se.norm.tSNE
 ```
 
 # Rotate `dimensions`
@@ -233,6 +288,12 @@ counts.norm.MDS.rotated %>%
   my_theme
 ```
 
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r rotate se, cache=TRUE}
+se.norm.MDS %>%
+rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
+```
+
 # Annotate `differential transcription`
 
 We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). `test_differential_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate). 
@@ -241,12 +302,18 @@ We may want to test for differential transcription between sample-wise factors o
 counts %>%	test_differential_abundance(  ~ condition,  action="get")
 ```
 
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r de se, cache=TRUE}
+se_mini %>%	test_differential_abundance(  ~ condition)
+```
+
 # Adjust `counts`
 
 We may want to adjust `counts` for (known) unwanted variation. `adjust_abundance` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation, and returns a tibble with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`. At the moment just an unwanted covariated is allowed at a time.
 
-```{r adjust, cache=TRUE}
-counts.norm.adj =
+
+```{r, echo=FALSE, include=FALSE}
+counts.norm.batch = 
 	counts.norm %>%
 
 	  # Add fake batch and factor of interest
@@ -255,9 +322,13 @@ counts.norm.adj =
 	  		distinct(sample) %>%
 	  		mutate(batch = c(0,1,0,1,1))
 	  ) %>%
-	 	mutate(factor_of_interest = `Cell type` == "b_cell") %>%
+	 	mutate(factor_of_interest = `Cell type` == "b_cell") 
 
-	  # Add covariate
+```
+
+```{r adjust, cache=TRUE}
+counts.norm.adj =
+	counts.norm.batch %>%
 	  adjust_abundance(
 	  	~ factor_of_interest + batch,
 	  	.abundance = `count normalised`,
@@ -265,6 +336,15 @@ counts.norm.adj =
 	  )
 
 counts.norm.adj
+```
+
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r adjust se, cache=TRUE}
+se.norm.batch %>%
+  adjust_abundance(
+  	~ factor_of_interest + batch,
+  	.abundance = `count normalised`
+  )
 ```
 
 # Annotate `Cell type composition`
@@ -277,14 +357,14 @@ counts.cibersort =
 	counts %>%
 	deconvolve_cellularity(action="add", cores=2)
 
-counts.cibersort %>% select(sample, contains("type:")) %>% distinct()
+counts.cibersort %>% select(sample, contains("cibersort:")) %>% distinct()
 ```
 
 With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is facetted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).
 
 ```{r plot_cibersort, cache=TRUE}
 counts.cibersort %>%
-	select(contains("type:"), everything()) %>%
+	select(contains("cibersort:"), everything()) %>%
 	gather(`Cell type inferred`, `proportion`, 1:22) %>%
   distinct(sample, `Cell type`, `Cell type inferred`, proportion) %>%
   ggplot(aes(x=`Cell type inferred`, y=proportion, fill=`Cell type`)) +
@@ -292,6 +372,15 @@ counts.cibersort %>%
   facet_wrap(~`Cell type`) +
   my_theme +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
+```
+
+All functions are also directly compatible with `SummarizedExperiment`. 
+
+
+```{r cibersort se, cache=TRUE}
+
+se.cibersort %>% deconvolve_cellularity(cores=2)
+
 ```
 
 # Annotate `clusters` 
@@ -322,6 +411,12 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
   my_theme
 ```
 
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r cluster se, cache=TRUE}
+se.norm %>%
+  cluster_elements(.abundance = `count normalised`, method="kmeans",	centers = 2 )
+
+```
 
 **SNN**
 
@@ -348,6 +443,11 @@ counts.norm.SNN %>%
    )
 ```
 
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r SNN se, cache=TRUE}
+se.norm.tSNE %>%	cluster_elements(.abundance= `count normalised`, method = "SNN")
+```
+
 # Drop `redundant`
 
 We may want to remove redundant elements from the original data set (e.g., samples or transcripts), for example if we want to define cell-type specific signatures with low sample redundancy. `remove_redundancy` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble dropped recundant elements (e.g., samples). Two redundancy estimation approaches are supported: 
@@ -370,6 +470,11 @@ counts.norm.non_redundant %>%
   geom_point() +
   my_theme
 
+```
+
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r drop se, cache=TRUE}
+se.norm.MDS %>%  remove_redundancy(	method = "correlation" )
 ```
 
 **Approach 2**
@@ -395,6 +500,19 @@ counts.norm.non_redundant %>%
   geom_point() +
   my_theme
 
+```
+
+All functions are also directly compatible with `SummarizedExperiment`. 
+```{r drop2 se, cache=TRUE}
+
+se.norm.MDS %>%
+remove_redundancy(
+	method = "reduced_dimensions",
+	.element = sample,
+	.feature = transcript,
+	Dim_a_column = `Dim1`,
+	Dim_b_column = `Dim2`
+)
 ```
 
 # Other useful wrappers

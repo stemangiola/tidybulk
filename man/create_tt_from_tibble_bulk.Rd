@@ -4,7 +4,13 @@
 \alias{create_tt_from_tibble_bulk}
 \title{Create tt object from tibble}
 \usage{
-create_tt_from_tibble_bulk(.data, .sample, .transcript, .abundance)
+create_tt_from_tibble_bulk(
+  .data,
+  .sample,
+  .transcript,
+  .abundance,
+  .abundance_normalised = NULL
+)
 }
 \arguments{
 \item{.data}{A tibble}
@@ -14,6 +20,8 @@ create_tt_from_tibble_bulk(.data, .sample, .transcript, .abundance)
 \item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{.abundance_normalised}{The name of the transcript/gene normalised abundance column}
 }
 \value{
 A tibble with an additional column

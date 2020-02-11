@@ -1,17 +1,26 @@
+setOldClass("spec_tbl_df")
+setOldClass("ttBulk")
+
+
+
+
 #' Creates a `tt` object from a `tbl``
+#'
+#' \lifecycle{maturing}
 #'
 #' @description ttBulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
+#' @import lifecycle
 #'
 #' @name ttBulk
-#' @rdname ttBulk
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param .abundance_normalised The name of the transcript/gene normalised abundance column
 #'
 #' @details This function created a ttBulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
@@ -26,41 +35,172 @@
 #'
 #'
 #'
-#' my_tt =  ttBulk(ttBulk::counts_mini, sample, transcript, counts)
+#' my_tt =  ttBulk(ttBulk::counts_mini, sample, transcript, count)
 #'
 #'
-#'
+#' @docType methods
+#' @rdname ttBulk-methods
 #' @export
-ttBulk <- function(.data,
-													.sample,
-													.transcript,
-													.abundance) {
-	UseMethod("ttBulk", .data)
+#'
+setGeneric("ttBulk", function(.data,
+                              .sample,
+                              .transcript,
+                              .abundance,
+															.abundance_normalised = NULL) standardGeneric("ttBulk"))
+
+# Set internal
+.ttBulk = function(.data,
+                   .sample,
+                   .transcript,
+                   .abundance,
+									 .abundance_normalised = NULL) {
+
+  # Make col names
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+  .abundance_normalised = enquo(.abundance_normalised)
+
+  # Validate data frame
+  validation(.data,!!.sample,!!.transcript,!!.abundance, skip_dupli_check = TRUE)
+
+  create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance, !!.abundance_normalised)
 }
-#' @export
-ttBulk.default <- function(.data,
-																	.sample,
-																	.transcript,
-																	.abundance)
-{
-	print("This function cannot be applied to this object")
-}
-#' @export
-ttBulk.tbl_df <- function(.data,
-																 .sample,
-																 .transcript,
-																 .abundance)
-{
+#' ttBulk
+#' @inheritParams ttBulk
+#' @return A `ttBulk` object
+#'
+setMethod("ttBulk", "spec_tbl_df", .ttBulk)
+
+#' ttBulk
+#'
+#'
+#' @inheritParams ttBulk
+#' @return A `ttBulk` object
+#'
+setMethod("ttBulk", "tbl_df", .ttBulk)
+
+.ttBulk_se = function(.data,
+											 .sample,
+											 .transcript,
+											 .abundance,
+											.abundance_normalised = NULL){
+
 	# Make col names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	.abundance_normalised = enquo(.abundance_normalised)
 
-	create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance)
+	# Set normalised col names
+	norm_col =
+		assays(.data)[1] %>% names %>% paste("normalised") %>%
+		ifelse_pipe(
+			(.) %in% names(assays(.data)),
+			~ as.symbol(.x),
+			~ NULL
+		)
+
+	# Do donversion
+	assays(.data) %>%
+		as.list() %>%
+		map2(
+			assays(.data) %>%  names,
+			~ .x %>%
+				as_tibble(rownames = "feature") %>%
+				gather(sample, !!.y, -feature)
+		) %>%
+
+		# Join the assays
+		purrr::reduce(dplyr::left_join, by = c("sample", "feature")) %>%
+
+		# Attach annotation
+		left_join(
+			rowData(.data) %>% as.data.frame() %>% as_tibble(rownames = "feature"),
+			by = "feature"
+		) %>%
+		left_join(
+			colData(.data) %>% as_tibble(rownames="sample"),
+			by = "sample"
+		) %>%
+		mutate_if(is.character, as.factor) %>%
+		ttBulk(
+			sample,
+			feature,
+			!!as.symbol(assays(.data)[1] %>%  names),
+
+			# Normalised counts if any
+			!!norm_col
+		)
 
 }
 
+#' ttBulk
+#'
+#' @importFrom tibble as_tibble
+#' @importFrom purrr reduce
+#' @import dplyr
+#' @import tidyr
+#' @importFrom SummarizedExperiment assays
+#' @importFrom SummarizedExperiment rowData
+#' @importFrom SummarizedExperiment colData
+#' @importFrom S4Vectors DataFrame
+#' @importFrom purrr map2
+#'
+#'
+#' @inheritParams ttBulk
+#' @return A `ttBulk` object
+#'
+setMethod("ttBulk", "SummarizedExperiment", .ttBulk_se)
+
+#' ttBulk
+#' @inheritParams ttBulk
+#' @return A `ttBulk` object
+#'
+setMethod("ttBulk", "RangedSummarizedExperiment", .ttBulk_se)
+
+
+#' Creates a `tt` object from a list of file names of BAM/SAM
+#'
+#' \lifecycle{maturing}
+#'
+#' @description ttBulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name ttBulk_SAM_BAM
+#'
+#' @param file_names A character vector
+#' @param genome A character string
+#' @param ... Further parameters passed to the function Rsubread::featureCounts
+#'
+#' @details This function is based on FeatureCounts package. This function created a ttBulk object and is useful if you want
+#' to avoid to specify .sample, .transcript and .abundance arguments all the times.
+#' The ttBulk object have an attribute called parameters where these three
+#' arguments are stored as metadata. They can be extracted as attr(<object>, "parameters").
+#'
+#' @return A `ttBulk` object
+#'
+#'
+#'
+#'
+#'
+#' @docType methods
+#' @rdname ttBulk_SAM_BAM-methods
+#' @export
+#'
+setGeneric("ttBulk_SAM_BAM", function(file_names, genome = "hg38", ...) standardGeneric("ttBulk_SAM_BAM"))
+
+#' ttBulk_SAM_BAM
+#' @inheritParams ttBulk_SAM_BAM
+#' @return A `ttBulk` object
+#'
+setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	function(file_names, genome = "hg38", ...) create_tt_from_bam_sam_bulk(file_names = file_names, genome = genome, ...))
+
 #' Normalise the counts of transcripts/genes
+#'
+#' \lifecycle{maturing}
 #'
 #' @description scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and normalises the data for the library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #'
@@ -69,7 +209,6 @@ ttBulk.tbl_df <- function(.data,
 #' @importFrom stats median
 #'
 #' @name scale_abundance
-#' @rdname scale_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
@@ -92,78 +231,137 @@ ttBulk.tbl_df <- function(.data,
 #'
 #'
 #' @examples
-
 #'
 #'
 #'  scale_abundance(ttBulk::counts_mini,  sample, transcript, `count`)
 #'
 #'
 #'
+#' @docType methods
+#' @rdname scale_abundance-methods
 #' @export
-scale_abundance <- function(.data,
-														 .sample = NULL,
-														 .transcript = NULL,
-														 .abundance = NULL,
-														 cpm_threshold = 0.5,
-														 prop = 3 / 4,
-														 method = "TMM",
-														 reference_selection_function = median,
-														 action = "add") {
-	UseMethod("scale_abundance", .data)
-}
-#' @export
-scale_abundance.default <-  function(.data,
-																			.sample = NULL,
-																			.transcript = NULL,
-																			.abundance = NULL,
-																			cpm_threshold = 0.5,
-																			prop = 3 / 4,
-																			method = "TMM",
-																			reference_selection_function = median,
-																			action = "add")
-{
-	print("This function cannot be applied to this object")
-}
-#' @export
-scale_abundance.tbl_df = scale_abundance.ttBulk <-
-	function(.data,
-					 .sample = NULL,
-					 .transcript = NULL,
-					 .abundance = NULL,
-					 cpm_threshold = 0.5,
-					 prop = 3 / 4,
-					 method = "TMM",
-					 reference_selection_function = median,
-					 action = "add")
-	{
-		# Make col names
-		.sample = enquo(.sample)
-		.transcript = enquo(.transcript)
-		.abundance = enquo(.abundance)
 
-		if (action == "add")
-			add_normalised_counts_bulk(
-				.data,!!.sample,!!.transcript,!!.abundance,
-				cpm_threshold = cpm_threshold,
-				prop = prop,
-				method = method,
-				reference_selection_function = reference_selection_function
-			)
-		else if (action == "get")
-			get_normalised_counts_bulk(
-				.data,!!.sample,!!.transcript,!!.abundance,
-				cpm_threshold = cpm_threshold,
-				prop = prop,
-				method = method,
-				reference_selection_function = reference_selection_function
-			)
-		else
-			stop(
-				"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-	}
+setGeneric("scale_abundance", function(.data,
+                              .sample = NULL,
+                              .transcript = NULL,
+                              .abundance = NULL,
+                              cpm_threshold = 0.5,
+                              prop = 3 / 4,
+                              method = "TMM",
+                              reference_selection_function = median,
+                              action = "add") standardGeneric("scale_abundance"))
+
+# Set internal
+.scale_abundance = 	function(.data,
+                             .sample = NULL,
+                             .transcript = NULL,
+                             .abundance = NULL,
+                             cpm_threshold = 0.5,
+                             prop = 3 / 4,
+                             method = "TMM",
+                             reference_selection_function = median,
+                             action = "add")
+{
+  # Make col names
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+
+  # Validate data frame
+  validation(.data,!!.sample,!!.transcript,!!.abundance)
+
+  if (action == "add")
+    add_normalised_counts_bulk(
+      .data,!!.sample,!!.transcript,!!.abundance,
+      cpm_threshold = cpm_threshold,
+      prop = prop,
+      method = method,
+      reference_selection_function = reference_selection_function
+    )
+  else if (action == "get")
+    get_normalised_counts_bulk(
+      .data,!!.sample,!!.transcript,!!.abundance,
+      cpm_threshold = cpm_threshold,
+      prop = prop,
+      method = method,
+      reference_selection_function = reference_selection_function
+    )
+  else
+    stop(
+      "action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+    )
+}
+
+#' scale_abundance
+#' @inheritParams scale_abundance
+#' @return A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
+#'
+setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
+
+#' scale_abundance
+#' @inheritParams scale_abundance
+#' @return A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
+#'
+setMethod("scale_abundance", "tbl_df", .scale_abundance)
+
+#' scale_abundance
+#' @inheritParams scale_abundance
+#' @return A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
+#'
+setMethod("scale_abundance", "ttBulk", .scale_abundance)
+
+.scale_abundance_se = function(.data,
+															 .sample = NULL,
+															 .transcript = NULL,
+															 .abundance = NULL,
+															 cpm_threshold = 0.5,
+															 prop = 3 / 4,
+															 method = "TMM",
+															 reference_selection_function = median,
+															 action = "add"){
+
+	# Make col names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+
+	.data %>%
+
+		# Convert to ttBulk
+		ttBulk() %>%
+
+		# Apply scale method
+		scale_abundance(!!.sample,
+										!!.transcript,
+										!!.abundance,
+										cpm_threshold = cpm_threshold,
+										prop = prop,
+										method = method,
+										reference_selection_function = reference_selection_function,
+										action = action) %>%
+
+		# Convert to SummaizedExperiment
+		ttBulk_to_SummarizedExperiment()
+
+}
+
+#' scale_abundance
+#' @inheritParams scale_abundance
+#' @return A `ttBulk` object
+#'
+setMethod("scale_abundance", "SummarizedExperiment", .scale_abundance_se)
+
+#' scale_abundance
+#' @inheritParams scale_abundance
+#' @return A `ttBulk` object
+#'
+setMethod("scale_abundance", "RangedSummarizedExperiment", .scale_abundance_se)
+
+
 
 #' Get clusters of elements (e.g., samples or transcripts)
+#'
+#' \lifecycle{maturing}
 #'
 #' @description cluster_elements() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and identify clusters in the data.
 #'
@@ -171,7 +369,6 @@ scale_abundance.tbl_df = scale_abundance.ttBulk <-
 #' @importFrom magrittr "%>%"
 #'
 #' @name cluster_elements
-#' @rdname cluster_elements
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .element The name of the element column (normally samples).
@@ -196,110 +393,165 @@ scale_abundance.tbl_df = scale_abundance.ttBulk <-
 #'
 #'     cluster_elements(ttBulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
 #'
+#' @docType methods
+#' @rdname cluster_elements-methods
 #' @export
 #'
-cluster_elements <- function(.data,
-															.element = NULL,
-															.feature = NULL,
-															.abundance = NULL,
-															method,
-															of_samples = TRUE,
-															log_transform = TRUE,
-															action = "add",
-															...) {
-	UseMethod("cluster_elements", .data)
-}
+setGeneric("cluster_elements", function(.data,
+                                        .element = NULL,
+                                        .feature = NULL,
+                                        .abundance = NULL,
+                                        method,
+                                        of_samples = TRUE,
+                                        log_transform = TRUE,
+                                        action = "add",
+                                        ...) standardGeneric("cluster_elements"))
 
-#' @export
-cluster_elements.default <-  function(.data,
-																			 .element = NULL,
-																			 .feature = NULL,
-																			 .abundance = NULL,
-																			 method,
-																			 of_samples = TRUE,
-																			 log_transform = TRUE,
-																			 action = "add",
-																			 ...)
+# Set internal
+.cluster_elements = 		function(.data,
+                               .element = NULL,
+                               .feature = NULL,
+                               .abundance = NULL,
+                               method ,
+                               of_samples = TRUE,
+                               log_transform = TRUE,
+                               action = "add",
+                               ...)
 {
-	print("This function cannot be applied to this object")
+  # Make col names
+  .abundance = enquo(.abundance)
+  .element = enquo(.element)
+  .feature = enquo(.feature)
+
+  # Validate data frame
+  validation(.data,!!.element,!!.feature,!!.abundance)
+
+  if (method == "kmeans") {
+    if (action == "add")
+      add_clusters_kmeans_bulk(
+        .data,
+        .abundance = !!.abundance,
+        .element = !!.element,
+        .feature = !!.feature,
+        of_samples = of_samples,
+        log_transform = log_transform,
+        ...
+      )
+    else if (action == "get")
+      get_clusters_kmeans_bulk(
+        .data,
+        .abundance = !!.abundance,
+        .element = !!.element,
+        .feature = !!.feature,
+        of_samples = of_samples,
+        log_transform = log_transform,
+        ...
+      )
+    else
+      stop(
+        "action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+      )
+  }
+  else if (method == "SNN") {
+    if (action == "add")
+      add_clusters_SNN_bulk(
+        .data,
+        .abundance = !!.abundance,
+        .element = !!.element,
+        .feature = !!.feature,
+        of_samples = of_samples,
+        log_transform = log_transform,
+        ...
+      )
+    else if (action == "get")
+      get_clusters_SNN_bulk(
+        .data,
+        .abundance = !!.abundance,
+        .element = !!.element,
+        .feature = !!.feature,
+        of_samples = of_samples,
+        log_transform = log_transform,
+        ...
+      )
+    else
+      stop(
+        "action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+      )
+  }
+  else
+    stop("the only supported methods are \"kmeans\" or \"SNN\" ")
+
 }
 
-#' @export
-cluster_elements.tbl_df = cluster_elements.ttBulk <-
-	function(.data,
-					 .element = NULL,
-					 .feature = NULL,
-					 .abundance = NULL,
-					 method ,
-					 of_samples = TRUE,
-					 log_transform = TRUE,
-					 action = "add",
-					 ...)
-	{
-		# Make col names
-		.abundance = enquo(.abundance)
-		.element = enquo(.element)
-		.feature = enquo(.feature)
+#' cluster_elements
+#' @inheritParams cluster_elements
+#' @return A tbl object with additional columns with cluster labels
+#'
+setMethod("cluster_elements", "spec_tbl_df", .cluster_elements)
 
-		if (method == "kmeans") {
-			if (action == "add")
-				add_clusters_kmeans_bulk(
-					.data,
-					.abundance = !!.abundance,
-					.element = !!.element,
-					.feature = !!.feature,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					...
-				)
-			else if (action == "get")
-				get_clusters_kmeans_bulk(
-					.data,
-					.abundance = !!.abundance,
-					.element = !!.element,
-					.feature = !!.feature,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					...
-				)
-			else
-				stop(
-					"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-				)
-		}
-		else if (method == "SNN") {
-			if (action == "add")
-				add_clusters_SNN_bulk(
-					.data,
-					.abundance = !!.abundance,
-					.element = !!.element,
-					.feature = !!.feature,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					...
-				)
-			else if (action == "get")
-				get_clusters_SNN_bulk(
-					.data,
-					.abundance = !!.abundance,
-					.element = !!.element,
-					.feature = !!.feature,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					...
-				)
-			else
-				stop(
-					"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-				)
-		}
-		else
-			stop("the only supported methods are \"kmeans\" or \"SNN\" ")
+#' cluster_elements
+#' @inheritParams cluster_elements
+#' @return A tbl object with additional columns with cluster labels
+#'
+setMethod("cluster_elements", "tbl_df", .cluster_elements)
 
-	}
+#' cluster_elements
+#' @inheritParams cluster_elements
+#' @return A tbl object with additional columns with cluster labels
+#'
+setMethod("cluster_elements", "ttBulk", .cluster_elements)
+
+.cluster_elements_se = function(.data,
+																.element = NULL,
+																.feature = NULL,
+																.abundance = NULL,
+																method ,
+																of_samples = TRUE,
+																log_transform = TRUE,
+																action = "add",
+																...){
+
+	# Make col names
+	.abundance = enquo(.abundance)
+	.element = enquo(.element)
+	.feature = enquo(.feature)
+
+	.data %>%
+
+		# Convert to ttBulk
+		ttBulk() %>%
+
+		# Apply scale method
+		cluster_elements(.element = !!.element ,
+										 .feature = !!.feature ,
+										 .abundance = !!.abundance,
+										 method = method ,
+										 of_samples = of_samples,
+										 log_transform = log_transform,
+										 action = action,
+										 ...) %>%
+
+		# Convert to SummaizedExperiment
+		ttBulk_to_SummarizedExperiment()
+
+}
+
+#' cluster_elements
+#' @inheritParams cluster_elements
+#' @return A `ttBulk` object
+#'
+setMethod("cluster_elements", "SummarizedExperiment", .cluster_elements_se)
+
+#' cluster_elements
+#' @inheritParams cluster_elements
+#' @return A `ttBulk` object
+#'
+setMethod("cluster_elements", "RangedSummarizedExperiment", .cluster_elements_se)
 
 
 #' Dimension reduction of the transcript abundance data
+#'
+#' \lifecycle{maturing}
 #'
 #' @description reduce_dimensions() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
 #'
@@ -307,7 +559,6 @@ cluster_elements.tbl_df = cluster_elements.ttBulk <-
 #' @importFrom magrittr "%>%"
 #'
 #' @name reduce_dimensions
-#' @rdname reduce_dimensions
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .element The name of the element column (normally samples).
@@ -341,10 +592,12 @@ cluster_elements.tbl_df = cluster_elements.ttBulk <-
 #'
 #'
 #'
+#' @docType methods
+#' @rdname reduce_dimensions-methods
 #' @export
 #'
 #'
-reduce_dimensions <- function(.data,
+setGeneric("reduce_dimensions", function(.data,
 															.element = NULL,
 															.feature = NULL,
 															.abundance = NULL,
@@ -356,152 +609,205 @@ reduce_dimensions <- function(.data,
 															log_transform = TRUE,
 															scale = TRUE,
 															action = "add",
-															...) {
-	UseMethod("reduce_dimensions", .data)
-}
+															...) standardGeneric("reduce_dimensions"))
 
-#' @export
-reduce_dimensions.default <-  function(.data,
-																			 .element = NULL,
-																			 .feature = NULL,
-																			 .abundance = NULL,
-																			 method,
-																			 .dims = 2,
+# Set internal
+.reduce_dimensions = 		function(.data,
+                                .element = NULL,
+                                .feature = NULL,
+                                .abundance = NULL,
+                                method,
+                                .dims = 2,
 
-																			 top = 500,
-																			 of_samples = TRUE,
-																			 log_transform = TRUE,
-																			 scale = TRUE,
-																			 action = "add",
-																			 ...)
+                                top = 500,
+                                of_samples = TRUE,
+                                log_transform = TRUE,
+                                scale = TRUE,
+                                action = "add",
+                                ...)
 {
-	print("This function cannot be applied to this object")
+  # Make col names
+  .abundance = enquo(.abundance)
+  .element = enquo(.element)
+  .feature = enquo(.feature)
+
+  # Validate data frame
+  validation(.data,!!.element,!!.feature,!!.abundance)
+
+  if (method == "MDS") {
+    if (action == "add")
+      add_reduced_dimensions_MDS_bulk(
+        .data,
+        .abundance = !!.abundance,
+        .dims = .dims,
+        .element = !!.element,
+        .feature = !!.feature,
+        top = top,
+        of_samples = of_samples,
+        log_transform = log_transform,
+        ...
+      )
+    else if (action == "get")
+      get_reduced_dimensions_MDS_bulk(
+        .data,
+        .abundance = !!.abundance,
+        .dims = .dims,
+        .element = !!.element,
+        .feature = !!.feature,
+        top = top,
+        of_samples = of_samples,
+        log_transform = log_transform,
+        ...
+      )
+    else
+      stop(
+        "action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+      )
+  }
+  else if (method == "PCA") {
+    if (action == "add")
+      add_reduced_dimensions_PCA_bulk(
+        .data,
+        .abundance = !!.abundance,
+        .dims = .dims,
+        .element = !!.element,
+        .feature = !!.feature,
+        top = top,
+        of_samples = of_samples,
+        log_transform = log_transform,
+        scale = scale,
+        ...
+      )
+    else if (action == "get")
+      get_reduced_dimensions_PCA_bulk(
+        .data,
+        .abundance = !!.abundance,
+        .dims = .dims,
+        .element = !!.element,
+        .feature = !!.feature,
+        top = top,
+        of_samples = of_samples,
+        log_transform = log_transform,
+        scale = scale,
+        ...
+      )
+    else
+      stop(
+        "action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+      )
+
+  }
+  else if (method == "tSNE") {
+    if (action == "add")
+      add_reduced_dimensions_TSNE_bulk(
+        .data,
+        .abundance = !!.abundance,
+        .dims = .dims,
+        .element = !!.element,
+        .feature = !!.feature,
+        top = top,
+        of_samples = of_samples,
+        log_transform = log_transform,
+        scale = scale,
+        ...
+      )
+    else if (action == "get")
+      get_reduced_dimensions_TSNE_bulk(
+        .data,
+        .abundance = !!.abundance,
+        .dims = .dims,
+        .element = !!.element,
+        .feature = !!.feature,
+        top = top,
+        of_samples = of_samples,
+        log_transform = log_transform,
+        scale = scale,
+        ...
+      )
+    else
+      stop(
+        "action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+      )
+
+  }
+  else
+    stop("method must be either \"MDS\" or \"PCA\"")
+
 }
-#' @export
-reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
-	function(.data,
-					 .element = NULL,
-					 .feature = NULL,
-					 .abundance = NULL,
-					 method,
-					 .dims = 2,
 
-					 top = 500,
-					 of_samples = TRUE,
-					 log_transform = TRUE,
-					 scale = TRUE,
-					 action = "add",
-					 ...)
-	{
-		# Make col names
-		.abundance = enquo(.abundance)
-		.element = enquo(.element)
-		.feature = enquo(.feature)
+#' reduce_dimensions
+#' @inheritParams reduce_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions
+setMethod("reduce_dimensions", "spec_tbl_df", .reduce_dimensions)
 
-		if (method == "MDS") {
-			if (action == "add")
-				add_reduced_dimensions_MDS_bulk(
-					.data,
-					.abundance = !!.abundance,
-					.dims = .dims,
-					.element = !!.element,
-					.feature = !!.feature,
-					top = top,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					...
-				)
-			else if (action == "get")
-				get_reduced_dimensions_MDS_bulk(
-					.data,
-					.abundance = !!.abundance,
-					.dims = .dims,
-					.element = !!.element,
-					.feature = !!.feature,
-					top = top,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					...
-				)
-			else
-				stop(
-					"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-				)
-		}
-		else if (method == "PCA") {
-			if (action == "add")
-				add_reduced_dimensions_PCA_bulk(
-					.data,
-					.abundance = !!.abundance,
-					.dims = .dims,
-					.element = !!.element,
-					.feature = !!.feature,
-					top = top,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					scale = scale,
-					...
-				)
-			else if (action == "get")
-				get_reduced_dimensions_PCA_bulk(
-					.data,
-					.abundance = !!.abundance,
-					.dims = .dims,
-					.element = !!.element,
-					.feature = !!.feature,
-					top = top,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					scale = scale,
-					...
-				)
-			else
-				stop(
-					"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-				)
+#' reduce_dimensions
+#' @inheritParams reduce_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions
+setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 
-		}
-		else if (method == "tSNE") {
-			if (action == "add")
-				add_reduced_dimensions_TSNE_bulk(
-					.data,
-					.abundance = !!.abundance,
-					.dims = .dims,
-					.element = !!.element,
-					.feature = !!.feature,
-					top = top,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					scale = scale,
-					...
-				)
-			else if (action == "get")
-				get_reduced_dimensions_TSNE_bulk(
-					.data,
-					.abundance = !!.abundance,
-					.dims = .dims,
-					.element = !!.element,
-					.feature = !!.feature,
-					top = top,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					scale = scale,
-					...
-				)
-			else
-				stop(
-					"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-				)
+#' reduce_dimensions
+#' @inheritParams reduce_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions
+setMethod("reduce_dimensions", "ttBulk", .reduce_dimensions)
 
-		}
-		else
-			stop("method must be either \"MDS\" or \"PCA\"")
+.reduce_dimensions_se = function(.data,
+																 .element = NULL,
+																 .feature = NULL,
+																 .abundance = NULL,
+																 method,
+																 .dims = 2,
 
-	}
+																 top = 500,
+																 of_samples = TRUE,
+																 log_transform = TRUE,
+																 scale = TRUE,
+																 action = "add",
+																 ...){
 
+	# Make col names
+	.abundance = enquo(.abundance)
+	.element = enquo(.element)
+	.feature = enquo(.feature)
 
+	.data %>%
+
+		# Convert to ttBulk
+		ttBulk() %>%
+
+		# Apply scale method
+		reduce_dimensions(.element = !!.element,
+											.feature  = !!.feature,
+											.abundance  = !!.abundance,
+											method = method,
+											.dims = .dims,
+
+											top = top,
+											of_samples = of_samples,
+											log_transform = log_transform,
+											scale = scale,
+											action = action,
+											...) %>%
+
+		# Convert to SummaizedExperiment
+		ttBulk_to_SummarizedExperiment()
+
+}
+
+#' reduce_dimensions
+#' @inheritParams reduce_dimensions
+#' @return A `ttBulk` object
+#'
+setMethod("reduce_dimensions", "SummarizedExperiment", .reduce_dimensions_se)
+
+#' reduce_dimensions
+#' @inheritParams reduce_dimensions
+#' @return A `ttBulk` object
+#'
+setMethod("reduce_dimensions", "RangedSummarizedExperiment", .reduce_dimensions_se)
 
 #' Rotate two dimensions (e.g., principal components) of an arbitrary angle
+#'
+#' \lifecycle{maturing}
 #'
 #' @description rotate_dimensions() takes as imput a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
 #'
@@ -509,7 +815,6 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 #' @importFrom magrittr "%>%"
 #'
 #' @name rotate_dimensions
-#' @rdname rotate_dimensions
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .element The name of the element column (normally samples).
@@ -534,9 +839,11 @@ reduce_dimensions.tbl_df = reduce_dimensions.ttBulk <-
 #' counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 #'
 #'
+#' @docType methods
+#' @rdname rotate_dimensions-methods
 #' @export
 #'
-rotate_dimensions <- function(.data,
+setGeneric("rotate_dimensions", function(.data,
 															dimension_1_column,
 															dimension_2_column,
 															rotation_degrees,
@@ -544,27 +851,10 @@ rotate_dimensions <- function(.data,
 															of_samples = TRUE,
 															dimension_1_column_rotated = NULL,
 															dimension_2_column_rotated = NULL,
-															action = "add") {
-	UseMethod("rotate_dimensions", .data)
-}
+															action = "add") standardGeneric("rotate_dimensions"))
 
-#' @export
-rotate_dimensions.default <-  function(.data,
-																			 dimension_1_column,
-																			 dimension_2_column,
-																			 rotation_degrees,
-																			 .element = NULL,
-																			 of_samples = TRUE,
-																			 dimension_1_column_rotated = NULL,
-																			 dimension_2_column_rotated = NULL,
-																			 action = "add")
-{
-	print("This function cannot be applied to this object")
-}
-
-#' @export
-rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
-	function(.data,
+# Set internal
+.rotate_dimensions = 		function(.data,
 					 dimension_1_column,
 					 dimension_2_column,
 					 rotation_degrees,
@@ -611,8 +901,76 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 			)
 	}
 
+#' rotate_dimensions
+#' @inheritParams rotate_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
+setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
+
+#' rotate_dimensions
+#' @inheritParams rotate_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
+setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
+
+#' rotate_dimensions
+#' @inheritParams rotate_dimensions
+#' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
+setMethod("rotate_dimensions", "ttBulk", .rotate_dimensions)
+
+
+.rotate_dimensions_se = function(.data,
+																 dimension_1_column,
+																 dimension_2_column,
+																 rotation_degrees,
+																 .element = NULL,
+																 of_samples = TRUE,
+																 dimension_1_column_rotated = NULL,
+																 dimension_2_column_rotated = NULL,
+																 action =
+																 	"add"){
+
+	# Make col names
+	.element = enquo(.element)
+	dimension_1_column = enquo(dimension_1_column)
+	dimension_2_column = enquo(dimension_2_column)
+	dimension_1_column_rotated = enquo(dimension_1_column_rotated)
+	dimension_2_column_rotated = enquo(dimension_2_column_rotated)
+
+	.data %>%
+
+		# Convert to ttBulk
+		ttBulk() %>%
+
+		# Apply scale method
+		rotate_dimensions(dimension_1_column = !!dimension_1_column,
+											dimension_2_column = !!dimension_2_column,
+											rotation_degrees = rotation_degrees,
+											.element = !!.element,
+											of_samples = of_samples,
+											dimension_1_column_rotated = !!dimension_1_column_rotated,
+											dimension_2_column_rotated = !!dimension_2_column_rotated,
+											action = action) %>%
+
+		# Convert to SummaizedExperiment
+		ttBulk_to_SummarizedExperiment()
+
+}
+
+#' rotate_dimensions
+#' @inheritParams rotate_dimensions
+#' @return A `ttBulk` object
+#'
+setMethod("rotate_dimensions", "SummarizedExperiment", .rotate_dimensions_se)
+
+#' rotate_dimensions
+#' @inheritParams rotate_dimensions
+#' @return A `ttBulk` object
+#'
+setMethod("rotate_dimensions", "RangedSummarizedExperiment", .rotate_dimensions_se)
+
 
 #' Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) aboundances are correlated
+#'
+#' \lifecycle{maturing}
 #'
 #' @description remove_redundancy() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., samples).
 #'
@@ -620,7 +978,6 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 #' @importFrom magrittr "%>%"
 #'
 #' @name remove_redundancy
-#' @rdname remove_redundancy
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .element The name of the element column (normally samples).
@@ -631,6 +988,7 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 #' @param of_samples A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param correlation_threshold A real number between 0 and 1. For correlation based calculation.
+#' @param top An integer. How many top genes to select for correlation based method
 #' @param Dim_a_column A character string. For reduced_dimension based calculation. The column of one principal component
 #' @param Dim_b_column A character string. For reduced_dimension based calculation. The column of another principal component
 #'
@@ -661,10 +1019,12 @@ rotate_dimensions.tbl_df = rotate_dimensions.ttBulk <-
 #'   method = "reduced_dimensions"
 #' )
 #'
+#' @docType methods
+#' @rdname remove_redundancy-methods
 #' @export
 #'
 #'
-remove_redundancy <- function(.data,
+setGeneric("remove_redundancy", function(.data,
 													 .element = NULL,
 													 .feature = NULL,
 													 .abundance = NULL,
@@ -675,33 +1035,14 @@ remove_redundancy <- function(.data,
 
 
 													 correlation_threshold = 0.9,
+													 top = Inf,
 													 log_transform = FALSE,
 
 													 Dim_a_column,
-													 Dim_b_column) {
-	UseMethod("remove_redundancy", .data)
-}
-#' @export
-remove_redundancy.default <-  function(.data,
-																		.element = NULL,
-																		.feature = NULL,
-																		.abundance = NULL,
-																		method,
+													 Dim_b_column) standardGeneric("remove_redundancy"))
 
-																		of_samples = TRUE,
-
-
-
-																		correlation_threshold = 0.9,
-																		log_transform = FALSE,
-
-																		Dim_a_column,
-																		Dim_b_column)
-{
-	print("This function cannot be applied to this object")
-}
-#' @export
-remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
+# Set internal
+.remove_redundancy = 	 function(.data,
 																													 .element = NULL,
 																													 .feature = NULL,
 																													 .abundance = NULL,
@@ -712,10 +1053,11 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 
 
 																													 correlation_threshold = 0.9,
+																													 top = Inf,
 																													 log_transform = FALSE,
 
-																													 Dim_a_column,
-																													 Dim_b_column)
+																													 Dim_a_column = NULL,
+																													 Dim_b_column = NULL)
 {
 	# Make col names
 	.abundance = enquo(.abundance)
@@ -725,17 +1067,27 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 	Dim_a_column = enquo(Dim_a_column)
 	Dim_b_column = enquo(Dim_b_column)
 
-	if (method == "correlation")
+	if (method == "correlation"){
+
+		# Validate data frame
+		validation(.data,!!.element,!!.feature,!!.abundance)
+
 		remove_redundancy_elements_through_correlation(
 			.data,
 			.abundance = !!.abundance,
 			.element = !!.element,
 			.feature = !!.feature,
 			correlation_threshold = correlation_threshold,
+			top = top,
 			of_samples = of_samples,
 			log_transform = log_transform
 		)
-	else if (method == "reduced_dimensions")
+	}
+	else if (method == "reduced_dimensions"){
+
+		# Validate data frame
+		# MISSING because feature not needed. I should build a custom funtion.
+
 		remove_redundancy_elements_though_reduced_dimensions(
 			.data,
 			Dim_a_column = !!Dim_a_column,
@@ -743,6 +1095,7 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 			.element = !!.element,
 			of_samples = of_samples
 		)
+	}
 	else
 		stop(
 			"method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)"
@@ -750,9 +1103,90 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 
 }
 
+#' remove_redundancy
+#' @inheritParams remove_redundancy
+#' @return A tbl object with with dropped recundant elements (e.g., samples).
+setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
+
+#' remove_redundancy
+#' @inheritParams remove_redundancy
+#' @return A tbl object with with dropped recundant elements (e.g., samples).
+setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
+
+#' remove_redundancy
+#' @inheritParams remove_redundancy
+#' @return A tbl object with with dropped recundant elements (e.g., samples).
+setMethod("remove_redundancy", "ttBulk", .remove_redundancy)
+
+.remove_redundancy_se = function(.data,
+																 .element = NULL,
+																 .feature = NULL,
+																 .abundance = NULL,
+																 method,
+
+																 of_samples = TRUE,
+
+
+
+																 correlation_threshold = 0.9,
+																 top = Inf,
+																 log_transform = FALSE,
+
+																 Dim_a_column = NULL,
+																 Dim_b_column = NULL){
+
+	# Make col names
+	.abundance = enquo(.abundance)
+	.element = enquo(.element)
+	.feature = enquo(.feature)
+
+	Dim_a_column = enquo(Dim_a_column)
+	Dim_b_column = enquo(Dim_b_column)
+
+	.data %>%
+
+		# Convert to ttBulk
+		ttBulk() %>%
+
+		# Apply scale method
+		remove_redundancy( .element = !!.element,
+											 .feature = !!.feature,
+											 .abundance = !!.abundance,
+											 method = method,
+
+											 of_samples = of_samples,
+
+
+
+											 correlation_threshold = correlation_threshold,
+											 top = top,
+											 log_transform = log_transform,
+
+											 Dim_a_column = !!Dim_a_column,
+											 Dim_b_column = !!Dim_b_column) %>%
+
+		# Convert to SummaizedExperiment
+		ttBulk_to_SummarizedExperiment()
+
+}
+
+#' remove_redundancy
+#' @inheritParams remove_redundancy
+#' @return A `ttBulk` object
+#'
+setMethod("remove_redundancy", "SummarizedExperiment", .remove_redundancy_se)
+
+#' remove_redundancy
+#' @inheritParams remove_redundancy
+#' @return A `ttBulk` object
+#'
+setMethod("remove_redundancy", "RangedSummarizedExperiment", .remove_redundancy_se)
+
 
 
 #' Adjust transcript abundance for unwanted variation
+#'
+#' \lifecycle{maturing}
 #'
 #' @description adjust_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column..
 #'
@@ -760,7 +1194,6 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 #' @importFrom magrittr "%>%"
 #'
 #' @name adjust_abundance
-#' @rdname adjust_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
@@ -797,34 +1230,22 @@ remove_redundancy.tbl_df = remove_redundancy.ttBulk <-  function(.data,
 #'	)
 #'
 #'
+#' @docType methods
+#' @rdname adjust_abundance-methods
 #' @export
 #'
 #'
-adjust_abundance <- function(.data,
+setGeneric("adjust_abundance", function(.data,
 														 .formula,
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
 														 log_transform = TRUE,
 														 action = "add",
-														 ...) {
-	UseMethod("adjust_abundance", .data)
-}
-#' @export
-adjust_abundance.default <-  function(.data,
-																			.formula,
-																			.sample = NULL,
-																			.transcript = NULL,
-																			.abundance = NULL,
-																			log_transform = TRUE,
-																			action = "add",
-																			...)
-{
-	print("This function cannot be applied to this object")
-}
-#' @export
-adjust_abundance.tbl_df = adjust_abundance.ttBulk <-
-	function(.data,
+														 ...) standardGeneric("adjust_abundance"))
+
+# Set internal
+.adjust_abundance = 	function(.data,
 					 .formula,
 					 .sample = NULL,
 					 .transcript = NULL,
@@ -837,6 +1258,9 @@ adjust_abundance.tbl_df = adjust_abundance.ttBulk <-
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
+
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
 
 		if (action == "add")
 			add_adjusted_counts_for_unwanted_variation_bulk(
@@ -864,8 +1288,71 @@ adjust_abundance.tbl_df = adjust_abundance.ttBulk <-
 			)
 	}
 
+#' adjust_abundance
+#' @inheritParams adjust_abundance
+#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
+setMethod("adjust_abundance", "spec_tbl_df", .adjust_abundance)
+
+#' adjust_abundance
+#' @inheritParams adjust_abundance
+#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
+setMethod("adjust_abundance", "tbl_df", .adjust_abundance)
+
+#' adjust_abundance
+#' @inheritParams adjust_abundance
+#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
+setMethod("adjust_abundance", "ttBulk", .adjust_abundance)
+
+.adjust_abundance_se = function(.data,
+																.formula,
+																.sample = NULL,
+																.transcript = NULL,
+																.abundance = NULL,
+																log_transform = TRUE,
+																action = "add",
+																...){
+
+	# Make col names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+
+	.data %>%
+
+		# Convert to ttBulk
+		ttBulk() %>%
+
+		# Apply scale method
+		adjust_abundance( .formula = .formula,
+											.sample = !!.sample,
+											.transcript = !!.transcript,
+											.abundance = !!.abundance,
+											log_transform = log_transform,
+											action = action,
+											...) %>%
+
+		# Convert to SummaizedExperiment
+		ttBulk_to_SummarizedExperiment()
+
+}
+
+#' adjust_abundance
+#' @inheritParams adjust_abundance
+#' @return A `ttBulk` object
+#'
+setMethod("adjust_abundance", "SummarizedExperiment", .adjust_abundance_se)
+
+#' adjust_abundance
+#' @inheritParams adjust_abundance
+#' @return A `ttBulk` object
+#'
+setMethod("adjust_abundance", "RangedSummarizedExperiment", .adjust_abundance_se)
+
+
 
 #' Aggregates multiple counts from the same samples (e.g., from isoforms), concatenates other character columns, and averages other numeric columns
+#'
+#' \lifecycle{maturing}
 #'
 #' @description aggregate_duplicates() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.
 #'
@@ -873,7 +1360,6 @@ adjust_abundance.tbl_df = adjust_abundance.ttBulk <-
 #' @importFrom magrittr "%>%"
 #'
 #' @name aggregate_duplicates
-#' @rdname aggregate_duplicates
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
@@ -906,55 +1392,109 @@ adjust_abundance.tbl_df = adjust_abundance.ttBulk <-
 #'     )
 #'
 #'
+#' @docType methods
+#' @rdname aggregate_duplicates-methods
 #' @export
 #'
 #'
-aggregate_duplicates <- function(.data,
-																 aggregation_function = sum,
+setGeneric("aggregate_duplicates", function(.data,
+
 																 .sample = NULL,
 																 .transcript = NULL,
 																 .abundance = NULL,
-																 keep_integer = TRUE) {
-	UseMethod("aggregate_duplicates", .data)
-}
+																 aggregation_function = sum,
+																 keep_integer = TRUE) standardGeneric("aggregate_duplicates"))
 
-#' @export
-aggregate_duplicates.default <-  function(.data,
-																					aggregation_function = sum,
-																					.sample = NULL,
-																					.transcript = NULL,
-																					.abundance = NULL,
-																					keep_integer = TRUE)
-{
-	print("This function cannot be applied to this object")
-}
+# Set internal
+.aggregate_duplicates = 	function(.data,
 
-#' @export
-aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
-	function(.data,
-					 aggregation_function = sum,
 					 .sample = NULL,
 					 .transcript = NULL,
 					 .abundance = NULL,
+					 aggregation_function = sum,
 					 keep_integer = TRUE)  {
 		# Make col names
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
 
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance, skip_dupli_check = TRUE)
 
 		aggregate_duplicated_transcripts_bulk(
 			.data,
-			aggregation_function = aggregation_function,
+
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
+			aggregation_function = aggregation_function,
 			keep_integer = TRUE
 		)
 	}
 
+#' aggregate_duplicates
+#' @inheritParams aggregate_duplicates
+#' @return A `tbl` object with aggregated transcript abundance and annotation
+setMethod("aggregate_duplicates", "spec_tbl_df", .aggregate_duplicates)
+
+#' aggregate_duplicates
+#' @inheritParams aggregate_duplicates
+#' @return A `tbl` object with aggregated transcript abundance and annotation
+setMethod("aggregate_duplicates", "tbl_df", .aggregate_duplicates)
+
+#' aggregate_duplicates
+#' @inheritParams aggregate_duplicates
+#' @return A `tbl` object with aggregated transcript abundance and annotation
+setMethod("aggregate_duplicates", "ttBulk", .aggregate_duplicates)
+
+.aggregate_duplicates_se = function(.data,
+
+																		.sample = NULL,
+																		.transcript = NULL,
+																		.abundance = NULL,
+																		aggregation_function = sum,
+																		keep_integer = TRUE){
+
+	# Make col names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+
+	.data %>%
+
+		# Convert to ttBulk
+		ttBulk() %>%
+
+		# Apply scale method
+		aggregate_duplicates(
+													.sample = !!.sample,
+													.transcript = !!.transcript,
+													.abundance = !!.abundance,
+													aggregation_function = aggregation_function,
+													keep_integer = keep_integer) %>%
+
+		# Convert to SummaizedExperiment
+		ttBulk_to_SummarizedExperiment()
+
+}
+
+#' aggregate_duplicates
+#' @inheritParams aggregate_duplicates
+#' @return A `ttBulk` object
+#'
+setMethod("aggregate_duplicates", "SummarizedExperiment", .aggregate_duplicates_se)
+
+#' aggregate_duplicates
+#' @inheritParams aggregate_duplicates
+#' @return A `ttBulk` object
+#'
+setMethod("aggregate_duplicates", "RangedSummarizedExperiment", .aggregate_duplicates_se)
+
+
 
 #' Get cell type proportions from samples
+#'
+#' \lifecycle{maturing}
 #'
 #' @description deconvolve_cellularity() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
 #'
@@ -962,13 +1502,13 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 #' @importFrom magrittr "%>%"
 #'
 #' @name deconvolve_cellularity
-#' @rdname deconvolve_cellularity
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#'
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
+#' @param method A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function Cibersort
 #'
@@ -985,32 +1525,26 @@ aggregate_duplicates.tbl_df = aggregate_duplicates.ttBulk <-
 #' deconvolve_cellularity(ttBulk::counts, sample, transcript, `count`, cores = 2)
 #'
 #'
+#' @docType methods
+#' @rdname deconvolve_cellularity-methods
 #' @export
 #'
-deconvolve_cellularity <- function(.data,
+setGeneric("deconvolve_cellularity", function(.data,
 															 .sample = NULL,
 															 .transcript = NULL,
 															 .abundance = NULL,
+															 reference = X_cibersort,
+															 method = "cibersort",
 															 action = "add",
-															 ...) {
-	UseMethod("deconvolve_cellularity", .data)
-}
-#' @export
-deconvolve_cellularity.default <-  function(.data,
-																				.sample = NULL,
-																				.transcript = NULL,
-																				.abundance = NULL,
-																				action = "add",
-																				...)
-{
-	print("This function cannot be applied to this object")
-}
-#' @export
-deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
-	function(.data,
+															 ...) standardGeneric("deconvolve_cellularity"))
+
+# Set internal
+.deconvolve_cellularity = 		function(.data,
 					 .sample = NULL,
 					 .transcript = NULL,
 					 .abundance = NULL,
+					 reference = X_cibersort,
+					 method = "cibersort",
 					 action = "add",
 					 ...)  {
 		# Make col names
@@ -1018,12 +1552,17 @@ deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
 
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
+
 		if (action == "add")
 			add_cell_type_proportions(
 				.data,
 				.sample = !!.sample,
 				.transcript = !!.transcript,
 				.abundance = !!.abundance,
+				reference = reference,
+				method = method,
 				...
 			)
 		else if (action == "get")
@@ -1032,6 +1571,8 @@ deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
 				.sample = !!.sample,
 				.transcript = !!.transcript,
 				.abundance = !!.abundance,
+				reference = reference,
+				method = method,
 				...
 			)
 		else
@@ -1040,9 +1581,74 @@ deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
 			)
 	}
 
+#' deconvolve_cellularity
+#' @inheritParams deconvolve_cellularity
+#' @return A `tbl` object including additional columns for each cell type estimated
+setMethod("deconvolve_cellularity", "spec_tbl_df", .deconvolve_cellularity)
+
+#' deconvolve_cellularity
+#' @inheritParams deconvolve_cellularity
+#' @return A `tbl` object including additional columns for each cell type estimated
+setMethod("deconvolve_cellularity", "tbl_df", .deconvolve_cellularity)
+
+#' deconvolve_cellularity
+#' @inheritParams deconvolve_cellularity
+#' @return A `tbl` object including additional columns for each cell type estimated
+setMethod("deconvolve_cellularity", "ttBulk", .deconvolve_cellularity)
+
+
+
+.deconvolve_cellularity_se = function(.data,
+																			.sample = NULL,
+																			.transcript = NULL,
+																			.abundance = NULL,
+																			reference = X_cibersort,
+																			method = "cibersort",
+																			action = "add",
+																			...){
+
+	# Make col names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+
+	.data %>%
+
+		# Convert to ttBulk
+		ttBulk() %>%
+
+		# Apply scale method
+		deconvolve_cellularity(	 .sample = !!.sample,
+													 .transcript = !!.transcript,
+													 .abundance = !!.abundance,
+													 reference = reference,
+													 method = method,
+													 action = action,
+													 ...) %>%
+
+		# Convert to SummaizedExperiment
+		ttBulk_to_SummarizedExperiment()
+
+}
+
+#' deconvolve_cellularity
+#' @inheritParams deconvolve_cellularity
+#' @return A `ttBulk` object
+#'
+setMethod("deconvolve_cellularity", "SummarizedExperiment", .deconvolve_cellularity_se)
+
+#' deconvolve_cellularity
+#' @inheritParams deconvolve_cellularity
+#' @return A `ttBulk` object
+#'
+setMethod("deconvolve_cellularity", "RangedSummarizedExperiment", .deconvolve_cellularity_se)
+
+
 
 
 #' Add transcript symbol column from ensembl id
+#'
+#' \lifecycle{maturing}
 #'
 #' @description annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
 #'
@@ -1050,7 +1656,6 @@ deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
 #' @importFrom magrittr "%>%"
 #'
 #' @name annotate_symbol
-#' @rdname annotate_symbol
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> |
 #' @param .ensembl A character string. The column that is represents ensembl gene id
@@ -1070,24 +1675,17 @@ deconvolve_cellularity.tbl_df = deconvolve_cellularity.ttBulk <-
 #' 	annotate_symbol(ttBulk::counts_ensembl, ens)
 #'
 #'
+#' @docType methods
+#' @rdname annotate_symbol-methods
 #' @export
 #'
 #'
-annotate_symbol <- function(.data,
+setGeneric("annotate_symbol", function(.data,
 														.ensembl,
-														action = "add") {
-	UseMethod("annotate_symbol", .data)
-}
-#' @export
-annotate_symbol.default <-  function(.data,
-																		 .ensembl,
-																		 action = "add")
-{
-	print("This function cannot be applied to this object")
-}
-#' @export
-annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
-	function(.data,
+														action = "add") standardGeneric("annotate_symbol"))
+
+# Set internal
+.annotate_symbol = 		function(.data,
 					 .ensembl,
 					 action = "add")
 	{
@@ -1108,9 +1706,25 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 
 	}
 
+#' annotate_symbol
+#' @inheritParams annotate_symbol
+#' @return A `tbl` object including additional columns for transcript symbol
+setMethod("annotate_symbol", "spec_tbl_df", .annotate_symbol)
+
+#' annotate_symbol
+#' @inheritParams annotate_symbol
+#' @return A `tbl` object including additional columns for transcript symbol
+setMethod("annotate_symbol", "tbl_df", .annotate_symbol)
+
+#' annotate_symbol
+#' @inheritParams annotate_symbol
+#' @return A `tbl` object including additional columns for transcript symbol
+setMethod("annotate_symbol", "ttBulk", .annotate_symbol)
 
 
 #' Add differential transcription information to a tbl using edgeR.
+#'
+#' \lifecycle{maturing}
 #'
 #' @description test_differential_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -1118,7 +1732,6 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 #' @importFrom magrittr "%>%"
 #'
 #' @name test_differential_abundance
-#' @rdname test_differential_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model
@@ -1128,6 +1741,7 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
+#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
@@ -1149,9 +1763,11 @@ annotate_symbol.tbl_df = annotate_symbol.ttBulk <-
 #' 	)
 #'
 #'
+#' @docType methods
+#' @rdname test_differential_abundance-methods
 #' @export
 #'
-test_differential_abundance <- function(.data,
+setGeneric("test_differential_abundance", function(.data,
 																						.formula,
 																						.sample = NULL,
 																						.transcript = NULL,
@@ -1159,25 +1775,12 @@ test_differential_abundance <- function(.data,
 																				.coef = 2,
 																				.contrasts = NULL,
 																						significance_threshold = 0.05,
-																						action = "add") {
-	UseMethod("test_differential_abundance", .data)
-}
-#' @export
-test_differential_abundance.default <-  function(.data,
-																										 .formula,
-																										 .sample = NULL,
-																										 .transcript = NULL,
-																										 .abundance = NULL,
-																								 .coef = 2,
-																								 .contrasts = NULL,
-																										 significance_threshold = 0.05,
-																										 action = "add")
-{
-	print("This function cannot be applied to this object")
-}
-#' @export
-test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
-	function(.data,
+																				fill_missing_values = FALSE,
+
+																						action = "add") standardGeneric("test_differential_abundance"))
+
+# Set internal
+.test_differential_abundance = 		function(.data,
 					 .formula,
 					 .sample = NULL,
 					 .transcript = NULL,
@@ -1185,12 +1788,16 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 					 .coef = 2,
 					 .contrasts = NULL,
 					 significance_threshold = 0.05,
+					 fill_missing_values = FALSE,
 					 action = "add")
 	{
 		# Make col names
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
+
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
 
 		if (action == "add")
 			add_differential_transcript_abundance_bulk(
@@ -1201,7 +1808,8 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 				.abundance = !!.abundance,
 				.coef = .coef,
 				.contrasts = .contrasts,
-				significance_threshold = significance_threshold
+				significance_threshold = significance_threshold,
+				fill_missing_values = fill_missing_values
 			)
 		else if (action == "get")
 			get_differential_transcript_abundance_bulk(
@@ -1212,7 +1820,8 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 				.abundance = !!.abundance,
 				.coef = .coef,
 				.contrasts = .contrasts,
-				significance_threshold = significance_threshold
+				significance_threshold = significance_threshold,
+				fill_missing_values = fill_missing_values
 			)
 		else
 			stop(
@@ -1220,8 +1829,77 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 			)
 	}
 
+#' test_differential_abundance
+#' @inheritParams test_differential_abundance
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_differential_abundance", "spec_tbl_df", .test_differential_abundance)
 
-#' Identify variable transcripts
+#' test_differential_abundance
+#' @inheritParams test_differential_abundance
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_differential_abundance", "tbl_df", .test_differential_abundance)
+
+#' test_differential_abundance
+#' @inheritParams test_differential_abundance
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_differential_abundance", "ttBulk", .test_differential_abundance)
+
+
+
+.test_differential_abundance_se = function(.data,
+																					 .formula,
+																					 .sample = NULL,
+																					 .transcript = NULL,
+																					 .abundance = NULL,
+																					 .coef = 2,
+																					 .contrasts = NULL,
+																					 significance_threshold = 0.05,
+																					 fill_missing_values = FALSE,
+																					 action = "add")
+{
+	# Make col names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+
+	.data %>%
+
+		# Convert to ttBulk
+		ttBulk() %>%
+
+		# Apply scale method
+		test_differential_abundance(.formula,
+																.sample = !!.sample,
+																.transcript = !!.transcript,
+																.abundance = !!.abundance,
+																.coef = .coef,
+																.contrasts = .contrasts,
+																significance_threshold = significance_threshold,
+																fill_missing_values = fill_missing_values,
+																action = action) %>%
+
+		# Convert to SummaizedExperiment
+		ttBulk_to_SummarizedExperiment()
+
+}
+
+#' test_differential_abundance
+#' @inheritParams test_differential_abundance
+#' @return A `ttBulk` object
+#'
+setMethod("test_differential_abundance", "SummarizedExperiment", .test_differential_abundance_se)
+
+#' test_differential_abundance
+#' @inheritParams test_differential_abundance
+#' @return A `ttBulk` object
+#'
+setMethod("test_differential_abundance", "RangedSummarizedExperiment", .test_differential_abundance_se)
+
+
+
+#' Filter variable transcripts
+#'
+#' \lifecycle{maturing}
 #'
 #' @description filter_variable() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -1229,7 +1907,6 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 #' @importFrom magrittr "%>%"
 #'
 #' @name filter_variable
-#' @rdname filter_variable
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
@@ -1258,29 +1935,19 @@ test_differential_abundance.tbl_df = test_differential_abundance.ttBulk <-
 #' 	)
 #'
 #'
+#' @docType methods
+#' @rdname filter_variable-methods
 #' @export
 #'
-filter_variable <- function(.data,
+setGeneric("filter_variable", function(.data,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL,
 																				top = 500,
-														log_transform = TRUE) {
-	UseMethod("filter_variable", .data)
-}
-#' @export
-filter_variable.default <-  function(.data,
-																			 .sample = NULL,
-																			 .transcript = NULL,
-																			 .abundance = NULL,
-																			 top = 500,
-																		 log_transform = TRUE)
-{
-	print("This function cannot be applied to this object")
-}
-#' @export
-filter_variable.tbl_df = filter_variable.ttBulk <-
-	function(.data,
+														log_transform = TRUE) standardGeneric("filter_variable"))
+
+# Set internal
+.filter_variable = 		function(.data,
 					 .sample = NULL,
 					 .transcript = NULL,
 					 .abundance = NULL,
@@ -1292,6 +1959,9 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
 
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
+
 		filter_variable_transcripts(
 				.data,
 				.sample = !!.sample,
@@ -1302,8 +1972,214 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 			)
 	}
 
+#' filter_variable
+#' @inheritParams filter_variable
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("filter_variable", "spec_tbl_df", .filter_variable)
+
+#' filter_variable
+#' @inheritParams filter_variable
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("filter_variable", "tbl_df", .filter_variable)
+
+#' filter_variable
+#' @inheritParams filter_variable
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("filter_variable", "ttBulk", .filter_variable)
+
+.filter_variable_se = function(.data,
+															 .sample = NULL,
+															 .transcript = NULL,
+															 .abundance = NULL,
+															 top = 500,
+															 log_transform = TRUE)
+{
+	# Make col names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+
+	.data %>%
+
+		# Convert to ttBulk
+		ttBulk() %>%
+
+		# Apply scale method
+		filter_variable(
+										.sample = !!.sample,
+										.transcript = !!.transcript,
+										.abundance = !!.abundance,
+										top = top,
+										log_transform = log_transform) %>%
+
+		# Convert to SummaizedExperiment
+		ttBulk_to_SummarizedExperiment()
+
+}
+
+#' filter_variable
+#' @inheritParams filter_variable
+#' @return A `ttBulk` object
+#'
+setMethod("filter_variable", "SummarizedExperiment", .filter_variable_se)
+
+#' filter_variable
+#' @inheritParams filter_variable
+#' @return A `ttBulk` object
+#'
+setMethod("filter_variable", "RangedSummarizedExperiment", .filter_variable_se)
+
+
+
+#' Filter abundant transcripts
+#'
+#' \lifecycle{maturing}
+#'
+#' @description filter_abundant() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#' @importFrom dplyr filter
+#'
+#' @name filter_abundant
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param cpm_threshold A real positive number
+#' @param prop A number between 0 and 1
+#'
+#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#'
+#' 	filter_abundant(
+#' 	ttBulk::counts_mini,
+#' 	    sample,
+#' 	    transcript,
+#' 	    `count`
+#' 	)
+#'
+#'
+#' @docType methods
+#' @rdname filter_abundant-methods
+#' @export
+#'
+setGeneric("filter_abundant", function(.data,
+														.sample = NULL,
+														.transcript = NULL,
+														.abundance = NULL,
+														cpm_threshold = 0.5,
+														prop = 3 / 4) standardGeneric("filter_abundant"))
+
+# Set internal
+.filter_abundant = 		function(.data,
+					 .sample = NULL,
+					 .transcript = NULL,
+					 .abundance = NULL,
+					 cpm_threshold = 0.5,
+					 prop = 3 / 4)
+	{
+
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
+
+		# Validate data frame
+		validation(.data,!!.sample,!!.transcript,!!.abundance)
+
+		gene_to_exclude =
+			add_normalised_counts_bulk.get_low_expressed(.data,
+																								 .sample = !!.sample,
+																								 .transcript = !!.transcript,
+																								 .abundance = !!.abundance,
+																														 cpm_threshold = cpm_threshold,
+																														 prop = prop)
+
+		.data %>%
+
+			# Filter
+			dplyr::filter(!!.transcript %in% gene_to_exclude %>% `!`) %>%
+
+			# Attach attributes
+			add_attr(.data %>% attr("parameters"), "parameters")
+	}
+
+#' filter_abundant
+#' @inheritParams filter_abundant
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("filter_abundant", "spec_tbl_df", .filter_abundant)
+
+#' filter_abundant
+#' @inheritParams filter_abundant
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("filter_abundant", "tbl_df", .filter_abundant)
+
+#' filter_abundant
+#' @inheritParams filter_abundant
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("filter_abundant", "ttBulk", .filter_abundant)
+
+.filter_abundant_se = function(.data,
+															 .sample = NULL,
+															 .transcript = NULL,
+															 .abundance = NULL,
+															 cpm_threshold = 0.5,
+															 prop = 3 / 4)
+{
+	# Make col names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+
+	.data %>%
+
+		# Convert to ttBulk
+		ttBulk() %>%
+
+		# Apply scale method
+		filter_abundant(
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			cpm_threshold = cpm_threshold,
+			prop = prop) %>%
+
+		# Convert to SummaizedExperiment
+		ttBulk_to_SummarizedExperiment()
+
+}
+
+#' filter_abundant
+#' @inheritParams filter_abundant
+#' @return A `ttBulk` object
+#'
+setMethod("filter_abundant", "SummarizedExperiment", .filter_abundant_se)
+
+#' filter_abundant
+#' @inheritParams filter_abundant
+#' @return A `ttBulk` object
+#'
+setMethod("filter_abundant", "RangedSummarizedExperiment", .filter_abundant_se)
+
+
 
 #' Analise gene enrichment with EGSEA
+#'
+#' \lifecycle{maturing}
 #'
 #' @description analise_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
 #'
@@ -1311,7 +2187,6 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 #' @importFrom magrittr "%>%"
 #'
 #' @name analise_gene_enrichment
-#' @rdname analise_gene_enrichment
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model
@@ -1349,34 +2224,22 @@ filter_variable.tbl_df = filter_variable.ttBulk <-
 #'
 #'}
 #'
+#' @docType methods
+#' @rdname analise_gene_enrichment-methods
 #' @export
 #'
 #'
-analise_gene_enrichment <- function(.data,
+setGeneric("analise_gene_enrichment", function(.data,
 																		.formula,
 																		.sample = NULL,
 																		.entrez,
 																		.abundance = NULL,
 																		.contrasts = NULL,
 																		species,
-																		cores = 10) {
-	UseMethod("analise_gene_enrichment", .data)
-}
-#' @export
-analise_gene_enrichment.default <-  function(.data,
-																						 .formula,
-																						 .sample = NULL,
-																						 .entrez,
-																						 .abundance = NULL,
-																						 .contrasts = NULL,
-																						 species,
-																						 cores = 10)
-{
-	print("This function cannot be applied to this object")
-}
-#' @export
-analise_gene_enrichment.tbl_df = analise_gene_enrichment.ttBulk <-
-	function(.data,
+																		cores = 10) standardGeneric("analise_gene_enrichment"))
+
+# Set internal
+.analise_gene_enrichment = 		function(.data,
 					 .formula,
 					 .sample = NULL,
 					 .entrez,
@@ -1389,184 +2252,33 @@ analise_gene_enrichment.tbl_df = analise_gene_enrichment.ttBulk <-
 		.abundance = enquo(.abundance)
 		.entrez = enquo(.entrez)
 
-			analyse_gene_enrichment_bulk_EGSEA(.data,
-																				 .formula,
-																				 .sample = !!.sample,
-																				 .entrez = !!.entrez,
-																				 .abundance = !!.abundance,
-																				 .contrasts = .contrasts,
-																				 species = species,
-																				 cores = cores)
+		# Validate data frame
+		validation(.data,!!.sample,!!.entrez)
+
+		analyse_gene_enrichment_bulk_EGSEA(.data,
+																			 .formula,
+																			 .sample = !!.sample,
+																			 .entrez = !!.entrez,
+																			 .abundance = !!.abundance,
+																			 .contrasts = .contrasts,
+																			 species = species,
+																			 cores = cores)
 
 
 
 	}
 
+#' analise_gene_enrichment
+#' @inheritParams analise_gene_enrichment
+#' @return A `tbl` object
+setMethod("analise_gene_enrichment", "spec_tbl_df", .analise_gene_enrichment)
 
+#' analise_gene_enrichment
+#' @inheritParams analise_gene_enrichment
+#' @return A `tbl` object
+setMethod("analise_gene_enrichment", "tbl_df", .analise_gene_enrichment)
 
-
-#' Join datasets
-#'
-#' @importFrom purrr map
-#' @importFrom stats setNames
-#'
-#' @param ... Data frames to combine
-#'
-#' @return A tt object
-#'
-#' @examples
-#'
-#' bind_rows(ttBulk::counts_mini, ttBulk::counts_mini)
-#'
-#'
-#' @export
-bind_rows <- function(...) {
-	UseMethod("bind_rows")
-}
-
-#' @export
-bind_rows.default <-  function(...)
-{
-	dplyr::bind_rows(...)
-}
-
-#' @export
-bind_rows.ttBulk <- function(...)
-{
-
-	tts = dplyr:::flatten_bindable(rlang::dots_values(...))
-
-	par1 = tts[[1]] %>% attr("parameters") %>% unlist
-	par2 = tts[[2]] %>% attr("parameters") %>% unlist
-
-	# Parameters of the two objects must match
-	error_if_parameters_not_match(par1, par2)
-
-	par =
-		unique(c(par1 %>% names, par2 %>% names)) %>%
-		map(~ switch(par1[[.x]] %>% is.null %>% sum(1), par1[[.x]], par2[[.x]])) %>%
-		setNames(par1 %>% names)
-
-
-	dplyr::bind_rows(...) %>%
-
-		# Attach attributes
-		add_attr(par, "parameters")
-
-}
-
-
-#' Mutate datasets
-#'
-#' @param .data A tbl. (See dplyr)
-#' @param ... Data frames to combine (See dplyr)
-#'
-#' @return A tt object
-#' @export
-mutate <- function(.data, ...) {
-	UseMethod("mutate")
-}
-
-#' @export
-mutate.default <-  function(.data, ...)
-{
-	dplyr::mutate(.data, ...)
-}
-
-#' @export
-mutate.ttBulk <- function(.data, ...)
-{
-	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
-		dplyr::mutate(...) %>%
-
-		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters") %>%
-
-		# Add class
-		add_class("tt") %>%
-		add_class("ttBulk")
-
-
-}
-
-# Left join
-
-#' Join datasets
-#'
-#' @param x tbls to join. (See dplyr)
-#' @param y tbls to join. (See dplyr)
-#' @param by A character vector of variables to join by. (See dplyr)
-#' @param copy If x and y are not from the same data source, and copy is TRUE, then y will be copied into the same src as x. (See dplyr)
-#' @param suffix If there are non-joined duplicate variables in x and y, these suffixes will be added to the output to disambiguate them. Should be a character vector of length 2. (See dplyr)
-#' @param ... Data frames to combine (See dplyr)
-#'
-#' @return A tt object
-#'
-#' @export
-left_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
-	UseMethod("left_join")
-}
-
-#' @export
-left_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-																...)
-{
-	dplyr::left_join(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
-}
-
-#' @export
-left_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-														...)
-{
-	x %>%
-		drop_class(c("ttBulk", "tt")) %>%
-		dplyr::left_join(y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...) %>%
-
-		# Attach attributes
-		add_attr(x %>% attr("parameters"), "parameters") %>%
-
-		# Add class
-		add_class("tt") %>%
-		add_class("ttBulk")
-
-}
-
-#' distinct
-#' @param .data A tbl. (See dplyr)
-#' @param ... Data frames to combine (See dplyr)
-#' @param .keep_all If TRUE, keep all variables in .data. If a combination of ... is not distinct, this keeps the first row of values. (See dplyr)
-#'
-#' @return A tt object
-#'
-#' @examples
-#'
-#' distinct(ttBulk::counts_mini)
-#'
-#'
-#' @export
-distinct <- function (.data, ..., .keep_all = FALSE)  {
-	UseMethod("distinct")
-}
-
-#' @export
-distinct.default <-  function (.data, ..., .keep_all = FALSE)
-{
-	dplyr::distinct(.data, ..., .keep_all = FALSE)
-}
-
-#' @export
-distinct.ttBulk <- function (.data, ..., .keep_all = FALSE)
-{
-	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
-		dplyr::distinct(..., .keep_all = .keep_all) %>%
-
-		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters") %>%
-
-		# Add class
-		add_class("tt") %>%
-		add_class("ttBulk")
-
-}
+#' analise_gene_enrichment
+#' @inheritParams analise_gene_enrichment
+#' @return A `tbl` object
+setMethod("analise_gene_enrichment", "ttBulk", .analise_gene_enrichment)

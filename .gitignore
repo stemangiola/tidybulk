@@ -8,4 +8,7 @@ vignettes/introduction_cache*
 ttBulk.Rproj
 Meta
 doc
-dev
+dev/*csv
+dev/*rds
+dev/*rda
+dev/dplyr-master/*

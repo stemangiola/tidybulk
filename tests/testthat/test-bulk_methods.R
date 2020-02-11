@@ -107,8 +107,8 @@ test_that("filter variable - no object",{
 	)
 
 	expect_equal(
-		head(res$b),
-		c("TCL1A", "IGHD",  "IGHM",  "IGKC",  "FCN1",  "TCL1A")
+		sort(unique(res$b)),
+		c("FCN1",  "IGHD",  "IGHM",  "IGKC",  "TCL1A")
 	)
 
 })
@@ -135,6 +135,58 @@ test_that("Get differential trancript abundance - no object",{
     ncol(res),
     8
   )
+
+  # Continuous covariate
+  sam = distinct(input_df, a)
+  sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
+
+  res =
+  	test_differential_abundance(
+  		left_join(input_df, sam),
+  		~ condition_cont,
+  		.sample = a,
+  		.transcript = b,
+  		.abundance = c,
+  		action="get"
+  	)
+
+  expect_equal(
+  	unique(res$logFC)[1:4],
+  	c(-4.403626, -4.390714, -4.746695, -4.467572),
+  	tolerance=1e-6
+  )
+
+  expect_equal(
+  	ncol(res),
+  	8
+  )
+
+  # Just one covariate error
+  expect_error(
+  	test_differential_abundance(
+  		filter(input_df, condition),
+  		~ condition,
+  		.sample = a,
+  		.transcript = b,
+  		.abundance = c,
+  		action="get"
+  	),
+  	"Design matrix not of full rank"
+  )
+
+  # Just one sample per covariate error
+  expect_error(
+  	test_differential_abundance(
+  		filter(input_df, a %in% c("SRR1740034", "SRR1740035", "SRR1740043", "SRR1740058")),
+  		~ condition,
+  		.sample = a,
+  		.transcript = b,
+  		.abundance = c,
+  		action="get"
+  	),
+  	"You need at least two replicated"
+  )
+
 
 })
 
@@ -178,8 +230,8 @@ test_that("Add differential trancript abundance - no object",{
     )
 
   expect_equal(
-    unique(res$logFC)[1:4],
-    c(-12.10269, -12.48201, -11.48896, -13.44406),
+  	pull(filter(distinct(res, b, logFC), b %in% c("HK3", "FCN1", "CLEC7A", "FAM198B")) , "logFC"),
+    c(-12.10269, -12.48201 ,-11.48896, -13.44406),
     tolerance=1e-6
   )
 
@@ -660,6 +712,7 @@ test_that("Add symbol from ensambl - no object",{
 
 test_that("Get cell type proportions - no object",{
 
+	# Cibersort
   res =
     deconvolve_cellularity(
       input_df,
@@ -680,8 +733,30 @@ test_that("Get cell type proportions - no object",{
     23
   )
 
+  # LLSR
+  res =
+  	deconvolve_cellularity(
+  		input_df,
+  		.sample = a,
+  		.transcript = b,
+  		.abundance = c,
+  		method = "llsr",
+  		action="get", cores=1
+  	)
+
+  expect_equal(
+  	as.numeric(res[1,2:5]),
+  	c(0.6702025807, 0.0000000000, 0.0000000000, 0.0005272016),
+  	tolerance=1e-3
+  )
+
+  expect_equal(
+  	ncol(res),
+  	23
+  )
+
 })
-#
+
 test_that("Add cell type proportions - no object",{
 
   res =
@@ -705,3 +780,32 @@ test_that("Add cell type proportions - no object",{
   )
 
 })
+
+test_that("filter abundant - no object",{
+
+	res =
+		filter_abundant(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c
+		)
+
+	expect_equal(
+		res$b[1:4],
+		c("TNFRSF4", "PLCH2" ,  "PADI4" ,  "CDA"    )
+	)
+
+	expect_equal(	ncol(res),	6	)
+
+	expect_equal(	nrow(res),	2220	)
+
+})
+
+test_that("nest - no object",{
+
+	expect_equal(	class(nest(ttBulk(input_df, a, b, c), data = a))[1],	"data.frame"	)
+
+})
+
+

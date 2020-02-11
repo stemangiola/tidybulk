@@ -4,13 +4,13 @@
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr %>%
-#' @importFrom purrr reduce
 #' @import ggplot2
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param .abundance_normalised The name of the transcript/gene normalised abundance column
 #'
 #' @return A tibble with an additional column
 #'
@@ -18,19 +18,15 @@
 create_tt_from_tibble_bulk = function(.data,
 																			.sample,
 																			.transcript,
-																			.abundance) {
+																			.abundance,
+																			.abundance_normalised = NULL) {
 	# Make col names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	.abundance_normalised = enquo(.abundance_normalised)
 
 	.data %>%
-
-		# # Check input types
-		# error_if_wrong_input(
-		#   as.list(environment()),
-		#   c("spec_tbl_df",  "quosure",  "quosure",  "quosure")
-		# ) %>%
 
 		# Add parameters attribute
 		add_attr(
@@ -38,7 +34,13 @@ create_tt_from_tibble_bulk = function(.data,
 				.sample = .sample,
 				.transcript = .transcript,
 				.abundance = .abundance
-			),
+			) %>%
+
+				# If .abundance_normalised is not NULL add it to parameters
+				ifelse_pipe(.abundance_normalised %>% quo_is_symbol,
+										~ .x %>% c(
+											list(.abundance_normalised = .abundance_normalised)
+										)),
 			"parameters"
 		) %>%
 
@@ -49,6 +51,8 @@ create_tt_from_tibble_bulk = function(.data,
 
 
 #' Convert bam/sam files to a tidy gene transcript counts data frame
+#'
+#' @importFrom purrr reduce
 #'
 #' @param file_names A character vector
 #' @param genome A character string
@@ -111,7 +115,7 @@ create_tt_from_bam_sam_bulk <-
 																		(.) %$% genes %>% select(GeneID, transcript) %>% as_tibble(),
 																		(.) %$% samples %>% as_tibble()
 																	),
-																	left_join
+																	dplyr::left_join
 																) %>%
 																	rename(entrez = GeneID) %>%
 																	mutate(entrez = entrez %>% as.character())
@@ -161,13 +165,18 @@ add_normalised_counts_bulk.get_cpm <- function(.data,
 
 	# Add cmp and cmp threshold to the data set, and return
 	.data %>%
-		left_join(
+		dplyr::left_join(
 			(.) %>%
-				select(-contains("ct")) %>%
+
+				######################################################################
+				# I don't know what this was for, but is dangerous. Delete after check
+				# select(-contains("ct")) %>%
+				######################################################################
+
 				select(!!.transcript, !!.sample, !!.abundance) %>%
 				spread(!!.sample, !!.abundance) %>%
 				drop_na() %>%
-				do(bind_cols(
+				do(dplyr::bind_cols(
 					!!.transcript := (.) %>% pull(!!.transcript),
 					tibble::as_tibble((.) %>% select(-!!.transcript) %>% edgeR::cpm())
 				)) %>%
@@ -204,9 +213,14 @@ add_normalised_counts_bulk.get_low_expressed <- function(.data,
 																												 .abundance = `count`,
 																												 cpm_threshold = 0.5,
 																												 prop = 3 / 4) {
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
 	if (cpm_threshold < 0)
 		stop("The parameter cpm_threshold must be > 0")
@@ -221,7 +235,7 @@ add_normalised_counts_bulk.get_low_expressed <- function(.data,
 		tidyr::spread(!!.sample, !!.abundance) %>%
 		gather(!!.sample, !!.abundance, -!!.transcript) %>%
 		group_by(!!.transcript) %>%
-		mutate(
+		dplyr::mutate(
 			!!.abundance :=
 				ifelse(
 					!!.abundance %>% is.na(),
@@ -357,6 +371,8 @@ add_normalised_counts_bulk.calcNormFactor <- function(.data,
 #' @importFrom magrittr equals
 #' @importFrom rlang :=
 #' @importFrom stats median
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -419,7 +435,7 @@ get_normalised_counts_bulk <- function(.data,
 		#setNames(c("!!.sample", "gene", "count")) %>%
 
 		# Set samples and genes as factors
-		mutate(!!.sample := factor(!!.sample),
+		dplyr::mutate(!!.sample := factor(!!.sample),
 					 !!.transcript := factor(!!.transcript))
 
 	# Get norm factor object
@@ -448,11 +464,12 @@ get_normalised_counts_bulk <- function(.data,
 
 	# Calculate normalization factors
 	nf <- nf_obj$nf %>%
-		left_join(
+		dplyr::left_join(
 			df %>%
 				group_by(!!.sample) %>%
 				summarise(tot = sum(!!.abundance, na.rm = TRUE)) %>%
-				mutate(!!.sample := as.factor(as.character(!!.sample))),
+				ungroup() %>%
+				dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))),
 			by = quo_name(.sample)
 		) %>%
 		mutate(multiplier =
@@ -477,11 +494,11 @@ get_normalised_counts_bulk <- function(.data,
 	# Return
 	df_norm =
 		df %>%
-		mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
-		left_join(nf, by = quo_name(.sample)) %>%
+		dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
+		dplyr::left_join(nf, by = quo_name(.sample)) %>%
 
 		# Calculate normalised values
-		mutate(!!value_normalised := !!.abundance * multiplier) %>%
+		dplyr::mutate(!!value_normalised := !!.abundance * multiplier) %>%
 
 		# Format df for join
 		dplyr::select(!!.sample,!!.transcript,!!value_normalised,
@@ -492,17 +509,17 @@ get_normalised_counts_bulk <- function(.data,
 		arrange(!!.sample, !!.transcript)
 		#dplyr::select(-!!.sample,-!!.transcript)
 
-		# Attach attributes
-		df_norm %>%
-			add_attr(
-				.data %>%
-					attr("parameters") %>%
-					c(
-						.abundance_norm =
-							(function(x, v) enquo(v))(x, !!value_normalised)
-						),
-				"parameters"
-			)
+	# Attach attributes
+	df_norm %>%
+		add_attr(
+			.data %>%
+				attr("parameters") %>%
+				c(
+					.abundance_normalised =
+						(function(x, v) enquo(v))(x, !!value_normalised)
+					),
+			"parameters"
+		)
 
 }
 
@@ -578,6 +595,8 @@ add_normalised_counts_bulk <- function(.data,
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #'
 #' @param .data A tibble
@@ -588,6 +607,7 @@ add_normalised_counts_bulk <- function(.data,
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
+#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #'
 #' @return A tibble with edgeR results
 #'
@@ -598,7 +618,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .abundance = NULL,
 																											 .coef = 2,
 																											 .contrasts = NULL,
-																											 significance_threshold = 0.05) {
+																											 significance_threshold = 0.05,
+																											 fill_missing_values = FALSE) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -626,10 +647,25 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		# Prepare the data frame
 		select(!!.transcript,!!.sample,!!.abundance,
 					 one_of(parse_formula(.formula))) %>%
-		distinct()
+		distinct() %>%
+
+		# Check if data rectangular
+		ifelse_pipe(
+			(.) %>% check_if_data_rectangular( !!.sample, !!.transcript, !!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		)
 
 	# Check if at least two samples for each group
-	if (df_for_edgeR %>%
+	if (
+
+		# If I have some discrete covariates
+		df_for_edgeR %>%
+		select(one_of(parse_formula(.formula))) %>%
+		select_if(function(col) is.character(col) | is.factor(col) | is.logical(col)) %>%
+		ncol %>% `>` (0) &
+
+		# If I have at least 2 samples per group
+		df_for_edgeR %>%
 			select(!!.sample, one_of(parse_formula(.formula))) %>%
 			distinct %>%
 			count(!!as.symbol(parse_formula(.formula))) %>%
@@ -645,6 +681,10 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			object = .formula,
 			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
+
+	# Print the design column names in case I want constrasts
+	message(sprintf("The design column names are \"%s\" in case you are interested in constrasts", design %>% colnames %>% paste(collapse=", ")))
+
 	#%>%
 	#	magrittr::set_colnames(c("(Intercept)",	 (.) %>% colnames %>% `[` (-1)))
 
@@ -671,12 +711,18 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			`filter out low counts` = !!.transcript %in% add_normalised_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
 		)
 
-
 	df_for_edgeR.filt %>%
 		filter(!`filter out low counts`) %>%
 		select(!!.transcript, !!.sample, !!.abundance) %>%
 		spread(!!.sample, !!.abundance) %>%
 		as_matrix(rownames = !!.transcript) %>%
+
+		# If fill missing values
+		ifelse_pipe(
+			fill_missing_values,
+			~ .x %>% fill_NA_with_row_median
+		) %>%
+
 		edgeR::DGEList(counts = .) %>%
 		edgeR::calcNormFactors(method = "TMM") %>%
 		edgeR::estimateGLMCommonDisp(design) %>%
@@ -748,6 +794,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
+#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #'
 #' @return A tibble with differential_transcript_abundance results
 #'
@@ -759,7 +806,13 @@ add_differential_transcript_abundance_bulk <- function(.data,
 																											 .abundance = NULL,
 																											 .coef = 2,
 																											 .contrasts = NULL,
-																											 significance_threshold = 0.05) {
+																											 significance_threshold = 0.05,
+																											 fill_missing_values = FALSE) {
+
+	# Comply with CRAN NOTES
+	. = NULL
+	FDR = NULL
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -770,7 +823,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 	.abundance = col_names$.abundance
 
 	.data %>%
-		left_join(
+		dplyr::left_join(
 			(.) %>%
 				get_differential_transcript_abundance_bulk(
 					.formula,
@@ -779,7 +832,8 @@ add_differential_transcript_abundance_bulk <- function(.data,
 					.abundance = !!.abundance,
 					.coef = .coef,
 					.contrasts = .contrasts,
-					significance_threshold = significance_threshold
+					significance_threshold = significance_threshold,
+					fill_missing_values = fill_missing_values
 				)
 		) %>%
 
@@ -822,7 +876,7 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 	}
 
 	.data %>%
-		left_join(
+		dplyr::left_join(
 
 			# Get entrez mapping 1:1
 			AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db, .data %>% distinct(!!.transcript) %>% pull(1), 'ENTREZID', 'SYMBOL') %>%
@@ -843,6 +897,8 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 #' @importFrom magrittr set_colnames
 #' @importFrom purrr map2_dfr
 #' @importFrom stats model.matrix
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
@@ -864,6 +920,10 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 																		 										.contrasts = NULL,
 																		 									 species,
 																		 									cores = 10) {
+
+	# Comply with CRAN NOTES
+	. = NULL
+
 	# Get column names
 	.sample = enquo(.sample)
 	.abundance = enquo(.abundance)
@@ -1008,6 +1068,12 @@ get_clusters_kmeans_bulk <-
 					 of_samples = TRUE,
 					 log_transform = TRUE,
 					 ...) {
+
+		# Check if centers is in dots
+		dots_args = rlang::dots_list(...)
+		if("centers" %in% names(dots_args) %>% `!`)
+			stop("ttBulk says: for kmeans you need to provide the \"centers\" integer argument")
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1030,12 +1096,16 @@ get_clusters_kmeans_bulk <-
 
 			# Check if log tranfrom is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
 
 			# Prepare data frame for return
 			spread(!!.feature, !!.abundance) %>%
 			as_matrix(rownames = !!.element) %>%
-			kmeans(iter.max = 1000, ...) %$%
+
+			# Wrap the do.call because of the centers check
+			{
+				do.call(kmeans, list(x = (.), iter.max = 1000) %>% c(dots_args) )
+			}	 %$%
 			cluster %>%
 			as.list() %>%
 			as_tibble() %>%
@@ -1073,6 +1143,10 @@ add_clusters_kmeans_bulk <-
 					 of_samples = TRUE,
 					 log_transform = TRUE,
 					 ...) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1083,7 +1157,7 @@ add_clusters_kmeans_bulk <-
 		.abundance = enquo(.abundance)
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_clusters_kmeans_bulk(
 						.abundance = !!.abundance,
@@ -1104,6 +1178,8 @@ add_clusters_kmeans_bulk <-
 #' @import tidyr
 #' @import tibble
 #' @importFrom rlang :=
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1155,7 +1231,7 @@ get_clusters_SNN_bulk <-
 			distinct(!!.element, !!.feature, !!.abundance) %>%
 
 			# Check if log tranfrom is needed
-			#ifelse_pipe(log_transform, ~ .x %>% mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
+			#ifelse_pipe(log_transform, ~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
 
 			# Prepare data frame for return
 			spread(!!.element, !!.abundance)
@@ -1171,7 +1247,7 @@ get_clusters_SNN_bulk <-
 			`[[` ("seurat_clusters") %>%
 			as_tibble(rownames=quo_name(.element)) %>%
 			rename(`cluster SNN` = seurat_clusters) %>%
-			mutate(!!.element := gsub("\\.", "-", !!.element)) %>%
+			dplyr::mutate(!!.element := gsub("\\.", "-", !!.element)) %>%
 
 			# Attach attributes
 			add_attr(.data %>% attr("parameters"), "parameters")
@@ -1213,7 +1289,7 @@ add_clusters_SNN_bulk <-
 		.abundance = enquo(.abundance)
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_clusters_SNN_bulk(
 						.abundance = !!.abundance,
@@ -1258,6 +1334,10 @@ get_reduced_dimensions_MDS_bulk <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1294,7 +1374,7 @@ get_reduced_dimensions_MDS_bulk <-
 					# Check if logtansform is needed
 					ifelse_pipe(
 						log_transform,
-						~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())
+						~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())
 					) %>%
 
 					# Stop any column is not if not numeric or integer
@@ -1311,7 +1391,7 @@ get_reduced_dimensions_MDS_bulk <-
 					# output: tibble
 					{
 						tibble(names((.)$x), (.)$x, (.)$y) %>%
-							rename(
+							dplyr::rename(
 								!!.element := `names((.)$x)`,!!as.symbol(.x[1]) := `(.)$x`,!!as.symbol(.x[2]) := `(.)$y`
 							) %>%
 							gather(Component, `Component value`, -!!.element)
@@ -1355,6 +1435,10 @@ add_reduced_dimensions_MDS_bulk <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1365,7 +1449,7 @@ add_reduced_dimensions_MDS_bulk <-
 		.abundance = col_names$.abundance
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_reduced_dimensions_MDS_bulk(
 						.abundance = !!.abundance,
@@ -1417,6 +1501,10 @@ get_reduced_dimensions_PCA_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1442,7 +1530,7 @@ get_reduced_dimensions_PCA_bulk <-
 
 			# Check if logtansform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
@@ -1549,6 +1637,10 @@ add_reduced_dimensions_PCA_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1559,7 +1651,7 @@ add_reduced_dimensions_PCA_bulk <-
 		.abundance = col_names$.abundance
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_reduced_dimensions_PCA_bulk(
 						.abundance = !!.abundance,
@@ -1586,6 +1678,8 @@ add_reduced_dimensions_PCA_bulk <-
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1612,6 +1706,10 @@ get_reduced_dimensions_TSNE_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1661,19 +1759,13 @@ get_reduced_dimensions_TSNE_bulk <-
 
 			# Check if data rectangular
 			ifelse_pipe(
-				(.) %>% count(!!.element) %>% count(n) %>% nrow %>% `>` (1),
-				~ {
-					warning("Some elements are missing some features, the data is not rectangular. Those features have been omitted")
-					.x %>%
-						add_count(!!.feature, name = "my_n") %>%
-						filter(my_n == max(my_n)) %>%
-						select(-my_n)
-				}
+				(.) %>% check_if_data_rectangular( !!.element, !!.feature, !!.abundance, type = "soft"),
+				~ .x %>% eliminate_sparse_transcripts(!!.feature)
 			) %>%
 
 			# Check if logtansform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 			# Filter most variable genes
 			filter_variable_transcripts(!!.element, !!.feature, !!.abundance, top) %>%
@@ -1683,13 +1775,13 @@ get_reduced_dimensions_TSNE_bulk <-
 			# distinct %>%
 			as_matrix(rownames = quo_name(.element))
 
-			do.call(Rtsne::Rtsne, c(list(df_tsne), arguments)) %$%
+		do.call(Rtsne::Rtsne, c(list(df_tsne), arguments)) %$%
 			Y %>%
 			as_tibble(.name_repair = "minimal") %>%
 			setNames(c("tSNE1", "tSNE2")) %>%
 
 			# add element name
-			mutate(!!.element := df_tsne %>% rownames) %>%
+				dplyr::mutate(!!.element := df_tsne %>% rownames) %>%
 			select(!!.element, everything()) %>%
 
 				# Attach attributes
@@ -1730,6 +1822,10 @@ add_reduced_dimensions_TSNE_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -1740,7 +1836,7 @@ add_reduced_dimensions_TSNE_bulk <-
 		.abundance = col_names$.abundance
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_reduced_dimensions_TSNE_bulk(
 						.abundance = !!.abundance,
@@ -1886,6 +1982,10 @@ add_rotated_dimensions =
 					 of_samples = TRUE,
 					 dimension_1_column_rotated = NULL,
 					 dimension_2_column_rotated = NULL) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.element = enquo(.element)
 		col_names = get_elements(.data, .element)
@@ -1912,7 +2012,7 @@ add_rotated_dimensions =
 			))
 
 		.data %>%
-			left_join(
+			dplyr::left_join(
 				(.) %>%
 					get_rotated_dimensions(
 						dimension_1_column = !!dimension_1_column,
@@ -1957,6 +2057,9 @@ aggregate_duplicated_transcripts_bulk =
 
 					 keep_integer = TRUE) {
 
+		# Comply with CRAN NOTES
+		. = NULL
+
 		# Get column names
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
@@ -2000,10 +2103,11 @@ aggregate_duplicated_transcripts_bulk =
 
 			# If normalised add the column to the exclusion
 			ifelse_pipe(
-				(".abundance_norm" %in% (.data %>% attr("parameters") %>% names) &&
-				 	quo_name(.data %>% attr("parameters") %$% .abundance_norm) %in% (.data %>% colnames)
+				(".abundance_normalised" %in% (.data %>% attr("parameters") %>% names) &&
+				 	# .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
+				 	quo_name(.data %>% attr("parameters") %$% .abundance_normalised) %in% (.data %>% colnames)
 				),
-				~ .x %>% select(-!!(.data %>% attr("parameters") %$% .abundance_norm))
+				~ .x %>% select(-!!(.data %>% attr("parameters") %$% .abundance_normalised))
 			)	%>%
 			colnames() %>%
 			c("n_aggr")
@@ -2019,7 +2123,7 @@ aggregate_duplicated_transcripts_bulk =
 			mutate_if(is.logical, as.character) %>%
 
 			# Add the nuber of duplicates for each gene
-			left_join((.) %>% count(!!.sample, !!.transcript, name = "n_aggr"),
+			dplyr::left_join((.) %>% count(!!.sample, !!.transcript, name = "n_aggr"),
 								by = c(quo_name(.sample), quo_name(.transcript))) %>%
 
 			# Anonymous function - binds the unique and the reduced genes,
@@ -2036,16 +2140,17 @@ aggregate_duplicated_transcripts_bulk =
 										(.) %>%
 											filter(n_aggr > 1) %>%
 											group_by(!!.sample, !!.transcript) %>%
-											mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
+											dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
 
 											# If normalised abundance exists aggragate that as well
 											ifelse_pipe(
-												(".abundance_norm" %in% (.data %>% attr("parameters") %>% names) &&
-												 	quo_name(.data %>% attr("parameters") %$% .abundance_norm) %in% (.data %>% colnames)
+												(".abundance_normalised" %in% (.data %>% attr("parameters") %>% names) &&
+												 	# .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
+												 	quo_name(.data %>% attr("parameters") %$% .abundance_normalised) %in% (.data %>% colnames)
 												),
 												~ {
-													.abundance_norm = .data %>% attr("parameters") %$% .abundance_norm
-													.x %>% mutate(!!.abundance_norm := !!.abundance_norm %>% aggregation_function())
+													.abundance_normalised = .data %>% attr("parameters") %$% .abundance_normalised
+													.x %>% dplyr::mutate(!!.abundance_normalised := !!.abundance_normalised %>% aggregation_function())
 												}
 											) %>%
 
@@ -2077,6 +2182,7 @@ aggregate_duplicated_transcripts_bulk =
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
 #' @param correlation_threshold A real number between 0 and 1
+#' @param top An integer. How many top genes to select
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param of_samples A boolean
@@ -2090,9 +2196,13 @@ remove_redundancy_elements_through_correlation <- function(.data,
 																												.feature = NULL,
 																												.abundance = NULL,
 																												correlation_threshold = 0.9,
-
+																												top = Inf,
 																												of_samples = TRUE,
 																												log_transform = FALSE) {
+
+	# Comply with CRAN NOTES
+	. = NULL
+
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
@@ -2115,9 +2225,12 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		# Prepare the data frame
 		select(!!.feature, !!.element, !!.abundance) %>%
 
+		# Filter variable genes
+		filter_variable_transcripts(!!.element, !!.feature, !!.abundance, top = top) %>%
+
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
-								~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 		distinct() %>%
 		spread(!!.element, !!.abundance) %>%
 		drop_na() %>%
@@ -2148,7 +2261,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 
 		# Prepare the data frame
 		gather(!!.element, !!.abundance, -!!.feature) %>%
-		rename(rc := !!.abundance,
+		dplyr::rename(rc := !!.abundance,
 					 sample := !!.element,
 					 transcript := !!.feature) %>% # Is rename necessary?
 		mutate_if(is.factor, as.character) %>%
@@ -2164,7 +2277,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		) %>%
 		filter(correlation > correlation_threshold) %>%
 		distinct(item1) %>%
-		rename(!!.element := item1)
+		dplyr::rename(!!.element := item1)
 
 	# Return non redudant data frame
 	.data %>% anti_join(.data.correlated) %>%
@@ -2244,40 +2357,61 @@ remove_redundancy_elements_though_reduced_dimensions <-
 			add_attr(.data %>% attr("parameters"), "parameters")
 	}
 
-#' #' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
-#' #'
-#' #' @return A tibble with ensembl-transcript mapping
-#' #'
-#' get_ensembl_symbol_mapping <- function() {
-#'   # wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
-#'   # wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
-#'   read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
-#'               col_names = FALSE) %>%
-#'     setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
-#'     mutate(hg = "hg37") %>%
-#'     bind_rows(
-#'       read_table2(
-#'         "~/third_party_sofware/ensembl_mapping/mapping_38.txt",
-#'         col_names = FALSE
-#'       ) %>%
-#'         setNames(
-#'           c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
-#'         ) %>%
-#'         mutate(hg = "hg38")
-#'     ) %>%
-#'     drop_na() %>%
-#'     select(-ensembl_transcript_id) %>%
-#'     group_by(ensembl_gene_id) %>%
-#'     arrange(hg %>% desc()) %>%
-#'     slice(1) %>%
-#'     ungroup() %>%
-#'     {
-#'       (.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping.csv")
-#'       (.)
-#'     }
-#' }
+# #' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
+# #'
+# #' @return A tibble with ensembl-transcript mapping
+# #'
+# get_ensembl_symbol_mapping <- function() {
+#   # wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
+#   # wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
+#   all =
+#   	read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
+#               col_names = FALSE) %>%
+#     setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
+#     mutate(hg = "hg37") %>%
+#     bind_rows(
+#       read_table2(
+#         "~/third_party_sofware/ensembl_mapping/mapping_38.txt",
+#         col_names = FALSE
+#       ) %>%
+#         setNames(
+#           c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
+#         ) %>%
+#         mutate(hg = "hg38")
+#     ) %>%
+#     drop_na()
+#
+#
+#   bind_rows(
+#   	# Gene annotation
+#   	all %>%
+# 		select(-ensembl_transcript_id) %>%
+# 		group_by(ensembl_gene_id) %>%
+# 		arrange(hg %>% desc()) %>%
+# 		slice(1) %>%
+# 		ungroup() %>%
+# 		rename(ensembl_id = ensembl_gene_id),
+#
+# 		# Transcript annotation
+# 		all %>%
+# 		select(-ensembl_gene_id) %>%
+# 		group_by(ensembl_transcript_id) %>%
+# 		arrange(hg %>% desc()) %>%
+# 		slice(1) %>%
+# 		ungroup() %>%
+# 		rename(ensembl_id = ensembl_transcript_id)
+#   ) %>%
+#
+#   # Write to file and return
+#   {
+#     (.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping.csv")
+#     (.)
+#   }
+# }
 
-#' Get transcript column from ensembl gene id
+#' get_symbol_from_ensembl
+#'
+#' @description Get transcript column from ensembl gene id
 #'
 #' @param .data A tibble
 #' @param .ensembl A column symbol. The column that is represents ensembl gene id
@@ -2294,11 +2428,11 @@ get_symbol_from_ensembl <-
 			distinct() %>%
 
 			# Add name information
-			left_join(
-				ensembl_symbol_mapping %>%
-					distinct(ensembl_gene_id, hgnc_symbol, hg) %>%
-					rename(!!.ensembl := ensembl_gene_id) %>%
-					rename( transcript = hgnc_symbol),
+			dplyr::left_join(
+				ttBulk::ensembl_symbol_mapping %>%
+					distinct(ensembl_id, transcript, hg) %>%
+					dplyr::rename(!!.ensembl := ensembl_id) %>%
+					rename( transcript = transcript),
 				by = quo_name(.ensembl)
 			)
 
@@ -2314,27 +2448,64 @@ get_symbol_from_ensembl <-
 #'
 add_symbol_from_ensembl <-
 	function(.data, .ensembl) {
+
+		# Comply with CRAN NOTES
+		. = NULL
+
 		.ensembl = enquo(.ensembl)
 
 		# Add new symbols column
 		.data %>%
-			left_join((.) %>%
+			dplyr::left_join((.) %>%
 									get_symbol_from_ensembl(!!.ensembl)) %>%
 
 			# Attach attributes
 			add_attr(.data %>% attr("parameters"), "parameters")
 	}
 
+#' Perform linear equation system analysis through llsr
+#'
+#' @importFrom stats lsfit
+#'
+#' @param mix A data frame
+#' @param reference A data frame
+#'
+#' @return A data frame
+#'
+#'
+run_llsr = function(mix, reference){
+
+	# Get common markers
+	markers = intersect(rownames(mix), rownames(reference))
+
+	X <- (reference[markers,,drop=FALSE])
+	Y <- (mix[markers,, drop=FALSE])
+
+	results <- t(data.frame(lsfit(X, Y)$coefficients)[-1,,drop=FALSE])
+	results[results<0] <- 0
+	results <- results/apply(results, 1, sum)
+	rownames(results) = colnames(Y)
+
+	results
+}
+
+
 #' Get cell type proportions from cibersort
 #'
 #' @import parallel
 #' @import preprocessCore
 #' @importFrom stats setNames
+#' @importFrom rlang dots_list
+#' @importFrom magrittr equals
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
+#' @param method A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
@@ -2344,6 +2515,8 @@ get_cell_type_proportions = function(.data,
 																		 .sample = NULL,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
+																		 reference = X_cibersort,
+																		 method = "cibersort",
 																		 ...) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -2374,13 +2547,20 @@ get_cell_type_proportions = function(.data,
 
 	# Check if there are enough genes for the signature
 	if ((.data %>%
-			 pull(!!.transcript) %in% (X_cibersort %>% rownames)) %>%
+			 pull(!!.transcript) %in% (reference %>% rownames)) %>%
 			which %>%
 			length %>%
 			`<` (50))
 		stop(
 			"You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
 		)
+
+	# Check if rownames exist
+	if(reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% `!` %>% any)
+		stop("ttBulk says: your reference has non-numeric/integer columns.")
+
+	# Get the dots arguments
+	dots_args = rlang::dots_list(...)
 
 	.data %>%
 
@@ -2392,16 +2572,29 @@ get_cell_type_proportions = function(.data,
 		spread(!!.sample, !!.abundance) %>%
 		data.frame(row.names = 1, check.names = FALSE) %>%
 
-		# Run Cibersort through custom function
-		my_CIBERSORT(X_cibersort,	...) %$%
-		proportions %>%
+		# Run Cibersort or llsr through custom function, depending on method choice
+		ifelse2_pipe(
+			method %>% tolower %>% equals("cibersort"),
+			method %>% tolower %>% equals("llsr"),
+
+			# Execute do.call because I have to deal with ...
+			~ do.call(my_CIBERSORT, list(Y = .x, X = reference) %>% c(dots_args)) %$%
+				proportions %>%
+				as_tibble(rownames = quo_name(.sample)) %>%
+				select(-`P-value`, -Correlation, -RMSE),
+
+			# Don't need to execute do.call
+			~ .x %>%
+				run_llsr(reference) %>%
+				as_tibble(rownames = quo_name(.sample)),
+
+			~ stop("ttBulk syas: please choose between cibersort and llsr methods")
+		)	 %>%
 
 		# Parse results and return
-		as_tibble(rownames = quo_name(.sample)) %>%
-		select(-`P-value`, -Correlation, -RMSE) %>%
 		setNames(c(
 			quo_name(.sample),
-			(.) %>% select(-1) %>% colnames() %>% paste("type:", ., sep = " ")
+			(.) %>% select(-1) %>% colnames() %>% sprintf("%s: %s", method, .)
 		)) %>%
 		#%>%
 		#gather(`Cell type`, proportion,-!!.sample) %>%
@@ -2421,6 +2614,8 @@ get_cell_type_proportions = function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
+#' @param method A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
@@ -2430,7 +2625,13 @@ add_cell_type_proportions = function(.data,
 																		 .sample = NULL,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
+																		 reference = X_cibersort,
+																		 method = "cibersort",
 																		 ...) {
+
+	# Comply with CRAN NOTES
+	. = NULL
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2443,12 +2644,14 @@ add_cell_type_proportions = function(.data,
 	.data %>%
 
 		# Add new annotation
-		left_join(
+		dplyr::left_join(
 			(.) %>%
 				get_cell_type_proportions(
 					.sample = !!.sample,
 					.transcript = !!.transcript,
 					.abundance = !!.abundance,
+					reference = reference,
+					method = method,
 					...
 				),
 			by = quo_name(.sample)
@@ -2467,6 +2670,8 @@ add_cell_type_proportions = function(.data,
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
@@ -2522,7 +2727,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
-								~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 		# Mark Filter low counts
 		mutate(
@@ -2588,14 +2793,13 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		ifelse_pipe(
 			log_transform,
 			~ .x %>%
-				mutate(!!.abundance := !!.abundance %>% exp %>% `-`(1)) %>%
-				mutate(!!.abundance := ifelse(!!.abundance < 0, 0, !!.abundance)) %>%
-				mutate(!!.abundance := !!.abundance %>% as.integer)
+				dplyr::mutate(!!.abundance := !!.abundance %>% exp %>% `-`(1)) %>%
+				dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0, !!.abundance)) %>%
+				dplyr::mutate(!!.abundance := !!.abundance %>% as.integer)
 		) %>%
 
 		# Reset column names
-		rename(!!value_adjusted := !!.abundance)  %>%
-
+		dplyr::rename(!!value_adjusted := !!.abundance)  %>%
 
 		# Add filtering info
 		right_join(
@@ -2634,6 +2838,10 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 																														.abundance = NULL,
 																														log_transform = TRUE,
 																														...) {
+
+	# Comply with CRAN NOTES
+	. = NULL
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2649,7 +2857,7 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 	.data %>%
 
 		# Add adjsted column
-		left_join(
+		dplyr::left_join(
 			(.) %>%
 				get_adjusted_counts_for_unwanted_variation_bulk(
 					.formula,
@@ -2697,6 +2905,9 @@ filter_variable_transcripts = function(.data,
 	col_names = get_abundance_norm_if_exists(.data, .abundance)
 	.abundance = col_names$.abundance
 
+	# Manage Inf
+	top = min(top, .data %>% distinct(!!.transcript) %>% nrow)
+
 	writeLines(sprintf("Getting the %s most variable genes", top))
 
 	x =
@@ -2705,7 +2916,7 @@ filter_variable_transcripts = function(.data,
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
-								~ .x %>% mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 		spread(!!.sample, !!.abundance) %>%
 		as_matrix(rownames = quo_name(.transcript))
@@ -2718,20 +2929,64 @@ filter_variable_transcripts = function(.data,
 	.data %>% filter(!!.transcript %in% variable_trancripts)
 }
 
-#' Add cell type information on single cells
+#'ttBulk_to_SummarizedExperiment
 #'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
+#' @importFrom SummarizedExperiment SummarizedExperiment
+#' @importFrom SummarizedExperiment assay
+#' @importFrom utils data
 #'
-#' @param ... Argument to pass to bind_rows
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
 #'
-#' @return A tt tt object
+#' @return A SummarizedExperiment
 #'
-merged_ttBulk_object = function(...){
+ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL){
 
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
+	# If present get the normalised abundance
+	.abundance_normalised =
+		.data %>%
+		ifelse_pipe(
+			".abundance_normalised" %in% ((.) %>% attr("parameters") %>% names) &&
+				# .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
+				quo_name((.) %>% attr("parameters") %$% .abundance_normalised) %in% ((.) %>% colnames),
+			~ .x %>% attr("parameters") %$% .abundance_normalised,
+			~ NULL
+		)
 
+	# Get which columns are sample wise and which are feature wise
+	col_direction = get_x_y_annotation_columns(.data, !!.sample, !!.transcript, !!.abundance, !!.abundance_normalised)
+	sample_cols = col_direction$horizontal_cols
+	feature_cols = col_direction$vertical_cols
+	counts_cols = col_direction$counts_cols
 
+	colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% arrange(!!.sample) %>% { DataFrame((.) %>% select(-!!.sample), row.names = (.) %>% pull(!!.sample)) }
+
+	rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% arrange(!!.transcript) %>% { DataFrame((.) %>% select(-!!.transcript), row.names = (.) %>% pull(!!.transcript)) }
+
+	assays =
+		.data %>%
+		select(!!.sample, !!.transcript, !!.abundance, !!.abundance_normalised, counts_cols) %>%
+		distinct() %>%
+		gather(`assay`, .a, -!!.transcript, -!!.sample) %>%
+		nest(`data` = -`assay`) %>%
+		mutate(`data` = `data` %>%  map(~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))))
+
+	# Build the object
+	SummarizedExperiment(
+		assays=assays %>% pull(`data`) %>% setNames(assays$assay),
+		rowData = rowData,
+		colData = colData
+	)
 
 }

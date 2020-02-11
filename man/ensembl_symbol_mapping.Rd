@@ -4,7 +4,7 @@
 \name{ensembl_symbol_mapping}
 \alias{ensembl_symbol_mapping}
 \title{Data set}
-\format{An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 45206 rows and 3 columns.}
+\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 262942 rows and 3 columns.}
 \usage{
 ensembl_symbol_mapping
 }
