@@ -4,7 +4,6 @@
 \name{reexports}
 \alias{reexports}
 \alias{do}
-\alias{\%>\%}
 \alias{tibble}
 \alias{as_tibble}
 \title{Objects exported from other packages}
@@ -15,8 +14,6 @@ below to see their documentation.
 
 \describe{
   \item{dplyr}{\code{\link[dplyr]{do}}}
-
-  \item{magrittr}{\code{\link[magrittr]{\%>\%}}}
 
   \item{tibble}{\code{\link[tibble]{as_tibble}}, \code{\link[tibble]{tibble}}}
 }}
