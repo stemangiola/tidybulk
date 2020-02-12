@@ -802,10 +802,10 @@ test_that("filter abundant - no object",{
 
 })
 
-test_that("nest - no object",{
-
-	expect_equal(	class(nest(ttBulk(input_df, a, b, c), data = a))[1],	"data.frame"	)
-
-})
+# test_that("nest - no object",{
+#
+# 	expect_equal(	class(nest(ttBulk(input_df, a, b, c), data = a))[1],	"data.frame"	)
+#
+# })
 
 
