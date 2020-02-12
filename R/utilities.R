@@ -659,9 +659,9 @@ fill_NA_with_row_median = function(.matrix){
     .matrix
 }
 
-#' @importFrom magrittr %>%
-#' @export
-magrittr::`%>%`
+# #' @importFrom magrittr %>%
+# #' @export
+# magrittr::`%>%`
 
 #' @importFrom tibble tibble
 #' @export
