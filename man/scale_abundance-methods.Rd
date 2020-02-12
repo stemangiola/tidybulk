@@ -37,7 +37,7 @@ scale_abundance(
 \item{action}{A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.}
 }
 \value{
-A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
+A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
 }
 \description{
 scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and normalises the data for the library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).

@@ -1,4 +1,7 @@
 #' nest
+#'
+#' @importFrom tidyr nest
+#'
 #' @param .data A tbl. (See tidyr)
 #' @param ... Name-variable pairs of the form new_col = c(col1, col2, col3) (See tidyr)
 #'

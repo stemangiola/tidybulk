@@ -5,7 +5,7 @@
 \alias{ttBulk}
 \title{Creates a `tt` object from a `tbl``}
 \usage{
-ttBulk(.data, .sample, .transcript, .abundance, .abundance_normalised = NULL)
+ttBulk(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
@@ -16,7 +16,7 @@ ttBulk(.data, .sample, .transcript, .abundance, .abundance_normalised = NULL)
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{.abundance_normalised}{The name of the transcript/gene normalised abundance column}
+\item{.abundance_scaled}{The name of the transcript/gene scaled abundance column}
 }
 \value{
 A `ttBulk` object

@@ -29,7 +29,7 @@ test_that("ttBulk SummarizedExperiment normalisation manual",{
 	res = ttBulk(ttBulk:::ttBulk_to_SummarizedExperiment(scale_abundance(ttBulk(se))))
 
 	expect_equal(
-		res[1:4,]$`counts normalised`,
+		res[1:4,]$`counts scaled`,
 		c(1327.286584 , 859.307120 , 898.641600  ,  2.017153),
 		tolerance=1e-6
 	)
@@ -41,7 +41,7 @@ test_that("ttBulk SummarizedExperiment normalisation manual",{
 
 	res = rlang::quo_name(attr(res, "parameters")[[4]])
 
-	expect_equal( res,	"counts normalised"	)
+	expect_equal( res,	"counts scaled"	)
 
 })
 
@@ -51,7 +51,7 @@ test_that("ttBulk SummarizedExperiment normalisation",{
 
 	expect_equal(
 		names(assays(res)),
-		c("counts" ,"counts normalised")
+		c("counts" ,"counts scaled")
 	)
 
 })

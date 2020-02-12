@@ -54,7 +54,7 @@ counts
 
     ## # A tibble: 1,340,160 x 8
     ##    sample   transcript  `Cell type` count time  condition batch factor_of_inter…
-    ##    <chr>    <chr>       <chr>       <dbl> <chr> <lgl>     <int> <lgl>           
+    ##    <fct>    <fct>       <fct>       <dbl> <fct> <lgl>     <int> <lgl>           
     ##  1 SRR1740… DDX11L1     b_cell         17 0 d   TRUE          0 TRUE            
     ##  2 SRR1740… WASH7P      b_cell       3568 0 d   TRUE          0 TRUE            
     ##  3 SRR1740… MIR6859-1   b_cell         57 0 d   TRUE          0 TRUE            
@@ -69,7 +69,7 @@ counts
 
 In brief you can: + Going from BAM/SAM to a tidy data frame of counts
 (FeatureCounts) + Adding gene symbols from ensembl IDs + Aggregating
-duplicated gene symbols + Adding normalised counts + Adding principal
+duplicated gene symbols + Adding scaled counts + Adding principal
 components + Adding MDS components + Rotating principal component or MDS
 dimensions + Running differential transcript abunance analyses (edgeR) +
 Adding batch adjusted counts (Combat) + Eliminating redunant samples
@@ -123,12 +123,12 @@ colnames(dge_list.nr) <- colnames(dge_list)
 
 # Scale `counts`
 
-We may want to calculate the normalised counts for library size (e.g.,
-with TMM algorithm, Robinson and Oshlack
-doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble,
-column names (as symbols; for `sample`, `transcript` and `count`) and a
-method as arguments and returns a tibble with additional columns with
-normalised data as `<NAME OF COUNT COLUMN> normalised`.
+We may want to calculate the scaled counts for library size (e.g., with
+TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+`scale_abundance` takes a tibble, column names (as symbols; for
+`sample`, `transcript` and `count`) and a method as arguments and
+returns a tibble with additional columns with scaled data as `<NAME OF
+COUNT COLUMN> scaled`.
 
 <div class="column-left">
 
@@ -166,13 +166,13 @@ norm_counts.table <- t(
 
 </div>
 
-We can easily plot the normalised density to check the normalisation
+We can easily plot the scaled density to check the normalisation
 outcome. On the x axis we have the log scaled counts, on the y axes we
 have the density, data is grouped by sample and coloured by cell type.
 
 ``` r
 counts.norm %>%
-    ggplot(aes(`count normalised` + 1, group=sample, color=`Cell type`)) +
+    ggplot(aes(`count scaled` + 1, group=sample, color=`Cell type`)) +
     geom_density() +
     scale_x_log10() +
     my_theme
@@ -432,18 +432,18 @@ counts.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##      tSNE1  tSNE2 sample                       Call 
-    ##      <dbl>  <dbl> <chr>                        <fct>
-    ##  1   7.20   8.05  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2  -0.815 -7.05  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3   9.43  13.2   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4  -0.929  3.27  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5   3.35   1.33  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6 -11.4    5.28  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7 -32.3   -6.25  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8  -3.40   0.690 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9  -5.56   0.788 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  15.5   18.0   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##      tSNE1   tSNE2 sample                       Call 
+    ##      <dbl>   <dbl> <chr>                        <fct>
+    ##  1   9.57   -9.76  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2  -2.48    0.120 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3  14.6     6.58  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4   1.61  -17.1   TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5  -2.05  -14.8   TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6   0.506   7.38  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7 -33.2     7.37  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8  -0.983 -20.3   TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9  -4.30   11.4   TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10  19.0    13.9   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -832,18 +832,18 @@ counts.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##      tSNE1  tSNE2 `cluster SNN` sample                      
-    ##      <dbl>  <dbl> <fct>         <chr>                       
-    ##  1   7.20   8.05  0             TCGA-A1-A0SD-01A-11R-A115-07
-    ##  2  -0.815 -7.05  2             TCGA-A1-A0SF-01A-11R-A144-07
-    ##  3   9.43  13.2   1             TCGA-A1-A0SG-01A-11R-A144-07
-    ##  4  -0.929  3.27  0             TCGA-A1-A0SH-01A-11R-A084-07
-    ##  5   3.35   1.33  0             TCGA-A1-A0SI-01A-11R-A144-07
-    ##  6 -11.4    5.28  1             TCGA-A1-A0SJ-01A-11R-A084-07
-    ##  7 -32.3   -6.25  3             TCGA-A1-A0SK-01A-12R-A084-07
-    ##  8  -3.40   0.690 2             TCGA-A1-A0SM-01A-11R-A084-07
-    ##  9  -5.56   0.788 2             TCGA-A1-A0SN-01A-11R-A144-07
-    ## 10  15.5   18.0   1             TCGA-A1-A0SQ-01A-21R-A144-07
+    ##      tSNE1   tSNE2 `cluster SNN` sample                      
+    ##      <dbl>   <dbl> <fct>         <chr>                       
+    ##  1   9.57   -9.76  0             TCGA-A1-A0SD-01A-11R-A115-07
+    ##  2  -2.48    0.120 2             TCGA-A1-A0SF-01A-11R-A144-07
+    ##  3  14.6     6.58  1             TCGA-A1-A0SG-01A-11R-A144-07
+    ##  4   1.61  -17.1   0             TCGA-A1-A0SH-01A-11R-A084-07
+    ##  5  -2.05  -14.8   0             TCGA-A1-A0SI-01A-11R-A144-07
+    ##  6   0.506   7.38  1             TCGA-A1-A0SJ-01A-11R-A084-07
+    ##  7 -33.2     7.37  3             TCGA-A1-A0SK-01A-12R-A084-07
+    ##  8  -0.983 -20.3   2             TCGA-A1-A0SM-01A-11R-A084-07
+    ##  9  -4.30   11.4   2             TCGA-A1-A0SN-01A-11R-A144-07
+    ## 10  19.0    13.9   1             TCGA-A1-A0SQ-01A-21R-A144-07
     ## # … with 241 more rows
 
 ``` r
@@ -1016,7 +1016,7 @@ counts_ensembl %>% annotate_symbol(ens)
 
     ## # A tibble: 119 x 8
     ##    ens   iso   `read count` sample cases_0_project… cases_0_samples… transcript
-    ##    <chr> <chr>        <dbl> <chr>  <chr>            <chr>            <chr>     
+    ##    <chr> <chr>        <dbl> <chr>  <chr>            <chr>            <fct>     
     ##  1 ENSG… 13             144 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ##  2 ENSG… 13              72 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ##  3 ENSG… 13               0 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
@@ -1027,7 +1027,7 @@ counts_ensembl %>% annotate_symbol(ens)
     ##  8 ENSG… 13            2678 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ##  9 ENSG… 13             751 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ## # … with 109 more rows, and 1 more variable: hg <chr>
+    ## # … with 109 more rows, and 1 more variable: hg <fct>
 
 # ADD versus GET modes
 
@@ -1054,7 +1054,7 @@ respectively. For example, from this data set
     ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE          0 TRUE            
     ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE          0 TRUE            
     ## # … with 1,340,150 more rows, and 5 more variables: `merged transcripts` <dbl>,
-    ## #   `count normalised` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
+    ## #   `count scaled` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
     ## #   counts` <lgl>
 
 **action=“add”** (Default) We can add the MDS dimensions to the original
@@ -1063,7 +1063,7 @@ data set
 ``` r
   counts.norm %>%
     reduce_dimensions(
-        .abundance = `count normalised`,
+        .abundance = `count scaled`,
         method="MDS" ,
         .element = sample,
         .feature = transcript,
@@ -1086,7 +1086,7 @@ data set
     ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE          0 TRUE            
     ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE          0 TRUE            
     ## # … with 1,340,150 more rows, and 8 more variables: `merged transcripts` <dbl>,
-    ## #   `count normalised` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
+    ## #   `count scaled` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
     ## #   counts` <lgl>, Dim1 <dbl>, Dim2 <dbl>, Dim3 <dbl>
 
 **action=“get”** We can get just the MDS dimensions relative to each
@@ -1095,7 +1095,7 @@ sample
 ``` r
   counts.norm %>%
     reduce_dimensions(
-        .abundance = `count normalised`,
+        .abundance = `count scaled`,
         method="MDS" ,
         .element = sample,
         .feature = transcript,
