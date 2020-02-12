@@ -678,7 +678,7 @@ test_that("Get symbol from ensambl - no object",{
     )
 
   expect_equal(
-    res$transcript,
+    as.character(res$transcript),
     "TSPAN6"
   )
 
