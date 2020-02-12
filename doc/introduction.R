@@ -48,48 +48,6 @@ se.norm.batch =
 	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) %>%
 	scale_abundance()
 
-## -----------------------------------------------------------------------------
-counts = ttBulk(ttBulk::counts_mini, sample, transcript, count)
-counts 
-
-## ----aggregate, cache=TRUE----------------------------------------------------
-counts.aggr =  counts %>% aggregate_duplicates( 	aggregation_function = sum )
-
-counts.aggr 
-
-## ----aggregate se, cache=TRUE-------------------------------------------------
-se.aggr =  se_mini %>% aggregate_duplicates( 	aggregation_function = sum )
-
-se.aggr 
-
-## ----normalise, cache=TRUE----------------------------------------------------
-counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
-
-counts.norm %>% select(`count`, `count scaled`, `filter out low counts`, everything())
-
-## ----plot_normalise, cache=TRUE-----------------------------------------------
-counts.norm %>% 
-	ggplot(aes(`count scaled` + 1, group=sample, color=`Cell type`)) +
-	geom_density() + 
-	scale_x_log10() +
-	my_theme
-
-## ----normalise se, cache=TRUE-------------------------------------------------
-se.norm =  se.aggr %>% scale_abundance(method="TMM")
-
-se.norm 
-
-## ----mds, cache=TRUE----------------------------------------------------------
-counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = `count scaled`, method="MDS", .dims = 3)
-
-counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
-
-## ----plot_mds, cache=TRUE-----------------------------------------------------
-counts.norm.MDS %>%
-	select(contains("Dim"), sample, `Cell type`) %>%
-  distinct() %>%
-  GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
-
 ## ----mds se, cache=TRUE-------------------------------------------------------
 se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = `count scaled`, method="MDS", .dims = 3)
 
