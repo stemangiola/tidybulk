@@ -40,7 +40,7 @@ test_that("Test class identity of tt object",{
 
 })
 
-test_that("Getting normalised counts - no object",{
+test_that("Getting scaled counts - no object",{
 
   res =
     scale_abundance(
@@ -65,7 +65,7 @@ test_that("Getting normalised counts - no object",{
 })
 
 
-test_that("Adding normalised counts - no object",{
+test_that("Adding scaled counts - no object",{
 
   res =
     scale_abundance(
@@ -678,7 +678,7 @@ test_that("Get symbol from ensambl - no object",{
     )
 
   expect_equal(
-    res$transcript,
+    as.character(res$transcript),
     "TSPAN6"
   )
 

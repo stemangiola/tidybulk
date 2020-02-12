@@ -10,7 +10,7 @@
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .abundance_normalised The name of the transcript/gene normalised abundance column
+#' @param .abundance_scaled The name of the transcript/gene scaled abundance column
 #'
 #' @return A tibble with an additional column
 #'
@@ -19,12 +19,12 @@ create_tt_from_tibble_bulk = function(.data,
 																			.sample,
 																			.transcript,
 																			.abundance,
-																			.abundance_normalised = NULL) {
+																			.abundance_scaled = NULL) {
 	# Make col names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-	.abundance_normalised = enquo(.abundance_normalised)
+	.abundance_scaled = enquo(.abundance_scaled)
 
 	.data %>%
 
@@ -36,10 +36,10 @@ create_tt_from_tibble_bulk = function(.data,
 				.abundance = .abundance
 			) %>%
 
-				# If .abundance_normalised is not NULL add it to parameters
-				ifelse_pipe(.abundance_normalised %>% quo_is_symbol,
+				# If .abundance_scaled is not NULL add it to parameters
+				ifelse_pipe(.abundance_scaled %>% quo_is_symbol,
 										~ .x %>% c(
-											list(.abundance_normalised = .abundance_normalised)
+											list(.abundance_scaled = .abundance_scaled)
 										)),
 			"parameters"
 		) %>%
@@ -138,7 +138,7 @@ create_tt_from_bam_sam_bulk <-
 #' @param cpm_threshold A real positive number
 #'
 #' @return A tibble with an additional column
-add_normalised_counts_bulk.get_cpm <- function(.data,
+add_scaled_counts_bulk.get_cpm <- function(.data,
 																							 .sample = `sample`,
 																							 .transcript = `transcript`,
 																							 .abundance = `count`,
@@ -207,7 +207,7 @@ add_normalised_counts_bulk.get_cpm <- function(.data,
 #' @param prop A number between 0 and 1
 #'
 #' @return A tibble filtered
-add_normalised_counts_bulk.get_low_expressed <- function(.data,
+add_scaled_counts_bulk.get_low_expressed <- function(.data,
 																												 .sample = `sample`,
 																												 .transcript = `transcript`,
 																												 .abundance = `count`,
@@ -246,7 +246,7 @@ add_normalised_counts_bulk.get_low_expressed <- function(.data,
 		ungroup() %>%
 
 		# Calculate cpm
-		add_normalised_counts_bulk.get_cpm(!!.sample, !!.transcript, !!.abundance) %>%
+		add_scaled_counts_bulk.get_cpm(!!.sample, !!.transcript, !!.abundance) %>%
 
 		# Filter based on how many samples have a gene below the threshold
 		mutate(`gene above threshold` = (cpm > cpm_threshold) %>% as.integer) %>%
@@ -282,7 +282,7 @@ add_normalised_counts_bulk.get_low_expressed <- function(.data,
 #'
 #'
 #' @return A list including the filtered data frame and the normalization factors
-add_normalised_counts_bulk.calcNormFactor <- function(.data,
+add_scaled_counts_bulk.calcNormFactor <- function(.data,
 																											reference = NULL,
 																											cpm_threshold = 0.5,
 																											prop = 3 / 4,
@@ -298,7 +298,7 @@ add_normalised_counts_bulk.calcNormFactor <- function(.data,
 
 	# Get list of low transcribed genes
 	gene_to_exclude <-
-		add_normalised_counts_bulk.get_low_expressed(
+		add_scaled_counts_bulk.get_low_expressed(
 			.data %>%
 				filter(!!.sample != "reference"),
 			!!.sample,
@@ -326,13 +326,13 @@ add_normalised_counts_bulk.calcNormFactor <- function(.data,
 	# List of low abundant transcripts
 	gene_to_exclude = gene_to_exclude
 
-	# Normalised data set
+	# scaled data set
 	nf =
 		tibble::tibble(
 			# Sample factor
 			sample = factor(levels(df.filt %>% pull(!!.sample))),
 
-			# normalised data frame
+			# scaled data frame
 			nf = edgeR::calcNormFactors(
 				df.filt %>%
 					tidyr::spread(!!.sample, !!.abundance) %>%
@@ -363,7 +363,7 @@ add_normalised_counts_bulk.calcNormFactor <- function(.data,
 		add_attr(.data %>% attr("parameters"), "parameters")
 }
 
-#' Get a tibble with normalised counts using TMM
+#' Get a tibble with scaled counts using TMM
 #'
 #' @import dplyr
 #' @import tidyr
@@ -386,7 +386,7 @@ add_normalised_counts_bulk.calcNormFactor <- function(.data,
 #' @return A tibble including additional columns
 #'
 #'
-get_normalised_counts_bulk <- function(.data,
+get_scaled_counts_bulk <- function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
@@ -411,8 +411,8 @@ get_normalised_counts_bulk <- function(.data,
 		BiocManager::install("edgeR")
 	}
 
-	# Set column name for value normalised
-	value_normalised = as.symbol(sprintf("%s normalised",  quo_name(.abundance)))
+	# Set column name for value scaled
+	value_scaled = as.symbol(sprintf("%s scaled",  quo_name(.abundance)))
 
 	# Reformat input data set
 	df <-
@@ -451,7 +451,7 @@ get_normalised_counts_bulk <- function(.data,
 		as.character()
 
 	nf_obj <-
-		add_normalised_counts_bulk.calcNormFactor(
+		add_scaled_counts_bulk.calcNormFactor(
 			df,
 			reference,
 			cpm_threshold,
@@ -497,11 +497,11 @@ get_normalised_counts_bulk <- function(.data,
 		dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
 		dplyr::left_join(nf, by = quo_name(.sample)) %>%
 
-		# Calculate normalised values
-		dplyr::mutate(!!value_normalised := !!.abundance * multiplier) %>%
+		# Calculate scaled values
+		dplyr::mutate(!!value_scaled := !!.abundance * multiplier) %>%
 
 		# Format df for join
-		dplyr::select(!!.sample,!!.transcript,!!value_normalised,
+		dplyr::select(!!.sample,!!.transcript,!!value_scaled,
 									everything()) %>%
 		dplyr::mutate(`filter out low counts` = !!.transcript %in% nf_obj$gene_to_exclude) %>%
 		dplyr::select(-!!.abundance, -tot, -tot_filt) %>%
@@ -515,15 +515,15 @@ get_normalised_counts_bulk <- function(.data,
 			.data %>%
 				attr("parameters") %>%
 				c(
-					.abundance_normalised =
-						(function(x, v) enquo(v))(x, !!value_normalised)
+					.abundance_scaled =
+						(function(x, v) enquo(v))(x, !!value_scaled)
 					),
 			"parameters"
 		)
 
 }
 
-#' Add a tibble with normalised counts using TMM
+#' Add a tibble with scaled counts using TMM
 #'
 #' @import dplyr
 #' @import tidyr
@@ -542,7 +542,7 @@ get_normalised_counts_bulk <- function(.data,
 #' @return A tibble including additional columns
 #'
 #'
-add_normalised_counts_bulk <- function(.data,
+add_scaled_counts_bulk <- function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
@@ -562,7 +562,7 @@ add_normalised_counts_bulk <- function(.data,
 
 	.data_norm =
 		.data %>%
-		get_normalised_counts_bulk(
+		get_scaled_counts_bulk(
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
@@ -576,7 +576,7 @@ add_normalised_counts_bulk <- function(.data,
 	.data %>%
 		arrange(!!.sample, !!.transcript) %>%
 
-		# Add normalised data set
+		# Add scaled data set
 		bind_cols(
 			.data_norm %>%
 				select(-contains(quo_name(.sample)),-contains(quo_name(.transcript)))
@@ -708,7 +708,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		df_for_edgeR %>%
 		select(!!.transcript, !!.sample, !!.abundance) %>%
 		mutate(
-			`filter out low counts` = !!.transcript %in% add_normalised_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
+			`filter out low counts` = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
 		)
 
 	df_for_edgeR.filt %>%
@@ -991,7 +991,7 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 		df_for_edgeR %>%
 		select(!!.entrez, !!.sample, !!.abundance) %>%
 		mutate(
-			`filter out low counts` = !!.entrez %in% add_normalised_counts_bulk.get_low_expressed(., !!.sample, !!.entrez, !!.abundance)
+			`filter out low counts` = !!.entrez %in% add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.entrez, !!.abundance)
 		) %>%
 		filter(!`filter out low counts`) %>%
 
@@ -1081,7 +1081,7 @@ get_clusters_kmeans_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		# Get normalised abundance if present, otherwise get abundance
+		# Get scaled abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
 		col_names = get_abundance_norm_if_exists(.data, .abundance)
 		.abundance = col_names$.abundance
@@ -1206,7 +1206,7 @@ get_clusters_SNN_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		# Get normalised abundance if present, otherwise get abundance
+		# Get scaled abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
 		col_names = get_abundance_norm_if_exists(.data, .abundance)
 		.abundance = col_names$.abundance
@@ -1345,7 +1345,7 @@ get_reduced_dimensions_MDS_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		# Get normalised abundance if present, otherwise get abundance
+		# Get scaled abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
 		col_names = get_abundance_norm_if_exists(.data, .abundance)
 		.abundance = col_names$.abundance
@@ -1367,7 +1367,7 @@ get_reduced_dimensions_MDS_bulk <-
 					error_if_counts_is_na(!!.abundance) %>%
 
 					# Filter lowly transcribed (I have to avoid the use of normalising function)
-					add_normalised_counts_bulk(!!.element, !!.feature, !!.abundance) %>%
+					add_scaled_counts_bulk(!!.element, !!.feature, !!.abundance) %>%
 					filter(!`filter out low counts`) %>%
 					distinct(!!.feature, !!.element, !!.abundance) %>%
 
@@ -1512,7 +1512,7 @@ get_reduced_dimensions_PCA_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		# Get normalised abundance if present, otherwise get abundance
+		# Get scaled abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
 		col_names = get_abundance_norm_if_exists(.data, .abundance)
 		.abundance = col_names$.abundance
@@ -1717,7 +1717,7 @@ get_reduced_dimensions_TSNE_bulk <-
 		.element = col_names$.element
 		.feature = col_names$.feature
 
-		# Get normalised abundance if present, otherwise get abundance
+		# Get scaled abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
 		col_names = get_abundance_norm_if_exists(.data, .abundance)
 		.abundance = col_names$.abundance
@@ -2101,13 +2101,13 @@ aggregate_duplicated_transcripts_bulk =
 			select_if(is.numeric) %>%
 			select(-!!.abundance) %>%
 
-			# If normalised add the column to the exclusion
+			# If scaled add the column to the exclusion
 			ifelse_pipe(
-				(".abundance_normalised" %in% (.data %>% attr("parameters") %>% names) &&
-				 	# .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
-				 	quo_name(.data %>% attr("parameters") %$% .abundance_normalised) %in% (.data %>% colnames)
+				(".abundance_scaled" %in% (.data %>% attr("parameters") %>% names) &&
+				 	# .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
+				 	quo_name(.data %>% attr("parameters") %$% .abundance_scaled) %in% (.data %>% colnames)
 				),
-				~ .x %>% select(-!!(.data %>% attr("parameters") %$% .abundance_normalised))
+				~ .x %>% select(-!!(.data %>% attr("parameters") %$% .abundance_scaled))
 			)	%>%
 			colnames() %>%
 			c("n_aggr")
@@ -2142,15 +2142,15 @@ aggregate_duplicated_transcripts_bulk =
 											group_by(!!.sample, !!.transcript) %>%
 											dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
 
-											# If normalised abundance exists aggragate that as well
+											# If scaled abundance exists aggragate that as well
 											ifelse_pipe(
-												(".abundance_normalised" %in% (.data %>% attr("parameters") %>% names) &&
-												 	# .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
-												 	quo_name(.data %>% attr("parameters") %$% .abundance_normalised) %in% (.data %>% colnames)
+												(".abundance_scaled" %in% (.data %>% attr("parameters") %>% names) &&
+												 	# .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
+												 	quo_name(.data %>% attr("parameters") %$% .abundance_scaled) %in% (.data %>% colnames)
 												),
 												~ {
-													.abundance_normalised = .data %>% attr("parameters") %$% .abundance_normalised
-													.x %>% dplyr::mutate(!!.abundance_normalised := !!.abundance_normalised %>% aggregation_function())
+													.abundance_scaled = .data %>% attr("parameters") %$% .abundance_scaled
+													.x %>% dplyr::mutate(!!.abundance_scaled := !!.abundance_scaled %>% aggregation_function())
 												}
 											) %>%
 
@@ -2698,7 +2698,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
 
-	# Get normalised abundance if present, otherwise get abundance
+	# Get scaled abundance if present, otherwise get abundance
 	.abundance = enquo(.abundance)
 	col_names = get_abundance_norm_if_exists(.data, .abundance)
 	.abundance = col_names$.abundance
@@ -2733,7 +2733,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		mutate(
 			`filter out low counts` =
 				!!.transcript %in%
-				add_normalised_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
+				add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
 		)
 
 	# Create design matrix
@@ -2849,7 +2849,7 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
 
-	# Get normalised abundance if present, otherwise get abundance
+	# Get scaled abundance if present, otherwise get abundance
 	.abundance = enquo(.abundance)
 	col_names = get_abundance_norm_if_exists(.data, .abundance)
 	.abundance = col_names$.abundance
@@ -2900,7 +2900,7 @@ filter_variable_transcripts = function(.data,
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
 
-	# Get normalised abundance if present, otherwise get abundance
+	# Get scaled abundance if present, otherwise get abundance
 	.abundance = enquo(.abundance)
 	col_names = get_abundance_norm_if_exists(.data, .abundance)
 	.abundance = col_names$.abundance
@@ -2953,19 +2953,19 @@ ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = N
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
-	# If present get the normalised abundance
-	.abundance_normalised =
+	# If present get the scaled abundance
+	.abundance_scaled =
 		.data %>%
 		ifelse_pipe(
-			".abundance_normalised" %in% ((.) %>% attr("parameters") %>% names) &&
-				# .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
-				quo_name((.) %>% attr("parameters") %$% .abundance_normalised) %in% ((.) %>% colnames),
-			~ .x %>% attr("parameters") %$% .abundance_normalised,
+			".abundance_scaled" %in% ((.) %>% attr("parameters") %>% names) &&
+				# .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
+				quo_name((.) %>% attr("parameters") %$% .abundance_scaled) %in% ((.) %>% colnames),
+			~ .x %>% attr("parameters") %$% .abundance_scaled,
 			~ NULL
 		)
 
 	# Get which columns are sample wise and which are feature wise
-	col_direction = get_x_y_annotation_columns(.data, !!.sample, !!.transcript, !!.abundance, !!.abundance_normalised)
+	col_direction = get_x_y_annotation_columns(.data, !!.sample, !!.transcript, !!.abundance, !!.abundance_scaled)
 	sample_cols = col_direction$horizontal_cols
 	feature_cols = col_direction$vertical_cols
 	counts_cols = col_direction$counts_cols
@@ -2976,7 +2976,7 @@ ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = N
 
 	assays =
 		.data %>%
-		select(!!.sample, !!.transcript, !!.abundance, !!.abundance_normalised, counts_cols) %>%
+		select(!!.sample, !!.transcript, !!.abundance, !!.abundance_scaled, counts_cols) %>%
 		distinct() %>%
 		gather(`assay`, .a, -!!.transcript, -!!.sample) %>%
 		nest(`data` = -`assay`) %>%

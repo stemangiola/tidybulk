@@ -123,7 +123,7 @@ error_if_log_transformed <- function(x, .abundance) {
   if (x %>% nrow %>% `>` (0))
     if (x %>% summarise(m = !!.abundance %>% max) %>% pull(m) < 50)
       stop(
-        "The input was log transformed, this algorithm requires raw (un-normalised) read counts"
+        "The input was log transformed, this algorithm requires raw (un-scaled) read counts"
       )
 }
 
@@ -597,11 +597,11 @@ get_abundance_norm_if_exists = function(.data, .abundance){
 
       return(list(
         .abundance =  switch(
-          (".abundance_normalised" %in% (.data %>% attr("parameters") %>% names) &&
-             # .data %>% attr("parameters") %$% .abundance_normalised %>% is.null %>% `!` &&
-             quo_name(.data %>% attr("parameters") %$% .abundance_normalised) %in% (.data %>% colnames)
+          (".abundance_scaled" %in% (.data %>% attr("parameters") %>% names) &&
+             # .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
+             quo_name(.data %>% attr("parameters") %$% .abundance_scaled) %in% (.data %>% colnames)
            ) %>% `!` %>% sum(1),
-          attr(.data, "parameters")$.abundance_normalised,
+          attr(.data, "parameters")$.abundance_scaled,
           attr(.data, "parameters")$.abundance
         )
       ))
@@ -679,13 +679,13 @@ tibble::as_tibble
 #' @param .horizontal The name of the column horizontally presented in the heatmap
 #' @param .vertical The name of the column vertically presented in the heatmap
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .abundance_normalised The name of the transcript/gene normalised abundance column
+#' @param .abundance_scaled The name of the transcript/gene scaled abundance column
 #'
 #' @description This function recognise what are the sample-wise columns and transcrip-wise columns
 #'
 #' @return A list
 #'
-get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance, .abundance_normalised){
+get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance, .abundance_scaled){
 
 
   # Comply with CRAN NOTES
@@ -695,7 +695,7 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
   .horizontal = enquo(.horizontal)
   .vertical = enquo(.vertical)
   .abundance = enquo(.abundance)
-  .abundance_normalised = enquo(.abundance_normalised)
+  .abundance_scaled = enquo(.abundance_scaled)
 
   # x-annotation df
   n_x = .data %>% distinct(!!.horizontal) %>% nrow
@@ -745,7 +745,7 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
     {	(.)[lengths((.)) != 0]	} %>%
     unlist
 
-  # Counts wise columns, at the moment normalised counts is treated as special and not accounted for here
+  # Counts wise columns, at the moment scaled counts is treated as special and not accounted for here
   counts_cols =
     .data %>%
     select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
@@ -756,8 +756,8 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
     # Exclude vertical
     ifelse_pipe(!is.null(vertical_cols),  ~ .x %>% select(-vertical_cols)) %>%
 
-    # Exclude normalised counts if exist
-    ifelse_pipe(.abundance_normalised %>% quo_is_symbol,  ~ .x %>% select(-!!.abundance_normalised) ) %>%
+    # Exclude scaled counts if exist
+    ifelse_pipe(.abundance_scaled %>% quo_is_symbol,  ~ .x %>% select(-!!.abundance_scaled) ) %>%
 
     # Select colnames
     colnames %>%

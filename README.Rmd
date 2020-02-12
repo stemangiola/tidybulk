@@ -73,7 +73,7 @@ In brief you can:
 + Going from BAM/SAM to a tidy data frame of counts (FeatureCounts)
 + Adding gene symbols from ensembl IDs
 + Aggregating duplicated gene symbols
-+ Adding normalised counts
++ Adding scaled counts
 + Adding principal components
 + Adding MDS components
 + Rotating principal component or MDS dimensions
@@ -113,7 +113,7 @@ colnames(dge_list.nr) <- colnames(dge_list)
 
 # Scale `counts`
 
-We may want to calculate the normalised counts for library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`.
+We may want to calculate the scaled counts for library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`.
 
 <div class="column-left">
 TidyTranscriptomics
@@ -143,16 +143,16 @@ norm_counts.table <- t(
 <div style="clear:both;"></div>
 
 ```{r, include=FALSE}
-counts.norm %>% select(`count`, `count normalised`, `filter out low counts`, everything())
+counts.norm %>% select(`count`, `count scaled`, `filter out low counts`, everything())
 ```
 
 
-We can easily plot the normalised density to check the normalisation outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type. 
+We can easily plot the scaled density to check the normalisation outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type. 
 
 
 ```{r plot_normalise, cache=TRUE}
 counts.norm %>% 
-	ggplot(aes(`count normalised` + 1, group=sample, color=`Cell type`)) +
+	ggplot(aes(`count scaled` + 1, group=sample, color=`Cell type`)) +
 	geom_density() + 
 	scale_x_log10() +
 	my_theme
@@ -735,7 +735,7 @@ We can add the MDS dimensions to the original data set
 ```{r, cache=TRUE}
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count normalised`, 
+    	.abundance = `count scaled`, 
     	method="MDS" , 
     	.element = sample, 
     	.feature = transcript, 
@@ -750,7 +750,7 @@ We can get just the MDS dimensions relative to each sample
 ```{r, cache=TRUE}
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count normalised`, 
+    	.abundance = `count scaled`, 
     	method="MDS" , 
     	.element = sample, 
     	.feature = transcript, 

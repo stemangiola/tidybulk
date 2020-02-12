@@ -9,7 +9,7 @@ get_x_y_annotation_columns(
   .horizontal,
   .vertical,
   .abundance,
-  .abundance_normalised
+  .abundance_scaled
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ get_x_y_annotation_columns(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{.abundance_normalised}{The name of the transcript/gene normalised abundance column}
+\item{.abundance_scaled}{The name of the transcript/gene scaled abundance column}
 }
 \value{
 A list
