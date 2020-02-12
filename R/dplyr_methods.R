@@ -42,6 +42,7 @@
 #'   variables. Use [desc()] to sort a variable in descending order.
 #' @family single table verbs
 #' @examples
+#' `%>%` = magrittr::`%>%`
 #' arrange(mtcars, cyl, disp)
 #' arrange(mtcars, desc(disp))
 #'
@@ -116,6 +117,7 @@ arrange.ttBulk <- function(.data, ..., .by_group = FALSE) {
 #' @return `bind_rows()` and `bind_cols()` return the same type as
 #'   the first input, either a data frame, `tbl_df`, or `grouped_df`.
 #' @examples
+#' `%>%` = magrittr::`%>%`
 #' one <- mtcars[1:4, ]
 #' two <- mtcars[11:14, ]
 #'
@@ -393,6 +395,7 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 #'
 #' @export
 #' @examples
+#' `%>%` = magrittr::`%>%`
 #' by_cyl <- mtcars %>% group_by(cyl)
 #'
 #' # grouping doesn't change how the data looks (apart from listing
@@ -407,6 +410,7 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 #' by_cyl %>% filter(disp == max(disp))
 #'
 #' # Each call to summarise() removes a layer of grouping
+#' `%>%` = magrittr::`%>%`
 #' by_vs_am <- mtcars %>% group_by(vs, am)
 #' by_vs <- by_vs_am %>% summarise(n = n())
 #' by_vs
@@ -491,6 +495,7 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 #'
 #' @export
 #' @examples
+#' `%>%` = magrittr::`%>%`
 #' by_cyl <- mtcars %>% group_by(cyl)
 #'
 #' # grouping doesn't change how the data looks (apart from listing
@@ -667,6 +672,7 @@ ungroup.ttBulk <- function (x, ...)
 #'
 #' The following methods are currently available in loaded packages:
 #' @examples
+#' `%>%` = magrittr::`%>%`
 #' # A summary applied to ungrouped tbl returns a single row
 #' mtcars %>%
 #'   summarise(mean = mean(disp), n = n())
@@ -821,6 +827,7 @@ summarise.ttBulk <- function (.data, ...)
 #' Methods available in currently loaded packages:
 #'
 #' @examples
+#' `%>%` = magrittr::`%>%`
 #' # Newly created variables are available immediately
 #' mtcars %>% as_tibble() %>% mutate(
 #'   cyl2 = cyl * 2,
@@ -900,6 +907,7 @@ mutate.ttBulk <- function(.data, ...)
 #' @family single table verbs
 #' @export
 #' @examples
+#' `%>%` = magrittr::`%>%`
 #' iris <- as_tibble(iris) # so it prints a little nicer
 #' rename(iris, petal_length = Petal.Length)
 ############# START ADDED TTBULK #####################################
@@ -957,6 +965,7 @@ rename.ttBulk <- function(.data, ...)
 #'
 #' @export
 #' @examples
+#' `%>%` = magrittr::`%>%`
 #' df <- expand.grid(x = 1:3, y = 3:1)
 #' df_done <- df %>% rowwise() %>% do(i = seq(.$x, .$y))
 #' df_done
@@ -1007,7 +1016,7 @@ rowwise.ttBulk <- function(.data)
 #' @export
 #'
 #' @examples
-#'
+#'`%>%` = magrittr::`%>%`
 #' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
 #' ttBulk::counts %>% left_join(annotation)
 #'
@@ -1051,7 +1060,7 @@ left_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".
 #' @return A tt object
 #'
 #' @examples
-#'
+#'`%>%` = magrittr::`%>%`
 #' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
 #' ttBulk::counts %>% inner_join(annotation)
 #'
@@ -1094,7 +1103,7 @@ inner_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", "
 #' @return A tt object
 #'
 #' @examples
-#'
+#'`%>%` = magrittr::`%>%`
 #' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
 #' ttBulk::counts %>% right_join(annotation)
 #'
@@ -1140,7 +1149,7 @@ right_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", "
 #' @return A tt object
 #'
 #' @examples
-#'
+#'`%>%` = magrittr::`%>%`
 #' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
 #' ttBulk::counts %>% full_join(annotation)
 #'

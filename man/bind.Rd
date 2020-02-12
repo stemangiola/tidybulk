@@ -46,6 +46,7 @@ The output of `bind_rows()` will contain a column if that column
 appears in any of the inputs.
 }
 \examples{
+`\%>\%` = magrittr::`\%>\%`
 one <- mtcars[1:4, ]
 two <- mtcars[11:14, ]
 

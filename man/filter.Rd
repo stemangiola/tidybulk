@@ -88,6 +88,7 @@ Methods available in currently loaded packages:
 \examples{
 
 # Learn more in ?dplyr_tidy_eval
+`\%>\%` = magrittr::`\%>\%`
 by_cyl <- mtcars \%>\% group_by(cyl)
 
 # grouping doesn't change how the data looks (apart from listing
@@ -102,6 +103,7 @@ by_cyl \%>\% summarise(
 by_cyl \%>\% filter(disp == max(disp))
 
 # Each call to summarise() removes a layer of grouping
+`\%>\%` = magrittr::`\%>\%`
 by_vs_am <- mtcars \%>\% group_by(vs, am)
 by_vs <- by_vs_am \%>\% summarise(n = n())
 by_vs

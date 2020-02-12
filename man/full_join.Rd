@@ -26,7 +26,7 @@ A tt object
 Full join datasets
 }
 \examples{
-
+`\%>\%` = magrittr::`\%>\%`
 annotation = ttBulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
 ttBulk::counts \%>\% full_join(annotation)
 

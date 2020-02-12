@@ -41,6 +41,7 @@ The following methods are currently available in loaded packages:
 }
 
 \examples{
+`\%>\%` = magrittr::`\%>\%`
 iris <- as_tibble(iris) # so it prints a little nicer
 rename(iris, petal_length = Petal.Length)
 }
