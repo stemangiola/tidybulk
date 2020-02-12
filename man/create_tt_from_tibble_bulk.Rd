@@ -9,7 +9,7 @@ create_tt_from_tibble_bulk(
   .sample,
   .transcript,
   .abundance,
-  .abundance_normalised = NULL
+  .abundance_scaled = NULL
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ create_tt_from_tibble_bulk(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{.abundance_normalised}{The name of the transcript/gene normalised abundance column}
+\item{.abundance_scaled}{The name of the transcript/gene scaled abundance column}
 }
 \value{
 A tibble with an additional column

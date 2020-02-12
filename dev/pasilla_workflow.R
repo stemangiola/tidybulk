@@ -56,7 +56,7 @@ tt_scaled = tt %>% scale_abundance()
 
 # Plot densities
 tt_scaled %>%
-	pivot_longer(values_to = "count", names_to = "Normalisation", cols = c(count, `count normalised`)) %>%
+	pivot_longer(values_to = "count", names_to = "Normalisation", cols = c(count, `count scaled`)) %>%
 	ggplot(aes(count + 1, group=sample, color=type)) +
 	facet_grid(~Normalisation) +
 	geom_density() +
@@ -99,8 +99,8 @@ tt_mds %>%
 tt_adj = tt_mds %>%	adjust_abundance(~ condition + type)
 
 tt_adj %>%
-	filter( `count normalised adjusted` %>% is.na %>% `!`) %>%
-	reduce_dimensions(.abundance = `count normalised adjusted`, method="MDS", .dims = 3) %>%
+	filter( `count scaled adjusted` %>% is.na %>% `!`) %>%
+	reduce_dimensions(.abundance = `count scaled adjusted`, method="MDS", .dims = 3) %>%
 
 	# Plot
 	select(contains("Dim"), sample, type,  condition ) %>%
@@ -132,7 +132,7 @@ tt_test %>%
 	scale_size_discrete(range = c(0, 2)) +
 	my_theme
 
-# Plot top genes for raw, normalised and ajusted counts
+# Plot top genes for raw, scaled and ajusted counts
 tt_test %>%
 	inner_join( (.) %>% distinct(symbol, PValue) %>% arrange(PValue) %>% head(6)) %>%
 	pivot_longer(names_to = "Stage", values_to = "count", cols = starts_with("count")) %>%
@@ -149,7 +149,7 @@ tt_test %>%
 	tidyHeatmap::plot_heatmap(
 		.horizontal = sample,
 		.vertical = symbol,
-		.abundance = `count normalised adjusted`,
+		.abundance = `count scaled adjusted`,
 		annotation = c(condition, type),
 		log_transform = TRUE
 	)

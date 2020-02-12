@@ -20,7 +20,7 @@ setOldClass("ttBulk")
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .abundance_normalised The name of the transcript/gene normalised abundance column
+#' @param .abundance_scaled The name of the transcript/gene scaled abundance column
 #'
 #' @details This function created a ttBulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
@@ -46,25 +46,25 @@ setGeneric("ttBulk", function(.data,
                               .sample,
                               .transcript,
                               .abundance,
-															.abundance_normalised = NULL) standardGeneric("ttBulk"))
+															.abundance_scaled = NULL) standardGeneric("ttBulk"))
 
 # Set internal
 .ttBulk = function(.data,
                    .sample,
                    .transcript,
                    .abundance,
-									 .abundance_normalised = NULL) {
+									 .abundance_scaled = NULL) {
 
   # Make col names
   .sample = enquo(.sample)
   .transcript = enquo(.transcript)
   .abundance = enquo(.abundance)
-  .abundance_normalised = enquo(.abundance_normalised)
+  .abundance_scaled = enquo(.abundance_scaled)
 
   # Validate data frame
   validation(.data,!!.sample,!!.transcript,!!.abundance, skip_dupli_check = TRUE)
 
-  create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance, !!.abundance_normalised)
+  create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance, !!.abundance_scaled)
 }
 #' ttBulk
 #' @inheritParams ttBulk
@@ -84,17 +84,17 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 											 .sample,
 											 .transcript,
 											 .abundance,
-											.abundance_normalised = NULL){
+											.abundance_scaled = NULL){
 
 	# Make col names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-	.abundance_normalised = enquo(.abundance_normalised)
+	.abundance_scaled = enquo(.abundance_scaled)
 
-	# Set normalised col names
+	# Set scaled col names
 	norm_col =
-		assays(.data)[1] %>% names %>% paste("normalised") %>%
+		assays(.data)[1] %>% names %>% paste("scaled") %>%
 		ifelse_pipe(
 			(.) %in% names(assays(.data)),
 			~ as.symbol(.x),
@@ -129,7 +129,7 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 			feature,
 			!!as.symbol(assays(.data)[1] %>%  names),
 
-			# Normalised counts if any
+			# scaled counts if any
 			!!norm_col
 		)
 
@@ -227,7 +227,7 @@ setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	
 #' are filtered out from the normalisation procedure.
 #' The normalisation inference is then applied back to all unfiltered data.
 #'
-#' @return A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
 #'
 #'
 #' @examples
@@ -271,7 +271,7 @@ setGeneric("scale_abundance", function(.data,
   validation(.data,!!.sample,!!.transcript,!!.abundance)
 
   if (action == "add")
-    add_normalised_counts_bulk(
+    add_scaled_counts_bulk(
       .data,!!.sample,!!.transcript,!!.abundance,
       cpm_threshold = cpm_threshold,
       prop = prop,
@@ -279,7 +279,7 @@ setGeneric("scale_abundance", function(.data,
       reference_selection_function = reference_selection_function
     )
   else if (action == "get")
-    get_normalised_counts_bulk(
+    get_scaled_counts_bulk(
       .data,!!.sample,!!.transcript,!!.abundance,
       cpm_threshold = cpm_threshold,
       prop = prop,
@@ -294,19 +294,19 @@ setGeneric("scale_abundance", function(.data,
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
 #'
 setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
 #'
 setMethod("scale_abundance", "tbl_df", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A tbl object with additional columns with normalised data as `<NAME OF COUNT COLUMN> normalised`
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
 #'
 setMethod("scale_abundance", "ttBulk", .scale_abundance)
 
@@ -2102,7 +2102,7 @@ setGeneric("filter_abundant", function(.data,
 		validation(.data,!!.sample,!!.transcript,!!.abundance)
 
 		gene_to_exclude =
-			add_normalised_counts_bulk.get_low_expressed(.data,
+			add_scaled_counts_bulk.get_low_expressed(.data,
 																								 .sample = !!.sample,
 																								 .transcript = !!.transcript,
 																								 .abundance = !!.abundance,
