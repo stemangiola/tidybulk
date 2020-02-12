@@ -198,17 +198,17 @@ bind_cols.ttBulk <- function(..., .id = NULL)
 ############# END ADDED TTBULK #####################################
 ############# START ADDED TTBULK #####################################
 
-#' @importFrom dplyr arrange_all
-#' @export
-dplyr::arrange_all
-
-#' @importFrom dplyr arrange_at
-#' @export
-dplyr::arrange_at
-
-#' @importFrom dplyr arrange_if
-#' @export
-dplyr::arrange_if
+# #' @importFrom dplyr arrange_all
+# #' @export
+# dplyr::arrange_all
+#
+# #' @importFrom dplyr arrange_at
+# #' @export
+# dplyr::arrange_at
+#
+# #' @importFrom dplyr arrange_if
+# #' @export
+# dplyr::arrange_if
 
 ############# END ADDED TTBULK #####################################
 ############# START ADDED TTBULK #####################################
@@ -255,17 +255,17 @@ distinct.ttBulk <- function (.data, ..., .keep_all = FALSE)
 
 ############# START ADDED TTBULK #####################################
 
-#' @importFrom dplyr distinct_all
-#' @export
-dplyr::distinct_all
-
-#' @importFrom dplyr distinct_at
-#' @export
-dplyr::distinct_at
-
-#' @importFrom dplyr distinct_if
-#' @export
-dplyr::distinct_if
+# #' @importFrom dplyr distinct_all
+# #' @export
+# dplyr::distinct_all
+#
+# #' @importFrom dplyr distinct_at
+# #' @export
+# dplyr::distinct_at
+#
+# #' @importFrom dplyr distinct_if
+# #' @export
+# dplyr::distinct_if
 
 ############# END ADDED TTBULK #####################################
 
@@ -356,17 +356,17 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 
 ############# START ADDED TTBULK #####################################
 
-#' @importFrom dplyr filter_all
-#' @export
-dplyr::filter_all
-
-#' @importFrom dplyr filter_at
-#' @export
-dplyr::filter_at
-
-#' @importFrom dplyr filter_if
-#' @export
-dplyr::filter_if
+# #' @importFrom dplyr filter_all
+# #' @export
+# dplyr::filter_all
+#
+# #' @importFrom dplyr filter_at
+# #' @export
+# dplyr::filter_at
+#
+# #' @importFrom dplyr filter_if
+# #' @export
+# dplyr::filter_if
 
 ############# END ADDED TTBULK #####################################
 
@@ -590,17 +590,17 @@ ungroup.ttBulk <- function (x, ...)
 
 ############# START ADDED TTBULK #####################################
 
-#' @importFrom dplyr group_by_all
-#' @export
-dplyr::group_by_all
-
-#' @importFrom dplyr group_by_at
-#' @export
-dplyr::group_by_at
-
-#' @importFrom dplyr group_by_if
-#' @export
-dplyr::group_by_if
+# #' @importFrom dplyr group_by_all
+# #' @export
+# dplyr::group_by_all
+#
+# #' @importFrom dplyr group_by_at
+# #' @export
+# dplyr::group_by_at
+#
+# #' @importFrom dplyr group_by_if
+# #' @export
+# dplyr::group_by_if
 
 ############# END ADDED TTBULK #####################################
 
@@ -720,29 +720,29 @@ summarise.ttBulk <- function (.data, ...)
 
 ############# START ADDED TTBULK #####################################
 
-#' @importFrom dplyr summarize_all
-#' @export
-dplyr::summarize_all
-
-#' @importFrom dplyr summarize_at
-#' @export
-dplyr::summarize_at
-
-#' @importFrom dplyr summarize_if
-#' @export
-dplyr::summarize_if
+# #' @importFrom dplyr summarize_all
+# #' @export
+# dplyr::summarize_all
+#
+# #' @importFrom dplyr summarize_at
+# #' @export
+# dplyr::summarize_at
+#
+# #' @importFrom dplyr summarize_if
+# #' @export
+# dplyr::summarize_if
 
 ############# END ADDED TTBULK #####################################
 
-#' @rdname summarise_all
-#' @export
-summarize_all <- summarise_all
-#' @rdname summarise_all
-#' @export
-summarize_if <- summarise_if
-#' @rdname summarise_all
-#' @export
-summarize_at <- summarise_at
+# #' @rdname summarise_all
+# #' @export
+# summarize_all <- summarise_all
+# #' @rdname summarise_all
+# #' @export
+# summarize_if <- summarise_if
+# #' @rdname summarise_all
+# #' @export
+# summarize_at <- summarise_at
 
 #' Create, modify, and delete columns
 #'
@@ -859,17 +859,17 @@ mutate.ttBulk <- function(.data, ...)
 
 ############# START ADDED TTBULK #####################################
 
-#' @importFrom dplyr mutate_all
-#' @export
-dplyr::mutate_all
-
-#' @importFrom dplyr mutate_at
-#' @export
-dplyr::mutate_at
-
-#' @importFrom dplyr mutate_if
-#' @export
-dplyr::mutate_if
+# #' @importFrom dplyr mutate_all
+# #' @export
+# dplyr::mutate_all
+#
+# #' @importFrom dplyr mutate_at
+# #' @export
+# dplyr::mutate_at
+#
+# #' @importFrom dplyr mutate_if
+# #' @export
+# dplyr::mutate_if
 
 ############# END ADDED TTBULK #####################################
 
