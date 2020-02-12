@@ -1,11 +1,12 @@
 Type: Package
+Package: ttBulk
 Title: Friendly tidy wrappers for streamlined bulk transcriptional analysis
 Version: 0.99.8
 Author: person("Stefano", "Mangiola", email=mangiolastefano@gmail.com, role=c("cre", aut"), comment = c(ORCID = "0000-0001-7474-836X")).
 Maintainer: Stefano Mangiola <mangiolastefano@gmail.com>
-Description: This is a collection of utility function that allow
+Description: This is a collection of utility functions that allow
     to perform exploration of and calculations to RNA sequencing data, in
-    a tidy and pipe-friendly fashion.
+    a modular, pipe-friendly and tidy fashion.
 License: GPL-3
 Depends:
     R (>= 3.6)
