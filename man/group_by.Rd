@@ -50,6 +50,7 @@ Methods available in currently loaded packages:
 }
 
 \examples{
+`\%>\%` = magrittr::`\%>\%`
 by_cyl <- mtcars \%>\% group_by(cyl)
 
 # grouping doesn't change how the data looks (apart from listing

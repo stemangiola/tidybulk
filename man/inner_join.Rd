@@ -26,7 +26,7 @@ A tt object
 Inner join datasets
 }
 \examples{
-
+`\%>\%` = magrittr::`\%>\%`
 annotation = ttBulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
 ttBulk::counts \%>\% inner_join(annotation)
 

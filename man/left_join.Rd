@@ -26,7 +26,7 @@ A tt object
 Left join datasets
 }
 \examples{
-
+`\%>\%` = magrittr::`\%>\%`
 annotation = ttBulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
 ttBulk::counts \%>\% left_join(annotation)
 
