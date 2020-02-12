@@ -3,24 +3,6 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
-\alias{arrange_all}
-\alias{arrange_at}
-\alias{arrange_if}
-\alias{distinct_all}
-\alias{distinct_at}
-\alias{distinct_if}
-\alias{filter_all}
-\alias{filter_at}
-\alias{filter_if}
-\alias{group_by_all}
-\alias{group_by_at}
-\alias{group_by_if}
-\alias{summarize_all}
-\alias{summarize_at}
-\alias{summarize_if}
-\alias{mutate_all}
-\alias{mutate_at}
-\alias{mutate_if}
 \alias{do}
 \alias{\%>\%}
 \alias{tibble}
@@ -32,7 +14,7 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dplyr}{\code{\link[dplyr]{arrange_all}}, \code{\link[dplyr]{arrange_at}}, \code{\link[dplyr]{arrange_if}}, \code{\link[dplyr]{distinct_all}}, \code{\link[dplyr]{distinct_at}}, \code{\link[dplyr]{distinct_if}}, \code{\link[dplyr]{do}}, \code{\link[dplyr]{filter_all}}, \code{\link[dplyr]{filter_at}}, \code{\link[dplyr]{filter_if}}, \code{\link[dplyr]{group_by_all}}, \code{\link[dplyr]{group_by_at}}, \code{\link[dplyr]{group_by_if}}, \code{\link[dplyr]{mutate_all}}, \code{\link[dplyr]{mutate_at}}, \code{\link[dplyr]{mutate_if}}, \code{\link[dplyr]{summarize_all}}, \code{\link[dplyr]{summarize_at}}, \code{\link[dplyr]{summarize_if}}}
+  \item{dplyr}{\code{\link[dplyr]{do}}}
 
   \item{magrittr}{\code{\link[magrittr]{\%>\%}}}
 
