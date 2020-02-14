@@ -196,7 +196,7 @@ test_that("Get differential trancript abundance - no object",{
   		.transcript = b,
   		.abundance = c,
   		action="get",
-  		prop = 0.5,
+  		prop_threshold = 0.5,
   		cpm_threshold = 30
   	)
 

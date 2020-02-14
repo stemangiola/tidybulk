@@ -10,7 +10,7 @@ get_scaled_counts_bulk(
   .transcript = NULL,
   .abundance = NULL,
   cpm_threshold = 0.5,
-  prop = 3/4,
+  prop_threshold = 3/4,
   method = "TMM",
   reference_selection_function = median
 )
@@ -24,9 +24,9 @@ get_scaled_counts_bulk(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{cpm_threshold}{A real positive number}
+\item{cpm_threshold}{A real positive number. Minimum counts per million required for a selected proportion of samples}
 
-\item{prop}{A number between 0 and 1}
+\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.}
 
 \item{method}{A character string}
 

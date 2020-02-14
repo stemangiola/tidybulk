@@ -21,7 +21,7 @@ add_scaled_counts_bulk.get_cpm(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{cpm_threshold}{A real positive number}
+\item{cpm_threshold}{A real positive number. Minimum counts per million required for a selected proportion of samples}
 }
 \value{
 A tibble with an additional column

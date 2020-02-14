@@ -15,7 +15,7 @@ test_differential_abundance(
   .contrasts = NULL,
   significance_threshold = 0.05,
   cpm_threshold = 0.5,
-  prop = 3/4,
+  prop_threshold = 3/4,
   fill_missing_values = FALSE,
   action = "add"
 )
@@ -37,9 +37,9 @@ test_differential_abundance(
 
 \item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
 
-\item{cpm_threshold}{A real positive number}
+\item{cpm_threshold}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure.}
 
-\item{prop}{A number between 0 and 1}
+\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.}
 
 \item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
 

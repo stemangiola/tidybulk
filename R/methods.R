@@ -216,14 +216,14 @@ setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	
 #' @param .abundance The name of the transcript/gene abundance column
 #'
 #' @param cpm_threshold A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure. The normalisation inference is then applied back to all unfiltered data.
-#' @param prop A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
 #' @param method A character string. The methods used by the function. The method is passed to the function `calcNormFactors` from edgeR package.
 #' @param reference_selection_function A fucntion that is used to selecting the reference sample for normalisation. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
 #' @param action A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.
 #'
 #' @details normalises the data for the library size
 #' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
-#' Lowly transcribed transcripts/genes (defined with cpm_threshold and prop parameters)
+#' Lowly transcribed transcripts/genes (defined with cpm_threshold and prop_threshold parameters)
 #' are filtered out from the normalisation procedure.
 #' The normalisation inference is then applied back to all unfiltered data.
 #'
@@ -246,7 +246,7 @@ setGeneric("scale_abundance", function(.data,
                               .transcript = NULL,
                               .abundance = NULL,
                               cpm_threshold = 0.5,
-                              prop = 3 / 4,
+                              prop_threshold = 3 / 4,
                               method = "TMM",
                               reference_selection_function = median,
                               action = "add") standardGeneric("scale_abundance"))
@@ -257,7 +257,7 @@ setGeneric("scale_abundance", function(.data,
                              .transcript = NULL,
                              .abundance = NULL,
                              cpm_threshold = 0.5,
-                             prop = 3 / 4,
+                             prop_threshold = 3 / 4,
                              method = "TMM",
                              reference_selection_function = median,
                              action = "add")
@@ -274,7 +274,7 @@ setGeneric("scale_abundance", function(.data,
     add_scaled_counts_bulk(
       .data,!!.sample,!!.transcript,!!.abundance,
       cpm_threshold = cpm_threshold,
-      prop = prop,
+      prop_threshold = prop_threshold,
       method = method,
       reference_selection_function = reference_selection_function
     )
@@ -282,7 +282,7 @@ setGeneric("scale_abundance", function(.data,
     get_scaled_counts_bulk(
       .data,!!.sample,!!.transcript,!!.abundance,
       cpm_threshold = cpm_threshold,
-      prop = prop,
+      prop_threshold = prop_threshold,
       method = method,
       reference_selection_function = reference_selection_function
     )
@@ -315,7 +315,7 @@ setMethod("scale_abundance", "ttBulk", .scale_abundance)
 															 .transcript = NULL,
 															 .abundance = NULL,
 															 cpm_threshold = 0.5,
-															 prop = 3 / 4,
+															 prop_threshold = 3 / 4,
 															 method = "TMM",
 															 reference_selection_function = median,
 															 action = "add"){
@@ -335,7 +335,7 @@ setMethod("scale_abundance", "ttBulk", .scale_abundance)
 										!!.transcript,
 										!!.abundance,
 										cpm_threshold = cpm_threshold,
-										prop = prop,
+										prop_threshold = prop_threshold,
 										method = method,
 										reference_selection_function = reference_selection_function,
 										action = action) %>%
@@ -1741,8 +1741,8 @@ setMethod("annotate_symbol", "ttBulk", .annotate_symbol)
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
+#' @param cpm_threshold A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure.
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
@@ -1789,7 +1789,7 @@ setGeneric("test_differential_abundance", function(.data,
 																				.contrasts = NULL,
 																						significance_threshold = 0.05,
 																				cpm_threshold = 0.5,
-																				prop = 3 / 4,
+																				prop_threshold = 3 / 4,
 																				fill_missing_values = FALSE,
 
 																						action = "add") standardGeneric("test_differential_abundance"))
@@ -1804,7 +1804,7 @@ setGeneric("test_differential_abundance", function(.data,
 					 .contrasts = NULL,
 					 significance_threshold = 0.05,
 					 cpm_threshold = 0.5,
-					 prop = 3 / 4,
+					 prop_threshold = 3 / 4,
 					 fill_missing_values = FALSE,
 					 action = "add")
 	{
@@ -1827,7 +1827,7 @@ setGeneric("test_differential_abundance", function(.data,
 				.contrasts = .contrasts,
 				significance_threshold = significance_threshold,
 				cpm_threshold = cpm_threshold,
-				prop = prop,
+				prop_threshold = prop_threshold,
 				fill_missing_values = fill_missing_values
 			)
 		else if (action == "get")
@@ -1841,7 +1841,7 @@ setGeneric("test_differential_abundance", function(.data,
 				.contrasts = .contrasts,
 				significance_threshold = significance_threshold,
 				cpm_threshold = cpm_threshold,
-				prop = prop,
+				prop_threshold = prop_threshold,
 				fill_missing_values = fill_missing_values
 			)
 		else
@@ -1876,7 +1876,7 @@ setMethod("test_differential_abundance", "ttBulk", .test_differential_abundance)
 																					 .contrasts = NULL,
 																					 significance_threshold = 0.05,
 																					 cpm_threshold = 0.5,
-																					 prop = 3 / 4,
+																					 prop_threshold = 3 / 4,
 																					 fill_missing_values = FALSE,
 																					 action = "add")
 {
@@ -1899,7 +1899,7 @@ setMethod("test_differential_abundance", "ttBulk", .test_differential_abundance)
 																.contrasts = .contrasts,
 																significance_threshold = significance_threshold,
 																cpm_threshold = cpm_threshold,
-																prop = prop,
+																prop_threshold = prop_threshold,
 																fill_missing_values = fill_missing_values,
 																action = action) %>%
 
@@ -2072,8 +2072,8 @@ setMethod("filter_variable", "RangedSummarizedExperiment", .filter_variable_se)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
+#' @param cpm_threshold A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure.
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
 #'
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
 #'
@@ -2103,7 +2103,7 @@ setGeneric("filter_abundant", function(.data,
 														.transcript = NULL,
 														.abundance = NULL,
 														cpm_threshold = 0.5,
-														prop = 3 / 4) standardGeneric("filter_abundant"))
+														prop_threshold = 3 / 4) standardGeneric("filter_abundant"))
 
 # Set internal
 .filter_abundant = 		function(.data,
@@ -2111,7 +2111,7 @@ setGeneric("filter_abundant", function(.data,
 					 .transcript = NULL,
 					 .abundance = NULL,
 					 cpm_threshold = 0.5,
-					 prop = 3 / 4)
+					 prop_threshold = 3 / 4)
 	{
 
 	# Get column names
@@ -2132,7 +2132,7 @@ setGeneric("filter_abundant", function(.data,
 																								 .transcript = !!.transcript,
 																								 .abundance = !!.abundance,
 																														 cpm_threshold = cpm_threshold,
-																														 prop = prop)
+																														 prop_threshold = prop_threshold)
 
 		.data %>%
 
@@ -2163,7 +2163,7 @@ setMethod("filter_abundant", "ttBulk", .filter_abundant)
 															 .transcript = NULL,
 															 .abundance = NULL,
 															 cpm_threshold = 0.5,
-															 prop = 3 / 4)
+															 prop_threshold = 3 / 4)
 {
 	# Make col names
 	.sample = enquo(.sample)
@@ -2181,7 +2181,7 @@ setMethod("filter_abundant", "ttBulk", .filter_abundant)
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
 			cpm_threshold = cpm_threshold,
-			prop = prop) %>%
+			prop_threshold = prop_threshold) %>%
 
 		# Convert to SummaizedExperiment
 		ttBulk_to_SummarizedExperiment()

@@ -11,7 +11,7 @@ scale_abundance(
   .transcript = NULL,
   .abundance = NULL,
   cpm_threshold = 0.5,
-  prop = 3/4,
+  prop_threshold = 3/4,
   method = "TMM",
   reference_selection_function = median,
   action = "add"
@@ -28,7 +28,7 @@ scale_abundance(
 
 \item{cpm_threshold}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure. The normalisation inference is then applied back to all unfiltered data.}
 
-\item{prop}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.}
+\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.}
 
 \item{method}{A character string. The methods used by the function. The method is passed to the function `calcNormFactors` from edgeR package.}
 
@@ -47,7 +47,7 @@ scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> 
 
 normalises the data for the library size
 (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
-Lowly transcribed transcripts/genes (defined with cpm_threshold and prop parameters)
+Lowly transcribed transcripts/genes (defined with cpm_threshold and prop_threshold parameters)
 are filtered out from the normalisation procedure.
 The normalisation inference is then applied back to all unfiltered data.
 }

@@ -135,7 +135,7 @@ create_tt_from_bam_sam_bulk <-
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param cpm_threshold A real positive number
+#' @param cpm_threshold A real positive number. Minimum counts per million required for a selected proportion of samples
 #'
 #' @return A tibble with an additional column
 add_scaled_counts_bulk.get_cpm <- function(.data,
@@ -203,8 +203,8 @@ add_scaled_counts_bulk.get_cpm <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
+#' @param cpm_threshold A real positive number. Minimum counts per million required for a selected proportion of samples
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
 #'
 #' @return A tibble filtered
 add_scaled_counts_bulk.get_low_expressed <- function(.data,
@@ -212,7 +212,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 																												 .transcript = `transcript`,
 																												 .abundance = `count`,
 																												 cpm_threshold = 0.5,
-																												 prop = 3 / 4) {
+																												 prop_threshold = 3 / 4) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -224,9 +224,9 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 
 	if (cpm_threshold < 0)
 		stop("The parameter cpm_threshold must be > 0")
-	if (prop < 0 |
-			prop > 1)
-		stop("The parameter prop must be between 0 and 1")
+	if (prop_threshold < 0 |
+			prop_threshold > 1)
+		stop("The parameter prop_threshold must be between 0 and 1")
 
 	.data %>%
 
@@ -252,7 +252,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 		mutate(`gene above threshold` = (cpm > cpm_threshold) %>% as.integer) %>%
 		group_by(!!.transcript) %>%
 		summarise(n = `gene above threshold` %>% sum) %>%
-		filter(n < (max(n) * !!prop) %>% floor) %>%
+		filter(n < (max(n) * !!prop_threshold) %>% floor) %>%
 
 		# Pull information
 		pull(!!.transcript) %>%
@@ -273,8 +273,8 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 #'
 #' @param .data A tibble
 #' @param reference A reference matrix, not sure if used anymore
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
+#' @param cpm_threshold A real positive number. Minimum counts per million required for a selected proportion of samples
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
@@ -285,7 +285,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 add_scaled_counts_bulk.calcNormFactor <- function(.data,
 																											reference = NULL,
 																											cpm_threshold = 0.5,
-																											prop = 3 / 4,
+																											prop_threshold = 3 / 4,
 																											.sample = `sample`,
 																											.transcript = `transcript`,
 																											.abundance = `count`,
@@ -305,7 +305,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 			!!.transcript,
 			!!.abundance,
 			cpm_threshold = cpm_threshold,
-			prop = prop
+			prop_threshold = prop_threshold
 		)
 
 	# Check if transcript after filtering is 0
@@ -378,8 +378,8 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
+#' @param cpm_threshold A real positive number. Minimum counts per million required for a selected proportion of samples
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
 #' @param method A character string
 #' @param reference_selection_function A function between median, mean and max
 #'
@@ -391,7 +391,7 @@ get_scaled_counts_bulk <- function(.data,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
 																			 cpm_threshold = 0.5,
-																			 prop = 3 / 4,
+																			 prop_threshold = 3 / 4,
 																			 method = "TMM",
 																			 reference_selection_function = median) {
 	# Get column names
@@ -455,7 +455,7 @@ get_scaled_counts_bulk <- function(.data,
 			df,
 			reference,
 			cpm_threshold,
-			prop,
+			prop_threshold,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
@@ -534,8 +534,8 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
+#' @param cpm_threshold A real positive number. Minimum counts per million required for a selected proportion of samples
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
 #' @param method A character string
 #' @param reference_selection_function A function between median, mean and max
 #'
@@ -547,7 +547,7 @@ add_scaled_counts_bulk <- function(.data,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
 																			 cpm_threshold = 0.5,
-																			 prop = 3 / 4,
+																			 prop_threshold = 3 / 4,
 																			 method = "TMM",
 																			 reference_selection_function = median) {
 	# Get column names
@@ -567,7 +567,7 @@ add_scaled_counts_bulk <- function(.data,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
 			cpm_threshold = cpm_threshold,
-			prop = prop,
+			prop_threshold = prop_threshold,
 			method = method,
 			reference_selection_function = reference_selection_function
 		) %>%
@@ -607,8 +607,8 @@ add_scaled_counts_bulk <- function(.data,
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
+#' @param cpm_threshold A real positive number. Minimum counts per million required for a selected proportion of samples
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #'
 #' @return A tibble with edgeR results
@@ -622,7 +622,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
 																											 cpm_threshold = 0.5,
-																											 prop = 3 / 4,
+																											 prop_threshold = 3 / 4,
 																											 fill_missing_values = FALSE) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -712,7 +712,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		df_for_edgeR %>%
 		select(!!.transcript, !!.sample, !!.abundance) %>%
 		mutate(
-			`filter out low counts` = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance, cpm_threshold = cpm_threshold,				 prop = prop)
+			`filter out low counts` = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance, cpm_threshold = cpm_threshold,				 prop_threshold = prop_threshold)
 		)
 
 	df_for_edgeR.filt %>%
@@ -798,8 +798,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
+#' @param cpm_threshold A real positive number. Minimum counts per million required for a selected proportion of samples
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #'
 #' @return A tibble with differential_transcript_abundance results
@@ -814,7 +814,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
 																											 cpm_threshold = 0.5,
-																											 prop = 3 / 4,
+																											 prop_threshold = 3 / 4,
 																											 fill_missing_values = FALSE) {
 
 	# Comply with CRAN NOTES
@@ -842,7 +842,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 					.contrasts = .contrasts,
 					significance_threshold = significance_threshold,
 					cpm_threshold = cpm_threshold,
-					prop = prop,
+					prop_threshold = prop_threshold,
 					fill_missing_values = fill_missing_values
 				)
 		) %>%

@@ -52,7 +52,7 @@ counts_tcga = ttBulk(ttBulk::breast_tcga_mini, sample, ens, count)
 counts
 ```
 
-    ## # A tibble: 1,340,160 x 8
+    ## # A tibble: 938,112 x 8
     ##    sample   transcript  `Cell type` count time  condition batch factor_of_inter…
     ##    <fct>    <fct>       <fct>       <dbl> <fct> <lgl>     <int> <lgl>           
     ##  1 SRR1740… DDX11L1     b_cell         17 0 d   TRUE          0 TRUE            
@@ -63,9 +63,9 @@ counts
     ##  6 SRR1740… OR4F5       b_cell          0 0 d   TRUE          0 TRUE            
     ##  7 SRR1740… LOC729737   b_cell       1764 0 d   TRUE          0 TRUE            
     ##  8 SRR1740… LOC1027251… b_cell         11 0 d   TRUE          0 TRUE            
-    ##  9 SRR1740… WASH9P      b_cell       3590 0 d   TRUE          0 TRUE            
-    ## 10 SRR1740… MIR6859-2   b_cell         40 0 d   TRUE          0 TRUE            
-    ## # … with 1,340,150 more rows
+    ##  9 SRR1740… MIR6859-2   b_cell         40 0 d   TRUE          0 TRUE            
+    ## 10 SRR1740… OR4F29      b_cell          0 0 d   TRUE          0 TRUE            
+    ## # … with 938,102 more rows
 
 In brief you can: + Going from BAM/SAM to a tidy data frame of counts
 (FeatureCounts) + Adding gene symbols from ensembl IDs + Aggregating
@@ -290,18 +290,18 @@ counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% dist
 ```
 
     ## # A tibble: 48 x 9
-    ##    sample      Dim1   Dim2   Dim3     Dim4    Dim5    Dim6 `Cell type`     time 
-    ##    <chr>      <dbl>  <dbl>  <dbl>    <dbl>   <dbl>   <dbl> <chr>           <chr>
-    ##  1 SRR1740034  2.15  0.820 -3.02   0.255    0.118  -0.388  b_cell          0 d  
-    ##  2 SRR1740035  2.15  0.702 -3.05   0.252    0.127  -0.454  b_cell          1 d  
-    ##  3 SRR1740036  2.15  0.572 -2.95   0.391    0.103  -0.563  b_cell          3 d  
-    ##  4 SRR1740037  2.12  0.782 -2.99   0.271    0.0860 -0.310  b_cell          7 d  
-    ##  5 SRR1740038 -1.42 -2.21  -0.319 -0.0537  -1.18   -0.180  dendritic_myel… 0 d  
-    ##  6 SRR1740039 -1.34 -2.18  -0.236 -0.00772 -1.07   -0.0937 dendritic_myel… 1 d  
-    ##  7 SRR1740040 -1.36 -2.38  -0.325  0.0401  -1.35   -0.204  dendritic_myel… 3 d  
-    ##  8 SRR1740041 -1.31 -2.26  -0.292  0.0236  -1.16   -0.136  dendritic_myel… 7 d  
-    ##  9 SRR1740042 -2.12 -2.19  -0.204 -0.534    1.03   -0.227  monocyte        0 d  
-    ## 10 SRR1740043 -1.94 -1.96  -0.153 -0.676    1.02   -0.178  monocyte        1 d  
+    ##    sample       Dim1   Dim2    Dim3    Dim4    Dim5  Dim6 `Cell type`      time 
+    ##    <chr>       <dbl>  <dbl>   <dbl>   <dbl>   <dbl> <dbl> <chr>            <chr>
+    ##  1 SRR1740034  1.84   0.686 -2.79    0.279   0.0862 0.383 b_cell           0 d  
+    ##  2 SRR1740035  1.86   0.596 -2.80    0.277   0.109  0.451 b_cell           1 d  
+    ##  3 SRR1740036  1.87   0.481 -2.71    0.394   0.109  0.520 b_cell           3 d  
+    ##  4 SRR1740037  1.81   0.675 -2.75    0.303   0.0961 0.293 b_cell           7 d  
+    ##  5 SRR1740038 -1.05  -2.19  -0.129  -0.108  -1.08   0.172 dendritic_myelo… 0 d  
+    ##  6 SRR1740039 -0.989 -2.13  -0.0886 -0.0869 -0.981  0.143 dendritic_myelo… 1 d  
+    ##  7 SRR1740040 -0.976 -2.35  -0.153  -0.0691 -1.25   0.221 dendritic_myelo… 3 d  
+    ##  8 SRR1740041 -0.943 -2.24  -0.100  -0.0410 -1.05   0.167 dendritic_myelo… 7 d  
+    ##  9 SRR1740042 -1.65  -2.28  -0.0460 -0.423   0.977  0.244 monocyte         0 d  
+    ## 10 SRR1740043 -1.55  -2.04  -0.0310 -0.541   0.943  0.175 monocyte         1 d  
     ## # … with 38 more rows
 
 ``` r
@@ -357,18 +357,18 @@ counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% disti
 ```
 
     ## # A tibble: 48 x 9
-    ##    sample        PC1     PC2     PC3    PC4     PC5    PC6 `Cell type`     time 
-    ##    <chr>       <dbl>   <dbl>   <dbl>  <dbl>   <dbl>  <dbl> <chr>           <chr>
-    ##  1 SRR1740034  0.129  0.155  -0.113  0.268  -0.0980 0.0894 b_cell          0 d  
-    ##  2 SRR1740035  0.128  0.156  -0.117  0.269  -0.0892 0.0872 b_cell          1 d  
-    ##  3 SRR1740036  0.129  0.154  -0.119  0.268  -0.0858 0.0938 b_cell          3 d  
-    ##  4 SRR1740037  0.127  0.157  -0.120  0.266  -0.0921 0.0888 b_cell          7 d  
-    ##  5 SRR1740038 -0.172 -0.0673 -0.177  0.0718 -0.140  0.0845 dendritic_myel… 0 d  
-    ##  6 SRR1740039 -0.171 -0.0822 -0.172  0.0703 -0.143  0.0750 dendritic_myel… 1 d  
-    ##  7 SRR1740040 -0.169 -0.0741 -0.174  0.0759 -0.149  0.0713 dendritic_myel… 3 d  
-    ##  8 SRR1740041 -0.169 -0.0728 -0.182  0.0739 -0.142  0.0801 dendritic_myel… 7 d  
-    ##  9 SRR1740042 -0.191 -0.0445 -0.101  0.0579 -0.111  0.0873 monocyte        0 d  
-    ## 10 SRR1740043 -0.188 -0.0550 -0.0930 0.0629 -0.145  0.0671 monocyte        1 d  
+    ##    sample        PC1     PC2     PC3    PC4     PC5   PC6 `Cell type`      time 
+    ##    <chr>       <dbl>   <dbl>   <dbl>  <dbl>   <dbl> <dbl> <chr>            <chr>
+    ##  1 SRR1740034  0.130  0.137  -0.144  0.248  -0.0598 0.138 b_cell           0 d  
+    ##  2 SRR1740035  0.128  0.137  -0.146  0.253  -0.0536 0.137 b_cell           1 d  
+    ##  3 SRR1740036  0.130  0.135  -0.146  0.251  -0.0481 0.138 b_cell           3 d  
+    ##  4 SRR1740037  0.128  0.138  -0.151  0.248  -0.0516 0.137 b_cell           7 d  
+    ##  5 SRR1740038 -0.177 -0.0647 -0.176  0.0304 -0.0878 0.147 dendritic_myelo… 0 d  
+    ##  6 SRR1740039 -0.176 -0.0786 -0.171  0.0328 -0.0874 0.138 dendritic_myelo… 1 d  
+    ##  7 SRR1740040 -0.174 -0.0719 -0.173  0.0312 -0.103  0.142 dendritic_myelo… 3 d  
+    ##  8 SRR1740041 -0.175 -0.0722 -0.179  0.0306 -0.0856 0.147 dendritic_myelo… 7 d  
+    ##  9 SRR1740042 -0.198 -0.0389 -0.102  0.0234 -0.0556 0.118 monocyte         0 d  
+    ## 10 SRR1740043 -0.192 -0.0567 -0.0966 0.0315 -0.0976 0.117 monocyte         1 d  
     ## # … with 38 more rows
 
 ``` r
@@ -432,18 +432,18 @@ counts.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##      tSNE1   tSNE2 sample                       Call 
-    ##      <dbl>   <dbl> <chr>                        <fct>
-    ##  1   9.57   -9.76  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2  -2.48    0.120 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3  14.6     6.58  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4   1.61  -17.1   TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5  -2.05  -14.8   TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6   0.506   7.38  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7 -33.2     7.37  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8  -0.983 -20.3   TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9  -4.30   11.4   TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  19.0    13.9   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##     tSNE1   tSNE2 sample                       Call 
+    ##     <dbl>   <dbl> <chr>                        <fct>
+    ##  1  -5.36  -7.58  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2  10.6    4.69  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3  -7.99 -15.0   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4  -6.74  -0.591 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5  -7.07  -3.48  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  -6.77  -6.33  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7   7.23  32.9   TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8 -13.5    2.09  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9 -12.8    3.47  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10  -3.28 -23.1   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -583,20 +583,20 @@ DGEList(counts = counts) %>%
 counts.de
 ```
 
-    ## # A tibble: 27,920 x 8
-    ##    transcript    logFC logCPM    LR   PValue      FDR is_de `filter out low cou…
-    ##    <chr>         <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>               
-    ##  1 ANKRD18DP      4.82 -0.995 122.  1.88e-28 2.97e-24 TRUE  FALSE               
-    ##  2 SCIN           4.83 -0.463 113.  2.07e-26 1.64e-22 TRUE  FALSE               
-    ##  3 IGLL3P         5.34 -0.623  89.5 3.13e-21 1.65e-17 TRUE  FALSE               
-    ##  4 RNGTT          2.36  4.74   60.7 6.67e-15 2.63e-11 TRUE  FALSE               
-    ##  5 LOC101929322   2.90  0.612  54.5 1.54e-13 4.86e-10 TRUE  FALSE               
-    ##  6 STAG3          2.55  3.21   52.9 3.58e-13 9.43e-10 TRUE  FALSE               
-    ##  7 GIMAP4       -11.0   7.71   51.2 8.26e-13 1.87e- 9 TRUE  FALSE               
-    ##  8 GRAMD1B       -5.87  4.20   43.3 4.61e-11 8.95e- 8 TRUE  FALSE               
-    ##  9 BTNL9          6.34  3.83   43.1 5.09e-11 8.95e- 8 TRUE  FALSE               
-    ## 10 SMIM3         -9.55  3.52   40.9 1.62e-10 2.56e- 7 TRUE  FALSE               
-    ## # … with 27,910 more rows
+    ## # A tibble: 19,544 x 8
+    ##    transcript   logFC  logCPM    LR   PValue      FDR is_de `filter out low cou…
+    ##    <chr>        <dbl>   <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>               
+    ##  1 ANKRD18DP     4.83 -0.436  123.  1.43e-28 1.59e-24 TRUE  FALSE               
+    ##  2 IGLL3P        5.35 -0.0631  89.6 2.94e-21 1.63e-17 TRUE  FALSE               
+    ##  3 LOC101929322  2.91  1.17    54.7 1.44e-13 5.30e-10 TRUE  FALSE               
+    ##  4 GRAMD1B      -5.86  4.75    43.4 4.39e-11 1.16e- 7 TRUE  FALSE               
+    ##  5 BTNL9         6.34  4.40    43.1 5.21e-11 1.16e- 7 TRUE  FALSE               
+    ##  6 PXDC1         3.91  1.69    40.6 1.89e-10 3.38e- 7 TRUE  FALSE               
+    ##  7 MAATS1        2.98 -1.16    40.3 2.22e-10 3.38e- 7 TRUE  FALSE               
+    ##  8 SRMS          4.02  0.257   39.8 2.88e-10 3.38e- 7 TRUE  FALSE               
+    ##  9 IQGAP2       -3.55  7.72    39.7 3.01e-10 3.38e- 7 TRUE  FALSE               
+    ## 10 NT5DC3        2.26  4.56    39.6 3.05e-10 3.38e- 7 TRUE  FALSE               
+    ## # … with 19,534 more rows
 
 The functon `test_differential_abundance` operated with contrasts too.
 The constrasts hve the name of the design matrix (generally
@@ -846,18 +846,18 @@ counts.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##      tSNE1   tSNE2 `cluster SNN` sample                      
-    ##      <dbl>   <dbl> <fct>         <chr>                       
-    ##  1   9.57   -9.76  0             TCGA-A1-A0SD-01A-11R-A115-07
-    ##  2  -2.48    0.120 2             TCGA-A1-A0SF-01A-11R-A144-07
-    ##  3  14.6     6.58  1             TCGA-A1-A0SG-01A-11R-A144-07
-    ##  4   1.61  -17.1   0             TCGA-A1-A0SH-01A-11R-A084-07
-    ##  5  -2.05  -14.8   0             TCGA-A1-A0SI-01A-11R-A144-07
-    ##  6   0.506   7.38  1             TCGA-A1-A0SJ-01A-11R-A084-07
-    ##  7 -33.2     7.37  3             TCGA-A1-A0SK-01A-12R-A084-07
-    ##  8  -0.983 -20.3   2             TCGA-A1-A0SM-01A-11R-A084-07
-    ##  9  -4.30   11.4   2             TCGA-A1-A0SN-01A-11R-A144-07
-    ## 10  19.0    13.9   1             TCGA-A1-A0SQ-01A-21R-A144-07
+    ##     tSNE1   tSNE2 `cluster SNN` sample                      
+    ##     <dbl>   <dbl> <fct>         <chr>                       
+    ##  1  -5.36  -7.58  0             TCGA-A1-A0SD-01A-11R-A115-07
+    ##  2  10.6    4.69  2             TCGA-A1-A0SF-01A-11R-A144-07
+    ##  3  -7.99 -15.0   1             TCGA-A1-A0SG-01A-11R-A144-07
+    ##  4  -6.74  -0.591 0             TCGA-A1-A0SH-01A-11R-A084-07
+    ##  5  -7.07  -3.48  0             TCGA-A1-A0SI-01A-11R-A144-07
+    ##  6  -6.77  -6.33  1             TCGA-A1-A0SJ-01A-11R-A084-07
+    ##  7   7.23  32.9   3             TCGA-A1-A0SK-01A-12R-A084-07
+    ##  8 -13.5    2.09  2             TCGA-A1-A0SM-01A-11R-A084-07
+    ##  9 -12.8    3.47  2             TCGA-A1-A0SN-01A-11R-A144-07
+    ## 10  -3.28 -23.1   1             TCGA-A1-A0SQ-01A-21R-A144-07
     ## # … with 241 more rows
 
 ``` r
@@ -922,7 +922,7 @@ counts.norm.non_redundant =
   remove_redundancy(    method = "correlation" )
 ```
 
-    ## Getting the 27920 most variable genes
+    ## Getting the 19544 most variable genes
 
 </div>
 
@@ -1054,20 +1054,20 @@ respectively. For example, from this data set
   counts.norm
 ```
 
-    ## # A tibble: 1,340,160 x 13
+    ## # A tibble: 938,112 x 13
     ##    sample transcript `Cell type` count time  condition batch factor_of_inter…
     ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <dbl> <chr>           
     ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE          0 TRUE            
     ##  2 SRR17… A1BG-AS1   b_cell         83 0 d   TRUE          0 TRUE            
-    ##  3 SRR17… A1CF       b_cell          1 0 d   TRUE          0 TRUE            
-    ##  4 SRR17… A2M        b_cell          1 0 d   TRUE          0 TRUE            
-    ##  5 SRR17… A2M-AS1    b_cell          0 0 d   TRUE          0 TRUE            
-    ##  6 SRR17… A2ML1      b_cell          3 0 d   TRUE          0 TRUE            
-    ##  7 SRR17… A2MP1      b_cell          0 0 d   TRUE          0 TRUE            
-    ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE          0 TRUE            
-    ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE          0 TRUE            
-    ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE          0 TRUE            
-    ## # … with 1,340,150 more rows, and 5 more variables: `merged transcripts` <dbl>,
+    ##  3 SRR17… A2M-AS1    b_cell          0 0 d   TRUE          0 TRUE            
+    ##  4 SRR17… A2ML1      b_cell          3 0 d   TRUE          0 TRUE            
+    ##  5 SRR17… A2MP1      b_cell          0 0 d   TRUE          0 TRUE            
+    ##  6 SRR17… A3GALT2    b_cell          0 0 d   TRUE          0 TRUE            
+    ##  7 SRR17… A4GALT     b_cell          4 0 d   TRUE          0 TRUE            
+    ##  8 SRR17… A4GNT      b_cell          0 0 d   TRUE          0 TRUE            
+    ##  9 SRR17… AA06       b_cell          0 0 d   TRUE          0 TRUE            
+    ## 10 SRR17… AAAS       b_cell        868 0 d   TRUE          0 TRUE            
+    ## # … with 938,102 more rows, and 5 more variables: `merged transcripts` <dbl>,
     ## #   `count scaled` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
     ## #   counts` <lgl>
 
@@ -1086,20 +1086,20 @@ data set
     )
 ```
 
-    ## # A tibble: 1,340,160 x 16
+    ## # A tibble: 938,112 x 16
     ##    sample transcript `Cell type` count time  condition batch factor_of_inter…
     ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <dbl> <chr>           
     ##  1 SRR17… A1BG       b_cell        153 0 d   TRUE          0 TRUE            
     ##  2 SRR17… A1BG-AS1   b_cell         83 0 d   TRUE          0 TRUE            
-    ##  3 SRR17… A1CF       b_cell          1 0 d   TRUE          0 TRUE            
-    ##  4 SRR17… A2M        b_cell          1 0 d   TRUE          0 TRUE            
-    ##  5 SRR17… A2M-AS1    b_cell          0 0 d   TRUE          0 TRUE            
-    ##  6 SRR17… A2ML1      b_cell          3 0 d   TRUE          0 TRUE            
-    ##  7 SRR17… A2MP1      b_cell          0 0 d   TRUE          0 TRUE            
-    ##  8 SRR17… A3GALT2    b_cell          0 0 d   TRUE          0 TRUE            
-    ##  9 SRR17… A4GALT     b_cell          4 0 d   TRUE          0 TRUE            
-    ## 10 SRR17… A4GNT      b_cell          0 0 d   TRUE          0 TRUE            
-    ## # … with 1,340,150 more rows, and 8 more variables: `merged transcripts` <dbl>,
+    ##  3 SRR17… A2M-AS1    b_cell          0 0 d   TRUE          0 TRUE            
+    ##  4 SRR17… A2ML1      b_cell          3 0 d   TRUE          0 TRUE            
+    ##  5 SRR17… A2MP1      b_cell          0 0 d   TRUE          0 TRUE            
+    ##  6 SRR17… A3GALT2    b_cell          0 0 d   TRUE          0 TRUE            
+    ##  7 SRR17… A4GALT     b_cell          4 0 d   TRUE          0 TRUE            
+    ##  8 SRR17… A4GNT      b_cell          0 0 d   TRUE          0 TRUE            
+    ##  9 SRR17… AA06       b_cell          0 0 d   TRUE          0 TRUE            
+    ## 10 SRR17… AAAS       b_cell        868 0 d   TRUE          0 TRUE            
+    ## # … with 938,102 more rows, and 8 more variables: `merged transcripts` <dbl>,
     ## #   `count scaled` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
     ## #   counts` <lgl>, Dim1 <dbl>, Dim2 <dbl>, Dim3 <dbl>
 
@@ -1121,14 +1121,14 @@ sample
     ## # A tibble: 48 x 4
     ##    sample      Dim1   Dim2    Dim3
     ##    <chr>      <dbl>  <dbl>   <dbl>
-    ##  1 SRR1740034  2.31  0.491 -3.01  
-    ##  2 SRR1740035  2.29  0.427 -3.03  
-    ##  3 SRR1740036  2.25  0.388 -2.92  
-    ##  4 SRR1740037  2.29  0.420 -2.98  
-    ##  5 SRR1740038 -1.46 -2.12  -0.163 
-    ##  6 SRR1740039 -1.38 -2.17  -0.0592
-    ##  7 SRR1740040 -1.42 -2.12  -0.199 
-    ##  8 SRR1740041 -1.35 -2.18  -0.127 
-    ##  9 SRR1740042 -2.13 -2.05  -0.0695
-    ## 10 SRR1740043 -1.95 -1.96   0.0121
+    ##  1 SRR1740034 -2.00  0.290 -2.77  
+    ##  2 SRR1740035 -1.99  0.259 -2.77  
+    ##  3 SRR1740036 -1.97  0.224 -2.69  
+    ##  4 SRR1740037 -1.99  0.244 -2.73  
+    ##  5 SRR1740038  1.24 -2.02   0.0244
+    ##  6 SRR1740039  1.16 -2.04   0.0868
+    ##  7 SRR1740040  1.20 -2.01  -0.0334
+    ##  8 SRR1740041  1.13 -2.08   0.0615
+    ##  9 SRR1740042  1.83 -2.02   0.0885
+    ## 10 SRR1740043  1.70 -1.93   0.131 
     ## # … with 38 more rows
