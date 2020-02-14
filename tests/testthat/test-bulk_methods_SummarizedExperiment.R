@@ -50,7 +50,7 @@ test_that("ttBulk SummarizedExperiment normalisation",{
 	res = scale_abundance(se)
 
 	expect_equal(
-		names(assays(res)),
+		names(SummarizedExperiment::assays(res)),
 		c("counts" ,"counts scaled")
 	)
 
@@ -61,12 +61,12 @@ test_that("ttBulk SummarizedExperiment clustering",{
 	res = cluster_elements(se, method="kmeans", centers = 2)
 
 	expect_equal(
-		tail(names(colData(res)), 1),
+		tail(names(SummarizedExperiment::colData(res)), 1),
 		"cluster.kmeans"
 	)
 
 	expect_equal(
-		levels(colData(res)$cluster.kmeans),
+		levels(SummarizedExperiment::colData(res)$cluster.kmeans),
 		c("1", "2")
 	)
 
@@ -77,7 +77,7 @@ test_that("ttBulk SummarizedExperiment clustering",{
 	res = reduce_dimensions(se, method="PCA")
 
 	expect_equal(
-		tail(names(colData(res)), 1),
+		tail(names(SummarizedExperiment::colData(res)), 1),
 		"PC2"
 	)
 
@@ -97,7 +97,7 @@ test_that("Get rotated dimensions - SummarizedExperiment",{
 		)
 
 	expect_equal(
-		tail(names(colData(res)), 1),
+		tail(names(SummarizedExperiment::colData(res)), 1),
 		"PC2.rotated.45"
 	)
 
@@ -131,7 +131,7 @@ test_that("Get adjusted counts - SummarizedExperiment",{
 
 	expect_equal(nrow(res),	527	)
 
-	expect_equal(	names(assays(res)),	c("c" ,"c adjusted")	)
+	expect_equal(	names(SummarizedExperiment::assays(res)),	c("c" ,"c adjusted")	)
 
 
 })

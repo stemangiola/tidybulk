@@ -18,19 +18,15 @@ Imports:
     dplyr,
     magrittr,
     tidyr,
-    widyr,
     rlang,
     purrr,
-    ggplot2,
     preprocessCore,
     stats,
-    lifecycle,
-    SummarizedExperiment,
-    S4Vectors,
     parallel,
     utils
 Suggests:
     testthat,
+    lifecycle,
     AnnotationDbi,
     BiocManager,
     Rsubread,
@@ -46,7 +42,11 @@ Suggests:
     Seurat,
     KernSmooth,
     Rtsne,
-    EGSEA
+    EGSEA,
+    SummarizedExperiment,
+    S4Vectors,
+    ggplot2,
+    widyr
 VignetteBuilder: 
     knitr
 RdMacros: 

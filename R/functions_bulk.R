@@ -4,7 +4,6 @@
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr %>%
-#' @import ggplot2
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2189,7 +2188,6 @@ aggregate_duplicated_transcripts_bulk =
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
-#' @importFrom widyr pairwise_cor
 #' @importFrom rlang :=
 #'
 #' @param .data A tibble
@@ -2224,6 +2222,12 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.element = col_names$.element
 	.feature = col_names$.feature
 	.abundance = col_names$.abundance
+
+	# Check if package is installed, otherwise install
+	if ("widyr" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing widyr needed for correlation analyses")
+		install.packages("widyr")
+	}
 
 	# Get the redundant data frame
 	.data.correlated =
@@ -2944,8 +2948,6 @@ filter_variable_transcripts = function(.data,
 
 #'ttBulk_to_SummarizedExperiment
 #'
-#' @importFrom SummarizedExperiment SummarizedExperiment
-#' @importFrom SummarizedExperiment assay
 #' @importFrom utils data
 #'
 #' @param .data A tibble
@@ -2966,6 +2968,19 @@ ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = N
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	# Check if package is installed, otherwise install
+	if ("SummarizedExperiment" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing SummarizedExperiment")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("SummarizedExperiment")
+	}
+	if ("S4Vectors" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing S4Vectors")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("S4Vectors")
+	}
 	# If present get the scaled abundance
 	.abundance_scaled =
 		.data %>%
@@ -2983,11 +2998,11 @@ ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = N
 	feature_cols = col_direction$vertical_cols
 	counts_cols = col_direction$counts_cols
 
-	colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% arrange(!!.sample) %>% { DataFrame((.) %>% select(-!!.sample), row.names = (.) %>% pull(!!.sample)) }
+	colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% arrange(!!.sample) %>% { S4Vectors::DataFrame((.) %>% select(-!!.sample), row.names = (.) %>% pull(!!.sample)) }
 
-	rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% arrange(!!.transcript) %>% { DataFrame((.) %>% select(-!!.transcript), row.names = (.) %>% pull(!!.transcript)) }
+	rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% arrange(!!.transcript) %>% { S4Vectors::DataFrame((.) %>% select(-!!.transcript), row.names = (.) %>% pull(!!.transcript)) }
 
-	assays =
+	my_assays =
 		.data %>%
 		select(!!.sample, !!.transcript, !!.abundance, !!.abundance_scaled, counts_cols) %>%
 		distinct() %>%
@@ -2996,8 +3011,8 @@ ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = N
 		mutate(`data` = `data` %>%  map(~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))))
 
 	# Build the object
-	SummarizedExperiment(
-		assays=assays %>% pull(`data`) %>% setNames(assays$assay),
+	SummarizedExperiment::SummarizedExperiment(
+		assays=my_assays %>% pull(`data`) %>% setNames(my_assays$assay),
 		rowData = rowData,
 		colData = colData
 	)
