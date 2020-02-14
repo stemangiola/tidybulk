@@ -598,6 +598,20 @@ counts.de
     ## 10 SMIM3         -9.55  3.52   40.9 1.62e-10 2.56e- 7 TRUE  FALSE               
     ## # … with 27,910 more rows
 
+The functon `test_differential_abundance` operated with contrasts too.
+The constrasts hve the name of the design matrix (generally
+<NAME_COLUMN_COVARIATE><VALUES_OF_COVARIATE>)
+
+``` r
+counts.de =
+    counts %>%
+    test_differential_abundance(
+        ~ 0 + condition,                  
+        .contrasts = c( "conditionTRUE - conditionFALSE"), 
+        action="get"
+    )
+```
+
 # Adjust `counts`
 
 We may want to adjust `counts` for (known) unwanted variation.
