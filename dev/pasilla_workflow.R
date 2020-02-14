@@ -1,7 +1,6 @@
 library(tidyverse)
 library(ttBulk)
 
-
 my_theme =
 	theme_bw() +
 	theme(
@@ -146,10 +145,7 @@ tt_test %>%
 # Heatmap
 tt_test %>%
 	filter(FDR < 0.05 & abs(logFC) > 2) %>%
-	tidyHeatmap::plot_heatmap(
-		.horizontal = sample,
-		.vertical = symbol,
-		.abundance = `count scaled adjusted`,
+	tidyHeatmap::plot_heatmap(		.horizontal = sample,		.vertical = symbol,		.abundance = `count scaled adjusted`,
 		annotation = c(condition, type),
 		log_transform = TRUE
 	)

@@ -20,7 +20,7 @@ counts =
 	readRDS("dev/N52.rds") %>%
 	filter(symbol %>% is.na %>% `!`) %>%
 	group_by(cell_type_formatted) %>%
-	do(	filter_abundant((.), sample, symbol, count, prop = 1/2)	) %>%
+	do(	filter_abundant((.), sample, symbol, count, prop_threshold = 1/2)	) %>%
 	ungroup() %>%
 	group_by(symbol) %>%
 	mutate(n = n()) %>%
