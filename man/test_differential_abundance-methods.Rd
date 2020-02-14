@@ -61,5 +61,16 @@ At the moment this function uses edgeR only, but other inference algorithms will
 	    `count`
 	)
 
+	# The functon `test_differential_abundance` operated with contrasts too
+
+ test_differential_abundance(
+	    ttBulk::counts_mini,
+	    ~ 0 + condition,
+	    sample,
+	    transcript,
+	    `count`,
+	    .contrasts = c( "conditionTRUE - conditionFALSE")
+ )
+
 
 }

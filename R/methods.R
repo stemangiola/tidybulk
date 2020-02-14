@@ -1762,6 +1762,17 @@ setMethod("annotate_symbol", "ttBulk", .annotate_symbol)
 #' 	    `count`
 #' 	)
 #'
+#' 	# The functon `test_differential_abundance` operated with contrasts too
+#'
+#'  test_differential_abundance(
+#' 	    ttBulk::counts_mini,
+#' 	    ~ 0 + condition,
+#' 	    sample,
+#' 	    transcript,
+#' 	    `count`,
+#' 	    .contrasts = c( "conditionTRUE - conditionFALSE")
+#'  )
+#'
 #'
 #' @docType methods
 #' @rdname test_differential_abundance-methods

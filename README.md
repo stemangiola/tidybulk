@@ -1,6 +1,10 @@
 ttBulk - part of tidyTranscriptomics
 ================
 
+<!-- badges: start --> [![Lifecycle:
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+<!-- badges: end -->
+
 <!---
 
 [![Build Status](https://travis-ci.org/stemangiola/ttBulk.svg?branch=master)](https://travis-ci.org/stemangiola/ttBulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/ttBulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/ttBulk?branch=master)
@@ -45,12 +49,12 @@ tibble with columns for
 ``` r
 counts = ttBulk(ttBulk::counts, sample, transcript, count)
 counts_tcga = ttBulk(ttBulk::breast_tcga_mini, sample, ens, count)
-counts 
+counts
 ```
 
     ## # A tibble: 1,340,160 x 8
     ##    sample   transcript  `Cell type` count time  condition batch factor_of_inter…
-    ##    <chr>    <chr>       <chr>       <dbl> <chr> <lgl>     <int> <lgl>           
+    ##    <fct>    <fct>       <fct>       <dbl> <fct> <lgl>     <int> <lgl>           
     ##  1 SRR1740… DDX11L1     b_cell         17 0 d   TRUE          0 TRUE            
     ##  2 SRR1740… WASH7P      b_cell       3568 0 d   TRUE          0 TRUE            
     ##  3 SRR1740… MIR6859-1   b_cell         57 0 d   TRUE          0 TRUE            
@@ -99,13 +103,13 @@ Standard procedure
 
 ``` r
 temp = data.frame(
-    symbol = dge_list$genes$symbol, 
+    symbol = dge_list$genes$symbol,
     dge_list$counts
 )
-dge_list.nr <- by(temp, temp$symbol, 
+dge_list.nr <- by(temp, temp$symbol,
     function(df)
-        if(length(df[1,1])>0) 
-            matrixStats:::colSums(as.matrix(df[,-1])) 
+        if(length(df[1,1])>0)
+            matrixStats:::colSums(as.matrix(df[,-1]))
 )
 dge_list.nr <- do.call("rbind", dge_list.nr)
 colnames(dge_list.nr) <- colnames(dge_list)
@@ -119,12 +123,12 @@ colnames(dge_list.nr) <- colnames(dge_list)
 
 # Scale `counts`
 
-We may want to calculate the scaled counts for library size (e.g.,
-with TMM algorithm, Robinson and Oshlack
-doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble,
-column names (as symbols; for `sample`, `transcript` and `count`) and a
-method as arguments and returns a tibble with additional columns with
-scaled data as `<NAME OF COUNT COLUMN> scaled`.
+We may want to calculate the scaled counts for library size (e.g., with
+TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+`scale_abundance` takes a tibble, column names (as symbols; for
+`sample`, `transcript` and `count`) and a method as arguments and
+returns a tibble with additional columns with scaled data as `<NAME OF
+COUNT COLUMN> scaled`.
 
 <div class="column-left">
 
@@ -167,9 +171,9 @@ outcome. On the x axis we have the log scaled counts, on the y axes we
 have the density, data is grouped by sample and coloured by cell type.
 
 ``` r
-counts.norm %>% 
+counts.norm %>%
     ggplot(aes(`count scaled` + 1, group=sample, color=`Cell type`)) +
-    geom_density() + 
+    geom_density() +
     scale_x_log10() +
     my_theme
 ```
@@ -205,13 +209,13 @@ s <- rowMeans((x-rowMeans(x))^2)
 o <- order(s,decreasing=TRUE)
 x <- x[o[1L:top],,drop=FALSE]
 
-norm_counts.table = norm_counts.table[rownames(x)] 
+norm_counts.table = norm_counts.table[rownames(x)]
 
 norm_counts.table$cell_type = ttBulk::counts[
     match(
         ttBulk::counts$sample,
         rownames(norm_counts.table)
-    ), 
+    ),
     "Cell type"
 ]
 ```
@@ -251,7 +255,7 @@ Standard procedure
 ``` r
 library(limma)
 
-count_m_log = log(count_m + 1) 
+count_m_log = log(count_m + 1)
 cmds1_2 = count_m_log %>% plotMDS(dim.plot = 1:2, plot = FALSE)
 cmds3_4 = count_m_log %>% plotMDS(dim.plot = 3:4, plot = FALSE)
 cmds5_6 = count_m_log %>% plotMDS(dim.plot = 5:6, plot = FALSE)
@@ -266,7 +270,7 @@ cmds = cbind(
 ) %>%
     setNames(sprintf("Dim%s", 1:6))
 cmds$cell_type = ttBulk::counts[
-    match(ttBulk::counts$sample, rownames(cmds)), 
+    match(ttBulk::counts$sample, rownames(cmds)),
     "Cell type"
 ]
 ```
@@ -328,12 +332,12 @@ counts.norm.PCA =
 Standard procedure
 
 ``` r
-count_m_log = log(count_m + 1) 
+count_m_log = log(count_m + 1)
 pc = count_m_log %>% prcomp(scale = TRUE)
-variance = pc$sdev^2 
-variance = (variance / sum(variance))[1:6] 
+variance = pc$sdev^2
+variance = (variance / sum(variance))[1:6]
 pc$cell_type = counts[
-    match(counts$sample, rownames(pc)), 
+    match(counts$sample, rownames(pc)),
     "Cell type"
 ]
 ```
@@ -387,10 +391,10 @@ counts.norm.tSNE =
     counts_tcga%>%
     scale_abundance() %>%
     reduce_dimensions(
-        method = "tSNE", 
-        perplexity=10, 
+        method = "tSNE",
+        perplexity=10,
         pca_scale =TRUE
-    ) 
+    )
 ```
 
 </div>
@@ -400,15 +404,15 @@ counts.norm.tSNE =
 Standard procedure
 
 ``` r
-count_m_log = log(count_m + 1) 
+count_m_log = log(count_m + 1)
 
 tsne = Rtsne::Rtsne(
-    t(count_m_log), 
-    perplexity=10, 
+    t(count_m_log),
+    perplexity=10,
         pca_scale =TRUE
 )$Y
 tsne$cell_type = ttBulk::counts[
-    match(ttBulk::counts$sample, rownames(tsne)), 
+    match(ttBulk::counts$sample, rownames(tsne)),
     "Cell type"
 ]
 ```
@@ -422,7 +426,7 @@ tsne$cell_type = ttBulk::counts[
 Plot
 
 ``` r
-counts.norm.tSNE %>% 
+counts.norm.tSNE %>%
     select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
     distinct()
 ```
@@ -430,20 +434,20 @@ counts.norm.tSNE %>%
     ## # A tibble: 251 x 4
     ##      tSNE1   tSNE2 sample                       Call 
     ##      <dbl>   <dbl> <chr>                        <fct>
-    ##  1  -9.95    5.92  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2   4.67    0.147 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3 -14.6    14.3   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4  -6.87   -9.59  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5 -12.2     1.73  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6   2.59    7.15  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7  40.7    -7.21  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8  -0.811 -16.9   TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9  -1.84  -15.8   TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10 -25.9    17.0   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##  1   9.57   -9.76  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2  -2.48    0.120 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3  14.6     6.58  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4   1.61  -17.1   TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5  -2.05  -14.8   TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6   0.506   7.38  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7 -33.2     7.37  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8  -0.983 -20.3   TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9  -4.30   11.4   TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10  19.0    13.9   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
-counts.norm.tSNE %>% 
+counts.norm.tSNE %>%
     select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
     distinct() %>%
     ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
@@ -487,7 +491,7 @@ rotation = function(m, d) {
 }
 mds_r = pca %>% rotation(rotation_degrees)
 mds_r$cell_type = counts[
-    match(counts$sample, rownames(mds_r)), 
+    match(counts$sample, rownames(mds_r)),
     "Cell type"
 ]
 ```
@@ -539,7 +543,7 @@ false discovery rate).
 TidyTranscriptomics
 
 ``` r
-counts.de = 
+counts.de =
     counts %>%
     test_differential_abundance( ~ condition, action="get")
 ```
@@ -556,8 +560,8 @@ library(edgeR)
 design =
         model.matrix(
             object = .formula,
-            data = df_for_edgeR 
-        ) 
+            data = df_for_edgeR
+        )
 
 DGEList(counts = counts) %>%
         calcNormFactors(method = "TMM") %>%
@@ -594,6 +598,20 @@ counts.de
     ## 10 SMIM3         -9.55  3.52   40.9 1.62e-10 2.56e- 7 TRUE  FALSE               
     ## # … with 27,910 more rows
 
+The functon `test_differential_abundance` operated with contrasts too.
+The constrasts hve the name of the design matrix (generally
+<NAME_COLUMN_COVARIATE><VALUES_OF_COVARIATE>)
+
+``` r
+counts.de =
+    counts %>%
+    test_differential_abundance(
+        ~ 0 + condition,                  
+        .contrasts = c( "conditionTRUE - conditionFALSE"), 
+        action="get"
+    )
+```
+
 # Adjust `counts`
 
 We may want to adjust `counts` for (known) unwanted variation.
@@ -612,8 +630,8 @@ TidyTranscriptomics
 ``` r
 counts.norm.adj =
     counts.norm %>% adjust_abundance(
-        ~ factor_of_interest + batch,   
-        action = "get" 
+        ~ factor_of_interest + batch,
+        action = "get"
 )
 ```
 
@@ -626,24 +644,24 @@ Standard procedure
 ``` r
 library(sva)
 
-count_m_log = log(count_m + 1) 
+count_m_log = log(count_m + 1)
 
 design =
         model.matrix(
             object = ~ factor_of_interest + batch,
             data = annotation
-        ) 
+        )
 
-count_m_log.sva = 
+count_m_log.sva =
     ComBat(
             batch = design[,2],
             mod = design,
             ...
-        ) 
+        )
 
 count_m_log.sva = ceiling(exp(count_m_log.sva) -1)
 count_m_log.sva$cell_type = counts[
-    match(counts$sample, rownames(count_m_log.sva)), 
+    match(counts$sample, rownames(count_m_log.sva)),
     "Cell type"
 ]
 ```
@@ -667,7 +685,7 @@ with additional columns for the adjusted cell type proportions.
 TidyTranscriptomics
 
 ``` r
-counts.cibersort = 
+counts.cibersort =
     counts %>%
     deconvolve_cellularity(action="add", cores=2)
 ```
@@ -683,11 +701,11 @@ source(‘CIBERSORT.R’)
 count_m %>% write.table("mixture_file.txt")
 results <- CIBERSORT(
     "sig_matrix_file.txt",
-    "mixture_file.txt", 
+    "mixture_file.txt",
     perm=100, QN=TRUE
 )
 results$cell_type = ttBulk::counts[
-    match(ttBulk::counts$sample, rownames(results)), 
+    match(ttBulk::counts$sample, rownames(results)),
     "Cell type"
 ]
 ```
@@ -746,13 +764,13 @@ counts.norm.cluster = counts.norm.MDS %>%
 Standard procedure
 
 ``` r
-count_m_log = log(count_m + 1) 
+count_m_log = log(count_m + 1)
 
 k = kmeans(count_m_log, iter.max = 1000, ...)
 cluster = k$cluster
 
 cluster$cell_type = ttBulk::counts[
-    match(ttBulk::counts$sample, rownames(cluster)), 
+    match(ttBulk::counts$sample, rownames(cluster)),
     c("Cell type", "Dim1", "Dim2")
 ]
 ```
@@ -799,10 +817,10 @@ library(Seurat)
 
 snn = CreateSeuratObject(count_m)
 snn = ScaleData(
-    snn, display.progress = TRUE, 
+    snn, display.progress = TRUE,
     num.cores=4, do.par = TRUE
 )
-snn = FindVariableFeatures(snn, selection.method = "vst") 
+snn = FindVariableFeatures(snn, selection.method = "vst")
 snn = FindVariableFeatures(snn, selection.method = "vst")
 snn = RunPCA(snn, npcs = 30)
 snn = FindNeighbors(snn)
@@ -810,7 +828,7 @@ snn = FindClusters(snn, method = "igraph", ...)
 snn = snn[["seurat_clusters"]]
 
 snn$cell_type = ttBulk::counts[
-    match(ttBulk::counts$sample, rownames(snn)), 
+    match(ttBulk::counts$sample, rownames(snn)),
     c("Cell type", "Dim1", "Dim2")
 ]
 ```
@@ -822,7 +840,7 @@ snn$cell_type = ttBulk::counts[
 </div>
 
 ``` r
-counts.norm.SNN %>% 
+counts.norm.SNN %>%
     select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample) %>%
     distinct()
 ```
@@ -830,20 +848,20 @@ counts.norm.SNN %>%
     ## # A tibble: 251 x 4
     ##      tSNE1   tSNE2 `cluster SNN` sample                      
     ##      <dbl>   <dbl> <fct>         <chr>                       
-    ##  1  -9.95    5.92  0             TCGA-A1-A0SD-01A-11R-A115-07
-    ##  2   4.67    0.147 2             TCGA-A1-A0SF-01A-11R-A144-07
-    ##  3 -14.6    14.3   1             TCGA-A1-A0SG-01A-11R-A144-07
-    ##  4  -6.87   -9.59  0             TCGA-A1-A0SH-01A-11R-A084-07
-    ##  5 -12.2     1.73  0             TCGA-A1-A0SI-01A-11R-A144-07
-    ##  6   2.59    7.15  1             TCGA-A1-A0SJ-01A-11R-A084-07
-    ##  7  40.7    -7.21  3             TCGA-A1-A0SK-01A-12R-A084-07
-    ##  8  -0.811 -16.9   2             TCGA-A1-A0SM-01A-11R-A084-07
-    ##  9  -1.84  -15.8   2             TCGA-A1-A0SN-01A-11R-A144-07
-    ## 10 -25.9    17.0   1             TCGA-A1-A0SQ-01A-21R-A144-07
+    ##  1   9.57   -9.76  0             TCGA-A1-A0SD-01A-11R-A115-07
+    ##  2  -2.48    0.120 2             TCGA-A1-A0SF-01A-11R-A144-07
+    ##  3  14.6     6.58  1             TCGA-A1-A0SG-01A-11R-A144-07
+    ##  4   1.61  -17.1   0             TCGA-A1-A0SH-01A-11R-A084-07
+    ##  5  -2.05  -14.8   0             TCGA-A1-A0SI-01A-11R-A144-07
+    ##  6   0.506   7.38  1             TCGA-A1-A0SJ-01A-11R-A084-07
+    ##  7 -33.2     7.37  3             TCGA-A1-A0SK-01A-12R-A084-07
+    ##  8  -0.983 -20.3   2             TCGA-A1-A0SM-01A-11R-A084-07
+    ##  9  -4.30   11.4   2             TCGA-A1-A0SN-01A-11R-A144-07
+    ## 10  19.0    13.9   1             TCGA-A1-A0SQ-01A-21R-A144-07
     ## # … with 241 more rows
 
 ``` r
-counts.norm.SNN %>% 
+counts.norm.SNN %>%
     select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
     gather(source, Call, c("cluster SNN", "Call")) %>%
     distinct() %>%
@@ -861,8 +879,6 @@ counts.norm.SNN %>%
     action="get"
    )
 ```
-
-    ## The design column names are "(Intercept), factor_of_interestTRUE" in case you are interested in constrasts
 
     ## # A tibble: 500 x 8
     ##    ens           logFC logCPM    LR   PValue      FDR is_de `filter out low cou…
@@ -917,7 +933,7 @@ Standard procedure
 ``` r
 library(widyr)
 
-.data.correlated = 
+.data.correlated =
     pairwise_cor(
         counts,
         sample,
@@ -994,7 +1010,7 @@ tidy structure (similar to counts).
 
 ``` r
 counts = bam_sam_to_featureCounts_tibble(
-    file_names, 
+    file_names,
     genome = "hg38",
     isPairedEnd = TRUE,
     requireBothEndsMapped = TRUE,
@@ -1014,7 +1030,7 @@ counts_ensembl %>% annotate_symbol(ens)
 
     ## # A tibble: 119 x 8
     ##    ens   iso   `read count` sample cases_0_project… cases_0_samples… transcript
-    ##    <chr> <chr>        <dbl> <chr>  <chr>            <chr>            <chr>     
+    ##    <chr> <chr>        <dbl> <chr>  <chr>            <chr>            <fct>     
     ##  1 ENSG… 13             144 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ##  2 ENSG… 13              72 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ##  3 ENSG… 13               0 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
@@ -1025,7 +1041,7 @@ counts_ensembl %>% annotate_symbol(ens)
     ##  8 ENSG… 13            2678 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ##  9 ENSG… 13             751 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ## # … with 109 more rows, and 1 more variable: hg <chr>
+    ## # … with 109 more rows, and 1 more variable: hg <fct>
 
 # ADD versus GET modes
 
@@ -1035,7 +1051,7 @@ new information joint to the original input data frame (default), or
 respectively. For example, from this data set
 
 ``` r
-  counts.norm 
+  counts.norm
 ```
 
     ## # A tibble: 1,340,160 x 13
@@ -1061,11 +1077,11 @@ data set
 ``` r
   counts.norm %>%
     reduce_dimensions(
-        .abundance = `count scaled`, 
-        method="MDS" , 
-        .element = sample, 
-        .feature = transcript, 
-        .dims = 3, 
+        .abundance = `count scaled`,
+        method="MDS" ,
+        .element = sample,
+        .feature = transcript,
+        .dims = 3,
         action="add"
     )
 ```
@@ -1093,11 +1109,11 @@ sample
 ``` r
   counts.norm %>%
     reduce_dimensions(
-        .abundance = `count scaled`, 
-        method="MDS" , 
-        .element = sample, 
-        .feature = transcript, 
-        .dims = 3, 
+        .abundance = `count scaled`,
+        method="MDS" ,
+        .element = sample,
+        .feature = transcript,
+        .dims = 3,
         action="get"
     )
 ```

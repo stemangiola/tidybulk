@@ -683,7 +683,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		)
 
 	# Print the design column names in case I want constrasts
-	message(sprintf("The design column names are \"%s\" in case you are interested in constrasts", design %>% colnames %>% paste(collapse=", ")))
+	message(sprintf("ttBulk says: The design column names are \"%s\" in case you are interested in contrasts", design %>% colnames %>% paste(collapse=", ")))
 
 	#%>%
 	#	magrittr::set_colnames(c("(Intercept)",	 (.) %>% colnames %>% `[` (-1)))
@@ -838,7 +838,10 @@ add_differential_transcript_abundance_bulk <- function(.data,
 		) %>%
 
 		# Arrange
-		arrange(FDR) %>%
+		ifelse_pipe(
+			.contrasts %>% is.null,
+			~ .x %>% arrange(FDR)
+		)	%>%
 
 		# Attach attributes
 		add_attr(.data %>% attr("parameters"), "parameters")
