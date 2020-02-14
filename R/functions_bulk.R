@@ -607,6 +607,8 @@ add_scaled_counts_bulk <- function(.data,
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
+#' @param cpm_threshold A real positive number
+#' @param prop A number between 0 and 1
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #'
 #' @return A tibble with edgeR results
@@ -619,6 +621,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .coef = 2,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
+																											 cpm_threshold = 0.5,
+																											 prop = 3 / 4,
 																											 fill_missing_values = FALSE) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -708,7 +712,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		df_for_edgeR %>%
 		select(!!.transcript, !!.sample, !!.abundance) %>%
 		mutate(
-			`filter out low counts` = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
+			`filter out low counts` = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance, cpm_threshold = cpm_threshold,				 prop = prop)
 		)
 
 	df_for_edgeR.filt %>%
@@ -794,6 +798,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
+#' @param cpm_threshold A real positive number
+#' @param prop A number between 0 and 1
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #'
 #' @return A tibble with differential_transcript_abundance results
@@ -807,6 +813,8 @@ add_differential_transcript_abundance_bulk <- function(.data,
 																											 .coef = 2,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
+																											 cpm_threshold = 0.5,
+																											 prop = 3 / 4,
 																											 fill_missing_values = FALSE) {
 
 	# Comply with CRAN NOTES
@@ -833,6 +841,8 @@ add_differential_transcript_abundance_bulk <- function(.data,
 					.coef = .coef,
 					.contrasts = .contrasts,
 					significance_threshold = significance_threshold,
+					cpm_threshold = cpm_threshold,
+					prop = prop,
 					fill_missing_values = fill_missing_values
 				)
 		) %>%

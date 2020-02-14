@@ -187,7 +187,24 @@ test_that("Get differential trancript abundance - no object",{
   	"You need at least two replicated"
   )
 
+	# Setting filtering manually
+  res =
+  	test_differential_abundance(
+  		input_df,
+  		~ condition,
+  		.sample = a,
+  		.transcript = b,
+  		.abundance = c,
+  		action="get",
+  		prop = 0.5,
+  		cpm_threshold = 30
+  	)
 
+  expect_equal(
+  	unique(res$logFC)[1:4],
+  	c(-12.61470, -12.26935, -11.65885, -13.48920),
+  	tolerance=1e-6
+  )
 })
 
 test_that("Get differential trancript abundance - no object - with contrasts",{

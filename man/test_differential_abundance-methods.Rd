@@ -14,6 +14,8 @@ test_differential_abundance(
   .coef = 2,
   .contrasts = NULL,
   significance_threshold = 0.05,
+  cpm_threshold = 0.5,
+  prop = 3/4,
   fill_missing_values = FALSE,
   action = "add"
 )
@@ -34,6 +36,10 @@ test_differential_abundance(
 \item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`}
 
 \item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
+
+\item{cpm_threshold}{A real positive number}
+
+\item{prop}{A number between 0 and 1}
 
 \item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
 

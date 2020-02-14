@@ -1741,6 +1741,8 @@ setMethod("annotate_symbol", "ttBulk", .annotate_symbol)
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
+#' @param cpm_threshold A real positive number
+#' @param prop A number between 0 and 1
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
@@ -1786,6 +1788,8 @@ setGeneric("test_differential_abundance", function(.data,
 																				.coef = 2,
 																				.contrasts = NULL,
 																						significance_threshold = 0.05,
+																				cpm_threshold = 0.5,
+																				prop = 3 / 4,
 																				fill_missing_values = FALSE,
 
 																						action = "add") standardGeneric("test_differential_abundance"))
@@ -1799,6 +1803,8 @@ setGeneric("test_differential_abundance", function(.data,
 					 .coef = 2,
 					 .contrasts = NULL,
 					 significance_threshold = 0.05,
+					 cpm_threshold = 0.5,
+					 prop = 3 / 4,
 					 fill_missing_values = FALSE,
 					 action = "add")
 	{
@@ -1820,6 +1826,8 @@ setGeneric("test_differential_abundance", function(.data,
 				.coef = .coef,
 				.contrasts = .contrasts,
 				significance_threshold = significance_threshold,
+				cpm_threshold = cpm_threshold,
+				prop = prop,
 				fill_missing_values = fill_missing_values
 			)
 		else if (action == "get")
@@ -1832,6 +1840,8 @@ setGeneric("test_differential_abundance", function(.data,
 				.coef = .coef,
 				.contrasts = .contrasts,
 				significance_threshold = significance_threshold,
+				cpm_threshold = cpm_threshold,
+				prop = prop,
 				fill_missing_values = fill_missing_values
 			)
 		else
@@ -1865,6 +1875,8 @@ setMethod("test_differential_abundance", "ttBulk", .test_differential_abundance)
 																					 .coef = 2,
 																					 .contrasts = NULL,
 																					 significance_threshold = 0.05,
+																					 cpm_threshold = 0.5,
+																					 prop = 3 / 4,
 																					 fill_missing_values = FALSE,
 																					 action = "add")
 {
@@ -1886,6 +1898,8 @@ setMethod("test_differential_abundance", "ttBulk", .test_differential_abundance)
 																.coef = .coef,
 																.contrasts = .contrasts,
 																significance_threshold = significance_threshold,
+																cpm_threshold = cpm_threshold,
+																prop = prop,
 																fill_missing_values = fill_missing_values,
 																action = action) %>%
 
