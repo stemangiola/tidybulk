@@ -12,7 +12,6 @@ setOldClass("ttBulk")
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
-#' @import lifecycle
 #'
 #' @name ttBulk
 #'
@@ -86,6 +85,14 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 											 .abundance,
 											.abundance_scaled = NULL){
 
+	# Check if package is installed, otherwise install
+	if ("SummarizedExperiment" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing SummarizedExperiment")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("SummarizedExperiment")
+	}
+
 	# Make col names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -94,18 +101,18 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 
 	# Set scaled col names
 	norm_col =
-		assays(.data)[1] %>% names %>% paste("scaled") %>%
+		SummarizedExperiment::assays(.data)[1] %>% names %>% paste("scaled") %>%
 		ifelse_pipe(
-			(.) %in% names(assays(.data)),
+			(.) %in% names(SummarizedExperiment::assays(.data)),
 			~ as.symbol(.x),
 			~ NULL
 		)
 
 	# Do donversion
-	assays(.data) %>%
+	SummarizedExperiment::assays(.data) %>%
 		as.list() %>%
 		map2(
-			assays(.data) %>%  names,
+			SummarizedExperiment::assays(.data) %>%  names,
 			~ .x %>%
 				as_tibble(rownames = "feature") %>%
 				gather(sample, !!.y, -feature)
@@ -116,18 +123,18 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 
 		# Attach annotation
 		left_join(
-			rowData(.data) %>% as.data.frame() %>% as_tibble(rownames = "feature"),
+			SummarizedExperiment::rowData(.data) %>% as.data.frame() %>% as_tibble(rownames = "feature"),
 			by = "feature"
 		) %>%
 		left_join(
-			colData(.data) %>% as_tibble(rownames="sample"),
+			SummarizedExperiment::colData(.data) %>% as_tibble(rownames="sample"),
 			by = "sample"
 		) %>%
 		mutate_if(is.character, as.factor) %>%
 		ttBulk(
 			sample,
 			feature,
-			!!as.symbol(assays(.data)[1] %>%  names),
+			!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names),
 
 			# scaled counts if any
 			!!norm_col
@@ -141,10 +148,6 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 #' @importFrom purrr reduce
 #' @import dplyr
 #' @import tidyr
-#' @importFrom SummarizedExperiment assays
-#' @importFrom SummarizedExperiment rowData
-#' @importFrom SummarizedExperiment colData
-#' @importFrom S4Vectors DataFrame
 #' @importFrom purrr map2
 #'
 #'
@@ -1181,8 +1184,6 @@ setMethod("remove_redundancy", "SummarizedExperiment", .remove_redundancy_se)
 #' @return A `ttBulk` object
 #'
 setMethod("remove_redundancy", "RangedSummarizedExperiment", .remove_redundancy_se)
-
-
 
 #' Adjust transcript abundance for unwanted variation
 #'
