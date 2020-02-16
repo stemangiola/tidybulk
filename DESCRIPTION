@@ -15,6 +15,7 @@ Depends:
     R (>= 3.6)
 Imports: 
     tibble,
+    readr,
     dplyr,
     magrittr,
     tidyr,

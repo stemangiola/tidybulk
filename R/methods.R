@@ -1,4 +1,4 @@
-setOldClass("spec_tbl_df")
+# setOldClass("spec_tbl_df")
 setOldClass("ttBulk")
 
 
@@ -12,6 +12,7 @@ setOldClass("ttBulk")
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
+#' @import readr
 #'
 #' @name ttBulk
 #'
