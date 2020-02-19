@@ -1,6 +1,7 @@
 library("pasilla")
 library(edgeR)
 library(reshape)
+
 ### Reading data and sample annotation
 pasCts = system.file("extdata",
                      "pasilla_gene_counts.tsv",
@@ -19,20 +20,26 @@ coldata = coldata[, c("condition", "type")]
 coldata$new.annot = row.names(coldata)
 coldata$new.annot = gsub('fb', '', coldata$new.annot)
 cts = cts[, match(coldata$new.annot, colnames(cts))]
+
+time_df = tibble(step = "", time = list(), lines = NA, assignments = NA)
+
 # START WORKFLOW
 plot_densities = function(){
+
 ### Remving lowly expressed genes
 keep1 = filterByExpr(cts, group = factor(coldata$condition))
 sum(keep1)
 keep2 = apply(cts, 1, function(x)  length(x[x > 5]) > 2)
 sum(keep2) # 7846
 cts = cts[keep2,]
+
 ### Ploting distribution of samples
 col.type = c('red', 'black')[coldata$type]
 col.conditions = c('blue', 'cyan')[coldata$condition]
 plot(density(log2(cts[, 1] + 1)), type = 'n', ylim = c(0, .25))
 for (i in 1:ncol(cts))
   lines(density(log2(cts[, i] + 1)), col = col.type[i])
+
 ### TMM normalization
 library(edgeR)
 dge = DGEList(counts = cts,
@@ -43,32 +50,29 @@ logCPM = cpm(dge, log = TRUE, prior.count = 0.5)
 plot(density(logCPM[, 1]), type = 'n', ylim = c(0, .25))
 for (i in 1:ncol(cts))
   lines(density(logCPM[, i]), col = col.type[i])
+
+list(dge = dge, logCPM = logCPM)
+
 }
-plot_densities()
 plot_MDS = function(){
-  ### dimensionality reduction
+
+### dimensionality reduction
 library(GGally)
 mds = plotMDS(logCPM, ndim = 3)
 d = data.frame( 'cond' = coldata$condition,  'type' = coldata$type,  'data' = rep('CPM', 7),  'dim1' = mds$cmdscale.out[, 1],  'dim2' = mds$cmdscale.out[, 2],  'dim3' = mds$cmdscale.out[, 3])
 ggpairs(d, columns = 4:ncol(d), ggplot2::aes(colour = type))
+
+d
 }
-plot_MDS()
 plot_adjusted_MDS = function(){
-  ### ComBat
+### ComBat
 library(sva)
 batch = coldata$type
 mod.combat = model.matrix( ~ 1, data = coldata)
 mod.condition = model.matrix( ~ condition, data = coldata)
 combat.corrected = ComBat(  dat = logCPM,  batch = batch,  mod = mod.condition,  par.prior = TRUE,  prior.plots = FALSE)
 mds.combat = plotMDS(combat.corrected, ndim = 3)
-d2 = data.frame(
-  'cond' = coldata$condition,
-  'type' = coldata$type,
-  'data' = rep('ComBat', 7),
-  'dim1' = mds.combat$cmdscale.out[, 1],
-  'dim2' = mds.combat$cmdscale.out[, 2],
-  'dim3' = mds.combat$cmdscale.out[, 3]
-)
+d2 = data.frame(  'cond' = coldata$condition,  'type' = coldata$type,  'data' = rep('ComBat', 7),  'dim1' = mds.combat$cmdscale.out[, 1],  'dim2' = mds.combat$cmdscale.out[, 2], 'dim3' = mds.combat$cmdscale.out[, 3])
 final.d = rbind(d, d2)
 library(tidyr)
 final.d = gather(final.d, dim, dist, dim1:dim3, factor_key = TRUE)
@@ -77,8 +81,10 @@ final.d$new = paste0(final.d$cond, final.d$type)
 ggplot(final.d2, aes(x = cond, y = dist, fill = type)) +
   geom_boxplot() +
   facet_wrap( ~ data + dim)
+
+combat.corrected
+
 }
-plot_adjusted_MDS()
 test_abundance = function(){
     # DE (comparison 1)
 design = model.matrix( ~ coldata$condition + coldata$type, data = coldata$condition)
@@ -88,16 +94,15 @@ fit = glmFit(dge, design)
 lrt = glmLRT(fit, coef = 2)
 de = topTags(lrt, n = nrow(dge$counts))
 #hist(de.table$PValue)
+
+de.table  = de$table
+
 list(
-  de.table = de$table,
+  de.table = de.table,
   de.genes = de.table[abs(de.table$logFC) >= 2,],
   de.genes.lable = de.table[abs(de.table$logFC) >= 3,]
 )
-  }
-de_list = test_abundance()
-de.table = de_list$de.table
-de.genes = de_list$de.genes
-de.genes.lable = de_list$de.genes.lable
+}
 plot_MA = function(){
   ### MA plot
 n.genes = nrow(dge$counts)
@@ -116,7 +121,6 @@ ggplot(de.table, aes(x = logCPM, y = logFC, label = gene.lable)) +
   )) +
   ggrepel::geom_text_repel()
 }
-plot_MA()
 plot_DE_comparative = function(){
   ### Boxplot of 6 DE genes
 de.genes = row.names(de.genes.lable)[1:6]
@@ -138,20 +142,56 @@ combat.df$data = 'combat'
 ### Boxplot of all data
 final = rbind(count.df, cpm.df, combat.df)
 final$data = factor(final$data, levels = c('count', 'cpm', 'combat'))
-ggplot(final, aes(x = data, y = value, fill = Var2)) +
+ggplot(final, aes(x = data, y = value, fill = X2)) +
   geom_boxplot() +
-  facet_wrap( ~ Var1)
+  facet_wrap( ~ X1)
+
+de.genes
 }
-plot_DE_comparative()
 plot_heatmap = function(){
   ######## complex heatmap
-  de.genes = row.names(de.genes)
   de.data = logCPM[de.genes ,]
   library(ComplexHeatmap)
-  gene.labels = c(rep('AB', 28), rep('BA', 28))
+  gene.labels = c(rep('AB', floor(length(de.genes)/2)), rep('BA', ceiling(length(de.genes)/2)))
   h1 = Heatmap(t(de.data), top_annotation = HeatmapAnnotation(labels = gene.labels))
   h2 = Heatmap(coldata$condition)
   h3 = Heatmap(coldata$type)
   draw(h1 + h2 + h3)
 }
+
+tic()
+pd_res = plot_densities()
+time_df = time_df %>% bind_rows(tibble(step = "plot_densities", time = list(toc()), lines = 19, assignments = 8))
+
+logCPM = pd_res$logCPM
+dge = pd_res$dge
+
+tic()
+d  = plot_MDS()
+time_df = time_df %>% bind_rows(tibble(step = "plot_MDS", time = list(toc()), lines = 3, assignments = 2))
+
+tic()
+combat.corrected= plot_adjusted_MDS()
+time_df = time_df %>% bind_rows(tibble(step = "plot_adjusted_MDS", time = list(toc()), lines = 13, assignments = 10))
+
+tic()
+de_list = test_abundance()
+time_df = time_df %>% bind_rows(tibble(step = "test_abundance", time = list(toc()), lines = 7, assignments = 6))
+
+de.table = de_list$de.table
+de.genes = de_list$de.genes
+de.genes.lable = de_list$de.genes.lable
+
+tic()
+plot_MA()
+time_df = time_df %>% bind_rows(tibble(step = "plot_MA", time = list(toc()), lines = 11, assignments = 8))
+
+tic()
+de.genes = plot_DE_comparative()
+time_df = time_df %>% bind_rows(tibble(step = "plot_DE_comparative", time = list(toc()), lines = 18, assignments = 15))
+
+tic()
 plot_heatmap()
+time_df = time_df %>% bind_rows(tibble(step = "plot_heatmap", time = list(toc()), lines = 6, assignments = 5))
+
+time_df %>% saveRDS("dev/stats_pasilla_standard.rds")
