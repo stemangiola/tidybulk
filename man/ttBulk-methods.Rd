@@ -29,8 +29,8 @@ ttBulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIP
 
 This function created a ttBulk object and is useful if you want
 to avoid to specify .sample, .transcript and .abundance arguments all the times.
-The ttBulk object have an attribute called parameters where these three
-arguments are stored as metadata. They can be extracted as attr(<object>, "parameters").
+The ttBulk object have an attribute called tt_columns where these three
+arguments are stored as metadata. They can be extracted as attr(<object>, "tt_columns").
 }
 \examples{
 

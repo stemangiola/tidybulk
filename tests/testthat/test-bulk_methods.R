@@ -16,7 +16,7 @@ test_that("Creating tt object from tibble, number of parameters, methods",{
           .transcript = b,
           .abundance = c
         ) ,
-        "parameters"
+        "tt_columns"
       )
     ),
     3
