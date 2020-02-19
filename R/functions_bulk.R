@@ -27,7 +27,7 @@ create_tt_from_tibble_bulk = function(.data,
 
 	.data %>%
 
-		# Add parameters attribute
+		# Add tt_columns attribute
 		add_attr(
 			list(
 				.sample = .sample,
@@ -35,12 +35,12 @@ create_tt_from_tibble_bulk = function(.data,
 				.abundance = .abundance
 			) %>%
 
-				# If .abundance_scaled is not NULL add it to parameters
+				# If .abundance_scaled is not NULL add it to tt_columns
 				ifelse_pipe(.abundance_scaled %>% quo_is_symbol,
 										~ .x %>% c(
 											list(.abundance_scaled = .abundance_scaled)
 										)),
-			"parameters"
+			"tt_columns"
 		) %>%
 
 		# Add class
@@ -185,7 +185,7 @@ add_scaled_counts_bulk.get_cpm <- function(.data,
 		) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		add_attr(.data %>% attr("tt_columns"), "tt_columns")
 
 }
 
@@ -258,7 +258,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 		as.character() %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		add_attr(.data %>% attr("tt_columns"), "tt_columns")
 }
 
 
@@ -359,7 +359,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 	list(gene_to_exclude = gene_to_exclude, nf = nf) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		add_attr(.data %>% attr("tt_columns"), "tt_columns")
 }
 
 #' Get a tibble with scaled counts using TMM
@@ -512,12 +512,12 @@ get_scaled_counts_bulk <- function(.data,
 	df_norm %>%
 		add_attr(
 			.data %>%
-				attr("parameters") %>%
+				attr("tt_columns") %>%
 				c(
 					.abundance_scaled =
 						(function(x, v) enquo(v))(x, !!value_scaled)
 					),
-			"parameters"
+			"tt_columns"
 		)
 
 }
@@ -582,7 +582,7 @@ add_scaled_counts_bulk <- function(.data,
 		)		%>%
 
 		# Attach attributes
-		add_attr(.data_norm %>% attr("parameters"), "parameters")
+		add_attr(.data_norm %>% attr("tt_columns"), "tt_columns")
 
 }
 
@@ -778,7 +778,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		add_attr(.data %>% attr("tt_columns"), "tt_columns")
 }
 
 #' Add differential transcription information to a tibble using edgeR.
@@ -853,7 +853,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 		)	%>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		add_attr(.data %>% attr("tt_columns"), "tt_columns")
 }
 
 
@@ -1125,7 +1125,7 @@ get_clusters_kmeans_bulk <-
 			mutate(`cluster kmeans` = `cluster kmeans` %>% as.factor()) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 #' Add K-mean clusters to a tibble
@@ -1181,7 +1181,7 @@ add_clusters_kmeans_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 #' Get SNN shared nearest neighbour clusters to a tibble
@@ -1262,7 +1262,7 @@ get_clusters_SNN_bulk <-
 			dplyr::mutate(!!.element := gsub("\\.", "-", !!.element)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 #' Add SNN shared nearest neighbour clusters to a tibble
@@ -1313,7 +1313,7 @@ add_clusters_SNN_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 #' Get dimensionality information to a tibble using MDS
@@ -1416,7 +1416,7 @@ get_reduced_dimensions_MDS_bulk <-
 			)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 #' Add dimensionality information to a tibble using MDS
@@ -1476,7 +1476,7 @@ add_reduced_dimensions_MDS_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 #' Get principal component information to a tibble using PCA
@@ -1612,7 +1612,7 @@ get_reduced_dimensions_PCA_bulk <-
 			select(!!.element, sprintf("PC%s", components)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 
 	}
 
@@ -1680,7 +1680,7 @@ add_reduced_dimensions_PCA_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 #' Get principal component information to a tibble using tSNE
@@ -1797,7 +1797,7 @@ get_reduced_dimensions_TSNE_bulk <-
 			select(!!.element, everything()) %>%
 
 				# Attach attributes
-				add_attr(.data %>% attr("parameters"), "parameters")
+				add_attr(.data %>% attr("tt_columns"), "tt_columns")
 
 	}
 
@@ -1864,7 +1864,7 @@ add_reduced_dimensions_TSNE_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 
@@ -1961,7 +1961,7 @@ get_rotated_dimensions =
 			spread(`rotated dimensions`, value) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 
 	}
 
@@ -2039,7 +2039,7 @@ add_rotated_dimensions =
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 #' Aggregates multiple counts from the same samples (e.g., from isoforms)
@@ -2115,11 +2115,11 @@ aggregate_duplicated_transcripts_bulk =
 
 			# If scaled add the column to the exclusion
 			ifelse_pipe(
-				(".abundance_scaled" %in% (.data %>% attr("parameters") %>% names) &&
-				 	# .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
-				 	quo_name(.data %>% attr("parameters") %$% .abundance_scaled) %in% (.data %>% colnames)
+				(".abundance_scaled" %in% (.data %>% attr("tt_columns") %>% names) &&
+				 	# .data %>% attr("tt_columns") %$% .abundance_scaled %>% is.null %>% `!` &&
+				 	quo_name(.data %>% attr("tt_columns") %$% .abundance_scaled) %in% (.data %>% colnames)
 				),
-				~ .x %>% select(-!!(.data %>% attr("parameters") %$% .abundance_scaled))
+				~ .x %>% select(-!!(.data %>% attr("tt_columns") %$% .abundance_scaled))
 			)	%>%
 			colnames() %>%
 			c("n_aggr")
@@ -2156,12 +2156,12 @@ aggregate_duplicated_transcripts_bulk =
 
 											# If scaled abundance exists aggragate that as well
 											ifelse_pipe(
-												(".abundance_scaled" %in% (.data %>% attr("parameters") %>% names) &&
-												 	# .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
-												 	quo_name(.data %>% attr("parameters") %$% .abundance_scaled) %in% (.data %>% colnames)
+												(".abundance_scaled" %in% (.data %>% attr("tt_columns") %>% names) &&
+												 	# .data %>% attr("tt_columns") %$% .abundance_scaled %>% is.null %>% `!` &&
+												 	quo_name(.data %>% attr("tt_columns") %$% .abundance_scaled) %in% (.data %>% colnames)
 												),
 												~ {
-													.abundance_scaled = .data %>% attr("parameters") %$% .abundance_scaled
+													.abundance_scaled = .data %>% attr("tt_columns") %$% .abundance_scaled
 													.x %>% dplyr::mutate(!!.abundance_scaled := !!.abundance_scaled %>% aggregation_function())
 												}
 											) %>%
@@ -2179,7 +2179,7 @@ aggregate_duplicated_transcripts_bulk =
 			rename(`merged transcripts` = n_aggr) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 
 	}
 
@@ -2300,7 +2300,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.data %>% anti_join(.data.correlated) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		add_attr(.data %>% attr("tt_columns"), "tt_columns")
 }
 
 #' Identifies the closest pairs in a MDS contaxt and return one of them
@@ -2371,7 +2371,7 @@ remove_redundancy_elements_though_reduced_dimensions <-
 		.data %>% anti_join(.data.redundant) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 # #' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
@@ -2477,7 +2477,7 @@ add_symbol_from_ensembl <-
 									get_symbol_from_ensembl(!!.ensembl)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 #' Perform linear equation system analysis through llsr
@@ -2617,7 +2617,7 @@ get_cell_type_proportions = function(.data,
 		#gather(`Cell type`, proportion,-!!.sample) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		add_attr(.data %>% attr("tt_columns"), "tt_columns")
 
 
 }
@@ -2675,7 +2675,7 @@ add_cell_type_proportions = function(.data,
 		) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		add_attr(.data %>% attr("tt_columns"), "tt_columns")
 
 }
 
@@ -2827,7 +2827,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		)%>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		add_attr(.data %>% attr("tt_columns"), "tt_columns")
 }
 
 #' Add adjusted count for some batch effect
@@ -2888,7 +2888,7 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		)%>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		add_attr(.data %>% attr("tt_columns"), "tt_columns")
 
 }
 
@@ -2985,10 +2985,10 @@ ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = N
 	.abundance_scaled =
 		.data %>%
 		ifelse_pipe(
-			".abundance_scaled" %in% ((.) %>% attr("parameters") %>% names) &&
-				# .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
-				quo_name((.) %>% attr("parameters") %$% .abundance_scaled) %in% ((.) %>% colnames),
-			~ .x %>% attr("parameters") %$% .abundance_scaled,
+			".abundance_scaled" %in% ((.) %>% attr("tt_columns") %>% names) &&
+				# .data %>% attr("tt_columns") %$% .abundance_scaled %>% is.null %>% `!` &&
+				quo_name((.) %>% attr("tt_columns") %$% .abundance_scaled) %in% ((.) %>% colnames),
+			~ .x %>% attr("tt_columns") %$% .abundance_scaled,
 			~ NULL
 		)
 

@@ -345,18 +345,18 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
     }
 
     if( .sample %>% quo_is_symbol() ) .sample = .sample
-    else if(".sample" %in% (.data %>% attr("parameters") %>% names))
-      .sample =  attr(.data, "parameters")$.sample
+    else if(".sample" %in% (.data %>% attr("tt_columns") %>% names))
+      .sample =  attr(.data, "tt_columns")$.sample
     else my_stop()
 
     if( .transcript %>% quo_is_symbol() ) .transcript = .transcript
-    else if(".transcript" %in% (.data %>% attr("parameters") %>% names))
-      .transcript =  attr(.data, "parameters")$.transcript
+    else if(".transcript" %in% (.data %>% attr("tt_columns") %>% names))
+      .transcript =  attr(.data, "tt_columns")$.transcript
     else my_stop()
 
     if( .abundance %>% quo_is_symbol() ) .abundance = .abundance
-    else if(".abundance" %in% (.data %>% attr("parameters") %>% names))
-      .abundance = attr(.data, "parameters")$.abundance
+    else if(".abundance" %in% (.data %>% attr("tt_columns") %>% names))
+      .abundance = attr(.data, "tt_columns")$.abundance
     else my_stop()
 
     list(.sample = .sample, .transcript = .transcript, .abundance = .abundance)
@@ -384,13 +384,13 @@ get_sample_counts = function(.data, .sample, .abundance){
   }
 
   if( .sample %>% quo_is_symbol() ) .sample = .sample
-  else if(".sample" %in% (.data %>% attr("parameters") %>% names))
-    .sample =  attr(.data, "parameters")$.sample
+  else if(".sample" %in% (.data %>% attr("tt_columns") %>% names))
+    .sample =  attr(.data, "tt_columns")$.sample
   else my_stop()
 
   if( .abundance %>% quo_is_symbol() ) .abundance = .abundance
-  else if(".abundance" %in% (.data %>% attr("parameters") %>% names))
-    .abundance = attr(.data, "parameters")$.abundance
+  else if(".abundance" %in% (.data %>% attr("tt_columns") %>% names))
+    .abundance = attr(.data, "tt_columns")$.abundance
   else my_stop()
 
   list(.sample = .sample, .abundance = .abundance)
@@ -418,13 +418,13 @@ get_sample_transcript = function(.data, .sample, .transcript){
   }
 
   if( .sample %>% quo_is_symbol() ) .sample = .sample
-  else if(".sample" %in% (.data %>% attr("parameters") %>% names))
-    .sample =  attr(.data, "parameters")$.sample
+  else if(".sample" %in% (.data %>% attr("tt_columns") %>% names))
+    .sample =  attr(.data, "tt_columns")$.sample
   else my_stop()
 
   if( .transcript %>% quo_is_symbol() ) .transcript = .transcript
-  else if(".transcript" %in% (.data %>% attr("parameters") %>% names))
-    .transcript =  attr(.data, "parameters")$.transcript
+  else if(".transcript" %in% (.data %>% attr("tt_columns") %>% names))
+    .transcript =  attr(.data, "tt_columns")$.transcript
   else my_stop()
 
 
@@ -460,18 +460,18 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
   else {
 
     # If so, take them from the attribute
-    if(.data %>% attr("parameters") %>% is.null %>% `!`)
+    if(.data %>% attr("tt_columns") %>% is.null %>% `!`)
 
       return(list(
         .element =  switch(
           of_samples %>% `!` %>% sum(1),
-          attr(.data, "parameters")$.sample,
-          attr(.data, "parameters")$.transcript
+          attr(.data, "tt_columns")$.sample,
+          attr(.data, "tt_columns")$.transcript
         ),
         .feature = switch(
           of_samples %>% `!` %>% sum(1),
-          attr(.data, "parameters")$.transcript,
-          attr(.data, "parameters")$.sample
+          attr(.data, "tt_columns")$.transcript,
+          attr(.data, "tt_columns")$.sample
         )
       ))
     # Else through error
@@ -508,22 +508,22 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
   }
 
   if( .element %>% quo_is_symbol() ) .element = .element
-  else if(of_samples & ".sample" %in% (.data %>% attr("parameters") %>% names))
-    .element =  attr(.data, "parameters")$.sample
-  else if((!of_samples) & ".transcript" %in% (.data %>% attr("parameters") %>% names))
-     .element =  attr(.data, "parameters")$.transcript
+  else if(of_samples & ".sample" %in% (.data %>% attr("tt_columns") %>% names))
+    .element =  attr(.data, "tt_columns")$.sample
+  else if((!of_samples) & ".transcript" %in% (.data %>% attr("tt_columns") %>% names))
+     .element =  attr(.data, "tt_columns")$.transcript
   else my_stop()
 
   if( .feature %>% quo_is_symbol() ) .feature = .feature
-  else if(of_samples & ".transcript" %in% (.data %>% attr("parameters") %>% names))
-    .feature =  attr(.data, "parameters")$.transcript
-  else if((!of_samples) & ".sample" %in% (.data %>% attr("parameters") %>% names))
-    .feature =  attr(.data, "parameters")$.sample
+  else if(of_samples & ".transcript" %in% (.data %>% attr("tt_columns") %>% names))
+    .feature =  attr(.data, "tt_columns")$.transcript
+  else if((!of_samples) & ".sample" %in% (.data %>% attr("tt_columns") %>% names))
+    .feature =  attr(.data, "tt_columns")$.sample
   else my_stop()
 
   if( .abundance %>% quo_is_symbol() ) .abundance = .abundance
-  else if(".abundance" %in% (.data %>% attr("parameters") %>% names))
-    .abundance = attr(.data, "parameters")$.abundance
+  else if(".abundance" %in% (.data %>% attr("tt_columns") %>% names))
+    .abundance = attr(.data, "tt_columns")$.abundance
   else my_stop()
 
   list(.element = .element, .feature = .feature, .abundance = .abundance)
@@ -552,13 +552,13 @@ get_elements = function(.data, .element, of_samples = TRUE){
   else {
 
     # If so, take them from the attribute
-    if(.data %>% attr("parameters") %>% is.null %>% `!`)
+    if(.data %>% attr("tt_columns") %>% is.null %>% `!`)
 
       return(list(
         .element =  switch(
           of_samples %>% `!` %>% sum(1),
-          attr(.data, "parameters")$.sample,
-          attr(.data, "parameters")$.transcript
+          attr(.data, "tt_columns")$.sample,
+          attr(.data, "tt_columns")$.transcript
         )
       ))
     # Else through error
@@ -593,16 +593,16 @@ get_abundance_norm_if_exists = function(.data, .abundance){
   else {
 
     # If so, take them from the attribute
-    if(.data %>% attr("parameters") %>% is.null %>% `!`)
+    if(.data %>% attr("tt_columns") %>% is.null %>% `!`)
 
       return(list(
         .abundance =  switch(
-          (".abundance_scaled" %in% (.data %>% attr("parameters") %>% names) &&
-             # .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
-             quo_name(.data %>% attr("parameters") %$% .abundance_scaled) %in% (.data %>% colnames)
+          (".abundance_scaled" %in% (.data %>% attr("tt_columns") %>% names) &&
+             # .data %>% attr("tt_columns") %$% .abundance_scaled %>% is.null %>% `!` &&
+             quo_name(.data %>% attr("tt_columns") %$% .abundance_scaled) %in% (.data %>% colnames)
            ) %>% `!` %>% sum(1),
-          attr(.data, "parameters")$.abundance_scaled,
-          attr(.data, "parameters")$.abundance
+          attr(.data, "tt_columns")$.abundance_scaled,
+          attr(.data, "tt_columns")$.abundance
         )
       ))
     # Else through error

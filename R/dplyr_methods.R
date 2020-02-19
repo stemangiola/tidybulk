@@ -76,7 +76,7 @@ arrange.ttBulk <- function(.data, ..., .by_group = FALSE) {
 		dplyr::arrange( ..., .by_group = .by_group) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters") %>%
+		add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -149,10 +149,10 @@ bind_rows.ttBulk <- function(..., .id = NULL)
 
 	tts = dplyr:::flatten_bindable(rlang::dots_values(...))
 
-	par1 = tts[[1]] %>% attr("parameters") %>% unlist
-	par2 = tts[[2]] %>% attr("parameters") %>% unlist
+	par1 = tts[[1]] %>% attr("tt_columns") %>% unlist
+	par2 = tts[[2]] %>% attr("tt_columns") %>% unlist
 
-	# Parameters of the two objects must match
+	# tt_columns of the two objects must match
 	error_if_parameters_not_match(par1, par2)
 
 	par =
@@ -164,7 +164,7 @@ bind_rows.ttBulk <- function(..., .id = NULL)
 	dplyr::bind_rows(..., .id = .id) %>%
 
 		# Attach attributes
-		add_attr(par, "parameters")
+		add_attr(par, "tt_columns")
 
 }
 
@@ -193,7 +193,7 @@ bind_cols.ttBulk <- function(..., .id = NULL)
 	dplyr::bind_cols(..., .id = .id) %>%
 
 		# Attach attributes
-		add_attr(tts[[1]] %>% attr("parameters") , "parameters")
+		add_attr(tts[[1]] %>% attr("tt_columns") , "tt_columns")
 
 }
 
@@ -246,7 +246,7 @@ distinct.ttBulk <- function (.data, ..., .keep_all = FALSE)
 		dplyr::distinct(..., .keep_all = .keep_all) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters") %>%
+		add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -346,7 +346,7 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 		dplyr::filter( ..., .preserve = .preserve) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters") %>%
+		add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -454,7 +454,7 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 		dplyr::filter(..., .preserve = .preserve) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters") %>%
+		add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -552,7 +552,7 @@ group_by.ttBulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_def
 		dplyr::group_by( ..., .drop = .drop) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters") %>%
+		add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -584,7 +584,7 @@ ungroup.ttBulk <- function (x, ...)
 		dplyr::ungroup( ...) %>%
 
 		# Attach attributes
-		add_attr(x %>% attr("parameters"), "parameters") %>%
+		add_attr(x %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -715,7 +715,7 @@ summarise.ttBulk <- function (.data, ...)
 		dplyr::summarise( ...) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters") %>%
+		add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -854,7 +854,7 @@ mutate.ttBulk <- function(.data, ...)
 		dplyr::mutate(...) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters") %>%
+		add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -930,7 +930,7 @@ rename.ttBulk <- function(.data, ...)
 		dplyr::rename(...) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters") %>%
+		add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -990,7 +990,7 @@ rowwise.ttBulk <- function(.data)
 		dplyr::rowwise() %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters") %>%
+		add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -1040,7 +1040,7 @@ left_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".
 		dplyr::left_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
 
 		# Attach attributes
-		add_attr(x %>% attr("parameters"), "parameters") %>%
+		add_attr(x %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -1083,7 +1083,7 @@ inner_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", "
 		dplyr::inner_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
 
 		# Attach attributes
-		add_attr(x %>% attr("parameters"), "parameters") %>%
+		add_attr(x %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -1128,7 +1128,7 @@ right_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", "
 		dplyr::right_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
 
 		# Attach attributes
-		add_attr(x %>% attr("parameters"), "parameters") %>%
+		add_attr(x %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -1174,7 +1174,7 @@ full_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".
 		dplyr::full_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
 
 		# Attach attributes
-		add_attr(x %>% attr("parameters"), "parameters") %>%
+		add_attr(x %>% attr("tt_columns"), "tt_columns") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -1185,4 +1185,3 @@ full_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".
 #' @importFrom dplyr do
 #' @export
 dplyr::do
-

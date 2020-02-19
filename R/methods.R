@@ -24,8 +24,8 @@ setOldClass("ttBulk")
 #'
 #' @details This function created a ttBulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The ttBulk object have an attribute called parameters where these three
-#' arguments are stored as metadata. They can be extracted as attr(<object>, "parameters").
+#' The ttBulk object have an attribute called tt_columns where these three
+#' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_columns").
 #'
 #' @return A `ttBulk` object
 #'
@@ -181,8 +181,8 @@ setMethod("ttBulk", "RangedSummarizedExperiment", .ttBulk_se)
 #'
 #' @details This function is based on FeatureCounts package. This function created a ttBulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The ttBulk object have an attribute called parameters where these three
-#' arguments are stored as metadata. They can be extracted as attr(<object>, "parameters").
+#' The ttBulk object have an attribute called tt_columns where these three
+#' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_columns").
 #'
 #' @return A `ttBulk` object
 #'
@@ -2142,7 +2142,7 @@ setGeneric("filter_abundant", function(.data,
 			dplyr::filter(!!.transcript %in% gene_to_exclude %>% `!`) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns")
 	}
 
 #' filter_abundant

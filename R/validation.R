@@ -112,7 +112,7 @@ column_type_checking = function(.data, .sample, .transcript, .abundance) {
 }
 
 check_if_attribute_present = function(.data) {
-	"parameters" %in% (.data %>% attributes %>% names)
+	"tt_columns" %in% (.data %>% attributes %>% names)
 }
 
 eliminate_sparse_transcripts = function(.data, .transcript){
