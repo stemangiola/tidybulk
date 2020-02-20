@@ -202,7 +202,7 @@ test_that("Get differential trancript abundance - no object",{
 
   expect_equal(
   	unique(res$logFC)[1:4],
-  	c(-12.61470, -12.26935, -11.65885, -13.48920),
+  	c(-12.33879, -12.66131, -11.70319, -13.62226),
   	tolerance=1e-6
   )
 })
@@ -331,13 +331,13 @@ test_that("Get adjusted counts - no object",{
 
   expect_equal(
     unique(res$`c adjusted`)[c(1, 2, 3, 5)],
-    c( 6, 1014,   25 ,   0),
+    c( 693,   47, 7941, 7068),
     tolerance=1e-6
   )
 
   expect_equal(
     ncol(res),
-    4
+    3
   )
 
 })
