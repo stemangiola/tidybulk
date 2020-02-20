@@ -1,5 +1,5 @@
 library(tidyverse)
-library(ttBulk)
+library(tidyBulk)
 library("pasilla")
 library(tictoc)
 library(edgeR)
@@ -18,7 +18,7 @@ pasAnno = system.file(
 cts = as.matrix(read.csv(pasCts, sep = "\t", row.names = "gene_id"))
 coldata = read.csv(pasAnno, row.names = 1)
 coldata = coldata[, c("condition", "type")]
-# Create ttBulk object
+# Create tidyBulk object
 tt =
 	cts %>%
 	as_tibble(rownames = "transcript") %>%
@@ -36,9 +36,9 @@ tt =
 	# 																	convert.into = "genes"
 	# 	)
 	# )) %>%
-	# ttBulk
+	# tidyBulk
 	mutate_if(is.character, as.factor) %>%
-	ttBulk(sample, transcript, count)
+	tidyBulk(sample, transcript, count)
 
 time_df = tibble(step = "", time = list(), lines = NA, assignments = NA)
 

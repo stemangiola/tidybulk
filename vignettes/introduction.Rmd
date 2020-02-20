@@ -1,14 +1,14 @@
 ---
-title: "Overview of the ttBulk package"
+title: "Overview of the tidyBulk package"
 author: "Stefano Mangiola"
 date: "`r Sys.Date()`"
-package: ttBulk
+package: tidyBulk
 output:
   BiocStyle::html_document:
     toc_float: true
 vignette: >
   %\VignetteEngine{knitr::knitr}
-  %\VignetteIndexEntry{Overview of the ttBulk package}
+  %\VignetteIndexEntry{Overview of the tidyBulk package}
   %\usepackage[UTF-8]{inputenc}
 ---
 
@@ -50,7 +50,7 @@ library(ggplot2)
 library(widyr) 
 library(rlang) 
 library(purrr)
-library(ttBulk)
+library(tidyBulk)
 
 my_theme = 	
 	theme_bw() +
@@ -68,19 +68,19 @@ my_theme =
 	)
 
 # counts_mini = 
-# 	ttBulk::counts %>% 
-# 	filter(transcript %in% (ttBulk::X_cibersort %>% rownames)) %>% 
+# 	tidyBulk::counts %>% 
+# 	filter(transcript %in% (tidyBulk::X_cibersort %>% rownames)) %>% 
 # 	filter(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058", "SRR1740043", "SRR1740067")) %>%
 # 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
 # se_mini
-se_mini = ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts_mini, sample, transcript, count)
-se_breast_tcga_mini = ttBulk:::ttBulk_to_SummarizedExperiment( ttBulk::breast_tcga_mini, sample, ens, `count`)
+se_mini = tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts_mini, sample, transcript, count)
+se_breast_tcga_mini = tidyBulk:::ttBulk_to_SummarizedExperiment( tidyBulk::breast_tcga_mini, sample, ens, `count`)
 se.cibersort = 
-	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) 
+	tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count) 
 se.norm.batch = 
 	
-	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) %>%
+	tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count) %>%
 	scale_abundance()
 ```
 
@@ -88,7 +88,7 @@ se.norm.batch =
 
 # Introduction
 
-ttBulk is a collection of wrapper functions for bulk tanscriptomic analyses that follows the "tidy" paradigm. The data structure is a tibble with columns for 
+tidyBulk is a collection of wrapper functions for bulk tanscriptomic analyses that follows the "tidy" paradigm. The data structure is a tibble with columns for 
 
 + sample identifier column
 + transcript identifier column
@@ -96,7 +96,7 @@ ttBulk is a collection of wrapper functions for bulk tanscriptomic analyses that
 + annotation (and other info) columns
 
 ```{r}
-counts = ttBulk(ttBulk::counts_mini, sample, transcript, count)
+counts = tidyBulk(tidyBulk::counts_mini, sample, transcript, count)
 counts 
 ```
 
@@ -114,11 +114,11 @@ In brief you can:
 + Clustering samples and/or genes with kmeans
 + Adding tissue composition (Cibersort)
 
-**All ttBulk methods are directly compatible with SummarizedExperiment as well.**
+**All tidyBulk methods are directly compatible with SummarizedExperiment as well.**
 
 # Aggregate `transcripts`
 
-ttBulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with aggregate transcript with the same name. All the rest of the column are appended, and factors and boolean are appended as characters.
+tidyBulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with aggregate transcript with the same name. All the rest of the column are appended, and factors and boolean are appended as characters.
 
 ```{r aggregate, cache=TRUE}
 counts.aggr =  counts %>% aggregate_duplicates( 	aggregation_function = sum )
@@ -217,8 +217,8 @@ se.norm.PCA
 
 ```{r, echo=FALSE, include=FALSE}
 tt_tcga_breast = 
-	ttBulk::breast_tcga_mini %>%
-	ttBulk(sample, ens, `count`)
+	tidyBulk::breast_tcga_mini %>%
+	tidyBulk(sample, ens, `count`)
 ```
 
 ```{r tsne, cache=TRUE}

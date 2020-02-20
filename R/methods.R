@@ -1,5 +1,5 @@
 # setOldClass("spec_tbl_df")
-setOldClass("ttBulk")
+setOldClass("tidyBulk")
 
 
 
@@ -8,13 +8,13 @@ setOldClass("ttBulk")
 #'
 #' \lifecycle{maturing}
 #'
-#' @description ttBulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @description tidyBulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #' @import readr
 #'
-#' @name ttBulk
+#' @name tidyBulk
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
@@ -22,12 +22,12 @@ setOldClass("ttBulk")
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .abundance_scaled The name of the transcript/gene scaled abundance column
 #'
-#' @details This function created a ttBulk object and is useful if you want
+#' @details This function created a tidyBulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The ttBulk object have an attribute called tt_columns where these three
+#' The tidyBulk object have an attribute called tt_columns where these three
 #' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_columns").
 #'
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 #'
 #' @examples
@@ -35,21 +35,21 @@ setOldClass("ttBulk")
 #'
 #'
 #'
-#' my_tt =  ttBulk(ttBulk::counts_mini, sample, transcript, count)
+#' my_tt =  tidyBulk(tidyBulk::counts_mini, sample, transcript, count)
 #'
 #'
 #' @docType methods
-#' @rdname ttBulk-methods
+#' @rdname tidyBulk-methods
 #' @export
 #'
-setGeneric("ttBulk", function(.data,
+setGeneric("tidyBulk", function(.data,
                               .sample,
                               .transcript,
                               .abundance,
-															.abundance_scaled = NULL) standardGeneric("ttBulk"))
+															.abundance_scaled = NULL) standardGeneric("tidyBulk"))
 
 # Set internal
-.ttBulk = function(.data,
+.tidyBulk = function(.data,
                    .sample,
                    .transcript,
                    .abundance,
@@ -66,19 +66,19 @@ setGeneric("ttBulk", function(.data,
 
   create_tt_from_tibble_bulk(.data,!!.sample,!!.transcript,!!.abundance, !!.abundance_scaled)
 }
-#' ttBulk
-#' @inheritParams ttBulk
-#' @return A `ttBulk` object
+#' tidyBulk
+#' @inheritParams tidyBulk
+#' @return A `tidyBulk` object
 #'
-setMethod("ttBulk", "spec_tbl_df", .ttBulk)
+setMethod("tidyBulk", "spec_tbl_df", .tidyBulk)
 
-#' ttBulk
+#' tidyBulk
 #'
 #'
-#' @inheritParams ttBulk
-#' @return A `ttBulk` object
+#' @inheritParams tidyBulk
+#' @return A `tidyBulk` object
 #'
-setMethod("ttBulk", "tbl_df", .ttBulk)
+setMethod("tidyBulk", "tbl_df", .tidyBulk)
 
 .ttBulk_se = function(.data,
 											 .sample,
@@ -132,7 +132,7 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 			by = "sample"
 		) %>%
 		mutate_if(is.character, as.factor) %>%
-		ttBulk(
+		tidyBulk(
 			sample,
 			feature,
 			!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names),
@@ -143,7 +143,7 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 
 }
 
-#' ttBulk
+#' tidyBulk
 #'
 #' @importFrom tibble as_tibble
 #' @importFrom purrr reduce
@@ -152,16 +152,16 @@ setMethod("ttBulk", "tbl_df", .ttBulk)
 #' @importFrom purrr map2
 #'
 #'
-#' @inheritParams ttBulk
-#' @return A `ttBulk` object
+#' @inheritParams tidyBulk
+#' @return A `tidyBulk` object
 #'
-setMethod("ttBulk", "SummarizedExperiment", .ttBulk_se)
+setMethod("tidyBulk", "SummarizedExperiment", .ttBulk_se)
 
-#' ttBulk
-#' @inheritParams ttBulk
-#' @return A `ttBulk` object
+#' tidyBulk
+#' @inheritParams tidyBulk
+#' @return A `tidyBulk` object
 #'
-setMethod("ttBulk", "RangedSummarizedExperiment", .ttBulk_se)
+setMethod("tidyBulk", "RangedSummarizedExperiment", .ttBulk_se)
 
 
 #' Creates a `tt` object from a list of file names of BAM/SAM
@@ -179,12 +179,12 @@ setMethod("ttBulk", "RangedSummarizedExperiment", .ttBulk_se)
 #' @param genome A character string
 #' @param ... Further parameters passed to the function Rsubread::featureCounts
 #'
-#' @details This function is based on FeatureCounts package. This function created a ttBulk object and is useful if you want
+#' @details This function is based on FeatureCounts package. This function created a tidyBulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The ttBulk object have an attribute called tt_columns where these three
+#' The tidyBulk object have an attribute called tt_columns where these three
 #' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_columns").
 #'
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 #'
 #'
@@ -198,7 +198,7 @@ setGeneric("ttBulk_SAM_BAM", function(file_names, genome = "hg38", ...) standard
 
 #' ttBulk_SAM_BAM
 #' @inheritParams ttBulk_SAM_BAM
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	function(file_names, genome = "hg38", ...) create_tt_from_bam_sam_bulk(file_names = file_names, genome = genome, ...))
 
@@ -237,7 +237,7 @@ setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	
 #' @examples
 #'
 #'
-#'  scale_abundance(ttBulk::counts_mini,  sample, transcript, `count`)
+#'  scale_abundance(tidyBulk::counts_mini,  sample, transcript, `count`)
 #'
 #'
 #'
@@ -312,7 +312,7 @@ setMethod("scale_abundance", "tbl_df", .scale_abundance)
 #' @inheritParams scale_abundance
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
 #'
-setMethod("scale_abundance", "ttBulk", .scale_abundance)
+setMethod("scale_abundance", "tidyBulk", .scale_abundance)
 
 .scale_abundance_se = function(.data,
 															 .sample = NULL,
@@ -331,8 +331,8 @@ setMethod("scale_abundance", "ttBulk", .scale_abundance)
 
 	.data %>%
 
-		# Convert to ttBulk
-		ttBulk() %>%
+		# Convert to tidyBulk
+		tidyBulk() %>%
 
 		# Apply scale method
 		scale_abundance(!!.sample,
@@ -351,13 +351,13 @@ setMethod("scale_abundance", "ttBulk", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("scale_abundance", "SummarizedExperiment", .scale_abundance_se)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("scale_abundance", "RangedSummarizedExperiment", .scale_abundance_se)
 
@@ -380,7 +380,7 @@ setMethod("scale_abundance", "RangedSummarizedExperiment", .scale_abundance_se)
 #' @param .abundance The name of the column including the numerical value the clustering is based on (normally transcript abundance)
 #'
 #' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
-#' @param of_samples A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column
+#' @param of_samples A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function kmeans
@@ -395,7 +395,7 @@ setMethod("scale_abundance", "RangedSummarizedExperiment", .scale_abundance_se)
 #' @examples
 #'
 #'
-#'     cluster_elements(ttBulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
+#'     cluster_elements(tidyBulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
 #'
 #' @docType methods
 #' @rdname cluster_elements-methods
@@ -503,7 +503,7 @@ setMethod("cluster_elements", "tbl_df", .cluster_elements)
 #' @inheritParams cluster_elements
 #' @return A tbl object with additional columns with cluster labels
 #'
-setMethod("cluster_elements", "ttBulk", .cluster_elements)
+setMethod("cluster_elements", "tidyBulk", .cluster_elements)
 
 .cluster_elements_se = function(.data,
 																.element = NULL,
@@ -522,8 +522,8 @@ setMethod("cluster_elements", "ttBulk", .cluster_elements)
 
 	.data %>%
 
-		# Convert to ttBulk
-		ttBulk() %>%
+		# Convert to tidyBulk
+		tidyBulk() %>%
 
 		# Apply scale method
 		cluster_elements(.element = !!.element ,
@@ -542,13 +542,13 @@ setMethod("cluster_elements", "ttBulk", .cluster_elements)
 
 #' cluster_elements
 #' @inheritParams cluster_elements
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("cluster_elements", "SummarizedExperiment", .cluster_elements_se)
 
 #' cluster_elements
 #' @inheritParams cluster_elements
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("cluster_elements", "RangedSummarizedExperiment", .cluster_elements_se)
 
@@ -571,7 +571,7 @@ setMethod("cluster_elements", "RangedSummarizedExperiment", .cluster_elements_se
 #'
 #' @param method A character string. The dimension reduction algorithm to use (PCA, MDS, tSNE).
 #' @param top An integer. How many top genes to select for dimensionality reduction
-#' @param of_samples A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column
+#' @param of_samples A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column
 #' @param .dims A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
 
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
@@ -589,10 +589,10 @@ setMethod("cluster_elements", "RangedSummarizedExperiment", .cluster_elements_se
 #'
 #'
 #'
-#' counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  reduce_dimensions(tidyBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 #'
 #'
-#' counts.PCA =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="PCA", .dims = 3)
+#' counts.PCA =  reduce_dimensions(tidyBulk::counts_mini, sample, transcript, count, method="PCA", .dims = 3)
 #'
 #'
 #'
@@ -752,7 +752,7 @@ setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
 #' @return A tbl object with additional columns for the reduced dimensions
-setMethod("reduce_dimensions", "ttBulk", .reduce_dimensions)
+setMethod("reduce_dimensions", "tidyBulk", .reduce_dimensions)
 
 .reduce_dimensions_se = function(.data,
 																 .element = NULL,
@@ -775,8 +775,8 @@ setMethod("reduce_dimensions", "ttBulk", .reduce_dimensions)
 
 	.data %>%
 
-		# Convert to ttBulk
-		ttBulk() %>%
+		# Convert to tidyBulk
+		tidyBulk() %>%
 
 		# Apply scale method
 		reduce_dimensions(.element = !!.element,
@@ -799,13 +799,13 @@ setMethod("reduce_dimensions", "ttBulk", .reduce_dimensions)
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("reduce_dimensions", "SummarizedExperiment", .reduce_dimensions_se)
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("reduce_dimensions", "RangedSummarizedExperiment", .reduce_dimensions_se)
 
@@ -826,7 +826,7 @@ setMethod("reduce_dimensions", "RangedSummarizedExperiment", .reduce_dimensions_
 #' @param dimension_1_column A character string. The column of the dimension 1
 #' @param dimension_2_column  A character string. The column of the dimension 2
 #' @param rotation_degrees A real number between 0 and 360
-#' @param of_samples A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column
+#' @param of_samples A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column
 #' @param dimension_1_column_rotated A character string. The column of the rotated dimension 1 (optional)
 #' @param dimension_2_column_rotated A character string. The column of the rotated dimension 2 (optional)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
@@ -838,7 +838,7 @@ setMethod("reduce_dimensions", "RangedSummarizedExperiment", .reduce_dimensions_
 #'
 #' @examples
 #'
-#' counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  reduce_dimensions(tidyBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 #'
 #' counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 #'
@@ -918,7 +918,7 @@ setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-setMethod("rotate_dimensions", "ttBulk", .rotate_dimensions)
+setMethod("rotate_dimensions", "tidyBulk", .rotate_dimensions)
 
 
 .rotate_dimensions_se = function(.data,
@@ -941,8 +941,8 @@ setMethod("rotate_dimensions", "ttBulk", .rotate_dimensions)
 
 	.data %>%
 
-		# Convert to ttBulk
-		ttBulk() %>%
+		# Convert to tidyBulk
+		tidyBulk() %>%
 
 		# Apply scale method
 		rotate_dimensions(dimension_1_column = !!dimension_1_column,
@@ -961,13 +961,13 @@ setMethod("rotate_dimensions", "ttBulk", .rotate_dimensions)
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("rotate_dimensions", "SummarizedExperiment", .rotate_dimensions_se)
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("rotate_dimensions", "RangedSummarizedExperiment", .rotate_dimensions_se)
 
@@ -989,7 +989,7 @@ setMethod("rotate_dimensions", "RangedSummarizedExperiment", .rotate_dimensions_
 #' @param .abundance The name of the column including the numerical value the clustering is based on (normally transcript abundance)
 #'
 #' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
-#' @param of_samples A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column
+#' @param of_samples A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param correlation_threshold A real number between 0 and 1. For correlation based calculation.
 #' @param top An integer. How many top genes to select for correlation based method
@@ -1006,14 +1006,14 @@ setMethod("rotate_dimensions", "RangedSummarizedExperiment", .rotate_dimensions_
 #'
 #'
 #'    remove_redundancy(
-#'     ttBulk::counts_mini,
+#'     tidyBulk::counts_mini,
 #' 	   .element = sample,
 #' 	   .feature = transcript,
 #' 	   	.abundance =  count,
 #' 	   	method = "correlation"
 #' 	   	)
 #'
-#' counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  reduce_dimensions(tidyBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 #'
 #' remove_redundancy(
 #' 	counts.MDS,
@@ -1120,7 +1120,7 @@ setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 #' remove_redundancy
 #' @inheritParams remove_redundancy
 #' @return A tbl object with with dropped recundant elements (e.g., samples).
-setMethod("remove_redundancy", "ttBulk", .remove_redundancy)
+setMethod("remove_redundancy", "tidyBulk", .remove_redundancy)
 
 .remove_redundancy_se = function(.data,
 																 .element = NULL,
@@ -1149,8 +1149,8 @@ setMethod("remove_redundancy", "ttBulk", .remove_redundancy)
 
 	.data %>%
 
-		# Convert to ttBulk
-		ttBulk() %>%
+		# Convert to tidyBulk
+		tidyBulk() %>%
 
 		# Apply scale method
 		remove_redundancy( .element = !!.element,
@@ -1176,13 +1176,13 @@ setMethod("remove_redundancy", "ttBulk", .remove_redundancy)
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("remove_redundancy", "SummarizedExperiment", .remove_redundancy_se)
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("remove_redundancy", "RangedSummarizedExperiment", .remove_redundancy_se)
 
@@ -1218,7 +1218,7 @@ setMethod("remove_redundancy", "RangedSummarizedExperiment", .remove_redundancy_
 #'
 #'
 #'
-#' cm = ttBulk::counts_mini
+#' cm = tidyBulk::counts_mini
 #' cm$batch = 0
 #' cm$batch[cm$sample %in% c("SRR1740035", "SRR1740043")] = 1
 #'
@@ -1303,7 +1303,7 @@ setMethod("adjust_abundance", "tbl_df", .adjust_abundance)
 #' adjust_abundance
 #' @inheritParams adjust_abundance
 #' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
-setMethod("adjust_abundance", "ttBulk", .adjust_abundance)
+setMethod("adjust_abundance", "tidyBulk", .adjust_abundance)
 
 .adjust_abundance_se = function(.data,
 																.formula,
@@ -1321,8 +1321,8 @@ setMethod("adjust_abundance", "ttBulk", .adjust_abundance)
 
 	.data %>%
 
-		# Convert to ttBulk
-		ttBulk() %>%
+		# Convert to tidyBulk
+		tidyBulk() %>%
 
 		# Apply scale method
 		adjust_abundance( .formula = .formula,
@@ -1340,13 +1340,13 @@ setMethod("adjust_abundance", "ttBulk", .adjust_abundance)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("adjust_abundance", "SummarizedExperiment", .adjust_abundance_se)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("adjust_abundance", "RangedSummarizedExperiment", .adjust_abundance_se)
 
@@ -1386,7 +1386,7 @@ setMethod("adjust_abundance", "RangedSummarizedExperiment", .adjust_abundance_se
 #' @examples
 #'
 #'     aggregate_duplicates(
-#'     ttBulk::counts_mini,
+#'     tidyBulk::counts_mini,
 #'     sample,
 #'     transcript,
 #'     `count`,
@@ -1447,7 +1447,7 @@ setMethod("aggregate_duplicates", "tbl_df", .aggregate_duplicates)
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
 #' @return A `tbl` object with aggregated transcript abundance and annotation
-setMethod("aggregate_duplicates", "ttBulk", .aggregate_duplicates)
+setMethod("aggregate_duplicates", "tidyBulk", .aggregate_duplicates)
 
 .aggregate_duplicates_se = function(.data,
 
@@ -1464,8 +1464,8 @@ setMethod("aggregate_duplicates", "ttBulk", .aggregate_duplicates)
 
 	.data %>%
 
-		# Convert to ttBulk
-		ttBulk() %>%
+		# Convert to tidyBulk
+		tidyBulk() %>%
 
 		# Apply scale method
 		aggregate_duplicates(
@@ -1482,13 +1482,13 @@ setMethod("aggregate_duplicates", "ttBulk", .aggregate_duplicates)
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("aggregate_duplicates", "SummarizedExperiment", .aggregate_duplicates_se)
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("aggregate_duplicates", "RangedSummarizedExperiment", .aggregate_duplicates_se)
 
@@ -1524,7 +1524,7 @@ setMethod("aggregate_duplicates", "RangedSummarizedExperiment", .aggregate_dupli
 #' @examples
 #'
 #'
-#' deconvolve_cellularity(ttBulk::counts, sample, transcript, `count`, cores = 2)
+#' deconvolve_cellularity(tidyBulk::counts, sample, transcript, `count`, cores = 2)
 #'
 #'
 #' @docType methods
@@ -1596,7 +1596,7 @@ setMethod("deconvolve_cellularity", "tbl_df", .deconvolve_cellularity)
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
 #' @return A `tbl` object including additional columns for each cell type estimated
-setMethod("deconvolve_cellularity", "ttBulk", .deconvolve_cellularity)
+setMethod("deconvolve_cellularity", "tidyBulk", .deconvolve_cellularity)
 
 
 
@@ -1616,8 +1616,8 @@ setMethod("deconvolve_cellularity", "ttBulk", .deconvolve_cellularity)
 
 	.data %>%
 
-		# Convert to ttBulk
-		ttBulk() %>%
+		# Convert to tidyBulk
+		tidyBulk() %>%
 
 		# Apply scale method
 		deconvolve_cellularity(	 .sample = !!.sample,
@@ -1635,13 +1635,13 @@ setMethod("deconvolve_cellularity", "ttBulk", .deconvolve_cellularity)
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("deconvolve_cellularity", "SummarizedExperiment", .deconvolve_cellularity_se)
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("deconvolve_cellularity", "RangedSummarizedExperiment", .deconvolve_cellularity_se)
 
@@ -1674,7 +1674,7 @@ setMethod("deconvolve_cellularity", "RangedSummarizedExperiment", .deconvolve_ce
 #' @examples
 #'
 #'
-#' 	annotate_symbol(ttBulk::counts_ensembl, ens)
+#' 	annotate_symbol(tidyBulk::counts_ensembl, ens)
 #'
 #'
 #' @docType methods
@@ -1721,7 +1721,7 @@ setMethod("annotate_symbol", "tbl_df", .annotate_symbol)
 #' annotate_symbol
 #' @inheritParams annotate_symbol
 #' @return A `tbl` object including additional columns for transcript symbol
-setMethod("annotate_symbol", "ttBulk", .annotate_symbol)
+setMethod("annotate_symbol", "tidyBulk", .annotate_symbol)
 
 
 #' Add differential transcription information to a tbl using edgeR.
@@ -1759,7 +1759,7 @@ setMethod("annotate_symbol", "ttBulk", .annotate_symbol)
 #'
 #'
 #' 	test_differential_abundance(
-#' 	 ttBulk::counts_mini,
+#' 	 tidyBulk::counts_mini,
 #' 	    ~ condition,
 #' 	    sample,
 #' 	    transcript,
@@ -1769,7 +1769,7 @@ setMethod("annotate_symbol", "ttBulk", .annotate_symbol)
 #' 	# The functon `test_differential_abundance` operated with contrasts too
 #'
 #'  test_differential_abundance(
-#' 	    ttBulk::counts_mini,
+#' 	    tidyBulk::counts_mini,
 #' 	    ~ 0 + condition,
 #' 	    sample,
 #' 	    transcript,
@@ -1865,7 +1865,7 @@ setMethod("test_differential_abundance", "tbl_df", .test_differential_abundance)
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("test_differential_abundance", "ttBulk", .test_differential_abundance)
+setMethod("test_differential_abundance", "tidyBulk", .test_differential_abundance)
 
 
 
@@ -1889,8 +1889,8 @@ setMethod("test_differential_abundance", "ttBulk", .test_differential_abundance)
 
 	.data %>%
 
-		# Convert to ttBulk
-		ttBulk() %>%
+		# Convert to tidyBulk
+		tidyBulk() %>%
 
 		# Apply scale method
 		test_differential_abundance(.formula,
@@ -1912,13 +1912,13 @@ setMethod("test_differential_abundance", "ttBulk", .test_differential_abundance)
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("test_differential_abundance", "SummarizedExperiment", .test_differential_abundance_se)
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("test_differential_abundance", "RangedSummarizedExperiment", .test_differential_abundance_se)
 
@@ -1954,7 +1954,7 @@ setMethod("test_differential_abundance", "RangedSummarizedExperiment", .test_dif
 #'
 #'
 #' 	filter_variable(
-#' 	ttBulk::counts_mini,
+#' 	tidyBulk::counts_mini,
 #' 	    sample,
 #' 	    transcript,
 #' 	    `count`,
@@ -2012,7 +2012,7 @@ setMethod("filter_variable", "tbl_df", .filter_variable)
 #' filter_variable
 #' @inheritParams filter_variable
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("filter_variable", "ttBulk", .filter_variable)
+setMethod("filter_variable", "tidyBulk", .filter_variable)
 
 .filter_variable_se = function(.data,
 															 .sample = NULL,
@@ -2028,8 +2028,8 @@ setMethod("filter_variable", "ttBulk", .filter_variable)
 
 	.data %>%
 
-		# Convert to ttBulk
-		ttBulk() %>%
+		# Convert to tidyBulk
+		tidyBulk() %>%
 
 		# Apply scale method
 		filter_variable(
@@ -2046,13 +2046,13 @@ setMethod("filter_variable", "ttBulk", .filter_variable)
 
 #' filter_variable
 #' @inheritParams filter_variable
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("filter_variable", "SummarizedExperiment", .filter_variable_se)
 
 #' filter_variable
 #' @inheritParams filter_variable
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("filter_variable", "RangedSummarizedExperiment", .filter_variable_se)
 
@@ -2089,7 +2089,7 @@ setMethod("filter_variable", "RangedSummarizedExperiment", .filter_variable_se)
 #'
 #'
 #' 	filter_abundant(
-#' 	ttBulk::counts_mini,
+#' 	tidyBulk::counts_mini,
 #' 	    sample,
 #' 	    transcript,
 #' 	    `count`
@@ -2137,7 +2137,7 @@ setGeneric("filter_abundant", function(.data,
 
 				# If column is present use this instead of doing more work
 				~ {
-					#message("ttBulk says: \"filter out low counts\" column is present. Using this to filter data")
+					#message("tidyBulk says: \"filter out low counts\" column is present. Using this to filter data")
 					.x %>% dplyr::filter(!`filter out low counts`)
 				},
 
@@ -2172,7 +2172,7 @@ setMethod("filter_abundant", "tbl_df", .filter_abundant)
 #' filter_abundant
 #' @inheritParams filter_abundant
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("filter_abundant", "ttBulk", .filter_abundant)
+setMethod("filter_abundant", "tidyBulk", .filter_abundant)
 
 .filter_abundant_se = function(.data,
 															 .sample = NULL,
@@ -2188,8 +2188,8 @@ setMethod("filter_abundant", "ttBulk", .filter_abundant)
 
 	.data %>%
 
-		# Convert to ttBulk
-		ttBulk() %>%
+		# Convert to tidyBulk
+		tidyBulk() %>%
 
 		# Apply scale method
 		filter_abundant(
@@ -2206,13 +2206,13 @@ setMethod("filter_abundant", "ttBulk", .filter_abundant)
 
 #' filter_abundant
 #' @inheritParams filter_abundant
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("filter_abundant", "SummarizedExperiment", .filter_abundant_se)
 
 #' filter_abundant
 #' @inheritParams filter_abundant
-#' @return A `ttBulk` object
+#' @return A `tidyBulk` object
 #'
 setMethod("filter_abundant", "RangedSummarizedExperiment", .filter_abundant_se)
 
@@ -2249,7 +2249,7 @@ setMethod("filter_abundant", "RangedSummarizedExperiment", .filter_abundant_se)
 #' @examples
 #' \donttest{
 #'
-#' df_entrez = symbol_to_entrez(ttBulk::counts_mini, .transcript = transcript, .sample = sample)
+#' df_entrez = symbol_to_entrez(tidyBulk::counts_mini, .transcript = transcript, .sample = sample)
 #' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 #'
 #' library("EGSEA")
@@ -2322,4 +2322,4 @@ setMethod("analise_gene_enrichment", "tbl_df", .analise_gene_enrichment)
 #' analise_gene_enrichment
 #' @inheritParams analise_gene_enrichment
 #' @return A `tbl` object
-setMethod("analise_gene_enrichment", "ttBulk", .analise_gene_enrichment)
+setMethod("analise_gene_enrichment", "tidyBulk", .analise_gene_enrichment)

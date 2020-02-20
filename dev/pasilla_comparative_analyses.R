@@ -16,7 +16,7 @@ my_theme =
 
 stats =
 	readRDS("dev/stats_pasilla_ttBulk.rds") %>%
-	mutate(Method = "ttBulk") %>%
+	mutate(Method = "tidyBulk") %>%
 	bind_rows(
 		readRDS("dev/stats_pasilla_standard.rds") %>%
 		mutate(Method = "Standard")

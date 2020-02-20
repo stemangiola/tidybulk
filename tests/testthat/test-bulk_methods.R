@@ -1,8 +1,8 @@
 context('Bulk methods')
 
-input_df = setNames(ttBulk::counts_mini, c("a", "b", "Cell type", "c",  "time" , "condition"))
+input_df = setNames(tidyBulk::counts_mini, c("a", "b", "Cell type", "c",  "time" , "condition"))
 
-input_df_breast = setNames(ttBulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
+input_df_breast = setNames(tidyBulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
 
 test_that("Creating tt object from tibble, number of parameters, methods",{
 
@@ -10,7 +10,7 @@ test_that("Creating tt object from tibble, number of parameters, methods",{
 
     length(
       attr(
-        ttBulk(
+        tidyBulk(
           input_df,
           .sample = a,
           .transcript = b,
@@ -28,14 +28,14 @@ test_that("Test class identity of tt object",{
 
   expect_equal(
     class(
-      ttBulk(
+      tidyBulk(
         input_df,
         .sample = a,
         .transcript = b,
         .abundance = c
       )
     )[1],
-    "ttBulk"
+    "tidyBulk"
   )
 
 })
@@ -548,7 +548,7 @@ test_that("Add reduced dimensions tSNE - no object",{
 
   res =
     reduce_dimensions(
-    	setNames(ttBulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) ,
+    	setNames(tidyBulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) ,
       method="tSNE",
       .abundance = c,
       .element = a,
@@ -689,7 +689,7 @@ test_that("Get symbol from ensambl - no object",{
 
   res =
     annotate_symbol(
-      ttBulk::counts_ensembl,
+      tidyBulk::counts_ensembl,
       .ensembl = ens,
       action="get"
     )
@@ -710,7 +710,7 @@ test_that("Add symbol from ensambl - no object",{
 
   res =
     annotate_symbol(
-      ttBulk::counts_ensembl,
+      tidyBulk::counts_ensembl,
       .ensembl = ens,
       action="add"
     )
@@ -821,7 +821,7 @@ test_that("filter abundant - no object",{
 
 test_that("nest - no object",{
 
-	expect_equal(	class(nest(ttBulk(input_df, a, b, c), data = a))[1],	"tbl_df"	)
+	expect_equal(	class(nest(tidyBulk(input_df, a, b, c), data = a))[1],	"tbl_df"	)
 
 })
 

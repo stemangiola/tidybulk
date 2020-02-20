@@ -43,7 +43,7 @@ At the moment this function uses edgeR only, but other inference algorithms will
 
 
 	filter_variable(
-	ttBulk::counts_mini,
+	tidyBulk::counts_mini,
 	    sample,
 	    transcript,
 	    `count`,

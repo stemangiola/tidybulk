@@ -1,5 +1,5 @@
 Type: Package
-Package: ttBulk
+Package: tidyBulk
 Title: Friendly tidy wrappers for streamlined bulk
     transcriptional analysis
 Version: 0.99.6

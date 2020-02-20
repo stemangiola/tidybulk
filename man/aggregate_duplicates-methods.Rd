@@ -46,7 +46,7 @@ For example, we often have to convert ensembl symbols to gene/transcript symbol,
 \examples{
 
     aggregate_duplicates(
-    ttBulk::counts_mini,
+    tidyBulk::counts_mini,
     sample,
     transcript,
     `count`,

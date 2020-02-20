@@ -60,7 +60,7 @@ At the moment this function uses edgeR only, but other inference algorithms will
 
 
 	test_differential_abundance(
-	 ttBulk::counts_mini,
+	 tidyBulk::counts_mini,
 	    ~ condition,
 	    sample,
 	    transcript,
@@ -70,7 +70,7 @@ At the moment this function uses edgeR only, but other inference algorithms will
 	# The functon `test_differential_abundance` operated with contrasts too
 
  test_differential_abundance(
-	    ttBulk::counts_mini,
+	    tidyBulk::counts_mini,
 	    ~ 0 + condition,
 	    sample,
 	    transcript,

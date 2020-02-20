@@ -60,7 +60,7 @@ arrange <- function(.data, ..., .by_group = FALSE) {
 #' @rdname arrange
 #' @export
 #'
-############# START ADDED TTBULK ###################################
+############# START ADDED tidyBulk ###################################
 
 arrange.default <- function(.data, ..., .by_group = FALSE) {
 
@@ -69,10 +69,10 @@ arrange.default <- function(.data, ..., .by_group = FALSE) {
 }
 
 #' @export
-arrange.ttBulk <- function(.data, ..., .by_group = FALSE) {
+arrange.tidyBulk <- function(.data, ..., .by_group = FALSE) {
 
 	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::arrange( ..., .by_group = .by_group) %>%
 
 		# Attach attributes
@@ -80,11 +80,11 @@ arrange.ttBulk <- function(.data, ..., .by_group = FALSE) {
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 }
 
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 #' Efficiently bind multiple data frames by row and column
 #'
@@ -131,7 +131,7 @@ NULL
 #' @rdname bind
 #' @export
 #'
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 
 bind_rows <- function(..., .id = NULL) {
 	UseMethod("bind_rows")
@@ -144,7 +144,7 @@ bind_rows.default <-  function(..., .id = NULL)
 }
 
 #' @export
-bind_rows.ttBulk <- function(..., .id = NULL)
+bind_rows.tidyBulk <- function(..., .id = NULL)
 {
 
 	tts = dplyr:::flatten_bindable(rlang::dots_values(...))
@@ -168,11 +168,11 @@ bind_rows.ttBulk <- function(..., .id = NULL)
 
 }
 
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 #' @export
 #' @rdname bind
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 
 bind_cols <- function(..., .id = NULL) {
 	UseMethod("bind_cols")
@@ -185,7 +185,7 @@ bind_cols.default <-  function(..., .id = NULL)
 }
 
 #' @export
-bind_cols.ttBulk <- function(..., .id = NULL)
+bind_cols.tidyBulk <- function(..., .id = NULL)
 {
 
 	tts = dplyr:::flatten_bindable(rlang::dots_values(...))
@@ -197,8 +197,8 @@ bind_cols.ttBulk <- function(..., .id = NULL)
 
 }
 
-############# END ADDED TTBULK #####################################
-############# START ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
+############# START ADDED tidyBulk #####################################
 
 # #' @importFrom dplyr arrange_all
 # #' @export
@@ -212,8 +212,8 @@ bind_cols.ttBulk <- function(..., .id = NULL)
 # #' @export
 # dplyr::arrange_if
 
-############# END ADDED TTBULK #####################################
-############# START ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
+############# START ADDED tidyBulk #####################################
 
 #' distinct
 #' @param .data A tbl. (See dplyr)
@@ -224,7 +224,7 @@ bind_cols.ttBulk <- function(..., .id = NULL)
 #'
 #' @examples
 #'
-#' distinct(ttBulk::counts_mini)
+#' distinct(tidyBulk::counts_mini)
 #'
 #'
 #' @export
@@ -239,10 +239,10 @@ distinct.default <-  function (.data, ..., .keep_all = FALSE)
 }
 
 #' @export
-distinct.ttBulk <- function (.data, ..., .keep_all = FALSE)
+distinct.tidyBulk <- function (.data, ..., .keep_all = FALSE)
 {
 	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::distinct(..., .keep_all = .keep_all) %>%
 
 		# Attach attributes
@@ -250,12 +250,12 @@ distinct.ttBulk <- function (.data, ..., .keep_all = FALSE)
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 }
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 
 # #' @importFrom dplyr distinct_all
 # #' @export
@@ -269,7 +269,7 @@ distinct.ttBulk <- function (.data, ..., .keep_all = FALSE)
 # #' @export
 # dplyr::distinct_if
 
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 #' Subset rows using column values
 #'
@@ -326,7 +326,7 @@ distinct.ttBulk <- function (.data, ..., .keep_all = FALSE)
 #' @examples
 #'
 #' # Learn more in ?dplyr_tidy_eval
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 #' @export
 filter <- function (.data, ..., .preserve = FALSE)  {
 	UseMethod("filter")
@@ -339,10 +339,10 @@ filter.default <-  function (.data, ..., .preserve = FALSE)
 }
 
 #' @export
-filter.ttBulk <- function (.data, ..., .preserve = FALSE)
+filter.tidyBulk <- function (.data, ..., .preserve = FALSE)
 {
 	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::filter( ..., .preserve = .preserve) %>%
 
 		# Attach attributes
@@ -350,13 +350,13 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 }
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 
 # #' @importFrom dplyr filter_all
 # #' @export
@@ -370,7 +370,7 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 # #' @export
 # dplyr::filter_if
 
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 #' Group by one or more variables
 #'
@@ -434,7 +434,7 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 #'   y = factor(rep(c("a", "c"), each  = 5), levels = c("a", "b", "c"))
 #' )
 #'
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 #' @export
 filter <- function (.data, ..., .preserve = FALSE)  {
 	UseMethod("filter")
@@ -447,10 +447,10 @@ filter.default <-  function (.data, ..., .preserve = FALSE)
 }
 
 #' @export
-filter.ttBulk <- function (.data, ..., .preserve = FALSE)
+filter.tidyBulk <- function (.data, ..., .preserve = FALSE)
 {
 	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::filter(..., .preserve = .preserve) %>%
 
 		# Attach attributes
@@ -458,10 +458,10 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 }
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 #' Group by one or more variables
 #'
@@ -532,7 +532,7 @@ filter.ttBulk <- function (.data, ..., .preserve = FALSE)
 #'   x = 1:10,
 #'   y = factor(rep(c("a", "c"), each  = 5), levels = c("a", "b", "c"))
 #' )
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 #' @export
 group_by <- function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))  {
 	UseMethod("group_by")
@@ -545,10 +545,10 @@ group_by.default <-  function (.data, ..., .add = FALSE, .drop = group_by_drop_d
 }
 
 #' @export
-group_by.ttBulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))
+group_by.tidyBulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))
 {
 	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::group_by( ..., .drop = .drop) %>%
 
 		# Attach attributes
@@ -556,10 +556,10 @@ group_by.ttBulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_def
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 }
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 
 #' @rdname group_by
@@ -568,7 +568,7 @@ group_by.ttBulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_def
 ungroup <- function(x, ...) {
 	UseMethod("ungroup")
 }
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 
 #' @export
 ungroup.default <-  function (x, ...)
@@ -577,10 +577,10 @@ ungroup.default <-  function (x, ...)
 }
 
 #' @export
-ungroup.ttBulk <- function (x, ...)
+ungroup.tidyBulk <- function (x, ...)
 {
 	x %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::ungroup( ...) %>%
 
 		# Attach attributes
@@ -588,12 +588,12 @@ ungroup.ttBulk <- function (x, ...)
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 }
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 
 # #' @importFrom dplyr group_by_all
 # #' @export
@@ -607,7 +607,7 @@ ungroup.ttBulk <- function (x, ...)
 # #' @export
 # dplyr::group_by_if
 
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 #' Summarise each group to fewer rows
 #'
@@ -695,7 +695,7 @@ ungroup.ttBulk <- function (x, ...)
 #' # Refer to column names stored as strings with the `.data` pronoun:
 #' var <- "mass"
 #' # Learn more in ?dplyr_tidy_eval
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 #' @export
 summarise <- function (.data, ...)  {
 	UseMethod("summarise")
@@ -708,10 +708,10 @@ summarise.default <-  function (.data, ...)
 }
 
 #' @export
-summarise.ttBulk <- function (.data, ...)
+summarise.tidyBulk <- function (.data, ...)
 {
 	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::summarise( ...) %>%
 
 		# Attach attributes
@@ -719,12 +719,12 @@ summarise.ttBulk <- function (.data, ...)
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 }
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 
 # #' @importFrom dplyr summarize_all
 # #' @export
@@ -738,7 +738,7 @@ summarise.ttBulk <- function (.data, ...)
 # #' @export
 # dplyr::summarize_if
 
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 # #' @rdname summarise_all
 # #' @export
@@ -834,7 +834,7 @@ summarise.ttBulk <- function (.data, ...)
 #'   cyl4 = cyl2 * 2
 #' )
 #'
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 #' @export
 mutate <- function(.data, ...) {
 	UseMethod("mutate")
@@ -847,10 +847,10 @@ mutate.default <-  function(.data, ...)
 }
 
 #' @export
-mutate.ttBulk <- function(.data, ...)
+mutate.tidyBulk <- function(.data, ...)
 {
 	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::mutate(...) %>%
 
 		# Attach attributes
@@ -858,13 +858,13 @@ mutate.ttBulk <- function(.data, ...)
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 
 }
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 
 # #' @importFrom dplyr mutate_all
 # #' @export
@@ -878,7 +878,7 @@ mutate.ttBulk <- function(.data, ...)
 # #' @export
 # dplyr::mutate_if
 
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 #' Rename columns
 #'
@@ -910,7 +910,7 @@ mutate.ttBulk <- function(.data, ...)
 #' `%>%` = magrittr::`%>%`
 #' iris <- as_tibble(iris) # so it prints a little nicer
 #' rename(iris, petal_length = Petal.Length)
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 #' @export
 rename <- function(.data, ...) {
 	UseMethod("rename")
@@ -923,10 +923,10 @@ rename.default <-  function(.data, ...)
 }
 
 #' @export
-rename.ttBulk <- function(.data, ...)
+rename.tidyBulk <- function(.data, ...)
 {
 	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::rename(...) %>%
 
 		# Attach attributes
@@ -934,11 +934,11 @@ rename.ttBulk <- function(.data, ...)
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 
 }
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 #' Group input by rows
 #'
@@ -970,7 +970,7 @@ rename.ttBulk <- function(.data, ...)
 #' df_done <- df %>% rowwise() %>% do(i = seq(.$x, .$y))
 #' df_done
 #' df_done %>% summarise(n = length(i))
-############# START ADDED TTBULK #####################################
+############# START ADDED tidyBulk #####################################
 #' @export
 rowwise <- function(.data) {
 	UseMethod("rowwise")
@@ -983,10 +983,10 @@ rowwise.default <-  function(.data)
 }
 
 #' @export
-rowwise.ttBulk <- function(.data)
+rowwise.tidyBulk <- function(.data)
 {
 	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::rowwise() %>%
 
 		# Attach attributes
@@ -994,11 +994,11 @@ rowwise.ttBulk <- function(.data)
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 
 }
-############# END ADDED TTBULK #####################################
+############# END ADDED tidyBulk #####################################
 
 
 
@@ -1017,8 +1017,8 @@ rowwise.ttBulk <- function(.data)
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
-#' ttBulk::counts %>% left_join(annotation)
+#' annotation = tidyBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
+#' tidyBulk::counts %>% left_join(annotation)
 #'
 left_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
 	UseMethod("left_join")
@@ -1032,11 +1032,11 @@ left_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", 
 }
 
 #' @export
-left_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+left_join.tidyBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 															...)
 {
 	x %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::left_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
 
 		# Attach attributes
@@ -1044,7 +1044,7 @@ left_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 }
 
@@ -1061,8 +1061,8 @@ left_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
-#' ttBulk::counts %>% inner_join(annotation)
+#' annotation = tidyBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
+#' tidyBulk::counts %>% inner_join(annotation)
 #'
 #' @export
 inner_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
@@ -1076,10 +1076,10 @@ inner_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 }
 
 #' @export
-inner_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)
+inner_join.tidyBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)
 {
 	x %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::inner_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
 
 		# Attach attributes
@@ -1087,7 +1087,7 @@ inner_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", "
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 }
 
@@ -1104,8 +1104,8 @@ inner_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", "
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
-#' ttBulk::counts %>% right_join(annotation)
+#' annotation = tidyBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
+#' tidyBulk::counts %>% right_join(annotation)
 #'
 #' @export
 right_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
@@ -1120,11 +1120,11 @@ right_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 }
 
 #' @export
-right_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+right_join.tidyBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 															 ...)
 {
 	x %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::right_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
 
 		# Attach attributes
@@ -1132,7 +1132,7 @@ right_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", "
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 }
 
@@ -1150,8 +1150,8 @@ right_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", "
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = ttBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
-#' ttBulk::counts %>% full_join(annotation)
+#' annotation = tidyBulk::counts %>% distinct(sample) %>% mutate(source = "AU")
+#' tidyBulk::counts %>% full_join(annotation)
 #'
 #' @export
 full_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
@@ -1166,11 +1166,11 @@ full_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", 
 }
 
 #' @export
-full_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+full_join.tidyBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 															 ...)
 {
 	x %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidyBulk", "tt")) %>%
 		dplyr::full_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
 
 		# Attach attributes
@@ -1178,7 +1178,7 @@ full_join.ttBulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 
 }
 

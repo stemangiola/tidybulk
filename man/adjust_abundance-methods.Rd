@@ -48,7 +48,7 @@ This function adjusts the abundance for (known) unwanted variation. At the momen
 
 
 
-cm = ttBulk::counts_mini
+cm = tidyBulk::counts_mini
 cm$batch = 0
 cm$batch[cm$sample \%in\% c("SRR1740035", "SRR1740043")] = 1
 
