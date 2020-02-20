@@ -1534,7 +1534,8 @@ get_reduced_dimensions_PCA_bulk <-
 		# Get components from dims
 		components = 1:.dims
 
-		.data %>%
+		prcomp_obj =
+			.data %>%
 
 			# Through error if some counts are NA
 			error_if_counts_is_na(!!.abundance) %>%
@@ -1587,7 +1588,9 @@ get_reduced_dimensions_PCA_bulk <-
 			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
 
 			# Calculate principal components
-			prcomp(scale = scale, ...) %>%
+			prcomp(scale = scale, ...)
+
+		prcomp_obj %>%
 
 			# Anonymous function - Prints fraction of variance
 			# input: PCA object
@@ -1614,7 +1617,14 @@ get_reduced_dimensions_PCA_bulk <-
 			select(!!.element, sprintf("PC%s", components)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+			add_attr(prcomp, "prcomp") %>%
+
+			# Communicate the attribute added
+			{
+				message("tidyBulk says: to extract the raw prcomp result do `%>% attr(\"prcomp\")`")
+				(.)
+			}
 
 	}
 

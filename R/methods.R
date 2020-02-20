@@ -1,9 +1,6 @@
 # setOldClass("spec_tbl_df")
 setOldClass("tidyBulk")
 
-
-
-
 #' Creates a `tt` object from a `tbl``
 #'
 #' \lifecycle{maturing}
