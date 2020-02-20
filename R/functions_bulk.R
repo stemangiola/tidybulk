@@ -2757,9 +2757,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		ifelse_pipe(log_transform,
 								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log()))
 
-	print("one----")
-	toc()
-	tic()
+
 	# Create design matrix
 	design =
 		model.matrix(
@@ -2776,16 +2774,14 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("sva")
 	}
-tic()
+
 	my_batch =
 		df_for_combat %>%
 		distinct(!!.sample, !!as.symbol(parse_formula(.formula)[2])) %>%
 		arrange(!!.sample) %>%
 		pull(2)
-	print("batch---")
-	toc()
+
 	mat = df_for_combat %>%
-		{	tic(); (.)} %>%
 		# Select relevant info
 		distinct(!!.transcript, !!.sample, !!.abundance) %>%
 
@@ -2797,7 +2793,7 @@ tic()
 
 		spread(!!.sample, !!.abundance) %>%
 		as_matrix(rownames = !!.transcript,
-							do_check = FALSE) %>%
+							do_check = FALSE)
 	mat %>%
 
 		# Run combat
@@ -2807,11 +2803,9 @@ tic()
 			prior.plots = FALSE,
 			...
 		) %>%
-		{print("fivee---"); toc();	tic(); (.)} %>%
 
 		as_tibble(rownames = quo_name(.transcript)) %>%
 		gather(!!.sample, !!.abundance, -!!.transcript) %>%
-		{print("six---"); toc();	tic(); (.)} %>%
 
 		# ReverseLog transform if tranformed in the first place
 		ifelse_pipe(
