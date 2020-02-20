@@ -74,7 +74,7 @@ my_theme =
 # 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
 # se_mini
-#se_mini = ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts_mini, sample, transcript, count)
+se_mini = ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts_mini, sample, transcript, count)
 se_breast_tcga_mini = ttBulk:::ttBulk_to_SummarizedExperiment( ttBulk::breast_tcga_mini, sample, ens, `count`)
 se.cibersort = 
 	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) 
