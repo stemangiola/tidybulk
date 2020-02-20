@@ -2128,18 +2128,32 @@ setGeneric("filter_abundant", function(.data,
 		# Validate data frame
 		validation(.data,!!.sample,!!.transcript,!!.abundance)
 
-		gene_to_exclude =
-			add_scaled_counts_bulk.get_low_expressed(.data,
-																								 .sample = !!.sample,
-																								 .transcript = !!.transcript,
-																								 .abundance = !!.abundance,
-																														 cpm_threshold = cpm_threshold,
-																														 prop_threshold = prop_threshold)
 
 		.data %>%
 
 			# Filter
-			dplyr::filter(!!.transcript %in% gene_to_exclude %>% `!`) %>%
+			ifelse_pipe(
+				"filter out low counts" %in% colnames((.)),
+
+				# If column is present use this instead of doing more work
+				~ {
+					#message("ttBulk says: \"filter out low counts\" column is present. Using this to filter data")
+					.x %>% dplyr::filter(!`filter out low counts`)
+				},
+
+				# If no column is present go
+				~ {
+					gene_to_exclude =
+						add_scaled_counts_bulk.get_low_expressed(.data,
+																										 .sample = !!.sample,
+																										 .transcript = !!.transcript,
+																										 .abundance = !!.abundance,
+																										 cpm_threshold = cpm_threshold,
+																										 prop_threshold = prop_threshold)
+
+					.x %>% dplyr::filter(!!.transcript %in% gene_to_exclude %>% `!`)
+				}
+			)	%>%
 
 			# Attach attributes
 			add_attr(.data %>% attr("tt_columns"), "tt_columns")
