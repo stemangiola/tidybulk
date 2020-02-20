@@ -54,7 +54,7 @@ The normalisation inference is then applied back to all unfiltered data.
 \examples{
 
 
- scale_abundance(ttBulk::counts_mini,  sample, transcript, `count`)
+ scale_abundance(tidyBulk::counts_mini,  sample, transcript, `count`)
 
 
 

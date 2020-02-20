@@ -1,5 +1,5 @@
 library(tidyverse)
-library(ttBulk)
+library(tidyBulk)
 library(furrr)
 plan(multiprocess)
 options(future.globals.maxSize = 50000 * 1024 ^ 2)
@@ -88,7 +88,7 @@ counts_proc =
 	counts %>%
 
 	# Create object
-	ttBulk(sample, symbol, count) %>%
+	tidyBulk(sample, symbol, count) %>%
 
 	# Sum redundant genes/isoforms
 	aggregate_duplicates(aggregation_function = sum) %>%

@@ -45,7 +45,7 @@ create_tt_from_tibble_bulk = function(.data,
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidyBulk")
 }
 
 
@@ -689,7 +689,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		)
 
 	# Print the design column names in case I want constrasts
-	message(sprintf("ttBulk says: The design column names are \"%s\" in case you are interested in contrasts", design %>% colnames %>% paste(collapse=", ")))
+	message(sprintf("tidyBulk says: The design column names are \"%s\" in case you are interested in contrasts", design %>% colnames %>% paste(collapse=", ")))
 
 	#%>%
 	#	magrittr::set_colnames(c("(Intercept)",	 (.) %>% colnames %>% `[` (-1)))
@@ -870,7 +870,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 #'
 #' @examples
 #'
-#' symbol_to_entrez(ttBulk::counts_mini, .transcript = transcript, .sample = sample)
+#' symbol_to_entrez(tidyBulk::counts_mini, .transcript = transcript, .sample = sample)
 #'
 #' @export
 #'
@@ -1087,7 +1087,7 @@ get_clusters_kmeans_bulk <-
 		# Check if centers is in dots
 		dots_args = rlang::dots_list(...)
 		if("centers" %in% names(dots_args) %>% `!`)
-			stop("ttBulk says: for kmeans you need to provide the \"centers\" integer argument")
+			stop("tidyBulk says: for kmeans you need to provide the \"centers\" integer argument")
 
 		# Get column names
 		.element = enquo(.element)
@@ -2448,7 +2448,7 @@ get_symbol_from_ensembl <-
 
 			# Add name information
 			dplyr::left_join(
-				ttBulk::ensembl_symbol_mapping %>%
+				tidyBulk::ensembl_symbol_mapping %>%
 					distinct(ensembl_id, transcript, hg) %>%
 					dplyr::rename(!!.ensembl := ensembl_id) %>%
 					rename( transcript = transcript),
@@ -2576,7 +2576,7 @@ get_cell_type_proportions = function(.data,
 
 	# Check if rownames exist
 	if(reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% `!` %>% any)
-		stop("ttBulk says: your reference has non-numeric/integer columns.")
+		stop("tidyBulk says: your reference has non-numeric/integer columns.")
 
 	# Get the dots arguments
 	dots_args = rlang::dots_list(...)
@@ -2607,7 +2607,7 @@ get_cell_type_proportions = function(.data,
 				run_llsr(reference) %>%
 				as_tibble(rownames = quo_name(.sample)),
 
-			~ stop("ttBulk syas: please choose between cibersort and llsr methods")
+			~ stop("tidyBulk syas: please choose between cibersort and llsr methods")
 		)	 %>%
 
 		# Parse results and return

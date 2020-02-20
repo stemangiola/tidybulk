@@ -1,5 +1,5 @@
 library(tidyverse)
-library(ttBulk)
+library(tidyBulk)
 
 my_theme =
 	theme_bw() +
@@ -27,7 +27,7 @@ cts <- as.matrix(read.csv(pasCts,sep="\t",row.names="gene_id"))
 coldata <- read.csv(pasAnno, row.names=1)
 coldata <- coldata[,c("condition","type")]
 
-# Create ttBulk object
+# Create tidyBulk object
 tt =
 	cts %>%
 	as_tibble(rownames = "transcript") %>%
@@ -46,9 +46,9 @@ tt =
 		)
 	) %>%
 
-	# ttBulk
+	# tidyBulk
 	mutate_if(is.character, as.factor) %>%
-	ttBulk(sample, transcript, count)
+	tidyBulk(sample, transcript, count)
 
 # Normalise
 tt_scaled = tt %>% scale_abundance()

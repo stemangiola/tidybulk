@@ -72,7 +72,7 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
 #'
 #' @examples
 #'
-#' as_matrix(head(dplyr::select(ttBulk::counts_mini, transcript, count)), rownames=transcript)
+#' as_matrix(head(dplyr::select(tidyBulk::counts_mini, transcript, count)), rownames=transcript)
 #'
 #' @export
 as_matrix <- function(tbl,

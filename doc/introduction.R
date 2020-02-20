@@ -15,7 +15,7 @@ library(ggplot2)
 library(widyr) 
 library(rlang) 
 library(purrr)
-library(ttBulk)
+library(tidyBulk)
 
 my_theme = 	
 	theme_bw() +
@@ -33,23 +33,23 @@ my_theme =
 	)
 
 # counts_mini = 
-# 	ttBulk::counts %>% 
-# 	filter(transcript %in% (ttBulk::X_cibersort %>% rownames)) %>% 
+# 	tidyBulk::counts %>% 
+# 	filter(transcript %in% (tidyBulk::X_cibersort %>% rownames)) %>% 
 # 	filter(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058", "SRR1740043", "SRR1740067")) %>%
 # 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
 # se_mini
-#se_mini = ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts_mini, sample, transcript, count)
-se_breast_tcga_mini = ttBulk:::ttBulk_to_SummarizedExperiment( ttBulk::breast_tcga_mini, sample, ens, `count`)
+se_mini = tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts_mini, sample, transcript, count)
+se_breast_tcga_mini = tidyBulk:::ttBulk_to_SummarizedExperiment( tidyBulk::breast_tcga_mini, sample, ens, `count`)
 se.cibersort = 
-	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) 
+	tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count) 
 se.norm.batch = 
 	
-	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) %>%
+	tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count) %>%
 	scale_abundance()
 
 ## -----------------------------------------------------------------------------
-counts = ttBulk(ttBulk::counts_mini, sample, transcript, count)
+counts = tidyBulk(tidyBulk::counts_mini, sample, transcript, count)
 counts 
 
 ## ----aggregate, cache=TRUE----------------------------------------------------
@@ -113,8 +113,8 @@ se.norm.PCA
 
 ## ---- echo=FALSE, include=FALSE-----------------------------------------------
 tt_tcga_breast = 
-	ttBulk::breast_tcga_mini %>%
-	ttBulk(sample, ens, `count`)
+	tidyBulk::breast_tcga_mini %>%
+	tidyBulk(sample, ens, `count`)
 
 ## ----tsne, cache=TRUE---------------------------------------------------------
 counts.norm.tSNE =

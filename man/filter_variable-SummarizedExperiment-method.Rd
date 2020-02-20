@@ -27,7 +27,7 @@
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
-A `ttBulk` object
+A `tidyBulk` object
 }
 \description{
 filter_variable

@@ -28,7 +28,7 @@ rotate_dimensions(
 
 \item{.element}{The name of the element column (normally samples).}
 
-\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{dimension_1_column_rotated}{A character string. The column of the rotated dimension 1 (optional)}
 
@@ -49,7 +49,7 @@ This function to rotate two dimensions such as the reduced dimensions.
 }
 \examples{
 
-counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+counts.MDS =  reduce_dimensions(tidyBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 
 counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 

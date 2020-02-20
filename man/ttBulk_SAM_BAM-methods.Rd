@@ -15,7 +15,7 @@ ttBulk_SAM_BAM(file_names, genome = "hg38", ...)
 \item{...}{Further parameters passed to the function Rsubread::featureCounts}
 }
 \value{
-A `ttBulk` object
+A `tidyBulk` object
 }
 \description{
 ttBulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
@@ -23,8 +23,8 @@ ttBulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <T
 \details{
 \lifecycle{maturing}
 
-This function is based on FeatureCounts package. This function created a ttBulk object and is useful if you want
+This function is based on FeatureCounts package. This function created a tidyBulk object and is useful if you want
 to avoid to specify .sample, .transcript and .abundance arguments all the times.
-The ttBulk object have an attribute called tt_columns where these three
+The tidyBulk object have an attribute called tt_columns where these three
 arguments are stored as metadata. They can be extracted as attr(<object>, "tt_columns").
 }
