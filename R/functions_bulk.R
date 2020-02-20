@@ -201,7 +201,7 @@ filter_transcript_high_prop_cpm = function(.data,
 
 	.data %>%
 		select(!!.sample, !!.transcript, cpm) %>%
-		spread(sample, cpm) %>%
+		spread(!!.sample, cpm) %>%
 		as_matrix(rownames = !!.transcript) %>%
 		`>` (cpm_threshold) %>%
 		rowSums() %>%
@@ -1382,7 +1382,7 @@ get_reduced_dimensions_MDS_bulk <-
 					error_if_counts_is_na(!!.abundance) %>%
 
 					# Filter lowly transcribed (I have to avoid the use of normalising function)
-					filter_abundant() %>%
+					filter_abundant(!!.element,!!.feature, !!.abundance) %>%
 					distinct(!!.feature, !!.element, !!.abundance) %>%
 
 					# Check if logtansform is needed
