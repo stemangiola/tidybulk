@@ -1382,8 +1382,7 @@ get_reduced_dimensions_MDS_bulk <-
 					error_if_counts_is_na(!!.abundance) %>%
 
 					# Filter lowly transcribed (I have to avoid the use of normalising function)
-					add_scaled_counts_bulk(!!.element, !!.feature, !!.abundance) %>%
-					filter(!`filter out low counts`) %>%
+					filter_abundant() %>%
 					distinct(!!.feature, !!.element, !!.abundance) %>%
 
 					# Check if logtansform is needed
@@ -2741,21 +2740,26 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 	df_for_combat <-
 		.data %>%
+
+		# Filter low counts
+		filter_abundant(!!.sample,!!.transcript,!!.abundance) %>%
+		{
+			# Give warning of filtering
+			message("Combat is applied excluding `filter out low counts`, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts ")
+			(.)
+		} %>%
+
 		select(!!.transcript,!!.sample,!!.abundance,
 					 one_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
-								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log()))
 
-		# Mark Filter low counts
-		mutate(
-			`filter out low counts` =
-				!!.transcript %in%
-				add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
-		)
-
+	print("one----")
+	toc()
+	tic()
 	# Create design matrix
 	design =
 		model.matrix(
@@ -2772,17 +2776,16 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("sva")
 	}
-
-	df_for_combat %>%
-
-		# Filter low counts
-		filter(!`filter out low counts`) %>%
-		{
-			# Give warning of filtering
-			writeLines("Combat is applied excluding `filter out low counts`, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts ")
-			(.)
-		} %>%
-
+tic()
+	my_batch =
+		df_for_combat %>%
+		distinct(!!.sample, !!as.symbol(parse_formula(.formula)[2])) %>%
+		arrange(!!.sample) %>%
+		pull(2)
+	print("batch---")
+	toc()
+	mat = df_for_combat %>%
+		{	tic(); (.)} %>%
 		# Select relevant info
 		distinct(!!.transcript, !!.sample, !!.abundance) %>%
 
@@ -2795,19 +2798,20 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		spread(!!.sample, !!.abundance) %>%
 		as_matrix(rownames = !!.transcript,
 							do_check = FALSE) %>%
+	mat %>%
 
 		# Run combat
 		sva::ComBat(
-			batch =
-				df_for_combat %>%
-				distinct(!!.sample, !!as.symbol(parse_formula(.formula)[2])) %>%
-				arrange(!!.sample) %>%
-				pull(2),
+			batch = my_batch,
 			mod = design,
+			prior.plots = FALSE,
 			...
 		) %>%
+		{print("fivee---"); toc();	tic(); (.)} %>%
+
 		as_tibble(rownames = quo_name(.transcript)) %>%
 		gather(!!.sample, !!.abundance, -!!.transcript) %>%
+		{print("six---"); toc();	tic(); (.)} %>%
 
 		# ReverseLog transform if tranformed in the first place
 		ifelse_pipe(
@@ -2821,13 +2825,13 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		# Reset column names
 		dplyr::rename(!!value_adjusted := !!.abundance)  %>%
 
-		# Add filtering info
-		right_join(
-			df_for_combat %>%
-				distinct(!!.transcript,!!.sample,
-								 `filter out low counts`),
-			by = c(quo_name(.transcript), quo_name(.sample))
-		)%>%
+		# # Add filtering info
+		# right_join(
+		# 	df_for_combat %>%
+		# 		distinct(!!.transcript,!!.sample,
+		# 						 `filter out low counts`),
+		# 	by = c(quo_name(.transcript), quo_name(.sample))
+		# )%>%
 
 		# Attach attributes
 		add_attr(.data %>% attr("tt_columns"), "tt_columns")
