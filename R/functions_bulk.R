@@ -149,18 +149,18 @@ add_scaled_counts_bulk.get_cpm <- function(.data,
 	if (cpm_threshold < 0)
 		stop("The parameter cpm_threshold must be > 0")
 
-	# Adjust cpm_theshold based on the library size
-	cpm_threshold <-
-		cpm_threshold /
-		(
-			.data %>%
-				group_by(!!.sample) %>%
-				summarise(s = sum(!!.abundance)) %>%
-				ungroup() %>%
-				summarise(m = median(s)) %>%
-				pull(m) /
-				1e6
-		)
+	# # Adjust cpm_theshold based on the library size
+	# cpm_threshold <-
+	# 	cpm_threshold /
+	# 	(
+	# 		.data %>%
+	# 			group_by(!!.sample) %>%
+	# 			summarise(s = sum(!!.abundance)) %>%
+	# 			ungroup() %>%
+	# 			summarise(m = median(s)) %>%
+	# 			pull(m) /
+	# 			1e6
+	# 	)
 
 	# Add cmp and cmp threshold to the data set, and return
 	.data %>%
