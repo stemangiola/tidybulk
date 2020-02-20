@@ -202,7 +202,7 @@ filter_transcript_high_prop_cpm = function(.data,
 	.data %>%
 		select(!!.sample, !!.transcript, cpm) %>%
 		spread(sample, cpm) %>%
-		as_matrix(rownames = transcript) %>%
+		as_matrix(rownames = !!.transcript) %>%
 		`>` (cpm_threshold) %>%
 		rowSums() %>%
 		`<` ( (max(.) * prop_threshold) %>% floor)  %>%
