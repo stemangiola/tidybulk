@@ -191,25 +191,6 @@ add_scaled_counts_bulk.get_cpm <- function(.data,
 }
 
 filter_transcript_high_prop_cpm = function(.data,
-																					 .sample,
-																					 .transcript,
-																					 cpm_threshold = 0.5,
-																					 prop_threshold = 3 / 4){
-
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-
-	.data %>%
-		mutate(`gene above threshold` = (cpm > cpm_threshold) %>% as.integer) %>%
-		group_by(!!.transcript) %>%
-		summarise(n = `gene above threshold` %>% sum) %>%
-		filter(n < (max(n) * !!prop_threshold) %>% floor) %>%
-		# Pull information
-		pull(!!.transcript) %>%
-		as.character()
-}
-
-filter_transcript_high_prop_cpm2 = function(.data,
 																						.sample,
 																						.transcript,
 																						cpm_threshold,
@@ -273,24 +254,10 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 		# Prepare the data frame
 		select(!!.transcript, !!.sample, !!.abundance) %>%
 
-		# # Something don't understand anymore, probably for historical reasons
-		# tidyr::spread(!!.sample, !!.abundance) %>%
-		# gather(!!.sample, !!.abundance, -!!.transcript) %>%
-		# group_by(!!.transcript) %>%
-		# dplyr::mutate(
-		# 	!!.abundance :=
-		# 		ifelse(
-		# 			!!.abundance %>% is.na(),
-		# 			!!.abundance %>% median(na.rm = TRUE) %>% as.integer(),
-		# 			!!.abundance
-		# 		)
-		# ) %>%
-		# ungroup() %>%
-
 		# Calculate cpm
 		add_scaled_counts_bulk.get_cpm(!!.sample, !!.transcript, !!.abundance) %>%
 		# Filter based on how many samples have a gene below the threshold
-		filter_transcript_high_prop_cpm2 (!!.sample, !!.transcript, cpm_threshold = cpm_threshold, prop_threshold = prop_threshold) %>%
+		filter_transcript_high_prop_cpm(!!.sample, !!.transcript, cpm_threshold = cpm_threshold, prop_threshold = prop_threshold) %>%
 		# Attach attributes
 		add_attr(.data %>% attr("tt_columns"), "tt_columns")
 }
