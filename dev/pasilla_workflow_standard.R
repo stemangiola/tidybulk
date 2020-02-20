@@ -1,6 +1,11 @@
 library("pasilla")
-library(edgeR)
 library(reshape)
+library(tidyverse)
+library(tictoc)
+library(ComplexHeatmap)
+library(edgeR)
+library(GGally)
+library(sva)
 
 ### Reading data and sample annotation
 pasCts = system.file("extdata",
@@ -41,7 +46,7 @@ for (i in 1:ncol(cts))
   lines(density(log2(cts[, i] + 1)), col = col.type[i])
 
 ### TMM normalization
-library(edgeR)
+
 dge = DGEList(counts = cts,
               sample = coldata$condition,
               group = coldata$type)
@@ -57,16 +62,16 @@ list(dge = dge, logCPM = logCPM)
 plot_MDS = function(){
 
 ### dimensionality reduction
-library(GGally)
+
 mds = plotMDS(logCPM, ndim = 3)
 d = data.frame( 'cond' = coldata$condition,  'type' = coldata$type,  'data' = rep('CPM', 7),  'dim1' = mds$cmdscale.out[, 1],  'dim2' = mds$cmdscale.out[, 2],  'dim3' = mds$cmdscale.out[, 3])
-ggpairs(d, columns = 4:ncol(d), ggplot2::aes(colour = type))
+p = ggpairs(d, columns = 4:ncol(d), ggplot2::aes(colour = type))
 
 d
 }
 plot_adjusted_MDS = function(){
 ### ComBat
-library(sva)
+
 batch = coldata$type
 mod.combat = model.matrix( ~ 1, data = coldata)
 mod.condition = model.matrix( ~ condition, data = coldata)
@@ -74,11 +79,10 @@ combat.corrected = ComBat(  dat = logCPM,  batch = batch,  mod = mod.condition, 
 mds.combat = plotMDS(combat.corrected, ndim = 3)
 d2 = data.frame(  'cond' = coldata$condition,  'type' = coldata$type,  'data' = rep('ComBat', 7),  'dim1' = mds.combat$cmdscale.out[, 1],  'dim2' = mds.combat$cmdscale.out[, 2], 'dim3' = mds.combat$cmdscale.out[, 3])
 final.d = rbind(d, d2)
-library(tidyr)
 final.d = gather(final.d, dim, dist, dim1:dim3, factor_key = TRUE)
 final.d2 = gather(final.d, cond, type, cond:type, factor_key = TRUE)
 final.d$new = paste0(final.d$cond, final.d$type)
-ggplot(final.d2, aes(x = cond, y = dist, fill = type)) +
+ p = ggplot(final.d2, aes(x = cond, y = dist, fill = type)) +
   geom_boxplot() +
   facet_wrap( ~ data + dim)
 
@@ -113,7 +117,7 @@ gene.de.color[which(row.names(de.table) %in% row.names(de.genes))] = 'red'
 size.point = ifelse(gene.de.color == 'black', .1, .2)
 gene.lable = rep(NA, n.genes)
 gene.lable[which(row.names(de.table) %in% row.names(de.genes.lable))] = row.names(de.genes.lable)
-ggplot(de.table, aes(x = logCPM, y = logFC, label = gene.lable)) +
+p = ggplot(de.table, aes(x = logCPM, y = logFC, label = gene.lable)) +
   geom_point(aes(
     color = gene.de.color,
     size = size.point,
@@ -142,7 +146,7 @@ combat.df$data = 'combat'
 ### Boxplot of all data
 final = rbind(count.df, cpm.df, combat.df)
 final$data = factor(final$data, levels = c('count', 'cpm', 'combat'))
-ggplot(final, aes(x = data, y = value, fill = X2)) +
+p = ggplot(final, aes(x = data, y = value, fill = X2)) +
   geom_boxplot() +
   facet_wrap( ~ X1)
 
@@ -151,32 +155,32 @@ de.genes
 plot_heatmap = function(){
   ######## complex heatmap
   de.data = logCPM[de.genes ,]
-  library(ComplexHeatmap)
+
   gene.labels = c(rep('AB', floor(length(de.genes)/2)), rep('BA', ceiling(length(de.genes)/2)))
   h1 = Heatmap(t(de.data), top_annotation = HeatmapAnnotation(labels = gene.labels))
   h2 = Heatmap(coldata$condition)
   h3 = Heatmap(coldata$type)
-  draw(h1 + h2 + h3)
+  p = draw(h1 + h2 + h3)
 }
 
 tic()
 pd_res = plot_densities()
-time_df = time_df %>% bind_rows(tibble(step = "plot_densities", time = list(toc()), lines = 19, assignments = 8))
+time_df = time_df %>% bind_rows(tibble(step = "Normalisation", time = list(toc()), lines = 19, assignments = 8))
 
 logCPM = pd_res$logCPM
 dge = pd_res$dge
 
 tic()
 d  = plot_MDS()
-time_df = time_df %>% bind_rows(tibble(step = "plot_MDS", time = list(toc()), lines = 3, assignments = 2))
+time_df = time_df %>% bind_rows(tibble(step = "Reduce dimensionality", time = list(toc()), lines = 3, assignments = 2))
 
 tic()
 combat.corrected= plot_adjusted_MDS()
-time_df = time_df %>% bind_rows(tibble(step = "plot_adjusted_MDS", time = list(toc()), lines = 13, assignments = 10))
+time_df = time_df %>% bind_rows(tibble(step = "Removal unwanted variation", time = list(toc()), lines = 13, assignments = 10))
 
 tic()
 de_list = test_abundance()
-time_df = time_df %>% bind_rows(tibble(step = "test_abundance", time = list(toc()), lines = 7, assignments = 6))
+time_df = time_df %>% bind_rows(tibble(step = "Test differential abundance", time = list(toc()), lines = 7, assignments = 6))
 
 de.table = de_list$de.table
 de.genes = de_list$de.genes
@@ -184,14 +188,14 @@ de.genes.lable = de_list$de.genes.lable
 
 tic()
 plot_MA()
-time_df = time_df %>% bind_rows(tibble(step = "plot_MA", time = list(toc()), lines = 11, assignments = 8))
+time_df = time_df %>% bind_rows(tibble(step = "Plot MA", time = list(toc()), lines = 11, assignments = 8))
 
 tic()
 de.genes = plot_DE_comparative()
-time_df = time_df %>% bind_rows(tibble(step = "plot_DE_comparative", time = list(toc()), lines = 18, assignments = 15))
+time_df = time_df %>% bind_rows(tibble(step = "Plot results across stages", time = list(toc()), lines = 18, assignments = 15))
 
 tic()
 plot_heatmap()
-time_df = time_df %>% bind_rows(tibble(step = "plot_heatmap", time = list(toc()), lines = 6, assignments = 5))
+time_df = time_df %>% bind_rows(tibble(step = "Plot heatmap", time = list(toc()), lines = 6, assignments = 5))
 
-time_df %>% saveRDS("dev/stats_pasilla_standard.rds")
+time_df %>% mutate(step = factor(step, levels = unique(step))) %>% saveRDS("dev/stats_pasilla_standard.rds")
