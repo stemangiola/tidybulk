@@ -116,33 +116,9 @@ plot_heatmap = function(){
 	tidyHeatmap::heatmap(	.horizontal = sample,		.vertical = transcript,		.abundance = `count`,annotation = c(condition, type),	log_transform = TRUE	)
 }
 
-tic()
-print("start")
-toc()
-
-# print(999)
-# tic()
-# tt_scaled = tt %>% scale_abundance()
-# toc()
-#
-# tic()
-# tt_scaled = tt %>% scale_abundance()
-# toc()
-
-# Plot densities
-# tic()
-# p = tt_scaled %>%
-# 	pivot_longer(	values_to = "count",	names_to = "Normalisation",	cols = c(count, `count scaled`)	) %>%
-# 	ggplot(aes(count + 1, group = sample, color = type)) +
-# 	facet_grid( ~ Normalisation) +
-# 	geom_density() +
-# 	scale_x_log10()
-# toc()
 
 tic()
-print(1111)
 tt_scaled = plot_densities()
-print(2222)
 time_df = time_df %>% bind_rows(tibble(step = "Normalisation", time = list(toc()), lines = 7, assignments = 1))
 
 tic()
