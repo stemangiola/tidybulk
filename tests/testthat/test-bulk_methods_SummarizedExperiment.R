@@ -39,7 +39,7 @@ test_that("tidyBulk SummarizedExperiment normalisation manual",{
 	expect_equal(	ncol(res),	16	)
 
 
-	res = rlang::quo_name(attr(res, "tt_columns")[[4]])
+	res = rlang::quo_name(attr(res, "tt_internals")$tt_columns[[4]])
 
 	expect_equal( res,	"counts scaled"	)
 

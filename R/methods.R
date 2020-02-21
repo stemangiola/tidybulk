@@ -21,8 +21,8 @@ setOldClass("tidyBulk")
 #'
 #' @details This function created a tidyBulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The tidyBulk object have an attribute called tt_columns where these three
-#' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_columns").
+#' The tidyBulk object have an attribute called tt_internals where these three
+#' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_internals").
 #'
 #' @return A `tidyBulk` object
 #'
@@ -178,8 +178,8 @@ setMethod("tidyBulk", "RangedSummarizedExperiment", .ttBulk_se)
 #'
 #' @details This function is based on FeatureCounts package. This function created a tidyBulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The tidyBulk object have an attribute called tt_columns where these three
-#' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_columns").
+#' The tidyBulk object have an attribute called tt_internals where these three
+#' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_internals").
 #'
 #' @return A `tidyBulk` object
 #'
@@ -2153,7 +2153,7 @@ setGeneric("filter_abundant", function(.data,
 			)	%>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 #' filter_abundant

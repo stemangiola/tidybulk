@@ -77,7 +77,7 @@ arrange.tidyBulk <- function(.data, ..., .by_group = FALSE) {
     dplyr::arrange( ..., .by_group = .by_group) %>%
 
     # Attach attributes
-    add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+    reattach_internals() %>%
 
     # Add class
     add_class("tt") %>%
@@ -199,22 +199,16 @@ bind_rows.tidyBulk <- function(..., .id = NULL)
 
   tts = dplyr:::flatten_bindable(rlang::dots_values(...))
 
-  par1 = tts[[1]] %>% attr("tt_columns") %>% unlist
-  par2 = tts[[2]] %>% attr("tt_columns") %>% unlist
+  par1 = tts[[1]] %>% get_tt_columns() %>% unlist
+  par2 = tts[[2]] %>% get_tt_columns() %>% unlist
 
   # tt_columns of the two objects must match
   error_if_parameters_not_match(par1, par2)
 
-  par =
-    unique(c(par1 %>% names, par2 %>% names)) %>%
-    map(~ switch(par1[[.x]] %>% is.null %>% sum(1), par1[[.x]], par2[[.x]])) %>%
-    setNames(par1 %>% names)
-
-
   dplyr::bind_rows(..., .id = .id) %>%
 
-    # Attach attributes
-    add_attr(par, "tt_columns")
+    # Attach attributes from the first object
+    add_attr(tts[[1]] %>% attr("tt_internals"), "tt_internals")
 
 }
 
@@ -243,7 +237,7 @@ bind_cols.tidyBulk <- function(..., .id = NULL)
   dplyr::bind_cols(..., .id = .id) %>%
 
     # Attach attributes
-    add_attr(tts[[1]] %>% attr("tt_columns") , "tt_columns")
+    add_attr(tts[[1]] %>% attr("tt_internals"), "tt_internals")
 
 }
 
@@ -296,7 +290,7 @@ distinct.tidyBulk <- function (.data, ..., .keep_all = FALSE)
     dplyr::distinct(..., .keep_all = .keep_all) %>%
 
     # Attach attributes
-    add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+    reattach_internals() %>%
 
     # Add class
     add_class("tt") %>%
@@ -436,7 +430,7 @@ filter.tidyBulk <- function (.data, ..., .preserve = FALSE)
     dplyr::filter( ..., .preserve = .preserve) %>%
 
     # Attach attributes
-    add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+    reattach_internals() %>%
 
     # Add class
     add_class("tt") %>%
@@ -564,7 +558,7 @@ filter.tidyBulk <- function (.data, ..., .preserve = FALSE)
     dplyr::filter(..., .preserve = .preserve) %>%
 
     # Attach attributes
-    add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+    reattach_internals() %>%
 
     # Add class
     add_class("tt") %>%
@@ -674,7 +668,7 @@ group_by.tidyBulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_d
     dplyr::group_by( ..., .add = .add, .drop = .drop) %>%
 
     # Attach attributes
-    add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+    reattach_internals() %>%
 
     # Add class
     add_class("tt") %>%
@@ -700,7 +694,7 @@ ungroup.tidyBulk <- function (.data, ...)
     dplyr::ungroup( ...) %>%
 
     # Attach attributes
-    add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+    reattach_internals() %>%
 
     # Add class
     add_class("tt") %>%
@@ -848,7 +842,7 @@ summarise.tidyBulk <- function (.data, ...)
     dplyr::summarise( ...) %>%
 
     # Attach attributes
-    add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+    reattach_internals() %>%
 
     # Add class
     add_class("tt") %>%
@@ -1042,7 +1036,7 @@ mutate.tidyBulk <- function(.data, ...)
     dplyr::mutate(...) %>%
 
     # Attach attributes
-    add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+    reattach_internals() %>%
 
     # Add class
     add_class("tt") %>%
@@ -1118,7 +1112,7 @@ rename.tidyBulk <- function(.data, ...)
     dplyr::rename(...) %>%
 
     # Attach attributes
-    add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+    reattach_internals() %>%
 
     # Add class
     add_class("tt") %>%
@@ -1172,7 +1166,7 @@ rowwise.tidyBulk <- function(.data)
     dplyr::rowwise() %>%
 
     # Attach attributes
-    add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+    reattach_internals() %>%
 
     # Add class
     add_class("tt") %>%

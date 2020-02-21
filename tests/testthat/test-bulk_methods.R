@@ -16,8 +16,8 @@ test_that("Creating tt object from tibble, number of parameters, methods",{
           .transcript = b,
           .abundance = c
         ) ,
-        "tt_columns"
-      )
+        "tt_internals"
+      )$tt_columns
     ),
     3
   )
@@ -62,6 +62,12 @@ test_that("Getting scaled counts - no object",{
     6
   )
 
+  internals = attr(scale_abundance(tidyBulk(input_df, a, b, c)), "tt_internals")
+
+  expect_equal(length(internals$tt_columns), 4 )
+
+  expect_equal(quo_name(internals$tt_columns[[4]]), "c scaled" )
+
 })
 
 
@@ -84,7 +90,7 @@ test_that("Adding scaled counts - no object",{
 
   expect_equal(
     ncol(res),
-    9
+    10
   )
 
 })
@@ -824,5 +830,3 @@ test_that("nest - no object",{
 	expect_equal(	class(nest(tidyBulk(input_df, a, b, c), data = a))[1],	"tbl_df"	)
 
 })
-
-

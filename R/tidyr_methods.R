@@ -35,7 +35,7 @@ nest.tidyBulk <- function (.data, ...)
 	#   %>%
 	#
 	# 	# Attach attributes
-	# 	add_attr(.data %>% attr("tt_columns"), "tt_columns") %>%
+	# 	reattach_internals(.data) %>%
 	#
 	# 	# Add class
 	# 	add_class("tt") %>%

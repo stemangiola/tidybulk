@@ -25,6 +25,6 @@ ttBulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <T
 
 This function is based on FeatureCounts package. This function created a tidyBulk object and is useful if you want
 to avoid to specify .sample, .transcript and .abundance arguments all the times.
-The tidyBulk object have an attribute called tt_columns where these three
-arguments are stored as metadata. They can be extracted as attr(<object>, "tt_columns").
+The tidyBulk object have an attribute called tt_internals where these three
+arguments are stored as metadata. They can be extracted as attr(<object>, "tt_internals").
 }
