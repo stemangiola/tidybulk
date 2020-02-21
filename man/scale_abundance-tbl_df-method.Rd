@@ -25,13 +25,13 @@
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{cpm_threshold}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure. The normalisation inference is then applied back to all unfiltered data.}
+\item{cpm_threshold}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.}
 
-\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.}
+\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
 \item{method}{A character string. The methods used by the function. The method is passed to the function `calcNormFactors` from edgeR package.}
 
-\item{reference_selection_function}{A fucntion that is used to selecting the reference sample for normalisation. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.}
+\item{reference_selection_function}{A fucntion that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.}
 
 \item{action}{A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.}
 }
