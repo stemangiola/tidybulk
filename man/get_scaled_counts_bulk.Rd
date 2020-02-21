@@ -26,7 +26,7 @@ get_scaled_counts_bulk(
 
 \item{cpm_threshold}{A real positive number. Minimum counts per million required for a selected proportion of samples}
 
-\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.}
+\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
 \item{method}{A character string}
 

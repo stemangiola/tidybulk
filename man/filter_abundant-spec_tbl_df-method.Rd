@@ -22,9 +22,9 @@
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{cpm_threshold}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure.}
+\item{cpm_threshold}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.}
 
-\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.}
+\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 }
 \value{
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).

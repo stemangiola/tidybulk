@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_bulk.R
 \name{add_scaled_counts_bulk.get_cpm}
 \alias{add_scaled_counts_bulk.get_cpm}
-\title{Get count per million for TMM normalisation.}
+\title{Get count per million for TMM scaling.}
 \usage{
 add_scaled_counts_bulk.get_cpm(
   .data,
@@ -27,5 +27,5 @@ add_scaled_counts_bulk.get_cpm(
 A tibble with an additional column
 }
 \description{
-Get count per million for TMM normalisation.
+Get count per million for TMM scaling.
 }
