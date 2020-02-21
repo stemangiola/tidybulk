@@ -16,11 +16,11 @@ analyses. This package is part of a tidy transcriptomics suite for tidy
 and user-friendly grammar of RNA sequencing data exploration and
 analysis. A wide range of analyses are included in convenient wrappers,
 including: resolving duplicate gene symbol (e.g., isoforms), scaling
-(normalisation), identifying variable transcripts, removal of know
-unwanted variation, differential transcript abundance analyses
-(differential expression), reducing data dimensionality (MDS, PCA and
-tSNE), clustering (SNN and kmeans), gene enrichment analyses, remove
-redundancy (either samples or transcripts).
+(a.k.a., normalisation), identifying variable transcripts, removal of
+know unwanted variation, differential transcript abundance analyses
+(a.k.a., differential expression), reducing data dimensionality (MDS,
+PCA and tSNE), clustering (SNN and kmeans), gene enrichment analyses,
+remove redundancy (either samples or transcripts).
 
 # <img src="inst/logo.png" height="139px" width="120px" />
 
@@ -123,12 +123,12 @@ colnames(dge_list.nr) <- colnames(dge_list)
 
 # Scale `counts`
 
-We may want to calculate the scaled counts for library size (e.g., with
-TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
-`scale_abundance` takes a tibble, column names (as symbols; for
-`sample`, `transcript` and `count`) and a method as arguments and
-returns a tibble with additional columns with scaled data as `<NAME OF
-COUNT COLUMN> scaled`.
+We may want to compensate for sequencing depth, scaling the transcript
+abundance (e.g., with TMM algorithm, Robinson and Oshlack
+doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble,
+column names (as symbols; for `sample`, `transcript` and `count`) and a
+method as arguments and returns a tibble with additional columns with
+scaled data as `<NAME OF COUNT COLUMN> scaled`.
 
 <div class="column-left">
 
@@ -166,9 +166,9 @@ norm_counts.table <- t(
 
 </div>
 
-We can easily plot the scaled density to check the normalisation
-outcome. On the x axis we have the log scaled counts, on the y axes we
-have the density, data is grouped by sample and coloured by cell type.
+We can easily plot the scaled density to check the scaling outcome. On
+the x axis we have the log scaled counts, on the y axes we have the
+density, data is grouped by sample and coloured by cell type.
 
 ``` r
 counts.norm %>%
@@ -607,7 +607,7 @@ counts.de =
     counts %>%
     test_differential_abundance(
         ~ 0 + condition,                  
-        .contrasts = c( "conditionTRUE - conditionFALSE"), 
+        .contrasts = c( "conditionTRUE - conditionFALSE"),
         action="get"
     )
 ```

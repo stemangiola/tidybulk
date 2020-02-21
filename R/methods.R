@@ -199,11 +199,11 @@ setGeneric("ttBulk_SAM_BAM", function(file_names, genome = "hg38", ...) standard
 #'
 setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	function(file_names, genome = "hg38", ...) create_tt_from_bam_sam_bulk(file_names = file_names, genome = genome, ...))
 
-#' Normalise the counts of transcripts/genes
+#' Scale the counts of transcripts/genes
 #'
 #' \lifecycle{maturing}
 #'
-#' @description scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and normalises the data for the library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+#' @description scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -216,17 +216,17 @@ setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #'
-#' @param cpm_threshold A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure. The normalisation inference is then applied back to all unfiltered data.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
+#' @param cpm_threshold A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The methods used by the function. The method is passed to the function `calcNormFactors` from edgeR package.
-#' @param reference_selection_function A fucntion that is used to selecting the reference sample for normalisation. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
+#' @param reference_selection_function A fucntion that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
 #' @param action A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.
 #'
-#' @details normalises the data for the library size
+#' @details Scales transcript abundance compansating for sequencing depth
 #' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #' Lowly transcribed transcripts/genes (defined with cpm_threshold and prop_threshold parameters)
-#' are filtered out from the normalisation procedure.
-#' The normalisation inference is then applied back to all unfiltered data.
+#' are filtered out from the scaling procedure.
+#' The scaling inference is then applied back to all unfiltered data.
 #'
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
 #'
@@ -1740,8 +1740,8 @@ setMethod("annotate_symbol", "tidyBulk", .annotate_symbol)
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
-#' @param cpm_threshold A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
+#' @param cpm_threshold A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
@@ -2071,8 +2071,8 @@ setMethod("filter_variable", "RangedSummarizedExperiment", .filter_variable_se)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param cpm_threshold A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.
+#' @param cpm_threshold A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
+#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #'
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
 #'

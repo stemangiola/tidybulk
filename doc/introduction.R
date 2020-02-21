@@ -1,7 +1,7 @@
 ## ---- echo=FALSE, include=FALSE-----------------------------------------------
 library(knitr)
 #library(kableExtra)
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE, 
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
                       message = FALSE, cache.lazy = FALSE)
 #options(width = 120)
 options(pillar.min_title_chars = Inf)
@@ -9,11 +9,11 @@ options(pillar.min_title_chars = Inf)
 
 library(tibble)
 library(dplyr)
-library(magrittr) 
+library(magrittr)
 library(tidyr)
 library(ggplot2)
-library(widyr) 
-library(rlang) 
+library(widyr)
+library(rlang)
 library(purrr)
 library(tidyBulk)
 
@@ -32,35 +32,35 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
-# counts_mini = 
-# 	tidyBulk::counts %>% 
-# 	filter(transcript %in% (tidyBulk::X_cibersort %>% rownames)) %>% 
+# counts_mini =
+# 	tidyBulk::counts %>%
+# 	filter(transcript %in% (tidyBulk::X_cibersort %>% rownames)) %>%
 # 	filter(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058", "SRR1740043", "SRR1740067")) %>%
 # 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
 # se_mini
 se_mini = tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts_mini, sample, transcript, count)
 se_breast_tcga_mini = tidyBulk:::ttBulk_to_SummarizedExperiment( tidyBulk::breast_tcga_mini, sample, ens, `count`)
-se.cibersort = 
-	tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count) 
-se.norm.batch = 
-	
+se.cibersort =
+	tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count)
+se.norm.batch =
+
 	tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count) %>%
 	scale_abundance()
 
 ## -----------------------------------------------------------------------------
 counts = tidyBulk(tidyBulk::counts_mini, sample, transcript, count)
-counts 
+counts
 
 ## ----aggregate, cache=TRUE----------------------------------------------------
 counts.aggr =  counts %>% aggregate_duplicates( 	aggregation_function = sum )
 
-counts.aggr 
+counts.aggr
 
 ## ----aggregate se, cache=TRUE-------------------------------------------------
 se.aggr =  se_mini %>% aggregate_duplicates( 	aggregation_function = sum )
 
-se.aggr 
+se.aggr
 
 ## ----normalise, cache=TRUE----------------------------------------------------
 counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
@@ -68,16 +68,16 @@ counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
 counts.norm %>% select(`count`, `count scaled`, `filter out low counts`, everything())
 
 ## ----plot_normalise, cache=TRUE-----------------------------------------------
-counts.norm %>% 
+counts.norm %>%
 	ggplot(aes(`count scaled` + 1, group=sample, color=`Cell type`)) +
-	geom_density() + 
+	geom_density() +
 	scale_x_log10() +
 	my_theme
 
 ## ----normalise se, cache=TRUE-------------------------------------------------
 se.norm =  se.aggr %>% scale_abundance(method="TMM")
 
-se.norm 
+se.norm
 
 ## ----mds, cache=TRUE----------------------------------------------------------
 counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = `count scaled`, method="MDS", .dims = 3)
@@ -109,10 +109,10 @@ counts.norm.PCA %>%
 ## ----pca se, cache=TRUE-------------------------------------------------------
 se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = `count scaled`, method="PCA" ,  .dims = 3)
 
-se.norm.PCA 
+se.norm.PCA
 
 ## ---- echo=FALSE, include=FALSE-----------------------------------------------
-tt_tcga_breast = 
+tt_tcga_breast =
 	tidyBulk::breast_tcga_mini %>%
 	tidyBulk(sample, ens, `count`)
 
@@ -120,32 +120,32 @@ tt_tcga_breast =
 counts.norm.tSNE =
 	tt_tcga_breast %>%
 	reduce_dimensions(
-		.abundance = `count scaled`, 
-		method = "tSNE", 
-		top = 500, 
-		perplexity=10, 
+		.abundance = `count scaled`,
+		method = "tSNE",
+		top = 500,
+		perplexity=10,
 		pca_scale =TRUE
-	) 
+	)
 
-counts.norm.tSNE %>% 
+counts.norm.tSNE %>%
 	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct()
 
-counts.norm.tSNE %>% 
+counts.norm.tSNE %>%
 	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct() %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 
 ## ----tsne se, cache=TRUE------------------------------------------------------
-se.norm.tSNE = 
+se.norm.tSNE =
 	se_breast_tcga_mini %>%
 	reduce_dimensions(
-		.abundance = `count scaled`, 
-		method = "tSNE", 
-		top = 500, 
-		perplexity=10, 
+		.abundance = `count scaled`,
+		method = "tSNE",
+		top = 500,
+		perplexity=10,
 		pca_scale =TRUE
-	) 
+	)
 se.norm.tSNE
 
 ## ----rotate, cache=TRUE-------------------------------------------------------
@@ -178,7 +178,7 @@ counts %>%	test_differential_abundance(  ~ condition,  action="get")
 se_mini %>%	test_differential_abundance(  ~ condition)
 
 ## ---- echo=FALSE, include=FALSE-----------------------------------------------
-counts.norm.batch = 
+counts.norm.batch =
 	counts.norm %>%
 
 	  # Add fake batch and factor of interest
@@ -187,7 +187,7 @@ counts.norm.batch =
 	  		distinct(sample) %>%
 	  		mutate(batch = c(0,1,0,1,1))
 	  ) %>%
-	 	mutate(factor_of_interest = `Cell type` == "b_cell") 
+	 	mutate(factor_of_interest = `Cell type` == "b_cell")
 
 
 ## ----adjust, cache=TRUE-------------------------------------------------------
@@ -257,11 +257,11 @@ se.norm %>%
 ## ----SNN, cache=TRUE----------------------------------------------------------
 counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= `count scaled`, method = "SNN")
 
-counts.norm.SNN %>% 
+counts.norm.SNN %>%
 	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample) %>%
 	distinct()
 
-counts.norm.SNN %>% 
+counts.norm.SNN %>%
 	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
 	gather(source, Call, c("cluster SNN", "Call")) %>%
 	distinct() %>%
@@ -337,27 +337,27 @@ remove_redundancy(
 counts_ensembl %>% annotate_symbol(ens)
 
 ## ---- cache=TRUE--------------------------------------------------------------
-  counts.norm 
+  counts.norm
 
 ## ---- cache=TRUE--------------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count scaled`, 
-    	method="MDS" , 
-    	.element = sample, 
-    	.feature = transcript, 
-    	.dims = 3, 
+    	.abundance = `count scaled`,
+    	method="MDS" ,
+    	.element = sample,
+    	.feature = transcript,
+    	.dims = 3,
     	action="add"
     )
 
 ## ---- cache=TRUE--------------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count scaled`, 
-    	method="MDS" , 
-    	.element = sample, 
-    	.feature = transcript, 
-    	.dims = 3, 
+    	.abundance = `count scaled`,
+    	method="MDS" ,
+    	.element = sample,
+    	.feature = transcript,
+    	.dims = 3,
     	action="get"
     )
 
