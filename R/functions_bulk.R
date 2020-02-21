@@ -28,25 +28,13 @@ create_tt_from_tibble_bulk = function(.data,
 	.data %>%
 
 		# Add tt_columns attribute
-		add_attr(
-			list(
-				.sample = .sample,
-				.transcript = .transcript,
-				.abundance = .abundance
-			) %>%
-
-				# If .abundance_scaled is not NULL add it to tt_columns
-				ifelse_pipe(.abundance_scaled %>% quo_is_symbol,
-										~ .x %>% c(
-											list(.abundance_scaled = .abundance_scaled)
-										)),
-			"tt_columns"
-		) %>%
+		add_tt_columns(!!.sample, !!.transcript, !!.abundance, !!.abundance_scaled) %>%
 
 		# Add class
 		add_class("tt") %>%
 		add_class("tidyBulk")
 }
+
 
 
 #' Convert bam/sam files to a tidy gene transcript counts data frame
@@ -185,7 +173,7 @@ add_scaled_counts_bulk.get_cpm <- function(.data,
 		) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("tt_columns"), "tt_columns")
+		reattach_internals(.data)
 
 
 }
@@ -259,7 +247,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 		# Filter based on how many samples have a gene below the threshold
 		filter_transcript_high_prop_cpm(!!.sample, !!.transcript, cpm_threshold = cpm_threshold, prop_threshold = prop_threshold) %>%
 		# Attach attributes
-		add_attr(.data %>% attr("tt_columns"), "tt_columns")
+		reattach_internals(.data)
 }
 
 
@@ -360,7 +348,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 	list(gene_to_exclude = gene_to_exclude, nf = nf) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("tt_columns"), "tt_columns")
+		reattach_internals(.data)
 }
 
 #' Get a tibble with scaled counts using TMM
@@ -511,16 +499,13 @@ get_scaled_counts_bulk <- function(.data,
 		arrange(!!.sample, !!.transcript)
 		#dplyr::select(-!!.sample,-!!.transcript)
 
-	# Attach attributes
+	# Attach attributesz
 	df_norm %>%
-		add_attr(
-			.data %>%
-				attr("tt_columns") %>%
-				c(
-					.abundance_scaled =
-						(function(x, v) enquo(v))(x, !!value_scaled)
-					),
-			"tt_columns"
+		add_tt_columns(
+			!!.sample,
+			!!.transcript,
+			!!.abundance,
+			!!(function(x, v) enquo(v))(x, !!value_scaled)
 		)
 
 }
@@ -573,7 +558,7 @@ add_scaled_counts_bulk <- function(.data,
 			method = method,
 			reference_selection_function = reference_selection_function
 		) %>%
-		select(-contains(quo_name(.sample)),-contains(quo_name(.transcript)))
+		arrange(!!.sample, !!.transcript)
 
 	.data %>%
 		arrange(!!.sample, !!.transcript) %>%
@@ -581,11 +566,12 @@ add_scaled_counts_bulk <- function(.data,
 		# Add scaled data set
 		bind_cols(
 			.data_norm %>%
-				select(-contains(quo_name(.sample)),-contains(quo_name(.transcript)))
+				select(-one_of(quo_name(.sample)),-one_of(quo_name(.transcript)))
 		)		%>%
 
 		# Attach attributes
-		add_attr(.data_norm %>% attr("tt_columns"), "tt_columns")
+		reattach_internals(.data_norm)
+
 
 }
 
@@ -781,7 +767,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 
 		# Attach attributes
-		add_attr(.data %>% attr("tt_columns"), "tt_columns")
+		reattach_internals(.data)
 }
 
 #' Add differential transcription information to a tibble using edgeR.
@@ -856,7 +842,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 		)	%>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("tt_columns"), "tt_columns")
+		reattach_internals(.data)
 }
 
 
@@ -1128,7 +1114,7 @@ get_clusters_kmeans_bulk <-
 			mutate(`cluster kmeans` = `cluster kmeans` %>% as.factor()) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 #' Add K-mean clusters to a tibble
@@ -1184,7 +1170,7 @@ add_clusters_kmeans_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 #' Get SNN shared nearest neighbour clusters to a tibble
@@ -1265,7 +1251,7 @@ get_clusters_SNN_bulk <-
 			dplyr::mutate(!!.element := gsub("\\.", "-", !!.element)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 #' Add SNN shared nearest neighbour clusters to a tibble
@@ -1316,7 +1302,7 @@ add_clusters_SNN_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 #' Get dimensionality information to a tibble using MDS
@@ -1418,7 +1404,7 @@ get_reduced_dimensions_MDS_bulk <-
 			)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 #' Add dimensionality information to a tibble using MDS
@@ -1478,7 +1464,7 @@ add_reduced_dimensions_MDS_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 #' Get principal component information to a tibble using PCA
@@ -1614,7 +1600,7 @@ get_reduced_dimensions_PCA_bulk <-
 			select(!!.element, sprintf("PC%s", components)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 
 	}
 
@@ -1682,7 +1668,7 @@ add_reduced_dimensions_PCA_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 #' Get principal component information to a tibble using tSNE
@@ -1799,7 +1785,7 @@ get_reduced_dimensions_TSNE_bulk <-
 			select(!!.element, everything()) %>%
 
 				# Attach attributes
-				add_attr(.data %>% attr("tt_columns"), "tt_columns")
+				reattach_internals(.data)
 
 	}
 
@@ -1866,7 +1852,7 @@ add_reduced_dimensions_TSNE_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 
@@ -1963,7 +1949,7 @@ get_rotated_dimensions =
 			spread(`rotated dimensions`, value) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 
 	}
 
@@ -2041,7 +2027,7 @@ add_rotated_dimensions =
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 #' Aggregates multiple counts from the same samples (e.g., from isoforms)
@@ -2117,11 +2103,11 @@ aggregate_duplicated_transcripts_bulk =
 
 			# If scaled add the column to the exclusion
 			ifelse_pipe(
-				(".abundance_scaled" %in% (.data %>% attr("tt_columns") %>% names) &&
-				 	# .data %>% attr("tt_columns") %$% .abundance_scaled %>% is.null %>% `!` &&
-				 	quo_name(.data %>% attr("tt_columns") %$% .abundance_scaled) %in% (.data %>% colnames)
+				(".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
+				 	# .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% `!` &&
+				 	quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)
 				),
-				~ .x %>% select(-!!(.data %>% attr("tt_columns") %$% .abundance_scaled))
+				~ .x %>% select(-!!(.data %>% get_tt_columns() %$% .abundance_scaled))
 			)	%>%
 			colnames() %>%
 			c("n_aggr")
@@ -2158,12 +2144,12 @@ aggregate_duplicated_transcripts_bulk =
 
 											# If scaled abundance exists aggragate that as well
 											ifelse_pipe(
-												(".abundance_scaled" %in% (.data %>% attr("tt_columns") %>% names) &&
-												 	# .data %>% attr("tt_columns") %$% .abundance_scaled %>% is.null %>% `!` &&
-												 	quo_name(.data %>% attr("tt_columns") %$% .abundance_scaled) %in% (.data %>% colnames)
+												(".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
+												 	# .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% `!` &&
+												 	quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)
 												),
 												~ {
-													.abundance_scaled = .data %>% attr("tt_columns") %$% .abundance_scaled
+													.abundance_scaled = .data %>% get_tt_columns() %$% .abundance_scaled
 													.x %>% dplyr::mutate(!!.abundance_scaled := !!.abundance_scaled %>% aggregation_function())
 												}
 											) %>%
@@ -2181,7 +2167,7 @@ aggregate_duplicated_transcripts_bulk =
 			rename(`merged transcripts` = n_aggr) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 
 	}
 
@@ -2302,7 +2288,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.data %>% anti_join(.data.correlated) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("tt_columns"), "tt_columns")
+		reattach_internals(.data)
 }
 
 #' Identifies the closest pairs in a MDS contaxt and return one of them
@@ -2373,7 +2359,7 @@ remove_redundancy_elements_though_reduced_dimensions <-
 		.data %>% anti_join(.data.redundant) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 # #' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
@@ -2479,7 +2465,7 @@ add_symbol_from_ensembl <-
 									get_symbol_from_ensembl(!!.ensembl)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("tt_columns"), "tt_columns")
+			reattach_internals(.data)
 	}
 
 #' Perform linear equation system analysis through llsr
@@ -2619,7 +2605,7 @@ get_cell_type_proportions = function(.data,
 		#gather(`Cell type`, proportion,-!!.sample) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("tt_columns"), "tt_columns")
+		reattach_internals(.data)
 
 
 }
@@ -2677,7 +2663,7 @@ add_cell_type_proportions = function(.data,
 		) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("tt_columns"), "tt_columns")
+		reattach_internals(.data)
 
 }
 
@@ -2828,7 +2814,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		# )%>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("tt_columns"), "tt_columns")
+		reattach_internals(.data)
 }
 
 #' Add adjusted count for some batch effect
@@ -2889,7 +2875,7 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		)%>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("tt_columns"), "tt_columns")
+		reattach_internals(.data)
 
 }
 
@@ -2986,10 +2972,10 @@ ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = N
 	.abundance_scaled =
 		.data %>%
 		ifelse_pipe(
-			".abundance_scaled" %in% ((.) %>% attr("tt_columns") %>% names) &&
-				# .data %>% attr("tt_columns") %$% .abundance_scaled %>% is.null %>% `!` &&
-				quo_name((.) %>% attr("tt_columns") %$% .abundance_scaled) %in% ((.) %>% colnames),
-			~ .x %>% attr("tt_columns") %$% .abundance_scaled,
+			".abundance_scaled" %in% ((.) %>% get_tt_columns() %>% names) &&
+				# .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% `!` &&
+				quo_name((.) %>% get_tt_columns() %$% .abundance_scaled) %in% ((.) %>% colnames),
+			~ .x %>% get_tt_columns() %$% .abundance_scaled,
 			~ NULL
 		)
 
@@ -3018,4 +3004,58 @@ ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = N
 		colData = colData
 	)
 
+}
+
+#' Get matrix from tibble
+#'
+#' @import dplyr
+#' @import tidyr
+#' @importFrom magrittr set_rownames
+#' @importFrom rlang quo_is_null
+#'
+#' @param tbl A tibble
+#' @param rownames A character string of the rownames
+#' @param do_check A boolean
+#'
+#' @return A matrix
+#'
+#' @examples
+#'
+#' as_matrix(head(dplyr::select(tidyBulk::counts_mini, transcript, count)), rownames=transcript)
+#'
+#' @export
+as_matrix <- function(tbl,
+											rownames = NULL,
+											do_check = TRUE) {
+	rownames = enquo(rownames)
+	tbl %>%
+
+		# Through warning if data frame is not numerical beside the rownames column (if present)
+		ifelse_pipe(
+			do_check &&
+				tbl %>%
+				# If rownames defined eliminate it from the data frame
+				ifelse_pipe(!quo_is_null(rownames), ~ .x[, -1], ~ .x) %>%
+				dplyr::summarise_all(class) %>%
+				tidyr::gather(variable, class) %>%
+				pull(class) %>%
+				unique() %>%
+				`%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+			~ {
+				warning("to_matrix says: there are NON-numerical columns, the matrix will NOT be numerical")
+				.x
+			}
+		) %>%
+		as.data.frame() %>%
+
+		# Deal with rownames column if present
+		ifelse_pipe(
+			!quo_is_null(rownames),
+			~ .x %>%
+				magrittr::set_rownames(tbl %>% pull(!!rownames)) %>%
+				select(-1)
+		) %>%
+
+		# Convert to matrix
+		as.matrix()
 }
