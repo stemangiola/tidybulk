@@ -499,7 +499,7 @@ get_scaled_counts_bulk <- function(.data,
 		arrange(!!.sample, !!.transcript)
 		#dplyr::select(-!!.sample,-!!.transcript)
 
-	# Attach attributesz
+	# Attach attributes
 	df_norm %>%
 		add_tt_columns(
 			!!.sample,
@@ -624,12 +624,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
 
-		# # Check input types
-		# error_if_wrong_input(
-		#   as.list(environment())[-1],
-		#   c("spec_tbl_df",".formula", "quosure",  "quosure",  "quosure", "numeric")
-		# ) %>%
-
 		# Stop if any counts is NA
 		error_if_counts_is_na(!!.abundance) %>%
 
@@ -677,9 +671,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	# Print the design column names in case I want constrasts
 	message(sprintf("tidyBulk says: The design column names are \"%s\" in case you are interested in contrasts", design %>% colnames %>% paste(collapse=", ")))
 
-	#%>%
-	#	magrittr::set_colnames(c("(Intercept)",	 (.) %>% colnames %>% `[` (-1)))
-
 	my_contrasts =
 		.contrasts %>%
 		ifelse_pipe(
@@ -703,7 +694,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			`filter out low counts` = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance, cpm_threshold = cpm_threshold,				 prop_threshold = prop_threshold)
 		)
 
-	df_for_edgeR.filt %>%
+	edgeR_object =
+		df_for_edgeR.filt %>%
 		filter(!`filter out low counts`) %>%
 		select(!!.transcript, !!.sample, !!.abundance) %>%
 		spread(!!.sample, !!.abundance) %>%
@@ -719,7 +711,9 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		edgeR::calcNormFactors(method = "TMM") %>%
 		edgeR::estimateGLMCommonDisp(design) %>%
 		edgeR::estimateGLMTagwiseDisp(design) %>%
-		edgeR::glmFit(design) %>%
+		edgeR::glmFit(design)
+
+	edgeR_object %>%
 
 		# If I have multiple .contrasts merge the results
 		ifelse_pipe(
@@ -758,8 +752,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			}
 		)	 %>%
 
-
-
 		# Add filtering info
 		full_join(df_for_edgeR.filt %>%
 								select(!!.transcript, `filter out low counts`) %>%
@@ -767,7 +759,15 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 
 		# Attach attributes
-		reattach_internals(.data)
+		reattach_internals(.data) %>%
+
+		# Add raw object
+		attach_to_internals(edgeR_object, "edgeR") %>%
+		# Communicate the attribute added
+		{
+			message("tidyBulk says: to access the raw results (glmFit) do `attr(..., \"tt_internals\")$edgeR`")
+			(.)
+		}
 }
 
 #' Add differential transcription information to a tibble using edgeR.
@@ -818,10 +818,9 @@ add_differential_transcript_abundance_bulk <- function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
-	.data %>%
-		dplyr::left_join(
-			(.) %>%
-				get_differential_transcript_abundance_bulk(
+	.data_processed =
+		.data %>%
+			get_differential_transcript_abundance_bulk(
 					.formula,
 					.sample = !!.sample,
 					.transcript = !!.transcript,
@@ -833,7 +832,9 @@ add_differential_transcript_abundance_bulk <- function(.data,
 					prop_threshold = prop_threshold,
 					fill_missing_values = fill_missing_values
 				)
-		) %>%
+
+	.data %>%
+		dplyr::left_join(.data_processed) %>%
 
 		# Arrange
 		ifelse_pipe(
@@ -842,7 +843,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 		)	%>%
 
 		# Attach attributes
-		reattach_internals(.data)
+		reattach_internals(.data_processed)
 }
 
 
@@ -1354,57 +1355,49 @@ get_reduced_dimensions_MDS_bulk <-
 		# Get components from dims
 		components = 1:.dims
 
-		# Convert components to components list
-		if ((length(components) %% 2) != 0)
-			components = components %>% append(components[1])
-		components_list = split(components, ceiling(seq_along(components) / 2))
+		mds_object =
+			.data %>%
 
-		# Loop over components list and calculate MDS. (I have to make this process more elegant)
-		components_list %>%
-			map_dfr(
-				~ .data %>%
+			# Through error if some counts are NA
+			error_if_counts_is_na(!!.abundance) %>%
 
-					# Through error if some counts are NA
-					error_if_counts_is_na(!!.abundance) %>%
+			# Filter lowly transcribed (I have to avoid the use of normalising function)
+			filter_abundant(!!.element,!!.feature, !!.abundance) %>%
+			distinct(!!.feature, !!.element, !!.abundance) %>%
 
-					# Filter lowly transcribed (I have to avoid the use of normalising function)
-					filter_abundant(!!.element,!!.feature, !!.abundance) %>%
-					distinct(!!.feature, !!.element, !!.abundance) %>%
+			# Check if logtansform is needed
+			ifelse_pipe(
+				log_transform,
+				~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())
+			) %>%
 
-					# Check if logtansform is needed
-					ifelse_pipe(
-						log_transform,
-						~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())
-					) %>%
+			# Stop any column is not if not numeric or integer
+			ifelse_pipe(
+				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+				~ stop(".abundance must be numerical or integer")
+			) %>%
+			spread(!!.element, !!.abundance) %>%
+			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
+			limma::plotMDS(ndim = .dims, plot = FALSE, top = top)
 
-					# Stop any column is not if not numeric or integer
-					ifelse_pipe(
-						(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-						~ stop(".abundance must be numerical or integer")
-					) %>%
-					spread(!!.element, !!.abundance) %>%
-					as_matrix(rownames = !!.feature, do_check = FALSE) %>%
-					limma::plotMDS(dim.plot = .x, plot = FALSE, top = top) %>%
+		# Pase results
+		mds_object %$%	cmdscale.out %>%
+			as.data.frame %>%
+			as_tibble(rownames = quo_name(.element)) %>%
+			setNames(c(quo_name(.element), sprintf("Dim%s", 1:.dims))) %>%
 
-					# Anonymous function
-					# input: MDS object
-					# output: tibble
-					{
-						tibble(names((.)$x), (.)$x, (.)$y) %>%
-							dplyr::rename(
-								!!.element := `names((.)$x)`,!!as.symbol(.x[1]) := `(.)$x`,!!as.symbol(.x[2]) := `(.)$y`
-							) %>%
-							gather(Component, `Component value`, -!!.element)
-					}
-			)  %>%
-			distinct() %>%
-			spread(Component, `Component value`) %>%
-			setNames(c((.) %>% select(1) %>% colnames(),
-								 paste0("Dim", (.) %>% select(-1) %>% colnames())
-			)) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data) %>%
+
+			# Add raw object
+			attach_to_internals(mds_object, "MDS") %>%
+			# Communicate the attribute added
+			{
+				message("tidyBulk says: to access the raw results do `attr(..., \"tt_internals\")$MDS`")
+				(.)
+			}
+
 	}
 
 #' Add dimensionality information to a tibble using MDS
@@ -1448,10 +1441,9 @@ add_reduced_dimensions_MDS_bulk <-
 		.feature = col_names$.feature
 		.abundance = col_names$.abundance
 
-		.data %>%
-			dplyr::left_join(
-				(.) %>%
-					get_reduced_dimensions_MDS_bulk(
+		.data_processed =
+			.data %>%
+				get_reduced_dimensions_MDS_bulk(
 						.abundance = !!.abundance,
 						.dims = .dims,
 						.element = !!.element,
@@ -1459,12 +1451,12 @@ add_reduced_dimensions_MDS_bulk <-
 						top = top,
 						of_samples = of_samples,
 						log_transform = log_transform
-					),
-				by = quo_name(.element)
-			) %>%
+					)
+
+		.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data_processed)
 	}
 
 #' Get principal component information to a tibble using PCA
@@ -1603,7 +1595,15 @@ get_reduced_dimensions_PCA_bulk <-
 			select(!!.element, sprintf("PC%s", components)) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data) %>%
+
+			# Add raw object
+			attach_to_internals(prcomp_obj, "PCA") %>%
+			# Communicate the attribute added
+			{
+				message("tidyBulk says: to access the raw results do `attr(..., \"tt_internals\")$PCA`")
+				(.)
+			}
 
 	}
 
@@ -1653,10 +1653,9 @@ add_reduced_dimensions_PCA_bulk <-
 		.feature = col_names$.feature
 		.abundance = col_names$.abundance
 
-		.data %>%
-			dplyr::left_join(
-				(.) %>%
-					get_reduced_dimensions_PCA_bulk(
+		.data_processed =
+			.data %>%
+			get_reduced_dimensions_PCA_bulk(
 						.abundance = !!.abundance,
 						.dims = .dims,
 						.element = !!.element,
@@ -1666,12 +1665,13 @@ add_reduced_dimensions_PCA_bulk <-
 						log_transform = log_transform,
 						scale = scale,
 						...
-					),
-				by = quo_name(.element)
-			) %>%
+					)
+
+		.data %>%
+			dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data_processed)
 	}
 
 #' Get principal component information to a tibble using tSNE

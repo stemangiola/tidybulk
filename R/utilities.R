@@ -231,14 +231,9 @@ add_tt_columns = function(.data,
   .abundance = enquo(.abundance)
   .abundance_scaled = enquo(.abundance_scaled)
 
-  tt_internals =
-    .data %>%
-    initialise_tt_internals() %>%
-    attr("tt_internals")
-
-  # Add tt_bolumns
-  tt_internals$tt_columns =
-    list(
+  # Add tt_columns
+  .data %>% attach_to_internals(
+     list(
       .sample = .sample,
       .transcript = .transcript,
       .abundance = .abundance
@@ -248,9 +243,9 @@ add_tt_columns = function(.data,
     ifelse_pipe(
       .abundance_scaled %>% quo_is_symbol,
       ~ .x %>% c(		list(.abundance_scaled = .abundance_scaled))
-    )
-
-  .data %>% add_attr(tt_internals, "tt_internals")
+    ),
+    "tt_columns"
+  )
 
 }
 
@@ -269,6 +264,18 @@ reattach_internals = function(.data, .data_internals_from = NULL){
   .data %>% add_attr(.data_internals_from %>% attr("tt_internals"), "tt_internals")
 }
 
+attach_to_internals = function(.data, .object, .name){
+
+  tt_internals =
+    .data %>%
+    initialise_tt_internals() %>%
+    attr("tt_internals")
+
+  # Add tt_bolumns
+  tt_internals[[.name]] = .object
+
+  .data %>% add_attr(tt_internals, "tt_internals")
+}
 #' Add attribute to abject
 #'
 #'

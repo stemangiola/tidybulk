@@ -142,6 +142,8 @@ test_that("Get differential trancript abundance - no object",{
     8
   )
 
+  expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+
   # Continuous covariate
   sam = distinct(input_df, a)
   sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
@@ -166,6 +168,8 @@ test_that("Get differential trancript abundance - no object",{
   	ncol(res),
   	8
   )
+
+  expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
 
   # Just one covariate error
   expect_error(
@@ -211,6 +215,8 @@ test_that("Get differential trancript abundance - no object",{
   	c(-12.33879, -12.66131, -11.70319, -13.62226),
   	tolerance=1e-6
   )
+
+  expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
 })
 
 test_that("Get differential trancript abundance - no object - with contrasts",{
@@ -236,6 +242,8 @@ test_that("Get differential trancript abundance - no object - with contrasts",{
 		ncol(res),
 		14
 	)
+
+	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
 
 })
 
@@ -263,7 +271,9 @@ test_that("Add differential trancript abundance - no object",{
     13
   )
 
-})
+  expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+
+ })
 
 test_that("Get entrez from symbol - no object",{
 
@@ -472,6 +482,8 @@ test_that("Get reduced dimensions MDS - no object",{
     3
   )
 
+  expect_equal(	class(attr(res, "tt_internals")$MDS)[1], 	"MDS"  )
+
 })
 
 test_that("Add reduced dimensions MDS - no object",{
@@ -497,6 +509,7 @@ test_that("Add reduced dimensions MDS - no object",{
     8
   )
 
+  expect_equal(	class(attr(res, "tt_internals")$MDS)[1], 	"MDS"  )
 })
 
 test_that("Get reduced dimensions PCA - no object",{
@@ -522,6 +535,7 @@ test_that("Get reduced dimensions PCA - no object",{
     3
   )
 
+  expect_equal(	class(attr(res, "tt_internals")$PCA), 	"prcomp"  )
 })
 
 test_that("Add reduced dimensions PCA - no object",{
@@ -545,6 +559,8 @@ test_that("Add reduced dimensions PCA - no object",{
     ncol(res),
     8
   )
+
+  expect_equal(	class(attr(res, "tt_internals")$PCA), 	"prcomp"  )
 
 })
 
