@@ -135,9 +135,9 @@ setMethod("tidyBulk", "tbl_df", .tidyBulk)
 		mutate_if(is.character, as.factor) %>%
 		tidyBulk(
 			sample,
-			feature,!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names),
-
-			# scaled counts if any!!norm_col
+			feature,
+			!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
+			!!norm_col # scaled counts if any
 		)
 
 }
