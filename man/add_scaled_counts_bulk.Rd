@@ -28,7 +28,7 @@ add_scaled_counts_bulk(
 
 \item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
-\item{method}{A character string}
+\item{method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
 \item{reference_selection_function}{A function between median, mean and max}
 }

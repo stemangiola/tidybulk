@@ -30,7 +30,7 @@ add_scaled_counts_bulk.calcNormFactor(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{method}{A string character}
+\item{method}{A string character. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 }
 \value{
 A list including the filtered data frame and the normalization factors

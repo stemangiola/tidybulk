@@ -15,7 +15,8 @@ add_differential_transcript_abundance_bulk(
   significance_threshold = 0.05,
   cpm_threshold = 0.5,
   prop_threshold = 3/4,
-  fill_missing_values = FALSE
+  fill_missing_values = FALSE,
+  scaling_method = "TMM"
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ add_differential_transcript_abundance_bulk(
 \item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
 \item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
+
+\item{scaling_method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 }
 \value{
 A tibble with differential_transcript_abundance results
