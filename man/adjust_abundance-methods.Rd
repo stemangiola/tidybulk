@@ -34,7 +34,7 @@ adjust_abundance(
 \item{...}{Further parameters passed to the function sva::ComBat}
 }
 \value{
-A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
+A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 }
 \description{
 adjust_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.

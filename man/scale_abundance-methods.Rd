@@ -37,7 +37,7 @@ scale_abundance(
 \item{action}{A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.}
 }
 \value{
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
+A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 }
 \description{
 scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
