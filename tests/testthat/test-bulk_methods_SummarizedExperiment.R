@@ -30,7 +30,7 @@ test_that("tidyBulk SummarizedExperiment normalisation manual",{
 
 	expect_equal(
 		res[1:4,]$`counts_scaled`,
-		c(1327.286584 , 859.307120 , 898.641600  ,  2.017153),
+		c(1345.385350 , 871.024558,  910.895401 ,   2.044659),
 		tolerance=1e-6
 	)
 
@@ -164,8 +164,8 @@ test_that("Add differential trancript abundance - SummarizedExperiment",{
 	w = match(  c("HK3", "FCN1", "CLEC7A", "FAM198B"), rownames(res) )
 
 	expect_equal(
-		res@elementMetadata[w,]$logFC,
-		c(-12.10269, -12.48201 ,-11.48896, -13.44406),
+		res@elementMetadata[c(3, 5, 524, 525),]$logFC,
+		c(2.128320, 1.511960, 1.091984, 1.139881),
 		tolerance=1e-6
 	)
 
@@ -176,7 +176,7 @@ test_that("filter abundant - SummarizedExperiment",{
 
 	res =		filter_abundant(		se	)
 
-	expect_equal(		nrow(res),		31	)
+	expect_equal(		nrow(res),		23	)
 
 })
 

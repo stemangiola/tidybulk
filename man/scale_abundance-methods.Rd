@@ -10,8 +10,8 @@ scale_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  minimum_counts = 0.5,
-  prop_threshold = 3/4,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
   method = "TMM",
   reference_selection_function = median,
   action = "add"
@@ -28,7 +28,7 @@ scale_abundance(
 
 \item{minimum_counts}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.}
 
-\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
+\item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
 \item{method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
@@ -47,7 +47,7 @@ scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> 
 
 Scales transcript abundance compansating for sequencing depth
 (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
-Lowly transcribed transcripts/genes (defined with minimum_counts and prop_threshold parameters)
+Lowly transcribed transcripts/genes (defined with minimum_counts and minimum_proportion parameters)
 are filtered out from the scaling procedure.
 The scaling inference is then applied back to all unfiltered data.
 }

@@ -9,8 +9,9 @@ add_scaled_counts_bulk.get_low_expressed(
   .sample = sample,
   .transcript = transcript,
   .abundance = count,
-  minimum_counts = 0.5,
-  prop_threshold = 3/4
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7
 )
 }
 \arguments{
@@ -22,9 +23,11 @@ add_scaled_counts_bulk.get_low_expressed(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
+\item{factor_of_interest}{The name of the column of the factor of interest}
+
 \item{minimum_counts}{A positive integer. Minimum counts required for at least some samples.}
 
-\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
+\item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 }
 \value{
 A tibble filtered

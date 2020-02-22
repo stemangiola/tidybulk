@@ -53,7 +53,7 @@ test_that("Getting scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.124713, 1.011405, 1.511470, 0.828865, 1.191472),
+		c(1.835983, 1.607034, 2.554334, 1.323492, 2.561279),
 		tolerance=1e-6
 	)
 
@@ -84,7 +84,7 @@ test_that("Adding scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.124713 ,1.011405, 1.511470, 0.828865, 1.191472),
+		c(1.835983, 1.607034, 2.554334, 1.323492, 2.561279),
 		tolerance=1e-6
 	)
 
@@ -133,7 +133,7 @@ test_that("Get differential trancript abundance - no object",{
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-12.48201, -12.10269 ,-11.48896, -13.44406),
+		c( -8.698972, -6.554587, -7.192796, -6.533274),
 		tolerance=1e-6
 	)
 
@@ -160,7 +160,7 @@ test_that("Get differential trancript abundance - no object",{
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-4.403626, -4.390714, -4.746695, -4.467572),
+		c(-3.673818, -3.250104, -3.041978,  2.832697),
 		tolerance=1e-6
 	)
 
@@ -206,13 +206,13 @@ test_that("Get differential trancript abundance - no object",{
 			.transcript = b,
 			.abundance = c,
 			action="get",
-			prop_threshold = 0.5,
+			minimum_proportion = 0.5,
 			minimum_counts = 30
 		)
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-12.33879, -12.66131, -11.70319, -13.62226),
+		c(-6.204849, -6.199910, -6.091363, -6.779040),
 		tolerance=1e-6
 	)
 
@@ -246,7 +246,7 @@ test_that("Get differential trancript abundance - no object - with contrasts",{
 
 	expect_equal(
 		unique(res$`logFC_conditionTRUE - conditionFALSE`)[1:4],
-		c(-12.48201, -12.10269, -11.48896, -13.44406),
+		c(-8.698972, -6.554587 ,-7.192796, -6.533274),
 		tolerance=1e-6
 	)
 
@@ -273,8 +273,8 @@ test_that("Add differential trancript abundance - no object",{
 		)
 
 	expect_equal(
-		pull(filter(distinct(res, b, logFC), b %in% c("HK3", "FCN1", "CLEC7A", "FAM198B")) , "logFC"),
-		c(-12.10269, -12.48201 ,-11.48896, -13.44406),
+		pull(slice(distinct(res, b, logFC), 1:4) , "logFC"),
+		c(-8.698972, -6.453886 ,-7.192796, -6.554587),
 		tolerance=1e-6
 	)
 
@@ -359,7 +359,7 @@ test_that("Get adjusted counts - no object",{
 
 	expect_equal(
 		unique(res$`c_adjusted`)[c(1, 2, 3, 5)],
-		c( 693,   47, 7941, 7068),
+		c( 7948 ,2193 , 262, 8152),
 		tolerance=1e-6
 	)
 
@@ -844,12 +844,12 @@ test_that("filter abundant - no object",{
 
 	expect_equal(
 		res$b[1:4],
-		c("TNFRSF4", "PLCH2" ,  "PADI4" ,  "CDA"    )
+		c("PLCH2", "PADI4", "RCAN3", "EPB41" )
 	)
 
 	expect_equal(	ncol(res),	6	)
 
-	expect_equal(	nrow(res),	2220	)
+	expect_equal(	nrow(res),	910	)
 
 })
 

@@ -13,8 +13,8 @@ get_differential_transcript_abundance_bulk(
   .coef = 2,
   .contrasts = NULL,
   significance_threshold = 0.05,
-  minimum_counts = 0.5,
-  prop_threshold = 3/4,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
   fill_missing_values = FALSE,
   scaling_method = "TMM"
 )
@@ -38,7 +38,7 @@ get_differential_transcript_abundance_bulk(
 
 \item{minimum_counts}{A positive integer. Minimum counts required for at least some samples.}
 
-\item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
+\item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
 \item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
 

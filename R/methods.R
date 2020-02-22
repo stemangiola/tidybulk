@@ -221,14 +221,14 @@ setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	
 #' @param .abundance The name of the transcript/gene abundance column
 #'
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A fucntion that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
 #' @param action A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.
 #'
 #' @details Scales transcript abundance compansating for sequencing depth
 #' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
-#' Lowly transcribed transcripts/genes (defined with minimum_counts and prop_threshold parameters)
+#' Lowly transcribed transcripts/genes (defined with minimum_counts and minimum_proportion parameters)
 #' are filtered out from the scaling procedure.
 #' The scaling inference is then applied back to all unfiltered data.
 #'
@@ -250,8 +250,8 @@ setGeneric("scale_abundance", function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
-																			 minimum_counts = 0.5,
-																			 prop_threshold = 3 / 4,
+																			 minimum_counts = 10,
+																			 minimum_proportion = 0.7,
 																			 method = "TMM",
 																			 reference_selection_function = median,
 																			 action = "add")
@@ -262,8 +262,8 @@ setGeneric("scale_abundance", function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
-														 minimum_counts = 0.5,
-														 prop_threshold = 3 / 4,
+														 minimum_counts = 10,
+														 minimum_proportion = 0.7,
 														 method = "TMM",
 														 reference_selection_function = median,
 														 action = "add")
@@ -283,7 +283,7 @@ setGeneric("scale_abundance", function(.data,
 			!!.transcript,
 			!!.abundance,
 			minimum_counts = minimum_counts,
-			prop_threshold = prop_threshold,
+			minimum_proportion = minimum_proportion,
 			method = method,
 			reference_selection_function = reference_selection_function
 		)
@@ -294,7 +294,7 @@ setGeneric("scale_abundance", function(.data,
 			!!.transcript,
 			!!.abundance,
 			minimum_counts = minimum_counts,
-			prop_threshold = prop_threshold,
+			minimum_proportion = minimum_proportion,
 			method = method,
 			reference_selection_function = reference_selection_function
 		)
@@ -326,8 +326,8 @@ setMethod("scale_abundance", "tidyBulk", .scale_abundance)
 															 .sample = NULL,
 															 .transcript = NULL,
 															 .abundance = NULL,
-															 minimum_counts = 0.5,
-															 prop_threshold = 3 / 4,
+															 minimum_counts = 10,
+															 minimum_proportion = 0.7,
 															 method = "TMM",
 															 reference_selection_function = median,
 															 action = "add") {
@@ -345,7 +345,7 @@ setMethod("scale_abundance", "tidyBulk", .scale_abundance)
 		scale_abundance(
 			!!.sample,!!.transcript,!!.abundance,
 			minimum_counts = minimum_counts,
-			prop_threshold = prop_threshold,
+			minimum_proportion = minimum_proportion,
 			method = method,
 			reference_selection_function = reference_selection_function,
 			action = action
@@ -1805,7 +1805,7 @@ setMethod("annotate_symbol", "tidyBulk", .annotate_symbol)
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
@@ -1852,8 +1852,8 @@ setGeneric("test_differential_abundance", function(.data,
 																									 .coef = 2,
 																									 .contrasts = NULL,
 																									 significance_threshold = 0.05,
-																									 minimum_counts = 0.5,
-																									 prop_threshold = 3 / 4,
+																									 minimum_counts = 10,
+																									 minimum_proportion = 0.7,
 																									 fill_missing_values = FALSE,
 																									 scaling_method = "TMM",
 
@@ -1869,8 +1869,8 @@ setGeneric("test_differential_abundance", function(.data,
 																					.coef = 2,
 																					.contrasts = NULL,
 																					significance_threshold = 0.05,
-																					minimum_counts = 0.5,
-																					prop_threshold = 3 / 4,
+																					minimum_counts = 10,
+																					minimum_proportion = 0.7,
 																					fill_missing_values = FALSE,
 																					scaling_method = "TMM",
 																					action = "add")
@@ -1894,7 +1894,7 @@ setGeneric("test_differential_abundance", function(.data,
 			.contrasts = .contrasts,
 			significance_threshold = significance_threshold,
 			minimum_counts = minimum_counts,
-			prop_threshold = prop_threshold,
+			minimum_proportion = minimum_proportion,
 			fill_missing_values = fill_missing_values,
 			scaling_method = scaling_method
 		)
@@ -1909,7 +1909,7 @@ setGeneric("test_differential_abundance", function(.data,
 			.contrasts = .contrasts,
 			significance_threshold = significance_threshold,
 			minimum_counts = minimum_counts,
-			prop_threshold = prop_threshold,
+			minimum_proportion = minimum_proportion,
 			fill_missing_values = fill_missing_values,
 			scaling_method = scaling_method
 		)
@@ -1950,8 +1950,8 @@ setMethod("test_differential_abundance",
 																					 .coef = 2,
 																					 .contrasts = NULL,
 																					 significance_threshold = 0.05,
-																					 minimum_counts = 0.5,
-																					 prop_threshold = 3 / 4,
+																					 minimum_counts = 10,
+																					 minimum_proportion = 0.7,
 																					 fill_missing_values = FALSE,
 																					 scaling_method = "TMM",
 																					 action = "add")
@@ -1976,7 +1976,7 @@ setMethod("test_differential_abundance",
 			.contrasts = .contrasts,
 			significance_threshold = significance_threshold,
 			minimum_counts = minimum_counts,
-			prop_threshold = prop_threshold,
+			minimum_proportion = minimum_proportion,
 			fill_missing_values = fill_missing_values,
 			scaling_method = scaling_method,
 			action = action
@@ -2165,8 +2165,9 @@ setMethod("filter_variable",
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param factor_of_interest The name of the column of the factor of interest
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #'
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
 #'
@@ -2195,8 +2196,9 @@ setGeneric("filter_abundant", function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
-																			 minimum_counts = 0.5,
-																			 prop_threshold = 3 / 4)
+																			 factor_of_interest = NULL,
+																			 minimum_counts = 10,
+																			 minimum_proportion = 0.7)
 	standardGeneric("filter_abundant"))
 
 # Set internal
@@ -2204,8 +2206,9 @@ setGeneric("filter_abundant", function(.data,
 															.sample = NULL,
 															.transcript = NULL,
 															.abundance = NULL,
-															minimum_counts = 0.5,
-															prop_threshold = 3 / 4)
+															factor_of_interest = NULL,
+															minimum_counts = 10,
+															minimum_proportion = 0.7)
 {
 	# Get column names
 	.sample = enquo(.sample)
@@ -2239,8 +2242,9 @@ setGeneric("filter_abundant", function(.data,
 											.sample = !!.sample,
 											.transcript = !!.transcript,
 											.abundance = !!.abundance,
+											factor_of_interest = factor_of_interest,
 											minimum_counts = minimum_counts,
-											prop_threshold = prop_threshold
+											minimum_proportion = minimum_proportion
 										)
 
 									.x %>% dplyr::filter(!!.transcript %in% gene_to_exclude %>% `!`)
@@ -2269,8 +2273,9 @@ setMethod("filter_abundant", "tidyBulk", .filter_abundant)
 															 .sample = NULL,
 															 .transcript = NULL,
 															 .abundance = NULL,
-															 minimum_counts = 0.5,
-															 prop_threshold = 3 / 4)
+															 factor_of_interest = NULL,
+															 minimum_counts = 10,
+															 minimum_proportion = 0.7)
 {
 	# Make col names
 	.sample = enquo(.sample)
@@ -2287,8 +2292,9 @@ setMethod("filter_abundant", "tidyBulk", .filter_abundant)
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
+			factor_of_interest = factor_of_interest,
 			minimum_counts = minimum_counts,
-			prop_threshold = prop_threshold
+			minimum_proportion = minimum_proportion
 		) %>%
 
 		# Convert to SummaizedExperiment

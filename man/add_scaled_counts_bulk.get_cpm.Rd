@@ -9,7 +9,7 @@ add_scaled_counts_bulk.get_cpm(
   .sample = sample,
   .transcript = transcript,
   .abundance = count,
-  minimum_counts = 0.5
+  minimum_counts = 10
 )
 }
 \arguments{

@@ -130,7 +130,7 @@ add_scaled_counts_bulk.get_cpm <- function(.data,
 																					 .sample = `sample`,
 																					 .transcript = `transcript`,
 																					 .abundance = `count`,
-																					 minimum_counts = 0.5) {
+																					 minimum_counts = 10) {
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
@@ -172,7 +172,7 @@ filter_transcript_high_prop_cpm = function(.data,
 																					 .sample,
 																					 .transcript,
 																					 minimum_counts,
-																					 prop_threshold) {
+																					 minimum_proportion) {
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 
@@ -182,7 +182,7 @@ filter_transcript_high_prop_cpm = function(.data,
 		as_matrix(rownames = !!.transcript) %>%
 		`>` (minimum_counts) %>%
 		rowSums() %>%
-		`<` ((max(.) * prop_threshold) %>% floor)  %>%
+		`<` ((max(.) * minimum_proportion) %>% floor)  %>%
 		which %>%
 		names
 
@@ -201,16 +201,18 @@ filter_transcript_high_prop_cpm = function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param factor_of_interest The name of the column of the factor of interest
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #'
 #' @return A tibble filtered
 add_scaled_counts_bulk.get_low_expressed <- function(.data,
 																										 .sample = `sample`,
 																										 .transcript = `transcript`,
 																										 .abundance = `count`,
-																										 minimum_counts = 0.5,
-																										 prop_threshold = 3 / 4) {
+																										 factor_of_interest = NULL,
+																										 minimum_counts = 10,
+																										 minimum_proportion = 0.7) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -222,26 +224,26 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 
 	if (minimum_counts < 0)
 		stop("The parameter minimum_counts must be > 0")
-	if (prop_threshold < 0 |
-			prop_threshold > 1)
-		stop("The parameter prop_threshold must be between 0 and 1")
+	if (minimum_proportion < 0 |
+			minimum_proportion > 1)
+		stop("The parameter minimum_proportion must be between 0 and 1")
 
 	.data %>%
+		select(!!.sample,!!.transcript, !!.abundance) %>%
+		spread(!!.sample, !!.abundance) %>%
+		as_matrix(rownames = !!.transcript) %>%
+		edgeR::filterByExpr(
+			min.count = minimum_counts,
+			group = factor_of_interest,
+			min.prop = minimum_proportion
+		) %>%
+		`!` %>%
+		which %>%
+		names %>%
 
-		# Prepare the data frame
-		select(!!.transcript,!!.sample,!!.abundance) %>%
-
-		# Calculate cpm
-		add_scaled_counts_bulk.get_cpm(!!.sample,!!.transcript,!!.abundance) %>%
-		# Filter based on how many samples have a gene below the threshold
-		filter_transcript_high_prop_cpm(!!.sample,
-																		!!.transcript,
-																		minimum_counts = minimum_counts,
-																		prop_threshold = prop_threshold) %>%
 		# Attach attributes
 		reattach_internals(.data)
 }
-
 
 #' Calculate the norm factor with calcNormFactor from limma
 #'
@@ -254,7 +256,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 #' @param .data A tibble
 #' @param reference A reference matrix, not sure if used anymore
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
@@ -264,8 +266,8 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 #' @return A list including the filtered data frame and the normalization factors
 add_scaled_counts_bulk.calcNormFactor <- function(.data,
 																									reference = NULL,
-																									minimum_counts = 0.5,
-																									prop_threshold = 3 / 4,
+																									minimum_counts = 10,
+																									minimum_proportion = 0.7,
 																									.sample = `sample`,
 																									.transcript = `transcript`,
 																									.abundance = `count`,
@@ -282,7 +284,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 			.data %>%
 				filter(!!.sample != "reference"),!!.sample,!!.transcript,!!.abundance,
 			minimum_counts = minimum_counts,
-			prop_threshold = prop_threshold
+			minimum_proportion = minimum_proportion
 		)
 
 	# Check if transcript after filtering is 0
@@ -356,7 +358,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A function between median, mean and max
 #'
@@ -367,8 +369,8 @@ get_scaled_counts_bulk <- function(.data,
 																	 .sample = NULL,
 																	 .transcript = NULL,
 																	 .abundance = NULL,
-																	 minimum_counts = 0.5,
-																	 prop_threshold = 3 / 4,
+																	 minimum_counts = 10,
+																	 minimum_proportion = 0.7,
 																	 method = "TMM",
 																	 reference_selection_function = median) {
 	# Get column names
@@ -432,7 +434,7 @@ get_scaled_counts_bulk <- function(.data,
 			df,
 			reference,
 			minimum_counts,
-			prop_threshold,
+			minimum_proportion,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
@@ -506,7 +508,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A function between median, mean and max
 #'
@@ -517,8 +519,8 @@ add_scaled_counts_bulk <- function(.data,
 																	 .sample = NULL,
 																	 .transcript = NULL,
 																	 .abundance = NULL,
-																	 minimum_counts = 0.5,
-																	 prop_threshold = 3 / 4,
+																	 minimum_counts = 10,
+																	 minimum_proportion = 0.7,
 																	 method = "TMM",
 																	 reference_selection_function = median) {
 	# Get column names
@@ -538,7 +540,7 @@ add_scaled_counts_bulk <- function(.data,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
 			minimum_counts = minimum_counts,
-			prop_threshold = prop_threshold,
+			minimum_proportion = minimum_proportion,
 			method = method,
 			reference_selection_function = reference_selection_function
 		) %>%
@@ -578,7 +580,7 @@ add_scaled_counts_bulk <- function(.data,
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #'
@@ -592,8 +594,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .coef = 2,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
-																											 minimum_counts = 0.5,
-																											 prop_threshold = 3 / 4,
+																											 minimum_counts = 10,
+																											 minimum_proportion = 0.7,
 																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM") {
 	# Get column names
@@ -686,7 +688,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				!!.transcript,
 				!!.abundance,
 				minimum_counts = minimum_counts,
-				prop_threshold = prop_threshold
+				minimum_proportion = minimum_proportion
 			)
 		)
 
@@ -784,7 +786,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #'
@@ -799,8 +801,8 @@ add_differential_transcript_abundance_bulk <- function(.data,
 																											 .coef = 2,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
-																											 minimum_counts = 0.5,
-																											 prop_threshold = 3 / 4,
+																											 minimum_counts = 10,
+																											 minimum_proportion = 0.7,
 																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM") {
 	# Comply with CRAN NOTES
@@ -827,7 +829,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 			.contrasts = .contrasts,
 			significance_threshold = significance_threshold,
 			minimum_counts = minimum_counts,
-			prop_threshold = prop_threshold,
+			minimum_proportion = minimum_proportion,
 			fill_missing_values = fill_missing_values,
 			scaling_method = scaling_method
 		)
