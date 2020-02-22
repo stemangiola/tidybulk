@@ -133,7 +133,7 @@ test_that("Get differential trancript abundance - no object",{
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c( -8.698972, -6.554587, -7.192796, -6.533274),
+		c(-12.58096, -12.19282, -11.58243, -13.53479),
 		tolerance=1e-6
 	)
 
@@ -160,7 +160,7 @@ test_that("Get differential trancript abundance - no object",{
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-3.673818, -3.250104, -3.041978,  2.832697),
+		c(-6.822502, -5.768898, -5.686800, -5.368460),
 		tolerance=1e-6
 	)
 
@@ -212,7 +212,7 @@ test_that("Get differential trancript abundance - no object",{
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-6.204849, -6.199910, -6.091363, -6.779040),
+		c(-12.68354, -12.36412, -11.72906, -13.63015),
 		tolerance=1e-6
 	)
 
@@ -246,7 +246,7 @@ test_that("Get differential trancript abundance - no object - with contrasts",{
 
 	expect_equal(
 		unique(res$`logFC_conditionTRUE - conditionFALSE`)[1:4],
-		c(-8.698972, -6.554587 ,-7.192796, -6.533274),
+		c(-12.58096 ,-12.19282, -11.58243 ,-13.53479),
 		tolerance=1e-6
 	)
 
@@ -274,7 +274,7 @@ test_that("Add differential trancript abundance - no object",{
 
 	expect_equal(
 		pull(slice(distinct(res, b, logFC), 1:4) , "logFC"),
-		c(-8.698972, -6.453886 ,-7.192796, -6.554587),
+		c(-12.19282, -12.58096, -11.58243, -13.53479),
 		tolerance=1e-6
 	)
 

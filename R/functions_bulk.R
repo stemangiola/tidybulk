@@ -315,7 +315,7 @@ get_scaled_counts_bulk <- function(.data,
 
 	# Check if package is installed, otherwise install
 	if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
-		writeLines("Installing edgeR needed for differential transcript abundance analyses")
+		writeLines("Installing edgeR needed for analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("edgeR")
@@ -611,13 +611,14 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 	df_for_edgeR.filt <-
 		df_for_edgeR %>%
-		select(!!.transcript,!!.sample,!!.abundance) %>%
+		select(!!.transcript,!!.sample,!!.abundance, !!as.symbol(parse_formula(.formula))) %>%
 		mutate(
 			lowly_abundant = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(
 				.,
 				!!.sample,
 				!!.transcript,
 				!!.abundance,
+				factor_of_interest = !!as.symbol(parse_formula(.formula)),
 				minimum_counts = minimum_counts,
 				minimum_proportion = minimum_proportion
 			)

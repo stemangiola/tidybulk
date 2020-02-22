@@ -164,8 +164,8 @@ test_that("Add differential trancript abundance - SummarizedExperiment",{
 	w = match(  c("HK3", "FCN1", "CLEC7A", "FAM198B"), rownames(res) )
 
 	expect_equal(
-		res@elementMetadata[c(3, 5, 524, 525),]$logFC,
-		c(2.128320, 1.511960, 1.091984, 1.139881),
+		res@elementMetadata[w,]$logFC,
+		c(-12.19282, -12.58096, -11.58243, -13.53479),
 		tolerance=1e-6
 	)
 
