@@ -55,7 +55,7 @@ tt_scaled = tt %>% scale_abundance()
 
 # Plot densities
 tt_scaled %>%
-	pivot_longer(values_to = "count", names_to = "Normalisation", cols = c(count, `count scaled`)) %>%
+	pivot_longer(values_to = "count", names_to = "Normalisation", cols = c(count, `count_scaled`)) %>%
 	ggplot(aes(count + 1, group=sample, color=type)) +
 	facet_grid(~Normalisation) +
 	geom_density() +
@@ -98,8 +98,8 @@ tt_mds %>%
 tt_adj = tt_mds %>%	adjust_abundance(~ condition + type)
 
 tt_adj %>%
-	filter( `count scaled adjusted` %>% is.na %>% `!`) %>%
-	reduce_dimensions(.abundance = `count scaled adjusted`, method="MDS", .dims = 3) %>%
+	filter( `count_scaled_adjusted` %>% is.na %>% `!`) %>%
+	reduce_dimensions(.abundance = `count_scaled_adjusted`, method="MDS", .dims = 3) %>%
 
 	# Plot
 	select(contains("Dim"), sample, type,  condition ) %>%
@@ -120,7 +120,7 @@ tt_test = tt_adj %>% test_differential_abundance(~ condition + type)
 
 # MA plot
 tt_test %>%
-	filter(!`filter out low counts.x`) %>%
+	filter(!`lowly_abundant.x`) %>%
 	mutate(de = FDR<0.05 & abs(logFC) >=2) %>%
 	distinct(transcript, symbol, logCPM, logFC, de) %>%
 	mutate(symbol = ifelse(de & abs(logFC)>3, as.character(symbol), NA)) %>%
@@ -145,7 +145,7 @@ tt_test %>%
 # Heatmap
 tt_test %>%
 	filter(FDR < 0.05 & abs(logFC) > 2) %>%
-	tidyHeatmap::plot_heatmap(		.horizontal = sample,		.vertical = symbol,		.abundance = `count scaled adjusted`,
+	tidyHeatmap::plot_heatmap(		.horizontal = sample,		.vertical = symbol,		.abundance = `count_scaled_adjusted`,
 		annotation = c(condition, type),
 		log_transform = TRUE
 	)

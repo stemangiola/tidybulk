@@ -48,7 +48,7 @@ plot_densities = function(){
 tt_scaled = tt %>% scale_abundance()
 # Plot densities
  p = tt_scaled %>%
-	pivot_longer(	values_to = "count",	names_to = "Normalisation",	cols = c(count, `count scaled`)	) %>%
+	pivot_longer(	values_to = "count",	names_to = "Normalisation",	cols = c(count, `count_scaled`)	) %>%
 	ggplot(aes(count + 1, group = sample, color = type)) +
 	facet_grid( ~ Normalisation) +
 	geom_density() +
@@ -70,8 +70,8 @@ plot_adjusted_MDS = function(){
 # Adjust abundance for type, and check MDS densities
  p = tt_mds %>%
 	adjust_abundance( ~ condition + type) %>%
-	filter(`count scaled adjusted` %>% is.na %>% `!`) %>%
-	reduce_dimensions(.abundance = `count scaled adjusted`,	method = "MDS",	.dims = 3) %>%
+	filter(`count_scaled_adjusted` %>% is.na %>% `!`) %>%
+	reduce_dimensions(.abundance = `count_scaled_adjusted`,	method = "MDS",	.dims = 3) %>%
 
 	# Plot
 	select(contains("Dim"), sample, type,  condition) %>%
@@ -91,7 +91,7 @@ test_abundance = function(){
 plot_MA = function(){
 	# MA plot
 p = tt_test %>%
-	filter(!`filter out low counts`) %>%
+	filter(!lowly_abundant) %>%
 	mutate(de = FDR < 0.05 & abs(logFC) >= 2) %>%
 	distinct(transcript, logCPM, logFC, de) %>%
 	mutate(transcript = ifelse(de &	abs(logFC) > 3, as.character(transcript), NA)) %>%

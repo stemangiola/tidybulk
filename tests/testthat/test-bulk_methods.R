@@ -66,7 +66,7 @@ test_that("Getting scaled counts - no object",{
 
 	expect_equal(length(internals$tt_columns), 4 )
 
-	expect_equal(quo_name(internals$tt_columns[[4]]), "c scaled" )
+	expect_equal(quo_name(internals$tt_columns[[4]]), "c_scaled" )
 
 })
 
@@ -358,7 +358,7 @@ test_that("Get adjusted counts - no object",{
 		)
 
 	expect_equal(
-		unique(res$`c adjusted`)[c(1, 2, 3, 5)],
+		unique(res$`c_adjusted`)[c(1, 2, 3, 5)],
 		c( 693,   47, 7941, 7068),
 		tolerance=1e-6
 	)
