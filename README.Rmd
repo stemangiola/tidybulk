@@ -136,7 +136,7 @@ dgList <- calcNormFactors(dgList, method="TMM")
 dgList <- estimateCommonDisp(dgList)
 dgList <- estimateTagwiseDisp(dgList)
 norm_counts.table <- t(
-	t(dgList$pseudo.counts)*
+	t(count_m)*
 		(dgList$samples$norm.factors)
 )
 ```
