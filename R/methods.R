@@ -2219,6 +2219,8 @@ setGeneric("filter_abundant", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	factor_of_interest = enquo(factor_of_interest)
+
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
@@ -2242,7 +2244,7 @@ setGeneric("filter_abundant", function(.data,
 											.sample = !!.sample,
 											.transcript = !!.transcript,
 											.abundance = !!.abundance,
-											factor_of_interest = factor_of_interest,
+											factor_of_interest = !!factor_of_interest,
 											minimum_counts = minimum_counts,
 											minimum_proportion = minimum_proportion
 										)
@@ -2282,6 +2284,8 @@ setMethod("filter_abundant", "tidyBulk", .filter_abundant)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 
+	factor_of_interest = enquo(factor_of_interest)
+
 	.data %>%
 
 		# Convert to tidyBulk
@@ -2292,7 +2296,7 @@ setMethod("filter_abundant", "tidyBulk", .filter_abundant)
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			factor_of_interest = factor_of_interest,
+			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion
 		) %>%

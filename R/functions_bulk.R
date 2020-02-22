@@ -143,6 +143,8 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	factor_of_interest = enquo(factor_of_interest)
+
 	if (minimum_counts < 0)
 		stop("The parameter minimum_counts must be > 0")
 	if (minimum_proportion < 0 |
@@ -155,7 +157,15 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 		as_matrix(rownames = !!.transcript) %>%
 		edgeR::filterByExpr(
 			min.count = minimum_counts,
-			group = factor_of_interest,
+			group = factor_of_interest %>%
+				ifelse_pipe(
+					quo_is_symbol(.),
+					~ .data %>%
+						distinct(!!.sample, !!factor_of_interest) %>%
+						arrange(!!.sample) %>%
+						pull(!!factor_of_interest),
+					~ NULL
+				),
 			min.prop = minimum_proportion
 		) %>%
 		`!` %>%

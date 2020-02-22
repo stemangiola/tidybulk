@@ -851,6 +851,26 @@ test_that("filter abundant - no object",{
 
 	expect_equal(	nrow(res),	910	)
 
+	res =
+		filter_abundant(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			factor_of_interest = condition,
+			minimum_proportion = 0.5,
+			minimum_counts = 30
+		)
+
+	expect_equal(
+		res$b[1:4],
+		c("PLCH2" ,"PADI4", "CDA",   "RCAN3"    )
+	)
+
+	expect_equal(	ncol(res),	6	)
+
+	expect_equal(	nrow(res),	1720	)
+
 })
 
 test_that("nest - no object",{
