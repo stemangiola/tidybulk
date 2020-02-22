@@ -65,7 +65,7 @@ se.aggr
 ## ----normalise, cache=TRUE----------------------------------------------------
 counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
 
-counts.norm %>% select(`count`, `count_scaled`, `filter out low counts`, everything())
+counts.norm %>% select(`count`, `count_scaled`, lowly_abundant, everything())
 
 ## ----plot_normalise, cache=TRUE-----------------------------------------------
 counts.norm %>%

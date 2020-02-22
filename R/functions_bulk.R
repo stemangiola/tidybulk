@@ -711,7 +711,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		# If I have multiple .contrasts merge the results
 		ifelse_pipe(
-			my_contrasts %>% is.null | ncol(my_contrasts) < 2,
+			my_contrasts %>% is.null,
 
 			# Simple comparison
 			~ .x %>%

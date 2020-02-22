@@ -140,7 +140,7 @@ We may want to compensate for sequencing depth, scaling the transcript abundance
 ```{r normalise, cache=TRUE}
 counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
 
-counts.norm %>% select(`count`, `count_scaled`, `filter out low counts`, everything())
+counts.norm %>% select(`count`, `count_scaled`, lowly_abundant, everything())
 ```
 
 
