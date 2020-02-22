@@ -9,7 +9,7 @@ add_scaled_counts_bulk.get_low_expressed(
   .sample = sample,
   .transcript = transcript,
   .abundance = count,
-  cpm_threshold = 0.5,
+  minimum_counts = 0.5,
   prop_threshold = 3/4
 )
 }
@@ -22,7 +22,7 @@ add_scaled_counts_bulk.get_low_expressed(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{cpm_threshold}{A real positive number. Minimum counts per million required for a selected proportion of samples}
+\item{minimum_counts}{A positive integer. Minimum counts required for at least some samples.}
 
 \item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 }

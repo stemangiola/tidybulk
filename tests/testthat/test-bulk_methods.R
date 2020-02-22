@@ -207,7 +207,7 @@ test_that("Get differential trancript abundance - no object",{
 			.abundance = c,
 			action="get",
 			prop_threshold = 0.5,
-			cpm_threshold = 30
+			minimum_counts = 30
 		)
 
 	expect_equal(

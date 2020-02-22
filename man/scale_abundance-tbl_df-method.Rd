@@ -9,7 +9,7 @@
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  cpm_threshold = 0.5,
+  minimum_counts = 0.5,
   prop_threshold = 3/4,
   method = "TMM",
   reference_selection_function = median,
@@ -25,7 +25,7 @@
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{cpm_threshold}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.}
+\item{minimum_counts}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.}
 
 \item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
