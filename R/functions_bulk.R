@@ -258,7 +258,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param method A string character
+#' @param method A string character. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #'
 #'
 #' @return A list including the filtered data frame and the normalization factors
@@ -357,7 +357,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param cpm_threshold A real positive number. Minimum counts per million required for a selected proportion of samples
 #' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param method A character string
+#' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A function between median, mean and max
 #'
 #' @return A tibble including additional columns
@@ -507,7 +507,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param cpm_threshold A real positive number. Minimum counts per million required for a selected proportion of samples
 #' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param method A character string
+#' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A function between median, mean and max
 #'
 #' @return A tibble including additional columns
@@ -580,7 +580,7 @@ add_scaled_counts_bulk <- function(.data,
 #' @param cpm_threshold A real positive number. Minimum counts per million required for a selected proportion of samples
 #' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
-#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors)
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #'
 #' @return A tibble with edgeR results
 #'
@@ -786,7 +786,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param cpm_threshold A real positive number. Minimum counts per million required for a selected proportion of samples
 #' @param prop_threshold A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
-#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors)
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #'
 #' @return A tibble with differential_transcript_abundance results
 #'
@@ -2950,6 +2950,7 @@ ttBulk_to_SummarizedExperiment = function(.data,
 																					.sample = NULL,
 																					.transcript = NULL,
 																					.abundance = NULL) {
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
