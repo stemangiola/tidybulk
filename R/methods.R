@@ -106,7 +106,7 @@ setMethod("tidyBulk", "tbl_df", .tidyBulk)
 
 	# Set scaled col names
 	norm_col =
-		SummarizedExperiment::assays(.data)[1] %>% names %>% paste("scaled") %>%
+		SummarizedExperiment::assays(.data)[1] %>% names %>% paste0(scaled_string) %>%
 		ifelse_pipe((.) %in% names(SummarizedExperiment::assays(.data)),
 								~ as.symbol(.x),
 								~ NULL)
@@ -232,7 +232,7 @@ setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	
 #' are filtered out from the scaling procedure.
 #' The scaling inference is then applied back to all unfiltered data.
 #'
-#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 #'
 #' @examples
@@ -306,19 +306,19 @@ setGeneric("scale_abundance", function(.data,
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 setMethod("scale_abundance", "tbl_df", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 setMethod("scale_abundance", "tidyBulk", .scale_abundance)
 
@@ -1242,7 +1242,7 @@ setMethod("remove_redundancy",
 #'
 #' @details This function adjusts the abundance for (known) unwanted variation. At the moment just an unwanted covariated is allowed at a time.
 #'
-#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
+#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 #'
 #'
 #'
@@ -1326,17 +1326,17 @@ setGeneric("adjust_abundance", function(.data,
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
+#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 setMethod("adjust_abundance", "spec_tbl_df", .adjust_abundance)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
+#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 setMethod("adjust_abundance", "tbl_df", .adjust_abundance)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
+#' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 setMethod("adjust_abundance", "tidyBulk", .adjust_abundance)
 
 .adjust_abundance_se = function(.data,
@@ -2223,12 +2223,12 @@ setGeneric("filter_abundant", function(.data,
 	.data %>%
 
 		# Filter
-		ifelse_pipe("filter out low counts" %in% colnames((.)),
+		ifelse_pipe("lowly_abundant" %in% colnames((.)),
 
 								# If column is present use this instead of doing more work
 								~ {
-									#message("tidyBulk says: \"filter out low counts\" column is present. Using this to filter data")
-									.x %>% dplyr::filter(!`filter out low counts`)
+									#message("tidyBulk says: \"lowly_abundant\" column is present. Using this to filter data")
+									.x %>% dplyr::filter(!lowly_abundant)
 								},
 
 								# If no column is present go

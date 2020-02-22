@@ -128,7 +128,7 @@ abundance (e.g., with TMM algorithm, Robinson and Oshlack
 doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble,
 column names (as symbols; for `sample`, `transcript` and `count`) and a
 method as arguments and returns a tibble with additional columns with
-scaled data as `<NAME OF COUNT COLUMN> scaled`.
+scaled data as `<NAME OF COUNT COLUMN>_scaled`.
 
 <div class="column-left">
 
@@ -172,7 +172,7 @@ density, data is grouped by sample and coloured by cell type.
 
 ``` r
 counts.norm %>%
-    ggplot(aes(`count scaled` + 1, group=sample, color=`Cell type`)) +
+    ggplot(aes(`count_scaled` + 1, group=sample, color=`Cell type`)) +
     geom_density() +
     scale_x_log10() +
     my_theme
@@ -434,16 +434,16 @@ counts.norm.tSNE %>%
     ## # A tibble: 251 x 4
     ##     tSNE1  tSNE2 sample                       Call 
     ##     <dbl>  <dbl> <chr>                        <fct>
-    ##  1   1.03 -11.3  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2  -1.63   2.84 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3   4.13  -2.13 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4   7.68  -5.98 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5  10.7   -7.78 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6  -7.00   5.88 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7   8.92  26.3  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8  14.5   -2.67 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9  13.8   -1.33 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10 -19.3   -8.89 TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##  1  -3.40  11.6  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2  -2.06  -6.58 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3   9.08   8.82 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4  -9.53   4.80 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5  -6.41   7.50 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  10.3   -7.95 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7  -3.64 -34.3  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8 -16.2    3.73 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9 -16.4    5.33 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10  -2.66  25.6  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -584,18 +584,18 @@ counts.de
 ```
 
     ## # A tibble: 19,544 x 8
-    ##    transcript    logFC logCPM    LR   PValue      FDR is_de `filter out low cou…
-    ##    <chr>         <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>               
-    ##  1 LOC101929322   2.92  1.21   58.3 2.23e-14 1.99e-10 TRUE  FALSE               
-    ##  2 GRAMD1B       -5.85  4.78   46.1 1.10e-11 4.91e- 8 TRUE  FALSE               
-    ##  3 NT5DC3         2.27  4.59   43.6 4.08e-11 1.21e- 7 TRUE  FALSE               
-    ##  4 IQGAP2        -3.54  7.76   41.9 9.66e-11 2.15e- 7 TRUE  FALSE               
-    ##  5 CEACAM19      -9.45  2.58   40.6 1.85e-10 3.29e- 7 TRUE  FALSE               
-    ##  6 FRMD4B        -8.11  4.16   38.2 6.27e-10 9.32e- 7 TRUE  FALSE               
-    ##  7 GIMAP8        -6.75  7.25   37.8 7.71e-10 9.77e- 7 TRUE  FALSE               
-    ##  8 ANXA1        -10.4   8.59   37.6 8.77e-10 9.77e- 7 TRUE  FALSE               
-    ##  9 LOC100287072   1.80  0.929  37.0 1.20e- 9 1.18e- 6 TRUE  FALSE               
-    ## 10 CMTM3         -4.21  6.82   36.6 1.45e- 9 1.30e- 6 TRUE  FALSE               
+    ##    transcript    logFC logCPM    LR   PValue      FDR is_de lowly_abundant
+    ##    <chr>         <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>         
+    ##  1 LOC101929322   2.92  1.21   58.3 2.23e-14 1.99e-10 TRUE  FALSE         
+    ##  2 GRAMD1B       -5.85  4.78   46.1 1.10e-11 4.91e- 8 TRUE  FALSE         
+    ##  3 NT5DC3         2.27  4.59   43.6 4.08e-11 1.21e- 7 TRUE  FALSE         
+    ##  4 IQGAP2        -3.54  7.76   41.9 9.66e-11 2.15e- 7 TRUE  FALSE         
+    ##  5 CEACAM19      -9.45  2.58   40.6 1.85e-10 3.29e- 7 TRUE  FALSE         
+    ##  6 FRMD4B        -8.11  4.16   38.2 6.27e-10 9.32e- 7 TRUE  FALSE         
+    ##  7 GIMAP8        -6.75  7.25   37.8 7.71e-10 9.77e- 7 TRUE  FALSE         
+    ##  8 ANXA1        -10.4   8.59   37.6 8.77e-10 9.77e- 7 TRUE  FALSE         
+    ##  9 LOC100287072   1.80  0.929  37.0 1.20e- 9 1.18e- 6 TRUE  FALSE         
+    ## 10 CMTM3         -4.21  6.82   36.6 1.45e- 9 1.30e- 6 TRUE  FALSE         
     ## # … with 19,534 more rows
 
 The functon `test_differential_abundance` operated with contrasts too.
@@ -620,7 +620,7 @@ symbols; for `sample`, `transcript` and `count`) and a formula
 representing the desired linear model where the first covariate is the
 factor of interest and the second covariate is the unwanted variation,
 and returns a tibble with additional columns for the adjusted counts as
-`<COUNT COLUMN> adjusted`. At the moment just an unwanted covariated is
+`<COUNT COLUMN>_adjusted`. At the moment just an unwanted covariated is
 allowed at a time.
 
 <div class="column-left">
@@ -848,16 +848,16 @@ counts.norm.SNN %>%
     ## # A tibble: 251 x 4
     ##     tSNE1  tSNE2 `cluster SNN` sample                      
     ##     <dbl>  <dbl> <fct>         <chr>                       
-    ##  1   1.03 -11.3  0             TCGA-A1-A0SD-01A-11R-A115-07
-    ##  2  -1.63   2.84 2             TCGA-A1-A0SF-01A-11R-A144-07
-    ##  3   4.13  -2.13 1             TCGA-A1-A0SG-01A-11R-A144-07
-    ##  4   7.68  -5.98 0             TCGA-A1-A0SH-01A-11R-A084-07
-    ##  5  10.7   -7.78 0             TCGA-A1-A0SI-01A-11R-A144-07
-    ##  6  -7.00   5.88 1             TCGA-A1-A0SJ-01A-11R-A084-07
-    ##  7   8.92  26.3  3             TCGA-A1-A0SK-01A-12R-A084-07
-    ##  8  14.5   -2.67 2             TCGA-A1-A0SM-01A-11R-A084-07
-    ##  9  13.8   -1.33 2             TCGA-A1-A0SN-01A-11R-A144-07
-    ## 10 -19.3   -8.89 1             TCGA-A1-A0SQ-01A-21R-A144-07
+    ##  1  -3.40  11.6  0             TCGA-A1-A0SD-01A-11R-A115-07
+    ##  2  -2.06  -6.58 2             TCGA-A1-A0SF-01A-11R-A144-07
+    ##  3   9.08   8.82 1             TCGA-A1-A0SG-01A-11R-A144-07
+    ##  4  -9.53   4.80 0             TCGA-A1-A0SH-01A-11R-A084-07
+    ##  5  -6.41   7.50 0             TCGA-A1-A0SI-01A-11R-A144-07
+    ##  6  10.3   -7.95 1             TCGA-A1-A0SJ-01A-11R-A084-07
+    ##  7  -3.64 -34.3  3             TCGA-A1-A0SK-01A-12R-A084-07
+    ##  8 -16.2    3.73 2             TCGA-A1-A0SM-01A-11R-A084-07
+    ##  9 -16.4    5.33 2             TCGA-A1-A0SN-01A-11R-A144-07
+    ## 10  -2.66  25.6  1             TCGA-A1-A0SQ-01A-21R-A144-07
     ## # … with 241 more rows
 
 ``` r
@@ -881,18 +881,18 @@ counts.norm.SNN %>%
 ```
 
     ## # A tibble: 500 x 8
-    ##    ens           logFC logCPM    LR   PValue      FDR is_de `filter out low cou…
-    ##    <chr>         <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>               
-    ##  1 ENSG00000186…  6.10   7.94  436. 6.75e-97 3.27e-94 TRUE  FALSE               
-    ##  2 ENSG00000111…  2.88   9.60  397. 2.54e-88 6.14e-86 TRUE  FALSE               
-    ##  3 ENSG00000140…  2.61   9.52  330. 8.45e-74 1.36e-71 TRUE  FALSE               
-    ##  4 ENSG00000065…  1.54  10.2   318. 4.80e-71 5.81e-69 TRUE  FALSE               
-    ##  5 ENSG00000137…  3.77   8.24  300. 3.89e-67 3.77e-65 TRUE  FALSE               
-    ##  6 ENSG00000124…  4.56   8.56  293. 1.38e-65 1.11e-63 TRUE  FALSE               
-    ##  7 ENSG00000196…  4.81   6.96  278. 1.64e-62 1.13e-60 TRUE  FALSE               
-    ##  8 ENSG00000092…  2.86   8.37  260. 1.98e-58 1.20e-56 TRUE  FALSE               
-    ##  9 ENSG00000091… -5.61  11.1   259. 2.72e-58 1.46e-56 TRUE  FALSE               
-    ## 10 ENSG00000094…  4.73   9.18  243. 8.33e-55 4.03e-53 TRUE  FALSE               
+    ##    ens             logFC logCPM    LR   PValue      FDR is_de lowly_abundant
+    ##    <chr>           <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>         
+    ##  1 ENSG00000186832  6.10   7.94  436. 6.75e-97 3.27e-94 TRUE  FALSE         
+    ##  2 ENSG00000111716  2.88   9.60  397. 2.54e-88 6.14e-86 TRUE  FALSE         
+    ##  3 ENSG00000140545  2.61   9.52  330. 8.45e-74 1.36e-71 TRUE  FALSE         
+    ##  4 ENSG00000065978  1.54  10.2   318. 4.80e-71 5.81e-69 TRUE  FALSE         
+    ##  5 ENSG00000137673  3.77   8.24  300. 3.89e-67 3.77e-65 TRUE  FALSE         
+    ##  6 ENSG00000124107  4.56   8.56  293. 1.38e-65 1.11e-63 TRUE  FALSE         
+    ##  7 ENSG00000196754  4.81   6.96  278. 1.64e-62 1.13e-60 TRUE  FALSE         
+    ##  8 ENSG00000092621  2.86   8.37  260. 1.98e-58 1.20e-56 TRUE  FALSE         
+    ##  9 ENSG00000091831 -5.61  11.1   259. 2.72e-58 1.46e-56 TRUE  FALSE         
+    ## 10 ENSG00000094755  4.73   9.18  243. 8.33e-55 4.03e-53 TRUE  FALSE         
     ## # … with 490 more rows
 
 # Drop `redundant` transcripts
@@ -1068,8 +1068,7 @@ respectively. For example, from this data set
     ##  9 SRR17… AA06       b_cell          0 0 d   TRUE          0 TRUE            
     ## 10 SRR17… AAAS       b_cell        868 0 d   TRUE          0 TRUE            
     ## # … with 938,102 more rows, and 5 more variables: `merged transcripts` <dbl>,
-    ## #   `count scaled` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
-    ## #   counts` <lgl>
+    ## #   count_scaled <dbl>, TMM <dbl>, multiplier <dbl>, lowly_abundant <lgl>
 
 **action=“add”** (Default) We can add the MDS dimensions to the original
 data set
@@ -1077,7 +1076,7 @@ data set
 ``` r
   counts.norm %>%
     reduce_dimensions(
-        .abundance = `count scaled`,
+        .abundance = `count_scaled`,
         method="MDS" ,
         .element = sample,
         .feature = transcript,
@@ -1100,8 +1099,8 @@ data set
     ##  9 SRR17… AA06       b_cell          0 0 d   TRUE          0 TRUE            
     ## 10 SRR17… AAAS       b_cell        868 0 d   TRUE          0 TRUE            
     ## # … with 938,102 more rows, and 8 more variables: `merged transcripts` <dbl>,
-    ## #   `count scaled` <dbl>, TMM <dbl>, multiplier <dbl>, `filter out low
-    ## #   counts` <lgl>, Dim1 <dbl>, Dim2 <dbl>, Dim3 <dbl>
+    ## #   count_scaled <dbl>, TMM <dbl>, multiplier <dbl>, lowly_abundant <lgl>,
+    ## #   Dim1 <dbl>, Dim2 <dbl>, Dim3 <dbl>
 
 **action=“get”** We can get just the MDS dimensions relative to each
 sample
@@ -1109,7 +1108,7 @@ sample
 ``` r
   counts.norm %>%
     reduce_dimensions(
-        .abundance = `count scaled`,
+        .abundance = `count_scaled`,
         method="MDS" ,
         .element = sample,
         .feature = transcript,

@@ -36,7 +36,7 @@ tt_scaled = tt %>% scale_abundance()
 
 # Plot densities
 tt_scaled %>%
-	pivot_longer(values_to = "count", names_to = "Normalisation", cols = c(count, `count scaled`)) %>%
+	pivot_longer(values_to = "count", names_to = "Normalisation", cols = c(count, `count_scaled`)) %>%
 	ggplot(aes(count + 1, group=sample, color=cell_type_formatted)) +
 	facet_grid(~Normalisation) +
 	geom_density() + scale_x_log10() +

@@ -389,7 +389,7 @@ get_scaled_counts_bulk <- function(.data,
 	}
 
 	# Set column name for value scaled
-	value_scaled = as.symbol(sprintf("%s scaled",  quo_name(.abundance)))
+	value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
 
 	# Reformat input data set
 	df <-
@@ -481,7 +481,7 @@ get_scaled_counts_bulk <- function(.data,
 		# Format df for join
 		dplyr::select(!!.sample, !!.transcript, !!value_scaled,
 									everything()) %>%
-		dplyr::mutate(`filter out low counts` = !!.transcript %in% nf_obj$gene_to_exclude) %>%
+		dplyr::mutate(lowly_abundant = !!.transcript %in% nf_obj$gene_to_exclude) %>%
 		dplyr::select(-!!.abundance,-tot,-tot_filt) %>%
 		dplyr::rename(TMM = nf) %>%
 		arrange(!!.sample,!!.transcript)
@@ -680,7 +680,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		df_for_edgeR %>%
 		select(!!.transcript,!!.sample,!!.abundance) %>%
 		mutate(
-			`filter out low counts` = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(
+			lowly_abundant = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(
 				.,
 				!!.sample,
 				!!.transcript,
@@ -692,7 +692,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 	edgeR_object =
 		df_for_edgeR.filt %>%
-		filter(!`filter out low counts`) %>%
+		filter(!lowly_abundant) %>%
 		select(!!.transcript,!!.sample,!!.abundance) %>%
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.transcript) %>%
@@ -749,7 +749,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		# Add filtering info
 		full_join(df_for_edgeR.filt %>%
-								select(!!.transcript, `filter out low counts`) %>%
+								select(!!.transcript, lowly_abundant) %>%
 								distinct()) %>%
 
 
@@ -994,9 +994,9 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 		df_for_edgeR %>%
 		select(!!.entrez,!!.sample,!!.abundance) %>%
 		mutate(
-			`filter out low counts` = !!.entrez %in% add_scaled_counts_bulk.get_low_expressed(.,!!.sample,!!.entrez,!!.abundance)
+			lowly_abundant = !!.entrez %in% add_scaled_counts_bulk.get_low_expressed(.,!!.sample,!!.entrez,!!.abundance)
 		) %>%
-		filter(!`filter out low counts`) %>%
+		filter(!lowly_abundant) %>%
 
 		# Make sure transcrpt names are adjacent
 		arrange(!!.entrez)
@@ -2721,7 +2721,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		warning("Only the second covariate in the .formula is adjusted for, at the moment")
 
 	# New column name
-	value_adjusted = as.symbol(sprintf("%s adjusted",  quo_name(.abundance)))
+	value_adjusted = as.symbol(sprintf("%s%s",  quo_name(.abundance), adjusted_string))
 
 	# Stop is any counts are NAs
 	.data %>% error_if_counts_is_na(!!.abundance)
@@ -2734,7 +2734,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		{
 			# Give warning of filtering
 			message(
-				"Combat is applied excluding `filter out low counts`, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts "
+				"Combat is applied excluding lowly_abundant, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts "
 			)
 			(.)
 		} %>%
@@ -2813,7 +2813,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		# right_join(
 		# 	df_for_combat %>%
 		# 		distinct(!!.transcript,!!.sample,
-		# 						 `filter out low counts`),
+		# 						 lowly_abundant),
 		# 	by = c(quo_name(.transcript), quo_name(.sample))
 		# )%>%
 

@@ -29,7 +29,7 @@ test_that("tidyBulk SummarizedExperiment normalisation manual",{
 	res = tidyBulk(tidyBulk:::ttBulk_to_SummarizedExperiment(scale_abundance(tidyBulk(se))))
 
 	expect_equal(
-		res[1:4,]$`counts scaled`,
+		res[1:4,]$`counts_scaled`,
 		c(1327.286584 , 859.307120 , 898.641600  ,  2.017153),
 		tolerance=1e-6
 	)
@@ -41,7 +41,7 @@ test_that("tidyBulk SummarizedExperiment normalisation manual",{
 
 	res = rlang::quo_name(attr(res, "tt_internals")$tt_columns[[4]])
 
-	expect_equal( res,	"counts scaled"	)
+	expect_equal( res,	"counts_scaled"	)
 
 })
 
@@ -51,7 +51,7 @@ test_that("tidyBulk SummarizedExperiment normalisation",{
 
 	expect_equal(
 		names(SummarizedExperiment::assays(res)),
-		c("counts" ,"counts scaled")
+		c("counts" ,"counts_scaled")
 	)
 
 })
@@ -131,7 +131,7 @@ test_that("Get adjusted counts - SummarizedExperiment",{
 
 	expect_equal(nrow(res),	527	)
 
-	expect_equal(	names(SummarizedExperiment::assays(res)),	c("c" ,"c adjusted")	)
+	expect_equal(	names(SummarizedExperiment::assays(res)),	c("c" ,"c_adjusted")	)
 
 
 })

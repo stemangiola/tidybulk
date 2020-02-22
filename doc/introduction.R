@@ -65,11 +65,11 @@ se.aggr
 ## ----normalise, cache=TRUE----------------------------------------------------
 counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
 
-counts.norm %>% select(`count`, `count scaled`, `filter out low counts`, everything())
+counts.norm %>% select(`count`, `count_scaled`, `filter out low counts`, everything())
 
 ## ----plot_normalise, cache=TRUE-----------------------------------------------
 counts.norm %>%
-	ggplot(aes(`count scaled` + 1, group=sample, color=`Cell type`)) +
+	ggplot(aes(`count_scaled` + 1, group=sample, color=`Cell type`)) +
 	geom_density() +
 	scale_x_log10() +
 	my_theme
@@ -80,7 +80,7 @@ se.norm =  se.aggr %>% scale_abundance(method="TMM")
 se.norm
 
 ## ----mds, cache=TRUE----------------------------------------------------------
-counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = `count scaled`, method="MDS", .dims = 3)
+counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="MDS", .dims = 3)
 
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 
@@ -91,12 +91,12 @@ counts.norm.MDS %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 
 ## ----mds se, cache=TRUE-------------------------------------------------------
-se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = `count scaled`, method="MDS", .dims = 3)
+se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="MDS", .dims = 3)
 
 se.norm.MDS
 
 ## ----pca, cache=TRUE----------------------------------------------------------
-counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = `count scaled`, method="PCA" ,  .dims = 3)
+counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="PCA" ,  .dims = 3)
 
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 
@@ -107,7 +107,7 @@ counts.norm.PCA %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 
 ## ----pca se, cache=TRUE-------------------------------------------------------
-se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = `count scaled`, method="PCA" ,  .dims = 3)
+se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="PCA" ,  .dims = 3)
 
 se.norm.PCA
 
@@ -120,7 +120,7 @@ tt_tcga_breast =
 counts.norm.tSNE =
 	tt_tcga_breast %>%
 	reduce_dimensions(
-		.abundance = `count scaled`,
+		.abundance = `count_scaled`,
 		method = "tSNE",
 		top = 500,
 		perplexity=10,
@@ -140,7 +140,7 @@ counts.norm.tSNE %>%
 se.norm.tSNE =
 	se_breast_tcga_mini %>%
 	reduce_dimensions(
-		.abundance = `count scaled`,
+		.abundance = `count_scaled`,
 		method = "tSNE",
 		top = 500,
 		perplexity=10,
@@ -195,7 +195,7 @@ counts.norm.adj =
 	counts.norm.batch %>%
 	  adjust_abundance(
 	  	~ factor_of_interest + batch,
-	  	.abundance = `count scaled`,
+	  	.abundance = `count_scaled`,
 	  	action = "get"
 	  )
 
@@ -205,7 +205,7 @@ counts.norm.adj
 se.norm.batch %>%
   adjust_abundance(
   	~ factor_of_interest + batch,
-  	.abundance = `count scaled`
+  	.abundance = `count_scaled`
   )
 
 ## ----cibersort, cache=TRUE----------------------------------------------------
@@ -233,14 +233,14 @@ se.cibersort %>% deconvolve_cellularity(cores=2)
 
 ## ----cluster, cache=TRUE------------------------------------------------------
 counts.norm.cluster = counts.norm %>%
-  cluster_elements(.abundance = `count scaled`, method="kmeans",	centers = 2 )
+  cluster_elements(.abundance = `count_scaled`, method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 
 ## ----plot_cluster, cache=TRUE-------------------------------------------------
  counts.norm.MDS %>%
   cluster_elements(
-  	.abundance = `count scaled`,
+  	.abundance = `count_scaled`,
   	method="kmeans",
   	centers = 2
   ) %>%
@@ -251,11 +251,11 @@ counts.norm.cluster
 
 ## ----cluster se, cache=TRUE---------------------------------------------------
 se.norm %>%
-  cluster_elements(.abundance = `count scaled`, method="kmeans",	centers = 2 )
+  cluster_elements(.abundance = `count_scaled`, method="kmeans",	centers = 2 )
 
 
 ## ----SNN, cache=TRUE----------------------------------------------------------
-counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= `count scaled`, method = "SNN")
+counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= `count_scaled`, method = "SNN")
 
 counts.norm.SNN %>%
 	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample) %>%
@@ -277,7 +277,7 @@ counts.norm.SNN %>%
    )
 
 ## ----SNN se, cache=TRUE-------------------------------------------------------
-se.norm.tSNE %>%	cluster_elements(.abundance= `count scaled`, method = "SNN")
+se.norm.tSNE %>%	cluster_elements(.abundance= `count_scaled`, method = "SNN")
 
 ## ----drop, cache=TRUE---------------------------------------------------------
 counts.norm.non_redundant = counts.norm.MDS %>%  remove_redundancy(	method = "correlation" )
@@ -342,7 +342,7 @@ counts_ensembl %>% annotate_symbol(ens)
 ## ---- cache=TRUE--------------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count scaled`,
+    	.abundance = `count_scaled`,
     	method="MDS" ,
     	.element = sample,
     	.feature = transcript,
@@ -353,7 +353,7 @@ counts_ensembl %>% annotate_symbol(ens)
 ## ---- cache=TRUE--------------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count scaled`,
+    	.abundance = `count_scaled`,
     	method="MDS" ,
     	.element = sample,
     	.feature = transcript,

@@ -114,7 +114,7 @@ colnames(dge_list.nr) <- colnames(dge_list)
 
 # Scale `counts`
 
-We may want to compensate for sequencing depth, scaling the transcript abundance (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`.
+We may want to compensate for sequencing depth, scaling the transcript abundance (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`.
 
 <div class="column-left">
 TidyTranscriptomics
@@ -144,7 +144,7 @@ norm_counts.table <- t(
 <div style="clear:both;"></div>
 
 ```{r, include=FALSE}
-counts.norm %>% select(`count`, `count scaled`, `filter out low counts`, everything())
+counts.norm %>% select(`count`, `count_scaled`, lowly_abundant, everything())
 ```
 
 We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.
@@ -152,7 +152,7 @@ We can easily plot the scaled density to check the scaling outcome. On the x axi
 
 ```{r plot_normalise, cache=TRUE}
 counts.norm %>%
-	ggplot(aes(`count scaled` + 1, group=sample, color=`Cell type`)) +
+	ggplot(aes(`count_scaled` + 1, group=sample, color=`Cell type`)) +
 	geom_density() +
 	scale_x_log10() +
 	my_theme
@@ -436,7 +436,7 @@ counts.de =
 
 # Adjust `counts`
 
-We may want to adjust `counts` for (known) unwanted variation. `adjust_abundance` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation, and returns a tibble with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`. At the moment just an unwanted covariated is allowed at a time.
+We may want to adjust `counts` for (known) unwanted variation. `adjust_abundance` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation, and returns a tibble with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`. At the moment just an unwanted covariated is allowed at a time.
 
 <div class="column-left">
 TidyTranscriptomics
@@ -746,7 +746,7 @@ We can add the MDS dimensions to the original data set
 ```{r, cache=TRUE}
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count scaled`,
+    	.abundance = `count_scaled`,
     	method="MDS" ,
     	.element = sample,
     	.feature = transcript,
@@ -761,7 +761,7 @@ We can get just the MDS dimensions relative to each sample
 ```{r, cache=TRUE}
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count scaled`,
+    	.abundance = `count_scaled`,
     	method="MDS" ,
     	.element = sample,
     	.feature = transcript,
