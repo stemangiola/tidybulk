@@ -30,7 +30,7 @@ scale_abundance(
 
 \item{prop_threshold}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
-\item{method}{A character string. The methods used by the function. The method is passed to the function `calcNormFactors` from edgeR package.}
+\item{method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
 \item{reference_selection_function}{A fucntion that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.}
 
