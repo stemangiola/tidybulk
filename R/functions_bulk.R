@@ -145,6 +145,25 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 
 	factor_of_interest = enquo(factor_of_interest)
 
+	# Check if factor_of_interest is continuous and exists
+	string_factor_of_interest =
+
+		factor_of_interest %>%
+		ifelse2_pipe(
+			quo_is_symbol(.) &&
+				select(.data, !!(.)) %>% lapply(class) %>%	as.character() %in% c("numeric", "integer", "double"),
+			quo_is_symbol(.),
+			~ {
+				message("tidyBulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
+				NULL
+			},
+			~ .data %>%
+				distinct(!!.sample, !!factor_of_interest) %>%
+				arrange(!!.sample) %>%
+				pull(!!factor_of_interest),
+			~ NULL
+		)
+
 	if (minimum_counts < 0)
 		stop("The parameter minimum_counts must be > 0")
 	if (minimum_proportion < 0 |
@@ -157,15 +176,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 		as_matrix(rownames = !!.transcript) %>%
 		edgeR::filterByExpr(
 			min.count = minimum_counts,
-			group = factor_of_interest %>%
-				ifelse_pipe(
-					quo_is_symbol(.),
-					~ .data %>%
-						distinct(!!.sample, !!factor_of_interest) %>%
-						arrange(!!.sample) %>%
-						pull(!!factor_of_interest),
-					~ NULL
-				),
+			group = string_factor_of_interest,
 			min.prop = minimum_proportion
 		) %>%
 		`!` %>%
@@ -631,17 +642,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				!!.sample,
 				!!.transcript,
 				!!.abundance,
-				factor_of_interest =
-					!!(
-						parse_formula(.formula)[1] %>%
-						ifelse_pipe(
-								select(df_for_edgeR, (.)) %>%
-								lapply(class) %>%
-								as.character() %in% c("numeric", "integer", "double"),
-							~ NULL,
-							~ as.symbol(.x)
-						)
-					),
+				factor_of_interest = !!(as.symbol(parse_formula(.formula)[1])),
 				minimum_counts = minimum_counts,
 				minimum_proportion = minimum_proportion
 			)

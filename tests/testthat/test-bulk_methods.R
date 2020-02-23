@@ -90,6 +90,21 @@ test_that("Getting scaled counts - no object",{
 		6
 	)
 
+	# Warnings on continuous
+	sam = distinct(input_df, a)
+	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
+
+	expect_message(
+		scale_abundance(
+			left_join(input_df, sam),
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			factor_of_interest = condition_cont
+		),
+		"The factor of interest is continuous"
+	)
+
 })
 
 
@@ -916,6 +931,21 @@ test_that("filter abundant - no object",{
 	expect_equal(	ncol(res),	6	)
 
 	expect_equal(	nrow(res),	1720	)
+
+	# Warning on continuous covariates
+	sam = distinct(input_df, a)
+	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
+
+	expect_message(
+		filter_abundant(
+			left_join(input_df, sam),
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			factor_of_interest = condition_cont
+		),
+		"The factor of interest is continuous"
+	)
 
 })
 
