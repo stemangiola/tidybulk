@@ -307,7 +307,7 @@ setGeneric("scale_abundance", function(.data,
 		)
 	else
 		stop(
-			"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 }
 
@@ -478,7 +478,7 @@ setGeneric("cluster_elements", function(.data,
 			)
 		else
 			stop(
-				"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
 	else if (method == "SNN") {
@@ -504,11 +504,11 @@ setGeneric("cluster_elements", function(.data,
 			)
 		else
 			stop(
-				"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
 	else
-		stop("the only supported methods are \"kmeans\" or \"SNN\" ")
+		stop("tidyBulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
 
 }
 
@@ -696,7 +696,7 @@ setGeneric("reduce_dimensions", function(.data,
 			)
 		else
 			stop(
-				"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
 	else if (method == "PCA") {
@@ -728,7 +728,7 @@ setGeneric("reduce_dimensions", function(.data,
 			)
 		else
 			stop(
-				"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 
 	}
@@ -761,12 +761,12 @@ setGeneric("reduce_dimensions", function(.data,
 			)
 		else
 			stop(
-				"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 
 	}
 	else
-		stop("method must be either \"MDS\" or \"PCA\"")
+		stop("tidyBulk says: method must be either \"MDS\" or \"PCA\"")
 
 }
 
@@ -938,7 +938,7 @@ setGeneric("rotate_dimensions", function(.data,
 		)
 	else
 		stop(
-			"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 }
 
@@ -1143,7 +1143,7 @@ setGeneric("remove_redundancy", function(.data,
 	}
 	else
 		stop(
-			"method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)"
+			"tidyBulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)"
 		)
 
 }
@@ -1333,7 +1333,7 @@ setGeneric("adjust_abundance", function(.data,
 		)
 	else
 		stop(
-			"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 }
 
@@ -1641,7 +1641,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 		)
 	else
 		stop(
-			"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 }
 
@@ -1777,7 +1777,7 @@ setGeneric("annotate_symbol", function(.data,
 
 	else
 		stop(
-			"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 
 }
@@ -1928,7 +1928,7 @@ setGeneric("test_differential_abundance", function(.data,
 		)
 	else
 		stop(
-			"action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 }
 

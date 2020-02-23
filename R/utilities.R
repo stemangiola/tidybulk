@@ -71,7 +71,7 @@ error_if_log_transformed <- function(x, .abundance) {
   if (x %>% nrow %>% `>` (0))
     if (x %>% summarise(m = !!.abundance %>% max) %>% pull(m) < 50)
       stop(
-        "The input was log transformed, this algorithm requires raw (un-scaled) read counts"
+        "tidyBulk says: The input was log transformed, this algorithm requires raw (un-scaled) read counts"
       )
 }
 
@@ -106,7 +106,7 @@ error_if_duplicated_genes <- function(.data,
     writeLines("Those are the duplicated genes")
     duplicates %>% print()
     stop(
-      "Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding."
+      "tidyBulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding."
     )
   }
 
@@ -130,7 +130,7 @@ error_if_counts_is_na = function(.data, .abundance) {
 
   # Do the check
   if (.data %>% filter(!!.abundance %>% is.na) %>% nrow %>% `>` (0))
-    stop("You have NA values in your counts")
+    stop("tidyBulk says: You have NA values in your counts")
 
   # If all good return original data frame
   .data
@@ -163,7 +163,7 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
     equals(expected_type) %>%
     `!`
   )
-    stop("You have passed the wrong argument to the function. Please check again.")
+    stop("tidyBulk says: You have passed the wrong argument to the function. Please check again.")
 
   # If all good return original data frame
   .data
@@ -180,7 +180,7 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
 #'
 parse_formula <- function(fm) {
   if (attr(terms(fm), "response") == 1)
-    stop("The .formula must be of the kind \"~ covariates\" ")
+    stop("tidyBulk says: The .formula must be of the kind \"~ covariates\" ")
   else
     as.character(attr(terms(fm), "variables"))[-1]
 }
@@ -349,7 +349,7 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
 
     my_stop = function() {
       stop("
-        The fucntion does not know what your sample, transcript and counts columns are.\n
+        tidyBulk says: The fucntion does not know what your sample, transcript and counts columns are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -388,7 +388,7 @@ get_sample_counts = function(.data, .sample, .abundance){
 
   my_stop = function() {
     stop("
-        The fucntion does not know what your sample, transcript and counts columns are.\n
+        tidyBulk says: The fucntion does not know what your sample, transcript and counts columns are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -422,7 +422,7 @@ get_sample_transcript = function(.data, .sample, .transcript){
 
   my_stop = function() {
     stop("
-        The fucntion does not know what your sample, transcript and counts columns are.\n
+        tidyBulk says: The fucntion does not know what your sample, transcript and counts columns are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -488,7 +488,7 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
     # Else through error
     else
       stop("
-        The fucntion does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
+        tidyBulk says: The fucntion does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -512,7 +512,7 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
 
   my_stop = function() {
     stop("
-        The fucntion does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
+        tidyBulk says: The fucntion does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -575,7 +575,7 @@ get_elements = function(.data, .element, of_samples = TRUE){
     # Else through error
     else
       stop("
-        The fucntion does not know what your elements (e.g., sample) are.\n
+        tidyBulk says: The fucntion does not know what your elements (e.g., sample) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -619,7 +619,7 @@ get_abundance_norm_if_exists = function(.data, .abundance){
     # Else through error
     else
       stop("
-        The fucntion does not know what your elements (e.g., sample) are.\n
+        tidyBulk says: The fucntion does not know what your elements (e.g., sample) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")

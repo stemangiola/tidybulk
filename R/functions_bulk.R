@@ -919,7 +919,7 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 			pull(1) %>%
 			min %>%
 			`<` (2))
-		stop("You need at least two replicated for each condition for EGSEA to work")
+		stop("tidyBulk says: You need at least two replicated for each condition for EGSEA to work")
 
 	# Create design matrix
 	design =
@@ -1329,7 +1329,7 @@ get_reduced_dimensions_MDS_bulk <-
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
 				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-				~ stop(".abundance must be numerical or integer")
+				~ stop("tidyBulk says: .abundance must be numerical or integer")
 			) %>%
 			spread(!!.element,!!.abundance) %>%
 			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
@@ -1481,7 +1481,7 @@ get_reduced_dimensions_PCA_bulk <-
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
 				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-				~ stop(".abundance must be numerical or integer")
+				~ stop("tidyBulk says: .abundance must be numerical or integer")
 			) %>%
 
 			# Filter most variable genes
@@ -1500,14 +1500,14 @@ get_reduced_dimensions_PCA_bulk <-
 
 				# First function
 				~ stop(
-					"In calculating PCA there is no gene that have non NA values is all samples"
+					"tidyBulk says: In calculating PCA there is no gene that have non NA values is all samples"
 				),
 
 				# Second function
 				~ {
 					warning(
 						"
-						In PCA correlation there is < 100 genes that have non NA values is all samples.
+						tidyBulk says: In PCA correlation there is < 100 genes that have non NA values is all samples.
 						The correlation calculation would not be reliable,
 						we suggest to partition the dataset for sample clusters.
 						"
@@ -1700,7 +1700,7 @@ get_reduced_dimensions_TSNE_bulk <-
 
 		# If not enough samples stop
 		if (arguments$perplexity <= 2)
-			stop("You don't have enough samples to run tSNE")
+			stop("tidyBulk says: You don't have enough samples to run tSNE")
 
 		# Calculate the most variable genes, from plotMDS Limma
 
@@ -1862,7 +1862,7 @@ get_rotated_dimensions =
 				max %>%
 				`>` (1))
 			stop(sprintf(
-				"%s must be unique for each row for the calculation of rotation",
+				"tidyBulk says: %s must be unique for each row for the calculation of rotation",
 				quo_name(.element)
 			))
 
@@ -1891,7 +1891,7 @@ get_rotated_dimensions =
 
 		# Sanity check of the angle selected
 		if (rotation_degrees %>% between(-360, 360) %>% `!`)
-			stop("rotation_degrees must be between -360 and 360")
+			stop("tidyBulk says: rotation_degrees must be between -360 and 360")
 
 		# Return
 		.data %>%
@@ -2046,9 +2046,9 @@ aggregate_duplicated_transcripts_bulk =
 		# Through warning if there are logicals of factor in the data frame
 		# because they cannot be merged if they are not unique
 		if ((lapply(.data, class) %>% unlist %in% c("logical", "factor")) %>% any) {
-			warning("for aggregation fctors and logical columns were converted to character")
-			writeLines("Converted to characters")
-			lapply(.data, class) %>% unlist %>% `[` (. %in% c("logical", "factor") %>% which) %>% print
+			warning("tidyBulk says: for aggregation fctors and logical columns were converted to character")
+			message("Converted to characters")
+			message(lapply(.data, class) %>% unlist %>% `[` (. %in% c("logical", "factor") %>% which))
 		}
 
 		# Select which are the numerical columns
@@ -2209,14 +2209,14 @@ remove_redundancy_elements_through_correlation <- function(.data,
 
 			# First function
 			~ stop(
-				"In calculating correlation there is no gene that have non NA values is all samples"
+				"tidyBulk says: In calculating correlation there is no gene that have non NA values is all samples"
 			),
 
 			# Second function
 			~ {
 				warning(
 					"
-					In calculating correlation there is < 100 genes that have non NA values is all samples.
+					tidyBulk says: In calculating correlation there is < 100 genes that have non NA values is all samples.
 					The correlation calculation would not be reliable,
 					we suggest to partition the dataset for sample clusters.
 					"
@@ -2515,7 +2515,7 @@ get_cell_type_proportions = function(.data,
 			length %>%
 			`<` (50))
 		stop(
-			"You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
+			"tidyBulk says: You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
 		)
 
 	# Check if rownames exist
@@ -2675,7 +2675,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 	# Check that .formula includes no more than two covariates at the moment
 	if (parse_formula(.formula) %>% length %>% `>` (3))
-		warning("Only the second covariate in the .formula is adjusted for, at the moment")
+		warning("tidyBulk says: Only the second covariate in the .formula is adjusted for, at the moment")
 
 	# New column name
 	value_adjusted = as.symbol(sprintf("%s%s",  quo_name(.abundance), adjusted_string))
@@ -2691,7 +2691,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		{
 			# Give warning of filtering
 			message(
-				"Combat is applied excluding lowly_abundant, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts "
+				"tidyBulk says: Combat is applied excluding lowly_abundant, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts "
 			)
 			(.)
 		} %>%
@@ -3020,7 +3020,7 @@ as_matrix <- function(tbl,
 				unique() %>%
 				`%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
 			~ {
-				warning("to_matrix says: there are NON-numerical columns, the matrix will NOT be numerical")
+				warning("tidyBulk says: there are NON-numerical columns, the matrix will NOT be numerical")
 				.x
 			}
 		) %>%
