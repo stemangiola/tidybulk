@@ -155,7 +155,7 @@ dgList <- calcNormFactors(dgList, method="TMM")
 dgList <- estimateCommonDisp(dgList)
 dgList <- estimateTagwiseDisp(dgList)
 norm_counts.table <- t(
-    t(dgList$pseudo.counts)*
+    t(count_m)*
         (dgList$samples$norm.factors)
 )
 ```
@@ -256,19 +256,12 @@ Standard procedure
 library(limma)
 
 count_m_log = log(count_m + 1)
-cmds1_2 = count_m_log %>% plotMDS(dim.plot = 1:2, plot = FALSE)
-cmds3_4 = count_m_log %>% plotMDS(dim.plot = 3:4, plot = FALSE)
-cmds5_6 = count_m_log %>% plotMDS(dim.plot = 5:6, plot = FALSE)
+cmds = limma::plotMDS(ndim = .dims, plot = FALSE)
 
-
-cmds = cbind(
-    data.frame(cmds1_2$x, cmds1_2$y),
-    cbind(
-        data.frame(cmds3_4$x, cmds3_4$y),
-        data.frame(cmds5_6$x, cmds5_6$y)
-    )
-) %>%
+cmds = cmds %$% 
+    cmdscale.out %>%
     setNames(sprintf("Dim%s", 1:6))
+
 cmds$cell_type = tidyBulk::counts[
     match(tidyBulk::counts$sample, rownames(cmds)),
     "Cell type"
