@@ -9,6 +9,7 @@ add_scaled_counts_bulk(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
+  factor_of_interest = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   method = "TMM",
@@ -23,6 +24,8 @@ add_scaled_counts_bulk(
 \item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{factor_of_interest}{The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.}
 
 \item{minimum_counts}{A positive integer. Minimum counts required for at least some samples.}
 

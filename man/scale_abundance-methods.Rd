@@ -10,6 +10,7 @@ scale_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
+  factor_of_interest = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   method = "TMM",
@@ -25,6 +26,8 @@ scale_abundance(
 \item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{factor_of_interest}{The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.}
 
 \item{minimum_counts}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.}
 

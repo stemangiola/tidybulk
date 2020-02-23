@@ -24,7 +24,7 @@ filter_abundant(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{factor_of_interest}{The name of the column of the factor of interest}
+\item{factor_of_interest}{The name of the column of the factor of interest. This is used for defining sample groups for the filtering process.}
 
 \item{minimum_counts}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.}
 

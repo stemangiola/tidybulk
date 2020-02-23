@@ -7,6 +7,7 @@
 add_scaled_counts_bulk.calcNormFactor(
   .data,
   reference = NULL,
+  factor_of_interest = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   .sample = sample,
@@ -19,6 +20,8 @@ add_scaled_counts_bulk.calcNormFactor(
 \item{.data}{A tibble}
 
 \item{reference}{A reference matrix, not sure if used anymore}
+
+\item{factor_of_interest}{The name of the column of the factor of interest}
 
 \item{minimum_counts}{A positive integer. Minimum counts required for at least some samples.}
 
