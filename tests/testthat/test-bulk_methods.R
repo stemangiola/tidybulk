@@ -68,6 +68,28 @@ test_that("Getting scaled counts - no object",{
 
 	expect_equal(quo_name(internals$tt_columns[[4]]), "c_scaled" )
 
+	# With factor of interest
+	res =
+		scale_abundance(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			factor_of_interest = condition,
+			action = "get"
+		)
+
+	expect_equal(
+		unique(res$multiplier),
+		c(1.1509530, 1.0821210, 1.3929492, 0.8779399, 1.1334760),
+		tolerance=1e-6
+	)
+
+	expect_equal(
+		ncol(res),
+		6
+	)
+
 })
 
 
@@ -160,7 +182,31 @@ test_that("Get differential trancript abundance - no object",{
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-6.822502, -5.768898, -5.686800, -5.368460),
+		c(-3.673818, -3.250104 ,-3.041978 , 2.832697),
+		tolerance=1e-6
+	)
+
+	expect_equal(
+		ncol(res),
+		8
+	)
+
+	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+
+	# Continuous and discrete
+	res =
+		test_differential_abundance(
+			left_join(input_df, sam),
+			~ condition_cont + condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get"
+		)
+
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-4.992912, -4.290761, -2.987840, -3.353016),
 		tolerance=1e-6
 	)
 
@@ -185,7 +231,7 @@ test_that("Get differential trancript abundance - no object",{
 	)
 
 	# Just one sample per covariate error
-	expect_error(
+	expect_warning(
 		test_differential_abundance(
 			filter(input_df, a %in% c("SRR1740034", "SRR1740035", "SRR1740043", "SRR1740058")),
 			~ condition,
@@ -194,7 +240,7 @@ test_that("Get differential trancript abundance - no object",{
 			.abundance = c,
 			action="get"
 		),
-		"You need at least two replicated"
+		"You have less than two replicated for each factorial condition"
 	)
 
 	# Setting filtering manually

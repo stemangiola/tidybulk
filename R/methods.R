@@ -220,6 +220,7 @@ setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #'
+#' @param factor_of_interest The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
@@ -250,6 +251,7 @@ setGeneric("scale_abundance", function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
+																			 factor_of_interest = NULL,
 																			 minimum_counts = 10,
 																			 minimum_proportion = 0.7,
 																			 method = "TMM",
@@ -262,6 +264,7 @@ setGeneric("scale_abundance", function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
+														 factor_of_interest = NULL,
 														 minimum_counts = 10,
 														 minimum_proportion = 0.7,
 														 method = "TMM",
@@ -273,6 +276,8 @@ setGeneric("scale_abundance", function(.data,
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 
+	factor_of_interest = enquo(factor_of_interest)
+
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
@@ -282,6 +287,7 @@ setGeneric("scale_abundance", function(.data,
 			!!.sample,
 			!!.transcript,
 			!!.abundance,
+			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion,
 			method = method,
@@ -293,6 +299,7 @@ setGeneric("scale_abundance", function(.data,
 			!!.sample,
 			!!.transcript,
 			!!.abundance,
+			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion,
 			method = method,
@@ -326,6 +333,7 @@ setMethod("scale_abundance", "tidyBulk", .scale_abundance)
 															 .sample = NULL,
 															 .transcript = NULL,
 															 .abundance = NULL,
+															 factor_of_interest = NULL,
 															 minimum_counts = 10,
 															 minimum_proportion = 0.7,
 															 method = "TMM",
@@ -336,6 +344,8 @@ setMethod("scale_abundance", "tidyBulk", .scale_abundance)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 
+	factor_of_interest = enquo(factor_of_interest)
+
 	.data %>%
 
 		# Convert to tidyBulk
@@ -343,7 +353,10 @@ setMethod("scale_abundance", "tidyBulk", .scale_abundance)
 
 		# Apply scale method
 		scale_abundance(
-			!!.sample,!!.transcript,!!.abundance,
+			!!.sample,
+			!!.transcript,
+			!!.abundance,
+			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion,
 			method = method,
@@ -2165,7 +2178,7 @@ setMethod("filter_variable",
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param factor_of_interest The name of the column of the factor of interest
+#' @param factor_of_interest The name of the column of the factor of interest. This is used for defining sample groups for the filtering process.
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #'

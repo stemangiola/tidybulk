@@ -186,6 +186,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 #'
 #' @param .data A tibble
 #' @param reference A reference matrix, not sure if used anymore
+#' @param factor_of_interest The name of the column of the factor of interest
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param .sample The name of the sample column
@@ -197,6 +198,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 #' @return A list including the filtered data frame and the normalization factors
 add_scaled_counts_bulk.calcNormFactor <- function(.data,
 																									reference = NULL,
+																									factor_of_interest = NULL,
 																									minimum_counts = 10,
 																									minimum_proportion = 0.7,
 																									.sample = `sample`,
@@ -207,6 +209,8 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 
+	factor_of_interest = enquo(factor_of_interest)
+
 	error_if_log_transformed(.data,!!.abundance)
 
 	# Get list of low transcribed genes
@@ -214,6 +218,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 		add_scaled_counts_bulk.get_low_expressed(
 			.data %>%
 				filter(!!.sample != "reference"),!!.sample,!!.transcript,!!.abundance,
+			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion
 		)
@@ -225,16 +230,12 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 		stop("The gene expression matrix has been filtered completely for lowly expressed genes")
 	}
 
-	# Get data frame for the higly transcribed transcripts
+	# Get data frame for the highly transcribed transcripts
 	df.filt <-
 		.data %>%
 		dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
-		droplevels()
-
-
-
-	# List of low abundant transcripts
-	gene_to_exclude = gene_to_exclude
+		droplevels() %>%
+		select(!!.sample, !!.transcript, !!.abundance)
 
 	# scaled data set
 	nf =
@@ -288,6 +289,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param factor_of_interest The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
@@ -300,6 +302,7 @@ get_scaled_counts_bulk <- function(.data,
 																	 .sample = NULL,
 																	 .transcript = NULL,
 																	 .abundance = NULL,
+																	 factor_of_interest = NULL,
 																	 minimum_counts = 10,
 																	 minimum_proportion = 0.7,
 																	 method = "TMM",
@@ -312,6 +315,8 @@ get_scaled_counts_bulk <- function(.data,
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
+
+	factor_of_interest = enquo(factor_of_interest)
 
 	# Check if package is installed, otherwise install
 	if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
@@ -328,12 +333,6 @@ get_scaled_counts_bulk <- function(.data,
 	df <-
 		.data %>%
 
-		# # Check input types
-		# error_if_wrong_input(
-		#   as.list(environment())[-1],
-		#   c("spec_tbl_df",  "quosure",  "quosure",  "quosure")
-		# ) %>%
-
 		# Stop if any counts is NA
 		error_if_counts_is_na(!!.abundance) %>%
 
@@ -341,7 +340,7 @@ get_scaled_counts_bulk <- function(.data,
 		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Rename
-		dplyr::select(!!.sample,!!.transcript,!!.abundance) %>%
+		dplyr::select(!!.sample,!!.transcript,!!.abundance, !!factor_of_interest) %>%
 		#setNames(c("!!.sample", "gene", "count")) %>%
 
 		# Set samples and genes as factors
@@ -364,6 +363,7 @@ get_scaled_counts_bulk <- function(.data,
 		add_scaled_counts_bulk.calcNormFactor(
 			df,
 			reference,
+			!!factor_of_interest,
 			minimum_counts,
 			minimum_proportion,
 			.sample = !!.sample,
@@ -405,6 +405,11 @@ get_scaled_counts_bulk <- function(.data,
 	# Return
 	df_norm =
 		df %>%
+
+		# drop factor of interest
+		select(!!.sample, !!.transcript, !!.abundance) %>%
+
+		# Manipulate
 		dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
 		dplyr::left_join(nf, by = quo_name(.sample)) %>%
 
@@ -438,6 +443,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param factor_of_interest The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
@@ -450,6 +456,7 @@ add_scaled_counts_bulk <- function(.data,
 																	 .sample = NULL,
 																	 .transcript = NULL,
 																	 .abundance = NULL,
+																	 factor_of_interest = NULL,
 																	 minimum_counts = 10,
 																	 minimum_proportion = 0.7,
 																	 method = "TMM",
@@ -463,6 +470,7 @@ add_scaled_counts_bulk <- function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	factor_of_interest = enquo(factor_of_interest)
 
 	.data_norm =
 		.data %>%
@@ -470,6 +478,7 @@ add_scaled_counts_bulk <- function(.data,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
+			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion,
 			method = method,
@@ -562,7 +571,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		)
 
 	# Check if at least two samples for each group
-	if (# If I have some discrete covariates
+	if (
+		# If I have some discrete covariates
 		df_for_edgeR %>%
 		select(one_of(parse_formula(.formula))) %>%
 		select_if(function(col)
@@ -572,13 +582,16 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		# If I have at least 2 samples per group
 		df_for_edgeR %>%
 		select(!!.sample, one_of(parse_formula(.formula))) %>%
+		select_if(function(col) !is.numeric(col) & !is.integer(col) & !is.double(col) ) %>%
 		distinct %>%
-		count(!!as.symbol(parse_formula(.formula))) %>%
-		distinct(n) %>%
-		pull(1) %>%
-		min %>%
-		`<` (2))
-	stop("You need at least two replicated for each condition for edgeR to work")
+		group_by_at(vars(-!!.sample)) %>%
+		count() %>%
+		{
+			(.) %>% nrow %>% `<` (2) |
+			(.) %>% distinct(n) %>%	pull(1) %>%	min %>%	`<` (2)
+		}
+	)
+	warning("tidyBulk says: You have less than two replicated for each factorial condition")
 
 	# Create design matrix
 	design =
@@ -590,7 +603,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	# Print the design column names in case I want constrasts
 	message(
 		sprintf(
-			"tidyBulk says: The design column names are \"%s\" in case you are interested in contrasts",
+			"tidyBulk says: The design column names are \"%s\"",
 			design %>% colnames %>% paste(collapse = ", ")
 		)
 	)
@@ -618,7 +631,17 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				!!.sample,
 				!!.transcript,
 				!!.abundance,
-				factor_of_interest = !!as.symbol(parse_formula(.formula)),
+				factor_of_interest =
+					!!(
+						parse_formula(.formula)[1] %>%
+						ifelse_pipe(
+								select(df_for_edgeR, (.)) %>%
+								lapply(class) %>%
+								as.character() %in% c("numeric", "integer", "double"),
+							~ NULL,
+							~ as.symbol(.x)
+						)
+					),
 				minimum_counts = minimum_counts,
 				minimum_proportion = minimum_proportion
 			)
