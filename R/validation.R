@@ -156,7 +156,7 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance, ty
 
 }
 
-ttBulk_to_tbl = function(.data) {
+tidyBulk_to_tbl = function(.data) {
 	.data %>%	drop_class(c("tidyBulk", "tt"))
 }
 
@@ -182,7 +182,7 @@ validation_default = function(.data,
 		warning(
 			"tidyBulk says: One or more columns .sample .transcript or .abundance are missing from your data frame. The tidyBulk object has been converted to a `tbl`"
 		)
-		return(.data %>% ttBulk_to_tbl)
+		return(.data %>% tidyBulk_to_tbl)
 	}
 
 	# Type check
@@ -196,7 +196,7 @@ validation_default = function(.data,
 		warning(
 			"tidyBulk says: The column provided as .sample .transcript or .abundance do not comply with the required types. The tidyBulk object has been converted to a `tbl`"
 		)
-		return(.data %>% ttBulk_to_tbl)
+		return(.data %>% tidyBulk_to_tbl)
 	}
 
 	# Check if duplicated genes
@@ -211,7 +211,7 @@ validation_default = function(.data,
 			warning(
 				"tidyBulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding (e.g., aggregate_duplicates()). The tidyBulk object has been converted to a `tbl`"
 			)
-			return(.data %>% ttBulk_to_tbl)
+			return(.data %>% tidyBulk_to_tbl)
 		}
 	}
 
@@ -224,7 +224,7 @@ validation_default = function(.data,
 		warning(
 			"tidyBulk says: You have NA values in your counts. The tidyBulk object has been converted to a `tbl`"
 		)
-		return(.data %>% ttBulk_to_tbl)
+		return(.data %>% tidyBulk_to_tbl)
 	}
 
 }
@@ -257,7 +257,7 @@ validation.tidyBulk = function(.data,
 		warning(
 			"tidyBulk says: The object provided has tidyBulk class but no attribute containing the column names. The tidyBulk object has been converted to a `tbl`"
 		)
-		return(.data %>% ttBulk_to_tbl)
+		return(.data %>% tidyBulk_to_tbl)
 	}
 
 	# Get column names

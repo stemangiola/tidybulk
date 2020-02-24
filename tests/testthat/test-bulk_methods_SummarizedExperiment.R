@@ -14,7 +14,7 @@ test_that("tidyBulk SummarizedExperiment conversion",{
 
 	expect_equal(	ncol(res),	12	)
 
-	res = res %>% tidyBulk:::ttBulk_to_SummarizedExperiment()
+	res = res %>% tidyBulk:::tidyBulk_to_SummarizedExperiment()
 
 	expect_equal(	class(res)[1],	"SummarizedExperiment"	)
 
@@ -26,7 +26,7 @@ test_that("tidyBulk SummarizedExperiment conversion",{
 
 test_that("tidyBulk SummarizedExperiment normalisation manual",{
 
-	res = tidyBulk(tidyBulk:::ttBulk_to_SummarizedExperiment(scale_abundance(tidyBulk(se))))
+	res = tidyBulk(tidyBulk:::tidyBulk_to_SummarizedExperiment(scale_abundance(tidyBulk(se))))
 
 	expect_equal(
 		res[1:4,]$`counts_scaled`,
@@ -125,7 +125,7 @@ test_that("Get adjusted counts - SummarizedExperiment",{
 
 	res =
 		adjust_abundance(
-			tidyBulk:::ttBulk_to_SummarizedExperiment(cm, a, b, c),
+			tidyBulk:::tidyBulk_to_SummarizedExperiment(cm, a, b, c),
 			~ condition + batch
 		)
 
@@ -147,7 +147,7 @@ test_that("Aggregate duplicated transcript - SummarizedExperiment",{
 
 test_that("Add cell type proportions - SummarizedExperiment",{
 
-	res =		deconvolve_cellularity(tidyBulk:::ttBulk_to_SummarizedExperiment(input_df, a, b, c), cores=1	)
+	res =		deconvolve_cellularity(tidyBulk:::tidyBulk_to_SummarizedExperiment(input_df, a, b, c), cores=1	)
 
 	expect_equal(
 		as.numeric(as.data.frame(res@colData[1, 4:7])),
@@ -159,7 +159,7 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 
 test_that("Add differential trancript abundance - SummarizedExperiment",{
 
-	res =		test_differential_abundance(tidyBulk:::ttBulk_to_SummarizedExperiment(input_df, a, b, c),	~ condition	)
+	res =		test_differential_abundance(tidyBulk:::tidyBulk_to_SummarizedExperiment(input_df, a, b, c),	~ condition	)
 
 	w = match(  c("HK3", "FCN1", "CLEC7A", "FAM198B"), rownames(res) )
 
@@ -188,7 +188,7 @@ test_that("filter variable - no object",{
 
 	res =
 		filter_variable(
-			tidyBulk:::ttBulk_to_SummarizedExperiment(input_df, a, b, c),
+			tidyBulk:::tidyBulk_to_SummarizedExperiment(input_df, a, b, c),
 			top = 5
 		)
 

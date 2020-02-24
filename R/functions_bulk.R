@@ -99,7 +99,7 @@ create_tt_from_bam_sam_bulk <-
 			{
 				reduce(
 					list(
-						(.) %$% counts %>% as_tibble(rownames = "GeneID") %>% mutate(GeneID = GeneID %>% as.integer()) %>% gather(sample, `count`,-GeneID),
+						(.) %$% counts %>% as_tibble(rownames = "GeneID") %>% mutate(GeneID = GeneID %>% as.integer()) %>% gather(sample, count,-GeneID),
 						(.) %$% genes %>% select(GeneID, transcript) %>% as_tibble(),
 						(.) %$% samples %>% as_tibble()
 					),
@@ -107,7 +107,14 @@ create_tt_from_bam_sam_bulk <-
 				) %>%
 					rename(entrez = GeneID) %>%
 					mutate(entrez = entrez %>% as.character())
-			}
+			} %>%
+
+			# Add tt_columns attribute
+			add_tt_columns(sample,transcript,count) %>%
+
+			# Add class
+			add_class("tt") %>%
+			add_class("tidyBulk")
 	}
 
 #' Drop lowly tanscribed genes for TMM normalization
@@ -2893,7 +2900,7 @@ filter_variable_transcripts = function(.data,
 	.data %>% filter(!!.transcript %in% variable_trancripts)
 }
 
-#'ttBulk_to_SummarizedExperiment
+#'tidyBulk_to_SummarizedExperiment
 #'
 #' @importFrom utils data
 #'
@@ -2904,7 +2911,7 @@ filter_variable_transcripts = function(.data,
 #'
 #' @return A SummarizedExperiment
 #'
-ttBulk_to_SummarizedExperiment = function(.data,
+tidyBulk_to_SummarizedExperiment = function(.data,
 																					.sample = NULL,
 																					.transcript = NULL,
 																					.abundance = NULL) {

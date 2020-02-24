@@ -74,13 +74,13 @@ my_theme =
 # 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
 # se_mini
-se_mini = tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts_mini, sample, transcript, count)
-se_breast_tcga_mini = tidyBulk:::ttBulk_to_SummarizedExperiment( tidyBulk::breast_tcga_mini, sample, ens, `count`)
+se_mini = tidyBulk:::tidyBulk_to_SummarizedExperiment(tidyBulk::counts_mini, sample, transcript, count)
+se_breast_tcga_mini = tidyBulk:::tidyBulk_to_SummarizedExperiment( tidyBulk::breast_tcga_mini, sample, ens, `count`)
 se.cibersort =
-	tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count)
+	tidyBulk:::tidyBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count)
 se.norm.batch =
 
-	tidyBulk:::ttBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count) %>%
+	tidyBulk:::tidyBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count) %>%
 	scale_abundance()
 ```
 

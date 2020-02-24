@@ -85,7 +85,7 @@ setMethod("tidyBulk", "spec_tbl_df", .tidyBulk)
 #'
 setMethod("tidyBulk", "tbl_df", .tidyBulk)
 
-.ttBulk_se = function(.data,
+.tidyBulk_se = function(.data,
 											.sample,
 											.transcript,
 											.abundance,
@@ -154,25 +154,25 @@ setMethod("tidyBulk", "tbl_df", .tidyBulk)
 #' @inheritParams tidyBulk
 #' @return A `tidyBulk` object
 #'
-setMethod("tidyBulk", "SummarizedExperiment", .ttBulk_se)
+setMethod("tidyBulk", "SummarizedExperiment", .tidyBulk_se)
 
 #' tidyBulk
 #' @inheritParams tidyBulk
 #' @return A `tidyBulk` object
 #'
-setMethod("tidyBulk", "RangedSummarizedExperiment", .ttBulk_se)
+setMethod("tidyBulk", "RangedSummarizedExperiment", .tidyBulk_se)
 
 
 #' Creates a `tt` object from a list of file names of BAM/SAM
 #'
 #' \lifecycle{maturing}
 #'
-#' @description ttBulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @description tidyBulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name ttBulk_SAM_BAM
+#' @name tidyBulk_SAM_BAM
 #'
 #' @param file_names A character vector
 #' @param genome A character string
@@ -190,17 +190,17 @@ setMethod("tidyBulk", "RangedSummarizedExperiment", .ttBulk_se)
 #'
 #'
 #' @docType methods
-#' @rdname ttBulk_SAM_BAM-methods
+#' @rdname tidyBulk_SAM_BAM-methods
 #' @export
 #'
-setGeneric("ttBulk_SAM_BAM", function(file_names, genome = "hg38", ...)
-	standardGeneric("ttBulk_SAM_BAM"))
+setGeneric("tidyBulk_SAM_BAM", function(file_names, genome = "hg38", ...)
+	standardGeneric("tidyBulk_SAM_BAM"))
 
-#' ttBulk_SAM_BAM
-#' @inheritParams ttBulk_SAM_BAM
+#' tidyBulk_SAM_BAM
+#' @inheritParams tidyBulk_SAM_BAM
 #' @return A `tidyBulk` object
 #'
-setMethod("ttBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	function(file_names, genome = "hg38", ...)
+setMethod("tidyBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	function(file_names, genome = "hg38", ...)
 	create_tt_from_bam_sam_bulk(file_names = file_names, genome = genome, ...))
 
 #' Scale the counts of transcripts/genes
@@ -365,7 +365,7 @@ setMethod("scale_abundance", "tidyBulk", .scale_abundance)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		ttBulk_to_SummarizedExperiment()
+		tidyBulk_to_SummarizedExperiment()
 
 }
 
@@ -562,7 +562,7 @@ setMethod("cluster_elements", "tidyBulk", .cluster_elements)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		ttBulk_to_SummarizedExperiment()
+		tidyBulk_to_SummarizedExperiment()
 
 }
 
@@ -825,7 +825,7 @@ setMethod("reduce_dimensions", "tidyBulk", .reduce_dimensions)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		ttBulk_to_SummarizedExperiment()
+		tidyBulk_to_SummarizedExperiment()
 
 }
 
@@ -993,7 +993,7 @@ setMethod("rotate_dimensions", "tidyBulk", .rotate_dimensions)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		ttBulk_to_SummarizedExperiment()
+		tidyBulk_to_SummarizedExperiment()
 
 }
 
@@ -1212,7 +1212,7 @@ setMethod("remove_redundancy", "tidyBulk", .remove_redundancy)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		ttBulk_to_SummarizedExperiment()
+		tidyBulk_to_SummarizedExperiment()
 
 }
 
@@ -1382,7 +1382,7 @@ setMethod("adjust_abundance", "tidyBulk", .adjust_abundance)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		ttBulk_to_SummarizedExperiment()
+		tidyBulk_to_SummarizedExperiment()
 
 }
 
@@ -1533,7 +1533,7 @@ setMethod("aggregate_duplicates", "tidyBulk", .aggregate_duplicates)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		ttBulk_to_SummarizedExperiment()
+		tidyBulk_to_SummarizedExperiment()
 
 }
 
@@ -1696,7 +1696,7 @@ setMethod("deconvolve_cellularity",
 		) %>%
 
 		# Convert to SummaizedExperiment
-		ttBulk_to_SummarizedExperiment()
+		tidyBulk_to_SummarizedExperiment()
 
 }
 
@@ -1996,7 +1996,7 @@ setMethod("test_differential_abundance",
 		) %>%
 
 		# Convert to SummaizedExperiment
-		ttBulk_to_SummarizedExperiment()
+		tidyBulk_to_SummarizedExperiment()
 
 }
 
@@ -2140,7 +2140,7 @@ setMethod("filter_variable", "tidyBulk", .filter_variable)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		ttBulk_to_SummarizedExperiment()
+		tidyBulk_to_SummarizedExperiment()
 
 }
 
@@ -2315,7 +2315,7 @@ setMethod("filter_abundant", "tidyBulk", .filter_abundant)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		ttBulk_to_SummarizedExperiment()
+		tidyBulk_to_SummarizedExperiment()
 
 }
 
