@@ -189,7 +189,7 @@ We may want to identify and filter variable transcripts.
 TidyTranscriptomics
 
 ``` r
-counts.norm.variable = counts.norm %>% filter_variable()
+counts.norm.variable = counts.norm %>% keep_variable()
 ```
 
     ## Getting the 500 most variable genes

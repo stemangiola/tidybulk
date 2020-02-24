@@ -165,7 +165,7 @@ We may want to identify and filter variable transcripts.
 <div class="column-left">
 TidyTranscriptomics
 ```{r filter variable, cache=TRUE}
-counts.norm.variable = counts.norm %>% filter_variable()
+counts.norm.variable = counts.norm %>% keep_variable()
 ```
 </div>
 <div class="column-right">

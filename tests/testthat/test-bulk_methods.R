@@ -135,7 +135,7 @@ test_that("Adding scaled counts - no object",{
 test_that("filter variable - no object",{
 
 	res =
-		filter_variable(
+		keep_variable(
 			input_df,
 			.sample = a,
 			.transcript = b,
@@ -896,7 +896,7 @@ test_that("Add cell type proportions - no object",{
 test_that("filter abundant - no object",{
 
 	res =
-		filter_abundant(
+		keep_abundant(
 			input_df,
 			.sample = a,
 			.transcript = b,
@@ -913,7 +913,7 @@ test_that("filter abundant - no object",{
 	expect_equal(	nrow(res),	910	)
 
 	res =
-		filter_abundant(
+		keep_abundant(
 			input_df,
 			.sample = a,
 			.transcript = b,
@@ -937,7 +937,7 @@ test_that("filter abundant - no object",{
 	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
 
 	expect_message(
-		filter_abundant(
+		keep_abundant(
 			left_join(input_df, sam),
 			.sample = a,
 			.transcript = b,

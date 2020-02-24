@@ -2026,12 +2026,12 @@ setMethod(
 #'
 #' \lifecycle{maturing}
 #'
-#' @description filter_variable() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#' @description keep_variable() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name filter_variable
+#' @name keep_variable
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
@@ -2051,7 +2051,7 @@ setMethod(
 #'
 #'
 #'
-#' 	filter_variable(
+#' 	keep_variable(
 #' 	tidyBulk::counts_mini,
 #' 	    sample,
 #' 	    transcript,
@@ -2061,19 +2061,19 @@ setMethod(
 #'
 #'
 #' @docType methods
-#' @rdname filter_variable-methods
+#' @rdname keep_variable-methods
 #' @export
 #'
-setGeneric("filter_variable", function(.data,
+setGeneric("keep_variable", function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
 																			 top = 500,
 																			 log_transform = TRUE)
-	standardGeneric("filter_variable"))
+	standardGeneric("keep_variable"))
 
 # Set internal
-.filter_variable = 		function(.data,
+.keep_variable = 		function(.data,
 															.sample = NULL,
 															.transcript = NULL,
 															.abundance = NULL,
@@ -2088,7 +2088,7 @@ setGeneric("filter_variable", function(.data,
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	filter_variable_transcripts(
+	keep_variable_transcripts(
 		.data,
 		.sample = !!.sample,
 		.transcript = !!.transcript,
@@ -2098,22 +2098,22 @@ setGeneric("filter_variable", function(.data,
 	)
 }
 
-#' filter_variable
-#' @inheritParams filter_variable
+#' keep_variable
+#' @inheritParams keep_variable
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("filter_variable", "spec_tbl_df", .filter_variable)
+setMethod("keep_variable", "spec_tbl_df", .keep_variable)
 
-#' filter_variable
-#' @inheritParams filter_variable
+#' keep_variable
+#' @inheritParams keep_variable
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("filter_variable", "tbl_df", .filter_variable)
+setMethod("keep_variable", "tbl_df", .keep_variable)
 
-#' filter_variable
-#' @inheritParams filter_variable
+#' keep_variable
+#' @inheritParams keep_variable
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("filter_variable", "tidyBulk", .filter_variable)
+setMethod("keep_variable", "tidyBulk", .keep_variable)
 
-.filter_variable_se = function(.data,
+.keep_variable_se = function(.data,
 															 .sample = NULL,
 															 .transcript = NULL,
 															 .abundance = NULL,
@@ -2131,7 +2131,7 @@ setMethod("filter_variable", "tidyBulk", .filter_variable)
 		tidyBulk() %>%
 
 		# Apply scale method
-		filter_variable(
+		keep_variable(
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
@@ -2144,21 +2144,21 @@ setMethod("filter_variable", "tidyBulk", .filter_variable)
 
 }
 
-#' filter_variable
-#' @inheritParams filter_variable
+#' keep_variable
+#' @inheritParams keep_variable
 #' @return A `tidyBulk` object
 #'
-setMethod("filter_variable",
+setMethod("keep_variable",
 					"SummarizedExperiment",
-					.filter_variable_se)
+					.keep_variable_se)
 
-#' filter_variable
-#' @inheritParams filter_variable
+#' keep_variable
+#' @inheritParams keep_variable
 #' @return A `tidyBulk` object
 #'
-setMethod("filter_variable",
+setMethod("keep_variable",
 					"RangedSummarizedExperiment",
-					.filter_variable_se)
+					.keep_variable_se)
 
 
 
@@ -2166,13 +2166,13 @@ setMethod("filter_variable",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description filter_abundant() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#' @description keep_abundant() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #' @importFrom dplyr filter
 #'
-#' @name filter_abundant
+#' @name keep_abundant
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
@@ -2193,7 +2193,7 @@ setMethod("filter_variable",
 #'
 #'
 #'
-#' 	filter_abundant(
+#' 	keep_abundant(
 #' 	tidyBulk::counts_mini,
 #' 	    sample,
 #' 	    transcript,
@@ -2202,20 +2202,20 @@ setMethod("filter_variable",
 #'
 #'
 #' @docType methods
-#' @rdname filter_abundant-methods
+#' @rdname keep_abundant-methods
 #' @export
 #'
-setGeneric("filter_abundant", function(.data,
+setGeneric("keep_abundant", function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
 																			 factor_of_interest = NULL,
 																			 minimum_counts = 10,
 																			 minimum_proportion = 0.7)
-	standardGeneric("filter_abundant"))
+	standardGeneric("keep_abundant"))
 
 # Set internal
-.filter_abundant = 		function(.data,
+.keep_abundant = 		function(.data,
 															.sample = NULL,
 															.transcript = NULL,
 															.abundance = NULL,
@@ -2269,22 +2269,22 @@ setGeneric("filter_abundant", function(.data,
 		reattach_internals(.data)
 }
 
-#' filter_abundant
-#' @inheritParams filter_abundant
+#' keep_abundant
+#' @inheritParams keep_abundant
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("filter_abundant", "spec_tbl_df", .filter_abundant)
+setMethod("keep_abundant", "spec_tbl_df", .keep_abundant)
 
-#' filter_abundant
-#' @inheritParams filter_abundant
+#' keep_abundant
+#' @inheritParams keep_abundant
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("filter_abundant", "tbl_df", .filter_abundant)
+setMethod("keep_abundant", "tbl_df", .keep_abundant)
 
-#' filter_abundant
-#' @inheritParams filter_abundant
+#' keep_abundant
+#' @inheritParams keep_abundant
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("filter_abundant", "tidyBulk", .filter_abundant)
+setMethod("keep_abundant", "tidyBulk", .keep_abundant)
 
-.filter_abundant_se = function(.data,
+.keep_abundant_se = function(.data,
 															 .sample = NULL,
 															 .transcript = NULL,
 															 .abundance = NULL,
@@ -2305,7 +2305,7 @@ setMethod("filter_abundant", "tidyBulk", .filter_abundant)
 		tidyBulk() %>%
 
 		# Apply scale method
-		filter_abundant(
+		keep_abundant(
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
@@ -2319,21 +2319,21 @@ setMethod("filter_abundant", "tidyBulk", .filter_abundant)
 
 }
 
-#' filter_abundant
-#' @inheritParams filter_abundant
+#' keep_abundant
+#' @inheritParams keep_abundant
 #' @return A `tidyBulk` object
 #'
-setMethod("filter_abundant",
+setMethod("keep_abundant",
 					"SummarizedExperiment",
-					.filter_abundant_se)
+					.keep_abundant_se)
 
-#' filter_abundant
-#' @inheritParams filter_abundant
+#' keep_abundant
+#' @inheritParams keep_abundant
 #' @return A `tidyBulk` object
 #'
-setMethod("filter_abundant",
+setMethod("keep_abundant",
 					"RangedSummarizedExperiment",
-					.filter_abundant_se)
+					.keep_abundant_se)
 
 
 

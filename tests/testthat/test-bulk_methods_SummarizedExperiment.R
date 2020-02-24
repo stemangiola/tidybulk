@@ -174,7 +174,7 @@ test_that("Add differential trancript abundance - SummarizedExperiment",{
 
 test_that("filter abundant - SummarizedExperiment",{
 
-	res =		filter_abundant(		se	)
+	res =		keep_abundant(		se	)
 
 	expect_equal(		nrow(res),		23	)
 
@@ -182,12 +182,12 @@ test_that("filter abundant - SummarizedExperiment",{
 
 test_that("filter variable - no object",{
 
-	res =		filter_variable(se, top = 5		)
+	res =		keep_variable(se, top = 5		)
 
 	expect_equal(	nrow(res),5	)
 
 	res =
-		filter_variable(
+		keep_variable(
 			tidyBulk:::tidyBulk_to_SummarizedExperiment(input_df, a, b, c),
 			top = 5
 		)

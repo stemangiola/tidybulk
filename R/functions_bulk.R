@@ -1327,7 +1327,7 @@ get_reduced_dimensions_MDS_bulk <-
 			error_if_counts_is_na(!!.abundance) %>%
 
 			# Filter lowly transcribed (I have to avoid the use of scaling function)
-			filter_abundant(!!.element, !!.feature,!!.abundance) %>%
+			keep_abundant(!!.element, !!.feature,!!.abundance) %>%
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
 			# Check if logtansform is needed
@@ -1493,7 +1493,7 @@ get_reduced_dimensions_PCA_bulk <-
 			) %>%
 
 			# Filter most variable genes
-			filter_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
+			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
 
 			spread(!!.element,!!.abundance) %>%
 
@@ -1736,7 +1736,7 @@ get_reduced_dimensions_TSNE_bulk <-
 									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 			# Filter most variable genes
-			filter_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
+			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
 
 			spread(!!.feature,!!.abundance) %>%
 			# select(-sample) %>%
@@ -2199,7 +2199,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		select(!!.feature,!!.element,!!.abundance) %>%
 
 		# Filter variable genes
-		filter_variable_transcripts(!!.element,!!.feature,!!.abundance, top = top) %>%
+		keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top = top) %>%
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
@@ -2695,7 +2695,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		.data %>%
 
 		# Filter low counts
-		filter_abundant(!!.sample, !!.transcript, !!.abundance) %>%
+		keep_abundant(!!.sample, !!.transcript, !!.abundance) %>%
 		{
 			# Give warning of filtering
 			message(
@@ -2858,7 +2858,7 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 #'
 #' @return A tibble filtered genes
 #'
-filter_variable_transcripts = function(.data,
+keep_variable_transcripts = function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
