@@ -190,7 +190,7 @@ validation_default = function(.data,
 	if (type == "hard" &
 			!is_type)
 		stop(
-			"tidyBulk says: The column provided as .sample .transcript or .abundance do not comply with the required types."
+			"tidyBulk says: The column provided as .sample .transcript or .abundance do not comply with the required types (<FACTOR/CHARACTER>, <FACTOR/CHARACTER>, <NUMERIC>)."
 		)
 	if (type == "soft" & !is_type) {
 		warning(
