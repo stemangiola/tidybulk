@@ -27,7 +27,7 @@
 
 \item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
 
-\item{of_samples}{A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
@@ -36,7 +36,7 @@
 \item{...}{Further parameters passed to the function kmeans}
 }
 \value{
-A `tidyBulk` object
+A `tidybulk` object
 }
 \description{
 cluster_elements

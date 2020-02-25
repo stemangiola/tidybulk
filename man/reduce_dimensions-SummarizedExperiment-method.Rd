@@ -34,7 +34,7 @@
 
 \item{top}{An integer. How many top genes to select for dimensionality reduction}
 
-\item{of_samples}{A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
@@ -45,7 +45,7 @@
 \item{...}{Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"}
 }
 \value{
-A `tidyBulk` object
+A `tidybulk` object
 }
 \description{
 reduce_dimensions

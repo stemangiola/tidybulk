@@ -35,7 +35,7 @@ reduce_dimensions(
 
 \item{top}{An integer. How many top genes to select for dimensionality reduction}
 
-\item{of_samples}{A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
@@ -61,10 +61,10 @@ It can use multi-dimensional scaling (MDS) of principal component analysis (PCA)
 
 
 
-counts.MDS =  reduce_dimensions(tidyBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 
 
-counts.PCA =  reduce_dimensions(tidyBulk::counts_mini, sample, transcript, count, method="PCA", .dims = 3)
+counts.PCA =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="PCA", .dims = 3)
 
 
 

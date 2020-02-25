@@ -1,5 +1,5 @@
 ---
-title: "tidyBulk - part of tidyTranscriptomics"
+title: "tidybulk - part of tidyTranscriptomics"
 output: github_document
 ---
 
@@ -9,7 +9,7 @@ output: github_document
 
 <!---
 
-[![Build Status](https://travis-ci.org/stemangiola/tidyBulk.svg?branch=master)](https://travis-ci.org/stemangiola/tidyBulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/tidyBulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/tidyBulk?branch=master)
+[![Build Status](https://travis-ci.org/stemangiola/tidybulk.svg?branch=master)](https://travis-ci.org/stemangiola/tidybulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/tidybulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/tidybulk?branch=master)
 
 -->
 
@@ -26,7 +26,7 @@ knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
 
 library(tidyverse)
 library(magrittr)
-library(tidyBulk)
+library(tidybulk)
 
 my_theme = 	
 	theme_bw() +
@@ -51,13 +51,13 @@ Due to Bioconductor submission requiring R >= 4.0 you need to install the **dev*
 
 ```{r, eval=FALSE}
 
-devtools::install_github("stemangiola/tidyBulk@dev")
+devtools::install_github("stemangiola/tidybulk@dev")
 
 ```
 
 # Introduction
 
-tidyBulk is a collection of wrapper functions for bulk tanscriptomic analyses that follows the "tidy" paradigm. The data structure is a tibble with columns for
+tidybulk is a collection of wrapper functions for bulk tanscriptomic analyses that follows the "tidy" paradigm. The data structure is a tibble with columns for
 
 + sample identifier column
 + transcript identifier column
@@ -65,8 +65,8 @@ tidyBulk is a collection of wrapper functions for bulk tanscriptomic analyses th
 + annotation (and other info) columns
 
 ```{r}
-counts = tidyBulk(tidyBulk::counts, sample, transcript, count)
-counts_tcga = tidyBulk(tidyBulk::breast_tcga_mini, sample, ens, count)
+counts = tidybulk(tidybulk::counts, sample, transcript, count)
+counts_tcga = tidybulk(tidybulk::breast_tcga_mini, sample, ens, count)
 counts
 ```
 
@@ -86,7 +86,7 @@ In brief you can:
 
 # Aggregate duplicated `transcripts`
 
-tidyBulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with aggregate transcript with the same name. All the rest of the column are appended, and factors and boolean are appended as characters.
+tidybulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with aggregate transcript with the same name. All the rest of the column are appended, and factors and boolean are appended as characters.
 
 <div class="column-left">
 TidyTranscriptomics
@@ -181,9 +181,9 @@ x <- x[o[1L:top],,drop=FALSE]
 
 norm_counts.table = norm_counts.table[rownames(x)]
 
-norm_counts.table$cell_type = tidyBulk::counts[
+norm_counts.table$cell_type = tidybulk::counts[
 	match(
-		tidyBulk::counts$sample,
+		tidybulk::counts$sample,
 		rownames(norm_counts.table)
 	),
 	"Cell type"
@@ -221,8 +221,8 @@ cmds = cmds %$%
 	cmdscale.out %>%
 	setNames(sprintf("Dim%s", 1:6))
 
-cmds$cell_type = tidyBulk::counts[
-	match(tidyBulk::counts$sample, rownames(cmds)),
+cmds$cell_type = tidybulk::counts[
+	match(tidybulk::counts$sample, rownames(cmds)),
 	"Cell type"
 ]
 ```
@@ -305,8 +305,8 @@ tsne = Rtsne::Rtsne(
 	perplexity=10,
 		pca_scale =TRUE
 )$Y
-tsne$cell_type = tidyBulk::counts[
-	match(tidyBulk::counts$sample, rownames(tsne)),
+tsne$cell_type = tidybulk::counts[
+	match(tidybulk::counts$sample, rownames(tsne)),
 	"Cell type"
 ]
 ```
@@ -497,8 +497,8 @@ results <- CIBERSORT(
 	"mixture_file.txt",
 	perm=100, QN=TRUE
 )
-results$cell_type = tidyBulk::counts[
-	match(tidyBulk::counts$sample, rownames(results)),
+results$cell_type = tidybulk::counts[
+	match(tidybulk::counts$sample, rownames(results)),
 	"Cell type"
 ]
 
@@ -541,8 +541,8 @@ count_m_log = log(count_m + 1)
 k = kmeans(count_m_log, iter.max = 1000, ...)
 cluster = k$cluster
 
-cluster$cell_type = tidyBulk::counts[
-	match(tidyBulk::counts$sample, rownames(cluster)),
+cluster$cell_type = tidybulk::counts[
+	match(tidybulk::counts$sample, rownames(cluster)),
 	c("Cell type", "Dim1", "Dim2")
 ]
 
@@ -587,8 +587,8 @@ snn = FindNeighbors(snn)
 snn = FindClusters(snn, method = "igraph", ...)
 snn = snn[["seurat_clusters"]]
 
-snn$cell_type = tidyBulk::counts[
-	match(tidyBulk::counts$sample, rownames(snn)),
+snn$cell_type = tidybulk::counts[
+	match(tidybulk::counts$sample, rownames(snn)),
 	c("Cell type", "Dim1", "Dim2")
 ]
 

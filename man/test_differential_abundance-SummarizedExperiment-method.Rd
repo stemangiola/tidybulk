@@ -48,7 +48,7 @@
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
 \value{
-A `tidyBulk` object
+A `tidybulk` object
 }
 \description{
 test_differential_abundance

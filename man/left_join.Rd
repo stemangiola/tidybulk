@@ -27,7 +27,7 @@ Left join datasets
 }
 \examples{
 `\%>\%` = magrittr::`\%>\%`
-annotation = tidyBulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
-tidyBulk::counts \%>\% left_join(annotation)
+annotation = tidybulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
+tidybulk::counts \%>\% left_join(annotation)
 
 }

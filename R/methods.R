@@ -1,17 +1,17 @@
 # setOldClass("spec_tbl_df")
-setOldClass("tidyBulk")
+setOldClass("tidybulk")
 
 #' Creates a `tt` object from a `tbl``
 #'
 #' \lifecycle{maturing}
 #'
-#' @description tidyBulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @description tidybulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #' @import readr
 #'
-#' @name tidyBulk
+#' @name tidybulk
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
@@ -19,12 +19,12 @@ setOldClass("tidyBulk")
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .abundance_scaled The name of the transcript/gene scaled abundance column
 #'
-#' @details This function created a tidyBulk object and is useful if you want
+#' @details This function created a tidybulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The tidyBulk object have an attribute called tt_internals where these three
+#' The tidybulk object have an attribute called tt_internals where these three
 #' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_internals").
 #'
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 #'
 #' @examples
@@ -32,22 +32,22 @@ setOldClass("tidyBulk")
 #'
 #'
 #'
-#' my_tt =  tidyBulk(tidyBulk::counts_mini, sample, transcript, count)
+#' my_tt =  tidybulk(tidybulk::counts_mini, sample, transcript, count)
 #'
 #'
 #' @docType methods
-#' @rdname tidyBulk-methods
+#' @rdname tidybulk-methods
 #' @export
 #'
-setGeneric("tidyBulk", function(.data,
+setGeneric("tidybulk", function(.data,
 																.sample,
 																.transcript,
 																.abundance,
 																.abundance_scaled = NULL)
-	standardGeneric("tidyBulk"))
+	standardGeneric("tidybulk"))
 
 # Set internal
-.tidyBulk = function(.data,
+.tidybulk = function(.data,
 										 .sample,
 										 .transcript,
 										 .abundance,
@@ -71,21 +71,21 @@ setGeneric("tidyBulk", function(.data,
 														 !!.abundance,
 														 !!.abundance_scaled)
 }
-#' tidyBulk
-#' @inheritParams tidyBulk
-#' @return A `tidyBulk` object
+#' tidybulk
+#' @inheritParams tidybulk
+#' @return A `tidybulk` object
 #'
-setMethod("tidyBulk", "spec_tbl_df", .tidyBulk)
+setMethod("tidybulk", "spec_tbl_df", .tidybulk)
 
-#' tidyBulk
+#' tidybulk
 #'
 #'
-#' @inheritParams tidyBulk
-#' @return A `tidyBulk` object
+#' @inheritParams tidybulk
+#' @return A `tidybulk` object
 #'
-setMethod("tidyBulk", "tbl_df", .tidyBulk)
+setMethod("tidybulk", "tbl_df", .tidybulk)
 
-.tidyBulk_se = function(.data,
+.tidybulk_se = function(.data,
 											.sample,
 											.transcript,
 											.abundance,
@@ -133,7 +133,7 @@ setMethod("tidyBulk", "tbl_df", .tidyBulk)
 																																 	"sample"),
 							by = "sample") %>%
 		mutate_if(is.character, as.factor) %>%
-		tidyBulk(
+		tidybulk(
 			sample,
 			feature,
 			!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
@@ -142,7 +142,7 @@ setMethod("tidyBulk", "tbl_df", .tidyBulk)
 
 }
 
-#' tidyBulk
+#' tidybulk
 #'
 #' @importFrom tibble as_tibble
 #' @importFrom purrr reduce
@@ -151,56 +151,56 @@ setMethod("tidyBulk", "tbl_df", .tidyBulk)
 #' @importFrom purrr map2
 #'
 #'
-#' @inheritParams tidyBulk
-#' @return A `tidyBulk` object
+#' @inheritParams tidybulk
+#' @return A `tidybulk` object
 #'
-setMethod("tidyBulk", "SummarizedExperiment", .tidyBulk_se)
+setMethod("tidybulk", "SummarizedExperiment", .tidybulk_se)
 
-#' tidyBulk
-#' @inheritParams tidyBulk
-#' @return A `tidyBulk` object
+#' tidybulk
+#' @inheritParams tidybulk
+#' @return A `tidybulk` object
 #'
-setMethod("tidyBulk", "RangedSummarizedExperiment", .tidyBulk_se)
+setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 
 
 #' Creates a `tt` object from a list of file names of BAM/SAM
 #'
 #' \lifecycle{maturing}
 #'
-#' @description tidyBulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @description tidybulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name tidyBulk_SAM_BAM
+#' @name tidybulk_SAM_BAM
 #'
 #' @param file_names A character vector
 #' @param genome A character string
 #' @param ... Further parameters passed to the function Rsubread::featureCounts
 #'
-#' @details This function is based on FeatureCounts package. This function created a tidyBulk object and is useful if you want
+#' @details This function is based on FeatureCounts package. This function created a tidybulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The tidyBulk object have an attribute called tt_internals where these three
+#' The tidybulk object have an attribute called tt_internals where these three
 #' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_internals").
 #'
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 #'
 #'
 #'
 #'
 #' @docType methods
-#' @rdname tidyBulk_SAM_BAM-methods
+#' @rdname tidybulk_SAM_BAM-methods
 #' @export
 #'
-setGeneric("tidyBulk_SAM_BAM", function(file_names, genome = "hg38", ...)
-	standardGeneric("tidyBulk_SAM_BAM"))
+setGeneric("tidybulk_SAM_BAM", function(file_names, genome = "hg38", ...)
+	standardGeneric("tidybulk_SAM_BAM"))
 
-#' tidyBulk_SAM_BAM
-#' @inheritParams tidyBulk_SAM_BAM
-#' @return A `tidyBulk` object
+#' tidybulk_SAM_BAM
+#' @inheritParams tidybulk_SAM_BAM
+#' @return A `tidybulk` object
 #'
-setMethod("tidyBulk_SAM_BAM", c(file_names = "character", genome = "character"), 	function(file_names, genome = "hg38", ...)
+setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"), 	function(file_names, genome = "hg38", ...)
 	create_tt_from_bam_sam_bulk(file_names = file_names, genome = genome, ...))
 
 #' Scale the counts of transcripts/genes
@@ -239,7 +239,7 @@ setMethod("tidyBulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @examples
 #'
 #'
-#'  scale_abundance(tidyBulk::counts_mini,  sample, transcript, `count`)
+#'  scale_abundance(tidybulk::counts_mini,  sample, transcript, `count`)
 #'
 #'
 #'
@@ -307,7 +307,7 @@ setGeneric("scale_abundance", function(.data,
 		)
 	else
 		stop(
-			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 }
 
@@ -327,7 +327,7 @@ setMethod("scale_abundance", "tbl_df", .scale_abundance)
 #' @inheritParams scale_abundance
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
-setMethod("scale_abundance", "tidyBulk", .scale_abundance)
+setMethod("scale_abundance", "tidybulk", .scale_abundance)
 
 .scale_abundance_se = function(.data,
 															 .sample = NULL,
@@ -348,8 +348,8 @@ setMethod("scale_abundance", "tidyBulk", .scale_abundance)
 
 	.data %>%
 
-		# Convert to tidyBulk
-		tidyBulk() %>%
+		# Convert to tidybulk
+		tidybulk() %>%
 
 		# Apply scale method
 		scale_abundance(
@@ -365,13 +365,13 @@ setMethod("scale_abundance", "tidyBulk", .scale_abundance)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		tidyBulk_to_SummarizedExperiment()
+		tidybulk_to_SummarizedExperiment()
 
 }
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("scale_abundance",
 					"SummarizedExperiment",
@@ -379,7 +379,7 @@ setMethod("scale_abundance",
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("scale_abundance",
 					"RangedSummarizedExperiment",
@@ -404,7 +404,7 @@ setMethod("scale_abundance",
 #' @param .abundance The name of the column including the numerical value the clustering is based on (normally transcript abundance)
 #'
 #' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
-#' @param of_samples A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column
+#' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function kmeans
@@ -419,7 +419,7 @@ setMethod("scale_abundance",
 #' @examples
 #'
 #'
-#'     cluster_elements(tidyBulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
+#'     cluster_elements(tidybulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
 #'
 #' @docType methods
 #' @rdname cluster_elements-methods
@@ -478,7 +478,7 @@ setGeneric("cluster_elements", function(.data,
 			)
 		else
 			stop(
-				"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
 	else if (method == "SNN") {
@@ -504,11 +504,11 @@ setGeneric("cluster_elements", function(.data,
 			)
 		else
 			stop(
-				"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
 	else
-		stop("tidyBulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
+		stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
 
 }
 
@@ -528,7 +528,7 @@ setMethod("cluster_elements", "tbl_df", .cluster_elements)
 #' @inheritParams cluster_elements
 #' @return A tbl object with additional columns with cluster labels
 #'
-setMethod("cluster_elements", "tidyBulk", .cluster_elements)
+setMethod("cluster_elements", "tidybulk", .cluster_elements)
 
 .cluster_elements_se = function(.data,
 																.element = NULL,
@@ -546,8 +546,8 @@ setMethod("cluster_elements", "tidyBulk", .cluster_elements)
 
 	.data %>%
 
-		# Convert to tidyBulk
-		tidyBulk() %>%
+		# Convert to tidybulk
+		tidybulk() %>%
 
 		# Apply scale method
 		cluster_elements(
@@ -562,13 +562,13 @@ setMethod("cluster_elements", "tidyBulk", .cluster_elements)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		tidyBulk_to_SummarizedExperiment()
+		tidybulk_to_SummarizedExperiment()
 
 }
 
 #' cluster_elements
 #' @inheritParams cluster_elements
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("cluster_elements",
 					"SummarizedExperiment",
@@ -576,7 +576,7 @@ setMethod("cluster_elements",
 
 #' cluster_elements
 #' @inheritParams cluster_elements
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("cluster_elements",
 					"RangedSummarizedExperiment",
@@ -601,7 +601,7 @@ setMethod("cluster_elements",
 #'
 #' @param method A character string. The dimension reduction algorithm to use (PCA, MDS, tSNE).
 #' @param top An integer. How many top genes to select for dimensionality reduction
-#' @param of_samples A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column
+#' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param .dims A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
 
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
@@ -619,10 +619,10 @@ setMethod("cluster_elements",
 #'
 #'
 #'
-#' counts.MDS =  reduce_dimensions(tidyBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 #'
 #'
-#' counts.PCA =  reduce_dimensions(tidyBulk::counts_mini, sample, transcript, count, method="PCA", .dims = 3)
+#' counts.PCA =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="PCA", .dims = 3)
 #'
 #'
 #'
@@ -696,7 +696,7 @@ setGeneric("reduce_dimensions", function(.data,
 			)
 		else
 			stop(
-				"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
 	else if (method == "PCA") {
@@ -728,7 +728,7 @@ setGeneric("reduce_dimensions", function(.data,
 			)
 		else
 			stop(
-				"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 
 	}
@@ -761,12 +761,12 @@ setGeneric("reduce_dimensions", function(.data,
 			)
 		else
 			stop(
-				"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 
 	}
 	else
-		stop("tidyBulk says: method must be either \"MDS\" or \"PCA\"")
+		stop("tidybulk says: method must be either \"MDS\" or \"PCA\"")
 
 }
 
@@ -783,7 +783,7 @@ setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
 #' @return A tbl object with additional columns for the reduced dimensions
-setMethod("reduce_dimensions", "tidyBulk", .reduce_dimensions)
+setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 
 .reduce_dimensions_se = function(.data,
 																 .element = NULL,
@@ -805,8 +805,8 @@ setMethod("reduce_dimensions", "tidyBulk", .reduce_dimensions)
 
 	.data %>%
 
-		# Convert to tidyBulk
-		tidyBulk() %>%
+		# Convert to tidybulk
+		tidybulk() %>%
 
 		# Apply scale method
 		reduce_dimensions(
@@ -825,13 +825,13 @@ setMethod("reduce_dimensions", "tidyBulk", .reduce_dimensions)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		tidyBulk_to_SummarizedExperiment()
+		tidybulk_to_SummarizedExperiment()
 
 }
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("reduce_dimensions",
 					"SummarizedExperiment",
@@ -839,7 +839,7 @@ setMethod("reduce_dimensions",
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("reduce_dimensions",
 					"RangedSummarizedExperiment",
@@ -862,7 +862,7 @@ setMethod("reduce_dimensions",
 #' @param dimension_1_column A character string. The column of the dimension 1
 #' @param dimension_2_column  A character string. The column of the dimension 2
 #' @param rotation_degrees A real number between 0 and 360
-#' @param of_samples A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column
+#' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param dimension_1_column_rotated A character string. The column of the rotated dimension 1 (optional)
 #' @param dimension_2_column_rotated A character string. The column of the rotated dimension 2 (optional)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
@@ -874,7 +874,7 @@ setMethod("reduce_dimensions",
 #'
 #' @examples
 #'
-#' counts.MDS =  reduce_dimensions(tidyBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 #'
 #' counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 #'
@@ -938,7 +938,7 @@ setGeneric("rotate_dimensions", function(.data,
 		)
 	else
 		stop(
-			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 }
 
@@ -955,7 +955,7 @@ setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-setMethod("rotate_dimensions", "tidyBulk", .rotate_dimensions)
+setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 
 
 .rotate_dimensions_se = function(.data,
@@ -977,8 +977,8 @@ setMethod("rotate_dimensions", "tidyBulk", .rotate_dimensions)
 
 	.data %>%
 
-		# Convert to tidyBulk
-		tidyBulk() %>%
+		# Convert to tidybulk
+		tidybulk() %>%
 
 		# Apply scale method
 		rotate_dimensions(
@@ -993,13 +993,13 @@ setMethod("rotate_dimensions", "tidyBulk", .rotate_dimensions)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		tidyBulk_to_SummarizedExperiment()
+		tidybulk_to_SummarizedExperiment()
 
 }
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("rotate_dimensions",
 					"SummarizedExperiment",
@@ -1007,7 +1007,7 @@ setMethod("rotate_dimensions",
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("rotate_dimensions",
 					"RangedSummarizedExperiment",
@@ -1031,7 +1031,7 @@ setMethod("rotate_dimensions",
 #' @param .abundance The name of the column including the numerical value the clustering is based on (normally transcript abundance)
 #'
 #' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
-#' @param of_samples A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column
+#' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param correlation_threshold A real number between 0 and 1. For correlation based calculation.
 #' @param top An integer. How many top genes to select for correlation based method
@@ -1048,14 +1048,14 @@ setMethod("rotate_dimensions",
 #'
 #'
 #'    remove_redundancy(
-#'     tidyBulk::counts_mini,
+#'     tidybulk::counts_mini,
 #' 	   .element = sample,
 #' 	   .feature = transcript,
 #' 	   	.abundance =  count,
 #' 	   	method = "correlation"
 #' 	   	)
 #'
-#' counts.MDS =  reduce_dimensions(tidyBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 #'
 #' remove_redundancy(
 #' 	counts.MDS,
@@ -1143,7 +1143,7 @@ setGeneric("remove_redundancy", function(.data,
 	}
 	else
 		stop(
-			"tidyBulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)"
+			"tidybulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)"
 		)
 
 }
@@ -1161,7 +1161,7 @@ setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 #' remove_redundancy
 #' @inheritParams remove_redundancy
 #' @return A tbl object with with dropped recundant elements (e.g., samples).
-setMethod("remove_redundancy", "tidyBulk", .remove_redundancy)
+setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 
 .remove_redundancy_se = function(.data,
 																 .element = NULL,
@@ -1189,8 +1189,8 @@ setMethod("remove_redundancy", "tidyBulk", .remove_redundancy)
 
 	.data %>%
 
-		# Convert to tidyBulk
-		tidyBulk() %>%
+		# Convert to tidybulk
+		tidybulk() %>%
 
 		# Apply scale method
 		remove_redundancy(
@@ -1212,13 +1212,13 @@ setMethod("remove_redundancy", "tidyBulk", .remove_redundancy)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		tidyBulk_to_SummarizedExperiment()
+		tidybulk_to_SummarizedExperiment()
 
 }
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("remove_redundancy",
 					"SummarizedExperiment",
@@ -1226,7 +1226,7 @@ setMethod("remove_redundancy",
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("remove_redundancy",
 					"RangedSummarizedExperiment",
@@ -1264,7 +1264,7 @@ setMethod("remove_redundancy",
 #'
 #'
 #'
-#' cm = tidyBulk::counts_mini
+#' cm = tidybulk::counts_mini
 #' cm$batch = 0
 #' cm$batch[cm$sample %in% c("SRR1740035", "SRR1740043")] = 1
 #'
@@ -1333,7 +1333,7 @@ setGeneric("adjust_abundance", function(.data,
 		)
 	else
 		stop(
-			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 }
 
@@ -1350,7 +1350,7 @@ setMethod("adjust_abundance", "tbl_df", .adjust_abundance)
 #' adjust_abundance
 #' @inheritParams adjust_abundance
 #' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
-setMethod("adjust_abundance", "tidyBulk", .adjust_abundance)
+setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 
 .adjust_abundance_se = function(.data,
 																.formula,
@@ -1367,8 +1367,8 @@ setMethod("adjust_abundance", "tidyBulk", .adjust_abundance)
 
 	.data %>%
 
-		# Convert to tidyBulk
-		tidyBulk() %>%
+		# Convert to tidybulk
+		tidybulk() %>%
 
 		# Apply scale method
 		adjust_abundance(
@@ -1382,13 +1382,13 @@ setMethod("adjust_abundance", "tidyBulk", .adjust_abundance)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		tidyBulk_to_SummarizedExperiment()
+		tidybulk_to_SummarizedExperiment()
 
 }
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("adjust_abundance",
 					"SummarizedExperiment",
@@ -1396,7 +1396,7 @@ setMethod("adjust_abundance",
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("adjust_abundance",
 					"RangedSummarizedExperiment",
@@ -1438,7 +1438,7 @@ setMethod("adjust_abundance",
 #' @examples
 #'
 #'     aggregate_duplicates(
-#'     tidyBulk::counts_mini,
+#'     tidybulk::counts_mini,
 #'     sample,
 #'     transcript,
 #'     `count`,
@@ -1504,7 +1504,7 @@ setMethod("aggregate_duplicates", "tbl_df", .aggregate_duplicates)
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
 #' @return A `tbl` object with aggregated transcript abundance and annotation
-setMethod("aggregate_duplicates", "tidyBulk", .aggregate_duplicates)
+setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 
 .aggregate_duplicates_se = function(.data,
 
@@ -1520,8 +1520,8 @@ setMethod("aggregate_duplicates", "tidyBulk", .aggregate_duplicates)
 
 	.data %>%
 
-		# Convert to tidyBulk
-		tidyBulk() %>%
+		# Convert to tidybulk
+		tidybulk() %>%
 
 		# Apply scale method
 		aggregate_duplicates(
@@ -1533,13 +1533,13 @@ setMethod("aggregate_duplicates", "tidyBulk", .aggregate_duplicates)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		tidyBulk_to_SummarizedExperiment()
+		tidybulk_to_SummarizedExperiment()
 
 }
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("aggregate_duplicates",
 					"SummarizedExperiment",
@@ -1547,7 +1547,7 @@ setMethod("aggregate_duplicates",
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("aggregate_duplicates",
 					"RangedSummarizedExperiment",
@@ -1585,7 +1585,7 @@ setMethod("aggregate_duplicates",
 #' @examples
 #'
 #'
-#' deconvolve_cellularity(tidyBulk::counts, sample, transcript, `count`, cores = 2)
+#' deconvolve_cellularity(tidybulk::counts, sample, transcript, `count`, cores = 2)
 #'
 #'
 #' @docType methods
@@ -1641,7 +1641,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 		)
 	else
 		stop(
-			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 }
 
@@ -1661,7 +1661,7 @@ setMethod("deconvolve_cellularity", "tbl_df", .deconvolve_cellularity)
 #' @inheritParams deconvolve_cellularity
 #' @return A `tbl` object including additional columns for each cell type estimated
 setMethod("deconvolve_cellularity",
-					"tidyBulk",
+					"tidybulk",
 					.deconvolve_cellularity)
 
 
@@ -1681,8 +1681,8 @@ setMethod("deconvolve_cellularity",
 
 	.data %>%
 
-		# Convert to tidyBulk
-		tidyBulk() %>%
+		# Convert to tidybulk
+		tidybulk() %>%
 
 		# Apply scale method
 		deconvolve_cellularity(
@@ -1696,13 +1696,13 @@ setMethod("deconvolve_cellularity",
 		) %>%
 
 		# Convert to SummaizedExperiment
-		tidyBulk_to_SummarizedExperiment()
+		tidybulk_to_SummarizedExperiment()
 
 }
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("deconvolve_cellularity",
 					"SummarizedExperiment",
@@ -1710,7 +1710,7 @@ setMethod("deconvolve_cellularity",
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod(
 	"deconvolve_cellularity",
@@ -1747,7 +1747,7 @@ setMethod(
 #' @examples
 #'
 #'
-#' 	annotate_symbol(tidyBulk::counts_ensembl, ens)
+#' 	annotate_symbol(tidybulk::counts_ensembl, ens)
 #'
 #'
 #' @docType methods
@@ -1777,7 +1777,7 @@ setGeneric("annotate_symbol", function(.data,
 
 	else
 		stop(
-			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 
 }
@@ -1795,7 +1795,7 @@ setMethod("annotate_symbol", "tbl_df", .annotate_symbol)
 #' annotate_symbol
 #' @inheritParams annotate_symbol
 #' @return A `tbl` object including additional columns for transcript symbol
-setMethod("annotate_symbol", "tidyBulk", .annotate_symbol)
+setMethod("annotate_symbol", "tidybulk", .annotate_symbol)
 
 
 #' Add differential transcription information to a tbl using edgeR.
@@ -1834,7 +1834,7 @@ setMethod("annotate_symbol", "tidyBulk", .annotate_symbol)
 #'
 #'
 #' 	test_differential_abundance(
-#' 	 tidyBulk::counts_mini,
+#' 	 tidybulk::counts_mini,
 #' 	    ~ condition,
 #' 	    sample,
 #' 	    transcript,
@@ -1844,7 +1844,7 @@ setMethod("annotate_symbol", "tidyBulk", .annotate_symbol)
 #' 	# The functon `test_differential_abundance` operated with contrasts too
 #'
 #'  test_differential_abundance(
-#' 	    tidyBulk::counts_mini,
+#' 	    tidybulk::counts_mini,
 #' 	    ~ 0 + condition,
 #' 	    sample,
 #' 	    transcript,
@@ -1928,7 +1928,7 @@ setGeneric("test_differential_abundance", function(.data,
 		)
 	else
 		stop(
-			"tidyBulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
 }
 
@@ -1950,7 +1950,7 @@ setMethod("test_differential_abundance",
 #' @inheritParams test_differential_abundance
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_abundance",
-					"tidyBulk",
+					"tidybulk",
 					.test_differential_abundance)
 
 
@@ -1976,8 +1976,8 @@ setMethod("test_differential_abundance",
 
 	.data %>%
 
-		# Convert to tidyBulk
-		tidyBulk() %>%
+		# Convert to tidybulk
+		tidybulk() %>%
 
 		# Apply scale method
 		test_differential_abundance(
@@ -1996,13 +1996,13 @@ setMethod("test_differential_abundance",
 		) %>%
 
 		# Convert to SummaizedExperiment
-		tidyBulk_to_SummarizedExperiment()
+		tidybulk_to_SummarizedExperiment()
 
 }
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod(
 	"test_differential_abundance",
@@ -2012,7 +2012,7 @@ setMethod(
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod(
 	"test_differential_abundance",
@@ -2052,7 +2052,7 @@ setMethod(
 #'
 #'
 #' 	keep_variable(
-#' 	tidyBulk::counts_mini,
+#' 	tidybulk::counts_mini,
 #' 	    sample,
 #' 	    transcript,
 #' 	    `count`,
@@ -2111,7 +2111,7 @@ setMethod("keep_variable", "tbl_df", .keep_variable)
 #' keep_variable
 #' @inheritParams keep_variable
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("keep_variable", "tidyBulk", .keep_variable)
+setMethod("keep_variable", "tidybulk", .keep_variable)
 
 .keep_variable_se = function(.data,
 															 .sample = NULL,
@@ -2127,8 +2127,8 @@ setMethod("keep_variable", "tidyBulk", .keep_variable)
 
 	.data %>%
 
-		# Convert to tidyBulk
-		tidyBulk() %>%
+		# Convert to tidybulk
+		tidybulk() %>%
 
 		# Apply scale method
 		keep_variable(
@@ -2140,13 +2140,13 @@ setMethod("keep_variable", "tidyBulk", .keep_variable)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		tidyBulk_to_SummarizedExperiment()
+		tidybulk_to_SummarizedExperiment()
 
 }
 
 #' keep_variable
 #' @inheritParams keep_variable
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("keep_variable",
 					"SummarizedExperiment",
@@ -2154,7 +2154,7 @@ setMethod("keep_variable",
 
 #' keep_variable
 #' @inheritParams keep_variable
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("keep_variable",
 					"RangedSummarizedExperiment",
@@ -2194,7 +2194,7 @@ setMethod("keep_variable",
 #'
 #'
 #' 	keep_abundant(
-#' 	tidyBulk::counts_mini,
+#' 	tidybulk::counts_mini,
 #' 	    sample,
 #' 	    transcript,
 #' 	    `count`
@@ -2245,7 +2245,7 @@ setGeneric("keep_abundant", function(.data,
 
 								# If column is present use this instead of doing more work
 								~ {
-									#message("tidyBulk says: \"lowly_abundant\" column is present. Using this to filter data")
+									#message("tidybulk says: \"lowly_abundant\" column is present. Using this to filter data")
 									.x %>% dplyr::filter(!lowly_abundant)
 								},
 
@@ -2282,7 +2282,7 @@ setMethod("keep_abundant", "tbl_df", .keep_abundant)
 #' keep_abundant
 #' @inheritParams keep_abundant
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("keep_abundant", "tidyBulk", .keep_abundant)
+setMethod("keep_abundant", "tidybulk", .keep_abundant)
 
 .keep_abundant_se = function(.data,
 															 .sample = NULL,
@@ -2301,8 +2301,8 @@ setMethod("keep_abundant", "tidyBulk", .keep_abundant)
 
 	.data %>%
 
-		# Convert to tidyBulk
-		tidyBulk() %>%
+		# Convert to tidybulk
+		tidybulk() %>%
 
 		# Apply scale method
 		keep_abundant(
@@ -2315,13 +2315,13 @@ setMethod("keep_abundant", "tidyBulk", .keep_abundant)
 		) %>%
 
 		# Convert to SummaizedExperiment
-		tidyBulk_to_SummarizedExperiment()
+		tidybulk_to_SummarizedExperiment()
 
 }
 
 #' keep_abundant
 #' @inheritParams keep_abundant
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("keep_abundant",
 					"SummarizedExperiment",
@@ -2329,7 +2329,7 @@ setMethod("keep_abundant",
 
 #' keep_abundant
 #' @inheritParams keep_abundant
-#' @return A `tidyBulk` object
+#' @return A `tidybulk` object
 #'
 setMethod("keep_abundant",
 					"RangedSummarizedExperiment",
@@ -2368,7 +2368,7 @@ setMethod("keep_abundant",
 #' @examples
 #' \donttest{
 #'
-#' df_entrez = symbol_to_entrez(tidyBulk::counts_mini, .transcript = transcript, .sample = sample)
+#' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
 #' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 #'
 #' library("EGSEA")
@@ -2449,5 +2449,5 @@ setMethod("analise_gene_enrichment",
 #' @inheritParams analise_gene_enrichment
 #' @return A `tbl` object
 setMethod("analise_gene_enrichment",
-					"tidyBulk",
+					"tidybulk",
 					.analise_gene_enrichment)

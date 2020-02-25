@@ -145,9 +145,9 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance, ty
 
 	is_rectangular
 
-	# if(!is_rectangular & type == "hard") stop("tidyBulk says: the data must have the same number of transcript per sample.")
+	# if(!is_rectangular & type == "hard") stop("tidybulk says: the data must have the same number of transcript per sample.")
 	#
-	# if(!is_rectangular & type == "soft") warning("tidyBulk says: the data should have the same number of transcript per sample.")
+	# if(!is_rectangular & type == "soft") warning("tidybulk says: the data should have the same number of transcript per sample.")
 
 
 	# # Eliminate sparse transcripts
@@ -156,8 +156,8 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance, ty
 
 }
 
-tidyBulk_to_tbl = function(.data) {
-	.data %>%	drop_class(c("tidyBulk", "tt"))
+tidybulk_to_tbl = function(.data) {
+	.data %>%	drop_class(c("tidybulk", "tt"))
 }
 
 validation_default = function(.data,
@@ -176,13 +176,13 @@ validation_default = function(.data,
 	if (type == "hard" &
 			!is_missing)
 		stop(
-			"tidyBulk says: One or more columns .sample .transcript or .abundance are missing from your data frame."
+			"tidybulk says: One or more columns .sample .transcript or .abundance are missing from your data frame."
 		)
 	if (type == "soft" & !is_missing) {
 		warning(
-			"tidyBulk says: One or more columns .sample .transcript or .abundance are missing from your data frame. The tidyBulk object has been converted to a `tbl`"
+			"tidybulk says: One or more columns .sample .transcript or .abundance are missing from your data frame. The tidybulk object has been converted to a `tbl`"
 		)
-		return(.data %>% tidyBulk_to_tbl)
+		return(.data %>% tidybulk_to_tbl)
 	}
 
 	# Type check
@@ -190,13 +190,13 @@ validation_default = function(.data,
 	if (type == "hard" &
 			!is_type)
 		stop(
-			"tidyBulk says: The column provided as .sample .transcript or .abundance do not comply with the required types (<FACTOR/CHARACTER>, <FACTOR/CHARACTER>, <NUMERIC>)."
+			"tidybulk says: The column provided as .sample .transcript or .abundance do not comply with the required types (<FACTOR/CHARACTER>, <FACTOR/CHARACTER>, <NUMERIC>)."
 		)
 	if (type == "soft" & !is_type) {
 		warning(
-			"tidyBulk says: The column provided as .sample .transcript or .abundance do not comply with the required types. The tidyBulk object has been converted to a `tbl`"
+			"tidybulk says: The column provided as .sample .transcript or .abundance do not comply with the required types. The tidybulk object has been converted to a `tbl`"
 		)
-		return(.data %>% tidyBulk_to_tbl)
+		return(.data %>% tidybulk_to_tbl)
 	}
 
 	# Check if duplicated genes
@@ -205,13 +205,13 @@ validation_default = function(.data,
 		if (type == "hard" &
 				!is_unique)
 			stop(
-				"tidyBulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding (e.g., aggregate_duplicates())."
+				"tidybulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding (e.g., aggregate_duplicates())."
 			)
 		if (type == "soft" & !is_unique) {
 			warning(
-				"tidyBulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding (e.g., aggregate_duplicates()). The tidyBulk object has been converted to a `tbl`"
+				"tidybulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding (e.g., aggregate_duplicates()). The tidybulk object has been converted to a `tbl`"
 			)
-			return(.data %>% tidyBulk_to_tbl)
+			return(.data %>% tidybulk_to_tbl)
 		}
 	}
 
@@ -219,12 +219,12 @@ validation_default = function(.data,
 	is_count_good = check_if_counts_is_na(.data,!!.abundance)
 	if (type == "hard" &
 			!is_count_good)
-		stop("tidyBulk says: You have NA values in your counts. Please check your data frame.")
+		stop("tidybulk says: You have NA values in your counts. Please check your data frame.")
 	if (type == "soft" & !is_count_good) {
 		warning(
-			"tidyBulk says: You have NA values in your counts. The tidyBulk object has been converted to a `tbl`"
+			"tidybulk says: You have NA values in your counts. The tidybulk object has been converted to a `tbl`"
 		)
-		return(.data %>% tidyBulk_to_tbl)
+		return(.data %>% tidybulk_to_tbl)
 	}
 
 }
@@ -240,7 +240,7 @@ validation <- function(.data,
 
 validation.default = validation_default
 
-validation.tidyBulk = function(.data,
+validation.tidybulk = function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
@@ -251,13 +251,13 @@ validation.tidyBulk = function(.data,
 	if (type == "hard" &
 			!is_attr)
 		stop(
-			"tidyBulk says: The object provided has tidyBulk class but no attribute containing the column names. Insert a valid tidyBulk object or provide `.sample`, `.transcript`, `.abundance` column names as arguments "
+			"tidybulk says: The object provided has tidybulk class but no attribute containing the column names. Insert a valid tidybulk object or provide `.sample`, `.transcript`, `.abundance` column names as arguments "
 		)
 	if (type == "soft" & !is_attr) {
 		warning(
-			"tidyBulk says: The object provided has tidyBulk class but no attribute containing the column names. The tidyBulk object has been converted to a `tbl`"
+			"tidybulk says: The object provided has tidybulk class but no attribute containing the column names. The tidybulk object has been converted to a `tbl`"
 		)
-		return(.data %>% tidyBulk_to_tbl)
+		return(.data %>% tidybulk_to_tbl)
 	}
 
 	# Get column names

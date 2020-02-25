@@ -15,7 +15,7 @@ library(ggplot2)
 library(widyr)
 library(rlang)
 library(purrr)
-library(tidyBulk)
+library(tidybulk)
 
 my_theme = 	
 	theme_bw() +
@@ -33,23 +33,23 @@ my_theme =
 	)
 
 # counts_mini =
-# 	tidyBulk::counts %>%
-# 	filter(transcript %in% (tidyBulk::X_cibersort %>% rownames)) %>%
+# 	tidybulk::counts %>%
+# 	filter(transcript %in% (tidybulk::X_cibersort %>% rownames)) %>%
 # 	filter(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058", "SRR1740043", "SRR1740067")) %>%
 # 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
 # se_mini
-se_mini = tidyBulk:::tidyBulk_to_SummarizedExperiment(tidyBulk::counts_mini, sample, transcript, count)
-se_breast_tcga_mini = tidyBulk:::tidyBulk_to_SummarizedExperiment( tidyBulk::breast_tcga_mini, sample, ens, `count`)
+se_mini = tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk::counts_mini, sample, transcript, count)
+se_breast_tcga_mini = tidybulk:::tidybulk_to_SummarizedExperiment( tidybulk::breast_tcga_mini, sample, ens, `count`)
 se.cibersort =
-	tidyBulk:::tidyBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count)
+	tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk::counts,  sample ,  transcript, count)
 se.norm.batch =
 
-	tidyBulk:::tidyBulk_to_SummarizedExperiment(tidyBulk::counts,  sample ,  transcript, count) %>%
+	tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk::counts,  sample ,  transcript, count) %>%
 	scale_abundance()
 
 ## -----------------------------------------------------------------------------
-counts = tidyBulk(tidyBulk::counts_mini, sample, transcript, count)
+counts = tidybulk(tidybulk::counts_mini, sample, transcript, count)
 counts
 
 ## ----aggregate, cache=TRUE----------------------------------------------------
@@ -113,8 +113,8 @@ se.norm.PCA
 
 ## ---- echo=FALSE, include=FALSE-----------------------------------------------
 tt_tcga_breast =
-	tidyBulk::breast_tcga_mini %>%
-	tidyBulk(sample, ens, `count`)
+	tidybulk::breast_tcga_mini %>%
+	tidybulk(sample, ens, `count`)
 
 ## ----tsne, cache=TRUE---------------------------------------------------------
 counts.norm.tSNE =

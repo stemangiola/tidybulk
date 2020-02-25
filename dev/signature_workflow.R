@@ -1,5 +1,5 @@
 library(tidyverse)
-library(tidyBulk)
+library(tidybulk)
 library(furrr)
 plan(multiprocess)
 options(future.globals.maxSize = 50000 * 1024 ^ 2)
@@ -88,7 +88,7 @@ counts_proc =
 	counts %>%
 
 	# Create object
-	tidyBulk(sample, symbol, count) %>%
+	tidybulk(sample, symbol, count) %>%
 
 	# Sum redundant genes/isoforms
 	aggregate_duplicates(aggregation_function = sum) %>%
@@ -137,9 +137,9 @@ counts_ct =
 # 	select(-data) %>%
 # 	unnest(bimodality_NB)
 #
-# bimodality %>% saveRDS("bimodality.rds")
+# bimodality %>% saveRDS("dev/bimodality.rds")
 
-bimodality = readRDS("bimodality.rds")
+bimodality = readRDS("dev/bimodality.rds")
 
 # Assign values and filter
 counts_ct_bm =

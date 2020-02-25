@@ -39,7 +39,7 @@
 \item{action}{A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.}
 }
 \value{
-A `tidyBulk` object
+A `tidybulk` object
 }
 \description{
 scale_abundance

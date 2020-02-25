@@ -21,7 +21,7 @@ distinct
 }
 \examples{
 
-distinct(tidyBulk::counts_mini)
+distinct(tidybulk::counts_mini)
 
 
 }

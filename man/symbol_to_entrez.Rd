@@ -21,6 +21,6 @@ Get ENTREZ id from gene SYMBOL
 }
 \examples{
 
-symbol_to_entrez(tidyBulk::counts_mini, .transcript = transcript, .sample = sample)
+symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
 
 }

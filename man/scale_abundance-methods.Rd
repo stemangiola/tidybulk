@@ -57,7 +57,7 @@ The scaling inference is then applied back to all unfiltered data.
 \examples{
 
 
- scale_abundance(tidyBulk::counts_mini,  sample, transcript, `count`)
+ scale_abundance(tidybulk::counts_mini,  sample, transcript, `count`)
 
 
 

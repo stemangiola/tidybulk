@@ -1,4 +1,4 @@
-tidyBulk - part of tidyTranscriptomics
+tidybulk - part of tidyTranscriptomics
 ================
 
 <!-- badges: start --> [![Lifecycle:
@@ -7,7 +7,7 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 
 <!---
 
-[![Build Status](https://travis-ci.org/stemangiola/tidyBulk.svg?branch=master)](https://travis-ci.org/stemangiola/tidyBulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/tidyBulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/tidyBulk?branch=master)
+[![Build Status](https://travis-ci.org/stemangiola/tidybulk.svg?branch=master)](https://travis-ci.org/stemangiola/tidybulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/tidybulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/tidybulk?branch=master)
 
 -->
 
@@ -30,12 +30,12 @@ Due to Bioconductor submission requiring R \>= 4.0 you need to install
 the **dev** branch
 
 ``` r
-devtools::install_github("stemangiola/tidyBulk@dev")
+devtools::install_github("stemangiola/tidybulk@dev")
 ```
 
 # Introduction
 
-tidyBulk is a collection of wrapper functions for bulk tanscriptomic
+tidybulk is a collection of wrapper functions for bulk tanscriptomic
 analyses that follows the “tidy” paradigm. The data structure is a
 tibble with columns for
 
@@ -47,8 +47,8 @@ tibble with columns for
 <!-- end list -->
 
 ``` r
-counts = tidyBulk(tidyBulk::counts, sample, transcript, count)
-counts_tcga = tidyBulk(tidyBulk::breast_tcga_mini, sample, ens, count)
+counts = tidybulk(tidybulk::counts, sample, transcript, count)
+counts_tcga = tidybulk(tidybulk::breast_tcga_mini, sample, ens, count)
 counts
 ```
 
@@ -78,7 +78,7 @@ tissue composition (Cibersort)
 
 # Aggregate duplicated `transcripts`
 
-tidyBulk provide the `aggregate_duplicates` function to aggregate
+tidybulk provide the `aggregate_duplicates` function to aggregate
 duplicated transcripts (e.g., isoforms, ensembl). For example, we often
 have to convert ensembl symbols to gene/transcript symbol, but in doing
 so we have to deal with duplicates. `aggregate_duplicates` takes a
@@ -211,9 +211,9 @@ x <- x[o[1L:top],,drop=FALSE]
 
 norm_counts.table = norm_counts.table[rownames(x)]
 
-norm_counts.table$cell_type = tidyBulk::counts[
+norm_counts.table$cell_type = tidybulk::counts[
     match(
-        tidyBulk::counts$sample,
+        tidybulk::counts$sample,
         rownames(norm_counts.table)
     ),
     "Cell type"
@@ -262,8 +262,8 @@ cmds = cmds %$%
     cmdscale.out %>%
     setNames(sprintf("Dim%s", 1:6))
 
-cmds$cell_type = tidyBulk::counts[
-    match(tidyBulk::counts$sample, rownames(cmds)),
+cmds$cell_type = tidybulk::counts[
+    match(tidybulk::counts$sample, rownames(cmds)),
     "Cell type"
 ]
 ```
@@ -404,8 +404,8 @@ tsne = Rtsne::Rtsne(
     perplexity=10,
         pca_scale =TRUE
 )$Y
-tsne$cell_type = tidyBulk::counts[
-    match(tidyBulk::counts$sample, rownames(tsne)),
+tsne$cell_type = tidybulk::counts[
+    match(tidybulk::counts$sample, rownames(tsne)),
     "Cell type"
 ]
 ```
@@ -425,18 +425,18 @@ counts.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##      tSNE1   tSNE2 sample                       Call 
-    ##      <dbl>   <dbl> <chr>                        <fct>
-    ##  1   2.37    8.95  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2  -7.97   -4.77  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3  10.2    13.7   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4   4.91    2.29  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5   6.74    5.27  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6  -0.811  -6.22  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7  -0.568 -34.7   TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8   5.76   -0.458 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9 -14.3     2.17  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10   8.46   22.0   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##     tSNE1   tSNE2 sample                       Call 
+    ##     <dbl>   <dbl> <chr>                        <fct>
+    ##  1  -7.32  -6.57  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2   1.18   5.64  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3 -11.3    2.12  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4   3.22  -3.87  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5 -11.8   -2.31  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6   4.25   0.694 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7  20.1   20.0   TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8  11.8   -2.62  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9  11.3   -3.79  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10 -15.9  -21.0   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -577,18 +577,18 @@ counts.de
 ```
 
     ## # A tibble: 19,544 x 8
-    ##    transcript    logFC logCPM    LR   PValue          FDR is_de lowly_abundant
-    ##    <chr>         <dbl>  <dbl> <dbl>    <dbl>        <dbl> <lgl> <lgl>         
-    ##  1 GRAMD1B       -5.84  4.78   46.7 8.27e-12 0.0000000704 TRUE  FALSE         
-    ##  2 NT5DC3         2.27  4.60   44.5 2.50e-11 0.000000106  TRUE  FALSE         
-    ##  3 IQGAP2        -3.54  7.77   42.4 7.29e-11 0.000000207  TRUE  FALSE         
-    ##  4 CEACAM19      -9.45  2.58   41.0 1.51e-10 0.000000322  TRUE  FALSE         
-    ##  5 FRMD4B        -8.10  4.16   38.6 5.21e-10 0.000000831  TRUE  FALSE         
-    ##  6 GIMAP8        -6.74  7.25   38.3 6.16e-10 0.000000831  TRUE  FALSE         
-    ##  7 LOC100287072   1.81  0.940  37.9 7.43e-10 0.000000831  TRUE  FALSE         
-    ##  8 ANXA1        -10.4   8.59   37.8 7.81e-10 0.000000831  TRUE  FALSE         
-    ##  9 CMTM3         -4.21  6.83   37.2 1.09e- 9 0.00000103   TRUE  FALSE         
-    ## 10 UPP1          -4.74  5.87   36.5 1.51e- 9 0.00000129   TRUE  FALSE         
+    ##    transcript   logFC  logCPM    LR   PValue      FDR is_de lowly_abundant
+    ##    <chr>        <dbl>   <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>         
+    ##  1 FRZB          6.57 -1.71   126.  2.56e-29 3.14e-25 TRUE  FALSE         
+    ##  2 ANKRD18DP     4.83 -0.454  109.  1.57e-25 9.63e-22 TRUE  FALSE         
+    ##  3 LINC00525     6.06 -1.35   103.  2.92e-24 1.19e-20 TRUE  FALSE         
+    ##  4 IGLL3P        5.34 -0.0803  82.8 9.23e-20 2.82e-16 TRUE  FALSE         
+    ##  5 SHANK2        5.16 -1.92    76.2 2.57e-18 6.28e-15 TRUE  FALSE         
+    ##  6 ERVV-1        4.83 -1.97    70.0 5.84e-17 1.19e-13 TRUE  FALSE         
+    ##  7 KRTAP4-6      5.67 -1.77    66.5 3.55e-16 6.20e-13 TRUE  FALSE         
+    ##  8 COL1A2        4.65 -2.10    63.9 1.33e-15 2.03e-12 TRUE  FALSE         
+    ##  9 CNTNAP2       6.95  2.53    54.0 2.04e-13 2.77e-10 TRUE  FALSE         
+    ## 10 LOC101929322  2.91  1.16    50.4 1.23e-12 1.50e- 9 TRUE  FALSE         
     ## # … with 19,534 more rows
 
 The functon `test_differential_abundance` operated with contrasts too.
@@ -697,8 +697,8 @@ results <- CIBERSORT(
     "mixture_file.txt",
     perm=100, QN=TRUE
 )
-results$cell_type = tidyBulk::counts[
-    match(tidyBulk::counts$sample, rownames(results)),
+results$cell_type = tidybulk::counts[
+    match(tidybulk::counts$sample, rownames(results)),
     "Cell type"
 ]
 ```
@@ -762,8 +762,8 @@ count_m_log = log(count_m + 1)
 k = kmeans(count_m_log, iter.max = 1000, ...)
 cluster = k$cluster
 
-cluster$cell_type = tidyBulk::counts[
-    match(tidyBulk::counts$sample, rownames(cluster)),
+cluster$cell_type = tidybulk::counts[
+    match(tidybulk::counts$sample, rownames(cluster)),
     c("Cell type", "Dim1", "Dim2")
 ]
 ```
@@ -820,8 +820,8 @@ snn = FindNeighbors(snn)
 snn = FindClusters(snn, method = "igraph", ...)
 snn = snn[["seurat_clusters"]]
 
-snn$cell_type = tidyBulk::counts[
-    match(tidyBulk::counts$sample, rownames(snn)),
+snn$cell_type = tidybulk::counts[
+    match(tidybulk::counts$sample, rownames(snn)),
     c("Cell type", "Dim1", "Dim2")
 ]
 ```
@@ -839,18 +839,18 @@ counts.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##      tSNE1   tSNE2 `cluster SNN` sample                      
-    ##      <dbl>   <dbl> <fct>         <chr>                       
-    ##  1   2.37    8.95  0             TCGA-A1-A0SD-01A-11R-A115-07
-    ##  2  -7.97   -4.77  2             TCGA-A1-A0SF-01A-11R-A144-07
-    ##  3  10.2    13.7   1             TCGA-A1-A0SG-01A-11R-A144-07
-    ##  4   4.91    2.29  0             TCGA-A1-A0SH-01A-11R-A084-07
-    ##  5   6.74    5.27  0             TCGA-A1-A0SI-01A-11R-A144-07
-    ##  6  -0.811  -6.22  1             TCGA-A1-A0SJ-01A-11R-A084-07
-    ##  7  -0.568 -34.7   3             TCGA-A1-A0SK-01A-12R-A084-07
-    ##  8   5.76   -0.458 2             TCGA-A1-A0SM-01A-11R-A084-07
-    ##  9 -14.3     2.17  2             TCGA-A1-A0SN-01A-11R-A144-07
-    ## 10   8.46   22.0   1             TCGA-A1-A0SQ-01A-21R-A144-07
+    ##     tSNE1   tSNE2 `cluster SNN` sample                      
+    ##     <dbl>   <dbl> <fct>         <chr>                       
+    ##  1  -7.32  -6.57  0             TCGA-A1-A0SD-01A-11R-A115-07
+    ##  2   1.18   5.64  2             TCGA-A1-A0SF-01A-11R-A144-07
+    ##  3 -11.3    2.12  1             TCGA-A1-A0SG-01A-11R-A144-07
+    ##  4   3.22  -3.87  0             TCGA-A1-A0SH-01A-11R-A084-07
+    ##  5 -11.8   -2.31  0             TCGA-A1-A0SI-01A-11R-A144-07
+    ##  6   4.25   0.694 1             TCGA-A1-A0SJ-01A-11R-A084-07
+    ##  7  20.1   20.0   3             TCGA-A1-A0SK-01A-12R-A084-07
+    ##  8  11.8   -2.62  2             TCGA-A1-A0SM-01A-11R-A084-07
+    ##  9  11.3   -3.79  2             TCGA-A1-A0SN-01A-11R-A144-07
+    ## 10 -15.9  -21.0   1             TCGA-A1-A0SQ-01A-21R-A144-07
     ## # … with 241 more rows
 
 ``` r
@@ -874,18 +874,18 @@ counts.norm.SNN %>%
 ```
 
     ## # A tibble: 500 x 8
-    ##    ens             logFC logCPM    LR    PValue      FDR is_de lowly_abundant
-    ##    <chr>           <dbl>  <dbl> <dbl>     <dbl>    <dbl> <lgl> <lgl>         
-    ##  1 ENSG00000186832  6.22   8.04  451. 4.09e-100 1.99e-97 TRUE  FALSE         
-    ##  2 ENSG00000111716  2.95   9.64  417. 9.23e- 93 2.25e-90 TRUE  FALSE         
-    ##  3 ENSG00000181617  7.96   9.13  386. 5.97e- 86 9.72e-84 TRUE  FALSE         
-    ##  4 ENSG00000140545  2.67   9.53  355. 3.44e- 79 4.20e-77 TRUE  FALSE         
-    ##  5 ENSG00000065978  1.58  10.2   329. 1.73e- 73 1.69e-71 TRUE  FALSE         
-    ##  6 ENSG00000137673  3.88   8.26  325. 1.35e- 72 1.10e-70 TRUE  FALSE         
-    ##  7 ENSG00000124107  4.63   8.61  302. 9.53e- 68 6.64e-66 TRUE  FALSE         
-    ##  8 ENSG00000196754  4.93   7.05  290. 5.69e- 65 3.47e-63 TRUE  FALSE         
-    ##  9 ENSG00000092621  2.90   8.40  262. 5.04e- 59 2.73e-57 TRUE  FALSE         
-    ## 10 ENSG00000094755  4.86   9.22  259. 2.30e- 58 1.12e-56 TRUE  FALSE         
+    ##    ens             logFC logCPM    LR   PValue      FDR is_de lowly_abundant
+    ##    <chr>           <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>         
+    ##  1 ENSG00000186832  6.17   7.99  446. 4.54e-99 2.27e-96 TRUE  FALSE         
+    ##  2 ENSG00000111716  2.94   9.64  407. 1.32e-90 3.30e-88 TRUE  FALSE         
+    ##  3 ENSG00000181617  7.93   9.12  380. 1.15e-84 1.92e-82 TRUE  FALSE         
+    ##  4 ENSG00000140545  2.69   9.54  359. 3.65e-80 4.57e-78 TRUE  FALSE         
+    ##  5 ENSG00000065978  1.59  10.2   329. 1.85e-73 1.85e-71 TRUE  FALSE         
+    ##  6 ENSG00000137673  3.88   8.28  319. 2.16e-71 1.80e-69 TRUE  FALSE         
+    ##  7 ENSG00000124107  4.66   8.62  305. 3.37e-68 2.41e-66 TRUE  FALSE         
+    ##  8 ENSG00000196754  4.92   7.04  291. 3.24e-65 2.03e-63 TRUE  FALSE         
+    ##  9 ENSG00000092621  2.91   8.40  263. 3.37e-59 1.87e-57 TRUE  FALSE         
+    ## 10 ENSG00000094755  4.85   9.22  258. 4.11e-58 2.06e-56 TRUE  FALSE         
     ## # … with 490 more rows
 
 # Drop `redundant` transcripts

@@ -1,8 +1,8 @@
 context('Bulk methods')
 
-input_df = setNames(tidyBulk::counts_mini, c("a", "b", "Cell type", "c",  "time" , "condition"))
+input_df = setNames(tidybulk::counts_mini, c("a", "b", "Cell type", "c",  "time" , "condition"))
 
-input_df_breast = setNames(tidyBulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
+input_df_breast = setNames(tidybulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
 
 test_that("Creating tt object from tibble, number of parameters, methods",{
 
@@ -10,7 +10,7 @@ test_that("Creating tt object from tibble, number of parameters, methods",{
 
 		length(
 			attr(
-				tidyBulk(
+				tidybulk(
 					input_df,
 					.sample = a,
 					.transcript = b,
@@ -28,14 +28,14 @@ test_that("Test class identity of tt object",{
 
 	expect_equal(
 		class(
-			tidyBulk(
+			tidybulk(
 				input_df,
 				.sample = a,
 				.transcript = b,
 				.abundance = c
 			)
 		)[1],
-		"tidyBulk"
+		"tidybulk"
 	)
 
 })
@@ -62,7 +62,7 @@ test_that("Getting scaled counts - no object",{
 		6
 	)
 
-	internals = attr(scale_abundance(tidyBulk(input_df, a, b, c)), "tt_internals")
+	internals = attr(scale_abundance(tidybulk(input_df, a, b, c)), "tt_internals")
 
 	expect_equal(length(internals$tt_columns), 4 )
 
@@ -643,7 +643,7 @@ test_that("Add reduced dimensions tSNE - no object",{
 
 	res =
 		reduce_dimensions(
-			setNames(tidyBulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) ,
+			setNames(tidybulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) ,
 			method="tSNE",
 			.abundance = c,
 			.element = a,
@@ -784,7 +784,7 @@ test_that("Get symbol from ensambl - no object",{
 
 	res =
 		annotate_symbol(
-			tidyBulk::counts_ensembl,
+			tidybulk::counts_ensembl,
 			.ensembl = ens,
 			action="get"
 		)
@@ -805,7 +805,7 @@ test_that("Add symbol from ensambl - no object",{
 
 	res =
 		annotate_symbol(
-			tidyBulk::counts_ensembl,
+			tidybulk::counts_ensembl,
 			.ensembl = ens,
 			action="add"
 		)
@@ -951,6 +951,6 @@ test_that("filter abundant - no object",{
 
 test_that("nest - no object",{
 
-	expect_equal(	class(nest(tidyBulk(input_df, a, b, c), data = a))[1],	"tbl_df"	)
+	expect_equal(	class(nest(tidybulk(input_df, a, b, c), data = a))[1],	"tbl_df"	)
 
 })

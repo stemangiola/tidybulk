@@ -27,7 +27,7 @@ Inner join datasets
 }
 \examples{
 `\%>\%` = magrittr::`\%>\%`
-annotation = tidyBulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
-tidyBulk::counts \%>\% inner_join(annotation)
+annotation = tidybulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
+tidybulk::counts \%>\% inner_join(annotation)
 
 }

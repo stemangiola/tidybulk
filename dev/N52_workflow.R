@@ -1,5 +1,5 @@
 library(tidyverse)
-library(tidyBulk)
+library(tidybulk)
 
 my_theme =
 	theme_bw() +
@@ -28,8 +28,8 @@ counts =
 	filter(n == 52) %>%
 	select(-n)
 
-# Create tidyBulk object
-tt = counts %>% tidyBulk(sample, symbol, count)
+# Create tidybulk object
+tt = counts %>% tidybulk(sample, symbol, count)
 
 # Normalise
 tt_scaled = tt %>% scale_abundance()

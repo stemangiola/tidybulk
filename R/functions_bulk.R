@@ -33,7 +33,7 @@ create_tt_from_tibble_bulk = function(.data,
 
 		# Add class
 		add_class("tt") %>%
-		add_class("tidyBulk")
+		add_class("tidybulk")
 }
 
 
@@ -114,7 +114,7 @@ create_tt_from_bam_sam_bulk <-
 
 			# Add class
 			add_class("tt") %>%
-			add_class("tidyBulk")
+			add_class("tidybulk")
 	}
 
 #' Drop lowly tanscribed genes for TMM normalization
@@ -161,7 +161,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 				select(.data, !!(.)) %>% lapply(class) %>%	as.character() %in% c("numeric", "integer", "double"),
 			quo_is_symbol(.),
 			~ {
-				message("tidyBulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
+				message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
 				NULL
 			},
 			~ .data %>%
@@ -609,7 +609,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			(.) %>% distinct(n) %>%	pull(1) %>%	min %>%	`<` (2)
 		}
 	)
-	warning("tidyBulk says: You have less than two replicated for each factorial condition")
+	warning("tidybulk says: You have less than two replicated for each factorial condition")
 
 	# Create design matrix
 	design =
@@ -621,7 +621,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	# Print the design column names in case I want constrasts
 	message(
 		sprintf(
-			"tidyBulk says: The design column names are \"%s\"",
+			"tidybulk says: The design column names are \"%s\"",
 			design %>% colnames %>% paste(collapse = ", ")
 		)
 	)
@@ -726,7 +726,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		# Communicate the attribute added
 		{
 			message(
-				"tidyBulk says: to access the raw results (glmFit) do `attr(..., \"tt_internals\")$edgeR`"
+				"tidybulk says: to access the raw results (glmFit) do `attr(..., \"tt_internals\")$edgeR`"
 			)
 			(.)
 		}
@@ -819,7 +819,7 @@ add_differential_transcript_abundance_bulk <- function(.data,
 #'
 #' @examples
 #'
-#' symbol_to_entrez(tidyBulk::counts_mini, .transcript = transcript, .sample = sample)
+#' symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
 #'
 #' @export
 #'
@@ -927,7 +927,7 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 			pull(1) %>%
 			min %>%
 			`<` (2))
-		stop("tidyBulk says: You need at least two replicated for each condition for EGSEA to work")
+		stop("tidybulk says: You need at least two replicated for each condition for EGSEA to work")
 
 	# Create design matrix
 	design =
@@ -1039,7 +1039,7 @@ get_clusters_kmeans_bulk <-
 		# Check if centers is in dots
 		dots_args = rlang::dots_list(...)
 		if ("centers" %in% names(dots_args) %>% `!`)
-			stop("tidyBulk says: for kmeans you need to provide the \"centers\" integer argument")
+			stop("tidybulk says: for kmeans you need to provide the \"centers\" integer argument")
 
 		# Get column names
 		.element = enquo(.element)
@@ -1337,7 +1337,7 @@ get_reduced_dimensions_MDS_bulk <-
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
 				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-				~ stop("tidyBulk says: .abundance must be numerical or integer")
+				~ stop("tidybulk says: .abundance must be numerical or integer")
 			) %>%
 			spread(!!.element,!!.abundance) %>%
 			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
@@ -1357,7 +1357,7 @@ get_reduced_dimensions_MDS_bulk <-
 			attach_to_internals(mds_object, "MDS") %>%
 			# Communicate the attribute added
 			{
-				message("tidyBulk says: to access the raw results do `attr(..., \"tt_internals\")$MDS`")
+				message("tidybulk says: to access the raw results do `attr(..., \"tt_internals\")$MDS`")
 				(.)
 			}
 
@@ -1489,7 +1489,7 @@ get_reduced_dimensions_PCA_bulk <-
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
 				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-				~ stop("tidyBulk says: .abundance must be numerical or integer")
+				~ stop("tidybulk says: .abundance must be numerical or integer")
 			) %>%
 
 			# Filter most variable genes
@@ -1508,14 +1508,14 @@ get_reduced_dimensions_PCA_bulk <-
 
 				# First function
 				~ stop(
-					"tidyBulk says: In calculating PCA there is no gene that have non NA values is all samples"
+					"tidybulk says: In calculating PCA there is no gene that have non NA values is all samples"
 				),
 
 				# Second function
 				~ {
 					warning(
 						"
-						tidyBulk says: In PCA correlation there is < 100 genes that have non NA values is all samples.
+						tidybulk says: In PCA correlation there is < 100 genes that have non NA values is all samples.
 						The correlation calculation would not be reliable,
 						we suggest to partition the dataset for sample clusters.
 						"
@@ -1562,7 +1562,7 @@ get_reduced_dimensions_PCA_bulk <-
 			attach_to_internals(prcomp_obj, "PCA") %>%
 			# Communicate the attribute added
 			{
-				message("tidyBulk says: to access the raw results do `attr(..., \"tt_internals\")$PCA`")
+				message("tidybulk says: to access the raw results do `attr(..., \"tt_internals\")$PCA`")
 				(.)
 			}
 
@@ -1708,7 +1708,7 @@ get_reduced_dimensions_TSNE_bulk <-
 
 		# If not enough samples stop
 		if (arguments$perplexity <= 2)
-			stop("tidyBulk says: You don't have enough samples to run tSNE")
+			stop("tidybulk says: You don't have enough samples to run tSNE")
 
 		# Calculate the most variable genes, from plotMDS Limma
 
@@ -1870,7 +1870,7 @@ get_rotated_dimensions =
 				max %>%
 				`>` (1))
 			stop(sprintf(
-				"tidyBulk says: %s must be unique for each row for the calculation of rotation",
+				"tidybulk says: %s must be unique for each row for the calculation of rotation",
 				quo_name(.element)
 			))
 
@@ -1899,7 +1899,7 @@ get_rotated_dimensions =
 
 		# Sanity check of the angle selected
 		if (rotation_degrees %>% between(-360, 360) %>% `!`)
-			stop("tidyBulk says: rotation_degrees must be between -360 and 360")
+			stop("tidybulk says: rotation_degrees must be between -360 and 360")
 
 		# Return
 		.data %>%
@@ -2054,7 +2054,7 @@ aggregate_duplicated_transcripts_bulk =
 		# Through warning if there are logicals of factor in the data frame
 		# because they cannot be merged if they are not unique
 		if ((lapply(.data, class) %>% unlist %in% c("logical", "factor")) %>% any) {
-			warning("tidyBulk says: for aggregation fctors and logical columns were converted to character")
+			warning("tidybulk says: for aggregation fctors and logical columns were converted to character")
 			message("Converted to characters")
 			message(lapply(.data, class) %>% unlist %>% `[` (. %in% c("logical", "factor") %>% which))
 		}
@@ -2217,14 +2217,14 @@ remove_redundancy_elements_through_correlation <- function(.data,
 
 			# First function
 			~ stop(
-				"tidyBulk says: In calculating correlation there is no gene that have non NA values is all samples"
+				"tidybulk says: In calculating correlation there is no gene that have non NA values is all samples"
 			),
 
 			# Second function
 			~ {
 				warning(
 					"
-					tidyBulk says: In calculating correlation there is < 100 genes that have non NA values is all samples.
+					tidybulk says: In calculating correlation there is < 100 genes that have non NA values is all samples.
 					The correlation calculation would not be reliable,
 					we suggest to partition the dataset for sample clusters.
 					"
@@ -2402,7 +2402,7 @@ get_symbol_from_ensembl <-
 
 			# Add name information
 			dplyr::left_join(
-				tidyBulk::ensembl_symbol_mapping %>%
+				tidybulk::ensembl_symbol_mapping %>%
 					distinct(ensembl_id, transcript, hg) %>%
 					dplyr::rename(!!.ensembl := ensembl_id) %>%
 					rename(transcript = transcript),
@@ -2523,12 +2523,12 @@ get_cell_type_proportions = function(.data,
 			length %>%
 			`<` (50))
 		stop(
-			"tidyBulk says: You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
+			"tidybulk says: You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
 		)
 
 	# Check if rownames exist
 	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% `!` %>% any)
-		stop("tidyBulk says: your reference has non-numeric/integer columns.")
+		stop("tidybulk says: your reference has non-numeric/integer columns.")
 
 	# Get the dots arguments
 	dots_args = rlang::dots_list(...)
@@ -2560,7 +2560,7 @@ get_cell_type_proportions = function(.data,
 				as_tibble(rownames = quo_name(.sample)),
 
 			~ stop(
-				"tidyBulk syas: please choose between cibersort and llsr methods"
+				"tidybulk syas: please choose between cibersort and llsr methods"
 			)
 		)	 %>%
 
@@ -2683,7 +2683,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 	# Check that .formula includes no more than two covariates at the moment
 	if (parse_formula(.formula) %>% length %>% `>` (3))
-		warning("tidyBulk says: Only the second covariate in the .formula is adjusted for, at the moment")
+		warning("tidybulk says: Only the second covariate in the .formula is adjusted for, at the moment")
 
 	# New column name
 	value_adjusted = as.symbol(sprintf("%s%s",  quo_name(.abundance), adjusted_string))
@@ -2699,7 +2699,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		{
 			# Give warning of filtering
 			message(
-				"tidyBulk says: Combat is applied excluding lowly_abundant, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts "
+				"tidybulk says: Combat is applied excluding lowly_abundant, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts "
 			)
 			(.)
 		} %>%
@@ -2900,7 +2900,7 @@ keep_variable_transcripts = function(.data,
 	.data %>% filter(!!.transcript %in% variable_trancripts)
 }
 
-#'tidyBulk_to_SummarizedExperiment
+#'tidybulk_to_SummarizedExperiment
 #'
 #' @importFrom utils data
 #'
@@ -2911,7 +2911,7 @@ keep_variable_transcripts = function(.data,
 #'
 #' @return A SummarizedExperiment
 #'
-tidyBulk_to_SummarizedExperiment = function(.data,
+tidybulk_to_SummarizedExperiment = function(.data,
 																					.sample = NULL,
 																					.transcript = NULL,
 																					.abundance = NULL) {
@@ -3007,7 +3007,7 @@ tidyBulk_to_SummarizedExperiment = function(.data,
 #'
 #' @examples
 #'
-#' as_matrix(head(dplyr::select(tidyBulk::counts_mini, transcript, count)), rownames=transcript)
+#' as_matrix(head(dplyr::select(tidybulk::counts_mini, transcript, count)), rownames=transcript)
 #'
 #' @export
 as_matrix <- function(tbl,
@@ -3028,7 +3028,7 @@ as_matrix <- function(tbl,
 				unique() %>%
 				`%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
 			~ {
-				warning("tidyBulk says: there are NON-numerical columns, the matrix will NOT be numerical")
+				warning("tidybulk says: there are NON-numerical columns, the matrix will NOT be numerical")
 				.x
 			}
 		) %>%

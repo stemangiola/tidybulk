@@ -27,7 +27,7 @@
 
 \item{.element}{The name of the element column (normally samples).}
 
-\item{of_samples}{A boolean. In case the input is a tidyBulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{dimension_1_column_rotated}{A character string. The column of the rotated dimension 1 (optional)}
 
@@ -36,7 +36,7 @@
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
 \value{
-A `tidyBulk` object
+A `tidybulk` object
 }
 \description{
 rotate_dimensions

@@ -19,7 +19,7 @@ nest
 }
 \examples{
 
-nest(tidyBulk(tidyBulk::counts_mini, sample, transcript, count), data = -transcript)
+nest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript)
 
 
 }
