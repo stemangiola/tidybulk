@@ -2341,12 +2341,12 @@ setMethod("keep_abundant",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description analyse_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
+#' @description test_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name analyse_gene_enrichment
+#' @name test_gene_enrichment
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model
@@ -2373,7 +2373,7 @@ setMethod("keep_abundant",
 #'
 #' library("EGSEA")
 #'
-#' 	analyse_gene_enrichment(
+#' 	test_gene_enrichment(
 #'			df_entrez,
 #'			~ condition,
 #'			.sample = sample,
@@ -2385,11 +2385,11 @@ setMethod("keep_abundant",
 #'}
 #'
 #' @docType methods
-#' @rdname analyse_gene_enrichment-methods
+#' @rdname test_gene_enrichment-methods
 #' @export
 #'
 #'
-setGeneric("analyse_gene_enrichment", function(.data,
+setGeneric("test_gene_enrichment", function(.data,
 																							 .formula,
 																							 .sample = NULL,
 																							 .entrez,
@@ -2397,10 +2397,10 @@ setGeneric("analyse_gene_enrichment", function(.data,
 																							 .contrasts = NULL,
 																							 species,
 																							 cores = 10)
-	standardGeneric("analyse_gene_enrichment"))
+	standardGeneric("test_gene_enrichment"))
 
 # Set internal
-.analyse_gene_enrichment = 		function(.data,
+.test_gene_enrichment = 		function(.data,
 																			.formula,
 																			.sample = NULL,
 																			.entrez,
@@ -2416,7 +2416,7 @@ setGeneric("analyse_gene_enrichment", function(.data,
 	# Validate data frame
 	validation(.data, !!.sample, !!.entrez)
 
-	analyse_gene_enrichment_bulk_EGSEA(
+	test_gene_enrichment_bulk_EGSEA(
 		.data,
 		.formula,
 		.sample = !!.sample,
@@ -2431,23 +2431,23 @@ setGeneric("analyse_gene_enrichment", function(.data,
 
 }
 
-#' analyse_gene_enrichment
-#' @inheritParams analyse_gene_enrichment
+#' test_gene_enrichment
+#' @inheritParams test_gene_enrichment
 #' @return A `tbl` object
-setMethod("analyse_gene_enrichment",
+setMethod("test_gene_enrichment",
 					"spec_tbl_df",
-					.analyse_gene_enrichment)
+					.test_gene_enrichment)
 
-#' analyse_gene_enrichment
-#' @inheritParams analyse_gene_enrichment
+#' test_gene_enrichment
+#' @inheritParams test_gene_enrichment
 #' @return A `tbl` object
-setMethod("analyse_gene_enrichment",
+setMethod("test_gene_enrichment",
 					"tbl_df",
-					.analyse_gene_enrichment)
+					.test_gene_enrichment)
 
-#' analyse_gene_enrichment
-#' @inheritParams analyse_gene_enrichment
+#' test_gene_enrichment
+#' @inheritParams test_gene_enrichment
 #' @return A `tbl` object
-setMethod("analyse_gene_enrichment",
+setMethod("test_gene_enrichment",
 					"tidybulk",
-					.analyse_gene_enrichment)
+					.test_gene_enrichment)
