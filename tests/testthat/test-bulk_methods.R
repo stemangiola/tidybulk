@@ -371,7 +371,7 @@ test_that("Get entrez from symbol - no object",{
 # 	library(EGSEA)
 #
 # 	res =
-# 		analise_gene_enrichment(
+# 		analyse_gene_enrichment(
 # 			aggregate_duplicates(
 # 				dplyr::rename(symbol_to_entrez(
 # 					#dplyr::filter(input_df, grepl("^B", b)),

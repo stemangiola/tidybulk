@@ -2337,16 +2337,16 @@ setMethod("keep_abundant",
 
 
 
-#' Analise gene enrichment with EGSEA
+#' analyse gene enrichment with EGSEA
 #'
 #' \lifecycle{maturing}
 #'
-#' @description analise_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
+#' @description analyse_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name analise_gene_enrichment
+#' @name analyse_gene_enrichment
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model
@@ -2373,7 +2373,7 @@ setMethod("keep_abundant",
 #'
 #' library("EGSEA")
 #'
-#' 	analise_gene_enrichment(
+#' 	analyse_gene_enrichment(
 #'			df_entrez,
 #'			~ condition,
 #'			.sample = sample,
@@ -2385,11 +2385,11 @@ setMethod("keep_abundant",
 #'}
 #'
 #' @docType methods
-#' @rdname analise_gene_enrichment-methods
+#' @rdname analyse_gene_enrichment-methods
 #' @export
 #'
 #'
-setGeneric("analise_gene_enrichment", function(.data,
+setGeneric("analyse_gene_enrichment", function(.data,
 																							 .formula,
 																							 .sample = NULL,
 																							 .entrez,
@@ -2397,10 +2397,10 @@ setGeneric("analise_gene_enrichment", function(.data,
 																							 .contrasts = NULL,
 																							 species,
 																							 cores = 10)
-	standardGeneric("analise_gene_enrichment"))
+	standardGeneric("analyse_gene_enrichment"))
 
 # Set internal
-.analise_gene_enrichment = 		function(.data,
+.analyse_gene_enrichment = 		function(.data,
 																			.formula,
 																			.sample = NULL,
 																			.entrez,
@@ -2431,23 +2431,23 @@ setGeneric("analise_gene_enrichment", function(.data,
 
 }
 
-#' analise_gene_enrichment
-#' @inheritParams analise_gene_enrichment
+#' analyse_gene_enrichment
+#' @inheritParams analyse_gene_enrichment
 #' @return A `tbl` object
-setMethod("analise_gene_enrichment",
+setMethod("analyse_gene_enrichment",
 					"spec_tbl_df",
-					.analise_gene_enrichment)
+					.analyse_gene_enrichment)
 
-#' analise_gene_enrichment
-#' @inheritParams analise_gene_enrichment
+#' analyse_gene_enrichment
+#' @inheritParams analyse_gene_enrichment
 #' @return A `tbl` object
-setMethod("analise_gene_enrichment",
+setMethod("analyse_gene_enrichment",
 					"tbl_df",
-					.analise_gene_enrichment)
+					.analyse_gene_enrichment)
 
-#' analise_gene_enrichment
-#' @inheritParams analise_gene_enrichment
+#' analyse_gene_enrichment
+#' @inheritParams analyse_gene_enrichment
 #' @return A `tbl` object
-setMethod("analise_gene_enrichment",
+setMethod("analyse_gene_enrichment",
 					"tidybulk",
-					.analise_gene_enrichment)
+					.analyse_gene_enrichment)
