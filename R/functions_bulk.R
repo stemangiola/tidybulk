@@ -881,7 +881,7 @@ symbol_to_entrez = function(.data,
 #'
 #' @return A tibble with edgeR results
 #'
-analyse_gene_enrichment_bulk_EGSEA <- function(.data,
+test_gene_enrichment_bulk_EGSEA <- function(.data,
 																							 .formula,
 																							 .sample = NULL,
 																							 .entrez,
