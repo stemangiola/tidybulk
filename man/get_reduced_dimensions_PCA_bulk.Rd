@@ -13,7 +13,7 @@ get_reduced_dimensions_PCA_bulk(
   top = 500,
   of_samples = TRUE,
   log_transform = TRUE,
-  scale = TRUE,
+  scale = FALSE,
   ...
 )
 }

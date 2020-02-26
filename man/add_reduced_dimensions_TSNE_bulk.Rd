@@ -13,7 +13,6 @@ add_reduced_dimensions_TSNE_bulk(
   top = 500,
   of_samples = TRUE,
   log_transform = TRUE,
-  scale = TRUE,
   ...
 )
 }
@@ -33,8 +32,6 @@ add_reduced_dimensions_TSNE_bulk(
 \item{of_samples}{A boolean}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
-
-\item{scale}{A boolean}
 
 \item{...}{Further parameters passed to the function tSNE}
 }
