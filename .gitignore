@@ -12,3 +12,4 @@ dev/*csv
 dev/*rds
 dev/*rda
 dev/dplyr-master/*
+tidybulk.Rproj
