@@ -4,44 +4,41 @@ Dr. Maria Doyle (EMAIL) and Dr. Stefano Mangiola (EMAIL)
 
 # Workshop Description
 
-Along with the topic of your workshop, include how students can expect
-to spend their time. For the description may also include information
-about what type of workshop it is (e.g. instructor-led live demo, lab,
-lecture + lab, etc.). Instructors are strongly recommended to provide
-completely worked examples for lab sessions, and a set of stand-alone
-notes that can be read and understood outside of the workshop.
+This workshop will show you how to perform analysis of RNA-Seq count data in a 'tidy' way using the tidyBulk and tidyHeatmap packages. 
+tidyBulk provides a modular framework and a tidy data structure for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation for creating heatmaps. These packages are part of a tidy transcriptomics suite for tidy and user-friendly grammar of RNA sequencing data exploration and analysis. 
+
+- preprocess count data
+- perform differential expression analysis
+- visualise gene expression data
 
 ## Pre-requisites
 
-List any workshop prerequisites, for example:
-
-* Basic knowledge of R syntax
+* Basic knowledge of RStudio
 * Familiarity with tidyverse syntax
 
-List relevant background reading for the workshop, including any
-theoretical background you expect students to have.
-
-* List any textbooks, papers, or other reading that students should be
-  familiar with. Include direct links where possible.
+Recommended Background Reading 
+https://mblue9.github.io/r-intro-biologists/intro_r_biologists.html
 
 ## Workshop Participation
 
-Describe how students will be expected to participate in the workshop.
+Sudents will be expected to participate in the workshop in a hands-on way, following along with the code provided and performing  exercises.
 
 ## _R_ / _Bioconductor_ packages used
 
-List any _R_ / _Bioconductor_ packages that will be explicitly covered.
+* tidyverse
+* tidyBulk
+* tidyHeatmap
+* edgeR
+* devtools
 
 ## Time outline
 
-An example for a 45-minute workshop:
-
 | Activity                     | Time |
 |------------------------------|------|
-| Packages                     | 15m  |
-| Package Development          | 15m  |
-| Contributing to Bioconductor | 5m   |
-| Best Practices               | 10m  |
+| Data import & preprocessing  | 30m  |
+| Quality control              | 30m  |
+| Differential expression      | 30m  |
+| Visualisation                | 30m  |
 
 # Workshop goals and objectives
 
@@ -61,17 +58,16 @@ are others.
 
 ## Learning goals
 
-Some examples:
-
-* describe how to...
-* identify methods for...
-* understand the difference between...
+* learn how RNA-Seq count data can be analysed in a tidy way
+* understand key steps in analysis of RNA-Seq counts
+* evaluate RNA-Seq counts using visualisations
 
 ## Learning objectives
 
-* analyze xyz data to produce...
-* create xyz plots
-* evaluate xyz data for artifacts
+* analyse RNA-Seq counts in tidy data format
+* produce a list of differentially expressed genes
+* create visualisations of gene expression
+
 
 ### A note about learning goals and objectives (#bloom)
 
