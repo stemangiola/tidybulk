@@ -1,20 +1,20 @@
 context('Bulk methods SummarizedExperiment')
 
-input_df = setNames(ttBulk::counts_mini, c("a", "b", "Cell type", "c",  "time" , "condition"))
+input_df = setNames(tidybulk::counts_mini, c("a", "b", "Cell type", "c",  "time" , "condition"))
 
-input_df_breast = setNames(ttBulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
+input_df_breast = setNames(tidybulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
 
-test_that("ttBulk SummarizedExperiment conversion",{
+test_that("tidybulk SummarizedExperiment conversion",{
 
-	res = ttBulk(ttBulk::se)
+	res = tidybulk(tidybulk::se)
 
-	expect_equal(	class(res)[1],	"ttBulk"	)
+	expect_equal(	class(res)[1],	"tidybulk"	)
 
 	expect_equal(	nrow(res),	800	)
 
 	expect_equal(	ncol(res),	12	)
 
-	res = res %>% ttBulk:::ttBulk_to_SummarizedExperiment()
+	res = res %>% tidybulk:::tidybulk_to_SummarizedExperiment()
 
 	expect_equal(	class(res)[1],	"SummarizedExperiment"	)
 
@@ -24,13 +24,13 @@ test_that("ttBulk SummarizedExperiment conversion",{
 
 })
 
-test_that("ttBulk SummarizedExperiment normalisation manual",{
+test_that("tidybulk SummarizedExperiment normalisation manual",{
 
-	res = ttBulk(ttBulk:::ttBulk_to_SummarizedExperiment(scale_abundance(ttBulk(se))))
+	res = tidybulk(tidybulk:::tidybulk_to_SummarizedExperiment(scale_abundance(tidybulk(se))))
 
 	expect_equal(
-		res[1:4,]$`counts scaled`,
-		c(1327.286584 , 859.307120 , 898.641600  ,  2.017153),
+		res[1:4,]$`counts_scaled`,
+		c(1345.385350 , 871.024558,  910.895401 ,   2.044659),
 		tolerance=1e-6
 	)
 
@@ -39,45 +39,45 @@ test_that("ttBulk SummarizedExperiment normalisation manual",{
 	expect_equal(	ncol(res),	16	)
 
 
-	res = rlang::quo_name(attr(res, "parameters")[[4]])
+	res = rlang::quo_name(attr(res, "tt_internals")$tt_columns[[4]])
 
-	expect_equal( res,	"counts scaled"	)
+	expect_equal( res,	"counts_scaled"	)
 
 })
 
-test_that("ttBulk SummarizedExperiment normalisation",{
+test_that("tidybulk SummarizedExperiment normalisation",{
 
 	res = scale_abundance(se)
 
 	expect_equal(
-		names(assays(res)),
-		c("counts" ,"counts scaled")
+		names(SummarizedExperiment::assays(res)),
+		c("counts" ,"counts_scaled")
 	)
 
 })
 
-test_that("ttBulk SummarizedExperiment clustering",{
+test_that("tidybulk SummarizedExperiment clustering",{
 
 	res = cluster_elements(se, method="kmeans", centers = 2)
 
 	expect_equal(
-		tail(names(colData(res)), 1),
+		tail(names(SummarizedExperiment::colData(res)), 1),
 		"cluster.kmeans"
 	)
 
 	expect_equal(
-		levels(colData(res)$cluster.kmeans),
+		levels(SummarizedExperiment::colData(res)$cluster.kmeans),
 		c("1", "2")
 	)
 
 })
 
-test_that("ttBulk SummarizedExperiment clustering",{
+test_that("tidybulk SummarizedExperiment clustering",{
 
 	res = reduce_dimensions(se, method="PCA")
 
 	expect_equal(
-		tail(names(colData(res)), 1),
+		tail(names(SummarizedExperiment::colData(res)), 1),
 		"PC2"
 	)
 
@@ -97,7 +97,7 @@ test_that("Get rotated dimensions - SummarizedExperiment",{
 		)
 
 	expect_equal(
-		tail(names(colData(res)), 1),
+		tail(names(SummarizedExperiment::colData(res)), 1),
 		"PC2.rotated.45"
 	)
 
@@ -125,13 +125,13 @@ test_that("Get adjusted counts - SummarizedExperiment",{
 
 	res =
 		adjust_abundance(
-			ttBulk:::ttBulk_to_SummarizedExperiment(cm, a, b, c),
+			tidybulk:::tidybulk_to_SummarizedExperiment(cm, a, b, c),
 			~ condition + batch
 		)
 
 	expect_equal(nrow(res),	527	)
 
-	expect_equal(	names(assays(res)),	c("c" ,"c adjusted")	)
+	expect_equal(	names(SummarizedExperiment::assays(res)),	c("c" ,"c_adjusted")	)
 
 
 })
@@ -147,7 +147,7 @@ test_that("Aggregate duplicated transcript - SummarizedExperiment",{
 
 test_that("Add cell type proportions - SummarizedExperiment",{
 
-	res =		deconvolve_cellularity(ttBulk:::ttBulk_to_SummarizedExperiment(input_df, a, b, c), cores=1	)
+	res =		deconvolve_cellularity(tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c), cores=1	)
 
 	expect_equal(
 		as.numeric(as.data.frame(res@colData[1, 4:7])),
@@ -159,13 +159,13 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 
 test_that("Add differential trancript abundance - SummarizedExperiment",{
 
-	res =		test_differential_abundance(ttBulk:::ttBulk_to_SummarizedExperiment(input_df, a, b, c),	~ condition	)
+	res =		test_differential_abundance(tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c),	~ condition	)
 
 	w = match(  c("HK3", "FCN1", "CLEC7A", "FAM198B"), rownames(res) )
 
 	expect_equal(
 		res@elementMetadata[w,]$logFC,
-		c(-12.10269, -12.48201 ,-11.48896, -13.44406),
+		c(-12.19282, -12.58096, -11.58243, -13.53479),
 		tolerance=1e-6
 	)
 
@@ -174,21 +174,21 @@ test_that("Add differential trancript abundance - SummarizedExperiment",{
 
 test_that("filter abundant - SummarizedExperiment",{
 
-	res =		filter_abundant(		se	)
+	res =		keep_abundant(		se	)
 
-	expect_equal(		nrow(res),		31	)
+	expect_equal(		nrow(res),		23	)
 
 })
 
 test_that("filter variable - no object",{
 
-	res =		filter_variable(se, top = 5		)
+	res =		keep_variable(se, top = 5		)
 
 	expect_equal(	nrow(res),5	)
 
 	res =
-		filter_variable(
-			ttBulk:::ttBulk_to_SummarizedExperiment(input_df, a, b, c),
+		keep_variable(
+			tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c),
 			top = 5
 		)
 

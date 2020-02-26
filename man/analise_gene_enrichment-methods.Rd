@@ -47,7 +47,7 @@ This wrapper execute gene enrichment analyses of the dataset
 \examples{
 \donttest{
 
-df_entrez = symbol_to_entrez(ttBulk::counts_mini, .transcript = transcript, .sample = sample)
+df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
 df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 
 library("EGSEA")

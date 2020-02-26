@@ -1,5 +1,5 @@
 library(tidyverse)
-library(ttBulk)
+library(tidybulk)
 
 my_theme =
 	theme_bw() +
@@ -20,7 +20,7 @@ counts =
 	readRDS("dev/N52.rds") %>%
 	filter(symbol %>% is.na %>% `!`) %>%
 	group_by(cell_type_formatted) %>%
-	do(	filter_abundant((.), sample, symbol, count, prop = 1/2)	) %>%
+	do(	keep_abundant((.), sample, symbol, count, minimum_proportion = 1/2)	) %>%
 	ungroup() %>%
 	group_by(symbol) %>%
 	mutate(n = n()) %>%
@@ -28,15 +28,15 @@ counts =
 	filter(n == 52) %>%
 	select(-n)
 
-# Create ttBulk object
-tt = counts %>% ttBulk(sample, symbol, count)
+# Create tidybulk object
+tt = counts %>% tidybulk(sample, symbol, count)
 
 # Normalise
 tt_scaled = tt %>% scale_abundance()
 
 # Plot densities
 tt_scaled %>%
-	pivot_longer(values_to = "count", names_to = "Normalisation", cols = c(count, `count scaled`)) %>%
+	pivot_longer(values_to = "count", names_to = "Normalisation", cols = c(count, `count_scaled`)) %>%
 	ggplot(aes(count + 1, group=sample, color=cell_type_formatted)) +
 	facet_grid(~Normalisation) +
 	geom_density() + scale_x_log10() +

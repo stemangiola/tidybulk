@@ -9,7 +9,7 @@
 #'
 #' @examples
 #'
-#' nest(ttBulk(ttBulk::counts_mini, sample, transcript, count), data = -transcript)
+#' nest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript)
 #'
 #'
 #' @export
@@ -24,21 +24,21 @@ nest.default <-  function (.data, ...)
 }
 
 #' @export
-nest.ttBulk <- function (.data, ...)
+nest.tidybulk <- function (.data, ...)
 {
-	warning("nest is not fully supported yet by ttBulk. The nested data frame has been reverted to tbl")
+	warning("nest is not fully supported yet by tidybulk. The nested data frame has been reverted to tbl")
 
 	.data %>%
-		drop_class(c("ttBulk", "tt")) %>%
+		drop_class(c("tidybulk", "tt")) %>%
 		tidyr::nest(...)
 
 	#   %>%
 	#
 	# 	# Attach attributes
-	# 	add_attr(.data %>% attr("parameters"), "parameters") %>%
+	# 	reattach_internals(.data) %>%
 	#
 	# 	# Add class
 	# 	add_class("tt") %>%
-	# 	add_class("ttBulk")
+	# 	add_class("tidybulk")
 
 }

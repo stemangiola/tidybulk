@@ -1,98 +1,141 @@
 context('Bulk methods')
 
-input_df = setNames(ttBulk::counts_mini, c("a", "b", "Cell type", "c",  "time" , "condition"))
+input_df = setNames(tidybulk::counts_mini, c("a", "b", "Cell type", "c",  "time" , "condition"))
 
-input_df_breast = setNames(ttBulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
+input_df_breast = setNames(tidybulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
 
 test_that("Creating tt object from tibble, number of parameters, methods",{
 
-  expect_equal(
+	expect_equal(
 
-    length(
-      attr(
-        ttBulk(
-          input_df,
-          .sample = a,
-          .transcript = b,
-          .abundance = c
-        ) ,
-        "parameters"
-      )
-    ),
-    3
-  )
+		length(
+			attr(
+				tidybulk(
+					input_df,
+					.sample = a,
+					.transcript = b,
+					.abundance = c
+				) ,
+				"tt_internals"
+			)$tt_columns
+		),
+		3
+	)
 
 })
 
 test_that("Test class identity of tt object",{
 
-  expect_equal(
-    class(
-      ttBulk(
-        input_df,
-        .sample = a,
-        .transcript = b,
-        .abundance = c
-      )
-    )[1],
-    "ttBulk"
-  )
+	expect_equal(
+		class(
+			tidybulk(
+				input_df,
+				.sample = a,
+				.transcript = b,
+				.abundance = c
+			)
+		)[1],
+		"tidybulk"
+	)
 
 })
 
 test_that("Getting scaled counts - no object",{
 
-  res =
-    scale_abundance(
-      input_df,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
-      action = "get"
-    )
+	res =
+		scale_abundance(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action = "get"
+		)
 
-  expect_equal(
-    unique(res$multiplier),
-    c(1.124713, 1.011405, 1.511470, 0.828865, 1.191472),
-    tolerance=1e-6
-  )
+	expect_equal(
+		unique(res$multiplier),
+		c(1.835983, 1.607034, 2.554334, 1.323492, 2.561279),
+		tolerance=1e-6
+	)
 
-  expect_equal(
-    ncol(res),
-    6
-  )
+	expect_equal(
+		ncol(res),
+		6
+	)
+
+	internals = attr(scale_abundance(tidybulk(input_df, a, b, c)), "tt_internals")
+
+	expect_equal(length(internals$tt_columns), 4 )
+
+	expect_equal(quo_name(internals$tt_columns[[4]]), "c_scaled" )
+
+	# With factor of interest
+	res =
+		scale_abundance(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			factor_of_interest = condition,
+			action = "get"
+		)
+
+	expect_equal(
+		unique(res$multiplier),
+		c(1.1509530, 1.0821210, 1.3929492, 0.8779399, 1.1334760),
+		tolerance=1e-6
+	)
+
+	expect_equal(
+		ncol(res),
+		6
+	)
+
+	# Warnings on continuous
+	sam = distinct(input_df, a)
+	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
+
+	expect_message(
+		scale_abundance(
+			left_join(input_df, sam),
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			factor_of_interest = condition_cont
+		),
+		"The factor of interest is continuous"
+	)
 
 })
 
 
 test_that("Adding scaled counts - no object",{
 
-  res =
-    scale_abundance(
-      input_df,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
-      action = "add"
-    )
+	res =
+		scale_abundance(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action = "add"
+		)
 
-  expect_equal(
-    unique(res$multiplier),
-    c(1.124713 ,1.011405, 1.511470, 0.828865, 1.191472),
-    tolerance=1e-6
-  )
+	expect_equal(
+		unique(res$multiplier),
+		c(1.835983, 1.607034, 2.554334, 1.323492, 2.561279),
+		tolerance=1e-6
+	)
 
-  expect_equal(
-    ncol(res),
-    9
-  )
+	expect_equal(
+		ncol(res),
+		10
+	)
 
 })
 
 test_that("filter variable - no object",{
 
 	res =
-		filter_variable(
+		keep_variable(
 			input_df,
 			.sample = a,
 			.transcript = b,
@@ -115,79 +158,138 @@ test_that("filter variable - no object",{
 
 test_that("Get differential trancript abundance - no object",{
 
-  res =
-    test_differential_abundance(
-      input_df,
-      ~ condition,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
-      action="get"
-    )
+	res =
+		test_differential_abundance(
+			input_df,
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get"
+		)
 
-  expect_equal(
-    unique(res$logFC)[1:4],
-    c(-12.48201, -12.10269 ,-11.48896, -13.44406),
-    tolerance=1e-6
-  )
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-12.58096, -12.19282, -11.58243, -13.53479),
+		tolerance=1e-6
+	)
 
-  expect_equal(
-    ncol(res),
-    8
-  )
+	expect_equal(
+		ncol(res),
+		8
+	)
 
-  # Continuous covariate
-  sam = distinct(input_df, a)
-  sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
+	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
 
-  res =
-  	test_differential_abundance(
-  		left_join(input_df, sam),
-  		~ condition_cont,
-  		.sample = a,
-  		.transcript = b,
-  		.abundance = c,
-  		action="get"
-  	)
+	# Continuous covariate
+	sam = distinct(input_df, a)
+	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
 
-  expect_equal(
-  	unique(res$logFC)[1:4],
-  	c(-4.403626, -4.390714, -4.746695, -4.467572),
-  	tolerance=1e-6
-  )
+	res =
+		test_differential_abundance(
+			left_join(input_df, sam),
+			~ condition_cont,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get"
+		)
 
-  expect_equal(
-  	ncol(res),
-  	8
-  )
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-3.673818, -3.250104 ,-3.041978 , 2.832697),
+		tolerance=1e-6
+	)
 
-  # Just one covariate error
-  expect_error(
-  	test_differential_abundance(
-  		filter(input_df, condition),
-  		~ condition,
-  		.sample = a,
-  		.transcript = b,
-  		.abundance = c,
-  		action="get"
-  	),
-  	"Design matrix not of full rank"
-  )
+	expect_equal(
+		ncol(res),
+		8
+	)
 
-  # Just one sample per covariate error
-  expect_error(
-  	test_differential_abundance(
-  		filter(input_df, a %in% c("SRR1740034", "SRR1740035", "SRR1740043", "SRR1740058")),
-  		~ condition,
-  		.sample = a,
-  		.transcript = b,
-  		.abundance = c,
-  		action="get"
-  	),
-  	"You need at least two replicated"
-  )
+	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
 
+	# Continuous and discrete
+	res =
+		test_differential_abundance(
+			left_join(input_df, sam),
+			~ condition_cont + condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get"
+		)
 
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-4.992912, -4.290761, -2.987840, -3.353016),
+		tolerance=1e-6
+	)
+
+	expect_equal(
+		ncol(res),
+		8
+	)
+
+	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+
+	# Just one covariate error
+	expect_error(
+		test_differential_abundance(
+			filter(input_df, condition),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get"
+		),
+		"Design matrix not of full rank"
+	)
+
+	# Just one sample per covariate error
+	expect_warning(
+		test_differential_abundance(
+			filter(input_df, a %in% c("SRR1740034", "SRR1740035", "SRR1740043", "SRR1740058")),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get"
+		),
+		"You have less than two replicated for each factorial condition"
+	)
+
+	# Setting filtering manually
+	res =
+		test_differential_abundance(
+			input_df,
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get",
+			minimum_proportion = 0.5,
+			minimum_counts = 30
+		)
+
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-12.68354, -12.36412, -11.72906, -13.63015),
+		tolerance=1e-6
+	)
+
+	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+
+	# Change scaling method
+	res =
+		test_differential_abundance(
+			input_df,
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			scaling_method = "TMM",
+			action="get"
+		)
 })
 
 test_that("Get differential trancript abundance - no object - with contrasts",{
@@ -205,7 +307,7 @@ test_that("Get differential trancript abundance - no object - with contrasts",{
 
 	expect_equal(
 		unique(res$`logFC_conditionTRUE - conditionFALSE`)[1:4],
-		c(-12.48201, -12.10269, -11.48896, -13.44406),
+		c(-12.58096 ,-12.19282, -11.58243 ,-13.53479),
 		tolerance=1e-6
 	)
 
@@ -214,31 +316,35 @@ test_that("Get differential trancript abundance - no object - with contrasts",{
 		14
 	)
 
+	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+
 })
 
 
 test_that("Add differential trancript abundance - no object",{
 
-  res =
-    test_differential_abundance(
-      input_df,
-      ~ condition,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
-      action="add"
-    )
+	res =
+		test_differential_abundance(
+			input_df,
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="add"
+		)
 
-  expect_equal(
-  	pull(filter(distinct(res, b, logFC), b %in% c("HK3", "FCN1", "CLEC7A", "FAM198B")) , "logFC"),
-    c(-12.10269, -12.48201 ,-11.48896, -13.44406),
-    tolerance=1e-6
-  )
+	expect_equal(
+		pull(slice(distinct(res, b, logFC), 1:4) , "logFC"),
+		c(-12.19282, -12.58096, -11.58243, -13.53479),
+		tolerance=1e-6
+	)
 
-  expect_equal(
-    ncol(res),
-    13
-  )
+	expect_equal(
+		ncol(res),
+		13
+	)
+
+	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
 
 })
 
@@ -298,81 +404,81 @@ test_that("Get entrez from symbol - no object",{
 
 test_that("Get adjusted counts - no object",{
 
-  cm = input_df
-  cm$batch = 0
-  cm$batch[cm$a %in% c("SRR1740035", "SRR1740043")] = 1
+	cm = input_df
+	cm$batch = 0
+	cm$batch[cm$a %in% c("SRR1740035", "SRR1740043")] = 1
 
-  res =
-    adjust_abundance(
-      cm,
-      ~ condition + batch,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
-      action="get"
-    )
+	res =
+		adjust_abundance(
+			cm,
+			~ condition + batch,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get"
+		)
 
-  expect_equal(
-    unique(res$`c adjusted`)[c(1, 2, 3, 5)],
-    c( 6, 1014,   25 ,   0),
-    tolerance=1e-6
-  )
+	expect_equal(
+		unique(res$`c_adjusted`)[c(1, 2, 3, 5)],
+		c( 7948 ,2193 , 262, 8152),
+		tolerance=1e-6
+	)
 
-  expect_equal(
-    ncol(res),
-    4
-  )
+	expect_equal(
+		ncol(res),
+		3
+	)
 
 })
 
 
 test_that("Get cluster lables based on Kmeans - no object",{
 
-  res =
-    cluster_elements(
-      input_df,
-      .abundance = c,
-      .element = a,
-      .feature = b,
-      method="kmeans",
-      centers = 2,
-      action="get"
-    )
+	res =
+		cluster_elements(
+			input_df,
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			method="kmeans",
+			centers = 2,
+			action="get"
+		)
 
-  expect_equal(
-    typeof(res$`cluster kmeans`),
-    "integer"
-  )
+	expect_equal(
+		typeof(res$`cluster kmeans`),
+		"integer"
+	)
 
-  expect_equal(
-    ncol(res),
-    2
-  )
+	expect_equal(
+		ncol(res),
+		2
+	)
 
 })
 
 test_that("Add cluster lables based on Kmeans - no object",{
 
-  res =
-    cluster_elements(
-      input_df,
-      .abundance = c,
-      .element = a,
-      .feature = b,
-      method="kmeans",
-      centers = 2,
-      action="add"
-    )
+	res =
+		cluster_elements(
+			input_df,
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			method="kmeans",
+			centers = 2,
+			action="add"
+		)
 
-  expect_equal(
-    typeof(res$`cluster kmeans`),
-    "integer"
-  )
+	expect_equal(
+		typeof(res$`cluster kmeans`),
+		"integer"
+	)
 
-  expect_equal(
-    ncol(res),
-    7
-  )
+	expect_equal(
+		ncol(res),
+		7
+	)
 
 })
 
@@ -428,363 +534,210 @@ test_that("Add cluster lables based on SNN - no object",{
 
 test_that("Get reduced dimensions MDS - no object",{
 
-  res =
-    reduce_dimensions(
-      input_df,
-      method = "MDS",
-      .abundance = c,
-      .element = a,
-      .feature = b,
-      action="get"
-    )
+	res =
+		reduce_dimensions(
+			input_df,
+			method = "MDS",
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			action="get"
+		)
 
-  expect_equal(
-    res$`Dim1`,
-    c(1.4048441,  1.3933490, -2.0138120 , 0.8832354, -1.6676164),
-    tolerance=10
-  )
+	expect_equal(
+		res$`Dim1`,
+		c(1.4048441,  1.3933490, -2.0138120 , 0.8832354, -1.6676164),
+		tolerance=10
+	)
 
-  expect_equal(
-    ncol(res),
-    3
-  )
+	expect_equal(
+		ncol(res),
+		3
+	)
+
+	expect_equal(	class(attr(res, "tt_internals")$MDS)[1], 	"MDS"  )
 
 })
 
 test_that("Add reduced dimensions MDS - no object",{
 
-  res =
-    reduce_dimensions(
-      input_df,
-      method = "MDS",
-      .abundance = c,
-      .element = a,
-      .feature = b,
-      action="add"
-    )
+	res =
+		reduce_dimensions(
+			input_df,
+			method = "MDS",
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			action="add"
+		)
 
-  expect_equal(
-    (res$`Dim1`)[1:4],
-    c( 1.404844, 1.404844, 1.404844, 1.404844),
-    tolerance=10
-  )
+	expect_equal(
+		(res$`Dim1`)[1:4],
+		c( 1.404844, 1.404844, 1.404844, 1.404844),
+		tolerance=10
+	)
 
-  expect_equal(
-    ncol(res),
-    8
-  )
+	expect_equal(
+		ncol(res),
+		8
+	)
 
+	expect_equal(	class(attr(res, "tt_internals")$MDS)[1], 	"MDS"  )
 })
 
 test_that("Get reduced dimensions PCA - no object",{
 
-  res =
-    reduce_dimensions(
-      input_df,
-      method="PCA",
-      .abundance = c,
-      .element = a,
-      .feature = b,
-      action="get"
-    )
+	res =
+		reduce_dimensions(
+			input_df,
+			method="PCA",
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			action="get"
+		)
 
-  expect_equal(
-    res$PC1,
-    c( -0.5070361 ,-0.5086096, -0.4070171, -0.3378837, -0.4521088),
-    tolerance=1e-1
-  )
+	expect_equal(
+		res$PC1,
+		c( -0.5070361 ,-0.5086096, -0.4070171, -0.3378837, -0.4521088),
+		tolerance=1e-1
+	)
 
-  expect_equal(
-    ncol(res),
-    3
-  )
+	expect_equal(
+		ncol(res),
+		3
+	)
 
+	expect_equal(	class(attr(res, "tt_internals")$PCA), 	"prcomp"  )
 })
 
 test_that("Add reduced dimensions PCA - no object",{
 
-  res =
-    reduce_dimensions(
-      input_df,
-      method="PCA",
-      .abundance = c,
-      .element = a,
-      .feature = b,
-      action="add"
-    )
+	res =
+		reduce_dimensions(
+			input_df,
+			method="PCA",
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			action="add"
+		)
 
-  expect_equal(
-  	typeof(res$`PC1`),
-  	"double"
-  )
+	expect_equal(
+		typeof(res$`PC1`),
+		"double"
+	)
 
-  expect_equal(
-    ncol(res),
-    8
-  )
+	expect_equal(
+		ncol(res),
+		8
+	)
+
+	expect_equal(	class(attr(res, "tt_internals")$PCA), 	"prcomp"  )
 
 })
 
 test_that("Add reduced dimensions tSNE - no object",{
 
-  set.seed(132)
+	set.seed(132)
 
-  res =
-    reduce_dimensions(
-    	setNames(ttBulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) ,
-      method="tSNE",
-      .abundance = c,
-      .element = a,
-      .feature = b,
-      action="add"
-    )
+	res =
+		reduce_dimensions(
+			setNames(tidybulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) ,
+			method="tSNE",
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			action="add"
+		)
 
-  expect_equal(
-    typeof(res$`tSNE1`),
-    "double",
-    tolerance=1e-1
-  )
+	expect_equal(
+		typeof(res$`tSNE1`),
+		"double",
+		tolerance=1e-1
+	)
 
-  expect_equal(
-    ncol(res),
-    10
-  )
+	expect_equal(
+		ncol(res),
+		10
+	)
 
 })
 
 test_that("Get rotated dimensions - no object",{
 
-  res.pca =
-    reduce_dimensions(
-      input_df,
-      method="PCA",
-      .abundance = c,
-      .element = a,
-      .feature = b,
-      action="add"
-    )
+	res.pca =
+		reduce_dimensions(
+			input_df,
+			method="PCA",
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			action="add"
+		)
 
-  res =
-    rotate_dimensions(
-      res.pca,
-      dimension_1_column = PC1,
-      dimension_2_column = PC2,
-      rotation_degrees = 45,
-      .element = a,
-      action="get"
-    )
+	res =
+		rotate_dimensions(
+			res.pca,
+			dimension_1_column = PC1,
+			dimension_2_column = PC2,
+			rotation_degrees = 45,
+			.element = a,
+			action="get"
+		)
 
-  expect_equal(
-    res$`PC1 rotated 45`,
-    c(-0.08299217 ,-0.08765521 ,-0.71713866 ,-0.03872173 ,-0.68530405),
-    tolerance=1e-1
-  )
+	expect_equal(
+		res$`PC1 rotated 45`,
+		c(-0.08299217 ,-0.08765521 ,-0.71713866 ,-0.03872173 ,-0.68530405),
+		tolerance=1e-1
+	)
 
-  expect_equal(
-    ncol(res),
-    3
-  )
+	expect_equal(
+		ncol(res),
+		3
+	)
 
 })
 
 test_that("Add rotated dimensions - no object",{
 
-  res.pca =
-    reduce_dimensions(
-      input_df,
-      method="PCA",
-      .abundance = c,
-      .element = a,
-      .feature = b,
-      action="add"
-    )
+	res.pca =
+		reduce_dimensions(
+			input_df,
+			method="PCA",
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			action="add"
+		)
 
-  res =
-    rotate_dimensions(
-      res.pca,
-      dimension_1_column = PC1,
-      dimension_2_column = PC2,
-      rotation_degrees = 45,
-      .element = a,
-      action="add"
-    )
+	res =
+		rotate_dimensions(
+			res.pca,
+			dimension_1_column = PC1,
+			dimension_2_column = PC2,
+			rotation_degrees = 45,
+			.element = a,
+			action="add"
+		)
 
-  expect_equal(
-    res$`PC1 rotated 45`[1:4],
-    c( -0.08299217, -0.08299217, -0.08299217, -0.08299217),
-    tolerance=1e-1
-  )
+	expect_equal(
+		res$`PC1 rotated 45`[1:4],
+		c( -0.08299217, -0.08299217, -0.08299217, -0.08299217),
+		tolerance=1e-1
+	)
 
-  expect_equal(
-    ncol(res),
-    10
-  )
+	expect_equal(
+		ncol(res),
+		10
+	)
 
 })
 
 test_that("Aggregate duplicated transcript - no object",{
 
-  res =
-    aggregate_duplicates(
-      input_df,
-      .sample = a,
-      .transcript = b,
-      .abundance = c
-    )
-
-  expect_equal(
-    res$b[1:4],
-    c( "TNFRSF4", "PLCH2" ,  "PADI4" ,  "PAX7"   )
-  )
-
-  expect_equal(
-    ncol(res),
-    7
-  )
-
-})
-
-test_that("Drop redundant correlated - no object",{
-
-  res =
-    remove_redundancy(
-      input_df,
-      method = "correlation",
-      .abundance = c,
-      .element = a,
-      .feature = b
-    )
-
-  expect_equal(
-    nrow(res),
-    2108
-  )
-
-  expect_equal(
-    ncol(res),
-    6
-  )
-
-})
-
-
-test_that("Get symbol from ensambl - no object",{
-
-  res =
-    annotate_symbol(
-      ttBulk::counts_ensembl,
-      .ensembl = ens,
-      action="get"
-    )
-
-  expect_equal(
-    as.character(res$transcript),
-    "TSPAN6"
-  )
-
-  expect_equal(
-    ncol(res),
-    3
-  )
-
-})
-
-test_that("Add symbol from ensambl - no object",{
-
-  res =
-    annotate_symbol(
-      ttBulk::counts_ensembl,
-      .ensembl = ens,
-      action="add"
-    )
-
-  expect_equal(
-    res$`read count`[1:4],
-    c(144,   72,    0 ,1099)
-  )
-
-  expect_equal(
-    ncol(res),
-    8
-  )
-
-})
-
-test_that("Get cell type proportions - no object",{
-
-	# Cibersort
-  res =
-    deconvolve_cellularity(
-      input_df,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
-      action="get", cores=1
-    )
-
-  expect_equal(
-    as.numeric(res[1,2:5]),
-    c(0.6223514, 0.2378625, 0.0000000 ,0.0000000),
-    tolerance=1e-3
-  )
-
-  expect_equal(
-    ncol(res),
-    23
-  )
-
-  # LLSR
-  res =
-  	deconvolve_cellularity(
-  		input_df,
-  		.sample = a,
-  		.transcript = b,
-  		.abundance = c,
-  		method = "llsr",
-  		action="get", cores=1
-  	)
-
-  expect_equal(
-  	as.numeric(res[1,2:5]),
-  	c(0.6702025807, 0.0000000000, 0.0000000000, 0.0005272016),
-  	tolerance=1e-3
-  )
-
-  expect_equal(
-  	ncol(res),
-  	23
-  )
-
-})
-
-test_that("Add cell type proportions - no object",{
-
-  res =
-    deconvolve_cellularity(
-      input_df,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
-      action="add", cores=1
-    )
-
-  expect_equal(
-    as.numeric(res[1,7:10]),
-    c(0.6223514, 0.2378625, 0.0000000 ,0.0000000),
-    tolerance=1e-3
-  )
-
-  expect_equal(
-    ncol(res),
-    28
-  )
-
-})
-
-test_that("filter abundant - no object",{
-
 	res =
-		filter_abundant(
+		aggregate_duplicates(
 			input_df,
 			.sample = a,
 			.transcript = b,
@@ -793,19 +746,211 @@ test_that("filter abundant - no object",{
 
 	expect_equal(
 		res$b[1:4],
-		c("TNFRSF4", "PLCH2" ,  "PADI4" ,  "CDA"    )
+		c( "TNFRSF4", "PLCH2" ,  "PADI4" ,  "PAX7"   )
+	)
+
+	expect_equal(
+		ncol(res),
+		7
+	)
+
+})
+
+test_that("Drop redundant correlated - no object",{
+
+	res =
+		remove_redundancy(
+			input_df,
+			method = "correlation",
+			.abundance = c,
+			.element = a,
+			.feature = b
+		)
+
+	expect_equal(
+		nrow(res),
+		2108
+	)
+
+	expect_equal(
+		ncol(res),
+		6
+	)
+
+})
+
+
+test_that("Get symbol from ensambl - no object",{
+
+	res =
+		annotate_symbol(
+			tidybulk::counts_ensembl,
+			.ensembl = ens,
+			action="get"
+		)
+
+	expect_equal(
+		as.character(res$transcript),
+		"TSPAN6"
+	)
+
+	expect_equal(
+		ncol(res),
+		3
+	)
+
+})
+
+test_that("Add symbol from ensambl - no object",{
+
+	res =
+		annotate_symbol(
+			tidybulk::counts_ensembl,
+			.ensembl = ens,
+			action="add"
+		)
+
+	expect_equal(
+		res$`read count`[1:4],
+		c(144,   72,    0 ,1099)
+	)
+
+	expect_equal(
+		ncol(res),
+		8
+	)
+
+})
+
+test_that("Get cell type proportions - no object",{
+
+	# Cibersort
+	res =
+		deconvolve_cellularity(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get", cores=1
+		)
+
+	expect_equal(
+		as.numeric(res[1,2:5]),
+		c(0.6223514, 0.2378625, 0.0000000 ,0.0000000),
+		tolerance=1e-3
+	)
+
+	expect_equal(
+		ncol(res),
+		23
+	)
+
+	# LLSR
+	res =
+		deconvolve_cellularity(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "llsr",
+			action="get", cores=1
+		)
+
+	expect_equal(
+		as.numeric(res[1,2:5]),
+		c(0.6702025807, 0.0000000000, 0.0000000000, 0.0005272016),
+		tolerance=1e-3
+	)
+
+	expect_equal(
+		ncol(res),
+		23
+	)
+
+})
+
+test_that("Add cell type proportions - no object",{
+
+	res =
+		deconvolve_cellularity(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="add", cores=1
+		)
+
+	expect_equal(
+		as.numeric(res[1,7:10]),
+		c(0.6223514, 0.2378625, 0.0000000 ,0.0000000),
+		tolerance=1e-3
+	)
+
+	expect_equal(
+		ncol(res),
+		28
+	)
+
+})
+
+test_that("filter abundant - no object",{
+
+	res =
+		keep_abundant(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c
+		)
+
+	expect_equal(
+		res$b[1:4],
+		c("PLCH2", "PADI4", "RCAN3", "EPB41" )
 	)
 
 	expect_equal(	ncol(res),	6	)
 
-	expect_equal(	nrow(res),	2220	)
+	expect_equal(	nrow(res),	910	)
+
+	res =
+		keep_abundant(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			factor_of_interest = condition,
+			minimum_proportion = 0.5,
+			minimum_counts = 30
+		)
+
+	expect_equal(
+		res$b[1:4],
+		c("PLCH2" ,"PADI4", "CDA",   "RCAN3"    )
+	)
+
+	expect_equal(	ncol(res),	6	)
+
+	expect_equal(	nrow(res),	1720	)
+
+	# Warning on continuous covariates
+	sam = distinct(input_df, a)
+	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
+
+	expect_message(
+		keep_abundant(
+			left_join(input_df, sam),
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			factor_of_interest = condition_cont
+		),
+		"The factor of interest is continuous"
+	)
 
 })
 
-# test_that("nest - no object",{
-#
-# 	expect_equal(	class(nest(ttBulk(input_df, a, b, c), data = a))[1],	"data.frame"	)
-#
-# })
+test_that("nest - no object",{
 
+	expect_equal(	class(nest(tidybulk(input_df, a, b, c), data = a))[1],	"tbl_df"	)
 
+})

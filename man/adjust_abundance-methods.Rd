@@ -34,10 +34,10 @@ adjust_abundance(
 \item{...}{Further parameters passed to the function sva::ComBat}
 }
 \value{
-A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN> adjusted`
+A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 }
 \description{
-adjust_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column..
+adjust_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
 }
 \details{
 \lifecycle{maturing}
@@ -48,7 +48,7 @@ This function adjusts the abundance for (known) unwanted variation. At the momen
 
 
 
-cm = ttBulk::counts_mini
+cm = tidybulk::counts_mini
 cm$batch = 0
 cm$batch[cm$sample \%in\% c("SRR1740035", "SRR1740043")] = 1
 

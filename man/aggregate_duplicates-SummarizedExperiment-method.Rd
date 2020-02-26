@@ -27,7 +27,7 @@
 \item{keep_integer}{A boolean. Whether to force the aggregated counts to integer}
 }
 \value{
-A `ttBulk` object
+A `tidybulk` object
 }
 \description{
 aggregate_duplicates

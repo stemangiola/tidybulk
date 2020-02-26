@@ -1,10 +1,10 @@
 
 
+
 #' Create tt object from tibble
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr %>%
-#' @import ggplot2
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -28,26 +28,14 @@ create_tt_from_tibble_bulk = function(.data,
 
 	.data %>%
 
-		# Add parameters attribute
-		add_attr(
-			list(
-				.sample = .sample,
-				.transcript = .transcript,
-				.abundance = .abundance
-			) %>%
-
-				# If .abundance_scaled is not NULL add it to parameters
-				ifelse_pipe(.abundance_scaled %>% quo_is_symbol,
-										~ .x %>% c(
-											list(.abundance_scaled = .abundance_scaled)
-										)),
-			"parameters"
-		) %>%
+		# Add tt_columns attribute
+		add_tt_columns(!!.sample,!!.transcript,!!.abundance,!!.abundance_scaled) %>%
 
 		# Add class
 		add_class("tt") %>%
-		add_class("ttBulk")
+		add_class("tidybulk")
 }
+
 
 
 #' Convert bam/sam files to a tidy gene transcript counts data frame
@@ -80,116 +68,54 @@ create_tt_from_bam_sam_bulk <-
 			# Anonymous function
 			# input: Subread results
 			# output edgeR::DGEList object
-															{
-																edgeR::DGEList(
-																	counts = (.)$counts,
-																	genes = (.)$annotation[, c("GeneID", "Length")],
-																	samples = (.)$stat %>% as_tibble() %>% gather(sample, temp, -Status) %>% spread(Status, temp)
-																)
-															} %>%
+			{
+				edgeR::DGEList(
+					counts = (.)$counts,
+					genes = (.)$annotation[, c("GeneID", "Length")],
+					samples = (.)$stat %>% as_tibble() %>% gather(sample, temp,-Status) %>% spread(Status, temp)
+				)
+			} %>%
 
 			# Anonymous function
 			# input: edgeR::DGEList object
 			# output: edgeR::DGEList object with added transcript symbol
-															{
-																dge <- (.)
-																dge$genes$transcript <-
-																	AnnotationDbi::mapIds(
-																		org.Hs.eg.db::org.Hs.eg.db,
-																		keys = as.character(dge$genes$GeneID),
-																		column = "SYMBOL",
-																		keytype = "ENTREZID",
-																		multiVals = "first"
-																	)
+			{
+				dge <- (.)
+				dge$genes$transcript <-
+					AnnotationDbi::mapIds(
+						org.Hs.eg.db::org.Hs.eg.db,
+						keys = as.character(dge$genes$GeneID),
+						column = "SYMBOL",
+						keytype = "ENTREZID",
+						multiVals = "first"
+					)
 
-																dge
-															} %>%
+				dge
+			} %>%
 
 			# Anonymous function
 			# input: annotated edgeR::DGEList object
 			# output: tibble
-															{
-																reduce(
-																	list(
-																		(.) %$% counts %>% as_tibble(rownames = "GeneID") %>% mutate(GeneID = GeneID %>% as.integer()) %>% gather(sample, `count`, -GeneID),
-																		(.) %$% genes %>% select(GeneID, transcript) %>% as_tibble(),
-																		(.) %$% samples %>% as_tibble()
-																	),
-																	dplyr::left_join
-																) %>%
-																	rename(entrez = GeneID) %>%
-																	mutate(entrez = entrez %>% as.character())
-															}
+			{
+				reduce(
+					list(
+						(.) %$% counts %>% as_tibble(rownames = "GeneID") %>% mutate(GeneID = GeneID %>% as.integer()) %>% gather(sample, count,-GeneID),
+						(.) %$% genes %>% select(GeneID, transcript) %>% as_tibble(),
+						(.) %$% samples %>% as_tibble()
+					),
+					dplyr::left_join
+				) %>%
+					rename(entrez = GeneID) %>%
+					mutate(entrez = entrez %>% as.character())
+			} %>%
+
+			# Add tt_columns attribute
+			add_tt_columns(sample,transcript,count) %>%
+
+			# Add class
+			add_class("tt") %>%
+			add_class("tidybulk")
 	}
-
-
-#' Get count per million for TMM normalisation.
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#' @importFrom rlang :=
-#' @importFrom stats median
-#'
-#' @param .data A tibble
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
-#' @param cpm_threshold A real positive number
-#'
-#' @return A tibble with an additional column
-add_scaled_counts_bulk.get_cpm <- function(.data,
-																							 .sample = `sample`,
-																							 .transcript = `transcript`,
-																							 .abundance = `count`,
-																							 cpm_threshold = 0.5) {
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-
-	if (cpm_threshold < 0)
-		stop("The parameter cpm_threshold must be > 0")
-
-	# Adjust cpm_theshold based on the library size
-	cpm_threshold <-
-		cpm_threshold /
-		(
-			.data %>%
-				group_by(!!.sample) %>%
-				summarise(s = sum(!!.abundance)) %>%
-				ungroup() %>%
-				summarise(m = median(s)) %>%
-				pull(m) /
-				1e6
-		)
-
-	# Add cmp and cmp threshold to the data set, and return
-	.data %>%
-		dplyr::left_join(
-			(.) %>%
-
-				######################################################################
-				# I don't know what this was for, but is dangerous. Delete after check
-				# select(-contains("ct")) %>%
-				######################################################################
-
-				select(!!.transcript, !!.sample, !!.abundance) %>%
-				spread(!!.sample, !!.abundance) %>%
-				drop_na() %>%
-				do(dplyr::bind_cols(
-					!!.transcript := (.) %>% pull(!!.transcript),
-					tibble::as_tibble((.) %>% select(-!!.transcript) %>% edgeR::cpm())
-				)) %>%
-				gather(!!.sample, cpm, -!!.transcript) %>%
-				mutate(cpm_threshold = cpm_threshold),
-			by = c(quo_name(.transcript), quo_name(.sample))
-		) %>%
-
-		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
-
-}
-
 
 #' Drop lowly tanscribed genes for TMM normalization
 #'
@@ -203,16 +129,18 @@ add_scaled_counts_bulk.get_cpm <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
+#' @param factor_of_interest The name of the column of the factor of interest
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #'
 #' @return A tibble filtered
 add_scaled_counts_bulk.get_low_expressed <- function(.data,
-																												 .sample = `sample`,
-																												 .transcript = `transcript`,
-																												 .abundance = `count`,
-																												 cpm_threshold = 0.5,
-																												 prop = 3 / 4) {
+																										 .sample = `sample`,
+																										 .transcript = `transcript`,
+																										 .abundance = `count`,
+																										 factor_of_interest = NULL,
+																										 minimum_counts = 10,
+																										 minimum_proportion = 0.7) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -222,46 +150,49 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
-	if (cpm_threshold < 0)
-		stop("The parameter cpm_threshold must be > 0")
-	if (prop < 0 |
-			prop > 1)
-		stop("The parameter prop must be between 0 and 1")
+	factor_of_interest = enquo(factor_of_interest)
+
+	# Check if factor_of_interest is continuous and exists
+	string_factor_of_interest =
+
+		factor_of_interest %>%
+		ifelse2_pipe(
+			quo_is_symbol(.) &&
+				select(.data, !!(.)) %>% lapply(class) %>%	as.character() %in% c("numeric", "integer", "double"),
+			quo_is_symbol(.),
+			~ {
+				message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
+				NULL
+			},
+			~ .data %>%
+				distinct(!!.sample, !!factor_of_interest) %>%
+				arrange(!!.sample) %>%
+				pull(!!factor_of_interest),
+			~ NULL
+		)
+
+	if (minimum_counts < 0)
+		stop("The parameter minimum_counts must be > 0")
+	if (minimum_proportion < 0 |
+			minimum_proportion > 1)
+		stop("The parameter minimum_proportion must be between 0 and 1")
 
 	.data %>%
-
-		# Prepare the data frame
-		select(!!.transcript, !!.sample, !!.abundance) %>%
-		tidyr::spread(!!.sample, !!.abundance) %>%
-		gather(!!.sample, !!.abundance, -!!.transcript) %>%
-		group_by(!!.transcript) %>%
-		dplyr::mutate(
-			!!.abundance :=
-				ifelse(
-					!!.abundance %>% is.na(),
-					!!.abundance %>% median(na.rm = TRUE) %>% as.integer(),
-					!!.abundance
-				)
+		select(!!.sample,!!.transcript, !!.abundance) %>%
+		spread(!!.sample, !!.abundance) %>%
+		as_matrix(rownames = !!.transcript) %>%
+		edgeR::filterByExpr(
+			min.count = minimum_counts,
+			group = string_factor_of_interest,
+			min.prop = minimum_proportion
 		) %>%
-		ungroup() %>%
-
-		# Calculate cpm
-		add_scaled_counts_bulk.get_cpm(!!.sample, !!.transcript, !!.abundance) %>%
-
-		# Filter based on how many samples have a gene below the threshold
-		mutate(`gene above threshold` = (cpm > cpm_threshold) %>% as.integer) %>%
-		group_by(!!.transcript) %>%
-		summarise(n = `gene above threshold` %>% sum) %>%
-		filter(n < (max(n) * !!prop) %>% floor) %>%
-
-		# Pull information
-		pull(!!.transcript) %>%
-		as.character() %>%
+		`!` %>%
+		which %>%
+		names %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		reattach_internals(.data)
 }
-
 
 #' Calculate the norm factor with calcNormFactor from limma
 #'
@@ -273,39 +204,41 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 #'
 #' @param .data A tibble
 #' @param reference A reference matrix, not sure if used anymore
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
+#' @param factor_of_interest The name of the column of the factor of interest
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param method A string character
+#' @param method A string character. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #'
 #'
 #' @return A list including the filtered data frame and the normalization factors
 add_scaled_counts_bulk.calcNormFactor <- function(.data,
-																											reference = NULL,
-																											cpm_threshold = 0.5,
-																											prop = 3 / 4,
-																											.sample = `sample`,
-																											.transcript = `transcript`,
-																											.abundance = `count`,
-																											method) {
+																									reference = NULL,
+																									factor_of_interest = NULL,
+																									minimum_counts = 10,
+																									minimum_proportion = 0.7,
+																									.sample = `sample`,
+																									.transcript = `transcript`,
+																									.abundance = `count`,
+																									method) {
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 
-	error_if_log_transformed(.data, !!.abundance)
+	factor_of_interest = enquo(factor_of_interest)
+
+	error_if_log_transformed(.data,!!.abundance)
 
 	# Get list of low transcribed genes
 	gene_to_exclude <-
 		add_scaled_counts_bulk.get_low_expressed(
 			.data %>%
-				filter(!!.sample != "reference"),
-			!!.sample,
-			!!.transcript,
-			!!.abundance,
-			cpm_threshold = cpm_threshold,
-			prop = prop
+				filter(!!.sample != "reference"),!!.sample,!!.transcript,!!.abundance,
+			factor_of_interest = !!factor_of_interest,
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion
 		)
 
 	# Check if transcript after filtering is 0
@@ -315,16 +248,12 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 		stop("The gene expression matrix has been filtered completely for lowly expressed genes")
 	}
 
-	# Get data frame for the higly transcribed transcripts
+	# Get data frame for the highly transcribed transcripts
 	df.filt <-
 		.data %>%
 		dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
-		droplevels()
-
-
-
-	# List of low abundant transcripts
-	gene_to_exclude = gene_to_exclude
+		droplevels() %>%
+		select(!!.sample, !!.transcript, !!.abundance)
 
 	# scaled data set
 	nf =
@@ -335,7 +264,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 			# scaled data frame
 			nf = edgeR::calcNormFactors(
 				df.filt %>%
-					tidyr::spread(!!.sample, !!.abundance) %>%
+					tidyr::spread(!!.sample,!!.abundance) %>%
 					tidyr::drop_na() %>%
 					dplyr::select(-!!.transcript),
 				refColumn = which(reference == factor(levels(
@@ -360,7 +289,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 	list(gene_to_exclude = gene_to_exclude, nf = nf) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		reattach_internals(.data)
 }
 
 #' Get a tibble with scaled counts using TMM
@@ -378,22 +307,24 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
-#' @param method A character string
+#' @param factor_of_interest The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A function between median, mean and max
 #'
 #' @return A tibble including additional columns
 #'
 #'
 get_scaled_counts_bulk <- function(.data,
-																			 .sample = NULL,
-																			 .transcript = NULL,
-																			 .abundance = NULL,
-																			 cpm_threshold = 0.5,
-																			 prop = 3 / 4,
-																			 method = "TMM",
-																			 reference_selection_function = median) {
+																	 .sample = NULL,
+																	 .transcript = NULL,
+																	 .abundance = NULL,
+																	 factor_of_interest = NULL,
+																	 minimum_counts = 10,
+																	 minimum_proportion = 0.7,
+																	 method = "TMM",
+																	 reference_selection_function = median) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -403,40 +334,36 @@ get_scaled_counts_bulk <- function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	factor_of_interest = enquo(factor_of_interest)
+
 	# Check if package is installed, otherwise install
 	if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
-		writeLines("Installing edgeR needed for differential transcript abundance analyses")
+		writeLines("Installing edgeR needed for analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("edgeR")
 	}
 
 	# Set column name for value scaled
-	value_scaled = as.symbol(sprintf("%s scaled",  quo_name(.abundance)))
+	value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
 
 	# Reformat input data set
 	df <-
 		.data %>%
 
-		# # Check input types
-		# error_if_wrong_input(
-		#   as.list(environment())[-1],
-		#   c("spec_tbl_df",  "quosure",  "quosure",  "quosure")
-		# ) %>%
-
 		# Stop if any counts is NA
 		error_if_counts_is_na(!!.abundance) %>%
 
 		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample, !!.transcript, !!.abundance) %>%
+		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Rename
-		dplyr::select(!!.sample, !!.transcript, !!.abundance) %>%
+		dplyr::select(!!.sample,!!.transcript,!!.abundance, !!factor_of_interest) %>%
 		#setNames(c("!!.sample", "gene", "count")) %>%
 
 		# Set samples and genes as factors
-		dplyr::mutate(!!.sample := factor(!!.sample),
-					 !!.transcript := factor(!!.transcript))
+		dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript))
+
 
 	# Get norm factor object
 	reference <-
@@ -454,8 +381,9 @@ get_scaled_counts_bulk <- function(.data,
 		add_scaled_counts_bulk.calcNormFactor(
 			df,
 			reference,
-			cpm_threshold,
-			prop,
+			!!factor_of_interest,
+			minimum_counts,
+			minimum_proportion,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
@@ -463,6 +391,7 @@ get_scaled_counts_bulk <- function(.data,
 		)
 
 	# Calculate normalization factors
+
 	nf <- nf_obj$nf %>%
 		dplyr::left_join(
 			df %>%
@@ -494,6 +423,11 @@ get_scaled_counts_bulk <- function(.data,
 	# Return
 	df_norm =
 		df %>%
+
+		# drop factor of interest
+		select(!!.sample, !!.transcript, !!.abundance) %>%
+
+		# Manipulate
 		dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
 		dplyr::left_join(nf, by = quo_name(.sample)) %>%
 
@@ -501,25 +435,18 @@ get_scaled_counts_bulk <- function(.data,
 		dplyr::mutate(!!value_scaled := !!.abundance * multiplier) %>%
 
 		# Format df for join
-		dplyr::select(!!.sample,!!.transcript,!!value_scaled,
+		dplyr::select(!!.sample, !!.transcript, !!value_scaled,
 									everything()) %>%
-		dplyr::mutate(`filter out low counts` = !!.transcript %in% nf_obj$gene_to_exclude) %>%
-		dplyr::select(-!!.abundance, -tot, -tot_filt) %>%
+		dplyr::mutate(lowly_abundant = !!.transcript %in% nf_obj$gene_to_exclude) %>%
+		dplyr::select(-!!.abundance,-tot,-tot_filt) %>%
 		dplyr::rename(TMM = nf) %>%
-		arrange(!!.sample, !!.transcript)
-		#dplyr::select(-!!.sample,-!!.transcript)
+		arrange(!!.sample,!!.transcript)
+	#dplyr::select(-!!.sample,-!!.transcript)
 
 	# Attach attributes
 	df_norm %>%
-		add_attr(
-			.data %>%
-				attr("parameters") %>%
-				c(
-					.abundance_scaled =
-						(function(x, v) enquo(v))(x, !!value_scaled)
-					),
-			"parameters"
-		)
+		add_tt_columns(!!.sample,!!.transcript,!!.abundance,!!(function(x, v)
+			enquo(v))(x,!!value_scaled))
 
 }
 
@@ -534,22 +461,24 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param cpm_threshold A real positive number
-#' @param prop A number between 0 and 1
-#' @param method A character string
+#' @param factor_of_interest The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A function between median, mean and max
 #'
 #' @return A tibble including additional columns
 #'
 #'
 add_scaled_counts_bulk <- function(.data,
-																			 .sample = NULL,
-																			 .transcript = NULL,
-																			 .abundance = NULL,
-																			 cpm_threshold = 0.5,
-																			 prop = 3 / 4,
-																			 method = "TMM",
-																			 reference_selection_function = median) {
+																	 .sample = NULL,
+																	 .transcript = NULL,
+																	 .abundance = NULL,
+																	 factor_of_interest = NULL,
+																	 minimum_counts = 10,
+																	 minimum_proportion = 0.7,
+																	 method = "TMM",
+																	 reference_selection_function = median) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -559,6 +488,7 @@ add_scaled_counts_bulk <- function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	factor_of_interest = enquo(factor_of_interest)
 
 	.data_norm =
 		.data %>%
@@ -566,24 +496,24 @@ add_scaled_counts_bulk <- function(.data,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			cpm_threshold = cpm_threshold,
-			prop = prop,
+			factor_of_interest = !!factor_of_interest,
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion,
 			method = method,
 			reference_selection_function = reference_selection_function
 		) %>%
-		select(-contains(quo_name(.sample)),-contains(quo_name(.transcript)))
+		arrange(!!.sample,!!.transcript)
 
 	.data %>%
-		arrange(!!.sample, !!.transcript) %>%
+		arrange(!!.sample,!!.transcript) %>%
 
 		# Add scaled data set
-		bind_cols(
-			.data_norm %>%
-				select(-contains(quo_name(.sample)),-contains(quo_name(.transcript)))
-		)		%>%
+		bind_cols(.data_norm %>%
+								select(-one_of(quo_name(.sample)), -one_of(quo_name(.transcript))))		%>%
 
 		# Attach attributes
-		add_attr(.data_norm %>% attr("parameters"), "parameters")
+		reattach_internals(.data_norm)
+
 
 }
 
@@ -607,7 +537,10 @@ add_scaled_counts_bulk <- function(.data,
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #'
 #' @return A tibble with edgeR results
 #'
@@ -619,7 +552,10 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .coef = 2,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
-																											 fill_missing_values = FALSE) {
+																											 minimum_counts = 10,
+																											 minimum_proportion = 0.7,
+																											 fill_missing_values = FALSE,
+																											 scaling_method = "TMM") {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -632,48 +568,48 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
 
-		# # Check input types
-		# error_if_wrong_input(
-		#   as.list(environment())[-1],
-		#   c("spec_tbl_df",".formula", "quosure",  "quosure",  "quosure", "numeric")
-		# ) %>%
-
 		# Stop if any counts is NA
 		error_if_counts_is_na(!!.abundance) %>%
 
 		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample, !!.transcript, !!.abundance) %>%
+		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Prepare the data frame
-		select(!!.transcript,!!.sample,!!.abundance,
+		select(!!.transcript,
+					 !!.sample,
+					 !!.abundance,
 					 one_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# Check if data rectangular
 		ifelse_pipe(
-			(.) %>% check_if_data_rectangular( !!.sample, !!.transcript, !!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` &
+				!fill_missing_values,
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
 		)
 
 	# Check if at least two samples for each group
 	if (
-
 		# If I have some discrete covariates
 		df_for_edgeR %>%
 		select(one_of(parse_formula(.formula))) %>%
-		select_if(function(col) is.character(col) | is.factor(col) | is.logical(col)) %>%
+		select_if(function(col)
+			is.character(col) | is.factor(col) | is.logical(col)) %>%
 		ncol %>% `>` (0) &
 
 		# If I have at least 2 samples per group
 		df_for_edgeR %>%
-			select(!!.sample, one_of(parse_formula(.formula))) %>%
-			distinct %>%
-			count(!!as.symbol(parse_formula(.formula))) %>%
-			distinct(n) %>%
-			pull(1) %>%
-			min %>%
-			`<` (2))
-		stop("You need at least two replicated for each condition for edgeR to work")
+		select(!!.sample, one_of(parse_formula(.formula))) %>%
+		select_if(function(col) !is.numeric(col) & !is.integer(col) & !is.double(col) ) %>%
+		distinct %>%
+		group_by_at(vars(-!!.sample)) %>%
+		count() %>%
+		{
+			(.) %>% nrow %>% `<` (2) |
+			(.) %>% distinct(n) %>%	pull(1) %>%	min %>%	`<` (2)
+		}
+	)
+	warning("tidybulk says: You have less than two replicated for each factorial condition")
 
 	# Create design matrix
 	design =
@@ -683,18 +619,18 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		)
 
 	# Print the design column names in case I want constrasts
-	message(sprintf("The design column names are \"%s\" in case you are interested in constrasts", design %>% colnames %>% paste(collapse=", ")))
-
-	#%>%
-	#	magrittr::set_colnames(c("(Intercept)",	 (.) %>% colnames %>% `[` (-1)))
+	message(
+		sprintf(
+			"tidybulk says: The design column names are \"%s\"",
+			design %>% colnames %>% paste(collapse = ", ")
+		)
+	)
 
 	my_contrasts =
 		.contrasts %>%
-		ifelse_pipe(
-			length(.) > 0,
-			~ limma::makeContrasts(contrasts = .x, levels=design),
-			~ NULL
-		)
+		ifelse_pipe(length(.) > 0,
+								~ limma::makeContrasts(contrasts = .x, levels = design),
+								~ NULL)
 
 	# Check if package is installed, otherwise install
 	if ("edgeR" %in% rownames(installed.packages()) == FALSE) {
@@ -706,32 +642,41 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 	df_for_edgeR.filt <-
 		df_for_edgeR %>%
-		select(!!.transcript, !!.sample, !!.abundance) %>%
+		select(!!.transcript,!!.sample,!!.abundance, !!as.symbol(parse_formula(.formula))) %>%
 		mutate(
-			`filter out low counts` = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
+			lowly_abundant = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(
+				.,
+				!!.sample,
+				!!.transcript,
+				!!.abundance,
+				factor_of_interest = !!(as.symbol(parse_formula(.formula)[1])),
+				minimum_counts = minimum_counts,
+				minimum_proportion = minimum_proportion
+			)
 		)
 
-	df_for_edgeR.filt %>%
-		filter(!`filter out low counts`) %>%
-		select(!!.transcript, !!.sample, !!.abundance) %>%
-		spread(!!.sample, !!.abundance) %>%
+	edgeR_object =
+		df_for_edgeR.filt %>%
+		filter(!lowly_abundant) %>%
+		select(!!.transcript,!!.sample,!!.abundance) %>%
+		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.transcript) %>%
 
 		# If fill missing values
-		ifelse_pipe(
-			fill_missing_values,
-			~ .x %>% fill_NA_with_row_median
-		) %>%
+		ifelse_pipe(fill_missing_values,
+								~ .x %>% fill_NA_with_row_median) %>%
 
 		edgeR::DGEList(counts = .) %>%
-		edgeR::calcNormFactors(method = "TMM") %>%
+		edgeR::calcNormFactors(method = scaling_method) %>%
 		edgeR::estimateGLMCommonDisp(design) %>%
 		edgeR::estimateGLMTagwiseDisp(design) %>%
-		edgeR::glmFit(design) %>%
+		edgeR::glmFit(design)
+
+	edgeR_object %>%
 
 		# If I have multiple .contrasts merge the results
 		ifelse_pipe(
-			my_contrasts %>% is.null | ncol(my_contrasts) < 2,
+			my_contrasts %>% is.null,
 
 			# Simple comparison
 			~ .x %>%
@@ -753,7 +698,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				1:ncol(my_contrasts) %>%
 					map_dfr(
 						~ edgeR_obj %>%
-							edgeR::glmLRT(coef = .coef, contrast = my_contrasts[,.x]) %>%
+							edgeR::glmLRT(coef = .coef, contrast = my_contrasts[, .x]) %>%
 							edgeR::topTags(n = 999999) %$%
 							table %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
@@ -762,20 +707,29 @@ get_differential_transcript_abundance_bulk <- function(.data,
 							# Mark DE genes
 							mutate(is_de = FDR < significance_threshold)
 					) %>%
-					pivot_wider(values_from = -c(!!.transcript, constrast), names_from = constrast)
+					pivot_wider(values_from = -c(!!.transcript, constrast),
+											names_from = constrast)
 			}
 		)	 %>%
 
-
-
 		# Add filtering info
 		full_join(df_for_edgeR.filt %>%
-								select(!!.transcript, `filter out low counts`) %>%
+								select(!!.transcript, lowly_abundant) %>%
 								distinct()) %>%
 
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		reattach_internals(.data) %>%
+
+		# Add raw object
+		attach_to_internals(edgeR_object, "edgeR") %>%
+		# Communicate the attribute added
+		{
+			message(
+				"tidybulk says: to access the raw results (glmFit) do `attr(..., \"tt_internals\")$edgeR`"
+			)
+			(.)
+		}
 }
 
 #' Add differential transcription information to a tibble using edgeR.
@@ -794,7 +748,10 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .coef An integer. See edgeR specifications
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
 #' @param significance_threshold A real between 0 and 1
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #'
 #' @return A tibble with differential_transcript_abundance results
 #'
@@ -807,8 +764,10 @@ add_differential_transcript_abundance_bulk <- function(.data,
 																											 .coef = 2,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
-																											 fill_missing_values = FALSE) {
-
+																											 minimum_counts = 10,
+																											 minimum_proportion = 0.7,
+																											 fill_missing_values = FALSE,
+																											 scaling_method = "TMM") {
 	# Comply with CRAN NOTES
 	. = NULL
 	FDR = NULL
@@ -822,26 +781,31 @@ add_differential_transcript_abundance_bulk <- function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	.data_processed =
+		.data %>%
+		get_differential_transcript_abundance_bulk(
+			.formula,
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			.coef = .coef,
+			.contrasts = .contrasts,
+			significance_threshold = significance_threshold,
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion,
+			fill_missing_values = fill_missing_values,
+			scaling_method = scaling_method
+		)
+
 	.data %>%
-		dplyr::left_join(
-			(.) %>%
-				get_differential_transcript_abundance_bulk(
-					.formula,
-					.sample = !!.sample,
-					.transcript = !!.transcript,
-					.abundance = !!.abundance,
-					.coef = .coef,
-					.contrasts = .contrasts,
-					significance_threshold = significance_threshold,
-					fill_missing_values = fill_missing_values
-				)
-		) %>%
+		dplyr::left_join(.data_processed) %>%
 
 		# Arrange
-		arrange(FDR) %>%
+		ifelse_pipe(.contrasts %>% is.null,
+								~ .x %>% arrange(FDR))	%>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		reattach_internals(.data_processed)
 }
 
 
@@ -855,12 +819,13 @@ add_differential_transcript_abundance_bulk <- function(.data,
 #'
 #' @examples
 #'
-#' symbol_to_entrez(ttBulk::counts_mini, .transcript = transcript, .sample = sample)
+#' symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
 #'
 #' @export
 #'
-symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
-
+symbol_to_entrez = function(.data,
+														.transcript = NULL,
+														.sample = NULL) {
 	# Get column names
 	.transcript = enquo(.transcript)
 	.sample = enquo(.sample)
@@ -877,14 +842,18 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 
 	.data %>%
 		dplyr::left_join(
-
 			# Get entrez mapping 1:1
-			AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db, .data %>% distinct(!!.transcript) %>% pull(1), 'ENTREZID', 'SYMBOL') %>%
-			enframe(name = quo_name(.transcript), value = "entrez") %>%
-			filter(entrez %>% is.na %>% `!`) %>%
-			group_by(!!.transcript) %>%
-			slice(1) %>%
-			ungroup()
+			AnnotationDbi::mapIds(
+				org.Hs.eg.db::org.Hs.eg.db,
+				.data %>% distinct(!!.transcript) %>% pull(1),
+				'ENTREZID',
+				'SYMBOL'
+			) %>%
+				enframe(name = quo_name(.transcript), value = "entrez") %>%
+				filter(entrez %>% is.na %>% `!`) %>%
+				group_by(!!.transcript) %>%
+				slice(1) %>%
+				ungroup()
 		)
 
 }
@@ -913,14 +882,13 @@ symbol_to_entrez = function(.data, .transcript = NULL, .sample = NULL){
 #' @return A tibble with edgeR results
 #'
 analyse_gene_enrichment_bulk_EGSEA <- function(.data,
-																											 .formula,
-																											 .sample = NULL,
-																											 .entrez,
-																											 .abundance = NULL,
-																		 										.contrasts = NULL,
-																		 									 species,
-																		 									cores = 10) {
-
+																							 .formula,
+																							 .sample = NULL,
+																							 .entrez,
+																							 .abundance = NULL,
+																							 .contrasts = NULL,
+																							 species,
+																							 cores = 10) {
 	# Comply with CRAN NOTES
 	. = NULL
 
@@ -940,10 +908,10 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 		error_if_counts_is_na(!!.abundance) %>%
 
 		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample, !!.entrez, !!.abundance) %>%
+		error_if_duplicated_genes(!!.sample,!!.entrez,!!.abundance) %>%
 
 		# Prepare the data frame
-		select(!!.entrez,!!.sample,!!.abundance,
+		select(!!.entrez, !!.sample, !!.abundance,
 					 one_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
@@ -959,7 +927,7 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 			pull(1) %>%
 			min %>%
 			`<` (2))
-		stop("You need at least two replicated for each condition for EGSEA to work")
+		stop("tidybulk says: You need at least two replicated for each condition for EGSEA to work")
 
 	# Create design matrix
 	design =
@@ -983,40 +951,40 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 		writeLines("EGSEA not installed. Please install it with.")
 		writeLines("BiocManager::install(\"EGSEA\")")
 	}
-	if(!"EGSEA" %in% (.packages())){
+	if (!"EGSEA" %in% (.packages())) {
 		writeLines("EGSEA package not loaded. Please run library(\"EGSEA\")")
 	}
 
 	df_for_edgeR.filt <-
 		df_for_edgeR %>%
-		select(!!.entrez, !!.sample, !!.abundance) %>%
+		select(!!.entrez,!!.sample,!!.abundance) %>%
 		mutate(
-			`filter out low counts` = !!.entrez %in% add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.entrez, !!.abundance)
+			lowly_abundant = !!.entrez %in% add_scaled_counts_bulk.get_low_expressed(.,!!.sample,!!.entrez,!!.abundance)
 		) %>%
-		filter(!`filter out low counts`) %>%
+		filter(!lowly_abundant) %>%
 
 		# Make sure transcrpt names are adjacent
 		arrange(!!.entrez)
 
 	dge =
 		df_for_edgeR.filt %>%
-		select(!!.entrez, !!.sample, !!.abundance) %>%
-		spread(!!.sample, !!.abundance) %>%
+		select(!!.entrez,!!.sample,!!.abundance) %>%
+		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.entrez) %>%
 		edgeR::DGEList(counts = .)
 
-	idx =  buildIdx(entrezIDs=rownames(dge), species=species)
+	idx =  buildIdx(entrezIDs = rownames(dge), species = species)
 
- res =
- 	dge %>%
+	res =
+		dge %>%
 
 		# Calculate weights
-		limma::voom(design, plot=FALSE) %>%
+		limma::voom(design, plot = FALSE) %>%
 
 		# Execute EGSEA
- 		egsea(
-			contrasts=.contrasts,
-			gs.annots=idx,
+		egsea(
+			contrasts = .contrasts,
+			gs.annots = idx,
 			# symbolsMap=
 			# 	df_for_edgeR.filt %>%
 			# 	select(entrez, !!.transcript) %>%
@@ -1024,19 +992,19 @@ analyse_gene_enrichment_bulk_EGSEA <- function(.data,
 			# 	arrange(match(entrez, rownames(dge))) %>%
 			# 	setNames(c("FeatureID", "Symbols")),
 			baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
-			sort.by="med.rank",
+			sort.by = "med.rank",
 			num.threads = cores
 		)
 
- res@results %>%
- 	map2_dfr(
- 		res@results %>% names,
- 		~ .x[[1]][[1]] %>%
- 			as_tibble(rownames = "pathway") %>%
- 			mutate(data_base = .y)
- 	) %>%
- 	arrange(med.rank) %>%
- 	select(data_base, pathway, everything())
+	res@results %>%
+		map2_dfr(
+			res@results %>% names,
+			~ .x[[1]][[1]] %>%
+				as_tibble(rownames = "pathway") %>%
+				mutate(data_base = .y)
+		) %>%
+		arrange(med.rank) %>%
+		select(data_base, pathway, everything())
 
 
 }
@@ -1068,11 +1036,10 @@ get_clusters_kmeans_bulk <-
 					 of_samples = TRUE,
 					 log_transform = TRUE,
 					 ...) {
-
 		# Check if centers is in dots
 		dots_args = rlang::dots_list(...)
-		if("centers" %in% names(dots_args) %>% `!`)
-			stop("ttBulk says: for kmeans you need to provide the \"centers\" integer argument")
+		if ("centers" %in% names(dots_args) %>% `!`)
+			stop("tidybulk says: for kmeans you need to provide the \"centers\" integer argument")
 
 		# Get column names
 		.element = enquo(.element)
@@ -1092,19 +1059,19 @@ get_clusters_kmeans_bulk <-
 			error_if_counts_is_na(!!.abundance) %>%
 
 			# Prepare data frame
-			distinct(!!.feature, !!.element, !!.abundance) %>%
+			distinct(!!.feature,!!.element,!!.abundance) %>%
 
 			# Check if log tranfrom is needed
 			ifelse_pipe(log_transform,
 									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
 
 			# Prepare data frame for return
-			spread(!!.feature, !!.abundance) %>%
+			spread(!!.feature,!!.abundance) %>%
 			as_matrix(rownames = !!.element) %>%
 
 			# Wrap the do.call because of the centers check
 			{
-				do.call(kmeans, list(x = (.), iter.max = 1000) %>% c(dots_args) )
+				do.call(kmeans, list(x = (.), iter.max = 1000) %>% c(dots_args))
 			}	 %$%
 			cluster %>%
 			as.list() %>%
@@ -1113,7 +1080,7 @@ get_clusters_kmeans_bulk <-
 			mutate(`cluster kmeans` = `cluster kmeans` %>% as.factor()) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data)
 	}
 
 #' Add K-mean clusters to a tibble
@@ -1143,7 +1110,6 @@ add_clusters_kmeans_bulk <-
 					 of_samples = TRUE,
 					 log_transform = TRUE,
 					 ...) {
-
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -1169,7 +1135,7 @@ add_clusters_kmeans_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data)
 	}
 
 #' Get SNN shared nearest neighbour clusters to a tibble
@@ -1228,29 +1194,31 @@ get_clusters_SNN_bulk <-
 			error_if_counts_is_na(!!.abundance) %>%
 
 			# Prepare data frame
-			distinct(!!.element, !!.feature, !!.abundance) %>%
+			distinct(!!.element,!!.feature,!!.abundance) %>%
 
 			# Check if log tranfrom is needed
 			#ifelse_pipe(log_transform, ~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
 
 			# Prepare data frame for return
-			spread(!!.element, !!.abundance)
+			spread(!!.element,!!.abundance)
 
 		my_df %>%
 			data.frame(row.names = quo_name(.feature)) %>%
 			Seurat::CreateSeuratObject() %>%
-			Seurat::ScaleData(display.progress = TRUE, num.cores=4, do.par = TRUE) %>%
+			Seurat::ScaleData(display.progress = TRUE,
+												num.cores = 4,
+												do.par = TRUE) %>%
 			Seurat::FindVariableFeatures(selection.method = "vst") %>%
 			Seurat::RunPCA(npcs = 30) %>%
 			Seurat::FindNeighbors() %>%
 			Seurat::FindClusters(method = "igraph", ...) %>%
 			`[[` ("seurat_clusters") %>%
-			as_tibble(rownames=quo_name(.element)) %>%
+			as_tibble(rownames = quo_name(.element)) %>%
 			rename(`cluster SNN` = seurat_clusters) %>%
-			dplyr::mutate(!!.element := gsub("\\.", "-", !!.element)) %>%
+			dplyr::mutate(!!.element := gsub("\\.", "-",!!.element)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data)
 	}
 
 #' Add SNN shared nearest neighbour clusters to a tibble
@@ -1301,7 +1269,7 @@ add_clusters_SNN_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data)
 	}
 
 #' Get dimensionality information to a tibble using MDS
@@ -1334,7 +1302,6 @@ get_reduced_dimensions_MDS_bulk <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE) {
-
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -1353,58 +1320,47 @@ get_reduced_dimensions_MDS_bulk <-
 		# Get components from dims
 		components = 1:.dims
 
-		# Convert components to components list
-		if ((length(components) %% 2) != 0)
-			components = components %>% append(components[1])
-		components_list = split(components, ceiling(seq_along(components) / 2))
+		mds_object =
+			.data %>%
 
-		# Loop over components list and calculate MDS. (I have to make this process more elegant)
-		components_list %>%
-			map_dfr(
-				~ .data %>%
+			# Through error if some counts are NA
+			error_if_counts_is_na(!!.abundance) %>%
 
-					# Through error if some counts are NA
-					error_if_counts_is_na(!!.abundance) %>%
+			# Filter lowly transcribed (I have to avoid the use of scaling function)
+			keep_abundant(!!.element, !!.feature,!!.abundance) %>%
+			distinct(!!.feature,!!.element,!!.abundance) %>%
 
-					# Filter lowly transcribed (I have to avoid the use of normalising function)
-					add_scaled_counts_bulk(!!.element, !!.feature, !!.abundance) %>%
-					filter(!`filter out low counts`) %>%
-					distinct(!!.feature, !!.element, !!.abundance) %>%
+			# Check if logtansform is needed
+			ifelse_pipe(log_transform,
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
-					# Check if logtansform is needed
-					ifelse_pipe(
-						log_transform,
-						~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())
-					) %>%
+			# Stop any column is not if not numeric or integer
+			ifelse_pipe(
+				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+				~ stop("tidybulk says: .abundance must be numerical or integer")
+			) %>%
+			spread(!!.element,!!.abundance) %>%
+			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
+			limma::plotMDS(ndim = .dims, plot = FALSE, top = top)
 
-					# Stop any column is not if not numeric or integer
-					ifelse_pipe(
-						(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-						~ stop(".abundance must be numerical or integer")
-					) %>%
-					spread(!!.element, !!.abundance) %>%
-					as_matrix(rownames = !!.feature, do_check = FALSE) %>%
-					limma::plotMDS(dim.plot = .x, plot = FALSE, top = top) %>%
+		# Pase results
+		mds_object %$%	cmdscale.out %>%
+			as.data.frame %>%
+			as_tibble(rownames = quo_name(.element)) %>%
+			setNames(c(quo_name(.element), sprintf("Dim%s", 1:.dims))) %>%
 
-					# Anonymous function
-					# input: MDS object
-					# output: tibble
-					{
-						tibble(names((.)$x), (.)$x, (.)$y) %>%
-							dplyr::rename(
-								!!.element := `names((.)$x)`,!!as.symbol(.x[1]) := `(.)$x`,!!as.symbol(.x[2]) := `(.)$y`
-							) %>%
-							gather(Component, `Component value`, -!!.element)
-					}
-			)  %>%
-			distinct() %>%
-			spread(Component, `Component value`) %>%
-			setNames(c((.) %>% select(1) %>% colnames(),
-								 paste0("Dim", (.) %>% select(-1) %>% colnames())
-			)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data) %>%
+
+			# Add raw object
+			attach_to_internals(mds_object, "MDS") %>%
+			# Communicate the attribute added
+			{
+				message("tidybulk says: to access the raw results do `attr(..., \"tt_internals\")$MDS`")
+				(.)
+			}
+
 	}
 
 #' Add dimensionality information to a tibble using MDS
@@ -1435,7 +1391,6 @@ add_reduced_dimensions_MDS_bulk <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE) {
-
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -1448,23 +1403,22 @@ add_reduced_dimensions_MDS_bulk <-
 		.feature = col_names$.feature
 		.abundance = col_names$.abundance
 
-		.data %>%
-			dplyr::left_join(
-				(.) %>%
-					get_reduced_dimensions_MDS_bulk(
-						.abundance = !!.abundance,
-						.dims = .dims,
-						.element = !!.element,
-						.feature = !!.feature,
-						top = top,
-						of_samples = of_samples,
-						log_transform = log_transform
-					),
-				by = quo_name(.element)
-			) %>%
+		.data_processed =
+			.data %>%
+			get_reduced_dimensions_MDS_bulk(
+				.abundance = !!.abundance,
+				.dims = .dims,
+				.element = !!.element,
+				.feature = !!.feature,
+				top = top,
+				of_samples = of_samples,
+				log_transform = log_transform
+			)
+
+		.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data_processed)
 	}
 
 #' Get principal component information to a tibble using PCA
@@ -1501,7 +1455,6 @@ get_reduced_dimensions_PCA_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
-
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -1520,13 +1473,14 @@ get_reduced_dimensions_PCA_bulk <-
 		# Get components from dims
 		components = 1:.dims
 
-		.data %>%
+		prcomp_obj =
+			.data %>%
 
 			# Through error if some counts are NA
 			error_if_counts_is_na(!!.abundance) %>%
 
 			# Prepare data frame
-			distinct(!!.feature, !!.element, !!.abundance) %>%
+			distinct(!!.feature,!!.element,!!.abundance) %>%
 
 			# Check if logtansform is needed
 			ifelse_pipe(log_transform,
@@ -1535,13 +1489,13 @@ get_reduced_dimensions_PCA_bulk <-
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
 				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-				~ stop(".abundance must be numerical or integer")
+				~ stop("tidybulk says: .abundance must be numerical or integer")
 			) %>%
 
 			# Filter most variable genes
-			filter_variable_transcripts(!!.element, !!.feature, !!.abundance, top) %>%
+			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
 
-			spread(!!.element, !!.abundance) %>%
+			spread(!!.element,!!.abundance) %>%
 
 			drop_na %>% # Is this necessary?
 
@@ -1554,14 +1508,14 @@ get_reduced_dimensions_PCA_bulk <-
 
 				# First function
 				~ stop(
-					"In calculating PCA there is no gene that have non NA values is all samples"
+					"tidybulk says: In calculating PCA there is no gene that have non NA values is all samples"
 				),
 
 				# Second function
 				~ {
 					warning(
 						"
-						In PCA correlation there is < 100 genes that have non NA values is all samples.
+						tidybulk says: In PCA correlation there is < 100 genes that have non NA values is all samples.
 						The correlation calculation would not be reliable,
 						we suggest to partition the dataset for sample clusters.
 						"
@@ -1573,7 +1527,9 @@ get_reduced_dimensions_PCA_bulk <-
 			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
 
 			# Calculate principal components
-			prcomp(scale = scale, ...) %>%
+			prcomp(scale = scale, ...)
+
+		prcomp_obj %>%
 
 			# Anonymous function - Prints fraction of variance
 			# input: PCA object
@@ -1600,7 +1556,15 @@ get_reduced_dimensions_PCA_bulk <-
 			select(!!.element, sprintf("PC%s", components)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data) %>%
+
+			# Add raw object
+			attach_to_internals(prcomp_obj, "PCA") %>%
+			# Communicate the attribute added
+			{
+				message("tidybulk says: to access the raw results do `attr(..., \"tt_internals\")$PCA`")
+				(.)
+			}
 
 	}
 
@@ -1637,7 +1601,6 @@ add_reduced_dimensions_PCA_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
-
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -1650,25 +1613,25 @@ add_reduced_dimensions_PCA_bulk <-
 		.feature = col_names$.feature
 		.abundance = col_names$.abundance
 
+		.data_processed =
+			.data %>%
+			get_reduced_dimensions_PCA_bulk(
+				.abundance = !!.abundance,
+				.dims = .dims,
+				.element = !!.element,
+				.feature = !!.feature,
+				top = top,
+				of_samples = of_samples,
+				log_transform = log_transform,
+				scale = scale,
+				...
+			)
+
 		.data %>%
-			dplyr::left_join(
-				(.) %>%
-					get_reduced_dimensions_PCA_bulk(
-						.abundance = !!.abundance,
-						.dims = .dims,
-						.element = !!.element,
-						.feature = !!.feature,
-						top = top,
-						of_samples = of_samples,
-						log_transform = log_transform,
-						scale = scale,
-						...
-					),
-				by = quo_name(.element)
-			) %>%
+			dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data_processed)
 	}
 
 #' Get principal component information to a tibble using tSNE
@@ -1706,7 +1669,6 @@ get_reduced_dimensions_TSNE_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
-
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -1724,9 +1686,12 @@ get_reduced_dimensions_TSNE_bulk <-
 
 		# Evaluate ...
 		arguments <- list(...)
-		if(!"check_duplicates" %in% names(arguments)) arguments = arguments %>% c(check_duplicates = TRUE)
-		if(!"verbose" %in% names(arguments))arguments = arguments %>% c(verbose = TRUE)
-		if(!"dims" %in% names(arguments))arguments = arguments %>% c(dims = .dims)
+		if (!"check_duplicates" %in% names(arguments))
+			arguments = arguments %>% c(check_duplicates = TRUE)
+		if (!"verbose" %in% names(arguments))
+			arguments = arguments %>% c(verbose = TRUE)
+		if (!"dims" %in% names(arguments))
+			arguments = arguments %>% c(dims = .dims)
 
 
 		# Check if package is installed, otherwise install
@@ -1736,11 +1701,14 @@ get_reduced_dimensions_TSNE_bulk <-
 		}
 
 		# Set perprexity to not be too high
-		if(!"perplexity" %in% names(arguments))
-			arguments = arguments %>% c(perplexity = ((.data %>% distinct(!!.element) %>% nrow %>% sum(- 1))/3/2) %>% floor() %>% min(30))
+		if (!"perplexity" %in% names(arguments))
+			arguments = arguments %>% c(perplexity = ((
+				.data %>% distinct(!!.element) %>% nrow %>% sum(-1)
+			) / 3 / 2) %>% floor() %>% min(30))
 
 		# If not enough samples stop
-		if(arguments$perplexity <= 2) stop("You don't have enough samples to run tSNE")
+		if (arguments$perplexity <= 2)
+			stop("tidybulk says: You don't have enough samples to run tSNE")
 
 		# Calculate the most variable genes, from plotMDS Limma
 
@@ -1749,17 +1717,17 @@ get_reduced_dimensions_TSNE_bulk <-
 			.data %>%
 
 			# Check if duplicates
-			error_if_duplicated_genes(!!.element, !!.feature, !!.abundance)  %>%
+			error_if_duplicated_genes(!!.element,!!.feature,!!.abundance)  %>%
 
 			# Filter NA symbol
 			filter(!!.feature %>% is.na %>% `!`) %>%
 
 			# Prepare data frame
-			distinct(!!.feature, !!.element, !!.abundance) %>%
+			distinct(!!.feature,!!.element,!!.abundance) %>%
 
 			# Check if data rectangular
 			ifelse_pipe(
-				(.) %>% check_if_data_rectangular( !!.element, !!.feature, !!.abundance, type = "soft"),
+				(.) %>% check_if_data_rectangular(!!.element,!!.feature,!!.abundance, type = "soft"),
 				~ .x %>% eliminate_sparse_transcripts(!!.feature)
 			) %>%
 
@@ -1768,9 +1736,9 @@ get_reduced_dimensions_TSNE_bulk <-
 									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
 			# Filter most variable genes
-			filter_variable_transcripts(!!.element, !!.feature, !!.abundance, top) %>%
+			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
 
-			spread(!!.feature, !!.abundance) %>%
+			spread(!!.feature,!!.abundance) %>%
 			# select(-sample) %>%
 			# distinct %>%
 			as_matrix(rownames = quo_name(.element))
@@ -1781,11 +1749,11 @@ get_reduced_dimensions_TSNE_bulk <-
 			setNames(c("tSNE1", "tSNE2")) %>%
 
 			# add element name
-				dplyr::mutate(!!.element := df_tsne %>% rownames) %>%
+			dplyr::mutate(!!.element := df_tsne %>% rownames) %>%
 			select(!!.element, everything()) %>%
 
-				# Attach attributes
-				add_attr(.data %>% attr("parameters"), "parameters")
+			# Attach attributes
+			reattach_internals(.data)
 
 	}
 
@@ -1822,7 +1790,6 @@ add_reduced_dimensions_TSNE_bulk <-
 					 log_transform = TRUE,
 					 scale = TRUE,
 					 ...) {
-
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -1852,7 +1819,7 @@ add_reduced_dimensions_TSNE_bulk <-
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data)
 	}
 
 
@@ -1897,13 +1864,13 @@ get_rotated_dimensions =
 		dimension_2_column_rotated = enquo(dimension_2_column_rotated)
 
 		if (.data %>%
-				distinct(!!.element,!!dimension_1_column,!!dimension_2_column) %>%
-				count(!!.element,!!dimension_1_column,!!dimension_2_column) %>%
+				distinct(!!.element, !!dimension_1_column, !!dimension_2_column) %>%
+				count(!!.element, !!dimension_1_column, !!dimension_2_column) %>%
 				pull(n) %>%
 				max %>%
 				`>` (1))
 			stop(sprintf(
-				"%s must be unique for each row for the calculation of rotation",
+				"tidybulk says: %s must be unique for each row for the calculation of rotation",
 				quo_name(.element)
 			))
 
@@ -1932,11 +1899,11 @@ get_rotated_dimensions =
 
 		# Sanity check of the angle selected
 		if (rotation_degrees %>% between(-360, 360) %>% `!`)
-			stop("rotation_degrees must be between -360 and 360")
+			stop("tidybulk says: rotation_degrees must be between -360 and 360")
 
 		# Return
 		.data %>%
-			distinct(!!.element,!!dimension_1_column,!!dimension_2_column) %>%
+			distinct(!!.element, !!dimension_1_column, !!dimension_2_column) %>%
 			as_matrix(rownames = !!.element) %>% t %>%
 			rotation(rotation_degrees) %>%
 			as_tibble() %>%
@@ -1945,11 +1912,11 @@ get_rotated_dimensions =
 						 		quo_name(dimension_1_column_rotated),
 						 		quo_name(dimension_2_column_rotated)
 						 	)) %>%
-			gather(!!.element, value, -`rotated dimensions`) %>%
+			gather(!!.element, value,-`rotated dimensions`) %>%
 			spread(`rotated dimensions`, value) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data)
 
 	}
 
@@ -1982,7 +1949,6 @@ add_rotated_dimensions =
 					 of_samples = TRUE,
 					 dimension_1_column_rotated = NULL,
 					 dimension_2_column_rotated = NULL) {
-
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -2027,7 +1993,7 @@ add_rotated_dimensions =
 			) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data)
 	}
 
 #' Aggregates multiple counts from the same samples (e.g., from isoforms)
@@ -2056,7 +2022,6 @@ aggregate_duplicated_transcripts_bulk =
 					 aggregation_function = sum,
 
 					 keep_integer = TRUE) {
-
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -2089,9 +2054,9 @@ aggregate_duplicated_transcripts_bulk =
 		# Through warning if there are logicals of factor in the data frame
 		# because they cannot be merged if they are not unique
 		if ((lapply(.data, class) %>% unlist %in% c("logical", "factor")) %>% any) {
-			warning("for aggregation fctors and logical columns were converted to character")
-			writeLines("Converted to characters")
-			lapply(.data, class) %>% unlist %>% `[` (. %in% c("logical", "factor") %>% which) %>% print
+			warning("tidybulk says: for aggregation fctors and logical columns were converted to character")
+			message("Converted to characters")
+			message(lapply(.data, class) %>% unlist %>% `[` (. %in% c("logical", "factor") %>% which))
 		}
 
 		# Select which are the numerical columns
@@ -2102,13 +2067,14 @@ aggregate_duplicated_transcripts_bulk =
 			select(-!!.abundance) %>%
 
 			# If scaled add the column to the exclusion
-			ifelse_pipe(
-				(".abundance_scaled" %in% (.data %>% attr("parameters") %>% names) &&
-				 	# .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
-				 	quo_name(.data %>% attr("parameters") %$% .abundance_scaled) %in% (.data %>% colnames)
-				),
-				~ .x %>% select(-!!(.data %>% attr("parameters") %$% .abundance_scaled))
-			)	%>%
+			ifelse_pipe((
+				".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
+					# .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% `!` &&
+					quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)
+			),
+			~ .x %>% select(-!!(
+				.data %>% get_tt_columns() %$% .abundance_scaled
+			)))	%>%
 			colnames() %>%
 			c("n_aggr")
 
@@ -2123,51 +2089,54 @@ aggregate_duplicated_transcripts_bulk =
 			mutate_if(is.logical, as.character) %>%
 
 			# Add the nuber of duplicates for each gene
-			dplyr::left_join((.) %>% count(!!.sample, !!.transcript, name = "n_aggr"),
-								by = c(quo_name(.sample), quo_name(.transcript))) %>%
+			dplyr::left_join((.) %>% count(!!.sample,!!.transcript, name = "n_aggr"),
+											 by = c(quo_name(.sample), quo_name(.transcript))) %>%
 
 			# Anonymous function - binds the unique and the reduced genes,
 			# in the way we have to reduce redundancy just for the duplicated genes
 			# input: tibble
 			# output tibble distinct
-								{
-									dplyr::bind_rows(
-										# Unique symbols
-										(.) %>%
-											filter(n_aggr == 1),
+			{
+				dplyr::bind_rows(
+					# Unique symbols
+					(.) %>%
+						filter(n_aggr == 1),
 
-										# Duplicated symbols
-										(.) %>%
-											filter(n_aggr > 1) %>%
-											group_by(!!.sample, !!.transcript) %>%
-											dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
+					# Duplicated symbols
+					(.) %>%
+						filter(n_aggr > 1) %>%
+						group_by(!!.sample,!!.transcript) %>%
+						dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
 
-											# If scaled abundance exists aggragate that as well
-											ifelse_pipe(
-												(".abundance_scaled" %in% (.data %>% attr("parameters") %>% names) &&
-												 	# .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
-												 	quo_name(.data %>% attr("parameters") %$% .abundance_scaled) %in% (.data %>% colnames)
-												),
-												~ {
-													.abundance_scaled = .data %>% attr("parameters") %$% .abundance_scaled
-													.x %>% dplyr::mutate(!!.abundance_scaled := !!.abundance_scaled %>% aggregation_function())
-												}
-											) %>%
+						# If scaled abundance exists aggragate that as well
+						ifelse_pipe((
+							".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
+								# .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% `!` &&
+								quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)
+						),
+						~ {
+							.abundance_scaled = .data %>% get_tt_columns() %$% .abundance_scaled
+							.x %>% dplyr::mutate(!!.abundance_scaled := !!.abundance_scaled %>% aggregation_function())
+						}) %>%
 
-											mutate_at(vars(numerical_columns), mean) %>%
-											mutate_at(
-												vars(-group_cols(), - contains(quo_name(.abundance)), -!!numerical_columns),
-												list(~ paste3(unique(.), collapse = ", "))
-											) %>%
-											distinct()
-									)
-								} %>%
+						mutate_at(vars(numerical_columns), mean) %>%
+						mutate_at(
+							vars(
+								-group_cols(),
+								-contains(quo_name(.abundance)),
+								-!!numerical_columns
+							),
+							list( ~ paste3(unique(.), collapse = ", "))
+						) %>%
+						distinct()
+				)
+			} %>%
 
 			# Rename column of number of duplicates for each gene
 			rename(`merged transcripts` = n_aggr) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data)
 
 	}
 
@@ -2176,7 +2145,6 @@ aggregate_duplicated_transcripts_bulk =
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
-#' @importFrom widyr pairwise_cor
 #' @importFrom rlang :=
 #'
 #' @param .data A tibble
@@ -2192,14 +2160,13 @@ aggregate_duplicated_transcripts_bulk =
 #'
 #'
 remove_redundancy_elements_through_correlation <- function(.data,
-																												.element = NULL,
-																												.feature = NULL,
-																												.abundance = NULL,
-																												correlation_threshold = 0.9,
-																												top = Inf,
-																												of_samples = TRUE,
-																												log_transform = FALSE) {
-
+																													 .element = NULL,
+																													 .feature = NULL,
+																													 .abundance = NULL,
+																													 correlation_threshold = 0.9,
+																													 top = Inf,
+																													 of_samples = TRUE,
+																													 log_transform = FALSE) {
 	# Comply with CRAN NOTES
 	. = NULL
 
@@ -2212,6 +2179,12 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.feature = col_names$.feature
 	.abundance = col_names$.abundance
 
+	# Check if package is installed, otherwise install
+	if ("widyr" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing widyr needed for correlation analyses")
+		install.packages("widyr")
+	}
+
 	# Get the redundant data frame
 	.data.correlated =
 		.data %>%
@@ -2220,19 +2193,19 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		error_if_counts_is_na(!!.abundance) %>%
 
 		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.element, !!.feature, !!.abundance) %>%
+		error_if_duplicated_genes(!!.element,!!.feature,!!.abundance) %>%
 
 		# Prepare the data frame
-		select(!!.feature, !!.element, !!.abundance) %>%
+		select(!!.feature,!!.element,!!.abundance) %>%
 
 		# Filter variable genes
-		filter_variable_transcripts(!!.element, !!.feature, !!.abundance, top = top) %>%
+		keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top = top) %>%
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
 								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 		distinct() %>%
-		spread(!!.element, !!.abundance) %>%
+		spread(!!.element,!!.abundance) %>%
 		drop_na() %>%
 
 		# check that there are non-NA genes for enough samples
@@ -2244,14 +2217,14 @@ remove_redundancy_elements_through_correlation <- function(.data,
 
 			# First function
 			~ stop(
-				"In calculating correlation there is no gene that have non NA values is all samples"
+				"tidybulk says: In calculating correlation there is no gene that have non NA values is all samples"
 			),
 
 			# Second function
 			~ {
 				warning(
 					"
-					In calculating correlation there is < 100 genes that have non NA values is all samples.
+					tidybulk says: In calculating correlation there is < 100 genes that have non NA values is all samples.
 					The correlation calculation would not be reliable,
 					we suggest to partition the dataset for sample clusters.
 					"
@@ -2260,10 +2233,10 @@ remove_redundancy_elements_through_correlation <- function(.data,
 			}) %>%
 
 		# Prepare the data frame
-		gather(!!.element, !!.abundance, -!!.feature) %>%
+		gather(!!.element,!!.abundance,-!!.feature) %>%
 		dplyr::rename(rc := !!.abundance,
-					 sample := !!.element,
-					 transcript := !!.feature) %>% # Is rename necessary?
+									sample := !!.element,
+									transcript := !!.feature) %>% # Is rename necessary?
 		mutate_if(is.factor, as.character) %>%
 
 		# Run pairwise correlation and return a tibble
@@ -2283,7 +2256,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.data %>% anti_join(.data.correlated) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		reattach_internals(.data)
 }
 
 #' Identifies the closest pairs in a MDS contaxt and return one of them
@@ -2321,14 +2294,14 @@ remove_redundancy_elements_though_reduced_dimensions <-
 
 			# Calculate distances
 			.data %>%
-			select(!!.element, !!Dim_a_column, !!Dim_b_column) %>%
+			select(!!.element,!!Dim_a_column,!!Dim_b_column) %>%
 			distinct() %>%
 			as_matrix(rownames = !!.element) %>%
 			dist() %>%
 
 			# Prepare matrix
 			as.matrix() %>% as_tibble(rownames = "sample a") %>%
-			gather(`sample b`, dist, -`sample a`) %>%
+			gather(`sample b`, dist,-`sample a`) %>%
 			filter(`sample a` != `sample b`) %>%
 
 			# Sort the elements of the two columns to avoid eliminating all samples
@@ -2354,7 +2327,7 @@ remove_redundancy_elements_though_reduced_dimensions <-
 		.data %>% anti_join(.data.redundant) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data)
 	}
 
 # #' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
@@ -2429,10 +2402,10 @@ get_symbol_from_ensembl <-
 
 			# Add name information
 			dplyr::left_join(
-				ttBulk::ensembl_symbol_mapping %>%
+				tidybulk::ensembl_symbol_mapping %>%
 					distinct(ensembl_id, transcript, hg) %>%
 					dplyr::rename(!!.ensembl := ensembl_id) %>%
-					rename( transcript = transcript),
+					rename(transcript = transcript),
 				by = quo_name(.ensembl)
 			)
 
@@ -2448,7 +2421,6 @@ get_symbol_from_ensembl <-
 #'
 add_symbol_from_ensembl <-
 	function(.data, .ensembl) {
-
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -2457,10 +2429,10 @@ add_symbol_from_ensembl <-
 		# Add new symbols column
 		.data %>%
 			dplyr::left_join((.) %>%
-									get_symbol_from_ensembl(!!.ensembl)) %>%
+											 	get_symbol_from_ensembl(!!.ensembl)) %>%
 
 			# Attach attributes
-			add_attr(.data %>% attr("parameters"), "parameters")
+			reattach_internals(.data)
 	}
 
 #' Perform linear equation system analysis through llsr
@@ -2473,17 +2445,16 @@ add_symbol_from_ensembl <-
 #' @return A data frame
 #'
 #'
-run_llsr = function(mix, reference){
-
+run_llsr = function(mix, reference) {
 	# Get common markers
 	markers = intersect(rownames(mix), rownames(reference))
 
-	X <- (reference[markers,,drop=FALSE])
-	Y <- (mix[markers,, drop=FALSE])
+	X <- (reference[markers, , drop = FALSE])
+	Y <- (mix[markers, , drop = FALSE])
 
-	results <- t(data.frame(lsfit(X, Y)$coefficients)[-1,,drop=FALSE])
-	results[results<0] <- 0
-	results <- results/apply(results, 1, sum)
+	results <- t(data.frame(lsfit(X, Y)$coefficients)[-1, , drop = FALSE])
+	results[results < 0] <- 0
+	results <- results / apply(results, 1, sum)
 	rownames(results) = colnames(Y)
 
 	results
@@ -2552,12 +2523,12 @@ get_cell_type_proportions = function(.data,
 			length %>%
 			`<` (50))
 		stop(
-			"You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
+			"tidybulk says: You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
 		)
 
 	# Check if rownames exist
-	if(reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% `!` %>% any)
-		stop("ttBulk says: your reference has non-numeric/integer columns.")
+	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% `!` %>% any)
+		stop("tidybulk says: your reference has non-numeric/integer columns.")
 
 	# Get the dots arguments
 	dots_args = rlang::dots_list(...)
@@ -2565,11 +2536,11 @@ get_cell_type_proportions = function(.data,
 	.data %>%
 
 		# Check if some transcripts are duplicated
-		error_if_duplicated_genes(!!.sample, !!.transcript, !!.abundance) %>%
+		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Prepare data frame
-		distinct(!!.sample, !!.transcript, !!.abundance) %>%
-		spread(!!.sample, !!.abundance) %>%
+		distinct(!!.sample,!!.transcript,!!.abundance) %>%
+		spread(!!.sample,!!.abundance) %>%
 		data.frame(row.names = 1, check.names = FALSE) %>%
 
 		# Run Cibersort or llsr through custom function, depending on method choice
@@ -2581,14 +2552,16 @@ get_cell_type_proportions = function(.data,
 			~ do.call(my_CIBERSORT, list(Y = .x, X = reference) %>% c(dots_args)) %$%
 				proportions %>%
 				as_tibble(rownames = quo_name(.sample)) %>%
-				select(-`P-value`, -Correlation, -RMSE),
+				select(-`P-value`,-Correlation,-RMSE),
 
 			# Don't need to execute do.call
 			~ .x %>%
 				run_llsr(reference) %>%
 				as_tibble(rownames = quo_name(.sample)),
 
-			~ stop("ttBulk syas: please choose between cibersort and llsr methods")
+			~ stop(
+				"tidybulk syas: please choose between cibersort and llsr methods"
+			)
 		)	 %>%
 
 		# Parse results and return
@@ -2600,7 +2573,7 @@ get_cell_type_proportions = function(.data,
 		#gather(`Cell type`, proportion,-!!.sample) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		reattach_internals(.data)
 
 
 }
@@ -2628,7 +2601,6 @@ add_cell_type_proportions = function(.data,
 																		 reference = X_cibersort,
 																		 method = "cibersort",
 																		 ...) {
-
 	# Comply with CRAN NOTES
 	. = NULL
 
@@ -2658,7 +2630,7 @@ add_cell_type_proportions = function(.data,
 		) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		reattach_internals(.data)
 
 }
 
@@ -2711,30 +2683,37 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 	# Check that .formula includes no more than two covariates at the moment
 	if (parse_formula(.formula) %>% length %>% `>` (3))
-		warning("Only the second covariate in the .formula is adjusted for, at the moment")
+		warning("tidybulk says: Only the second covariate in the .formula is adjusted for, at the moment")
 
 	# New column name
-	value_adjusted = as.symbol(sprintf("%s adjusted",  quo_name(.abundance)))
+	value_adjusted = as.symbol(sprintf("%s%s",  quo_name(.abundance), adjusted_string))
 
 	# Stop is any counts are NAs
 	.data %>% error_if_counts_is_na(!!.abundance)
 
 	df_for_combat <-
 		.data %>%
-		select(!!.transcript,!!.sample,!!.abundance,
+
+		# Filter low counts
+		keep_abundant(!!.sample, !!.transcript, !!.abundance) %>%
+		{
+			# Give warning of filtering
+			message(
+				"tidybulk says: Combat is applied excluding lowly_abundant, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts "
+			)
+			(.)
+		} %>%
+
+		select(!!.transcript,
+					 !!.sample,
+					 !!.abundance,
 					 one_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
-								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log()))
 
-		# Mark Filter low counts
-		mutate(
-			`filter out low counts` =
-				!!.transcript %in%
-				add_scaled_counts_bulk.get_low_expressed(., !!.sample, !!.transcript, !!.abundance)
-		)
 
 	# Create design matrix
 	design =
@@ -2753,18 +2732,15 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		BiocManager::install("sva")
 	}
 
-	df_for_combat %>%
+	my_batch =
+		df_for_combat %>%
+		distinct(!!.sample,!!as.symbol(parse_formula(.formula)[2])) %>%
+		arrange(!!.sample) %>%
+		pull(2)
 
-		# Filter low counts
-		filter(!`filter out low counts`) %>%
-		{
-			# Give warning of filtering
-			writeLines("Combat is applied excluding `filter out low counts`, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts ")
-			(.)
-		} %>%
-
+	mat = df_for_combat %>%
 		# Select relevant info
-		distinct(!!.transcript, !!.sample, !!.abundance) %>%
+		distinct(!!.transcript,!!.sample,!!.abundance) %>%
 
 		# Stop any column is not if not numeric or integer
 		ifelse_pipe(
@@ -2772,45 +2748,42 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 			~ stop(".abundance must be numerical or integer")
 		) %>%
 
-		spread(!!.sample, !!.abundance) %>%
+		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.transcript,
-							do_check = FALSE) %>%
+							do_check = FALSE)
+	mat %>%
 
 		# Run combat
-		sva::ComBat(
-			batch =
-				df_for_combat %>%
-				distinct(!!.sample, !!as.symbol(parse_formula(.formula)[2])) %>%
-				arrange(!!.sample) %>%
-				pull(2),
-			mod = design,
-			...
-		) %>%
+		sva::ComBat(batch = my_batch,
+								mod = design,
+								prior.plots = FALSE,
+								...) %>%
+
 		as_tibble(rownames = quo_name(.transcript)) %>%
-		gather(!!.sample, !!.abundance, -!!.transcript) %>%
+		gather(!!.sample,!!.abundance,-!!.transcript) %>%
 
 		# ReverseLog transform if tranformed in the first place
 		ifelse_pipe(
 			log_transform,
 			~ .x %>%
 				dplyr::mutate(!!.abundance := !!.abundance %>% exp %>% `-`(1)) %>%
-				dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0, !!.abundance)) %>%
+				dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0,!!.abundance)) %>%
 				dplyr::mutate(!!.abundance := !!.abundance %>% as.integer)
 		) %>%
 
 		# Reset column names
 		dplyr::rename(!!value_adjusted := !!.abundance)  %>%
 
-		# Add filtering info
-		right_join(
-			df_for_combat %>%
-				distinct(!!.transcript,!!.sample,
-								 `filter out low counts`),
-			by = c(quo_name(.transcript), quo_name(.sample))
-		)%>%
+		# # Add filtering info
+		# right_join(
+		# 	df_for_combat %>%
+		# 		distinct(!!.transcript,!!.sample,
+		# 						 lowly_abundant),
+		# 	by = c(quo_name(.transcript), quo_name(.sample))
+		# )%>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		reattach_internals(.data)
 }
 
 #' Add adjusted count for some batch effect
@@ -2838,7 +2811,6 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 																														.abundance = NULL,
 																														log_transform = TRUE,
 																														...) {
-
 	# Comply with CRAN NOTES
 	. = NULL
 
@@ -2868,10 +2840,10 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 					...
 				) ,
 			by = c(quo_name(.transcript), quo_name(.sample))
-		)%>%
+		) %>%
 
 		# Attach attributes
-		add_attr(.data %>% attr("parameters"), "parameters")
+		reattach_internals(.data)
 
 }
 
@@ -2886,13 +2858,12 @@ add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 #'
 #' @return A tibble filtered genes
 #'
-filter_variable_transcripts = function(.data,
+keep_variable_transcripts = function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
 																			 top = 500,
-																			 log_transform = TRUE){
-
+																			 log_transform = TRUE) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2912,27 +2883,25 @@ filter_variable_transcripts = function(.data,
 
 	x =
 		.data %>%
-		distinct(!!.sample, !!.transcript, !!.abundance) %>%
+		distinct(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Check if logtansform is needed
 		ifelse_pipe(log_transform,
 								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 
-		spread(!!.sample, !!.abundance) %>%
+		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = quo_name(.transcript))
 
-	s <- rowMeans((x-rowMeans(x))^2)
-	o <- order(s,decreasing=TRUE)
-	x <- x[o[1L:top],,drop=FALSE]
+	s <- rowMeans((x - rowMeans(x)) ^ 2)
+	o <- order(s, decreasing = TRUE)
+	x <- x[o[1L:top], , drop = FALSE]
 	variable_trancripts = rownames(x)
 
 	.data %>% filter(!!.transcript %in% variable_trancripts)
 }
 
-#'ttBulk_to_SummarizedExperiment
+#'tidybulk_to_SummarizedExperiment
 #'
-#' @importFrom SummarizedExperiment SummarizedExperiment
-#' @importFrom SummarizedExperiment assay
 #' @importFrom utils data
 #'
 #' @param .data A tibble
@@ -2942,7 +2911,10 @@ filter_variable_transcripts = function(.data,
 #'
 #' @return A SummarizedExperiment
 #'
-ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL){
+tidybulk_to_SummarizedExperiment = function(.data,
+																					.sample = NULL,
+																					.transcript = NULL,
+																					.abundance = NULL) {
 
 	# Get column names
 	.sample = enquo(.sample)
@@ -2953,40 +2925,123 @@ ttBulk_to_SummarizedExperiment = function(.data, .sample = NULL, .transcript = N
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	# Check if package is installed, otherwise install
+	if ("SummarizedExperiment" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing SummarizedExperiment")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("SummarizedExperiment")
+	}
+	if ("S4Vectors" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("Installing S4Vectors")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("S4Vectors")
+	}
 	# If present get the scaled abundance
 	.abundance_scaled =
 		.data %>%
 		ifelse_pipe(
-			".abundance_scaled" %in% ((.) %>% attr("parameters") %>% names) &&
-				# .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
-				quo_name((.) %>% attr("parameters") %$% .abundance_scaled) %in% ((.) %>% colnames),
-			~ .x %>% attr("parameters") %$% .abundance_scaled,
+			".abundance_scaled" %in% ((.) %>% get_tt_columns() %>% names) &&
+				# .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% `!` &&
+				quo_name((.) %>% get_tt_columns() %$% .abundance_scaled) %in% ((.) %>% colnames),
+			~ .x %>% get_tt_columns() %$% .abundance_scaled,
 			~ NULL
 		)
 
 	# Get which columns are sample wise and which are feature wise
-	col_direction = get_x_y_annotation_columns(.data, !!.sample, !!.transcript, !!.abundance, !!.abundance_scaled)
+	col_direction = get_x_y_annotation_columns(.data,
+																						 !!.sample,
+																						 !!.transcript,
+																						 !!.abundance,
+																						 !!.abundance_scaled)
 	sample_cols = col_direction$horizontal_cols
 	feature_cols = col_direction$vertical_cols
 	counts_cols = col_direction$counts_cols
 
-	colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% arrange(!!.sample) %>% { DataFrame((.) %>% select(-!!.sample), row.names = (.) %>% pull(!!.sample)) }
+	colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% arrange(!!.sample) %>% {
+		S4Vectors::DataFrame((.) %>% select(-!!.sample),
+												 row.names = (.) %>% pull(!!.sample))
+	}
 
-	rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% arrange(!!.transcript) %>% { DataFrame((.) %>% select(-!!.transcript), row.names = (.) %>% pull(!!.transcript)) }
+	rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% arrange(!!.transcript) %>% {
+		S4Vectors::DataFrame((.) %>% select(-!!.transcript),
+												 row.names = (.) %>% pull(!!.transcript))
+	}
 
-	assays =
+	my_assays =
 		.data %>%
-		select(!!.sample, !!.transcript, !!.abundance, !!.abundance_scaled, counts_cols) %>%
+		select(!!.sample,
+					 !!.transcript,
+					 !!.abundance,
+					 !!.abundance_scaled,
+					 counts_cols) %>%
 		distinct() %>%
-		gather(`assay`, .a, -!!.transcript, -!!.sample) %>%
+		gather(`assay`, .a,-!!.transcript,-!!.sample) %>%
 		nest(`data` = -`assay`) %>%
-		mutate(`data` = `data` %>%  map(~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))))
+		mutate(`data` = `data` %>%  map(
+			~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))
+		))
 
 	# Build the object
-	SummarizedExperiment(
-		assays=assays %>% pull(`data`) %>% setNames(assays$assay),
+	SummarizedExperiment::SummarizedExperiment(
+		assays = my_assays %>% pull(`data`) %>% setNames(my_assays$assay),
 		rowData = rowData,
 		colData = colData
 	)
 
+}
+
+#' Get matrix from tibble
+#'
+#' @import dplyr
+#' @import tidyr
+#' @importFrom magrittr set_rownames
+#' @importFrom rlang quo_is_null
+#'
+#' @param tbl A tibble
+#' @param rownames A character string of the rownames
+#' @param do_check A boolean
+#'
+#' @return A matrix
+#'
+#' @examples
+#'
+#' as_matrix(head(dplyr::select(tidybulk::counts_mini, transcript, count)), rownames=transcript)
+#'
+#' @export
+as_matrix <- function(tbl,
+											rownames = NULL,
+											do_check = TRUE) {
+	rownames = enquo(rownames)
+	tbl %>%
+
+		# Through warning if data frame is not numerical beside the rownames column (if present)
+		ifelse_pipe(
+			do_check &&
+				tbl %>%
+				# If rownames defined eliminate it from the data frame
+				ifelse_pipe(!quo_is_null(rownames), ~ .x[,-1], ~ .x) %>%
+				dplyr::summarise_all(class) %>%
+				tidyr::gather(variable, class) %>%
+				pull(class) %>%
+				unique() %>%
+				`%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+			~ {
+				warning("tidybulk says: there are NON-numerical columns, the matrix will NOT be numerical")
+				.x
+			}
+		) %>%
+		as.data.frame() %>%
+
+		# Deal with rownames column if present
+		ifelse_pipe(
+			!quo_is_null(rownames),
+			~ .x %>%
+				magrittr::set_rownames(tbl %>% pull(!!rownames)) %>%
+				select(-1)
+		) %>%
+
+		# Convert to matrix
+		as.matrix()
 }

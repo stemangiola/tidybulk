@@ -30,7 +30,7 @@ remove_redundancy(
 
 \item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
 
-\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{correlation_threshold}{A real number between 0 and 1. For correlation based calculation.}
 
@@ -58,14 +58,14 @@ This function removes redundant elements from the original data set (e.g., sampl
 
 
    remove_redundancy(
-    ttBulk::counts_mini,
+    tidybulk::counts_mini,
 	   .element = sample,
 	   .feature = transcript,
 	   	.abundance =  count,
 	   	method = "correlation"
 	   	)
 
-counts.MDS =  reduce_dimensions(ttBulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
 
 remove_redundancy(
 	counts.MDS,

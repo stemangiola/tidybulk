@@ -1,4 +1,4 @@
 library(testthat)
-library(ttBulk)
+library(tidybulk)
 
-test_check("ttBulk")
+test_check("tidybulk")

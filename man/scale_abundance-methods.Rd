@@ -3,15 +3,16 @@
 \docType{methods}
 \name{scale_abundance}
 \alias{scale_abundance}
-\title{Normalise the counts of transcripts/genes}
+\title{Scale the counts of transcripts/genes}
 \usage{
 scale_abundance(
   .data,
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  cpm_threshold = 0.5,
-  prop = 3/4,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
   method = "TMM",
   reference_selection_function = median,
   action = "add"
@@ -26,35 +27,37 @@ scale_abundance(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{cpm_threshold}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the normalisation procedure. The normalisation inference is then applied back to all unfiltered data.}
+\item{factor_of_interest}{The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.}
 
-\item{prop}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for normalisation procedure.}
+\item{minimum_counts}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.}
 
-\item{method}{A character string. The methods used by the function. The method is passed to the function `calcNormFactors` from edgeR package.}
+\item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
-\item{reference_selection_function}{A fucntion that is used to selecting the reference sample for normalisation. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.}
+\item{method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
+
+\item{reference_selection_function}{A fucntion that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.}
 
 \item{action}{A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.}
 }
 \value{
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN> scaled`
+A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 }
 \description{
-scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and normalises the data for the library size (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 }
 \details{
 \lifecycle{maturing}
 
-normalises the data for the library size
+Scales transcript abundance compansating for sequencing depth
 (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
-Lowly transcribed transcripts/genes (defined with cpm_threshold and prop parameters)
-are filtered out from the normalisation procedure.
-The normalisation inference is then applied back to all unfiltered data.
+Lowly transcribed transcripts/genes (defined with minimum_counts and minimum_proportion parameters)
+are filtered out from the scaling procedure.
+The scaling inference is then applied back to all unfiltered data.
 }
 \examples{
 
 
- scale_abundance(ttBulk::counts_mini,  sample, transcript, `count`)
+ scale_abundance(tidybulk::counts_mini,  sample, transcript, `count`)
 
 
 

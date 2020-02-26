@@ -1,7 +1,7 @@
 ## ---- echo=FALSE, include=FALSE-----------------------------------------------
 library(knitr)
 #library(kableExtra)
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE, 
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
                       message = FALSE, cache.lazy = FALSE)
 #options(width = 120)
 options(pillar.min_title_chars = Inf)
@@ -9,13 +9,13 @@ options(pillar.min_title_chars = Inf)
 
 library(tibble)
 library(dplyr)
-library(magrittr) 
+library(magrittr)
 library(tidyr)
 library(ggplot2)
-library(widyr) 
-library(rlang) 
+library(widyr)
+library(rlang)
 library(purrr)
-library(ttBulk)
+library(tidybulk)
 
 my_theme = 	
 	theme_bw() +
@@ -32,29 +32,71 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
-# counts_mini = 
-# 	ttBulk::counts %>% 
-# 	filter(transcript %in% (ttBulk::X_cibersort %>% rownames)) %>% 
+# counts_mini =
+# 	tidybulk::counts %>%
+# 	filter(transcript %in% (tidybulk::X_cibersort %>% rownames)) %>%
 # 	filter(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058", "SRR1740043", "SRR1740067")) %>%
 # 	mutate(condition = ifelse(sample %in% c("SRR1740034", "SRR1740035", "SRR1740058"), TRUE, FALSE))
 
 # se_mini
-#se_mini = ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts_mini, sample, transcript, count)
-se_breast_tcga_mini = ttBulk:::ttBulk_to_SummarizedExperiment( ttBulk::breast_tcga_mini, sample, ens, `count`)
-se.cibersort = 
-	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) 
-se.norm.batch = 
-	
-	ttBulk:::ttBulk_to_SummarizedExperiment(ttBulk::counts,  sample ,  transcript, count) %>%
+se_mini = tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk::counts_mini, sample, transcript, count)
+se_breast_tcga_mini = tidybulk:::tidybulk_to_SummarizedExperiment( tidybulk::breast_tcga_mini, sample, ens, `count`)
+se.cibersort =
+	tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk::counts,  sample ,  transcript, count)
+se.norm.batch =
+
+	tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk::counts,  sample ,  transcript, count) %>%
 	scale_abundance()
 
+## -----------------------------------------------------------------------------
+counts = tidybulk(tidybulk::counts_mini, sample, transcript, count)
+counts
+
+## ----aggregate, cache=TRUE----------------------------------------------------
+counts.aggr =  counts %>% aggregate_duplicates( 	aggregation_function = sum )
+
+counts.aggr
+
+## ----aggregate se, cache=TRUE-------------------------------------------------
+se.aggr =  se_mini %>% aggregate_duplicates( 	aggregation_function = sum )
+
+se.aggr
+
+## ----normalise, cache=TRUE----------------------------------------------------
+counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
+
+counts.norm %>% select(`count`, `count_scaled`, lowly_abundant, everything())
+
+## ----plot_normalise, cache=TRUE-----------------------------------------------
+counts.norm %>%
+	ggplot(aes(`count_scaled` + 1, group=sample, color=`Cell type`)) +
+	geom_density() +
+	scale_x_log10() +
+	my_theme
+
+## ----normalise se, cache=TRUE-------------------------------------------------
+se.norm =  se.aggr %>% scale_abundance(method="TMM")
+
+se.norm
+
+## ----mds, cache=TRUE----------------------------------------------------------
+counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="MDS", .dims = 3)
+
+counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
+
+## ----plot_mds, cache=TRUE-----------------------------------------------------
+counts.norm.MDS %>%
+	select(contains("Dim"), sample, `Cell type`) %>%
+  distinct() %>%
+  GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
+
 ## ----mds se, cache=TRUE-------------------------------------------------------
-se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = `count scaled`, method="MDS", .dims = 3)
+se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="MDS", .dims = 3)
 
 se.norm.MDS
 
 ## ----pca, cache=TRUE----------------------------------------------------------
-counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = `count scaled`, method="PCA" ,  .dims = 3)
+counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="PCA" ,  .dims = 3)
 
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 
@@ -65,45 +107,45 @@ counts.norm.PCA %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 
 ## ----pca se, cache=TRUE-------------------------------------------------------
-se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = `count scaled`, method="PCA" ,  .dims = 3)
+se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="PCA" ,  .dims = 3)
 
-se.norm.PCA 
+se.norm.PCA
 
 ## ---- echo=FALSE, include=FALSE-----------------------------------------------
-tt_tcga_breast = 
-	ttBulk::breast_tcga_mini %>%
-	ttBulk(sample, ens, `count`)
+tt_tcga_breast =
+	tidybulk::breast_tcga_mini %>%
+	tidybulk(sample, ens, `count`)
 
 ## ----tsne, cache=TRUE---------------------------------------------------------
 counts.norm.tSNE =
 	tt_tcga_breast %>%
 	reduce_dimensions(
-		.abundance = `count scaled`, 
-		method = "tSNE", 
-		top = 500, 
-		perplexity=10, 
+		.abundance = `count_scaled`,
+		method = "tSNE",
+		top = 500,
+		perplexity=10,
 		pca_scale =TRUE
-	) 
+	)
 
-counts.norm.tSNE %>% 
+counts.norm.tSNE %>%
 	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct()
 
-counts.norm.tSNE %>% 
+counts.norm.tSNE %>%
 	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct() %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 
 ## ----tsne se, cache=TRUE------------------------------------------------------
-se.norm.tSNE = 
+se.norm.tSNE =
 	se_breast_tcga_mini %>%
 	reduce_dimensions(
-		.abundance = `count scaled`, 
-		method = "tSNE", 
-		top = 500, 
-		perplexity=10, 
+		.abundance = `count_scaled`,
+		method = "tSNE",
+		top = 500,
+		perplexity=10,
 		pca_scale =TRUE
-	) 
+	)
 se.norm.tSNE
 
 ## ----rotate, cache=TRUE-------------------------------------------------------
@@ -136,7 +178,7 @@ counts %>%	test_differential_abundance(  ~ condition,  action="get")
 se_mini %>%	test_differential_abundance(  ~ condition)
 
 ## ---- echo=FALSE, include=FALSE-----------------------------------------------
-counts.norm.batch = 
+counts.norm.batch =
 	counts.norm %>%
 
 	  # Add fake batch and factor of interest
@@ -145,7 +187,7 @@ counts.norm.batch =
 	  		distinct(sample) %>%
 	  		mutate(batch = c(0,1,0,1,1))
 	  ) %>%
-	 	mutate(factor_of_interest = `Cell type` == "b_cell") 
+	 	mutate(factor_of_interest = `Cell type` == "b_cell")
 
 
 ## ----adjust, cache=TRUE-------------------------------------------------------
@@ -153,7 +195,7 @@ counts.norm.adj =
 	counts.norm.batch %>%
 	  adjust_abundance(
 	  	~ factor_of_interest + batch,
-	  	.abundance = `count scaled`,
+	  	.abundance = `count_scaled`,
 	  	action = "get"
 	  )
 
@@ -163,7 +205,7 @@ counts.norm.adj
 se.norm.batch %>%
   adjust_abundance(
   	~ factor_of_interest + batch,
-  	.abundance = `count scaled`
+  	.abundance = `count_scaled`
   )
 
 ## ----cibersort, cache=TRUE----------------------------------------------------
@@ -191,14 +233,14 @@ se.cibersort %>% deconvolve_cellularity(cores=2)
 
 ## ----cluster, cache=TRUE------------------------------------------------------
 counts.norm.cluster = counts.norm %>%
-  cluster_elements(.abundance = `count scaled`, method="kmeans",	centers = 2 )
+  cluster_elements(.abundance = `count_scaled`, method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 
 ## ----plot_cluster, cache=TRUE-------------------------------------------------
  counts.norm.MDS %>%
   cluster_elements(
-  	.abundance = `count scaled`,
+  	.abundance = `count_scaled`,
   	method="kmeans",
   	centers = 2
   ) %>%
@@ -209,17 +251,17 @@ counts.norm.cluster
 
 ## ----cluster se, cache=TRUE---------------------------------------------------
 se.norm %>%
-  cluster_elements(.abundance = `count scaled`, method="kmeans",	centers = 2 )
+  cluster_elements(.abundance = `count_scaled`, method="kmeans",	centers = 2 )
 
 
 ## ----SNN, cache=TRUE----------------------------------------------------------
-counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= `count scaled`, method = "SNN")
+counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= `count_scaled`, method = "SNN")
 
-counts.norm.SNN %>% 
+counts.norm.SNN %>%
 	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample) %>%
 	distinct()
 
-counts.norm.SNN %>% 
+counts.norm.SNN %>%
 	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
 	gather(source, Call, c("cluster SNN", "Call")) %>%
 	distinct() %>%
@@ -235,7 +277,7 @@ counts.norm.SNN %>%
    )
 
 ## ----SNN se, cache=TRUE-------------------------------------------------------
-se.norm.tSNE %>%	cluster_elements(.abundance= `count scaled`, method = "SNN")
+se.norm.tSNE %>%	cluster_elements(.abundance= `count_scaled`, method = "SNN")
 
 ## ----drop, cache=TRUE---------------------------------------------------------
 counts.norm.non_redundant = counts.norm.MDS %>%  remove_redundancy(	method = "correlation" )
@@ -295,27 +337,27 @@ remove_redundancy(
 counts_ensembl %>% annotate_symbol(ens)
 
 ## ---- cache=TRUE--------------------------------------------------------------
-  counts.norm 
+  counts.norm
 
 ## ---- cache=TRUE--------------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count scaled`, 
-    	method="MDS" , 
-    	.element = sample, 
-    	.feature = transcript, 
-    	.dims = 3, 
+    	.abundance = `count_scaled`,
+    	method="MDS" ,
+    	.element = sample,
+    	.feature = transcript,
+    	.dims = 3,
     	action="add"
     )
 
 ## ---- cache=TRUE--------------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count scaled`, 
-    	method="MDS" , 
-    	.element = sample, 
-    	.feature = transcript, 
-    	.dims = 3, 
+    	.abundance = `count_scaled`,
+    	method="MDS" ,
+    	.element = sample,
+    	.feature = transcript,
+    	.dims = 3,
     	action="get"
     )
 

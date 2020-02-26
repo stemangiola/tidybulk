@@ -47,7 +47,7 @@ This function infers the cell type composition of our samples (with the algorith
 \examples{
 
 
-deconvolve_cellularity(ttBulk::counts, sample, transcript, `count`, cores = 2)
+deconvolve_cellularity(tidybulk::counts, sample, transcript, `count`, cores = 2)
 
 
 }

@@ -28,7 +28,7 @@ This is useful since different resources use ensembl IDs while others use gene s
 \examples{
 
 
-	annotate_symbol(ttBulk::counts_ensembl, ens)
+	annotate_symbol(tidybulk::counts_ensembl, ens)
 
 
 }

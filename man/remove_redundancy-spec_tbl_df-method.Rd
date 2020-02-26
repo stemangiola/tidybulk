@@ -29,7 +29,7 @@
 
 \item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
 
-\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{correlation_threshold}{A real number between 0 and 1. For correlation based calculation.}
 

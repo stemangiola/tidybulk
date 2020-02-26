@@ -13,7 +13,10 @@ get_differential_transcript_abundance_bulk(
   .coef = 2,
   .contrasts = NULL,
   significance_threshold = 0.05,
-  fill_missing_values = FALSE
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
+  fill_missing_values = FALSE,
+  scaling_method = "TMM"
 )
 }
 \arguments{
@@ -33,7 +36,13 @@ get_differential_transcript_abundance_bulk(
 
 \item{significance_threshold}{A real between 0 and 1}
 
+\item{minimum_counts}{A positive integer. Minimum counts required for at least some samples.}
+
+\item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
+
 \item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
+
+\item{scaling_method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 }
 \value{
 A tibble with edgeR results

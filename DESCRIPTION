@@ -1,8 +1,11 @@
 Type: Package
-Package: ttBulk
-Title: Friendly tidy wrappers for streamlined bulk transcriptional analysis
+Package: tidybulk
+Title: Friendly tidy wrappers for streamlined bulk
+    transcriptional analysis
 Version: 0.99.15
-Author: person("Stefano", "Mangiola", email=mangiolastefano@gmail.com, role=c("cre", aut"), comment = c(ORCID = "0000-0001-7474-836X")).
+Author: person("Stefano", "Mangiola",
+    email=mangiolastefano@gmail.com, role=c("cre", aut"), comment =
+    c(ORCID = "0000-0001-7474-836X")).
 Maintainer: Stefano Mangiola <mangiolastefano@gmail.com>
 Description: This is a collection of utility functions that allow
     to perform exploration of and calculations to RNA sequencing data, in
@@ -12,22 +15,19 @@ Depends:
     R (>= 4.0)
 Imports:
     tibble,
+    readr,
     dplyr,
     magrittr,
     tidyr,
-    widyr,
     rlang,
     purrr,
-    ggplot2,
     preprocessCore,
     stats,
-    lifecycle,
-    SummarizedExperiment,
-    S4Vectors,
     parallel,
     utils
 Suggests:
     testthat,
+    lifecycle,
     AnnotationDbi,
     BiocManager,
     Rsubread,
@@ -43,8 +43,12 @@ Suggests:
     Seurat,
     KernSmooth,
     Rtsne,
-    EGSEA
-VignetteBuilder:
+    EGSEA,
+    SummarizedExperiment,
+    S4Vectors,
+    ggplot2,
+    widyr
+VignetteBuilder: 
     knitr
 RdMacros:
     lifecycle

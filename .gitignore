@@ -2,10 +2,10 @@
 .Rhistory
 .RData
 .Ruserdata
-ttBulk.Rproj
+tidybulk.Rproj
 README_cache/*
 vignettes/introduction_cache*
-ttBulk.Rproj
+tidybulk.Rproj
 Meta
 doc
 dev/*csv

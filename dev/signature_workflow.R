@@ -1,5 +1,5 @@
 library(tidyverse)
-library(ttBulk)
+library(tidybulk)
 library(furrr)
 plan(multiprocess)
 options(future.globals.maxSize = 50000 * 1024 ^ 2)
@@ -88,7 +88,7 @@ counts_proc =
 	counts %>%
 
 	# Create object
-	ttBulk(sample, symbol, count) %>%
+	tidybulk(sample, symbol, count) %>%
 
 	# Sum redundant genes/isoforms
 	aggregate_duplicates(aggregation_function = sum) %>%
@@ -127,7 +127,7 @@ counts_ct =
 # 	mutate(	bimodality_NB =
 # 		future_map(
 # 			data,
-# 			~ .x %>% pull(`count scaled`) %>% as.integer %>%
+# 			~ .x %>% pull(`count_scaled`) %>% as.integer %>%
 # 				siberg_iterative() %>%
 # 				`[` (1:2) %>%
 # 				setNames(c("bimodality_NB_diff", "bimodality_NB")) %>%
@@ -137,9 +137,9 @@ counts_ct =
 # 	select(-data) %>%
 # 	unnest(bimodality_NB)
 #
-# bimodality %>% saveRDS("bimodality.rds")
+# bimodality %>% saveRDS("dev/bimodality.rds")
 
-bimodality = readRDS("bimodality.rds")
+bimodality = readRDS("dev/bimodality.rds")
 
 # Assign values and filter
 counts_ct_bm =
@@ -153,7 +153,7 @@ counts_ct_bm =
 # Plots and Study
 counts_ct_bm %>%
 
-	reduce_dimensions(sample, symbol, `count scaled`, method = "tSNE") %>%
+	reduce_dimensions(sample, symbol, `count_scaled`, method = "tSNE") %>%
 	select(contains("tSNE"), `Data base`, `Cell type formatted`) %>%
 	distinct %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color = `Cell type formatted`)) +

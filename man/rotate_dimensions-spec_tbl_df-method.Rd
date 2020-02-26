@@ -27,7 +27,7 @@
 
 \item{.element}{The name of the element column (normally samples).}
 
-\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{dimension_1_column_rotated}{A character string. The column of the rotated dimension 1 (optional)}
 

@@ -13,7 +13,10 @@
   .coef = 2,
   .contrasts = NULL,
   significance_threshold = 0.05,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
   fill_missing_values = FALSE,
+  scaling_method = "TMM",
   action = "add"
 )
 }
@@ -34,12 +37,18 @@
 
 \item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
 
+\item{minimum_counts}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.}
+
+\item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
+
 \item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
+
+\item{scaling_method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
 \value{
-A `ttBulk` object
+A `tidybulk` object
 }
 \description{
 test_differential_abundance

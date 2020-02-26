@@ -7,8 +7,9 @@
 add_scaled_counts_bulk.calcNormFactor(
   .data,
   reference = NULL,
-  cpm_threshold = 0.5,
-  prop = 3/4,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
   .sample = sample,
   .transcript = transcript,
   .abundance = count,
@@ -20,9 +21,11 @@ add_scaled_counts_bulk.calcNormFactor(
 
 \item{reference}{A reference matrix, not sure if used anymore}
 
-\item{cpm_threshold}{A real positive number}
+\item{factor_of_interest}{The name of the column of the factor of interest}
 
-\item{prop}{A number between 0 and 1}
+\item{minimum_counts}{A positive integer. Minimum counts required for at least some samples.}
+
+\item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
 \item{.sample}{The name of the sample column}
 
@@ -30,7 +33,7 @@ add_scaled_counts_bulk.calcNormFactor(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{method}{A string character}
+\item{method}{A string character. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 }
 \value{
 A list including the filtered data frame and the normalization factors

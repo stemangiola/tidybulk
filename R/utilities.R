@@ -57,59 +57,7 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
     ))
 }
 
-#' Get matrix from tibble
-#'
-#' @import dplyr
-#' @import tidyr
-#' @importFrom magrittr set_rownames
-#' @importFrom rlang quo_is_null
-#'
-#' @param tbl A tibble
-#' @param rownames A character string of the rownames
-#' @param do_check A boolean
-#'
-#' @return A matrix
-#'
-#' @examples
-#'
-#' as_matrix(head(dplyr::select(ttBulk::counts_mini, transcript, count)), rownames=transcript)
-#'
-#' @export
-as_matrix <- function(tbl,
-                      rownames = NULL,
-                      do_check = TRUE) {
-  rownames = enquo(rownames)
-  tbl %>%
 
-    # Through warning if data frame is not numerical beside the rownames column (if present)
-    ifelse_pipe(
-      do_check &&
-        tbl %>%
-        # If rownames defined eliminate it from the data frame
-        ifelse_pipe(!quo_is_null(rownames), ~ .x[, -1], ~ .x) %>%
-        dplyr::summarise_all(class) %>%
-        tidyr::gather(variable, class) %>%
-        pull(class) %>%
-        unique() %>%
-        `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-      ~ {
-        warning("to_matrix says: there are NON-numerical columns, the matrix will NOT be numerical")
-        .x
-      }
-    ) %>%
-    as.data.frame() %>%
-
-    # Deal with rownames column if present
-    ifelse_pipe(
-      !quo_is_null(rownames),
-      ~ .x %>%
-        magrittr::set_rownames(tbl %>% pull(!!rownames)) %>%
-        select(-1)
-    ) %>%
-
-    # Convert to matrix
-    as.matrix()
-}
 
 #' Check whether a numeric vector has been log transformed
 #'
@@ -123,7 +71,7 @@ error_if_log_transformed <- function(x, .abundance) {
   if (x %>% nrow %>% `>` (0))
     if (x %>% summarise(m = !!.abundance %>% max) %>% pull(m) < 50)
       stop(
-        "The input was log transformed, this algorithm requires raw (un-scaled) read counts"
+        "tidybulk says: The input was log transformed, this algorithm requires raw (un-scaled) read counts"
       )
 }
 
@@ -158,7 +106,7 @@ error_if_duplicated_genes <- function(.data,
     writeLines("Those are the duplicated genes")
     duplicates %>% print()
     stop(
-      "Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding."
+      "tidybulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding."
     )
   }
 
@@ -182,7 +130,7 @@ error_if_counts_is_na = function(.data, .abundance) {
 
   # Do the check
   if (.data %>% filter(!!.abundance %>% is.na) %>% nrow %>% `>` (0))
-    stop("You have NA values in your counts")
+    stop("tidybulk says: You have NA values in your counts")
 
   # If all good return original data frame
   .data
@@ -215,7 +163,7 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
     equals(expected_type) %>%
     `!`
   )
-    stop("You have passed the wrong argument to the function. Please check again.")
+    stop("tidybulk says: You have passed the wrong argument to the function. Please check again.")
 
   # If all good return original data frame
   .data
@@ -232,7 +180,7 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
 #'
 parse_formula <- function(fm) {
   if (attr(terms(fm), "response") == 1)
-    stop("The .formula must be of the kind \"~ covariates\" ")
+    stop("tidybulk says: The .formula must be of the kind \"~ covariates\" ")
   else
     as.character(attr(terms(fm), "variables"))[-1]
 }
@@ -265,6 +213,69 @@ scale_design = function(df, .formula) {
     select(`(Intercept)`, one_of(parse_formula(.formula)))
 }
 
+get_tt_columns = function(.data){
+  if(.data %>% attr("tt_internals") %>% is.list())
+    .data %>% attr("tt_internals") %$% tt_columns
+  else NULL
+}
+
+add_tt_columns = function(.data,
+                          .sample,
+                          .transcript,
+                          .abundance,
+                          .abundance_scaled = NULL){
+
+  # Make col names
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+  .abundance_scaled = enquo(.abundance_scaled)
+
+  # Add tt_columns
+  .data %>% attach_to_internals(
+     list(
+      .sample = .sample,
+      .transcript = .transcript,
+      .abundance = .abundance
+    ) %>%
+
+    # If .abundance_scaled is not NULL add it to tt_columns
+    ifelse_pipe(
+      .abundance_scaled %>% quo_is_symbol,
+      ~ .x %>% c(		list(.abundance_scaled = .abundance_scaled))
+    ),
+    "tt_columns"
+  )
+
+}
+
+initialise_tt_internals = function(.data){
+  .data %>%
+    ifelse_pipe(
+      "tt_internals" %in% ((.) %>% attributes %>% names) %>% `!`,
+      ~ .x %>% add_attr(list(), "tt_internals")
+    )
+}
+
+reattach_internals = function(.data, .data_internals_from = NULL){
+  if(.data_internals_from %>% is.null)
+    .data_internals_from = .data
+
+  .data %>% add_attr(.data_internals_from %>% attr("tt_internals"), "tt_internals")
+}
+
+attach_to_internals = function(.data, .object, .name){
+
+  tt_internals =
+    .data %>%
+    initialise_tt_internals() %>%
+    attr("tt_internals")
+
+  # Add tt_bolumns
+  tt_internals[[.name]] = .object
+
+  .data %>% add_attr(tt_internals, "tt_internals")
+}
 #' Add attribute to abject
 #'
 #'
@@ -338,25 +349,25 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
 
     my_stop = function() {
       stop("
-        The fucntion does not know what your sample, transcript and counts columns are.\n
+        tidybulk says: The fucntion does not know what your sample, transcript and counts columns are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
     }
 
     if( .sample %>% quo_is_symbol() ) .sample = .sample
-    else if(".sample" %in% (.data %>% attr("parameters") %>% names))
-      .sample =  attr(.data, "parameters")$.sample
+    else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
+      .sample =  get_tt_columns(.data)$.sample
     else my_stop()
 
     if( .transcript %>% quo_is_symbol() ) .transcript = .transcript
-    else if(".transcript" %in% (.data %>% attr("parameters") %>% names))
-      .transcript =  attr(.data, "parameters")$.transcript
+    else if(".transcript" %in% (.data %>% get_tt_columns() %>% names))
+      .transcript =  get_tt_columns(.data)$.transcript
     else my_stop()
 
     if( .abundance %>% quo_is_symbol() ) .abundance = .abundance
-    else if(".abundance" %in% (.data %>% attr("parameters") %>% names))
-      .abundance = attr(.data, "parameters")$.abundance
+    else if(".abundance" %in% (.data %>% get_tt_columns() %>% names))
+      .abundance = get_tt_columns(.data)$.abundance
     else my_stop()
 
     list(.sample = .sample, .transcript = .transcript, .abundance = .abundance)
@@ -377,20 +388,20 @@ get_sample_counts = function(.data, .sample, .abundance){
 
   my_stop = function() {
     stop("
-        The fucntion does not know what your sample, transcript and counts columns are.\n
+        tidybulk says: The fucntion does not know what your sample, transcript and counts columns are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
   }
 
   if( .sample %>% quo_is_symbol() ) .sample = .sample
-  else if(".sample" %in% (.data %>% attr("parameters") %>% names))
-    .sample =  attr(.data, "parameters")$.sample
+  else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
+    .sample =  get_tt_columns(.data)$.sample
   else my_stop()
 
   if( .abundance %>% quo_is_symbol() ) .abundance = .abundance
-  else if(".abundance" %in% (.data %>% attr("parameters") %>% names))
-    .abundance = attr(.data, "parameters")$.abundance
+  else if(".abundance" %in% (.data %>% get_tt_columns() %>% names))
+    .abundance = get_tt_columns(.data)$.abundance
   else my_stop()
 
   list(.sample = .sample, .abundance = .abundance)
@@ -411,20 +422,20 @@ get_sample_transcript = function(.data, .sample, .transcript){
 
   my_stop = function() {
     stop("
-        The fucntion does not know what your sample, transcript and counts columns are.\n
+        tidybulk says: The fucntion does not know what your sample, transcript and counts columns are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
   }
 
   if( .sample %>% quo_is_symbol() ) .sample = .sample
-  else if(".sample" %in% (.data %>% attr("parameters") %>% names))
-    .sample =  attr(.data, "parameters")$.sample
+  else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
+    .sample =  get_tt_columns(.data)$.sample
   else my_stop()
 
   if( .transcript %>% quo_is_symbol() ) .transcript = .transcript
-  else if(".transcript" %in% (.data %>% attr("parameters") %>% names))
-    .transcript =  attr(.data, "parameters")$.transcript
+  else if(".transcript" %in% (.data %>% get_tt_columns() %>% names))
+    .transcript =  get_tt_columns(.data)$.transcript
   else my_stop()
 
 
@@ -460,24 +471,24 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
   else {
 
     # If so, take them from the attribute
-    if(.data %>% attr("parameters") %>% is.null %>% `!`)
+    if(.data %>% get_tt_columns() %>% is.null %>% `!`)
 
       return(list(
         .element =  switch(
           of_samples %>% `!` %>% sum(1),
-          attr(.data, "parameters")$.sample,
-          attr(.data, "parameters")$.transcript
+          get_tt_columns(.data)$.sample,
+          get_tt_columns(.data)$.transcript
         ),
         .feature = switch(
           of_samples %>% `!` %>% sum(1),
-          attr(.data, "parameters")$.transcript,
-          attr(.data, "parameters")$.sample
+          get_tt_columns(.data)$.transcript,
+          get_tt_columns(.data)$.sample
         )
       ))
     # Else through error
     else
       stop("
-        The fucntion does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
+        tidybulk says: The fucntion does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -501,29 +512,29 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
 
   my_stop = function() {
     stop("
-        The fucntion does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
+        tidybulk says: The fucntion does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
   }
 
   if( .element %>% quo_is_symbol() ) .element = .element
-  else if(of_samples & ".sample" %in% (.data %>% attr("parameters") %>% names))
-    .element =  attr(.data, "parameters")$.sample
-  else if((!of_samples) & ".transcript" %in% (.data %>% attr("parameters") %>% names))
-     .element =  attr(.data, "parameters")$.transcript
+  else if(of_samples & ".sample" %in% (.data %>% get_tt_columns() %>% names))
+    .element =  get_tt_columns(.data)$.sample
+  else if((!of_samples) & ".transcript" %in% (.data %>% get_tt_columns() %>% names))
+     .element =  get_tt_columns(.data)$.transcript
   else my_stop()
 
   if( .feature %>% quo_is_symbol() ) .feature = .feature
-  else if(of_samples & ".transcript" %in% (.data %>% attr("parameters") %>% names))
-    .feature =  attr(.data, "parameters")$.transcript
-  else if((!of_samples) & ".sample" %in% (.data %>% attr("parameters") %>% names))
-    .feature =  attr(.data, "parameters")$.sample
+  else if(of_samples & ".transcript" %in% (.data %>% get_tt_columns() %>% names))
+    .feature =  get_tt_columns(.data)$.transcript
+  else if((!of_samples) & ".sample" %in% (.data %>% get_tt_columns() %>% names))
+    .feature =  get_tt_columns(.data)$.sample
   else my_stop()
 
   if( .abundance %>% quo_is_symbol() ) .abundance = .abundance
-  else if(".abundance" %in% (.data %>% attr("parameters") %>% names))
-    .abundance = attr(.data, "parameters")$.abundance
+  else if(".abundance" %in% (.data %>% get_tt_columns() %>% names))
+    .abundance = get_tt_columns(.data)$.abundance
   else my_stop()
 
   list(.element = .element, .feature = .feature, .abundance = .abundance)
@@ -552,19 +563,19 @@ get_elements = function(.data, .element, of_samples = TRUE){
   else {
 
     # If so, take them from the attribute
-    if(.data %>% attr("parameters") %>% is.null %>% `!`)
+    if(.data %>% get_tt_columns() %>% is.null %>% `!`)
 
       return(list(
         .element =  switch(
           of_samples %>% `!` %>% sum(1),
-          attr(.data, "parameters")$.sample,
-          attr(.data, "parameters")$.transcript
+          get_tt_columns(.data)$.sample,
+          get_tt_columns(.data)$.transcript
         )
       ))
     # Else through error
     else
       stop("
-        The fucntion does not know what your elements (e.g., sample) are.\n
+        tidybulk says: The fucntion does not know what your elements (e.g., sample) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -593,22 +604,22 @@ get_abundance_norm_if_exists = function(.data, .abundance){
   else {
 
     # If so, take them from the attribute
-    if(.data %>% attr("parameters") %>% is.null %>% `!`)
+    if(.data %>% get_tt_columns() %>% is.null %>% `!`)
 
       return(list(
         .abundance =  switch(
-          (".abundance_scaled" %in% (.data %>% attr("parameters") %>% names) &&
-             # .data %>% attr("parameters") %$% .abundance_scaled %>% is.null %>% `!` &&
-             quo_name(.data %>% attr("parameters") %$% .abundance_scaled) %in% (.data %>% colnames)
+          (".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
+             # .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% `!` &&
+             quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)
            ) %>% `!` %>% sum(1),
-          attr(.data, "parameters")$.abundance_scaled,
-          attr(.data, "parameters")$.abundance
+          get_tt_columns(.data)$.abundance_scaled,
+          get_tt_columns(.data)$.abundance
         )
       ))
     # Else through error
     else
       stop("
-        The fucntion does not know what your elements (e.g., sample) are.\n
+        tidybulk says: The fucntion does not know what your elements (e.g., sample) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")

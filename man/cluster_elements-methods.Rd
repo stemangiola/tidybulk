@@ -28,7 +28,7 @@ cluster_elements(
 
 \item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
 
-\item{of_samples}{A boolean. In case the input is a ttBulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 
@@ -52,6 +52,6 @@ At the moment only k-means clustering is supported, the plan is to introduce mor
 \examples{
 
 
-    cluster_elements(ttBulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
+    cluster_elements(tidybulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
 
 }

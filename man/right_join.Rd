@@ -27,7 +27,7 @@ Right join datasets
 }
 \examples{
 `\%>\%` = magrittr::`\%>\%`
-annotation = ttBulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
-ttBulk::counts \%>\% right_join(annotation)
+annotation = tidybulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
+tidybulk::counts \%>\% right_join(annotation)
 
 }
