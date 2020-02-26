@@ -1453,7 +1453,7 @@ get_reduced_dimensions_PCA_bulk <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE,
-					 scale = TRUE,
+					 scale = FALSE,
 					 ...) {
 		# Comply with CRAN NOTES
 		. = NULL
@@ -1599,7 +1599,7 @@ add_reduced_dimensions_PCA_bulk <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE,
-					 scale = TRUE,
+					 scale = FALSE,
 					 ...) {
 		# Comply with CRAN NOTES
 		. = NULL
@@ -1652,7 +1652,6 @@ add_reduced_dimensions_PCA_bulk <-
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
-#' @param scale A boolean
 #' @param ... Further parameters passed to the function Rtsne
 #'
 #' @return A tibble with additional columns
@@ -1667,7 +1666,6 @@ get_reduced_dimensions_TSNE_bulk <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE,
-					 scale = TRUE,
 					 ...) {
 		# Comply with CRAN NOTES
 		. = NULL
@@ -1772,7 +1770,6 @@ get_reduced_dimensions_TSNE_bulk <-
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
-#' @param scale A boolean
 #' @param ... Further parameters passed to the function tSNE
 #'
 #' @return A tibble with additional columns
@@ -1788,7 +1785,6 @@ add_reduced_dimensions_TSNE_bulk <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE,
-					 scale = TRUE,
 					 ...) {
 		# Comply with CRAN NOTES
 		. = NULL
@@ -1812,7 +1808,6 @@ add_reduced_dimensions_TSNE_bulk <-
 						.feature = !!.feature,
 						top = top,
 						log_transform = log_transform,
-						scale = TRUE,
 						...
 					),
 				by = quo_name(.element)

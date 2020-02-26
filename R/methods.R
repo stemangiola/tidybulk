@@ -743,7 +743,6 @@ setGeneric("reduce_dimensions", function(.data,
 				top = top,
 				of_samples = of_samples,
 				log_transform = log_transform,
-				scale = scale,
 				...
 			)
 		else if (action == "get")
@@ -756,7 +755,6 @@ setGeneric("reduce_dimensions", function(.data,
 				top = top,
 				of_samples = of_samples,
 				log_transform = log_transform,
-				scale = scale,
 				...
 			)
 		else
