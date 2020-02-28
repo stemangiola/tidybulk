@@ -40,7 +40,7 @@ test_that("Test class identity of tt object",{
 
 })
 
-test_that("Getting scaled counts - no object",{
+test_that("Only scaled counts - no object",{
 
 	res =
 		scale_abundance(
@@ -103,6 +103,30 @@ test_that("Getting scaled counts - no object",{
 			factor_of_interest = condition_cont
 		),
 		"The factor of interest is continuous"
+	)
+
+})
+
+test_that("Getting scaled counts - no object",{
+
+	res =
+		scale_abundance(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action = "get"
+		)
+
+	expect_equal(
+		unique(res$multiplier),
+		c(1.835983, 1.607034, 2.554334, 1.323492, 2.561279),
+		tolerance=1e-6
+	)
+
+	expect_equal(
+		ncol(res),
+		9
 	)
 
 })
@@ -321,6 +345,32 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 })
 
 
+test_that("Get differential trancript abundance - no object",{
+
+	res =
+		test_differential_abundance(
+			input_df,
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get"
+		)
+
+	expect_equal(
+		pull(slice(distinct(res, b, logFC), 1:4) , "logFC"),
+		c(-12.19282, -12.58096, -11.58243, -13.53479),
+		tolerance=1e-6
+	)
+
+	expect_equal(	ncol(res),	8)
+	expect_equal(	nrow(res),	527)
+
+	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+
+})
+
+
 test_that("Add differential trancript abundance - no object",{
 
 	res =
@@ -431,6 +481,64 @@ test_that("Only adjusted counts - no object",{
 
 })
 
+test_that("Get adjusted counts - no object",{
+
+	cm = input_df
+	cm$batch = 0
+	cm$batch[cm$a %in% c("SRR1740035", "SRR1740043")] = 1
+
+	res =
+		adjust_abundance(
+			cm,
+			~ condition + batch,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get"
+		)
+
+	expect_equal(
+		unique(res$`c_adjusted`)[c(1, 2, 3, 5)],
+		c( 7948 ,2193 , 262, 8152),
+		tolerance=1e-6
+	)
+
+	expect_equal(
+		ncol(res),
+		7
+	)
+
+})
+
+test_that("Add adjusted counts - no object",{
+
+	cm = input_df
+	cm$batch = 0
+	cm$batch[cm$a %in% c("SRR1740035", "SRR1740043")] = 1
+
+	res =
+		adjust_abundance(
+			cm,
+			~ condition + batch,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="add"
+		)
+
+	expect_equal(
+		unique(res$`c_adjusted`)[c(1, 2, 3, 5)],
+		c( NA, 1017,   25, 4904),
+		tolerance=1e-6
+	)
+
+	expect_equal(
+		ncol(res),
+		8
+	)
+
+})
+
 
 test_that("Only cluster lables based on Kmeans - no object",{
 
@@ -453,6 +561,35 @@ test_that("Only cluster lables based on Kmeans - no object",{
 	expect_equal(
 		ncol(res),
 		2
+	)
+
+})
+
+test_that("Get cluster lables based on Kmeans - no object",{
+
+	res =
+		cluster_elements(
+			input_df,
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			method="kmeans",
+			centers = 2,
+			action="get"
+		)
+
+	expect_equal(
+		typeof(res$`cluster kmeans`),
+		"integer"
+	)
+
+	expect_equal(
+		ncol(res),
+		5
+	)
+	expect_equal(
+		nrow(res),
+		5
 	)
 
 })
@@ -503,6 +640,35 @@ test_that("Only cluster lables based on SNN - no object",{
 	expect_equal(
 		ncol(res),
 		2
+	)
+
+})
+
+test_that("Get cluster lables based on SNN - no object",{
+
+	res =
+		cluster_elements(
+			input_df_breast,
+			.element = a,
+			.feature = b,
+			.abundance = `c norm`,
+			method="SNN",
+			resolution=0.8,
+			action="get"
+		)
+
+	expect_equal(
+		typeof(res$`cluster SNN`),
+		"integer"
+	)
+
+	expect_equal(
+		ncol(res),
+		3
+	)
+	expect_equal(
+		nrow(res),
+		251
 	)
 
 })
@@ -559,6 +725,35 @@ test_that("Only reduced dimensions MDS - no object",{
 
 })
 
+test_that("Get reduced dimensions MDS - no object",{
+
+	res =
+		reduce_dimensions(
+			input_df,
+			method = "MDS",
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			action="get"
+		)
+
+	expect_equal(
+		(res$`Dim1`)[1:4],
+		c( -0.8794274, -0.8976436 , 1.4564831 ,-1.0074328),
+		tolerance=10
+	)
+
+	expect_equal(
+		ncol(res),
+		6
+	)
+	expect_equal(
+		nrow(res),
+		5
+	)
+	expect_equal(	class(attr(res, "tt_internals")$MDS)[1], 	"MDS"  )
+})
+
 test_that("Add reduced dimensions MDS - no object",{
 
 	res =
@@ -611,6 +806,33 @@ test_that("Only reduced dimensions PCA - no object",{
 	expect_equal(	class(attr(res, "tt_internals")$PCA), 	"prcomp"  )
 })
 
+test_that("Get reduced dimensions PCA - no object",{
+
+	res =
+		reduce_dimensions(
+			input_df,
+			method="PCA",
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			action="get"
+		)
+
+	expect_equal(
+		typeof(res$`PC1`),
+		"double"
+	)
+
+	expect_equal(
+		ncol(res),
+		6
+	)
+
+	expect_equal(	class(attr(res, "tt_internals")$PCA), 	"prcomp"  )
+
+})
+
+
 test_that("Add reduced dimensions PCA - no object",{
 
 	res =
@@ -636,6 +858,39 @@ test_that("Add reduced dimensions PCA - no object",{
 	expect_equal(	class(attr(res, "tt_internals")$PCA), 	"prcomp"  )
 
 })
+
+test_that("Get reduced dimensions tSNE - no object",{
+
+	set.seed(132)
+
+	res =
+		reduce_dimensions(
+			setNames(tidybulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) ,
+			method="tSNE",
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			action="get"
+		)
+
+	expect_equal(
+		typeof(res$`tSNE1`),
+		"double",
+		tolerance=1e-1
+	)
+
+	expect_equal(
+		ncol(res),
+		8
+	)
+	expect_equal(
+		nrow(res),
+		48
+	)
+
+
+})
+
 
 test_that("Add reduced dimensions tSNE - no object",{
 
@@ -698,6 +953,45 @@ test_that("Only rotated dimensions - no object",{
 	)
 
 })
+
+test_that("Get rotated dimensions - no object",{
+
+	res.pca =
+		reduce_dimensions(
+			input_df,
+			method="PCA",
+			.abundance = c,
+			.element = a,
+			.feature = b,
+			action="get"
+		)
+
+	res =
+		rotate_dimensions(
+			res.pca,
+			dimension_1_column = PC1,
+			dimension_2_column = PC2,
+			rotation_degrees = 45,
+			.element = a,
+			action="get"
+		)
+
+	expect_equal(
+		res$`PC1 rotated 45`[1:4],
+		c(  -0.09683410, -0.10076545, -0.71267271, -0.01774641),
+		tolerance=1e-1
+	)
+
+	expect_equal(
+		ncol(res),
+		8
+	)
+	expect_equal(
+		nrow(res),
+		5
+	)
+})
+
 
 test_that("Add rotated dimensions - no object",{
 
@@ -868,6 +1162,35 @@ test_that("Only cell type proportions - no object",{
 	)
 
 })
+
+test_that("Get cell type proportions - no object",{
+
+	res =
+		deconvolve_cellularity(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			action="get", cores=1
+		)
+
+	expect_equal(
+		as.numeric(res[1,7:10]),
+		c(0.00000000 ,0.00000000, 0.00000000, 0.05134045),
+		tolerance=1e-3
+	)
+
+	expect_equal(
+		ncol(res),
+		26
+	)
+	expect_equal(
+		nrow(res),
+		5
+	)
+
+})
+
 
 test_that("Add cell type proportions - no object",{
 
