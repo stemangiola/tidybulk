@@ -335,11 +335,6 @@ get_scaled_counts_bulk <- function(.data,
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
-	.sample = col_names$.sample
-	.transcript = col_names$.transcript
-	.abundance = col_names$.abundance
-
 	factor_of_interest = enquo(factor_of_interest)
 
 	# Check if package is installed, otherwise install
@@ -455,74 +450,6 @@ get_scaled_counts_bulk <- function(.data,
 			enquo(v))(x,!!value_scaled))
 
 }
-
-#' Add a tibble with scaled counts using TMM
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#' @importFrom stats median
-#'
-#' @param .data A tibble
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
-#' @param factor_of_interest The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param reference_selection_function A function between median, mean and max
-#'
-#' @return A tibble including additional columns
-#'
-#'
-add_scaled_counts_bulk <- function(.data,
-																	 .sample = NULL,
-																	 .transcript = NULL,
-																	 .abundance = NULL,
-																	 factor_of_interest = NULL,
-																	 minimum_counts = 10,
-																	 minimum_proportion = 0.7,
-																	 method = "TMM",
-																	 reference_selection_function = median) {
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
-	.sample = col_names$.sample
-	.transcript = col_names$.transcript
-	.abundance = col_names$.abundance
-
-	factor_of_interest = enquo(factor_of_interest)
-
-	.data_norm =
-		.data %>%
-		get_scaled_counts_bulk(
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			method = method,
-			reference_selection_function = reference_selection_function
-		) %>%
-		arrange(!!.sample,!!.transcript)
-
-	.data %>%
-		arrange(!!.sample,!!.transcript) %>%
-
-		# Add scaled data set
-		bind_cols(.data_norm %>%
-								select(-one_of(quo_name(.sample)), -one_of(quo_name(.transcript))))		%>%
-
-		# Attach attributes
-		reattach_internals(.data_norm)
-
-
-}
-
 
 #' Get differential transcription information to a tibble using edgeR.
 #'
@@ -1050,14 +977,7 @@ get_clusters_kmeans_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
-		.element = col_names$.element
-		.feature = col_names$.feature
-
-		# Get scaled abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
-		col_names = get_abundance_norm_if_exists(.data, .abundance)
-		.abundance = col_names$.abundance
 
 		.data %>%
 
@@ -1084,61 +1004,6 @@ get_clusters_kmeans_bulk <-
 			as_tibble() %>%
 			gather(!!.element, `cluster kmeans`) %>%
 			mutate(`cluster kmeans` = `cluster kmeans` %>% as.factor()) %>%
-
-			# Attach attributes
-			reattach_internals(.data)
-	}
-
-#' Add K-mean clusters to a tibble
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#' @importFrom stats kmeans
-#'
-#'
-#' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
-#' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
-#' @param ... Further parameters passed to the function kmeans
-#'
-#' @return A tibble with additional columns
-#'
-#'
-add_clusters_kmeans_bulk <-
-	function(.data,
-					 .element = NULL,
-					 .feature = NULL,
-					 .abundance,
-					 of_samples = TRUE,
-					 log_transform = TRUE,
-					 ...) {
-		# Comply with CRAN NOTES
-		. = NULL
-
-		# Get column names
-		.element = enquo(.element)
-		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
-		.element = col_names$.element
-		.feature = col_names$.feature
-
-		.abundance = enquo(.abundance)
-
-		.data %>%
-			dplyr::left_join(
-				(.) %>%
-					get_clusters_kmeans_bulk(
-						.abundance = !!.abundance,
-						.element = !!.element,
-						.feature = !!.feature,
-						log_transform = log_transform,
-						...
-					)
-			) %>%
 
 			# Attach attributes
 			reattach_internals(.data)
@@ -1174,14 +1039,7 @@ get_clusters_SNN_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
-		.element = col_names$.element
-		.feature = col_names$.feature
-
-		# Get scaled abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
-		col_names = get_abundance_norm_if_exists(.data, .abundance)
-		.abundance = col_names$.abundance
 
 		# Check if package is installed, otherwise install
 		if ("Seurat" %in% rownames(installed.packages()) == FALSE) {
@@ -1227,57 +1085,6 @@ get_clusters_SNN_bulk <-
 			reattach_internals(.data)
 	}
 
-#' Add SNN shared nearest neighbour clusters to a tibble
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#' @importFrom stats kmeans
-#'
-#'
-#' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
-#' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
-#' @param ... Further parameters passed to the function kmeans
-#'
-#' @return A tibble with additional columns
-#'
-add_clusters_SNN_bulk <-
-	function(.data,
-					 .element = NULL,
-					 .feature = NULL,
-					 .abundance,
-					 of_samples = TRUE,
-					 log_transform = TRUE,
-					 ...) {
-		# Get column names
-		.element = enquo(.element)
-		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
-		.element = col_names$.element
-		.feature = col_names$.feature
-
-		.abundance = enquo(.abundance)
-
-		.data %>%
-			dplyr::left_join(
-				(.) %>%
-					get_clusters_SNN_bulk(
-						.abundance = !!.abundance,
-						.element = !!.element,
-						.feature = !!.feature,
-						log_transform = log_transform,
-						...
-					)
-			) %>%
-
-			# Attach attributes
-			reattach_internals(.data)
-	}
-
 #' Get dimensionality information to a tibble using MDS
 #'
 #' @import dplyr
@@ -1314,14 +1121,7 @@ get_reduced_dimensions_MDS_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
-		.element = col_names$.element
-		.feature = col_names$.feature
-
-		# Get scaled abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
-		col_names = get_abundance_norm_if_exists(.data, .abundance)
-		.abundance = col_names$.abundance
 
 		# Get components from dims
 		components = 1:.dims
@@ -1369,64 +1169,6 @@ get_reduced_dimensions_MDS_bulk <-
 
 	}
 
-#' Add dimensionality information to a tibble using MDS
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#'
-#'
-#' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
-#' @param top An integer. How many top genes to select
-#' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
-#'
-#' @return A tibble with additional columns
-#'
-#'
-add_reduced_dimensions_MDS_bulk <-
-	function(.data,
-					 .element = NULL,
-					 .feature = NULL,
-					 .abundance = NULL,
-					 .dims = 2,
-					 top = 500,
-					 of_samples = TRUE,
-					 log_transform = TRUE) {
-		# Comply with CRAN NOTES
-		. = NULL
-
-		# Get column names
-		.element = enquo(.element)
-		.feature = enquo(.feature)
-		.abundance = enquo(.abundance)
-		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
-		.element = col_names$.element
-		.feature = col_names$.feature
-		.abundance = col_names$.abundance
-
-		.data_processed =
-			.data %>%
-			get_reduced_dimensions_MDS_bulk(
-				.abundance = !!.abundance,
-				.dims = .dims,
-				.element = !!.element,
-				.feature = !!.feature,
-				top = top,
-				of_samples = of_samples,
-				log_transform = log_transform
-			)
-
-		.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-			# Attach attributes
-			reattach_internals(.data_processed)
-	}
-
 #' Get principal component information to a tibble using PCA
 #'
 #' @import dplyr
@@ -1467,14 +1209,7 @@ get_reduced_dimensions_PCA_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
-		.element = col_names$.element
-		.feature = col_names$.feature
-
-		# Get scaled abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
-		col_names = get_abundance_norm_if_exists(.data, .abundance)
-		.abundance = col_names$.abundance
 
 		# Get components from dims
 		components = 1:.dims
@@ -1574,72 +1309,6 @@ get_reduced_dimensions_PCA_bulk <-
 
 	}
 
-#' Add principal component information to a tibble using PCA
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#'
-#'
-#' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
-#' @param top An integer. How many top genes to select
-#' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
-#' @param scale A boolean
-#' @param ... Further parameters passed to the function prcomp
-#'
-#' @return A tibble with additional columns
-#'
-#'
-add_reduced_dimensions_PCA_bulk <-
-	function(.data,
-					 .element = NULL,
-					 .feature = NULL,
-
-					 .abundance = NULL,
-					 .dims = 2,
-					 top = 500,
-					 of_samples = TRUE,
-					 log_transform = TRUE,
-					 scale = FALSE,
-					 ...) {
-		# Comply with CRAN NOTES
-		. = NULL
-
-		# Get column names
-		.element = enquo(.element)
-		.feature = enquo(.feature)
-		.abundance = enquo(.abundance)
-		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
-		.element = col_names$.element
-		.feature = col_names$.feature
-		.abundance = col_names$.abundance
-
-		.data_processed =
-			.data %>%
-			get_reduced_dimensions_PCA_bulk(
-				.abundance = !!.abundance,
-				.dims = .dims,
-				.element = !!.element,
-				.feature = !!.feature,
-				top = top,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				scale = scale,
-				...
-			)
-
-		.data %>%
-			dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-			# Attach attributes
-			reattach_internals(.data_processed)
-	}
-
 #' Get principal component information to a tibble using tSNE
 #'
 #' @import dplyr
@@ -1679,14 +1348,7 @@ get_reduced_dimensions_TSNE_bulk <-
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
-		col_names = get_elements_features(.data, .element, .feature, of_samples)
-		.element = col_names$.element
-		.feature = col_names$.feature
-
-		# Get scaled abundance if present, otherwise get abundance
 		.abundance = enquo(.abundance)
-		col_names = get_abundance_norm_if_exists(.data, .abundance)
-		.abundance = col_names$.abundance
 
 		# Evaluate ...
 		arguments <- list(...)
@@ -1761,69 +1423,6 @@ get_reduced_dimensions_TSNE_bulk <-
 
 	}
 
-#' Add principal component information to a tibble using tSNE
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#'
-#'
-#' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
-#' @param top An integer. How many top genes to select
-#' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
-#' @param ... Further parameters passed to the function tSNE
-#'
-#' @return A tibble with additional columns
-#'
-#'
-add_reduced_dimensions_TSNE_bulk <-
-	function(.data,
-					 .element = NULL,
-					 .feature = NULL,
-
-					 .abundance = NULL,
-					 .dims = 2,
-					 top = 500,
-					 of_samples = TRUE,
-					 log_transform = TRUE,
-					 ...) {
-		# Comply with CRAN NOTES
-		. = NULL
-
-		# Get column names
-		.element = enquo(.element)
-		.feature = enquo(.feature)
-		.abundance = enquo(.abundance)
-		col_names = get_elements_features_abundance(.data, .element, .feature, .abundance, of_samples)
-		.element = col_names$.element
-		.feature = col_names$.feature
-		.abundance = col_names$.abundance
-
-		.data %>%
-			dplyr::left_join(
-				(.) %>%
-					get_reduced_dimensions_TSNE_bulk(
-						.abundance = !!.abundance,
-						.dims = .dims,
-						.element = !!.element,
-						.feature = !!.feature,
-						top = top,
-						log_transform = log_transform,
-						...
-					),
-				by = quo_name(.element)
-			) %>%
-
-			# Attach attributes
-			reattach_internals(.data)
-	}
-
-
 #' Get rotated dimensions of two principal components or MDS dimension of choice, of an angle
 #'
 #' @import dplyr
@@ -1855,10 +1454,6 @@ get_rotated_dimensions =
 					 dimension_2_column_rotated = NULL) {
 		# Get column names
 		.element = enquo(.element)
-		col_names = get_elements(.data, .element)
-		.element = col_names$.element
-
-		# Parse other colnames
 		dimension_1_column = enquo(dimension_1_column)
 		dimension_2_column = enquo(dimension_2_column)
 		dimension_1_column_rotated = enquo(dimension_1_column_rotated)
@@ -1873,20 +1468,6 @@ get_rotated_dimensions =
 			stop(sprintf(
 				"tidybulk says: %s must be unique for each row for the calculation of rotation",
 				quo_name(.element)
-			))
-
-		# Set default col names for rotated dimensions if not set
-		if (quo_is_null(dimension_1_column_rotated))
-			dimension_1_column_rotated = as.symbol(sprintf(
-				"%s rotated %s",
-				quo_name(dimension_1_column),
-				rotation_degrees
-			))
-		if (quo_is_null(dimension_2_column_rotated))
-			dimension_2_column_rotated = as.symbol(sprintf(
-				"%s rotated %s",
-				quo_name(dimension_2_column),
-				rotation_degrees
 			))
 
 		# Function that rotates a 2D space of a arbitrary angle
@@ -1919,82 +1500,6 @@ get_rotated_dimensions =
 			# Attach attributes
 			reattach_internals(.data)
 
-	}
-
-#' Add Rotated dimensions of two principal components or MDS dimensions, of an angle
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#' @importFrom rlang quo_is_null
-#'
-#'
-#' @param .data A tibble
-#' @param dimension_1_column A column symbol. The column of the dimension 1
-#' @param dimension_2_column   A column symbol. The column of the dimension 2
-#' @param rotation_degrees A real number between 0 and 360
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
-#' @param of_samples A boolean
-#' @param dimension_1_column_rotated A column symbol. The column of the dimension 1 rotated
-#' @param dimension_2_column_rotated   A column symbol. The column of the dimension 2 rotated
-#'
-#' @return A tibble with additional rotated columns
-#'
-#'
-add_rotated_dimensions =
-	function(.data,
-					 dimension_1_column,
-					 dimension_2_column,
-					 rotation_degrees,
-					 .element = NULL,
-					 of_samples = TRUE,
-					 dimension_1_column_rotated = NULL,
-					 dimension_2_column_rotated = NULL) {
-		# Comply with CRAN NOTES
-		. = NULL
-
-		# Get column names
-		.element = enquo(.element)
-		col_names = get_elements(.data, .element)
-		.element = col_names$.element
-
-		# Parse other colnames
-		dimension_1_column = enquo(dimension_1_column)
-		dimension_2_column = enquo(dimension_2_column)
-		dimension_1_column_rotated = enquo(dimension_1_column_rotated)
-		dimension_2_column_rotated = enquo(dimension_2_column_rotated)
-
-		# Set default col names for rotated dimensions if not set
-		if (quo_is_null(dimension_1_column_rotated))
-			dimension_1_column_rotated = as.symbol(sprintf(
-				"%s rotated %s",
-				quo_name(dimension_1_column),
-				rotation_degrees
-			))
-		if (quo_is_null(dimension_2_column_rotated))
-			dimension_2_column_rotated = as.symbol(sprintf(
-				"%s rotated %s",
-				quo_name(dimension_2_column),
-				rotation_degrees
-			))
-
-		.data %>%
-			dplyr::left_join(
-				(.) %>%
-					get_rotated_dimensions(
-						dimension_1_column = !!dimension_1_column,
-						dimension_2_column = !!dimension_2_column,
-						rotation_degrees = rotation_degrees,
-						.element = !!.element,
-						of_samples = of_samples,
-						dimension_1_column_rotated = !!dimension_1_column_rotated,
-						dimension_2_column_rotated = !!dimension_2_column_rotated
-					),
-				by = quo_name(.element)
-			) %>%
-
-			# Attach attributes
-			reattach_internals(.data)
 	}
 
 #' Aggregates multiple counts from the same samples (e.g., from isoforms)
@@ -2412,30 +1917,6 @@ get_symbol_from_ensembl <-
 
 	}
 
-#' Add transcript column from ensembl gene id
-#'
-#' @param .data A tibble
-#' @param .ensembl A column symbol. The column that is represents ensembl gene id
-#'
-#' @return A tibble with added annotation
-#'
-#'
-add_symbol_from_ensembl <-
-	function(.data, .ensembl) {
-		# Comply with CRAN NOTES
-		. = NULL
-
-		.ensembl = enquo(.ensembl)
-
-		# Add new symbols column
-		.data %>%
-			dplyr::left_join((.) %>%
-											 	get_symbol_from_ensembl(!!.ensembl)) %>%
-
-			# Attach attributes
-			reattach_internals(.data)
-	}
-
 #' Perform linear equation system analysis through llsr
 #'
 #' @importFrom stats lsfit
@@ -2494,10 +1975,6 @@ get_cell_type_proportions = function(.data,
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
-	.sample = col_names$.sample
-	.transcript = col_names$.transcript
-	.abundance = col_names$.abundance
 
 	# Check if package is installed, otherwise install
 	if ("e1071" %in% rownames(installed.packages()) == FALSE) {
@@ -2579,62 +2056,6 @@ get_cell_type_proportions = function(.data,
 
 }
 
-#' Add cell type proportions from cibersort
-#'
-#' @import parallel
-#'
-#'
-#' @param .data A tibble
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
-#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
-#' @param method A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.
-#' @param ... Further parameters passed to the function Cibersort
-#'
-#' @return A tibble including additional columns
-#'
-#'
-add_cell_type_proportions = function(.data,
-																		 .sample = NULL,
-																		 .transcript = NULL,
-																		 .abundance = NULL,
-																		 reference = X_cibersort,
-																		 method = "cibersort",
-																		 ...) {
-	# Comply with CRAN NOTES
-	. = NULL
-
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
-	.sample = col_names$.sample
-	.transcript = col_names$.transcript
-	.abundance = col_names$.abundance
-
-	.data %>%
-
-		# Add new annotation
-		dplyr::left_join(
-			(.) %>%
-				get_cell_type_proportions(
-					.sample = !!.sample,
-					.transcript = !!.transcript,
-					.abundance = !!.abundance,
-					reference = reference,
-					method = method,
-					...
-				),
-			by = quo_name(.sample)
-		) %>%
-
-		# Attach attributes
-		reattach_internals(.data)
-
-}
-
 #' Get adjusted count for some batch effect
 #'
 #' @import dplyr
@@ -2667,14 +2088,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
-	col_names = get_sample_transcript(.data, .sample, .transcript)
-	.sample = col_names$.sample
-	.transcript = col_names$.transcript
-
-	# Get scaled abundance if present, otherwise get abundance
 	.abundance = enquo(.abundance)
-	col_names = get_abundance_norm_if_exists(.data, .abundance)
-	.abundance = col_names$.abundance
 
 	# Check that .formula includes at least two covariates
 	if (parse_formula(.formula) %>% length %>% `<` (2))
@@ -2785,67 +2199,6 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 		# Attach attributes
 		reattach_internals(.data)
-}
-
-#' Add adjusted count for some batch effect
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#' @importFrom magrittr set_colnames
-#'
-#' @param .data A tibble
-#' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
-#' @param ... Further parameters passed to the function sva::ComBat
-#'
-#' @return A tibble with adjusted counts
-#'
-#'
-add_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
-																														.formula,
-																														.sample = NULL,
-																														.transcript = NULL,
-																														.abundance = NULL,
-																														log_transform = TRUE,
-																														...) {
-	# Comply with CRAN NOTES
-	. = NULL
-
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	col_names = get_sample_transcript(.data, .sample, .transcript)
-	.sample = col_names$.sample
-	.transcript = col_names$.transcript
-
-	# Get scaled abundance if present, otherwise get abundance
-	.abundance = enquo(.abundance)
-	col_names = get_abundance_norm_if_exists(.data, .abundance)
-	.abundance = col_names$.abundance
-
-	.data %>%
-
-		# Add adjsted column
-		dplyr::left_join(
-			(.) %>%
-				get_adjusted_counts_for_unwanted_variation_bulk(
-					.formula,
-					.sample = !!.sample,
-					.transcript = !!.transcript,
-					.abundance = !!.abundance,
-					log_transform = log_transform,
-					...
-				) ,
-			by = c(quo_name(.transcript), quo_name(.sample))
-		) %>%
-
-		# Attach attributes
-		reattach_internals(.data)
-
 }
 
 #' Identify variable genes for dimensionality reduction

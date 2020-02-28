@@ -271,28 +271,48 @@ setGeneric("scale_abundance", function(.data,
 														 reference_selection_function = median,
 														 action = "add")
 {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
 	factor_of_interest = enquo(factor_of_interest)
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	if (action == "add")
-		add_scaled_counts_bulk(
-			.data,
-			!!.sample,
-			!!.transcript,
-			!!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			method = method,
-			reference_selection_function = reference_selection_function
-		)
+	if (action == "add"){
+
+		.data_norm =
+			.data %>%
+			get_scaled_counts_bulk(
+				.sample = !!.sample,
+				.transcript = !!.transcript,
+				.abundance = !!.abundance,
+				factor_of_interest = !!factor_of_interest,
+				minimum_counts = minimum_counts,
+				minimum_proportion = minimum_proportion,
+				method = method,
+				reference_selection_function = reference_selection_function
+			) %>%
+			arrange(!!.sample,!!.transcript)
+
+		.data %>%
+			arrange(!!.sample,!!.transcript) %>%
+
+			# Add scaled data set
+			bind_cols(.data_norm %>%
+									select(-one_of(quo_name(.sample)), -one_of(quo_name(.transcript))))		%>%
+
+			# Attach attributes
+			reattach_internals(.data_norm)
+
+	}
+
 	else if (action == "only")
 		get_scaled_counts_bulk(
 			.data,
@@ -339,7 +359,7 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 															 method = "TMM",
 															 reference_selection_function = median,
 															 action = "add") {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
@@ -447,25 +467,42 @@ setGeneric("cluster_elements", function(.data,
 															 action = "add",
 															 ...)
 {
-	# Make col names
-	.abundance = enquo(.abundance)
+	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
+	col_names = get_elements_features(.data, .element, .feature, of_samples)
+	.element = col_names$.element
+	.feature = col_names$.feature
+
+	# Get scaled abundance if present, otherwise get abundance
+	.abundance = enquo(.abundance)
+	col_names = get_abundance_norm_if_exists(.data, .abundance)
+	.abundance = col_names$.abundance
 
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.abundance)
 
 	if (method == "kmeans") {
-		if (action == "add")
-			add_clusters_kmeans_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
+		if (action == "add"){
+
+			.data %>%
+				dplyr::left_join(
+					(.) %>%
+						get_clusters_kmeans_bulk(
+							.abundance = !!.abundance,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_samples = of_samples,
+							log_transform = log_transform,
+							...
+						)
+				) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+
 		else if (action == "only")
 			get_clusters_kmeans_bulk(
 				.data,
@@ -482,16 +519,26 @@ setGeneric("cluster_elements", function(.data,
 			)
 	}
 	else if (method == "SNN") {
-		if (action == "add")
-			add_clusters_SNN_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
+		if (action == "add"){
+
+			.data %>%
+				dplyr::left_join(
+					(.) %>%
+						get_clusters_SNN_bulk(
+							.abundance = !!.abundance,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_samples = of_samples,
+							log_transform = log_transform,
+							...
+						)
+				) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+
 		else if (action == "only")
 			get_clusters_SNN_bulk(
 				.data,
@@ -539,10 +586,11 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 																log_transform = TRUE,
 																action = "add",
 																...) {
-	# Make col names
-	.abundance = enquo(.abundance)
+	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
+	.abundance = enquo(.abundance)
+
 
 	.data %>%
 
@@ -661,27 +709,44 @@ setGeneric("reduce_dimensions", function(.data,
 																action = "add",
 																...)
 {
-	# Make col names
-	.abundance = enquo(.abundance)
+	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
+	col_names = get_elements_features(.data, .element, .feature, of_samples)
+	.element = col_names$.element
+	.feature = col_names$.feature
+
+	# Get scaled abundance if present, otherwise get abundance
+	.abundance = enquo(.abundance)
+	col_names = get_abundance_norm_if_exists(.data, .abundance)
+	.abundance = col_names$.abundance
 
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.abundance)
 
 	if (method == "MDS") {
-		if (action == "add")
-			add_reduced_dimensions_MDS_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.dims = .dims,
-				.element = !!.element,
-				.feature = !!.feature,
-				top = top,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
+		if (action == "add"){
+
+			.data_processed =
+				.data %>%
+				get_reduced_dimensions_MDS_bulk(
+					.abundance = !!.abundance,
+					.dims = .dims,
+					.element = !!.element,
+					.feature = !!.feature,
+					top = top,
+					of_samples = of_samples,
+					log_transform = log_transform,
+					...
+				)
+
+			.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+				# Attach attributes
+				reattach_internals(.data_processed)
+
+		}
+
 		else if (action == "only")
 			get_reduced_dimensions_MDS_bulk(
 				.data,
@@ -700,19 +765,30 @@ setGeneric("reduce_dimensions", function(.data,
 			)
 	}
 	else if (method == "PCA") {
-		if (action == "add")
-			add_reduced_dimensions_PCA_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.dims = .dims,
-				.element = !!.element,
-				.feature = !!.feature,
-				top = top,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				scale = scale,
-				...
-			)
+		if (action == "add"){
+
+			.data_processed =
+				.data %>%
+				get_reduced_dimensions_PCA_bulk(
+					.abundance = !!.abundance,
+					.dims = .dims,
+					.element = !!.element,
+					.feature = !!.feature,
+					top = top,
+					of_samples = of_samples,
+					log_transform = log_transform,
+					scale = scale,
+					...
+				)
+
+			.data %>%
+				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+				# Attach attributes
+				reattach_internals(.data_processed)
+
+		}
+
 		else if (action == "only")
 			get_reduced_dimensions_PCA_bulk(
 				.data,
@@ -733,18 +809,29 @@ setGeneric("reduce_dimensions", function(.data,
 
 	}
 	else if (method == "tSNE") {
-		if (action == "add")
-			add_reduced_dimensions_TSNE_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.dims = .dims,
-				.element = !!.element,
-				.feature = !!.feature,
-				top = top,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
+		if (action == "add"){
+
+			.data %>%
+				dplyr::left_join(
+					(.) %>%
+						get_reduced_dimensions_TSNE_bulk(
+							.abundance = !!.abundance,
+							.dims = .dims,
+							.element = !!.element,
+							.feature = !!.feature,
+							top = top,
+							of_samples = of_samples,
+							log_transform = log_transform,
+							...
+						),
+					by = quo_name(.element)
+				) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+
 		else if (action == "only")
 			get_reduced_dimensions_TSNE_bulk(
 				.data,
@@ -796,10 +883,10 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 																 scale = TRUE,
 																 action = "add",
 																 ...) {
-	# Make col names
-	.abundance = enquo(.abundance)
+	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
+	.abundance = enquo(.abundance)
 
 	.data %>%
 
@@ -904,25 +991,54 @@ setGeneric("rotate_dimensions", function(.data,
 																action =
 																	"add")
 {
-	# Make col names
+	# Get column names
 	.element = enquo(.element)
+	col_names = get_elements(.data, .element)
+	.element = col_names$.element
+
+	# Parse other colnames
 	dimension_1_column = enquo(dimension_1_column)
 	dimension_2_column = enquo(dimension_2_column)
 	dimension_1_column_rotated = enquo(dimension_1_column_rotated)
 	dimension_2_column_rotated = enquo(dimension_2_column_rotated)
 
+	# Set default col names for rotated dimensions if not set
+	if (quo_is_null(dimension_1_column_rotated))
+		dimension_1_column_rotated = as.symbol(sprintf(
+			"%s rotated %s",
+			quo_name(dimension_1_column),
+			rotation_degrees
+		))
+	if (quo_is_null(dimension_2_column_rotated))
+		dimension_2_column_rotated = as.symbol(sprintf(
+			"%s rotated %s",
+			quo_name(dimension_2_column),
+			rotation_degrees
+		))
 
-	if (action == "add")
-		add_rotated_dimensions(
-			.data,
-			dimension_1_column = !!dimension_1_column,
-			dimension_2_column = !!dimension_2_column,
-			rotation_degrees = rotation_degrees,
-			.element = !!.element,
-			of_samples = of_samples,
-			dimension_1_column_rotated = !!dimension_1_column_rotated,
-			dimension_2_column_rotated = !!dimension_2_column_rotated
-		)
+
+	if (action == "add"){
+
+		.data %>%
+			dplyr::left_join(
+				(.) %>%
+					get_rotated_dimensions(
+						dimension_1_column = !!dimension_1_column,
+						dimension_2_column = !!dimension_2_column,
+						rotation_degrees = rotation_degrees,
+						.element = !!.element,
+						of_samples = of_samples,
+						dimension_1_column_rotated = !!dimension_1_column_rotated,
+						dimension_2_column_rotated = !!dimension_2_column_rotated
+					),
+				by = quo_name(.element)
+			) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
+
 	else if (action == "only")
 		get_rotated_dimensions(
 			.data,
@@ -966,12 +1082,28 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 																 dimension_2_column_rotated = NULL,
 																 action =
 																 	"add") {
-	# Make col names
+	# Get column names
 	.element = enquo(.element)
+
+	# Parse other colnames
 	dimension_1_column = enquo(dimension_1_column)
 	dimension_2_column = enquo(dimension_2_column)
 	dimension_1_column_rotated = enquo(dimension_1_column_rotated)
 	dimension_2_column_rotated = enquo(dimension_2_column_rotated)
+
+	# Set default col names for rotated dimensions if not set
+	if (quo_is_null(dimension_1_column_rotated))
+		dimension_1_column_rotated = as.symbol(sprintf(
+			"%s rotated %s",
+			quo_name(dimension_1_column),
+			rotation_degrees
+		))
+	if (quo_is_null(dimension_2_column_rotated))
+		dimension_2_column_rotated = as.symbol(sprintf(
+			"%s rotated %s",
+			quo_name(dimension_2_column),
+			rotation_degrees
+		))
 
 	.data %>%
 
@@ -1301,24 +1433,43 @@ setGeneric("adjust_abundance", function(.data,
 															action = "add",
 															...)
 {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
+	col_names = get_sample_transcript(.data, .sample, .transcript)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+
+	# Get scaled abundance if present, otherwise get abundance
 	.abundance = enquo(.abundance)
+	col_names = get_abundance_norm_if_exists(.data, .abundance)
+	.abundance = col_names$.abundance
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	if (action == "add")
-		add_adjusted_counts_for_unwanted_variation_bulk(
-			.data,
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			log_transform = log_transform,
-			...
-		)
+	if (action == "add"){
+
+		.data %>%
+
+			# Add adjsted column
+			dplyr::left_join(
+				(.) %>%
+					get_adjusted_counts_for_unwanted_variation_bulk(
+						.formula,
+						.sample = !!.sample,
+						.transcript = !!.transcript,
+						.abundance = !!.abundance,
+						log_transform = log_transform,
+						...
+					) ,
+				by = c(quo_name(.transcript), quo_name(.sample))
+			) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
 	else if (action == "only")
 		get_adjusted_counts_for_unwanted_variation_bulk(
 			.data,
@@ -1358,7 +1509,7 @@ setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 																log_transform = TRUE,
 																action = "add",
 																...) {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
@@ -1609,24 +1760,39 @@ setGeneric("deconvolve_cellularity", function(.data,
 																		 method = "cibersort",
 																		 action = "add",
 																		 ...)  {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	if (action == "add")
-		add_cell_type_proportions(
-			.data,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			reference = reference,
-			method = method,
-			...
-		)
+	if (action == "add"){
+		.data %>%
+
+			# Add new annotation
+			dplyr::left_join(
+				(.) %>%
+					get_cell_type_proportions(
+						.sample = !!.sample,
+						.transcript = !!.transcript,
+						.abundance = !!.abundance,
+						reference = reference,
+						method = method,
+						...
+					),
+				by = quo_name(.sample)
+			) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+	}
+
 	else if (action == "only")
 		get_cell_type_proportions(
 			.data,
@@ -1672,7 +1838,7 @@ setMethod("deconvolve_cellularity",
 																			method = "cibersort",
 																			action = "add",
 																			...) {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
@@ -1767,8 +1933,17 @@ setGeneric("annotate_symbol", function(.data,
 	.ensembl = enquo(.ensembl)
 
 
-	if (action == "add")
-		add_symbol_from_ensembl(.data,!!.ensembl)
+	if (action == "add"){
+
+		# Add new symbols column
+		.data %>%
+			dplyr::left_join((.) %>%
+											 	get_symbol_from_ensembl(!!.ensembl)) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
 
 	else if (action == "only")
 		get_symbol_from_ensembl(.data,!!.ensembl)
@@ -2294,7 +2469,6 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-
 	factor_of_interest = enquo(factor_of_interest)
 
 	.data %>%

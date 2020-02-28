@@ -119,25 +119,27 @@ counts_ct =
 						 	count(symbol) %>%
 						 	filter(n == max(n)))
 
-# # Calculate bimodality
-# bimodality =
-#
-# 	counts_ct %>%
-# 	nest(data = -c(`Cell type formatted`, symbol)) %>%
-# 	mutate(	bimodality_NB =
-# 		future_map(
-# 			data,
-# 			~ .x %>% pull(`count_scaled`) %>% as.integer %>%
-# 				siberg_iterative() %>%
-# 				`[` (1:2) %>%
-# 				setNames(c("bimodality_NB_diff", "bimodality_NB")) %>%
-# 				enframe() %>% spread(name, value)
-# 		)
-# 	) %>%
-# 	select(-data) %>%
-# 	unnest(bimodality_NB)
-#
-# bimodality %>% saveRDS("dev/bimodality.rds")
+# Calculate bimodality
+bimodality =
+
+	counts_ct %>%
+	nest(data = -c(`Cell type formatted`, symbol)) %>%
+	mutate(	bimodality_NB =
+		map(
+			data,
+			~ {
+				#print(.x)
+				.x %>% pull(`count_scaled`) %>% as.integer %>%
+				siberg_iterative() %>%
+				`[` (1:2) %>%
+				setNames(c("bimodality_NB_diff", "bimodality_NB")) %>%
+				enframe() %>% spread(name, value)
+		})
+	) %>%
+	select(-data) %>%
+	unnest(bimodality_NB)
+
+bimodality %>% saveRDS("dev/bimodality.rds")
 
 bimodality = readRDS("dev/bimodality.rds")
 
@@ -209,7 +211,7 @@ markers =
 									 			~ 0 + ct,
 									 			.contrasts = sprintf("ct%s - ct%s", .x, .y),
 									 			fill_missing_values = TRUE,
-									 			action = "get"
+									 			action = "only"
 									 		) %>%
 									 		filter(logFC > 0 & logFC > 2) %>%
 									 		arrange(PValue) %>%
