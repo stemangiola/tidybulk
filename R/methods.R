@@ -2034,21 +2034,32 @@ setGeneric("annotate_symbol", function(.data,
 	# Make col names
 	.ensembl = enquo(.ensembl)
 
+	.data_processed = get_symbol_from_ensembl(.data,!!.ensembl)
 
 	if (action == "add"){
 
 		# Add new symbols column
 		.data %>%
-			dplyr::left_join((.) %>%
-											 	get_symbol_from_ensembl(!!.ensembl)) %>%
+			dplyr::left_join(.data_processed) %>%
 
 			# Attach attributes
 			reattach_internals(.data)
 
 	}
+	# else if (action == "get"){
+	#
+	# 	# Add new symbols column
+	# 	.data %>%
+	#
+	#
+	# 		dplyr::left_join(.data_processed) %>%
+	#
+	# 		# Attach attributes
+	# 		reattach_internals(.data)
+	#
+	# }
 
-	else if (action == "only")
-		get_symbol_from_ensembl(.data,!!.ensembl)
+	else if (action == "only") .data_processed
 
 	else
 		stop(
