@@ -1,8 +1,8 @@
 tidybulk - part of tidyTranscriptomics
 ================
 
-<!-- badges: start --> [![Lifecycle:
-maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+<!-- badges: start -->
+[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
 <!---
@@ -425,18 +425,18 @@ counts.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##      tSNE1  tSNE2 sample                       Call 
-    ##      <dbl>  <dbl> <chr>                        <fct>
-    ##  1   4.04    8.64 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2   0.421  -6.24 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3   9.64   14.0  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4  -5.14    6.11 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5  -1.50    7.06 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6   6.94   -5.44 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7 -21.2   -16.1  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8 -11.6     5.00 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9 -11.5     6.12 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  15.7    15.4  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##     tSNE1    tSNE2 sample                       Call 
+    ##     <dbl>    <dbl> <chr>                        <fct>
+    ##  1  -1.24  -8.47   TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2   7.31   7.30   TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3  -6.64 -12.6    TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4 -15.8    0.0394 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5 -15.6    2.87   TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  -4.32  -2.23   TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7  -5.22  33.1    TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8 -12.9    0.711  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9 -11.3   -0.525  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10   2.83 -24.6    TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -839,18 +839,18 @@ counts.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##      tSNE1  tSNE2 `cluster SNN` sample                      
-    ##      <dbl>  <dbl> <fct>         <chr>                       
-    ##  1   4.04    8.64 0             TCGA-A1-A0SD-01A-11R-A115-07
-    ##  2   0.421  -6.24 2             TCGA-A1-A0SF-01A-11R-A144-07
-    ##  3   9.64   14.0  1             TCGA-A1-A0SG-01A-11R-A144-07
-    ##  4  -5.14    6.11 0             TCGA-A1-A0SH-01A-11R-A084-07
-    ##  5  -1.50    7.06 0             TCGA-A1-A0SI-01A-11R-A144-07
-    ##  6   6.94   -5.44 1             TCGA-A1-A0SJ-01A-11R-A084-07
-    ##  7 -21.2   -16.1  3             TCGA-A1-A0SK-01A-12R-A084-07
-    ##  8 -11.6     5.00 2             TCGA-A1-A0SM-01A-11R-A084-07
-    ##  9 -11.5     6.12 2             TCGA-A1-A0SN-01A-11R-A144-07
-    ## 10  15.7    15.4  1             TCGA-A1-A0SQ-01A-21R-A144-07
+    ##     tSNE1    tSNE2 `cluster SNN` sample                      
+    ##     <dbl>    <dbl> <fct>         <chr>                       
+    ##  1  -1.24  -8.47   0             TCGA-A1-A0SD-01A-11R-A115-07
+    ##  2   7.31   7.30   2             TCGA-A1-A0SF-01A-11R-A144-07
+    ##  3  -6.64 -12.6    1             TCGA-A1-A0SG-01A-11R-A144-07
+    ##  4 -15.8    0.0394 0             TCGA-A1-A0SH-01A-11R-A084-07
+    ##  5 -15.6    2.87   0             TCGA-A1-A0SI-01A-11R-A144-07
+    ##  6  -4.32  -2.23   1             TCGA-A1-A0SJ-01A-11R-A084-07
+    ##  7  -5.22  33.1    3             TCGA-A1-A0SK-01A-12R-A084-07
+    ##  8 -12.9    0.711  2             TCGA-A1-A0SM-01A-11R-A084-07
+    ##  9 -11.3   -0.525  2             TCGA-A1-A0SN-01A-11R-A144-07
+    ## 10   2.83 -24.6    1             TCGA-A1-A0SQ-01A-21R-A144-07
     ## # … with 241 more rows
 
 ``` r

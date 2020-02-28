@@ -4,7 +4,7 @@ output: github_document
 ---
 
  <!-- badges: start -->
-  [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+  [![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
   <!-- badges: end -->
 
 <!---
