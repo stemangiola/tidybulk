@@ -794,3 +794,39 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
   list(  horizontal_cols = horizontal_cols,  vertical_cols = vertical_cols, counts_cols = counts_cols )
 }
 
+get_specific_annotation_columns = function(.data, .col){
+
+
+  # Comply with CRAN NOTES
+  . = NULL
+
+  # Make col names
+  .col = enquo(.col)
+
+  # x-annotation df
+  n_x = .data %>% distinct(!!.col) %>% nrow
+
+  # Sample wise columns
+  .data %>%
+  select(-!!.col) %>%
+  colnames %>%
+  map(
+    ~
+      .x %>%
+      ifelse_pipe(
+        .data %>%
+          distinct(!!.col, !!as.symbol(.x)) %>%
+          nrow %>%
+          equals(n_x),
+        ~ .x,
+        ~ NULL
+      )
+  ) %>%
+
+  # Drop NULL
+  {	(.)[lengths((.)) != 0]	} %>%
+  unlist
+
+}
+
+

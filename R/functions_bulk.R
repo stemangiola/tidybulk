@@ -493,10 +493,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
-	.sample = col_names$.sample
-	.transcript = col_names$.transcript
-	.abundance = col_names$.abundance
 
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
@@ -664,83 +660,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			(.)
 		}
 }
-
-#' Add differential transcription information to a tibble using edgeR.
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#' @importFrom magrittr set_colnames
-#'
-#'
-#' @param .data A tibble
-#' @param .formula a formula with no response variable, referring only to numeric variables
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
-#' @param .coef An integer. See edgeR specifications
-#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
-#' @param significance_threshold A real between 0 and 1
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
-#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#'
-#' @return A tibble with differential_transcript_abundance results
-#'
-#'
-add_differential_transcript_abundance_bulk <- function(.data,
-																											 .formula,
-																											 .sample = NULL,
-																											 .transcript = NULL,
-																											 .abundance = NULL,
-																											 .coef = 2,
-																											 .contrasts = NULL,
-																											 significance_threshold = 0.05,
-																											 minimum_counts = 10,
-																											 minimum_proportion = 0.7,
-																											 fill_missing_values = FALSE,
-																											 scaling_method = "TMM") {
-	# Comply with CRAN NOTES
-	. = NULL
-	FDR = NULL
-
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
-	.sample = col_names$.sample
-	.transcript = col_names$.transcript
-	.abundance = col_names$.abundance
-
-	.data_processed =
-		.data %>%
-		get_differential_transcript_abundance_bulk(
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			.coef = .coef,
-			.contrasts = .contrasts,
-			significance_threshold = significance_threshold,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			fill_missing_values = fill_missing_values,
-			scaling_method = scaling_method
-		)
-
-	.data %>%
-		dplyr::left_join(.data_processed) %>%
-
-		# Arrange
-		ifelse_pipe(.contrasts %>% is.null,
-								~ .x %>% arrange(FDR))	%>%
-
-		# Attach attributes
-		reattach_internals(.data_processed)
-}
-
 
 #' Get ENTREZ id from gene SYMBOL
 #'

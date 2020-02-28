@@ -285,21 +285,22 @@ setGeneric("scale_abundance", function(.data,
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	if (action == "add"){
+	.data_norm =
+		.data %>%
+		get_scaled_counts_bulk(
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			factor_of_interest = !!factor_of_interest,
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion,
+			method = method,
+			reference_selection_function = reference_selection_function
+		) %>%
+		arrange(!!.sample,!!.transcript)
 
-		.data_norm =
-			.data %>%
-			get_scaled_counts_bulk(
-				.sample = !!.sample,
-				.transcript = !!.transcript,
-				.abundance = !!.abundance,
-				factor_of_interest = !!factor_of_interest,
-				minimum_counts = minimum_counts,
-				minimum_proportion = minimum_proportion,
-				method = method,
-				reference_selection_function = reference_selection_function
-			) %>%
-			arrange(!!.sample,!!.transcript)
+
+	if (action == "add"){
 
 		.data %>%
 			arrange(!!.sample,!!.transcript) %>%
@@ -312,19 +313,25 @@ setGeneric("scale_abundance", function(.data,
 			reattach_internals(.data_norm)
 
 	}
+	else if (action == "get"){
 
-	else if (action == "only")
-		get_scaled_counts_bulk(
-			.data,
-			!!.sample,
-			!!.transcript,
-			!!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			method = method,
-			reference_selection_function = reference_selection_function
-		)
+		.data %>%
+
+			# Selecting the right columns
+			select(
+				!!.sample,
+				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
+			) %>%
+			distinct() %>%
+			mutate_if(is.character, as.factor) %>%
+
+			# Join result
+			left_join(.data_norm, by=quo_name(.sample)) %>%
+
+			# Attach attributes
+			reattach_internals(.data_norm)
+	}
+	else if (action == "only") .data_norm
 	else
 		stop(
 			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -502,7 +509,33 @@ setGeneric("cluster_elements", function(.data,
 				reattach_internals(.data)
 
 		}
+		else if (action == "get"){
 
+			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
+				) %>%
+				distinct() %>%
+
+				dplyr::left_join(
+					.data %>%
+						get_clusters_kmeans_bulk(
+							.abundance = !!.abundance,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_samples = of_samples,
+							log_transform = log_transform,
+							...
+						)
+				) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
 		else if (action == "only")
 			get_clusters_kmeans_bulk(
 				.data,
@@ -524,6 +557,33 @@ setGeneric("cluster_elements", function(.data,
 			.data %>%
 				dplyr::left_join(
 					(.) %>%
+						get_clusters_SNN_bulk(
+							.abundance = !!.abundance,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_samples = of_samples,
+							log_transform = log_transform,
+							...
+						)
+				) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+		else if (action == "get"){
+
+			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
+				) %>%
+				distinct() %>%
+
+				dplyr::left_join(
+					.data %>%
 						get_clusters_SNN_bulk(
 							.abundance = !!.abundance,
 							.element = !!.element,
@@ -725,31 +785,10 @@ setGeneric("reduce_dimensions", function(.data,
 	validation(.data, !!.element, !!.feature, !!.abundance)
 
 	if (method == "MDS") {
-		if (action == "add"){
 
-			.data_processed =
-				.data %>%
-				get_reduced_dimensions_MDS_bulk(
-					.abundance = !!.abundance,
-					.dims = .dims,
-					.element = !!.element,
-					.feature = !!.feature,
-					top = top,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					...
-				)
-
-			.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-
-		else if (action == "only")
+		.data_processed =
+			.data %>%
 			get_reduced_dimensions_MDS_bulk(
-				.data,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -759,29 +798,26 @@ setGeneric("reduce_dimensions", function(.data,
 				log_transform = log_transform,
 				...
 			)
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-	}
-	else if (method == "PCA") {
+
 		if (action == "add"){
 
-			.data_processed =
-				.data %>%
-				get_reduced_dimensions_PCA_bulk(
-					.abundance = !!.abundance,
-					.dims = .dims,
-					.element = !!.element,
-					.feature = !!.feature,
-					top = top,
-					of_samples = of_samples,
-					log_transform = log_transform,
-					scale = scale,
-					...
-				)
+			.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+				# Attach attributes
+				reattach_internals(.data_processed)
+
+		}
+		else if (action == "get"){
 
 			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
+				) %>%
+				distinct() %>%
+
 				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
 
 				# Attach attributes
@@ -789,9 +825,17 @@ setGeneric("reduce_dimensions", function(.data,
 
 		}
 
-		else if (action == "only")
+		else if (action == "only") .data_processed
+		else
+			stop(
+				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			)
+	}
+	else if (method == "PCA") {
+
+		.data_processed =
+			.data %>%
 			get_reduced_dimensions_PCA_bulk(
-				.data,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -802,6 +846,36 @@ setGeneric("reduce_dimensions", function(.data,
 				scale = scale,
 				...
 			)
+
+		if (action == "add"){
+
+			.data %>%
+				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+				# Attach attributes
+				reattach_internals(.data_processed)
+
+		}
+
+		else if (action == "get"){
+
+			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
+				) %>%
+				distinct() %>%
+
+				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+				# Attach attributes
+				reattach_internals(.data_processed)
+
+		}
+
+		else if (action == "only")	.data_processed
 		else
 			stop(
 				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -809,32 +883,10 @@ setGeneric("reduce_dimensions", function(.data,
 
 	}
 	else if (method == "tSNE") {
-		if (action == "add"){
 
+		.data_processed =
 			.data %>%
-				dplyr::left_join(
-					(.) %>%
-						get_reduced_dimensions_TSNE_bulk(
-							.abundance = !!.abundance,
-							.dims = .dims,
-							.element = !!.element,
-							.feature = !!.feature,
-							top = top,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by = quo_name(.element)
-				) %>%
-
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-
-		else if (action == "only")
 			get_reduced_dimensions_TSNE_bulk(
-				.data,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -844,6 +896,34 @@ setGeneric("reduce_dimensions", function(.data,
 				log_transform = log_transform,
 				...
 			)
+
+		if (action == "add"){
+
+			.data %>%
+				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+		else if (action == "get"){
+
+			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
+				) %>%
+				distinct() %>%
+
+				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+		else if (action == "only") .data_processed
 		else
 			stop(
 				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -988,8 +1068,7 @@ setGeneric("rotate_dimensions", function(.data,
 																of_samples = TRUE,
 																dimension_1_column_rotated = NULL,
 																dimension_2_column_rotated = NULL,
-																action =
-																	"add")
+																action =	"add")
 {
 	# Get column names
 	.element = enquo(.element)
@@ -1016,30 +1095,7 @@ setGeneric("rotate_dimensions", function(.data,
 			rotation_degrees
 		))
 
-
-	if (action == "add"){
-
-		.data %>%
-			dplyr::left_join(
-				(.) %>%
-					get_rotated_dimensions(
-						dimension_1_column = !!dimension_1_column,
-						dimension_2_column = !!dimension_2_column,
-						rotation_degrees = rotation_degrees,
-						.element = !!.element,
-						of_samples = of_samples,
-						dimension_1_column_rotated = !!dimension_1_column_rotated,
-						dimension_2_column_rotated = !!dimension_2_column_rotated
-					),
-				by = quo_name(.element)
-			) %>%
-
-			# Attach attributes
-			reattach_internals(.data)
-
-	}
-
-	else if (action == "only")
+	.data_processed =
 		get_rotated_dimensions(
 			.data,
 			dimension_1_column = !!dimension_1_column,
@@ -1050,6 +1106,34 @@ setGeneric("rotate_dimensions", function(.data,
 			dimension_1_column_rotated = !!dimension_1_column_rotated,
 			dimension_2_column_rotated = !!dimension_2_column_rotated
 		)
+
+	if (action == "add"){
+
+		.data %>%
+			dplyr::left_join(	.data_processed,	by = quo_name(.element)	) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
+	else if (action == "get"){
+
+		.data %>%
+
+			# Selecting the right columns
+			select(
+				!!.element,
+				get_specific_annotation_columns(.data, !!.element)
+			) %>%
+			distinct() %>%
+
+			dplyr::left_join(	.data_processed,	by = quo_name(.element)	) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
+	else if (action == "only") .data_processed
 	else
 		stop(
 			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -1448,29 +1532,7 @@ setGeneric("adjust_abundance", function(.data,
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	if (action == "add"){
-
-		.data %>%
-
-			# Add adjsted column
-			dplyr::left_join(
-				(.) %>%
-					get_adjusted_counts_for_unwanted_variation_bulk(
-						.formula,
-						.sample = !!.sample,
-						.transcript = !!.transcript,
-						.abundance = !!.abundance,
-						log_transform = log_transform,
-						...
-					) ,
-				by = c(quo_name(.transcript), quo_name(.sample))
-			) %>%
-
-			# Attach attributes
-			reattach_internals(.data)
-
-	}
-	else if (action == "only")
+	.data_processed =
 		get_adjusted_counts_for_unwanted_variation_bulk(
 			.data,
 			.formula,
@@ -1480,6 +1542,37 @@ setGeneric("adjust_abundance", function(.data,
 			log_transform = log_transform,
 			...
 		)
+
+	if (action == "add"){
+
+		.data %>%
+
+			# Add adjsted column
+			dplyr::left_join(.data_processed,	by = c(quo_name(.transcript), quo_name(.sample))) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
+	else if (action == "get"){
+
+		.data %>%
+
+			# Selecting the right columns
+			select(
+				!!.sample,
+				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
+			) %>%
+			distinct() %>%
+
+			# Add adjsted column
+			dplyr::left_join(.data_processed,	by = quo_name(.sample)) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
+	else if (action == "only") .data_processed
 	else
 		stop(
 			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -1772,37 +1865,46 @@ setGeneric("deconvolve_cellularity", function(.data,
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
+	.data_processed =
+		get_cell_type_proportions(
+		.data,
+		.sample = !!.sample,
+		.transcript = !!.transcript,
+		.abundance = !!.abundance,
+		reference = reference,
+		method = method,
+		...
+	)
+
 	if (action == "add"){
 		.data %>%
 
 			# Add new annotation
-			dplyr::left_join(
-				(.) %>%
-					get_cell_type_proportions(
-						.sample = !!.sample,
-						.transcript = !!.transcript,
-						.abundance = !!.abundance,
-						reference = reference,
-						method = method,
-						...
-					),
-				by = quo_name(.sample)
-			) %>%
+			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
 
 			# Attach attributes
 			reattach_internals(.data)
 	}
 
-	else if (action == "only")
-		get_cell_type_proportions(
-			.data,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			reference = reference,
-			method = method,
-			...
-		)
+	else if (action == "get"){
+		.data %>%
+
+
+			# Selecting the right columns
+			select(
+				!!.sample,
+				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
+			) %>%
+			distinct() %>%
+
+			# Add new annotation
+			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+	}
+
+	else if (action == "only") .data_processed
 	else
 		stop(
 			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -2061,30 +2163,19 @@ setGeneric("test_differential_abundance", function(.data,
 																					scaling_method = "TMM",
 																					action = "add")
 {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	if (action == "add")
-		add_differential_transcript_abundance_bulk(
-			.data,
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			.coef = .coef,
-			.contrasts = .contrasts,
-			significance_threshold = significance_threshold,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			fill_missing_values = fill_missing_values,
-			scaling_method = scaling_method
-		)
-	else if (action == "only")
+	.data_processed =
 		get_differential_transcript_abundance_bulk(
 			.data,
 			.formula,
@@ -2099,6 +2190,42 @@ setGeneric("test_differential_abundance", function(.data,
 			fill_missing_values = fill_missing_values,
 			scaling_method = scaling_method
 		)
+
+	if (action == "add"){
+
+		.data %>%
+			dplyr::left_join(.data_processed) %>%
+
+			# Arrange
+			ifelse_pipe(.contrasts %>% is.null,
+									~ .x %>% arrange(FDR))	%>%
+
+			# Attach attributes
+			reattach_internals(.data_processed)
+
+	}
+	else if (action == "get"){
+
+		.data %>%
+
+			# Selecting the right columns
+			select(
+				!!.transcript,
+				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$vertical_cols
+			) %>%
+			distinct() %>%
+
+			dplyr::left_join(.data_processed) %>%
+
+			# Arrange
+			ifelse_pipe(.contrasts %>% is.null,
+									~ .x %>% arrange(FDR))	%>%
+
+			# Attach attributes
+			reattach_internals(.data_processed)
+
+	}
+	else if (action == "only") .data_processed
 	else
 		stop(
 			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"

@@ -156,7 +156,7 @@ test_that("filter variable - no object",{
 
 })
 
-test_that("Get differential trancript abundance - no object",{
+test_that("Only differential trancript abundance - no object",{
 
 	res =
 		test_differential_abundance(
@@ -292,7 +292,7 @@ test_that("Get differential trancript abundance - no object",{
 		)
 })
 
-test_that("Get differential trancript abundance - no object - with contrasts",{
+test_that("Only differential trancript abundance - no object - with contrasts",{
 
 	res =
 		test_differential_abundance(
@@ -402,7 +402,7 @@ test_that("Get entrez from symbol - no object",{
 # })
 #
 
-test_that("Get adjusted counts - no object",{
+test_that("Only adjusted counts - no object",{
 
 	cm = input_df
 	cm$batch = 0
@@ -432,7 +432,7 @@ test_that("Get adjusted counts - no object",{
 })
 
 
-test_that("Get cluster lables based on Kmeans - no object",{
+test_that("Only cluster lables based on Kmeans - no object",{
 
 	res =
 		cluster_elements(
@@ -482,7 +482,7 @@ test_that("Add cluster lables based on Kmeans - no object",{
 
 })
 
-test_that("Get cluster lables based on SNN - no object",{
+test_that("Only cluster lables based on SNN - no object",{
 
 	res =
 		cluster_elements(
@@ -532,7 +532,7 @@ test_that("Add cluster lables based on SNN - no object",{
 
 })
 
-test_that("Get reduced dimensions MDS - no object",{
+test_that("Only reduced dimensions MDS - no object",{
 
 	res =
 		reduce_dimensions(
@@ -585,7 +585,7 @@ test_that("Add reduced dimensions MDS - no object",{
 	expect_equal(	class(attr(res, "tt_internals")$MDS)[1], 	"MDS"  )
 })
 
-test_that("Get reduced dimensions PCA - no object",{
+test_that("Only reduced dimensions PCA - no object",{
 
 	res =
 		reduce_dimensions(
@@ -664,7 +664,7 @@ test_that("Add reduced dimensions tSNE - no object",{
 
 })
 
-test_that("Get rotated dimensions - no object",{
+test_that("Only rotated dimensions - no object",{
 
 	res.pca =
 		reduce_dimensions(
@@ -780,7 +780,7 @@ test_that("Drop redundant correlated - no object",{
 })
 
 
-test_that("Get symbol from ensambl - no object",{
+test_that("Only symbol from ensambl - no object",{
 
 	res =
 		annotate_symbol(
@@ -822,7 +822,7 @@ test_that("Add symbol from ensambl - no object",{
 
 })
 
-test_that("Get cell type proportions - no object",{
+test_that("Only cell type proportions - no object",{
 
 	# Cibersort
 	res =
