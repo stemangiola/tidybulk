@@ -692,7 +692,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				as_tibble(rownames = quo_name(.transcript)) %>%
 
 				# Mark DE genes
-				mutate(is_de = FDR < significance_threshold) 	%>%
+				mutate(significant = FDR < significance_threshold) 	%>%
 
 				# Arrange
 				arrange(FDR),
@@ -711,7 +711,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 							mutate(constrast = colnames(my_contrasts)[.x]) %>%
 
 							# Mark DE genes
-							mutate(is_de = FDR < significance_threshold)
+							mutate(significant = FDR < significance_threshold)
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
 											names_from = constrast)

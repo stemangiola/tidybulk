@@ -577,7 +577,7 @@ counts.de
 ```
 
     ## # A tibble: 19,544 x 8
-    ##    transcript   logFC  logCPM    LR   PValue      FDR is_de lowly_abundant
+    ##    transcript   logFC  logCPM    LR   PValue      FDR significant lowly_abundant
     ##    <chr>        <dbl>   <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>         
     ##  1 FRZB          6.57 -1.71   126.  2.56e-29 3.14e-25 TRUE  FALSE         
     ##  2 ANKRD18DP     4.83 -0.454  109.  1.57e-25 9.63e-22 TRUE  FALSE         
@@ -874,7 +874,7 @@ counts.norm.SNN %>%
 ```
 
     ## # A tibble: 500 x 8
-    ##    ens             logFC logCPM    LR   PValue      FDR is_de lowly_abundant
+    ##    ens             logFC logCPM    LR   PValue      FDR significant lowly_abundant
     ##    <chr>           <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>         
     ##  1 ENSG00000186832  6.17   7.99  446. 4.54e-99 2.27e-96 TRUE  FALSE         
     ##  2 ENSG00000111716  2.94   9.64  407. 1.32e-90 3.30e-88 TRUE  FALSE         
