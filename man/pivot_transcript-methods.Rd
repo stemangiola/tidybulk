@@ -27,7 +27,7 @@ This functon extracts only transcript-related information for downstream analysi
 
 
 	pivot_transcript(
-		tidybulk::counts_min,
+		tidybulk::counts_mini,
 		.transcript = transcript
 	)
 

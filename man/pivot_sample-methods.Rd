@@ -27,7 +27,7 @@ This functon extracts only sample-related information for downstream analysis (e
 
 
 	pivot_sample(
-		tidybulk::counts_min,
+		tidybulk::counts_mini,
 		.sample = sample
 	)
 

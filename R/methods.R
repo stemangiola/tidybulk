@@ -2787,7 +2787,7 @@ setMethod("test_gene_enrichment",
 #'
 #'
 #' 	pivot_sample(
-#'			tidybulk::counts_min,
+#'			tidybulk::counts_mini,
 #'			.sample = sample
 #'		)
 #'
@@ -2870,7 +2870,7 @@ setMethod("pivot_sample",
 #'
 #'
 #' 	pivot_transcript(
-#'			tidybulk::counts_min,
+#'			tidybulk::counts_mini,
 #'			.transcript = transcript
 #'		)
 #'
