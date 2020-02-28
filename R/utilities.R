@@ -276,6 +276,12 @@ attach_to_internals = function(.data, .object, .name){
 
   .data %>% add_attr(tt_internals, "tt_internals")
 }
+
+drop_internals = function(.data){
+
+  .data %>% drop_attr("tt_internals")
+}
+
 #' Add attribute to abject
 #'
 #'
@@ -286,6 +292,18 @@ attach_to_internals = function(.data, .object, .name){
 #' @return A tibble with an additional attribute
 add_attr = function(var, attribute, name) {
   attr(var, name) <- attribute
+  var
+}
+
+#' Drop attribute to abject
+#'
+#'
+#' @param var A tibble
+#' @param name A character name of the attribute
+#'
+#' @return A tibble with an additional attribute
+drop_attr = function(var, name) {
+  attr(var, name) <- NULL
   var
 }
 
@@ -407,6 +425,63 @@ get_sample_counts = function(.data, .sample, .abundance){
   list(.sample = .sample, .abundance = .abundance)
 
 }
+
+#' Get column names either from user or from attributes
+#'
+#' @importFrom rlang quo_is_symbol
+#'
+#' @param .data A tibble
+#' @param .sample A character name of the sample column
+#'
+#' @return A list of column enquo or error
+get_sample = function(.data, .sample){
+
+
+  my_stop = function() {
+    stop("
+        tidybulk says: The fucntion does not know what your sample, transcript and counts columns are.\n
+        You have to either enter those as symbols (e.g., `sample`), \n
+        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
+      ")
+  }
+
+  if( .sample %>% quo_is_symbol() ) .sample = .sample
+  else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
+    .sample =  get_tt_columns(.data)$.sample
+  else my_stop()
+
+  list(.sample = .sample)
+
+}
+
+#' Get column names either from user or from attributes
+#'
+#' @importFrom rlang quo_is_symbol
+#'
+#' @param .data A tibble
+#' @param .transcript A character name of the transcript column
+#'
+#' @return A list of column enquo or error
+get_transcript = function(.data, .transcript){
+
+
+  my_stop = function() {
+    stop("
+        tidybulk says: The fucntion does not know what your transcript, transcript and counts columns are.\n
+        You have to either enter those as symbols (e.g., `transcript`), \n
+        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
+      ")
+  }
+
+  if( .transcript %>% quo_is_symbol() ) .transcript = .transcript
+  else if(".transcript" %in% (.data %>% get_tt_columns() %>% names))
+    .transcript =  get_tt_columns(.data)$.transcript
+  else my_stop()
+
+  list(.transcript = .transcript)
+
+}
+
 
 #' Get column names either from user or from attributes
 #'
@@ -793,4 +868,40 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
 
   list(  horizontal_cols = horizontal_cols,  vertical_cols = vertical_cols, counts_cols = counts_cols )
 }
+
+get_specific_annotation_columns = function(.data, .col){
+
+
+  # Comply with CRAN NOTES
+  . = NULL
+
+  # Make col names
+  .col = enquo(.col)
+
+  # x-annotation df
+  n_x = .data %>% distinct(!!.col) %>% nrow
+
+  # Sample wise columns
+  .data %>%
+  select(-!!.col) %>%
+  colnames %>%
+  map(
+    ~
+      .x %>%
+      ifelse_pipe(
+        .data %>%
+          distinct(!!.col, !!as.symbol(.x)) %>%
+          nrow %>%
+          equals(n_x),
+        ~ .x,
+        ~ NULL
+      )
+  ) %>%
+
+  # Drop NULL
+  {	(.)[lengths((.)) != 0]	} %>%
+  unlist
+
+}
+
 

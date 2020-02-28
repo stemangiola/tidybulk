@@ -37,7 +37,7 @@ scale_abundance(
 
 \item{reference_selection_function}{A fucntion that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.}
 
-\item{action}{A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.}
+\item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
 }
 \value{
 A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
