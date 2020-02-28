@@ -225,7 +225,7 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A fucntion that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
-#' @param action A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.
+#' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
 #'
 #' @details Scales transcript abundance compansating for sequencing depth
 #' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
@@ -293,7 +293,7 @@ setGeneric("scale_abundance", function(.data,
 			method = method,
 			reference_selection_function = reference_selection_function
 		)
-	else if (action == "get")
+	else if (action == "only")
 		get_scaled_counts_bulk(
 			.data,
 			!!.sample,
@@ -466,7 +466,7 @@ setGeneric("cluster_elements", function(.data,
 				log_transform = log_transform,
 				...
 			)
-		else if (action == "get")
+		else if (action == "only")
 			get_clusters_kmeans_bulk(
 				.data,
 				.abundance = !!.abundance,
@@ -492,7 +492,7 @@ setGeneric("cluster_elements", function(.data,
 				log_transform = log_transform,
 				...
 			)
-		else if (action == "get")
+		else if (action == "only")
 			get_clusters_SNN_bulk(
 				.data,
 				.abundance = !!.abundance,
@@ -682,7 +682,7 @@ setGeneric("reduce_dimensions", function(.data,
 				log_transform = log_transform,
 				...
 			)
-		else if (action == "get")
+		else if (action == "only")
 			get_reduced_dimensions_MDS_bulk(
 				.data,
 				.abundance = !!.abundance,
@@ -713,7 +713,7 @@ setGeneric("reduce_dimensions", function(.data,
 				scale = scale,
 				...
 			)
-		else if (action == "get")
+		else if (action == "only")
 			get_reduced_dimensions_PCA_bulk(
 				.data,
 				.abundance = !!.abundance,
@@ -745,7 +745,7 @@ setGeneric("reduce_dimensions", function(.data,
 				log_transform = log_transform,
 				...
 			)
-		else if (action == "get")
+		else if (action == "only")
 			get_reduced_dimensions_TSNE_bulk(
 				.data,
 				.abundance = !!.abundance,
@@ -923,7 +923,7 @@ setGeneric("rotate_dimensions", function(.data,
 			dimension_1_column_rotated = !!dimension_1_column_rotated,
 			dimension_2_column_rotated = !!dimension_2_column_rotated
 		)
-	else if (action == "get")
+	else if (action == "only")
 		get_rotated_dimensions(
 			.data,
 			dimension_1_column = !!dimension_1_column,
@@ -1319,7 +1319,7 @@ setGeneric("adjust_abundance", function(.data,
 			log_transform = log_transform,
 			...
 		)
-	else if (action == "get")
+	else if (action == "only")
 		get_adjusted_counts_for_unwanted_variation_bulk(
 			.data,
 			.formula,
@@ -1627,7 +1627,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 			method = method,
 			...
 		)
-	else if (action == "get")
+	else if (action == "only")
 		get_cell_type_proportions(
 			.data,
 			.sample = !!.sample,
@@ -1770,7 +1770,7 @@ setGeneric("annotate_symbol", function(.data,
 	if (action == "add")
 		add_symbol_from_ensembl(.data,!!.ensembl)
 
-	else if (action == "get")
+	else if (action == "only")
 		get_symbol_from_ensembl(.data,!!.ensembl)
 
 	else
@@ -1909,7 +1909,7 @@ setGeneric("test_differential_abundance", function(.data,
 			fill_missing_values = fill_missing_values,
 			scaling_method = scaling_method
 		)
-	else if (action == "get")
+	else if (action == "only")
 		get_differential_transcript_abundance_bulk(
 			.data,
 			.formula,

@@ -538,7 +538,7 @@ TidyTranscriptomics
 ``` r
 counts.de =
     counts %>%
-    test_differential_abundance( ~ condition, action="get")
+    test_differential_abundance( ~ condition, action="only")
 ```
 
 </div>
@@ -601,7 +601,7 @@ counts.de =
     test_differential_abundance(
         ~ 0 + condition,                  
         .contrasts = c( "conditionTRUE - conditionFALSE"),
-        action="get"
+        action="only"
     )
 ```
 
@@ -624,7 +624,7 @@ TidyTranscriptomics
 counts.norm.adj =
     counts.norm %>% adjust_abundance(
         ~ factor_of_interest + batch,
-        action = "get"
+        action = "only"
 )
 ```
 
@@ -869,7 +869,7 @@ counts.norm.SNN %>%
     mutate(factor_of_interest = `cluster SNN` == 3) %>%
     test_differential_abundance(
     ~ factor_of_interest,
-    action="get"
+    action="only"
    )
 ```
 
@@ -1106,7 +1106,7 @@ sample
         .element = sample,
         .feature = transcript,
         .dims = 3,
-        action="get"
+        action="only"
     )
 ```
 

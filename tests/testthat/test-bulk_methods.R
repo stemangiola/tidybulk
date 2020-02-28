@@ -48,7 +48,7 @@ test_that("Getting scaled counts - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			action = "get"
+			action = "only"
 		)
 
 	expect_equal(
@@ -76,7 +76,7 @@ test_that("Getting scaled counts - no object",{
 			.transcript = b,
 			.abundance = c,
 			factor_of_interest = condition,
-			action = "get"
+			action = "only"
 		)
 
 	expect_equal(
@@ -165,7 +165,7 @@ test_that("Get differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			action="get"
+			action="only"
 		)
 
 	expect_equal(
@@ -192,7 +192,7 @@ test_that("Get differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			action="get"
+			action="only"
 		)
 
 	expect_equal(
@@ -216,7 +216,7 @@ test_that("Get differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			action="get"
+			action="only"
 		)
 
 	expect_equal(
@@ -240,7 +240,7 @@ test_that("Get differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			action="get"
+			action="only"
 		),
 		"Design matrix not of full rank"
 	)
@@ -253,7 +253,7 @@ test_that("Get differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			action="get"
+			action="only"
 		),
 		"You have less than two replicated for each factorial condition"
 	)
@@ -266,7 +266,7 @@ test_that("Get differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			action="get",
+			action="only",
 			minimum_proportion = 0.5,
 			minimum_counts = 30
 		)
@@ -288,7 +288,7 @@ test_that("Get differential trancript abundance - no object",{
 			.transcript = b,
 			.abundance = c,
 			scaling_method = "TMM",
-			action="get"
+			action="only"
 		)
 })
 
@@ -302,7 +302,7 @@ test_that("Get differential trancript abundance - no object - with contrasts",{
 			.transcript = b,
 			.abundance = c,
 			.contrasts = c( "conditionTRUE - conditionFALSE",  "conditionFALSE - conditionTRUE"),
-			action="get"
+			action="only"
 		)
 
 	expect_equal(
@@ -415,7 +415,7 @@ test_that("Get adjusted counts - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			action="get"
+			action="only"
 		)
 
 	expect_equal(
@@ -442,7 +442,7 @@ test_that("Get cluster lables based on Kmeans - no object",{
 			.feature = b,
 			method="kmeans",
 			centers = 2,
-			action="get"
+			action="only"
 		)
 
 	expect_equal(
@@ -492,7 +492,7 @@ test_that("Get cluster lables based on SNN - no object",{
 			.abundance = `c norm`,
 			method="SNN",
 			resolution=0.8,
-			action="get"
+			action="only"
 		)
 
 	expect_equal(
@@ -541,7 +541,7 @@ test_that("Get reduced dimensions MDS - no object",{
 			.abundance = c,
 			.element = a,
 			.feature = b,
-			action="get"
+			action="only"
 		)
 
 	expect_equal(
@@ -594,7 +594,7 @@ test_that("Get reduced dimensions PCA - no object",{
 			.abundance = c,
 			.element = a,
 			.feature = b,
-			action="get"
+			action="only"
 		)
 
 	expect_equal(
@@ -683,7 +683,7 @@ test_that("Get rotated dimensions - no object",{
 			dimension_2_column = PC2,
 			rotation_degrees = 45,
 			.element = a,
-			action="get"
+			action="only"
 		)
 
 	expect_equal(
@@ -786,7 +786,7 @@ test_that("Get symbol from ensambl - no object",{
 		annotate_symbol(
 			tidybulk::counts_ensembl,
 			.ensembl = ens,
-			action="get"
+			action="only"
 		)
 
 	expect_equal(
@@ -831,7 +831,7 @@ test_that("Get cell type proportions - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			action="get", cores=1
+			action="only", cores=1
 		)
 
 	expect_equal(
@@ -853,7 +853,7 @@ test_that("Get cell type proportions - no object",{
 			.transcript = b,
 			.abundance = c,
 			method = "llsr",
-			action="get", cores=1
+			action="only", cores=1
 		)
 
 	expect_equal(
