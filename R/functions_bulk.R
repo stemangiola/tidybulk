@@ -180,6 +180,12 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 	.data %>%
 		select(!!.sample,!!.transcript, !!.abundance) %>%
 		spread(!!.sample, !!.abundance) %>%
+
+		# Drop if transcript have missing value
+		drop_na() %>%
+		#eliminate_sparse_transcripts(!!.transcript) %>%
+
+		# Call edgeR
 		as_matrix(rownames = !!.transcript) %>%
 		edgeR::filterByExpr(
 			min.count = minimum_counts,
