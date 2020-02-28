@@ -1277,3 +1277,15 @@ test_that("nest - no object",{
 	expect_equal(	class(nest(tidybulk(input_df, a, b, c), data = a))[1],	"tbl_df"	)
 
 })
+
+test_that("pivot",{
+
+	expect_equal(	ncol(pivot_sample(tidybulk(input_df, a, b, c))),	4	)
+
+	expect_equal(	ncol(pivot_sample(input_df, a)),	4	)
+
+	expect_equal(	ncol(pivot_transcript(tidybulk(input_df, a, b, c))),	1	)
+
+	expect_equal(	ncol(pivot_transcript(input_df, b)),	1	)
+
+})

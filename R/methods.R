@@ -1991,7 +1991,7 @@ setMethod(
 #'
 #' \lifecycle{maturing}
 #'
-#' @description annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
+#' @description annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -2651,7 +2651,7 @@ setMethod("keep_abundant",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description test_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
+#' @description test_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -2761,3 +2761,169 @@ setMethod("test_gene_enrichment",
 setMethod("test_gene_enrichment",
 					"tidybulk",
 					.test_gene_enrichment)
+
+#' Extract sampe-wise information
+#'
+#' \lifecycle{maturing}
+#'
+#' @description pivot_sample() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sampe-related columns
+#'
+#' @importFrom magrittr "%>%"
+#'
+#' @name pivot_sample
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#'
+#'
+#' @details This functon extracts only sample-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to tidybulk function.
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#' 	pivot_sample(
+#'			tidybulk::counts_min,
+#'			.sample = sample
+#'		)
+#'
+#'
+#' @docType methods
+#' @rdname pivot_sample-methods
+#' @export
+#'
+#'
+setGeneric("pivot_sample", function(.data,
+																						.sample = NULL)
+	standardGeneric("pivot_sample"))
+
+# Set internal
+.pivot_sample = 		function(.data,
+																	 .sample = NULL)	{
+	# Make col names
+	.sample = enquo(.sample)
+	col_names = get_sample(.data, .sample)
+	.sample = col_names$.sample
+
+	.data %>%
+
+		# Selecting the right columns
+		select(
+			!!.sample,
+			get_specific_annotation_columns(.data, !!.sample)
+		) %>%
+		distinct() %>%
+
+		drop_class(c("tidybulk", "tt")) %>%
+		drop_internals()
+
+
+}
+
+#' pivot_sample
+#' @inheritParams pivot_sample
+#' @return A `tbl` object
+setMethod("pivot_sample",
+					"spec_tbl_df",
+					.pivot_sample)
+
+#' pivot_sample
+#' @inheritParams pivot_sample
+#' @return A `tbl` object
+setMethod("pivot_sample",
+					"tbl_df",
+					.pivot_sample)
+
+#' pivot_sample
+#' @inheritParams pivot_sample
+#' @return A `tbl` object
+setMethod("pivot_sample",
+					"tidybulk",
+					.pivot_sample)
+
+#' Extract transcript-wise information
+#'
+#' \lifecycle{maturing}
+#'
+#' @description pivot_transcript() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sampe-related columns
+#'
+#' @importFrom magrittr "%>%"
+#'
+#' @name pivot_transcript
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .transcript The name of the transcript column
+#'
+#'
+#' @details This functon extracts only transcript-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to tidybulk function.
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#' 	pivot_transcript(
+#'			tidybulk::counts_min,
+#'			.transcript = transcript
+#'		)
+#'
+#'
+#' @docType methods
+#' @rdname pivot_transcript-methods
+#' @export
+#'
+#'
+setGeneric("pivot_transcript", function(.data,
+																		.transcript = NULL)
+	standardGeneric("pivot_transcript"))
+
+# Set internal
+.pivot_transcript = 		function(.data,
+													 .transcript = NULL)	{
+	# Make col names
+	.transcript = enquo(.transcript)
+	col_names = get_transcript(.data, .transcript)
+	.transcript = col_names$.transcript
+
+	.data %>%
+
+		# Selecting the right columns
+		select(
+			!!.transcript,
+			get_specific_annotation_columns(.data, !!.transcript)
+		) %>%
+		distinct() %>%
+
+		drop_class(c("tidybulk", "tt")) %>%
+		drop_internals()
+
+
+}
+
+#' pivot_transcript
+#' @inheritParams pivot_transcript
+#' @return A `tbl` object
+setMethod("pivot_transcript",
+					"spec_tbl_df",
+					.pivot_transcript)
+
+#' pivot_transcript
+#' @inheritParams pivot_transcript
+#' @return A `tbl` object
+setMethod("pivot_transcript",
+					"tbl_df",
+					.pivot_transcript)
+
+#' pivot_transcript
+#' @inheritParams pivot_transcript
+#' @return A `tbl` object
+setMethod("pivot_transcript",
+					"tidybulk",
+					.pivot_transcript)
