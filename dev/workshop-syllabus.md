@@ -1,4 +1,4 @@
-# A Tidy Transcriptomics introduction to RNA-Seq
+# A Tidy Transcriptomics introduction to RNA-Seq analyses
 
 Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
 
