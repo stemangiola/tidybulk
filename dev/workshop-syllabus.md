@@ -1,6 +1,6 @@
 # A Tidy Transcriptomics introduction to RNA-Seq
 
-Dr. Maria Doyle (EMAIL) and Dr. Stefano Mangiola (EMAIL)
+Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
 
 # Workshop Description
 
