@@ -2,7 +2,7 @@ Type: Package
 Package: tidybulk
 Title: Friendly tidy wrappers for streamlined bulk
     transcriptional analysis
-Version: 0.99.20
+Version: 0.99.21
 Author: person("Stefano", "Mangiola",
     email=mangiolastefano@gmail.com, role=c("cre", aut"), comment =
     c(ORCID = "0000-0001-7474-836X")).
