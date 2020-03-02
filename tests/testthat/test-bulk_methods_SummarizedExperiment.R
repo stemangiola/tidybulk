@@ -166,7 +166,7 @@ test_that("Add differential trancript abundance - SummarizedExperiment",{
 	expect_equal(
 		res@elementMetadata[w,]$logFC,
 		c(-12.19282, -12.58096, -11.58243, -13.53479),
-		tolerance=1e-6
+		tolerance=1e-4
 	)
 
 
