@@ -26,7 +26,7 @@ nest.default <-  function (.data, ...)
 #' @export
 nest.tidybulk <- function (.data, ...)
 {
-	warning("nest is not fully supported yet by tidybulk. The nested data frame has been reverted to tbl")
+	warning("nest is not fully supported yet by tidybulk. The nested data frame has been reverted to tbl_df")
 
 	.data %>%
 		drop_class(c("tidybulk", "tt")) %>%

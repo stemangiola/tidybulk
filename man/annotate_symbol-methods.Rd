@@ -18,7 +18,7 @@ annotate_symbol(.data, .ensembl, action = "add")
 A `tbl` object including additional columns for transcript symbol
 }
 \description{
-annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
+annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 }
 \details{
 \lifecycle{maturing}

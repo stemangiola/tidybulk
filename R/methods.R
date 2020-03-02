@@ -225,7 +225,7 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A fucntion that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
-#' @param action A character string between "add" (default) and "get". "add" joins the new information to the input tbl (default), "get" return a non-redundant tbl with the just new information.
+#' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
 #'
 #' @details Scales transcript abundance compansating for sequencing depth
 #' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
@@ -271,40 +271,67 @@ setGeneric("scale_abundance", function(.data,
 														 reference_selection_function = median,
 														 action = "add")
 {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
 	factor_of_interest = enquo(factor_of_interest)
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	if (action == "add")
-		add_scaled_counts_bulk(
-			.data,
-			!!.sample,
-			!!.transcript,
-			!!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			method = method,
-			reference_selection_function = reference_selection_function
-		)
-	else if (action == "get")
+	.data_norm =
+		.data %>%
 		get_scaled_counts_bulk(
-			.data,
-			!!.sample,
-			!!.transcript,
-			!!.abundance,
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
 			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion,
 			method = method,
 			reference_selection_function = reference_selection_function
-		)
+		) %>%
+		arrange(!!.sample,!!.transcript)
+
+
+	if (action == "add"){
+
+		.data %>%
+			arrange(!!.sample,!!.transcript) %>%
+
+			# Add scaled data set
+			bind_cols(.data_norm %>%
+									select(-one_of(quo_name(.sample)), -one_of(quo_name(.transcript))))		%>%
+
+			# Attach attributes
+			reattach_internals(.data_norm)
+
+	}
+	else if (action == "get"){
+
+		.data %>%
+
+			# Selecting the right columns
+			select(
+				!!.sample,
+				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
+			) %>%
+			distinct() %>%
+			mutate_if(is.character, as.factor) %>%
+
+			# Join result
+			left_join(.data_norm, by=quo_name(.sample)) %>%
+
+			# Attach attributes
+			reattach_internals(.data_norm)
+	}
+	else if (action == "only") .data_norm
 	else
 		stop(
 			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -339,7 +366,7 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 															 method = "TMM",
 															 reference_selection_function = median,
 															 action = "add") {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
@@ -447,26 +474,69 @@ setGeneric("cluster_elements", function(.data,
 															 action = "add",
 															 ...)
 {
-	# Make col names
-	.abundance = enquo(.abundance)
+	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
+	col_names = get_elements_features(.data, .element, .feature, of_samples)
+	.element = col_names$.element
+	.feature = col_names$.feature
+
+	# Get scaled abundance if present, otherwise get abundance
+	.abundance = enquo(.abundance)
+	col_names = get_abundance_norm_if_exists(.data, .abundance)
+	.abundance = col_names$.abundance
 
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.abundance)
 
 	if (method == "kmeans") {
-		if (action == "add")
-			add_clusters_kmeans_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
-		else if (action == "get")
+		if (action == "add"){
+
+			.data %>%
+				dplyr::left_join(
+					(.) %>%
+						get_clusters_kmeans_bulk(
+							.abundance = !!.abundance,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_samples = of_samples,
+							log_transform = log_transform,
+							...
+						)
+				) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+		else if (action == "get"){
+
+			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
+				) %>%
+				distinct() %>%
+
+				dplyr::left_join(
+					.data %>%
+						get_clusters_kmeans_bulk(
+							.abundance = !!.abundance,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_samples = of_samples,
+							log_transform = log_transform,
+							...
+						)
+				) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+		else if (action == "only")
 			get_clusters_kmeans_bulk(
 				.data,
 				.abundance = !!.abundance,
@@ -482,17 +552,54 @@ setGeneric("cluster_elements", function(.data,
 			)
 	}
 	else if (method == "SNN") {
-		if (action == "add")
-			add_clusters_SNN_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
-		else if (action == "get")
+		if (action == "add"){
+
+			.data %>%
+				dplyr::left_join(
+					(.) %>%
+						get_clusters_SNN_bulk(
+							.abundance = !!.abundance,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_samples = of_samples,
+							log_transform = log_transform,
+							...
+						)
+				) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+		else if (action == "get"){
+
+			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
+				) %>%
+				distinct() %>%
+
+				dplyr::left_join(
+					.data %>%
+						get_clusters_SNN_bulk(
+							.abundance = !!.abundance,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_samples = of_samples,
+							log_transform = log_transform,
+							...
+						)
+				) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+
+		else if (action == "only")
 			get_clusters_SNN_bulk(
 				.data,
 				.abundance = !!.abundance,
@@ -539,10 +646,11 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 																log_transform = TRUE,
 																action = "add",
 																...) {
-	# Make col names
-	.abundance = enquo(.abundance)
+	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
+	.abundance = enquo(.abundance)
+
 
 	.data %>%
 
@@ -661,30 +769,26 @@ setGeneric("reduce_dimensions", function(.data,
 																action = "add",
 																...)
 {
-	# Make col names
-	.abundance = enquo(.abundance)
+	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
+	col_names = get_elements_features(.data, .element, .feature, of_samples)
+	.element = col_names$.element
+	.feature = col_names$.feature
+
+	# Get scaled abundance if present, otherwise get abundance
+	.abundance = enquo(.abundance)
+	col_names = get_abundance_norm_if_exists(.data, .abundance)
+	.abundance = col_names$.abundance
 
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.abundance)
 
 	if (method == "MDS") {
-		if (action == "add")
-			add_reduced_dimensions_MDS_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.dims = .dims,
-				.element = !!.element,
-				.feature = !!.feature,
-				top = top,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
-		else if (action == "get")
+
+		.data_processed =
+			.data %>%
 			get_reduced_dimensions_MDS_bulk(
-				.data,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -694,28 +798,44 @@ setGeneric("reduce_dimensions", function(.data,
 				log_transform = log_transform,
 				...
 			)
+
+		if (action == "add"){
+
+			.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+				# Attach attributes
+				reattach_internals(.data_processed)
+
+		}
+		else if (action == "get"){
+
+			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
+				) %>%
+				distinct() %>%
+
+				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+				# Attach attributes
+				reattach_internals(.data_processed)
+
+		}
+
+		else if (action == "only") .data_processed
 		else
 			stop(
 				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
 	else if (method == "PCA") {
-		if (action == "add")
-			add_reduced_dimensions_PCA_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.dims = .dims,
-				.element = !!.element,
-				.feature = !!.feature,
-				top = top,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				scale = scale,
-				...
-			)
-		else if (action == "get")
+
+		.data_processed =
+			.data %>%
 			get_reduced_dimensions_PCA_bulk(
-				.data,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -726,6 +846,36 @@ setGeneric("reduce_dimensions", function(.data,
 				scale = scale,
 				...
 			)
+
+		if (action == "add"){
+
+			.data %>%
+				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+				# Attach attributes
+				reattach_internals(.data_processed)
+
+		}
+
+		else if (action == "get"){
+
+			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
+				) %>%
+				distinct() %>%
+
+				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+				# Attach attributes
+				reattach_internals(.data_processed)
+
+		}
+
+		else if (action == "only")	.data_processed
 		else
 			stop(
 				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -733,21 +883,10 @@ setGeneric("reduce_dimensions", function(.data,
 
 	}
 	else if (method == "tSNE") {
-		if (action == "add")
-			add_reduced_dimensions_TSNE_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.dims = .dims,
-				.element = !!.element,
-				.feature = !!.feature,
-				top = top,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
-		else if (action == "get")
+
+		.data_processed =
+			.data %>%
 			get_reduced_dimensions_TSNE_bulk(
-				.data,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -757,6 +896,34 @@ setGeneric("reduce_dimensions", function(.data,
 				log_transform = log_transform,
 				...
 			)
+
+		if (action == "add"){
+
+			.data %>%
+				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+		else if (action == "get"){
+
+			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
+				) %>%
+				distinct() %>%
+
+				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
+
+				# Attach attributes
+				reattach_internals(.data)
+
+		}
+		else if (action == "only") .data_processed
 		else
 			stop(
 				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -796,10 +963,10 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 																 scale = TRUE,
 																 action = "add",
 																 ...) {
-	# Make col names
-	.abundance = enquo(.abundance)
+	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
+	.abundance = enquo(.abundance)
 
 	.data %>%
 
@@ -901,29 +1068,34 @@ setGeneric("rotate_dimensions", function(.data,
 																of_samples = TRUE,
 																dimension_1_column_rotated = NULL,
 																dimension_2_column_rotated = NULL,
-																action =
-																	"add")
+																action =	"add")
 {
-	# Make col names
+	# Get column names
 	.element = enquo(.element)
+	col_names = get_elements(.data, .element)
+	.element = col_names$.element
+
+	# Parse other colnames
 	dimension_1_column = enquo(dimension_1_column)
 	dimension_2_column = enquo(dimension_2_column)
 	dimension_1_column_rotated = enquo(dimension_1_column_rotated)
 	dimension_2_column_rotated = enquo(dimension_2_column_rotated)
 
+	# Set default col names for rotated dimensions if not set
+	if (quo_is_null(dimension_1_column_rotated))
+		dimension_1_column_rotated = as.symbol(sprintf(
+			"%s rotated %s",
+			quo_name(dimension_1_column),
+			rotation_degrees
+		))
+	if (quo_is_null(dimension_2_column_rotated))
+		dimension_2_column_rotated = as.symbol(sprintf(
+			"%s rotated %s",
+			quo_name(dimension_2_column),
+			rotation_degrees
+		))
 
-	if (action == "add")
-		add_rotated_dimensions(
-			.data,
-			dimension_1_column = !!dimension_1_column,
-			dimension_2_column = !!dimension_2_column,
-			rotation_degrees = rotation_degrees,
-			.element = !!.element,
-			of_samples = of_samples,
-			dimension_1_column_rotated = !!dimension_1_column_rotated,
-			dimension_2_column_rotated = !!dimension_2_column_rotated
-		)
-	else if (action == "get")
+	.data_processed =
 		get_rotated_dimensions(
 			.data,
 			dimension_1_column = !!dimension_1_column,
@@ -934,6 +1106,34 @@ setGeneric("rotate_dimensions", function(.data,
 			dimension_1_column_rotated = !!dimension_1_column_rotated,
 			dimension_2_column_rotated = !!dimension_2_column_rotated
 		)
+
+	if (action == "add"){
+
+		.data %>%
+			dplyr::left_join(	.data_processed,	by = quo_name(.element)	) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
+	else if (action == "get"){
+
+		.data %>%
+
+			# Selecting the right columns
+			select(
+				!!.element,
+				get_specific_annotation_columns(.data, !!.element)
+			) %>%
+			distinct() %>%
+
+			dplyr::left_join(	.data_processed,	by = quo_name(.element)	) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
+	else if (action == "only") .data_processed
 	else
 		stop(
 			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -966,12 +1166,28 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 																 dimension_2_column_rotated = NULL,
 																 action =
 																 	"add") {
-	# Make col names
+	# Get column names
 	.element = enquo(.element)
+
+	# Parse other colnames
 	dimension_1_column = enquo(dimension_1_column)
 	dimension_2_column = enquo(dimension_2_column)
 	dimension_1_column_rotated = enquo(dimension_1_column_rotated)
 	dimension_2_column_rotated = enquo(dimension_2_column_rotated)
+
+	# Set default col names for rotated dimensions if not set
+	if (quo_is_null(dimension_1_column_rotated))
+		dimension_1_column_rotated = as.symbol(sprintf(
+			"%s rotated %s",
+			quo_name(dimension_1_column),
+			rotation_degrees
+		))
+	if (quo_is_null(dimension_2_column_rotated))
+		dimension_2_column_rotated = as.symbol(sprintf(
+			"%s rotated %s",
+			quo_name(dimension_2_column),
+			rotation_degrees
+		))
 
 	.data %>%
 
@@ -1301,25 +1517,22 @@ setGeneric("adjust_abundance", function(.data,
 															action = "add",
 															...)
 {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
+	col_names = get_sample_transcript(.data, .sample, .transcript)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+
+	# Get scaled abundance if present, otherwise get abundance
 	.abundance = enquo(.abundance)
+	col_names = get_abundance_norm_if_exists(.data, .abundance)
+	.abundance = col_names$.abundance
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	if (action == "add")
-		add_adjusted_counts_for_unwanted_variation_bulk(
-			.data,
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			log_transform = log_transform,
-			...
-		)
-	else if (action == "get")
+	.data_processed =
 		get_adjusted_counts_for_unwanted_variation_bulk(
 			.data,
 			.formula,
@@ -1329,6 +1542,37 @@ setGeneric("adjust_abundance", function(.data,
 			log_transform = log_transform,
 			...
 		)
+
+	if (action == "add"){
+
+		.data %>%
+
+			# Add adjsted column
+			dplyr::left_join(.data_processed,	by = c(quo_name(.transcript), quo_name(.sample))) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
+	else if (action == "get"){
+
+		.data %>%
+
+			# Selecting the right columns
+			select(
+				!!.sample,
+				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
+			) %>%
+			distinct() %>%
+
+			# Add adjsted column
+			dplyr::left_join(.data_processed,	by = quo_name(.sample)) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
+	else if (action == "only") .data_processed
 	else
 		stop(
 			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -1358,7 +1602,7 @@ setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 																log_transform = TRUE,
 																action = "add",
 																...) {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
@@ -1609,34 +1853,58 @@ setGeneric("deconvolve_cellularity", function(.data,
 																		 method = "cibersort",
 																		 action = "add",
 																		 ...)  {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	if (action == "add")
-		add_cell_type_proportions(
-			.data,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			reference = reference,
-			method = method,
-			...
-		)
-	else if (action == "get")
+	.data_processed =
 		get_cell_type_proportions(
-			.data,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			reference = reference,
-			method = method,
-			...
-		)
+		.data,
+		.sample = !!.sample,
+		.transcript = !!.transcript,
+		.abundance = !!.abundance,
+		reference = reference,
+		method = method,
+		...
+	)
+
+	if (action == "add"){
+		.data %>%
+
+			# Add new annotation
+			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+	}
+
+	else if (action == "get"){
+		.data %>%
+
+
+			# Selecting the right columns
+			select(
+				!!.sample,
+				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
+			) %>%
+			distinct() %>%
+
+			# Add new annotation
+			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+	}
+
+	else if (action == "only") .data_processed
 	else
 		stop(
 			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -1672,7 +1940,7 @@ setMethod("deconvolve_cellularity",
 																			method = "cibersort",
 																			action = "add",
 																			...) {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
@@ -1723,7 +1991,7 @@ setMethod(
 #'
 #' \lifecycle{maturing}
 #'
-#' @description annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
+#' @description annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1766,12 +2034,32 @@ setGeneric("annotate_symbol", function(.data,
 	# Make col names
 	.ensembl = enquo(.ensembl)
 
+	.data_processed = get_symbol_from_ensembl(.data,!!.ensembl)
 
-	if (action == "add")
-		add_symbol_from_ensembl(.data,!!.ensembl)
+	if (action == "add"){
 
-	else if (action == "get")
-		get_symbol_from_ensembl(.data,!!.ensembl)
+		# Add new symbols column
+		.data %>%
+			dplyr::left_join(.data_processed) %>%
+
+			# Attach attributes
+			reattach_internals(.data)
+
+	}
+	# else if (action == "get"){
+	#
+	# 	# Add new symbols column
+	# 	.data %>%
+	#
+	#
+	# 		dplyr::left_join(.data_processed) %>%
+	#
+	# 		# Attach attributes
+	# 		reattach_internals(.data)
+	#
+	# }
+
+	else if (action == "only") .data_processed
 
 	else
 		stop(
@@ -1886,30 +2174,19 @@ setGeneric("test_differential_abundance", function(.data,
 																					scaling_method = "TMM",
 																					action = "add")
 {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	if (action == "add")
-		add_differential_transcript_abundance_bulk(
-			.data,
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			.coef = .coef,
-			.contrasts = .contrasts,
-			significance_threshold = significance_threshold,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			fill_missing_values = fill_missing_values,
-			scaling_method = scaling_method
-		)
-	else if (action == "get")
+	.data_processed =
 		get_differential_transcript_abundance_bulk(
 			.data,
 			.formula,
@@ -1924,6 +2201,42 @@ setGeneric("test_differential_abundance", function(.data,
 			fill_missing_values = fill_missing_values,
 			scaling_method = scaling_method
 		)
+
+	if (action == "add"){
+
+		.data %>%
+			dplyr::left_join(.data_processed) %>%
+
+			# Arrange
+			ifelse_pipe(.contrasts %>% is.null,
+									~ .x %>% arrange(FDR))	%>%
+
+			# Attach attributes
+			reattach_internals(.data_processed)
+
+	}
+	else if (action == "get"){
+
+		.data %>%
+
+			# Selecting the right columns
+			select(
+				!!.transcript,
+				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$vertical_cols
+			) %>%
+			distinct() %>%
+
+			dplyr::left_join(.data_processed) %>%
+
+			# Arrange
+			ifelse_pipe(.contrasts %>% is.null,
+									~ .x %>% arrange(FDR))	%>%
+
+			# Attach attributes
+			reattach_internals(.data_processed)
+
+	}
+	else if (action == "only") .data_processed
 	else
 		stop(
 			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -2294,7 +2607,6 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-
 	factor_of_interest = enquo(factor_of_interest)
 
 	.data %>%
@@ -2339,7 +2651,7 @@ setMethod("keep_abundant",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description test_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the the additional transcript symbol column
+#' @description test_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -2449,3 +2761,169 @@ setMethod("test_gene_enrichment",
 setMethod("test_gene_enrichment",
 					"tidybulk",
 					.test_gene_enrichment)
+
+#' Extract sampe-wise information
+#'
+#' \lifecycle{maturing}
+#'
+#' @description pivot_sample() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sampe-related columns
+#'
+#' @importFrom magrittr "%>%"
+#'
+#' @name pivot_sample
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#'
+#'
+#' @details This functon extracts only sample-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to tidybulk function.
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#' 	pivot_sample(
+#'			tidybulk::counts_mini,
+#'			.sample = sample
+#'		)
+#'
+#'
+#' @docType methods
+#' @rdname pivot_sample-methods
+#' @export
+#'
+#'
+setGeneric("pivot_sample", function(.data,
+																						.sample = NULL)
+	standardGeneric("pivot_sample"))
+
+# Set internal
+.pivot_sample = 		function(.data,
+																	 .sample = NULL)	{
+	# Make col names
+	.sample = enquo(.sample)
+	col_names = get_sample(.data, .sample)
+	.sample = col_names$.sample
+
+	.data %>%
+
+		# Selecting the right columns
+		select(
+			!!.sample,
+			get_specific_annotation_columns(.data, !!.sample)
+		) %>%
+		distinct() %>%
+
+		drop_class(c("tidybulk", "tt")) %>%
+		drop_internals()
+
+
+}
+
+#' pivot_sample
+#' @inheritParams pivot_sample
+#' @return A `tbl` object
+setMethod("pivot_sample",
+					"spec_tbl_df",
+					.pivot_sample)
+
+#' pivot_sample
+#' @inheritParams pivot_sample
+#' @return A `tbl` object
+setMethod("pivot_sample",
+					"tbl_df",
+					.pivot_sample)
+
+#' pivot_sample
+#' @inheritParams pivot_sample
+#' @return A `tbl` object
+setMethod("pivot_sample",
+					"tidybulk",
+					.pivot_sample)
+
+#' Extract transcript-wise information
+#'
+#' \lifecycle{maturing}
+#'
+#' @description pivot_transcript() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sampe-related columns
+#'
+#' @importFrom magrittr "%>%"
+#'
+#' @name pivot_transcript
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .transcript The name of the transcript column
+#'
+#'
+#' @details This functon extracts only transcript-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to tidybulk function.
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#' 	pivot_transcript(
+#'			tidybulk::counts_mini,
+#'			.transcript = transcript
+#'		)
+#'
+#'
+#' @docType methods
+#' @rdname pivot_transcript-methods
+#' @export
+#'
+#'
+setGeneric("pivot_transcript", function(.data,
+																		.transcript = NULL)
+	standardGeneric("pivot_transcript"))
+
+# Set internal
+.pivot_transcript = 		function(.data,
+													 .transcript = NULL)	{
+	# Make col names
+	.transcript = enquo(.transcript)
+	col_names = get_transcript(.data, .transcript)
+	.transcript = col_names$.transcript
+
+	.data %>%
+
+		# Selecting the right columns
+		select(
+			!!.transcript,
+			get_specific_annotation_columns(.data, !!.transcript)
+		) %>%
+		distinct() %>%
+
+		drop_class(c("tidybulk", "tt")) %>%
+		drop_internals()
+
+
+}
+
+#' pivot_transcript
+#' @inheritParams pivot_transcript
+#' @return A `tbl` object
+setMethod("pivot_transcript",
+					"spec_tbl_df",
+					.pivot_transcript)
+
+#' pivot_transcript
+#' @inheritParams pivot_transcript
+#' @return A `tbl` object
+setMethod("pivot_transcript",
+					"tbl_df",
+					.pivot_transcript)
+
+#' pivot_transcript
+#' @inheritParams pivot_transcript
+#' @return A `tbl` object
+setMethod("pivot_transcript",
+					"tidybulk",
+					.pivot_transcript)

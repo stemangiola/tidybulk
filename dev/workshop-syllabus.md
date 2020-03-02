@@ -1,15 +1,19 @@
-# Tidy Transcriptomics [SOME OTHER TITLE?]
+# A Tidy Transcriptomics introduction to RNA-Seq analyses
 
-Dr. Maria Doyle (EMAIL) and Dr. Stefano Mangiola (EMAIL)
+Dr. Maria Doyle (Maria.Doyle@petermac.org) and Dr. Stefano Mangiola (mangiola.s@wehi.edu.au)
 
 # Workshop Description
 
-This workshop will show you how to perform analysis of RNA-Seq count data in a 'tidy' way using the tidyBulk and tidyHeatmap packages. 
-tidyBulk provides a modular framework and a tidy data structure for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation for creating heatmaps. These packages are part of a tidy transcriptomics suite for tidy and user-friendly grammar of RNA sequencing data exploration and analysis. 
+This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions. 
 
-- preprocess count data
-- perform differential expression analysis
-- visualise gene expression data
+This can be achieved for RNA sequencing data with the tidybulk, tidyHeatmap and tidyverse packages. The package tidybulk provides a tidy data structure and a modular framework for bulk transcriptional analyses. tidyHeatmap provides a tidy implementation of ComplexHeatmap. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data.
+
+The topics presented in this workshop will be
+
+- Data exploration
+- Data dimensionality reduction and clustering
+- Differential gene expression analysis 
+- Data visualisation
 
 ## Pre-requisites
 
@@ -17,97 +21,42 @@ tidyBulk provides a modular framework and a tidy data structure for bulk transcr
 * Familiarity with tidyverse syntax
 
 Recommended Background Reading 
-https://mblue9.github.io/r-intro-biologists/intro_r_biologists.html
+[Introduction to R for Biologists](https://mblue9.github.io/r-intro-biologists/intro_r_biologists.html)
 
 ## Workshop Participation
 
-Sudents will be expected to participate in the workshop in a hands-on way, following along with the code provided and performing  exercises.
+Students will be expected to participate in the workshop in a hands-on way, following along with the code provided and performing  exercises.
 
 ## _R_ / _Bioconductor_ packages used
 
 * tidyverse
-* tidyBulk
+* tidybulk
 * tidyHeatmap
 * edgeR
 * devtools
 
 ## Time outline
 
-| Activity                     | Time |
-|------------------------------|------|
-| Data import & preprocessing  | 30m  |
-| Quality control              | 30m  |
-| Differential expression      | 30m  |
-| Visualisation                | 30m  |
+| Activity                                     | Time |
+|----------------------------------------------|------|
+| Data exploration                             | 30m  |
+| Data dimensionality reduction and clustering | 30m  |
+| Differential gene expression                 | 30m  |
+| Data visualisation                           | 30m  |
 
 # Workshop goals and objectives
 
-List "big picture" student-centered workshop goals and learning
-objectives. Learning goals and objectives are related, but not the
-same thing. These goals and objectives will help some people to decide
-whether to attend the conference for training purposes, so please make
-these as precise and accurate as possible.
+In exploring and analysing RNA sequencing data, there are a number of key concepts, such as filtering, scaling, dimensionality reduction, hypothesis testing, clustering and visualisation, that need to be understood. These concepts can be intuitively explained to new users, however, (i) the use of a heterogeneous vocabulary and jargon by methodologies/algorithms/packages, (ii) the complexity of data wrangling, and (iii) the coding burden, impede effective learning of the statistics and biology underlying an informed RNA sequencing analysis. 
 
-*Learning goals* are high-level descriptions of what
-participants will learn and be able to do after the workshop is
-over. *Learning objectives*, on the other hand, describe in very
-specific and measurable terms specific skills or knowledge
-attained. The [Bloom's Taxonomy](#bloom) may be a useful framework
-for defining and describing your goals and objectives, although there
-are others.
+The tidytranscriptomics approach to RNA sequencing data analysis abstracts out the coding-related complexity and provides tools that use an intuitive and jargon-free vocabulary, enabling focus on the statistical and biological challenges.
 
 ## Learning goals
 
-* learn how RNA-Seq count data can be analysed in a tidy way
-* understand key steps in analysis of RNA-Seq counts
-* evaluate RNA-Seq counts using visualisations
+* To understand the key concepts and steps of bulk RNA sequencing data analysis
+* To approach data representation and analysis though a tidy data paradigm, integrating tidyverse with tidybulk and tidyHeatmap.
 
 ## Learning objectives
 
-* analyse RNA-Seq counts in tidy data format
-* produce a list of differentially expressed genes
-* create visualisations of gene expression
-
-
-### A note about learning goals and objectives (#bloom)
-
-While not a new or modern system for thinking about learning,
-[Bloom's taxonomy][1] is one useful framework for understanding the
-cognitive processes involved in learning. From lowest to highest
-cognitive requirements:
-
-1. Knowledge: Learners must be able to recall or remember the
-   information.
-2. Comprehension: Learners must be able to understand the information.
-3. Application: Learners must be able to use the information they have
-   learned at the same or different contexts.
-4. Analysis: Learners must be able to analyze the information, by
-   identifying its different components.
-5. Synthesis: Learners must be able to create something new using
-   different chunks of the information they have already mastered.
-6. Evaluation: Learners must be able to present opinions, justify
-   decisions, and make judgments about the information presented,
-   based on previously acquired knowledge.
-
-To use Bloom's taxonomy, consider the following sets of verbs and
-descriptions for learning objectives:
-
-1. Remember: Memorize, show, pick, spell, list, quote, recall, repeat,
-   catalogue, cite, state, relate, record, name.
-2. Understand: Explain, restate, alter, outline, discuss, expand,
-   identify, locate, report, express, recognize, discuss, qualify,
-   covert, review, infer.
-3. Apply: Translate, interpret, explain, practice, illustrate,
-   operate, demonstrate, dramatize, sketch, put into action, complete,
-   model, utilize, experiment, schedule, use.
-4. Analyze: Distinguish, differentiate, separate, take apart,
-   appraise, calculate, criticize, compare, contrast, examine, test,
-   relate, search, classify, experiment.
-5. Evaluate: Decide, appraise, revise, score, recommend, select,
-   measure, argue, value, estimate, choose, discuss, rate, assess,
-   think.
-6. Create: Compose, plan, propose, produce, predict, design, assemble,
-   prepare, formulate, organize, manage, construct, generate, imagine,
-   set-up.
-
-[1]: https://cft.vanderbilt.edu/guides-sub-pages/blooms-taxonomy/ "Bloom's Taxonomy"
+* Recall the key concepts of RNA sequencing data analysis
+* Apply the concepts to publicly available data
+* Create plots that summarise the information content of the data and analysis results

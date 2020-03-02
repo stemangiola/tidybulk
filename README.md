@@ -1,8 +1,8 @@
 tidybulk - part of tidyTranscriptomics
 ================
 
-<!-- badges: start --> [![Lifecycle:
-maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+<!-- badges: start -->
+[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
 <!---
@@ -279,29 +279,30 @@ coloured by cell
 type.
 
 ``` r
-counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
+counts.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
 ```
 
-    ## # A tibble: 48 x 9
-    ##    sample       Dim1   Dim2    Dim3    Dim4    Dim5   Dim6 `Cell type`     time 
-    ##    <chr>       <dbl>  <dbl>   <dbl>   <dbl>   <dbl>  <dbl> <chr>           <chr>
-    ##  1 SRR17400… -1.30    0.932 -2.05    0.179   0.127  0.290  b_cell          0 d  
-    ##  2 SRR17400… -1.36    0.868 -2.06    0.185   0.0928 0.343  b_cell          1 d  
-    ##  3 SRR17400… -1.43    0.754 -1.97    0.252   0.102  0.377  b_cell          3 d  
-    ##  4 SRR17400… -1.23    0.944 -2.04    0.204   0.0924 0.229  b_cell          7 d  
-    ##  5 SRR17400… -0.288  -1.90  -0.0601 -0.0829 -0.783  0.113  dendritic_myel… 0 d  
-    ##  6 SRR17400… -0.290  -1.81  -0.0547 -0.0756 -0.702  0.0609 dendritic_myel… 1 d  
-    ##  7 SRR17400… -0.423  -2.05  -0.0609 -0.0392 -0.936  0.152  dendritic_myel… 3 d  
-    ##  8 SRR17400… -0.390  -1.88  -0.0523 -0.0538 -0.719  0.0817 dendritic_myel… 7 d  
-    ##  9 SRR17400… -0.0915 -2.09   0.0768 -0.343   0.739  0.146  monocyte        0 d  
-    ## 10 SRR17400…  0.0253 -1.93   0.0483 -0.358   0.744  0.0770 monocyte        1 d  
-    ## # … with 38 more rows
+    ## # A tibble: 48 x 15
+    ##       Dim1   Dim2    Dim3    Dim4    Dim5   Dim6 sample `Cell type` time 
+    ##      <dbl>  <dbl>   <dbl>   <dbl>   <dbl>  <dbl> <chr>  <chr>       <chr>
+    ##  1 -1.30    0.932 -2.05    0.179   0.127  0.290  SRR17… b_cell      0 d  
+    ##  2 -1.36    0.868 -2.06    0.185   0.0928 0.343  SRR17… b_cell      1 d  
+    ##  3 -1.43    0.754 -1.97    0.252   0.102  0.377  SRR17… b_cell      3 d  
+    ##  4 -1.23    0.944 -2.04    0.204   0.0924 0.229  SRR17… b_cell      7 d  
+    ##  5 -0.288  -1.90  -0.0601 -0.0829 -0.783  0.113  SRR17… dendritic_… 0 d  
+    ##  6 -0.290  -1.81  -0.0547 -0.0756 -0.702  0.0609 SRR17… dendritic_… 1 d  
+    ##  7 -0.423  -2.05  -0.0609 -0.0392 -0.936  0.152  SRR17… dendritic_… 3 d  
+    ##  8 -0.390  -1.88  -0.0523 -0.0538 -0.719  0.0817 SRR17… dendritic_… 7 d  
+    ##  9 -0.0915 -2.09   0.0768 -0.343   0.739  0.146  SRR17… monocyte    0 d  
+    ## 10  0.0253 -1.93   0.0483 -0.358   0.744  0.0770 SRR17… monocyte    1 d  
+    ## # … with 38 more rows, and 6 more variables: condition <chr>, batch <dbl>,
+    ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, TMM <dbl>,
+    ## #   multiplier <dbl>
 
 ``` r
 counts.norm.MDS %>%
-    select(contains("Dim"), sample, `Cell type`) %>%
-  distinct() %>%
-  GGally::ggpairs(columns = 1:6, ggplot2::aes(colour=`Cell type`))
+    pivot_sample() %>%
+  GGally::ggpairs(columns = 10:15, ggplot2::aes(colour=`Cell type`))
 ```
 
 ![](README_files/figure-gfm/plot_mds-1.png)<!-- -->
@@ -346,29 +347,30 @@ coloured by cell
 type.
 
 ``` r
-counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
+counts.norm.PCA %>% pivot_sample() %>% select(contains("PC"), everything())
 ```
 
-    ## # A tibble: 48 x 9
-    ##    sample        PC1     PC2     PC3    PC4     PC5   PC6 `Cell type`      time 
-    ##    <chr>       <dbl>   <dbl>   <dbl>  <dbl>   <dbl> <dbl> <chr>            <chr>
-    ##  1 SRR1740034  0.130  0.137  -0.144  0.248  -0.0598 0.138 b_cell           0 d  
-    ##  2 SRR1740035  0.128  0.137  -0.146  0.253  -0.0536 0.137 b_cell           1 d  
-    ##  3 SRR1740036  0.130  0.135  -0.146  0.251  -0.0481 0.138 b_cell           3 d  
-    ##  4 SRR1740037  0.128  0.138  -0.151  0.248  -0.0516 0.137 b_cell           7 d  
-    ##  5 SRR1740038 -0.177 -0.0647 -0.176  0.0304 -0.0878 0.147 dendritic_myelo… 0 d  
-    ##  6 SRR1740039 -0.176 -0.0786 -0.171  0.0328 -0.0874 0.138 dendritic_myelo… 1 d  
-    ##  7 SRR1740040 -0.174 -0.0719 -0.173  0.0312 -0.103  0.142 dendritic_myelo… 3 d  
-    ##  8 SRR1740041 -0.175 -0.0722 -0.179  0.0306 -0.0856 0.147 dendritic_myelo… 7 d  
-    ##  9 SRR1740042 -0.198 -0.0389 -0.102  0.0234 -0.0556 0.118 monocyte         0 d  
-    ## 10 SRR1740043 -0.192 -0.0567 -0.0966 0.0315 -0.0976 0.117 monocyte         1 d  
-    ## # … with 38 more rows
+    ## # A tibble: 48 x 15
+    ##       PC1     PC2     PC3    PC4     PC5   PC6 sample `Cell type` time 
+    ##     <dbl>   <dbl>   <dbl>  <dbl>   <dbl> <dbl> <chr>  <chr>       <chr>
+    ##  1  0.130  0.137  -0.144  0.248  -0.0598 0.138 SRR17… b_cell      0 d  
+    ##  2  0.128  0.137  -0.146  0.253  -0.0536 0.137 SRR17… b_cell      1 d  
+    ##  3  0.130  0.135  -0.146  0.251  -0.0481 0.138 SRR17… b_cell      3 d  
+    ##  4  0.128  0.138  -0.151  0.248  -0.0516 0.137 SRR17… b_cell      7 d  
+    ##  5 -0.177 -0.0647 -0.176  0.0304 -0.0878 0.147 SRR17… dendritic_… 0 d  
+    ##  6 -0.176 -0.0786 -0.171  0.0328 -0.0874 0.138 SRR17… dendritic_… 1 d  
+    ##  7 -0.174 -0.0719 -0.173  0.0312 -0.103  0.142 SRR17… dendritic_… 3 d  
+    ##  8 -0.175 -0.0722 -0.179  0.0306 -0.0856 0.147 SRR17… dendritic_… 7 d  
+    ##  9 -0.198 -0.0389 -0.102  0.0234 -0.0556 0.118 SRR17… monocyte    0 d  
+    ## 10 -0.192 -0.0567 -0.0966 0.0315 -0.0976 0.117 SRR17… monocyte    1 d  
+    ## # … with 38 more rows, and 6 more variables: condition <chr>, batch <dbl>,
+    ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, TMM <dbl>,
+    ## #   multiplier <dbl>
 
 ``` r
 counts.norm.PCA %>%
-    select(contains("PC"), sample, `Cell type`) %>%
-  distinct() %>%
-  GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
+     pivot_sample() %>%
+  GGally::ggpairs(columns = 10:12, ggplot2::aes(colour=`Cell type`))
 ```
 
 ![](README_files/figure-gfm/plot_pca-1.png)<!-- -->
@@ -420,29 +422,28 @@ Plot
 
 ``` r
 counts.norm.tSNE %>%
-    select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
-    distinct()
+    pivot_sample() %>%
+    select(contains("tSNE"), everything()) 
 ```
 
-    ## # A tibble: 251 x 4
-    ##      tSNE1  tSNE2 sample                       Call 
-    ##      <dbl>  <dbl> <chr>                        <fct>
-    ##  1   4.04    8.64 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2   0.421  -6.24 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3   9.64   14.0  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4  -5.14    6.11 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5  -1.50    7.06 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6   6.94   -5.44 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7 -21.2   -16.1  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8 -11.6     5.00 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9 -11.5     6.12 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  15.7    15.4  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ## # A tibble: 251 x 6
+    ##     tSNE1    tSNE2 sample                       Call    TMM multiplier
+    ##     <dbl>    <dbl> <chr>                        <fct> <dbl>      <dbl>
+    ##  1  -1.24  -8.47   TCGA-A1-A0SD-01A-11R-A115-07 LumA  1.08       0.957
+    ##  2   7.31   7.30   TCGA-A1-A0SF-01A-11R-A144-07 LumA  1.12       0.858
+    ##  3  -6.64 -12.6    TCGA-A1-A0SG-01A-11R-A144-07 LumA  0.920      0.990
+    ##  4 -15.8    0.0394 TCGA-A1-A0SH-01A-11R-A084-07 LumA  0.650      0.817
+    ##  5 -15.6    2.87   TCGA-A1-A0SI-01A-11R-A144-07 LumB  0.794      0.991
+    ##  6  -4.32  -2.23   TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1.04       0.903
+    ##  7  -5.22  33.1    TCGA-A1-A0SK-01A-12R-A084-07 Basal 0.818      1.49 
+    ##  8 -12.9    0.711  TCGA-A1-A0SM-01A-11R-A084-07 LumA  0.843      0.821
+    ##  9 -11.3   -0.525  TCGA-A1-A0SN-01A-11R-A144-07 LumB  0.952      0.856
+    ## 10   2.83 -24.6    TCGA-A1-A0SQ-01A-21R-A144-07 LumA  0.812      1.06 
     ## # … with 241 more rows
 
 ``` r
 counts.norm.tSNE %>%
-    select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
-    distinct() %>%
+    pivot_sample() %>%
     ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
 
@@ -465,7 +466,7 @@ TidyTranscriptomics
 ``` r
 counts.norm.MDS.rotated =
   counts.norm.MDS %>%
-    rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45)
+    rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, action="get")
 ```
 
 </div>
@@ -500,7 +501,6 @@ dimensions, data is coloured by cell type.
 
 ``` r
 counts.norm.MDS.rotated %>%
-    distinct(sample, `Dim1`,`Dim2`, `Cell type`) %>%
     ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type` )) +
   geom_point() +
   my_theme
@@ -513,7 +513,6 @@ dimensions rotated of 45 degrees, data is coloured by cell type.
 
 ``` r
 counts.norm.MDS.rotated %>%
-    distinct(sample, `Dim1 rotated 45`,`Dim2 rotated 45`, `Cell type`) %>%
     ggplot(aes(x=`Dim1 rotated 45`, y=`Dim2 rotated 45`, color=`Cell type` )) +
   geom_point() +
   my_theme
@@ -539,6 +538,7 @@ TidyTranscriptomics
 counts.de =
     counts %>%
     test_differential_abundance( ~ condition, action="get")
+counts.de
 ```
 
 </div>
@@ -572,25 +572,6 @@ DGEList(counts = counts) %>%
 
 </div>
 
-``` r
-counts.de
-```
-
-    ## # A tibble: 19,544 x 8
-    ##    transcript   logFC  logCPM    LR   PValue      FDR is_de lowly_abundant
-    ##    <chr>        <dbl>   <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>         
-    ##  1 FRZB          6.57 -1.71   126.  2.56e-29 3.14e-25 TRUE  FALSE         
-    ##  2 ANKRD18DP     4.83 -0.454  109.  1.57e-25 9.63e-22 TRUE  FALSE         
-    ##  3 LINC00525     6.06 -1.35   103.  2.92e-24 1.19e-20 TRUE  FALSE         
-    ##  4 IGLL3P        5.34 -0.0803  82.8 9.23e-20 2.82e-16 TRUE  FALSE         
-    ##  5 SHANK2        5.16 -1.92    76.2 2.57e-18 6.28e-15 TRUE  FALSE         
-    ##  6 ERVV-1        4.83 -1.97    70.0 5.84e-17 1.19e-13 TRUE  FALSE         
-    ##  7 KRTAP4-6      5.67 -1.77    66.5 3.55e-16 6.20e-13 TRUE  FALSE         
-    ##  8 COL1A2        4.65 -2.10    63.9 1.33e-15 2.03e-12 TRUE  FALSE         
-    ##  9 CNTNAP2       6.95  2.53    54.0 2.04e-13 2.77e-10 TRUE  FALSE         
-    ## 10 LOC101929322  2.91  1.16    50.4 1.23e-12 1.50e- 9 TRUE  FALSE         
-    ## # … with 19,534 more rows
-
 The functon `test_differential_abundance` operated with contrasts too.
 The constrasts hve the name of the design matrix (generally
 <NAME_COLUMN_COVARIATE><VALUES_OF_COVARIATE>)
@@ -622,10 +603,7 @@ TidyTranscriptomics
 
 ``` r
 counts.norm.adj =
-    counts.norm %>% adjust_abundance(
-        ~ factor_of_interest + batch,
-        action = "get"
-)
+    counts.norm %>% adjust_abundance(   ~ factor_of_interest + batch)
 ```
 
 </div>
@@ -680,7 +658,7 @@ TidyTranscriptomics
 ``` r
 counts.cibersort =
     counts %>%
-    deconvolve_cellularity(action="add", cores=2)
+    deconvolve_cellularity(action="get", cores=2)
 ```
 
 </div>
@@ -720,7 +698,6 @@ proportions. The data is facetted and coloured by nominal cell types
 counts.cibersort %>%
     select(contains("cibersort:"), everything()) %>%
     gather(`Cell type inferred`, `proportion`, 1:22) %>%
-  distinct(sample, `Cell type`, `Cell type inferred`, proportion) %>%
   ggplot(aes(x=`Cell type inferred`, y=proportion, fill=`Cell type`)) +
   geom_boxplot() +
   facet_wrap(~`Cell type`) +
@@ -747,7 +724,7 @@ TidyTranscriptomics
 
 ``` r
 counts.norm.cluster = counts.norm.MDS %>%
-  cluster_elements(method="kmeans", centers = 2 )
+  cluster_elements(method="kmeans", centers = 2, action="get" )
 ```
 
 </div>
@@ -779,7 +756,6 @@ plot.
 
 ``` r
  counts.norm.cluster %>%
-    distinct(sample, `Dim1`, `Dim2`, `cluster kmeans`) %>%
     ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster kmeans`)) +
   geom_point() +
   my_theme
@@ -834,28 +810,28 @@ snn$cell_type = tidybulk::counts[
 
 ``` r
 counts.norm.SNN %>%
-    select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample) %>%
-    distinct()
+    pivot_sample() %>%
+    select(contains("tSNE"), everything()) 
 ```
 
-    ## # A tibble: 251 x 4
-    ##      tSNE1  tSNE2 `cluster SNN` sample                      
-    ##      <dbl>  <dbl> <fct>         <chr>                       
-    ##  1   4.04    8.64 0             TCGA-A1-A0SD-01A-11R-A115-07
-    ##  2   0.421  -6.24 2             TCGA-A1-A0SF-01A-11R-A144-07
-    ##  3   9.64   14.0  1             TCGA-A1-A0SG-01A-11R-A144-07
-    ##  4  -5.14    6.11 0             TCGA-A1-A0SH-01A-11R-A084-07
-    ##  5  -1.50    7.06 0             TCGA-A1-A0SI-01A-11R-A144-07
-    ##  6   6.94   -5.44 1             TCGA-A1-A0SJ-01A-11R-A084-07
-    ##  7 -21.2   -16.1  3             TCGA-A1-A0SK-01A-12R-A084-07
-    ##  8 -11.6     5.00 2             TCGA-A1-A0SM-01A-11R-A084-07
-    ##  9 -11.5     6.12 2             TCGA-A1-A0SN-01A-11R-A144-07
-    ## 10  15.7    15.4  1             TCGA-A1-A0SQ-01A-21R-A144-07
+    ## # A tibble: 251 x 7
+    ##     tSNE1    tSNE2 sample                   Call    TMM multiplier `cluster SNN`
+    ##     <dbl>    <dbl> <chr>                    <fct> <dbl>      <dbl> <fct>        
+    ##  1  -1.24  -8.47   TCGA-A1-A0SD-01A-11R-A1… LumA  1.08       0.957 0            
+    ##  2   7.31   7.30   TCGA-A1-A0SF-01A-11R-A1… LumA  1.12       0.858 2            
+    ##  3  -6.64 -12.6    TCGA-A1-A0SG-01A-11R-A1… LumA  0.920      0.990 1            
+    ##  4 -15.8    0.0394 TCGA-A1-A0SH-01A-11R-A0… LumA  0.650      0.817 0            
+    ##  5 -15.6    2.87   TCGA-A1-A0SI-01A-11R-A1… LumB  0.794      0.991 0            
+    ##  6  -4.32  -2.23   TCGA-A1-A0SJ-01A-11R-A0… LumA  1.04       0.903 1            
+    ##  7  -5.22  33.1    TCGA-A1-A0SK-01A-12R-A0… Basal 0.818      1.49  3            
+    ##  8 -12.9    0.711  TCGA-A1-A0SM-01A-11R-A0… LumA  0.843      0.821 2            
+    ##  9 -11.3   -0.525  TCGA-A1-A0SN-01A-11R-A1… LumB  0.952      0.856 2            
+    ## 10   2.83 -24.6    TCGA-A1-A0SQ-01A-21R-A1… LumA  0.812      1.06  1            
     ## # … with 241 more rows
 
 ``` r
 counts.norm.SNN %>%
-    select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
+    pivot_sample() %>%
     gather(source, Call, c("cluster SNN", "Call")) %>%
     distinct() %>%
     ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
@@ -874,18 +850,18 @@ counts.norm.SNN %>%
 ```
 
     ## # A tibble: 500 x 8
-    ##    ens             logFC logCPM    LR   PValue      FDR is_de lowly_abundant
-    ##    <chr>           <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl> <lgl>         
-    ##  1 ENSG00000186832  6.17   7.99  446. 4.54e-99 2.27e-96 TRUE  FALSE         
-    ##  2 ENSG00000111716  2.94   9.64  407. 1.32e-90 3.30e-88 TRUE  FALSE         
-    ##  3 ENSG00000181617  7.93   9.12  380. 1.15e-84 1.92e-82 TRUE  FALSE         
-    ##  4 ENSG00000140545  2.69   9.54  359. 3.65e-80 4.57e-78 TRUE  FALSE         
-    ##  5 ENSG00000065978  1.59  10.2   329. 1.85e-73 1.85e-71 TRUE  FALSE         
-    ##  6 ENSG00000137673  3.88   8.28  319. 2.16e-71 1.80e-69 TRUE  FALSE         
-    ##  7 ENSG00000124107  4.66   8.62  305. 3.37e-68 2.41e-66 TRUE  FALSE         
-    ##  8 ENSG00000196754  4.92   7.04  291. 3.24e-65 2.03e-63 TRUE  FALSE         
-    ##  9 ENSG00000092621  2.91   8.40  263. 3.37e-59 1.87e-57 TRUE  FALSE         
-    ## 10 ENSG00000094755  4.85   9.22  258. 4.11e-58 2.06e-56 TRUE  FALSE         
+    ##    ens           lowly_abundant logFC logCPM    LR   PValue      FDR significant
+    ##    <chr>         <lgl>          <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl>      
+    ##  1 ENSG00000186… FALSE           6.17   7.99  446. 4.54e-99 2.27e-96 TRUE       
+    ##  2 ENSG00000111… FALSE           2.94   9.64  407. 1.32e-90 3.30e-88 TRUE       
+    ##  3 ENSG00000181… FALSE           7.93   9.12  380. 1.15e-84 1.92e-82 TRUE       
+    ##  4 ENSG00000140… FALSE           2.69   9.54  359. 3.65e-80 4.57e-78 TRUE       
+    ##  5 ENSG00000065… FALSE           1.59  10.2   329. 1.85e-73 1.85e-71 TRUE       
+    ##  6 ENSG00000137… FALSE           3.88   8.28  319. 2.16e-71 1.80e-69 TRUE       
+    ##  7 ENSG00000124… FALSE           4.66   8.62  305. 3.37e-68 2.41e-66 TRUE       
+    ##  8 ENSG00000196… FALSE           4.92   7.04  291. 3.24e-65 2.03e-63 TRUE       
+    ##  9 ENSG00000092… FALSE           2.91   8.40  263. 3.37e-59 1.87e-57 TRUE       
+    ## 10 ENSG00000094… FALSE           4.85   9.22  258. 4.11e-58 2.06e-56 TRUE       
     ## # … with 490 more rows
 
 # Drop `redundant` transcripts
@@ -957,7 +933,7 @@ look like
 
 ``` r
 counts.norm.non_redundant %>%
-    distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+    pivot_sample() %>%
     ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
@@ -982,7 +958,7 @@ pair removed.
 
 ``` r
 counts.norm.non_redundant %>%
-    distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+    pivot_sample() %>%
     ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
@@ -1036,12 +1012,14 @@ counts_ensembl %>% annotate_symbol(ens)
     ## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ## # … with 109 more rows, and 1 more variable: hg <fct>
 
-# ADD versus GET modes
+# ADD versus GET versus ONLY modes
 
-Every function takes this structure as input, and outputs either (i) the
-new information joint to the original input data frame (default), or
-(ii) just the new information, setting action=“add” or action=“get”
-respectively. For example, from this data set
+Every function takes a tidytranscriptomics structured data as input, and
+(i) with action=“add” outputs the new information joint to the original
+input data frame (default), (ii) with action=“get” the new information
+with the sample or transcript relative informatin depending on what the
+analysis is about, or (iii) with action=“only” just the new information.
+For example, from this data set
 
 ``` r
   counts.norm
@@ -1095,8 +1073,8 @@ data set
     ## #   count_scaled <dbl>, TMM <dbl>, multiplier <dbl>, lowly_abundant <lgl>,
     ## #   Dim1 <dbl>, Dim2 <dbl>, Dim3 <dbl>
 
-**action=“get”** We can get just the MDS dimensions relative to each
-sample
+**action=“get”** We can add the MDS dimensions to the original data set
+selecting just the sample-wise column
 
 ``` r
   counts.norm %>%
@@ -1107,6 +1085,37 @@ sample
         .feature = transcript,
         .dims = 3,
         action="get"
+    )
+```
+
+    ## # A tibble: 48 x 12
+    ##    sample `Cell type` time  condition batch factor_of_inter… `merged transcr…
+    ##    <chr>  <chr>       <chr> <chr>     <dbl> <chr>                       <dbl>
+    ##  1 SRR17… b_cell      0 d   TRUE          0 TRUE                            1
+    ##  2 SRR17… b_cell      1 d   TRUE          1 TRUE                            1
+    ##  3 SRR17… b_cell      3 d   TRUE          1 TRUE                            1
+    ##  4 SRR17… b_cell      7 d   TRUE          1 TRUE                            1
+    ##  5 SRR17… dendritic_… 0 d   FALSE         0 FALSE                           1
+    ##  6 SRR17… dendritic_… 1 d   FALSE         0 FALSE                           1
+    ##  7 SRR17… dendritic_… 3 d   FALSE         1 FALSE                           1
+    ##  8 SRR17… dendritic_… 7 d   FALSE         0 FALSE                           1
+    ##  9 SRR17… monocyte    0 d   FALSE         1 FALSE                           1
+    ## 10 SRR17… monocyte    1 d   FALSE         1 FALSE                           1
+    ## # … with 38 more rows, and 5 more variables: TMM <dbl>, multiplier <dbl>,
+    ## #   Dim1 <dbl>, Dim2 <dbl>, Dim3 <dbl>
+
+**action=“only”** We can get just the MDS dimensions relative to each
+sample
+
+``` r
+  counts.norm %>%
+    reduce_dimensions(
+        .abundance = `count_scaled`,
+        method="MDS" ,
+        .element = sample,
+        .feature = transcript,
+        .dims = 3,
+        action="only"
     )
 ```
 
