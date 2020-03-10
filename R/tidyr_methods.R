@@ -30,6 +30,7 @@ nest.tidybulk <- function (.data, ...)
 
 	.data %>%
 		drop_class(c("tidybulk", "tt")) %>%
+		drop_internals() %>%
 		tidyr::nest(...)
 
 	#   %>%
