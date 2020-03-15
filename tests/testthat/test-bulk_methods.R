@@ -1076,6 +1076,7 @@ test_that("Drop redundant correlated - no object",{
 
 test_that("Only symbol from ensambl - no object",{
 
+	# Human
 	res =
 		annotate_symbol(
 			tidybulk::counts_ensembl,
@@ -1093,6 +1094,30 @@ test_that("Only symbol from ensambl - no object",{
 		3
 	)
 
+	# Mouse
+	# Human
+	res =
+		annotate_symbol(
+			tibble(ens = c("ENSMUSG00000000001",
+												 "ENSMUSG00000000003",
+												 "ENSMUSG00000000028",
+												 "ENSMUSG00000000031",
+												 "ENSMUSG00000000037",
+												 "ENSMUSG00000000049"
+			)),
+			.ensembl = ens,
+			action="only"
+		)
+
+	expect_equal(
+		as.character(res$transcript)[1],
+		"Gnai3"
+	)
+
+	expect_equal(
+		ncol(res),
+		3
+	)
 })
 
 test_that("Add symbol from ensambl - no object",{
