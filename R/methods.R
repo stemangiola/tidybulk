@@ -1987,7 +1987,7 @@ setMethod(
 
 
 
-#' Add transcript symbol column from ensembl id
+#' Add transcript symbol column from ensembl id for human data
 #'
 #' \lifecycle{maturing}
 #'
@@ -2003,7 +2003,7 @@ setMethod(
 #'
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
-#' @details This is useful since different resources use ensembl IDs while others use gene symbol IDs.
+#' @details This is useful since different resources use ensembl IDs while others use gene symbol IDs. At the moment this work for human data only.
 #'
 #' @return A `tbl` object including additional columns for transcript symbol
 #'
