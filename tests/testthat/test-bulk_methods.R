@@ -1078,7 +1078,7 @@ test_that("Only symbol from ensambl - no object",{
 
 	# Human
 	res =
-		annotate_symbol(
+		ensembl_to_symbol(
 			tidybulk::counts_ensembl,
 			.ensembl = ens,
 			action="only"
@@ -1097,7 +1097,7 @@ test_that("Only symbol from ensambl - no object",{
 	# Mouse
 	# Human
 	res =
-		annotate_symbol(
+		ensembl_to_symbol(
 			tibble(ens = c("ENSMUSG00000000001",
 												 "ENSMUSG00000000003",
 												 "ENSMUSG00000000028",
@@ -1123,7 +1123,7 @@ test_that("Only symbol from ensambl - no object",{
 test_that("Add symbol from ensambl - no object",{
 
 	res =
-		annotate_symbol(
+		ensembl_to_symbol(
 			tidybulk::counts_ensembl,
 			.ensembl = ens,
 			action="add"

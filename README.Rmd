@@ -709,7 +709,7 @@ counts = bam_sam_to_featureCounts_tibble(
 We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs.
 
 ```{r ensembl, cache=TRUE}
-counts_ensembl %>% annotate_symbol(ens)
+counts_ensembl %>% ensembl_to_symbol(ens)
 ```
 
 # ADD versus GET versus ONLY modes

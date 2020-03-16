@@ -1987,23 +1987,23 @@ setMethod(
 
 
 
-#' Add transcript symbol column from ensembl id for human data
+#' Add transcript symbol column from ensembl id for human and mouse data
 #'
 #' \lifecycle{maturing}
 #'
-#' @description annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+#' @description ensembl_to_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name annotate_symbol
+#' @name ensembl_to_symbol
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> |
 #' @param .ensembl A character string. The column that is represents ensembl gene id
 #'
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
-#' @details This is useful since different resources use ensembl IDs while others use gene symbol IDs. At the moment this work for human data only.
+#' @details This is useful since different resources use ensembl IDs while others use gene symbol IDs. At the moment this work for human (genes and transcripts) and mouse (genes) data.
 #'
 #' @return A `tbl` object including additional columns for transcript symbol
 #'
@@ -2013,21 +2013,21 @@ setMethod(
 #' @examples
 #'
 #'
-#' 	annotate_symbol(tidybulk::counts_ensembl, ens)
+#' 	ensembl_to_symbol(tidybulk::counts_ensembl, ens)
 #'
 #'
 #' @docType methods
-#' @rdname annotate_symbol-methods
+#' @rdname ensembl_to_symbol-methods
 #' @export
 #'
 #'
-setGeneric("annotate_symbol", function(.data,
+setGeneric("ensembl_to_symbol", function(.data,
 																			 .ensembl,
 																			 action = "add")
-	standardGeneric("annotate_symbol"))
+	standardGeneric("ensembl_to_symbol"))
 
 # Set internal
-.annotate_symbol = 		function(.data,
+.ensembl_to_symbol = 		function(.data,
 															.ensembl,
 															action = "add")
 {
@@ -2068,20 +2068,20 @@ setGeneric("annotate_symbol", function(.data,
 
 }
 
-#' annotate_symbol
-#' @inheritParams annotate_symbol
+#' ensembl_to_symbol
+#' @inheritParams ensembl_to_symbol
 #' @return A `tbl` object including additional columns for transcript symbol
-setMethod("annotate_symbol", "spec_tbl_df", .annotate_symbol)
+setMethod("ensembl_to_symbol", "spec_tbl_df", .ensembl_to_symbol)
 
-#' annotate_symbol
-#' @inheritParams annotate_symbol
+#' ensembl_to_symbol
+#' @inheritParams ensembl_to_symbol
 #' @return A `tbl` object including additional columns for transcript symbol
-setMethod("annotate_symbol", "tbl_df", .annotate_symbol)
+setMethod("ensembl_to_symbol", "tbl_df", .ensembl_to_symbol)
 
-#' annotate_symbol
-#' @inheritParams annotate_symbol
+#' ensembl_to_symbol
+#' @inheritParams ensembl_to_symbol
 #' @return A `tbl` object including additional columns for transcript symbol
-setMethod("annotate_symbol", "tidybulk", .annotate_symbol)
+setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 
 
 #' Add differential transcription information to a tbl using edgeR.

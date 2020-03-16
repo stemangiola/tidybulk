@@ -994,7 +994,7 @@ We can add gene symbols from ensembl identifiers. This is useful since
 different resources use ensembl IDs while others use gene symbol IDs.
 
 ``` r
-counts_ensembl %>% annotate_symbol(ens)
+counts_ensembl %>% ensembl_to_symbol(ens)
 ```
 
     ## # A tibble: 119 x 8

@@ -1755,82 +1755,82 @@ remove_redundancy_elements_though_reduced_dimensions <-
 			reattach_internals(.data)
 	}
 
-#' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
-#'
-#' @return A tibble with ensembl-transcript mapping
-#'
-get_ensembl_symbol_mapping <- function() {
-  # wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
-  # wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
-  all =
-  	read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
-              col_names = FALSE) %>%
-    setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
-    mutate(ref_genome = "hg37") %>%
-    bind_rows(
-      read_table2(
-        "~/third_party_sofware/ensembl_mapping/mapping_38.txt",
-        col_names = FALSE
-      ) %>%
-        setNames(
-          c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
-        ) %>%
-        mutate(ref_genome = "hg38")
-    ) %>%
-    drop_na()
+##' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
+##'
+##' @return A tibble with ensembl-transcript mapping
+##'
+# get_ensembl_symbol_mapping <- function() {
+# 	# wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
+# 	# wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
+# 	all =
+# 		read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
+# 								col_names = FALSE) %>%
+# 		setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
+# 		mutate(ref_genome = "hg37") %>%
+# 		bind_rows(
+# 			read_table2(
+# 				"~/third_party_sofware/ensembl_mapping/mapping_38.txt",
+# 				col_names = FALSE
+# 			) %>%
+# 				setNames(
+# 					c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
+# 				) %>%
+# 				mutate(ref_genome = "hg38")
+# 		) %>%
+# 		drop_na()
+#
+#
+# 	bind_rows(
+# 		# Gene annotation
+# 		all %>%
+# 			select(-ensembl_transcript_id) %>%
+# 			group_by(ensembl_gene_id) %>%
+# 			arrange(ref_genome %>% desc()) %>%
+# 			slice(1) %>%
+# 			ungroup() %>%
+# 			rename(ensembl_id = ensembl_gene_id),
+#
+# 		# Transcript annotation
+# 		all %>%
+# 			select(-ensembl_gene_id) %>%
+# 			group_by(ensembl_transcript_id) %>%
+# 			arrange(ref_genome %>% desc()) %>%
+# 			slice(1) %>%
+# 			ungroup() %>%
+# 			rename(ensembl_id = ensembl_transcript_id)
+# 	) %>%
+#
+# 		# Write to file and return
+# 		{
+# 			(.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping.csv")
+# 			(.)
+# 		}
+# }
 
-
-  bind_rows(
-  	# Gene annotation
-  	all %>%
-		select(-ensembl_transcript_id) %>%
-		group_by(ensembl_gene_id) %>%
-		arrange(ref_genome %>% desc()) %>%
-		slice(1) %>%
-		ungroup() %>%
-		rename(ensembl_id = ensembl_gene_id),
-
-		# Transcript annotation
-		all %>%
-		select(-ensembl_gene_id) %>%
-		group_by(ensembl_transcript_id) %>%
-		arrange(ref_genome %>% desc()) %>%
-		slice(1) %>%
-		ungroup() %>%
-		rename(ensembl_id = ensembl_transcript_id)
-  ) %>%
-
-  # Write to file and return
-  {
-    (.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping.csv")
-    (.)
-  }
-}
-
-#' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
-#'
-#' @return A tibble with ensembl-transcript mapping
-#'
-get_ensembl_symbol_mapping_mouse <- function() {
-
-
-	left_join(
-	AnnotationDbi::toTable(org.Mm.eg.db::org.Mm.egENSEMBL),
-	AnnotationDbi::toTable(org.Mm.eg.db::org.Mm.egSYMBOL)
-	) %>%
-	as_tibble %>%
-	select(-gene_id) %>%
-	rename(ensembl_id = ensembl_id, transcript = symbol) %>%
-	drop_na() %>%
-
-	mutate(ref_genome = "mm10") %>%
-
-	# Write to file and return
-	{
-		(.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping_mouse.csv")
-		(.)
-	}
-}
+##' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
+##'
+##' @return A tibble with ensembl-transcript mapping
+##'
+# get_ensembl_symbol_mapping_mouse <- function() {
+#
+#
+# 	left_join(
+# 		AnnotationDbi::toTable(org.Mm.eg.db::org.Mm.egENSEMBL),
+# 		AnnotationDbi::toTable(org.Mm.eg.db::org.Mm.egSYMBOL)
+# 	) %>%
+# 		as_tibble %>%
+# 		select(-gene_id) %>%
+# 		rename(ensembl_id = ensembl_id, transcript = symbol) %>%
+# 		drop_na() %>%
+#
+# 		mutate(ref_genome = "mm10") %>%
+#
+# 		# Write to file and return
+# 		{
+# 			(.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping_mouse.csv")
+# 			(.)
+# 		}
+# }
 
 #' get_symbol_from_ensembl
 #'
