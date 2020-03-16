@@ -999,7 +999,7 @@ counts_ensembl %>% ensembl_to_symbol(ens)
 
     ## # A tibble: 119 x 8
     ##    ens   iso   `read count` sample cases_0_project… cases_0_samples… transcript
-    ##    <chr> <chr>        <dbl> <chr>  <chr>            <chr>            <fct>     
+    ##    <chr> <chr>        <dbl> <chr>  <chr>            <chr>            <chr>     
     ##  1 ENSG… 13             144 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ##  2 ENSG… 13              72 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ##  3 ENSG… 13               0 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
@@ -1010,7 +1010,7 @@ counts_ensembl %>% ensembl_to_symbol(ens)
     ##  8 ENSG… 13            2678 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ##  9 ENSG… 13             751 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ## # … with 109 more rows, and 1 more variable: hg <fct>
+    ## # … with 109 more rows, and 1 more variable: ref_genome <chr>
 
 # ADD versus GET versus ONLY modes
 
