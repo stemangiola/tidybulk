@@ -11,4 +11,5 @@ doc
 dev/*csv
 dev/*rds
 dev/*rda
+dev/*pdf
 dev/dplyr-master/*
