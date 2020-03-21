@@ -511,9 +511,10 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		distinct() %>%
 
 		# Check if data rectangular
-		ifelse_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` &
-				!fill_missing_values,
+		ifelse2_pipe(
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
 		)
 
@@ -590,10 +591,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		select(!!.transcript,!!.sample,!!.abundance) %>%
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.transcript) %>%
-
-		# If fill missing values
-		ifelse_pipe(fill_missing_values,
-								~ .x %>% fill_NA_with_row_median) %>%
 
 		edgeR::DGEList(counts = .) %>%
 		edgeR::calcNormFactors(method = scaling_method) %>%

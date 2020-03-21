@@ -715,6 +715,66 @@ fill_NA_with_row_median = function(.matrix){
     .matrix
 }
 
+#' This function is needed for DE in case the matrix is not rectangular, but includes NA
+#'
+#' @param .matrix A matrix
+#'
+#' @return A matrix
+#'
+#' @export
+fill_NA_using_formula = function(.data,
+                                    .formula,
+                                    .sample = NULL,
+                                    .transcript = NULL,
+                                    .abundance = NULL){
+
+  # Get column names
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+
+  col_formula =
+    .data %>%
+    select(parse_formula(.formula)) %>%
+    distinct() %>%
+    select_if(function(x) is.character(x) | is.logical(x) | is.factor(x)) %>%
+    colnames
+
+
+  .data %>%
+    select(!!.sample, !!.transcript, !!.abundance, col_formula) %>%
+    distinct %>%
+
+    # Create NAs for missing sample/transcript pair
+    spread(!!.transcript, !!.abundance) %>%
+    gather(!!.transcript, !!.abundance, -!!.sample, -col_formula) %>%
+
+    # Calculate median for NAs
+    nest(data = -col_formula) %>%
+    mutate(data = map(data, ~
+                        .x %>% mutate(
+                          !!.abundance := ifelse(
+                            !!.abundance %>% is.na,
+                            median(!!.abundance, na.rm = T),!!.abundance
+                          )
+                        ) %>%
+
+                      # Throu warning if group of size 1
+                        ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
+                  )) %>%
+    unnest(data) %>%
+
+    # Select only imputer data
+    select(-col_formula) %>%
+    anti_join(.data %>% select(!!.sample, !!.transcript)) %>%
+    left_join(.data %>% pivot_sample(!!.sample), by=quo_name(.sample)) %>%
+
+    # Add oiginal dataset
+    bind_rows(.data) %>%
+    select(.data %>% colnames)
+
+}
+
 # #' @importFrom magrittr %>%
 # #' @export
 # magrittr::`%>%`
