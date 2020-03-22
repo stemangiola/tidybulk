@@ -467,13 +467,13 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .coef An integer. See edgeR specifications
-#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param significance_threshold A real between 0 and 1
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
 #' @return A tibble with edgeR results
 #'
@@ -482,17 +482,23 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .sample = NULL,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
-																											 .coef = 2,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
 																											 minimum_counts = 10,
 																											 minimum_proportion = 0.7,
 																											 fill_missing_values = FALSE,
-																											 scaling_method = "TMM") {
+																											 scaling_method = "TMM",
+																											 omit_contrast_in_colnames = F) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+
+	# Check if omit_contrast_in_colnames is correctly setup
+	if(omit_contrast_in_colnames & length(.contrasts) > 1){
+		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+		omit_contrast_in_colnames = F
+	}
 
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
@@ -509,6 +515,9 @@ get_differential_transcript_abundance_bulk <- function(.data,
 					 !!.abundance,
 					 one_of(parse_formula(.formula))) %>%
 		distinct() %>%
+
+		# drop factors as it can affect design matrix
+		mutate_if(is.factor, as.character()) %>%
 
 		# Check if data rectangular
 		ifelse2_pipe(
@@ -602,11 +611,11 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		# If I have multiple .contrasts merge the results
 		ifelse_pipe(
-			my_contrasts %>% is.null,
+			my_contrasts %>% is.null | omit_contrast_in_colnames,
 
 			# Simple comparison
 			~ .x %>%
-				edgeR::glmLRT(coef = .coef, contrast = my_contrasts) %>%
+				edgeR::glmLRT(coef = 2, contrast = my_contrasts) %>%
 				edgeR::topTags(n = 999999) %$%
 				table %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
@@ -624,7 +633,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				1:ncol(my_contrasts) %>%
 					map_dfr(
 						~ edgeR_obj %>%
-							edgeR::glmLRT(coef = .coef, contrast = my_contrasts[, .x]) %>%
+							edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) %>%
 							edgeR::topTags(n = 999999) %$%
 							table %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
