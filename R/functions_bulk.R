@@ -2360,3 +2360,71 @@ as_matrix <- function(tbl,
 		# Convert to matrix
 		as.matrix()
 }
+
+# # Iterative version of Siberg function because fails
+# siberg_iterative = function(x) {
+# 	if (x %>% unique %>% length %>% `<` (5))
+# 		return(c(NA, NA))
+#
+#
+#
+# 	mu = NA
+# 	max_i = ceiling(length(x) / 10)
+# 	#max_i = 10
+# 	i = 0
+# 	while (mu %>% is.na | i <= max_i) {
+# 		res = SIBERG::SIBER(x, model = 'NB')
+#
+# 		BI = res[7]
+# 		mu = res[1]
+# 		x = x[-1]
+# 		i = i + 1
+#
+# 	}
+#
+#
+# 	if (mu %>% is.na & x %>% length %>% `<` (5))
+# 		return(c(NA, NA))
+#
+# 	return(c(max(res[1], res[2]) / (min(res[1], res[2]) + 1),
+# 					 res[7]))
+# }
+
+
+# # Calculate bimodality
+# bimodality =
+#
+# 	counts_non_red %>%
+# 	#keep_variable(top = 5000) %>%
+# 	tidybulk:::drop_class(c("tidybulk", "tt")) %>%
+# 	tidybulk:::drop_internals() %>%
+# 	nest(data = -c(`Cell type formatted`, symbol)) %>%
+#
+# 	#slice(1:10) %>%
+# 	mutate(	bimodality_NB =
+# 		map(
+# 			data,
+# 			~ tryCatch(
+# 							.x %>% pull(count_scaled) %>% as.integer %>%
+# 								siberg_iterative() %>%
+# 								`[` (1:2) , error=function(e) c(NA, NA))		%>%
+# 							setNames(c("bimodality_NB_diff", "bimodality_NB")) %>%
+# 							enframe() %>% spread(name, value)
+#
+# 		)
+# 	) %>%
+# 	select(-data) %>%
+# 	unnest(bimodality_NB)
+#
+# bimodality %>% saveRDS("dev/bimodality.rds")
+#
+# bimodality = readRDS("dev/bimodality.rds")
+#
+# non_bimodal =
+# 	bimodality %>%
+# 	add_count(symbol) %>%
+# 	filter(n==max(n)) %>%
+# 	mutate(bimodal = ((bimodality_NB > 0.8 & bimodality_NB_diff > 20) | bimodality_NB_diff > 100) ) %>%
+# 	nest(data = -symbol) %>%
+# 	mutate(how_many_bimod = map_int(data, ~ .x %>% pull(bimodal) %>% sum(na.rm=T))) %>%
+# 	filter(how_many_bimod == 0)
