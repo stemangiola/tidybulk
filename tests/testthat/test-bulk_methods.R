@@ -1314,3 +1314,22 @@ test_that("pivot",{
 	expect_equal(	ncol(pivot_transcript(input_df, b)),	1	)
 
 })
+
+test_that("impute missing - no object",{
+
+	res =
+		impute_abundance(
+			dplyr::slice(input_df, -1),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c
+		)
+
+	expect_equal(	pull(filter(res, b=="TNFRSF4" & a == "SRR1740034"), c),	203.5	)
+
+	expect_equal(	ncol(res),	ncol(input_df)	)
+
+	expect_equal(	nrow(res),	nrow(input_df)	)
+
+})
