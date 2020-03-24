@@ -65,11 +65,11 @@ se.aggr
 ## ----normalise, cache=TRUE----------------------------------------------------
 counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
 
-counts.norm %>% select(`count`, `count_scaled`, lowly_abundant, everything())
+counts.norm %>% select(`count`, count_scaled, lowly_abundant, everything())
 
 ## ----plot_normalise, cache=TRUE-----------------------------------------------
 counts.norm %>%
-	ggplot(aes(`count_scaled` + 1, group=sample, color=`Cell type`)) +
+	ggplot(aes(count_scaled + 1, group=sample, color=`Cell type`)) +
 	geom_density() +
 	scale_x_log10() +
 	my_theme
@@ -80,7 +80,7 @@ se.norm =  se.aggr %>% scale_abundance(method="TMM")
 se.norm
 
 ## ----mds, cache=TRUE----------------------------------------------------------
-counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="MDS", .dims = 3)
+counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = count_scaled, method="MDS", .dims = 3)
 
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 
@@ -91,12 +91,12 @@ counts.norm.MDS %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 
 ## ----mds se, cache=TRUE-------------------------------------------------------
-se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="MDS", .dims = 3)
+se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = count_scaled, method="MDS", .dims = 3)
 
 se.norm.MDS
 
 ## ----pca, cache=TRUE----------------------------------------------------------
-counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="PCA" ,  .dims = 3)
+counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = count_scaled, method="PCA" ,  .dims = 3)
 
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 
@@ -107,7 +107,7 @@ counts.norm.PCA %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
 
 ## ----pca se, cache=TRUE-------------------------------------------------------
-se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="PCA" ,  .dims = 3)
+se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = count_scaled, method="PCA" ,  .dims = 3)
 
 se.norm.PCA
 
@@ -120,7 +120,7 @@ tt_tcga_breast =
 counts.norm.tSNE =
 	tt_tcga_breast %>%
 	reduce_dimensions(
-		.abundance = `count_scaled`,
+		.abundance = count_scaled,
 		method = "tSNE",
 		top = 500,
 		perplexity=10,
@@ -132,15 +132,14 @@ counts.norm.tSNE %>%
 	distinct()
 
 counts.norm.tSNE %>%
-	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
-	distinct() %>%
+	pivot_sample() %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 
 ## ----tsne se, cache=TRUE------------------------------------------------------
 se.norm.tSNE =
 	se_breast_tcga_mini %>%
 	reduce_dimensions(
-		.abundance = `count_scaled`,
+		.abundance = count_scaled,
 		method = "tSNE",
 		top = 500,
 		perplexity=10,
@@ -155,14 +154,14 @@ counts.norm.MDS.rotated =
 
 ## ----plot_rotate_1, cache=TRUE------------------------------------------------
 counts.norm.MDS.rotated %>%
-	distinct(sample, `Dim1`,`Dim2`, `Cell type`) %>%
+	pivot_sample() %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type` )) +
   geom_point() +
   my_theme
 
 ## ----plot_rotate_2, cache=TRUE------------------------------------------------
 counts.norm.MDS.rotated %>%
-	distinct(sample, `Dim1 rotated 45`,`Dim2 rotated 45`, `Cell type`) %>%
+	pivot_sample() %>%
 	ggplot(aes(x=`Dim1 rotated 45`, y=`Dim2 rotated 45`, color=`Cell type` )) +
   geom_point() +
   my_theme
@@ -172,7 +171,7 @@ se.norm.MDS %>%
 rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 
 ## ----de, cache=TRUE-----------------------------------------------------------
-counts %>%	test_differential_abundance(  ~ condition,  action="get")
+counts %>%	test_differential_abundance(  ~ condition,  action="only")
 
 ## ----de se, cache=TRUE--------------------------------------------------------
 se_mini %>%	test_differential_abundance(  ~ condition)
@@ -195,8 +194,8 @@ counts.norm.adj =
 	counts.norm.batch %>%
 	  adjust_abundance(
 	  	~ factor_of_interest + batch,
-	  	.abundance = `count_scaled`,
-	  	action = "get"
+	  	.abundance = count_scaled,
+	  	action = "only"
 	  )
 
 counts.norm.adj
@@ -205,20 +204,19 @@ counts.norm.adj
 se.norm.batch %>%
   adjust_abundance(
   	~ factor_of_interest + batch,
-  	.abundance = `count_scaled`
+  	.abundance = count_scaled
   )
 
 ## ----cibersort, cache=TRUE----------------------------------------------------
 counts.cibersort =
 	counts %>%
-	deconvolve_cellularity(action="add", cores=2)
+	deconvolve_cellularity(action="get", cores=2)
 
-counts.cibersort %>% select(sample, contains("cibersort:")) %>% distinct()
+counts.cibersort %>% select(sample, contains("cibersort:")) 
 
 ## ----plot_cibersort, cache=TRUE-----------------------------------------------
 counts.cibersort %>%
-	select(contains("cibersort:"), everything()) %>%
-	gather(`Cell type inferred`, `proportion`, 1:22) %>%
+	gather(`Cell type inferred`, `proportion`, 5:26) %>%
   distinct(sample, `Cell type`, `Cell type inferred`, proportion) %>%
   ggplot(aes(x=`Cell type inferred`, y=proportion, fill=`Cell type`)) +
   geom_boxplot() +
@@ -233,33 +231,32 @@ se.cibersort %>% deconvolve_cellularity(cores=2)
 
 ## ----cluster, cache=TRUE------------------------------------------------------
 counts.norm.cluster = counts.norm %>%
-  cluster_elements(.abundance = `count_scaled`, method="kmeans",	centers = 2 )
+  cluster_elements(.abundance = count_scaled, method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 
 ## ----plot_cluster, cache=TRUE-------------------------------------------------
  counts.norm.MDS %>%
   cluster_elements(
-  	.abundance = `count_scaled`,
+  	.abundance = count_scaled,
   	method="kmeans",
-  	centers = 2
+  	centers = 2,
+  	action="get"
   ) %>%
-	distinct(sample, `Dim1`, `Dim2`, `cluster kmeans`) %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster kmeans`)) +
   geom_point() +
   my_theme
 
 ## ----cluster se, cache=TRUE---------------------------------------------------
 se.norm %>%
-  cluster_elements(.abundance = `count_scaled`, method="kmeans",	centers = 2 )
+  cluster_elements(.abundance = count_scaled, method="kmeans",	centers = 2 )
 
 
 ## ----SNN, cache=TRUE----------------------------------------------------------
-counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= `count_scaled`, method = "SNN")
+counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= count_scaled, method = "SNN")
 
 counts.norm.SNN %>%
-	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample) %>%
-	distinct()
+	pivot_sample()
 
 counts.norm.SNN %>%
 	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
@@ -273,18 +270,18 @@ counts.norm.SNN %>%
 	mutate(factor_of_interest = `cluster SNN` == 3) %>%
 	test_differential_abundance(
     ~ factor_of_interest,
-    action="get"
+    action="only"
    )
 
 ## ----SNN se, cache=TRUE-------------------------------------------------------
-se.norm.tSNE %>%	cluster_elements(.abundance= `count_scaled`, method = "SNN")
+se.norm.tSNE %>%	cluster_elements(.abundance= count_scaled, method = "SNN")
 
 ## ----drop, cache=TRUE---------------------------------------------------------
 counts.norm.non_redundant = counts.norm.MDS %>%  remove_redundancy(	method = "correlation" )
 
 ## ----plot_drop, cache=TRUE----------------------------------------------------
 counts.norm.non_redundant %>%
-	distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+	pivot_sample() %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
@@ -306,7 +303,7 @@ counts.norm.non_redundant =
 
 ## ----plot_drop2, cache=TRUE---------------------------------------------------
 counts.norm.non_redundant %>%
-	distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+	pivot_sample() %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
@@ -324,7 +321,7 @@ remove_redundancy(
 )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  counts = bam_sam_to_featureCounts_tibble(
+#  counts = tidybulk_SAM_BAM(
 #  	file_names,
 #  	genome = "hg38",
 #  	isPairedEnd = TRUE,
@@ -334,7 +331,7 @@ remove_redundancy(
 #  )
 
 ## ----ensembl, cache=TRUE------------------------------------------------------
-counts_ensembl %>% annotate_symbol(ens)
+counts_ensembl %>% ensembl_to_symbol(ens)
 
 ## ---- cache=TRUE--------------------------------------------------------------
   counts.norm
@@ -342,7 +339,7 @@ counts_ensembl %>% annotate_symbol(ens)
 ## ---- cache=TRUE--------------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count_scaled`,
+    	.abundance = count_scaled,
     	method="MDS" ,
     	.element = sample,
     	.feature = transcript,
@@ -353,12 +350,23 @@ counts_ensembl %>% annotate_symbol(ens)
 ## ---- cache=TRUE--------------------------------------------------------------
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count_scaled`,
+    	.abundance = count_scaled,
     	method="MDS" ,
     	.element = sample,
     	.feature = transcript,
     	.dims = 3,
     	action="get"
+    )
+
+## ---- cache=TRUE--------------------------------------------------------------
+  counts.norm %>%
+    reduce_dimensions(
+    	.abundance = count_scaled,
+    	method="MDS" ,
+    	.element = sample,
+    	.feature = transcript,
+    	.dims = 3,
+    	action="only"
     )
 
 ## -----------------------------------------------------------------------------
