@@ -10,13 +10,13 @@
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .coef = 2,
   .contrasts = NULL,
   significance_threshold = 0.05,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   fill_missing_values = FALSE,
   scaling_method = "TMM",
+  omit_contrast_in_colnames = F,
   action = "add"
 )
 }
@@ -31,9 +31,7 @@
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{.coef}{An integer. See edgeR specifications}
-
-\item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`}
+\item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
 \item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
 
@@ -45,10 +43,12 @@
 
 \item{scaling_method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
+\item{omit_contrast_in_colnames}{If just one contrast is specified you can choose to omit the contrast label in the colnames.}
+
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
 \value{
-A `tidybulk` object
+A `SummarizedExperiment` object
 }
 \description{
 test_differential_abundance

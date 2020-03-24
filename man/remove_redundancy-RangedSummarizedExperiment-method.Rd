@@ -42,7 +42,7 @@
 \item{Dim_b_column}{A character string. For reduced_dimension based calculation. The column of another principal component}
 }
 \value{
-A `tidybulk` object
+A `SummarizedExperiment` object
 }
 \description{
 remove_redundancy

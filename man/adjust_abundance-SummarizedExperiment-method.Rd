@@ -33,7 +33,7 @@
 \item{...}{Further parameters passed to the function sva::ComBat}
 }
 \value{
-A `tidybulk` object
+A `SummarizedExperiment` object
 }
 \description{
 adjust_abundance
