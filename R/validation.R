@@ -21,7 +21,7 @@ check_if_wrong_input = function(.data, list_input, expected_type) {
 			unlist %>%
 			equals(expected_type) %>%
 			`!`)
-		stop("You have passed the wrong argument to the function. Please check again.")
+		stop("tidybulk says: You have passed the wrong argument to the function. Please check again.")
 
 	# If all good return original data frame
 	.data
@@ -57,7 +57,7 @@ check_if_duplicated_genes <- function(.data,
 	is_unique = duplicates %>% nrow() %>% equals(0)
 
 	if (!is_unique) {
-		writeLines("Those are the duplicated genes")
+		writeLines("tidybulk says: Those are the duplicated genes")
 		duplicates %>% print()
 	}
 
@@ -120,7 +120,7 @@ eliminate_sparse_transcripts = function(.data, .transcript){
 	# Parse column names
 	.transcript = enquo(.transcript)
 
-	warning("Some transcripts have been omitted from the analysis because not present in every sample.")
+	warning("tidybulk says: Some transcripts have been omitted from the analysis because not present in every sample.")
 
 	.data %>%
 		add_count(!!.transcript, name = "my_n") %>%

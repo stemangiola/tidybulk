@@ -398,7 +398,7 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("scale_abundance",
 					"SummarizedExperiment",
@@ -406,7 +406,7 @@ setMethod("scale_abundance",
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("scale_abundance",
 					"RangedSummarizedExperiment",
@@ -676,7 +676,7 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 
 #' cluster_elements
 #' @inheritParams cluster_elements
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("cluster_elements",
 					"SummarizedExperiment",
@@ -684,7 +684,7 @@ setMethod("cluster_elements",
 
 #' cluster_elements
 #' @inheritParams cluster_elements
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("cluster_elements",
 					"RangedSummarizedExperiment",
@@ -996,7 +996,7 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("reduce_dimensions",
 					"SummarizedExperiment",
@@ -1004,7 +1004,7 @@ setMethod("reduce_dimensions",
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("reduce_dimensions",
 					"RangedSummarizedExperiment",
@@ -1213,7 +1213,7 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("rotate_dimensions",
 					"SummarizedExperiment",
@@ -1221,7 +1221,7 @@ setMethod("rotate_dimensions",
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("rotate_dimensions",
 					"RangedSummarizedExperiment",
@@ -1432,7 +1432,7 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("remove_redundancy",
 					"SummarizedExperiment",
@@ -1440,7 +1440,7 @@ setMethod("remove_redundancy",
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("remove_redundancy",
 					"RangedSummarizedExperiment",
@@ -1630,7 +1630,7 @@ setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("adjust_abundance",
 					"SummarizedExperiment",
@@ -1638,7 +1638,7 @@ setMethod("adjust_abundance",
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("adjust_abundance",
 					"RangedSummarizedExperiment",
@@ -1781,7 +1781,7 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("aggregate_duplicates",
 					"SummarizedExperiment",
@@ -1789,7 +1789,7 @@ setMethod("aggregate_duplicates",
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("aggregate_duplicates",
 					"RangedSummarizedExperiment",
@@ -1968,7 +1968,7 @@ setMethod("deconvolve_cellularity",
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("deconvolve_cellularity",
 					"SummarizedExperiment",
@@ -1976,7 +1976,7 @@ setMethod("deconvolve_cellularity",
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod(
 	"deconvolve_cellularity",
@@ -1987,23 +1987,23 @@ setMethod(
 
 
 
-#' Add transcript symbol column from ensembl id
+#' Add transcript symbol column from ensembl id for human and mouse data
 #'
 #' \lifecycle{maturing}
 #'
-#' @description annotate_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+#' @description ensembl_to_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name annotate_symbol
+#' @name ensembl_to_symbol
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> |
 #' @param .ensembl A character string. The column that is represents ensembl gene id
 #'
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
-#' @details This is useful since different resources use ensembl IDs while others use gene symbol IDs.
+#' @details This is useful since different resources use ensembl IDs while others use gene symbol IDs. At the moment this work for human (genes and transcripts) and mouse (genes) data.
 #'
 #' @return A `tbl` object including additional columns for transcript symbol
 #'
@@ -2013,21 +2013,21 @@ setMethod(
 #' @examples
 #'
 #'
-#' 	annotate_symbol(tidybulk::counts_ensembl, ens)
+#' 	ensembl_to_symbol(tidybulk::counts_ensembl, ens)
 #'
 #'
 #' @docType methods
-#' @rdname annotate_symbol-methods
+#' @rdname ensembl_to_symbol-methods
 #' @export
 #'
 #'
-setGeneric("annotate_symbol", function(.data,
+setGeneric("ensembl_to_symbol", function(.data,
 																			 .ensembl,
 																			 action = "add")
-	standardGeneric("annotate_symbol"))
+	standardGeneric("ensembl_to_symbol"))
 
 # Set internal
-.annotate_symbol = 		function(.data,
+.ensembl_to_symbol = 		function(.data,
 															.ensembl,
 															action = "add")
 {
@@ -2068,20 +2068,20 @@ setGeneric("annotate_symbol", function(.data,
 
 }
 
-#' annotate_symbol
-#' @inheritParams annotate_symbol
+#' ensembl_to_symbol
+#' @inheritParams ensembl_to_symbol
 #' @return A `tbl` object including additional columns for transcript symbol
-setMethod("annotate_symbol", "spec_tbl_df", .annotate_symbol)
+setMethod("ensembl_to_symbol", "spec_tbl_df", .ensembl_to_symbol)
 
-#' annotate_symbol
-#' @inheritParams annotate_symbol
+#' ensembl_to_symbol
+#' @inheritParams ensembl_to_symbol
 #' @return A `tbl` object including additional columns for transcript symbol
-setMethod("annotate_symbol", "tbl_df", .annotate_symbol)
+setMethod("ensembl_to_symbol", "tbl_df", .ensembl_to_symbol)
 
-#' annotate_symbol
-#' @inheritParams annotate_symbol
+#' ensembl_to_symbol
+#' @inheritParams ensembl_to_symbol
 #' @return A `tbl` object including additional columns for transcript symbol
-setMethod("annotate_symbol", "tidybulk", .annotate_symbol)
+setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 
 
 #' Add differential transcription information to a tbl using edgeR.
@@ -2100,13 +2100,13 @@ setMethod("annotate_symbol", "tidybulk", .annotate_symbol)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .coef An integer. See edgeR specifications
-#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
@@ -2148,13 +2148,13 @@ setGeneric("test_differential_abundance", function(.data,
 																									 .sample = NULL,
 																									 .transcript = NULL,
 																									 .abundance = NULL,
-																									 .coef = 2,
 																									 .contrasts = NULL,
 																									 significance_threshold = 0.05,
 																									 minimum_counts = 10,
 																									 minimum_proportion = 0.7,
 																									 fill_missing_values = FALSE,
 																									 scaling_method = "TMM",
+																									 omit_contrast_in_colnames = F,
 
 																									 action = "add")
 					 standardGeneric("test_differential_abundance"))
@@ -2165,13 +2165,14 @@ setGeneric("test_differential_abundance", function(.data,
 																					.sample = NULL,
 																					.transcript = NULL,
 																					.abundance = NULL,
-																					.coef = 2,
 																					.contrasts = NULL,
 																					significance_threshold = 0.05,
 																					minimum_counts = 10,
 																					minimum_proportion = 0.7,
 																					fill_missing_values = FALSE,
 																					scaling_method = "TMM",
+																					omit_contrast_in_colnames = F,
+
 																					action = "add")
 {
 	# Get column names
@@ -2193,13 +2194,13 @@ setGeneric("test_differential_abundance", function(.data,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			.coef = .coef,
 			.contrasts = .contrasts,
 			significance_threshold = significance_threshold,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion,
 			fill_missing_values = fill_missing_values,
-			scaling_method = scaling_method
+			scaling_method = scaling_method,
+			omit_contrast_in_colnames = omit_contrast_in_colnames
 		)
 
 	if (action == "add"){
@@ -2271,13 +2272,13 @@ setMethod("test_differential_abundance",
 																					 .sample = NULL,
 																					 .transcript = NULL,
 																					 .abundance = NULL,
-																					 .coef = 2,
 																					 .contrasts = NULL,
 																					 significance_threshold = 0.05,
 																					 minimum_counts = 10,
 																					 minimum_proportion = 0.7,
 																					 fill_missing_values = FALSE,
 																					 scaling_method = "TMM",
+																					 omit_contrast_in_colnames = F,
 																					 action = "add")
 {
 	# Make col names
@@ -2296,13 +2297,13 @@ setMethod("test_differential_abundance",
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			.coef = .coef,
 			.contrasts = .contrasts,
 			significance_threshold = significance_threshold,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion,
 			fill_missing_values = fill_missing_values,
 			scaling_method = scaling_method,
+			omit_contrast_in_colnames = omit_contrast_in_colnames,
 			action = action
 		) %>%
 
@@ -2313,7 +2314,7 @@ setMethod("test_differential_abundance",
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod(
 	"test_differential_abundance",
@@ -2323,7 +2324,7 @@ setMethod(
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod(
 	"test_differential_abundance",
@@ -2457,7 +2458,7 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 
 #' keep_variable
 #' @inheritParams keep_variable
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("keep_variable",
 					"SummarizedExperiment",
@@ -2465,7 +2466,7 @@ setMethod("keep_variable",
 
 #' keep_variable
 #' @inheritParams keep_variable
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("keep_variable",
 					"RangedSummarizedExperiment",
@@ -2631,7 +2632,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 
 #' keep_abundant
 #' @inheritParams keep_abundant
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("keep_abundant",
 					"SummarizedExperiment",
@@ -2639,7 +2640,7 @@ setMethod("keep_abundant",
 
 #' keep_abundant
 #' @inheritParams keep_abundant
-#' @return A `tidybulk` object
+#' @return A `SummarizedExperiment` object
 #'
 setMethod("keep_abundant",
 					"RangedSummarizedExperiment",
@@ -2927,3 +2928,160 @@ setMethod("pivot_transcript",
 setMethod("pivot_transcript",
 					"tidybulk",
 					.pivot_transcript)
+
+
+
+#' Impute transcript abundance if missing from sample-transcript pairs
+#'
+#' \lifecycle{maturing}
+#'
+#' @description impute_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name impute_abundance
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#'
+#' @details This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
+#'
+#' @return A `tbl` non-sparse abundance
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#' res =
+#' 	impute_abundance(
+#' 		tidybulk::counts_mini,
+#' 	~ condition,
+#' 	.sample = sample,
+#' 	.transcript = transcript,
+#' 	.abundance = count
+#' )
+#'
+#'
+#' @docType methods
+#' @rdname impute_abundance-methods
+#'
+#' @export
+#'
+#'
+setGeneric("impute_abundance", function(.data,
+																				.formula,
+																				.sample = NULL,
+																				.transcript = NULL,
+																				.abundance = NULL)
+	standardGeneric("impute_abundance"))
+
+# Set internal
+.impute_abundance = 	function(.data,
+															.formula,
+															.sample = NULL,
+															.transcript = NULL,
+															.abundance = NULL)
+{
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
+
+	# Get scaled abundance if present, otherwise get abundance
+	.abundance_scaled = NULL
+	if(
+		.data %>% get_tt_columns() %>% is.null %>% `!` &&
+		".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
+		quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames) &&
+		quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) != quo_name(.abundance)
+	)
+		.abundance_scaled = get_tt_columns(.data)$.abundance_scaled
+
+	# Validate data frame
+	validation(.data, !!.sample, !!.transcript, !!.abundance)
+
+	.data_processed =
+		fill_NA_using_formula(
+			.data,
+			.formula,
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			.abundance_scaled = !!.abundance_scaled) %>%
+
+		# Reattach internals
+		reattach_internals(.data)
+
+}
+
+#' impute_abundance
+#' @inheritParams impute_abundance
+#' @return A `tbl` with imputed abundnce
+setMethod("impute_abundance", "spec_tbl_df", .impute_abundance)
+
+#' impute_abundance
+#' @inheritParams impute_abundance
+#' @return A `tbl` with imputed abundnce
+setMethod("impute_abundance", "tbl_df", .impute_abundance)
+
+#' impute_abundance
+#' @inheritParams impute_abundance
+#' @return A `tbl` with imputed abundnce
+setMethod("impute_abundance", "tidybulk", .impute_abundance)
+
+.impute_abundance_se = function(.data,
+																.formula,
+																.sample = NULL,
+																.transcript = NULL,
+																.abundance = NULL) {
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+
+	.data %>%
+
+		# Convert to tidybulk
+		tidybulk() %>%
+
+		# Apply scale method
+		impute_abundance(
+			.formula = .formula,
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance
+		) %>%
+
+		# Convert to SummaizedExperiment
+		tidybulk_to_SummarizedExperiment()
+
+}
+
+#' impute_abundance
+#' @inheritParams impute_abundance
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("impute_abundance",
+					"SummarizedExperiment",
+					.impute_abundance_se)
+
+#' impute_abundance
+#' @inheritParams impute_abundance
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("impute_abundance",
+					"RangedSummarizedExperiment",
+					.impute_abundance_se)
+
+
+

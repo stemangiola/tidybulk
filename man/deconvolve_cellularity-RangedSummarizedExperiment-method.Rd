@@ -33,7 +33,7 @@
 \item{...}{Further parameters passed to the function Cibersort}
 }
 \value{
-A `tidybulk` object
+A `SummarizedExperiment` object
 }
 \description{
 deconvolve_cellularity

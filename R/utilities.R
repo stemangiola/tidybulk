@@ -1,4 +1,10 @@
-
+my_stop = function() {
+  stop("
+        You should call tidybulk library *after* tidyverse libraries.
+        tidybulk says: The function does not know what your sample, transcript and counts columns are.
+        You have to either enter those as arguments, or use the funtion tidybulk() to pass your column names that will be remembered.
+      ")
+}
 
 #' This is a generalisation of ifelse that acceots an object and return an objects
 #'
@@ -364,15 +370,6 @@ add_class = function(var, name) {
 #' @return A list of column enquo or error
 get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance){
 
-
-    my_stop = function() {
-      stop("
-        tidybulk says: The fucntion does not know what your sample, transcript and counts columns are.\n
-        You have to either enter those as symbols (e.g., `sample`), \n
-        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
-      ")
-    }
-
     if( .sample %>% quo_is_symbol() ) .sample = .sample
     else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
       .sample =  get_tt_columns(.data)$.sample
@@ -403,15 +400,6 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
 #' @return A list of column enquo or error
 get_sample_counts = function(.data, .sample, .abundance){
 
-
-  my_stop = function() {
-    stop("
-        tidybulk says: The fucntion does not know what your sample, transcript and counts columns are.\n
-        You have to either enter those as symbols (e.g., `sample`), \n
-        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
-      ")
-  }
-
   if( .sample %>% quo_is_symbol() ) .sample = .sample
   else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
     .sample =  get_tt_columns(.data)$.sample
@@ -435,15 +423,6 @@ get_sample_counts = function(.data, .sample, .abundance){
 #'
 #' @return A list of column enquo or error
 get_sample = function(.data, .sample){
-
-
-  my_stop = function() {
-    stop("
-        tidybulk says: The fucntion does not know what your sample, transcript and counts columns are.\n
-        You have to either enter those as symbols (e.g., `sample`), \n
-        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
-      ")
-  }
 
   if( .sample %>% quo_is_symbol() ) .sample = .sample
   else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
@@ -493,15 +472,6 @@ get_transcript = function(.data, .transcript){
 #'
 #' @return A list of column enquo or error
 get_sample_transcript = function(.data, .sample, .transcript){
-
-
-  my_stop = function() {
-    stop("
-        tidybulk says: The fucntion does not know what your sample, transcript and counts columns are.\n
-        You have to either enter those as symbols (e.g., `sample`), \n
-        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
-      ")
-  }
 
   if( .sample %>% quo_is_symbol() ) .sample = .sample
   else if(".sample" %in% (.data %>% get_tt_columns() %>% names))

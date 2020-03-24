@@ -1076,8 +1076,9 @@ test_that("Drop redundant correlated - no object",{
 
 test_that("Only symbol from ensambl - no object",{
 
+	# Human
 	res =
-		annotate_symbol(
+		ensembl_to_symbol(
 			tidybulk::counts_ensembl,
 			.ensembl = ens,
 			action="only"
@@ -1093,12 +1094,36 @@ test_that("Only symbol from ensambl - no object",{
 		3
 	)
 
+	# Mouse
+	# Human
+	res =
+		ensembl_to_symbol(
+			tibble(ens = c("ENSMUSG00000000001",
+												 "ENSMUSG00000000003",
+												 "ENSMUSG00000000028",
+												 "ENSMUSG00000000031",
+												 "ENSMUSG00000000037",
+												 "ENSMUSG00000000049"
+			)),
+			.ensembl = ens,
+			action="only"
+		)
+
+	expect_equal(
+		as.character(res$transcript)[1],
+		"Gnai3"
+	)
+
+	expect_equal(
+		ncol(res),
+		3
+	)
 })
 
 test_that("Add symbol from ensambl - no object",{
 
 	res =
-		annotate_symbol(
+		ensembl_to_symbol(
 			tidybulk::counts_ensembl,
 			.ensembl = ens,
 			action="add"
@@ -1287,5 +1312,24 @@ test_that("pivot",{
 	expect_equal(	ncol(pivot_transcript(tidybulk(input_df, a, b, c))),	1	)
 
 	expect_equal(	ncol(pivot_transcript(input_df, b)),	1	)
+
+})
+
+test_that("impute missing - no object",{
+
+	res =
+		impute_abundance(
+			dplyr::slice(input_df, -1),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c
+		)
+
+	expect_equal(	pull(filter(res, b=="TNFRSF4" & a == "SRR1740034"), c),	203.5	)
+
+	expect_equal(	ncol(res),	ncol(input_df)	)
+
+	expect_equal(	nrow(res),	nrow(input_df)	)
 
 })

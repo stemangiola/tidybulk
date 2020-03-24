@@ -45,7 +45,7 @@
 \item{...}{Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"}
 }
 \value{
-A `tidybulk` object
+A `SummarizedExperiment` object
 }
 \description{
 reduce_dimensions

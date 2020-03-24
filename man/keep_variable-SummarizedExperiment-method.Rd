@@ -27,7 +27,7 @@
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
-A `tidybulk` object
+A `SummarizedExperiment` object
 }
 \description{
 keep_variable

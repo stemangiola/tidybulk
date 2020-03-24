@@ -36,7 +36,7 @@
 \item{...}{Further parameters passed to the function kmeans}
 }
 \value{
-A `tidybulk` object
+A `SummarizedExperiment` object
 }
 \description{
 cluster_elements

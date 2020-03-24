@@ -1,36 +1,10 @@
 library(tidyverse)
 library(tidybulk)
 library(furrr)
-plan(multiprocess)
+plan(multicore)
 options(future.globals.maxSize = 50000 * 1024 ^ 2)
+library(RColorBrewer)
 
-# Iterative version of Siberg function because fails
-siberg_iterative = function(x) {
-	if (x %>% unique %>% length %>% `<` (5))
-		return(c(NA, NA))
-
-
-
-	mu = NA
-	max_i = ceiling(length(x) / 10)
-	i = 0
-	while (mu %>% is.na | i <= max_i) {
-		res = SIBERG::SIBER(x, model = 'NB')
-
-		BI = res[7]
-		mu = res[1]
-		x = x[-1]
-		i = i + 1
-
-	}
-
-
-	if (mu %>% is.na & x %>% length %>% `<` (8))
-		return(c(NA, NA))
-
-	return(c(max(res[1], res[2]) / (min(res[1], res[2]) + 1),
-					 res[7]))
-}
 
 my_theme =
 	theme_bw() +
@@ -48,190 +22,189 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
-data_hierarchy =
-	ARMET::tree %>%
-	data.tree::Clone() %>%
-	ARMET::ToDataFrameTypeColFull(TRUE, "name") %>%
-	pivot_longer(
-		cols = -name,
-		names_to = "level",
-		values_to = "Cell type category",
-		names_prefix = "level_"
-	) %>%
-	drop_na() %>%
-	mutate(level = as.integer(level) - 1) %>%
-	filter(level > 0) %>%
-	dplyr::rename(`Cell type formatted` = name)
 
-# Gather data
-path = "/wehisan/bioinf/bioinf-data/Papenfuss_lab/projects/mangiola.s/PostDoc/RNAseq-noise-model/big_data/tibble_cellType_files"
+# data_hierarchy =
+# 	ARMET::tree %>%
+# 	data.tree::Clone() %>%
+# 	ARMET::ToDataFrameTypeColFull(TRUE, "name") %>%
+# 	pivot_longer(
+# 		cols = -name,
+# 		names_to = "level",
+# 		values_to = "Cell type category",
+# 		names_prefix = "level_"
+# 	) %>%
+# 	drop_na() %>%
+# 	mutate(level = as.integer(level) - 1) %>%
+# 	filter(level > 0) %>%
+# 	dplyr::rename(`Cell type formatted` = name)
 
-counts =
-	dir(
-		path = path,
-		pattern="cellTypes_",
-		full.names = TRUE
-	) %>%
-	future_map_dfr(
-		~ read_csv(.x) %>%
-			select(sample, `Cell type`, `Cell type formatted`, count, symbol, `Data base`)
-	) %>%
-	filter((!is.na(symbol)) & (symbol != "")) %>%
-	filter(`Cell type formatted` %>% is.na %>% `!`) %>%
+# Expand palette
+colourCount = data_hierarchy %>% filter(level ==3) %>% distinct(`Cell type category`) %>% nrow
+getPalette = colorRampPalette(brewer.pal(9, "Set1"))
 
-	# Select level 3
-	inner_join(data_hierarchy) %>%
-	filter(level==3) %>%
-	filter(!`Cell type category` %in% c("t_cell", "b_cell"))
-
-counts_proc =
-	counts %>%
-
-	# Create object
-	tidybulk(sample, symbol, count) %>%
-
-	# Sum redundant genes/isoforms
-	aggregate_duplicates(aggregation_function = sum) %>%
-
-	# Normalise
-	scale_abundance()
-
-
-# Remove redundancy
-counts_non_red =
-	counts_proc %>%
-	remove_redundancy(
-		method="correlation",
-		correlation_threshold = 0.99,
-		top=1000
-	)
-
-counts_non_red %>% saveRDS("dev/counts_non_red.rds", compress = "gzip")
+# # Gather data
+# path = "/wehisan/bioinf/bioinf-data/Papenfuss_lab/projects/mangiola.s/PostDoc/RNAseq-noise-model/big_data/tibble_cellType_files"
+# counts =
+# 	dir(
+# 		path = path,
+# 		pattern="cellTypes_",
+# 		full.names = TRUE
+# 	) %>%
+# 	future_map_dfr(
+# 		~ read_csv(.x) %>%
+# 			select(sample, `Cell type`, `Cell type formatted`, count, symbol, `Data base`)
+# 	) %>%
+# 	filter((!is.na(symbol)) & (symbol != "")) %>%
+# 	filter(`Cell type formatted` %>% is.na %>% `!`) %>%
+#
+# 	# Select level 3
+# 	inner_join(data_hierarchy) %>%
+# 	filter(level==3) %>%
+# 	filter(!`Cell type category` %in% c("t_cell", "b_cell"))
+#
+# counts_proc =
+# 	counts %>%
+#
+# 	# Create object
+# 	tidybulk(sample, symbol, count) %>%
+#
+# 	# Sum redundant genes/isoforms
+# 	aggregate_duplicates(aggregation_function = sum) %>%
+#
+# 	# Normalise
+# 	scale_abundance()
+#
+# # Remove redundancy
+# counts_non_red =
+# 	counts_proc %>%
+# 	remove_redundancy(
+# 		method="correlation",
+# 		correlation_threshold = 0.99,
+# 		top=1000
+# 	)  %>%
+# 	rename(cell_type = `Cell type category`, data_base = `Data base`) %>%
+# 	mutate_if(is.character, as.factor) %>%
+# 	tidybulk:::drop_class(c("tidybulk", "tt")) %>%
+# 	tidybulk(sample, symbol, count, count_scaled)
+#
+# counts_non_red %>% saveRDS("dev/counts_non_red.rds", compress = "gzip")
 
 counts_non_red = readRDS("dev/counts_non_red.rds")
 
-counts_ct =
+# Plots and Study
+(counts_non_red %>%
+		reduce_dimensions(method = "tSNE", action="get") %>%
+		ggplot(aes(x = `tSNE1`, y = `tSNE2`, color = cell_type)) +
+		geom_point(size =2) +
+		scale_color_manual(values = getPalette(colourCount)) +
+		my_theme + theme(aspect.ratio=1)) %>%
+	ggsave(	"dev/signature_p1.pdf",	plot = .,	useDingbats=FALSE,	units = c("mm"),	width = 183/2 ,	limitsize = FALSE)
+
+
+
+# counts_non_red_de %>% saveRDS("dev/counts_non_red_de.rds")
+
+counts_non_red_de <- readRDS("dev/counts_non_red_de.rds")
+
+
+
+
+associated_with_data_base =
+
 	counts_non_red %>%
+	nest(data = -c(cell_type, symbol)) %>%
 
-	# Eliminate genes that are not in all cell types
-	inner_join((.) %>%
-						 	distinct(symbol, `Cell type formatted`) %>%
-						 	count(symbol) %>%
-						 	filter(n == max(n)))
+	# Eliminate one database only
+	filter(map_int(data, ~.x %>% distinct(data_base) %>% nrow) > 1) %>%
 
-# Calculate bimodality
-bimodality =
-
-	counts_ct %>%
-	nest(data = -c(`Cell type formatted`, symbol)) %>%
-	mutate(	bimodality_NB =
-		map(
-			data,
-			~ {
-				#print(.x)
-				.x %>% pull(`count_scaled`) %>% as.integer %>%
-				siberg_iterative() %>%
-				`[` (1:2) %>%
-				setNames(c("bimodality_NB_diff", "bimodality_NB")) %>%
-				enframe() %>% spread(name, value)
-		})
+	mutate(	anova =
+						map(
+							data,
+							~ .x %>%
+								aov(log(count_scaled + 1) ~ data_base, data = .) %>%
+								broom::tidy() %>%
+								filter(term=="data_base")
+						)
 	) %>%
 	select(-data) %>%
-	unnest(bimodality_NB)
+	unnest(anova) %>%
+	mutate(FDR = p.adjust(p.value, method="BH"))
 
-bimodality %>% saveRDS("dev/bimodality.rds")
 
-bimodality = readRDS("dev/bimodality.rds")
+associated_with_data_base %>% saveRDS("dev/associated_with_data_base.rds")
 
-# Assign values and filter
-counts_ct_bm =
-	counts_ct %>%
-	left_join(bimodality) %>%
 
-	# Too bimodal
-	filter((bimodality_NB > 0.8 & bimodality_NB_diff > 20) | bimodality_NB_diff > 100)
+keep_unimodal = associated_with_data_base %>% filter(FDR>0.00001) %>% distinct(symbol) %>% pull(1)
 
-#
-# Plots and Study
-counts_ct_bm %>%
-
-	reduce_dimensions(sample, symbol, `count_scaled`, method = "tSNE") %>%
-	select(contains("tSNE"), `Data base`, `Cell type formatted`) %>%
-	distinct %>%
-	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color = `Cell type formatted`)) +
-	geom_point(size =2) +
-	theme_bw() +
-	theme(
-		panel.border = element_blank(),
-		axis.line = element_line(),
-		panel.grid.major = element_line(size = 0.2),
-		panel.grid.minor = element_line(size = 0.1),
-		text = element_text(size = 12),
-		legend.position = "bottom",
-		aspect.ratio = 1,
-		#axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-		strip.background = element_blank(),
-		axis.title.x  = element_text(margin = margin(
-			t = 10,
-			r = 10,
-			b = 10,
-			l = 10
-		)),
-		axis.title.y  = element_text(margin = margin(
-			t = 10,
-			r = 10,
-			b = 10,
-			l = 10
-		))
-	)
-
-# Identify markers
-
-# Setup Cell type category names
-counts_light = counts_ct_bm %>% distinct(level, `Cell type category`, sample, symbol, count)
-counts_light %>% saveRDS("dev/counts_light.rds")
-
-counts_light = readRDS("dev/counts_light.rds")
-
+counts_non_red_filtered = counts_non_red_common %>% filter(symbol %in% keep_unimodal)
 
 markers =
-	counts_light %>%
-	filter(!`Cell type category` %in% c("t_cell", "b_cell")) %>%
-	distinct(`Cell type category`) %>%
-	pull(1) %>%
+	counts_non_red_filtered %>%
+	distinct(cell_type) %>%
+	pull(cell_type) %>%
 	gtools::permutations(n = length(.), r = 2, v = .) %>%
 	as_tibble() %>%
-	setNames(c("ct1", "ct2")) %>%
-	mutate(de = map2(ct1, ct2,
-									 ~ {
-									 	counts_light %>%
-									 		filter(`Cell type category` %in% c(.x, .y)) %>%
-									 		rename(ct = `Cell type category`) %>%
-									 		test_differential_abundance(
-									 			~ 0 + ct,
-									 			.contrasts = sprintf("ct%s - ct%s", .x, .y),
-									 			fill_missing_values = TRUE,
-									 			action = "only"
-									 		) %>%
-									 		filter(logFC > 0 & logFC > 2) %>%
-									 		arrange(PValue) %>%
-									 		slice(1:10) %>%
-									 		select(symbol)
-									 }))
+	setNames(c("cell_type1", "cell_type2")) %>%
+	mutate(contrast = sprintf("cell_type%s - cell_type%s", cell_type1, cell_type2)) %>%
+	mutate(de =
+				 	pmap(
+				 		list(cell_type1, cell_type2, contrast),
+				 		~ 	counts_non_red_filtered %>%
+				 			filter(cell_type %in% c(..1, ..2)) %>%
+				 			test_differential_abundance(~ 0 + cell_type, .contrasts = ..3, fill_missing_values = TRUE, action="get", omit_contrast_in_colnames = T) %>%
+				 			filter(logFC > 0) %>%
+				 			arrange(FDR) %>%
+				 			mutate(i = 1:n())
+				 	)) %>%
+	unnest(de)
 
-markers %>% saveRDS("dev/markers_for_signature_workflow")
 
-markers %>%
-	mutate(comparison = 1:n()) %>%
-	mutate(de = map(de, ~.x %>% slice(1))) %>%
-	unnest(de) %>%
-	filter(ct1=="monocyte") %>%
-	unite(pair, c("ct1", "ct2"), remove = FALSE, sep = "\n") %>%
-	gather(which, `Cell type category`, ct1, ct2) %>%
-	left_join(counts_light, by = c("symbol", "Cell type category")) %>%
-	ggplot(aes(y = count + 1, x = `Cell type category`)) +
-	geom_boxplot() +
-	facet_wrap(~pair + symbol, scales ="free_x", ncol = 5) +
-	scale_y_log10() +
-	my_theme
+markers %>% saveRDS("dev/markers_for_signature_workflow.rds")
+
+
+(markers %>%
+
+		# Filter best markers for monocytes
+		filter(ct1=="monocyte" & i==1) %>%
+
+		# Prettify contrasts for plotting
+		unite(pair, c("ct1", "ct2"), remove = FALSE, sep = "\n") %>%
+
+		# Reshape
+		gather(which, cell_type, ct1, ct2) %>%
+		distinct(pair,  symbol,   which, cell_type) %>%
+
+		# Attach counts
+		left_join(counts_non_red, by = c("symbol", "Cell type category")) %>%
+
+		# Plot
+		ggplot(aes(y = count_scaled + 1, x = cell_type, fill = cell_type)) +
+		geom_boxplot() +
+		facet_wrap(~pair+ symbol, scales ="free_x", nrow = 2) +
+		scale_y_log10() +
+		scale_fill_manual(values = getPalette(colourCount)) +
+		my_theme +
+		theme(	axis.text.x = element_text(angle = 30, hjust = 1))) %>%
+	ggsave(	"dev/signature_p2.pdf",	plot = .,	useDingbats=FALSE,	units = c("mm"),	width = 183 ,	limitsize = FALSE)
+
+# Plots and Study
+(markers %>%
+		filter(i < 6) %>%
+		unite(pair, c("ct1", "ct2"), remove = FALSE, sep = "\n") %>%
+		gather(which, cell_type, ct1, ct2) %>%
+
+		distinct(symbol) %>%
+		left_join(counts_non_red, by = c("symbol"))  %>%
+
+		# Impute missng values
+		tidybulk:::fill_NA_using_formula(~cell_type, sample, symbol, count_scaled) %>%
+
+		reduce_dimensions(sample, symbol, count_scaled, method = "tSNE") %>%
+		pivot_sample(sample) %>%
+		ggplot(aes(x = `tSNE1`, y = `tSNE2`, color = cell_type)) +
+		geom_point(size =2) +
+		scale_color_manual(values = getPalette(colourCount)) +
+		my_theme + theme(aspect.ratio=1)) %>%
+	ggsave(	"dev/signature_p3.pdf",	plot = .,	useDingbats=FALSE,	units = c("mm"),	width = 183/2 ,	limitsize = FALSE)
+
 

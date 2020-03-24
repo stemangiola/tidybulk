@@ -84,7 +84,7 @@ se.norm.batch =
 	scale_abundance()
 ```
 
-<img src="../inst/logo.png" height="139px" width="120px" />
+<img src="../inst/logo.png" height="139px" width="139px" />
 
 # Introduction
 
@@ -140,7 +140,7 @@ We may want to compensate for sequencing depth, scaling the transcript abundance
 ```{r normalise, cache=TRUE}
 counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
 
-counts.norm %>% select(`count`, `count_scaled`, lowly_abundant, everything())
+counts.norm %>% select(`count`, count_scaled, lowly_abundant, everything())
 ```
 
 
@@ -148,7 +148,7 @@ We can easily plot the scaled density to check the scaling outcome. On the x axi
 
 ```{r plot_normalise, cache=TRUE}
 counts.norm %>%
-	ggplot(aes(`count_scaled` + 1, group=sample, color=`Cell type`)) +
+	ggplot(aes(count_scaled + 1, group=sample, color=`Cell type`)) +
 	geom_density() +
 	scale_x_log10() +
 	my_theme
@@ -168,7 +168,7 @@ We may want to reduce the dimensions of our data, for example using PCA or MDS a
 **MDS** (Robinson et al., 10.1093/bioinformatics/btp616)
 
 ```{r mds, cache=TRUE}
-counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="MDS", .dims = 3)
+counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = count_scaled, method="MDS", .dims = 3)
 
 counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 ```
@@ -184,7 +184,7 @@ counts.norm.MDS %>%
 
 All functions are also directly compatible with `SummarizedExperiment`.
 ```{r mds se, cache=TRUE}
-se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="MDS", .dims = 3)
+se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = count_scaled, method="MDS", .dims = 3)
 
 se.norm.MDS
 ```
@@ -192,7 +192,7 @@ se.norm.MDS
 **PCA**
 
 ```{r pca, cache=TRUE}
-counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="PCA" ,  .dims = 3)
+counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = count_scaled, method="PCA" ,  .dims = 3)
 
 counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 ```
@@ -208,7 +208,7 @@ counts.norm.PCA %>%
 
 All functions are also directly compatible with `SummarizedExperiment`.
 ```{r pca se, cache=TRUE}
-se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = `count_scaled`, method="PCA" ,  .dims = 3)
+se.norm.PCA = se.norm %>% reduce_dimensions(.abundance = count_scaled, method="PCA" ,  .dims = 3)
 
 se.norm.PCA
 ```
@@ -225,7 +225,7 @@ tt_tcga_breast =
 counts.norm.tSNE =
 	tt_tcga_breast %>%
 	reduce_dimensions(
-		.abundance = `count_scaled`,
+		.abundance = count_scaled,
 		method = "tSNE",
 		top = 500,
 		perplexity=10,
@@ -237,8 +237,7 @@ counts.norm.tSNE %>%
 	distinct()
 
 counts.norm.tSNE %>%
-	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
-	distinct() %>%
+	pivot_sample() %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
 
@@ -247,7 +246,7 @@ All functions are also directly compatible with `SummarizedExperiment`.
 se.norm.tSNE =
 	se_breast_tcga_mini %>%
 	reduce_dimensions(
-		.abundance = `count_scaled`,
+		.abundance = count_scaled,
 		method = "tSNE",
 		top = 500,
 		perplexity=10,
@@ -271,7 +270,7 @@ On the x and y axes axis we have the first two reduced dimensions, data is colou
 
 ```{r plot_rotate_1, cache=TRUE}
 counts.norm.MDS.rotated %>%
-	distinct(sample, `Dim1`,`Dim2`, `Cell type`) %>%
+	pivot_sample() %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type` )) +
   geom_point() +
   my_theme
@@ -282,7 +281,7 @@ On the x and y axes axis we have the first two reduced dimensions rotated of 45 
 
 ```{r plot_rotate_2, cache=TRUE}
 counts.norm.MDS.rotated %>%
-	distinct(sample, `Dim1 rotated 45`,`Dim2 rotated 45`, `Cell type`) %>%
+	pivot_sample() %>%
 	ggplot(aes(x=`Dim1 rotated 45`, y=`Dim2 rotated 45`, color=`Cell type` )) +
   geom_point() +
   my_theme
@@ -331,7 +330,7 @@ counts.norm.adj =
 	counts.norm.batch %>%
 	  adjust_abundance(
 	  	~ factor_of_interest + batch,
-	  	.abundance = `count_scaled`,
+	  	.abundance = count_scaled,
 	  	action = "only"
 	  )
 
@@ -343,7 +342,7 @@ All functions are also directly compatible with `SummarizedExperiment`.
 se.norm.batch %>%
   adjust_abundance(
   	~ factor_of_interest + batch,
-  	.abundance = `count_scaled`
+  	.abundance = count_scaled
   )
 ```
 
@@ -355,17 +354,16 @@ We may want to infer the cell type composition of our samples (with the algorith
 ```{r cibersort, cache=TRUE}
 counts.cibersort =
 	counts %>%
-	deconvolve_cellularity(action="add", cores=2)
+	deconvolve_cellularity(action="get", cores=2)
 
-counts.cibersort %>% select(sample, contains("cibersort:")) %>% distinct()
+counts.cibersort %>% select(sample, contains("cibersort:")) 
 ```
 
 With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is facetted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).
 
 ```{r plot_cibersort, cache=TRUE}
 counts.cibersort %>%
-	select(contains("cibersort:"), everything()) %>%
-	gather(`Cell type inferred`, `proportion`, 1:22) %>%
+	gather(`Cell type inferred`, `proportion`, 5:26) %>%
   distinct(sample, `Cell type`, `Cell type inferred`, proportion) %>%
   ggplot(aes(x=`Cell type inferred`, y=proportion, fill=`Cell type`)) +
   geom_boxplot() +
@@ -391,7 +389,7 @@ We may want to cluster our data (e.g., using k-means sample-wise). `cluster_elem
 
 ```{r cluster, cache=TRUE}
 counts.norm.cluster = counts.norm %>%
-  cluster_elements(.abundance = `count_scaled`, method="kmeans",	centers = 2 )
+  cluster_elements(.abundance = count_scaled, method="kmeans",	centers = 2 )
 
 counts.norm.cluster
 ```
@@ -401,11 +399,11 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
 ```{r plot_cluster, cache=TRUE}
  counts.norm.MDS %>%
   cluster_elements(
-  	.abundance = `count_scaled`,
+  	.abundance = count_scaled,
   	method="kmeans",
-  	centers = 2
+  	centers = 2,
+  	action="get"
   ) %>%
-	distinct(sample, `Dim1`, `Dim2`, `cluster kmeans`) %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster kmeans`)) +
   geom_point() +
   my_theme
@@ -414,18 +412,17 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
 All functions are also directly compatible with `SummarizedExperiment`.
 ```{r cluster se, cache=TRUE}
 se.norm %>%
-  cluster_elements(.abundance = `count_scaled`, method="kmeans",	centers = 2 )
+  cluster_elements(.abundance = count_scaled, method="kmeans",	centers = 2 )
 
 ```
 
 **SNN**
 
 ```{r SNN, cache=TRUE}
-counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= `count_scaled`, method = "SNN")
+counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= count_scaled, method = "SNN")
 
 counts.norm.SNN %>%
-	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample) %>%
-	distinct()
+	pivot_sample()
 
 counts.norm.SNN %>%
 	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
@@ -445,7 +442,7 @@ counts.norm.SNN %>%
 
 All functions are also directly compatible with `SummarizedExperiment`.
 ```{r SNN se, cache=TRUE}
-se.norm.tSNE %>%	cluster_elements(.abundance= `count_scaled`, method = "SNN")
+se.norm.tSNE %>%	cluster_elements(.abundance= count_scaled, method = "SNN")
 ```
 
 # Drop `redundant`
@@ -465,7 +462,7 @@ We can visualise how the reduced redundancy with the reduced dimentions look lik
 
 ```{r plot_drop, cache=TRUE}
 counts.norm.non_redundant %>%
-	distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+	pivot_sample() %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
@@ -495,7 +492,7 @@ We can visualise MDS reduced dimensions of the samples with the closest pair rem
 
 ```{r plot_drop2, cache=TRUE}
 counts.norm.non_redundant %>%
-	distinct(sample, `Dim1`, `Dim2`, `Cell type`) %>%
+	pivot_sample() %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
   my_theme
@@ -524,7 +521,7 @@ The above wrapper streamline the most common processing of bulk RNA sequencing d
 We can calculate gene counts (using FeatureCounts; Liao Y et al., 10.1093/nar/gkz114) from a list of BAM/SAM files and format them into a tidy structure (similar to counts).
 
 ```{r eval=FALSE}
-counts = bam_sam_to_featureCounts_tibble(
+counts = tidybulk_SAM_BAM(
 	file_names,
 	genome = "hg38",
 	isPairedEnd = TRUE,
@@ -539,12 +536,13 @@ counts = bam_sam_to_featureCounts_tibble(
 We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs.
 
 ```{r ensembl, cache=TRUE}
-counts_ensembl %>% annotate_symbol(ens)
+counts_ensembl %>% ensembl_to_symbol(ens)
 ```
 
-# ADD versus GET modes
 
-Every function takes this structure as input, and outputs either (i) the new information joint to the original input data frame (default), or (ii) just the new information, setting action="add" or action="only" respectively. For example, from this data set
+# ADD versus GET versus ONLY modes
+
+Every function takes a tidytranscriptomics structured data as input, and (i) with action="add" outputs the new information joint to the original input data frame (default), (ii) with action="get" the new information with the sample or transcript relative informatin depending on what the analysis is about, or (iii) with action="only" just the new information. For example, from this data set
 
 ```{r, cache=TRUE}
   counts.norm
@@ -556,12 +554,27 @@ We can add the MDS dimensions to the original data set
 ```{r, cache=TRUE}
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count_scaled`,
+    	.abundance = count_scaled,
     	method="MDS" ,
     	.element = sample,
     	.feature = transcript,
     	.dims = 3,
     	action="add"
+    )
+```
+
+**action="get"** 
+We can add the MDS dimensions to the original data set selecting just the sample-wise column
+
+```{r, cache=TRUE}
+  counts.norm %>%
+    reduce_dimensions(
+    	.abundance = count_scaled,
+    	method="MDS" ,
+    	.element = sample,
+    	.feature = transcript,
+    	.dims = 3,
+    	action="get"
     )
 ```
 
@@ -571,7 +584,7 @@ We can get just the MDS dimensions relative to each sample
 ```{r, cache=TRUE}
   counts.norm %>%
     reduce_dimensions(
-    	.abundance = `count_scaled`,
+    	.abundance = count_scaled,
     	method="MDS" ,
     	.element = sample,
     	.feature = transcript,

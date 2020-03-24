@@ -467,13 +467,13 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .coef An integer. See edgeR specifications
-#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param significance_threshold A real between 0 and 1
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
 #' @return A tibble with edgeR results
 #'
@@ -482,17 +482,23 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .sample = NULL,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
-																											 .coef = 2,
 																											 .contrasts = NULL,
 																											 significance_threshold = 0.05,
 																											 minimum_counts = 10,
 																											 minimum_proportion = 0.7,
 																											 fill_missing_values = FALSE,
-																											 scaling_method = "TMM") {
+																											 scaling_method = "TMM",
+																											 omit_contrast_in_colnames = F) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+
+	# Check if omit_contrast_in_colnames is correctly setup
+	if(omit_contrast_in_colnames & length(.contrasts) > 1){
+		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+		omit_contrast_in_colnames = F
+	}
 
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
@@ -510,10 +516,14 @@ get_differential_transcript_abundance_bulk <- function(.data,
 					 one_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
+		# drop factors as it can affect design matrix
+		mutate_if(is.factor, as.character()) %>%
+
 		# Check if data rectangular
-		ifelse_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` &
-				!fill_missing_values,
+		ifelse2_pipe(
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
 		)
 
@@ -591,10 +601,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.transcript) %>%
 
-		# If fill missing values
-		ifelse_pipe(fill_missing_values,
-								~ .x %>% fill_NA_with_row_median) %>%
-
 		edgeR::DGEList(counts = .) %>%
 		edgeR::calcNormFactors(method = scaling_method) %>%
 		edgeR::estimateGLMCommonDisp(design) %>%
@@ -605,11 +611,11 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		# If I have multiple .contrasts merge the results
 		ifelse_pipe(
-			my_contrasts %>% is.null,
+			my_contrasts %>% is.null | omit_contrast_in_colnames,
 
 			# Simple comparison
 			~ .x %>%
-				edgeR::glmLRT(coef = .coef, contrast = my_contrasts) %>%
+				edgeR::glmLRT(coef = 2, contrast = my_contrasts) %>%
 				edgeR::topTags(n = 999999) %$%
 				table %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
@@ -627,7 +633,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				1:ncol(my_contrasts) %>%
 					map_dfr(
 						~ edgeR_obj %>%
-							edgeR::glmLRT(coef = .coef, contrast = my_contrasts[, .x]) %>%
+							edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) %>%
 							edgeR::topTags(n = 999999) %$%
 							table %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
@@ -1755,56 +1761,81 @@ remove_redundancy_elements_though_reduced_dimensions <-
 			reattach_internals(.data)
 	}
 
-# #' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
-# #'
-# #' @return A tibble with ensembl-transcript mapping
-# #'
+##' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
+##'
+##' @return A tibble with ensembl-transcript mapping
+##'
 # get_ensembl_symbol_mapping <- function() {
-#   # wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
-#   # wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
-#   all =
-#   	read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
-#               col_names = FALSE) %>%
-#     setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
-#     mutate(hg = "hg37") %>%
-#     bind_rows(
-#       read_table2(
-#         "~/third_party_sofware/ensembl_mapping/mapping_38.txt",
-#         col_names = FALSE
-#       ) %>%
-#         setNames(
-#           c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
-#         ) %>%
-#         mutate(hg = "hg38")
-#     ) %>%
-#     drop_na()
+# 	# wget -O mapping_38.txt 'http://www.ensembl.org/biomart/martservice?query=  <Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6">  <Dataset name="hsapiens_gene_ensembl" interface="default"> <Attribute name="ensembl_transcript_id"/> <Attribute name="ensembl_gene_id"/><Attribute name="transcript"/> </Dataset> </Query>'
+# 	# wget -O mapping_37.txt 'http://grch37.ensembl.org/biomart/martservice?query=<Query virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="1" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Attribute name="ensembl_transcript_id"/><Attribute name="ensembl_gene_id"/><Attribute name="transcript"/></Dataset></Query>'
+# 	all =
+# 		read_table2("~/third_party_sofware/ensembl_mapping/mapping_37.txt",
+# 								col_names = FALSE) %>%
+# 		setNames(c("ensembl_transcript_id", "ensembl_gene_id", "transcript")) %>%
+# 		mutate(ref_genome = "hg37") %>%
+# 		bind_rows(
+# 			read_table2(
+# 				"~/third_party_sofware/ensembl_mapping/mapping_38.txt",
+# 				col_names = FALSE
+# 			) %>%
+# 				setNames(
+# 					c("ensembl_transcript_id", "ensembl_gene_id", "transcript")
+# 				) %>%
+# 				mutate(ref_genome = "hg38")
+# 		) %>%
+# 		drop_na()
 #
 #
-#   bind_rows(
-#   	# Gene annotation
-#   	all %>%
-# 		select(-ensembl_transcript_id) %>%
-# 		group_by(ensembl_gene_id) %>%
-# 		arrange(hg %>% desc()) %>%
-# 		slice(1) %>%
-# 		ungroup() %>%
-# 		rename(ensembl_id = ensembl_gene_id),
+# 	bind_rows(
+# 		# Gene annotation
+# 		all %>%
+# 			select(-ensembl_transcript_id) %>%
+# 			group_by(ensembl_gene_id) %>%
+# 			arrange(ref_genome %>% desc()) %>%
+# 			slice(1) %>%
+# 			ungroup() %>%
+# 			rename(ensembl_id = ensembl_gene_id),
 #
 # 		# Transcript annotation
 # 		all %>%
-# 		select(-ensembl_gene_id) %>%
-# 		group_by(ensembl_transcript_id) %>%
-# 		arrange(hg %>% desc()) %>%
-# 		slice(1) %>%
-# 		ungroup() %>%
-# 		rename(ensembl_id = ensembl_transcript_id)
-#   ) %>%
+# 			select(-ensembl_gene_id) %>%
+# 			group_by(ensembl_transcript_id) %>%
+# 			arrange(ref_genome %>% desc()) %>%
+# 			slice(1) %>%
+# 			ungroup() %>%
+# 			rename(ensembl_id = ensembl_transcript_id)
+# 	) %>%
 #
-#   # Write to file and return
-#   {
-#     (.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping.csv")
-#     (.)
-#   }
+# 		# Write to file and return
+# 		{
+# 			(.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping.csv")
+# 			(.)
+# 		}
+# }
+
+##' after wget, this function merges hg37 and hg38 mapping data bases - Do not execute!
+##'
+##' @return A tibble with ensembl-transcript mapping
+##'
+# get_ensembl_symbol_mapping_mouse <- function() {
+#
+#
+# 	left_join(
+# 		AnnotationDbi::toTable(org.Mm.eg.db::org.Mm.egENSEMBL),
+# 		AnnotationDbi::toTable(org.Mm.eg.db::org.Mm.egSYMBOL)
+# 	) %>%
+# 		as_tibble %>%
+# 		select(-gene_id) %>%
+# 		rename(ensembl_id = ensembl_id, transcript = symbol) %>%
+# 		drop_na() %>%
+#
+# 		mutate(ref_genome = "mm10") %>%
+#
+# 		# Write to file and return
+# 		{
+# 			(.) %>% write_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping_mouse.csv")
+# 			(.)
+# 		}
 # }
 
 #' get_symbol_from_ensembl
@@ -1819,6 +1850,17 @@ remove_redundancy_elements_though_reduced_dimensions <-
 #'
 get_symbol_from_ensembl <-
 	function(.data, .ensembl) {
+
+		# # Creating file
+		# ensembl_symbol_mapping =
+		# 	bind_rows(
+		# 		read_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping.csv"),
+		# 		read_csv("~/third_party_sofware/ensembl_mapping/ensembl_symbol_mapping_mouse.csv")
+		# 	)
+		#
+		# save(ensembl_symbol_mapping, file="data/ensembl_symbol_mapping.rda", compress = "xz")
+
+
 		.ensembl = enquo(.ensembl)
 
 		.data %>%
@@ -1828,7 +1870,7 @@ get_symbol_from_ensembl <-
 			# Add name information
 			dplyr::left_join(
 				tidybulk::ensembl_symbol_mapping %>%
-					distinct(ensembl_id, transcript, hg) %>%
+					distinct(ensembl_id, transcript, ref_genome) %>%
 					dplyr::rename(!!.ensembl := ensembl_id) %>%
 					rename(transcript = transcript),
 				by = quo_name(.ensembl)
@@ -2318,3 +2360,170 @@ as_matrix <- function(tbl,
 		# Convert to matrix
 		as.matrix()
 }
+
+#' This function is needed for DE in case the matrix is not rectangular, but includes NA
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom stats as.formula
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .abundance_scaled The name of the transcript/gene scaled abundance column
+#'
+#'
+#' @return A tibble with adjusted counts
+#'
+#'
+fill_NA_using_formula = function(.data,
+																 .formula,
+																 .sample = NULL,
+																 .transcript = NULL,
+																 .abundance = NULL,
+																 .abundance_scaled = NULL){
+
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	.abundance_scaled = enquo(.abundance_scaled)
+
+	col_formula =
+		.data %>%
+		select(parse_formula(.formula)) %>%
+		distinct() %>%
+		select_if(function(x) is.character(x) | is.logical(x) | is.factor(x)) %>%
+		colnames
+
+	# Create NAs for missing sample/transcript pair
+	df_to_impute =
+		.data %>%
+		select(!!.sample, !!.transcript, !!.abundance, col_formula) %>%
+		distinct %>%
+		spread(!!.transcript, !!.abundance) %>%
+		gather(!!.transcript, !!.abundance, -!!.sample, -col_formula)
+
+	# Select just transcripts/covariates that have missing
+	combo_to_impute = df_to_impute %>% anti_join(.data, by=c(quo_name(.sample), quo_name(.transcript))) %>% select(!!.transcript, col_formula) %>% distinct()
+
+	# Impute using median
+	df_to_impute %>%
+		inner_join(combo_to_impute, by=c(quo_name(.transcript), col_formula)) %>%
+
+		# Calculate median for NAs
+		nest(data = -c(col_formula, !!.transcript)) %>%
+		mutate(data = map(data, ~
+												.x %>%
+												mutate(
+													!!.abundance := ifelse(
+														!!.abundance %>% is.na,
+														median(!!.abundance, na.rm = T),!!.abundance
+													)
+												) %>%
+
+												# Impute scaled if exist
+												ifelse_pipe(
+													quo_is_symbol(.abundance_scaled),
+													~ .x %>% mutate(
+														!!.abundance_scaled := ifelse(
+															!!.abundance_scaled %>% is.na,
+															median(!!.abundance_scaled, na.rm = T),!!.abundance_scaled
+														)
+													)
+												) %>%
+
+												# Throu warning if group of size 1
+												ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
+		)) %>%
+		unnest(data) %>%
+
+		# Select only imputed data
+		select(-col_formula) %>%
+
+		# In next command avoid error if no data to impute
+		ifelse_pipe(
+			nrow(.) > 0,
+			~ .x %>% left_join(.data %>% pivot_sample(!!.sample), by=quo_name(.sample))
+		) %>%
+
+		# Add oiginal dataset
+		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_name(.transcript), col_formula))) %>%
+		select(.data %>% colnames)
+
+}
+
+# # Iterative version of Siberg function because fails
+# siberg_iterative = function(x) {
+# 	if (x %>% unique %>% length %>% `<` (5))
+# 		return(c(NA, NA))
+#
+#
+#
+# 	mu = NA
+# 	max_i = ceiling(length(x) / 10)
+# 	#max_i = 10
+# 	i = 0
+# 	while (mu %>% is.na | i <= max_i) {
+# 		res = SIBERG::SIBER(x, model = 'NB')
+#
+# 		BI = res[7]
+# 		mu = res[1]
+# 		x = x[-1]
+# 		i = i + 1
+#
+# 	}
+#
+#
+# 	if (mu %>% is.na & x %>% length %>% `<` (5))
+# 		return(c(NA, NA))
+#
+# 	return(c(max(res[1], res[2]) / (min(res[1], res[2]) + 1),
+# 					 res[7]))
+# }
+
+
+# # Calculate bimodality
+# bimodality =
+#
+# 	counts_non_red %>%
+# 	#keep_variable(top = 5000) %>%
+# 	tidybulk:::drop_class(c("tidybulk", "tt")) %>%
+# 	tidybulk:::drop_internals() %>%
+# 	nest(data = -c(`Cell type formatted`, symbol)) %>%
+#
+# 	#slice(1:10) %>%
+# 	mutate(	bimodality_NB =
+# 		map(
+# 			data,
+# 			~ tryCatch(
+# 							.x %>% pull(count_scaled) %>% as.integer %>%
+# 								siberg_iterative() %>%
+# 								`[` (1:2) , error=function(e) c(NA, NA))		%>%
+# 							setNames(c("bimodality_NB_diff", "bimodality_NB")) %>%
+# 							enframe() %>% spread(name, value)
+#
+# 		)
+# 	) %>%
+# 	select(-data) %>%
+# 	unnest(bimodality_NB)
+#
+# bimodality %>% saveRDS("dev/bimodality.rds")
+#
+# bimodality = readRDS("dev/bimodality.rds")
+#
+# non_bimodal =
+# 	bimodality %>%
+# 	add_count(symbol) %>%
+# 	filter(n==max(n)) %>%
+# 	mutate(bimodal = ((bimodality_NB > 0.8 & bimodality_NB_diff > 20) | bimodality_NB_diff > 100) ) %>%
+# 	nest(data = -symbol) %>%
+# 	mutate(how_many_bimod = map_int(data, ~ .x %>% pull(bimodal) %>% sum(na.rm=T))) %>%
+# 	filter(how_many_bimod == 0)

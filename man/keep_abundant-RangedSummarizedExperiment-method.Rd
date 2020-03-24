@@ -30,7 +30,7 @@
 \item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 }
 \value{
-A `tidybulk` object
+A `SummarizedExperiment` object
 }
 \description{
 keep_abundant
