@@ -2361,6 +2361,105 @@ as_matrix <- function(tbl,
 		as.matrix()
 }
 
+#' This function is needed for DE in case the matrix is not rectangular, but includes NA
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom stats as.formula
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .abundance_scaled The name of the transcript/gene scaled abundance column
+#'
+#'
+#' @return A tibble with adjusted counts
+#'
+#'
+fill_NA_using_formula = function(.data,
+																 .formula,
+																 .sample = NULL,
+																 .transcript = NULL,
+																 .abundance = NULL,
+																 .abundance_scaled = NULL){
+
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	.abundance_scaled = enquo(.abundance_scaled)
+
+	col_formula =
+		.data %>%
+		select(parse_formula(.formula)) %>%
+		distinct() %>%
+		select_if(function(x) is.character(x) | is.logical(x) | is.factor(x)) %>%
+		colnames
+
+	# Create NAs for missing sample/transcript pair
+	df_to_impute =
+		.data %>%
+		select(!!.sample, !!.transcript, !!.abundance, col_formula) %>%
+		distinct %>%
+		spread(!!.transcript, !!.abundance) %>%
+		gather(!!.transcript, !!.abundance, -!!.sample, -col_formula)
+
+	# Select just transcripts/covariates that have missing
+	combo_to_impute = df_to_impute %>% anti_join(.data, by=c(quo_name(.sample), quo_name(.transcript))) %>% select(!!.transcript, col_formula) %>% distinct()
+
+	# Impute using median
+	df_to_impute %>%
+		inner_join(combo_to_impute, by=c(quo_name(.transcript), col_formula)) %>%
+
+		# Calculate median for NAs
+		nest(data = -c(col_formula, !!.transcript)) %>%
+		mutate(data = map(data, ~
+												.x %>%
+												mutate(
+													!!.abundance := ifelse(
+														!!.abundance %>% is.na,
+														median(!!.abundance, na.rm = T),!!.abundance
+													)
+												) %>%
+
+												# Impute scaled if exist
+												ifelse_pipe(
+													quo_is_symbol(.abundance_scaled),
+													~ .x %>% mutate(
+														!!.abundance_scaled := ifelse(
+															!!.abundance_scaled %>% is.na,
+															median(!!.abundance_scaled, na.rm = T),!!.abundance_scaled
+														)
+													)
+												) %>%
+
+												# Throu warning if group of size 1
+												ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
+		)) %>%
+		unnest(data) %>%
+
+		# Select only imputed data
+		select(-col_formula) %>%
+
+		# In next command avoid error if no data to impute
+		ifelse_pipe(
+			nrow(.) > 0,
+			~ .x %>% left_join(.data %>% pivot_sample(!!.sample), by=quo_name(.sample))
+		) %>%
+
+		# Add oiginal dataset
+		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_name(.transcript), col_formula))) %>%
+		select(.data %>% colnames)
+
+}
+
 # # Iterative version of Siberg function because fails
 # siberg_iterative = function(x) {
 # 	if (x %>% unique %>% length %>% `<` (5))
