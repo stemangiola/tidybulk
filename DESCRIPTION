@@ -24,10 +24,10 @@ Imports:
     preprocessCore,
     stats,
     parallel,
-    utils
+    utils,
+    lifecycle
 Suggests:
     testthat,
-    lifecycle,
     AnnotationDbi,
     BiocManager,
     Rsubread,
