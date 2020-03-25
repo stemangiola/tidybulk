@@ -31,7 +31,7 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 	expect_equal(
 		res[1:4,]$`counts_scaled`,
 		c(1345.385350 , 871.024558,  910.895401 ,   2.044659),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(	nrow(res),	800	)
@@ -166,7 +166,7 @@ test_that("Add differential trancript abundance - SummarizedExperiment",{
 	expect_equal(
 		res@elementMetadata[w,]$logFC,
 		c(-12.19282, -12.58096, -11.58243, -13.53479),
-		tolerance=1e-4
+		tolerance=1e-3
 	)
 
 
