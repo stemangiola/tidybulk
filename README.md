@@ -26,11 +26,8 @@ remove redundancy (either samples or transcripts).
 
 # Installation
 
-Due to Bioconductor submission requiring R \>= 4.0 you need to install
-the **dev** branch
-
 ``` r
-devtools::install_github("stemangiola/tidybulk@dev")
+devtools::install_github("stemangiola/tidybulk")
 ```
 
 # Introduction
