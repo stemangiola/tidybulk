@@ -2333,7 +2333,7 @@ setMethod(
 
 
 
-#' Filter variable transcripts
+#' Keep variable transcripts
 #'
 #' \lifecycle{maturing}
 #'
@@ -2473,7 +2473,7 @@ setMethod("keep_variable",
 
 
 
-#' Filter abundant transcripts
+#' Keep abundant transcripts
 #'
 #' \lifecycle{maturing}
 #'
