@@ -1,6 +1,3 @@
-
-
-
 #' Create tt object from tibble
 #'
 #' @importFrom rlang enquo
