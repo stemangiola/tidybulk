@@ -4,7 +4,9 @@
 \name{se}
 \alias{se}
 \title{SummarizedExperiment}
-\format{An object of class \code{RangedSummarizedExperiment} with 100 rows and 8 columns.}
+\format{
+An object of class \code{RangedSummarizedExperiment} with 100 rows and 8 columns.
+}
 \usage{
 se
 }

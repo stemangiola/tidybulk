@@ -4,7 +4,9 @@
 \name{counts_mini}
 \alias{counts_mini}
 \title{Example data set reduced}
-\format{An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 2635 rows and 6 columns.}
+\format{
+An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 2635 rows and 6 columns.
+}
 \usage{
 counts_mini
 }

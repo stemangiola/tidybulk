@@ -3,7 +3,7 @@
 \docType{methods}
 \name{keep_variable}
 \alias{keep_variable}
-\title{Filter variable transcripts}
+\title{Keep variable transcripts}
 \usage{
 keep_variable(
   .data,

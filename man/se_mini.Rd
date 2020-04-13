@@ -4,7 +4,9 @@
 \name{se_mini}
 \alias{se_mini}
 \title{SummarizedExperiment mini for vignette}
-\format{An object of class \code{SummarizedExperiment} with 527 rows and 5 columns.}
+\format{
+An object of class \code{SummarizedExperiment} with 527 rows and 5 columns.
+}
 \usage{
 se_mini
 }

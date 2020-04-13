@@ -4,7 +4,9 @@
 \name{X_cibersort}
 \alias{X_cibersort}
 \title{Cibersort reference}
-\format{An object of class \code{data.frame} with 547 rows and 22 columns.}
+\format{
+An object of class \code{data.frame} with 547 rows and 22 columns.
+}
 \usage{
 X_cibersort
 }

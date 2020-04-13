@@ -3,7 +3,7 @@
 \docType{methods}
 \name{keep_abundant}
 \alias{keep_abundant}
-\title{Filter abundant transcripts}
+\title{Keep abundant transcripts}
 \usage{
 keep_abundant(
   .data,
