@@ -17,10 +17,10 @@ and user-friendly grammar of RNA sequencing data exploration and
 analysis. A wide range of analyses are included in convenient wrappers,
 including: resolving duplicate gene symbol (e.g., isoforms), scaling
 (a.k.a., normalisation), identifying variable transcripts, removal of
-know unwanted variation, differential transcript abundance analyses
-(a.k.a., differential expression), reducing data dimensionality (MDS,
-PCA and tSNE), clustering (SNN and kmeans), gene enrichment analyses,
-remove redundancy (either samples or transcripts).
+know unwanted variation, tidy differential transcript abundance analyses
+(tidy differential expression), reducing data dimensionality (MDS, PCA
+and tSNE), clustering (SNN and kmeans), gene enrichment analyses, remove
+redundancy (either samples or transcripts).
 
 # <img src="inst/logo.png" height="139px" width="120px" />
 
@@ -172,7 +172,7 @@ density, data is grouped by sample and coloured by cell type.
 
 ``` r
 counts.norm %>%
-    ggplot(aes(`count_scaled` + 1, group=sample, color=`Cell type`)) +
+    ggplot(aes(count_scaled + 1, group=sample, color=`Cell type`)) +
     geom_density() +
     scale_x_log10() +
     my_theme
@@ -283,18 +283,18 @@ counts.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
 ```
 
     ## # A tibble: 48 x 15
-    ##       Dim1   Dim2    Dim3    Dim4    Dim5   Dim6 sample `Cell type` time 
-    ##      <dbl>  <dbl>   <dbl>   <dbl>   <dbl>  <dbl> <chr>  <chr>       <chr>
-    ##  1 -1.30    0.932 -2.05    0.179   0.127  0.290  SRR17… b_cell      0 d  
-    ##  2 -1.36    0.868 -2.06    0.185   0.0928 0.343  SRR17… b_cell      1 d  
-    ##  3 -1.43    0.754 -1.97    0.252   0.102  0.377  SRR17… b_cell      3 d  
-    ##  4 -1.23    0.944 -2.04    0.204   0.0924 0.229  SRR17… b_cell      7 d  
-    ##  5 -0.288  -1.90  -0.0601 -0.0829 -0.783  0.113  SRR17… dendritic_… 0 d  
-    ##  6 -0.290  -1.81  -0.0547 -0.0756 -0.702  0.0609 SRR17… dendritic_… 1 d  
-    ##  7 -0.423  -2.05  -0.0609 -0.0392 -0.936  0.152  SRR17… dendritic_… 3 d  
-    ##  8 -0.390  -1.88  -0.0523 -0.0538 -0.719  0.0817 SRR17… dendritic_… 7 d  
-    ##  9 -0.0915 -2.09   0.0768 -0.343   0.739  0.146  SRR17… monocyte    0 d  
-    ## 10  0.0253 -1.93   0.0483 -0.358   0.744  0.0770 SRR17… monocyte    1 d  
+    ##       Dim1   Dim2    Dim3     Dim4    Dim5   Dim6 sample `Cell type` time 
+    ##      <dbl>  <dbl>   <dbl>    <dbl>   <dbl>  <dbl> <chr>  <chr>       <chr>
+    ##  1 -1.52    0.559 -2.06    0.111    0.125  -0.239 SRR17… b_cell      0 d  
+    ##  2 -1.51    0.548 -2.08    0.0950   0.0942 -0.230 SRR17… b_cell      1 d  
+    ##  3 -1.49    0.519 -2.00    0.136    0.102  -0.229 SRR17… b_cell      3 d  
+    ##  4 -1.50    0.527 -2.04    0.157    0.0953 -0.196 SRR17… b_cell      7 d  
+    ##  5  0.150  -1.84   0.0708 -0.0425  -0.781  -0.207 SRR17… dendritic_… 0 d  
+    ##  6  0.0907 -1.82   0.0922 -0.00628 -0.704  -0.205 SRR17… dendritic_… 1 d  
+    ##  7  0.161  -1.82   0.0301 -0.0586  -0.940  -0.179 SRR17… dendritic_… 3 d  
+    ##  8  0.0450 -1.84   0.0818 -0.00920 -0.714  -0.184 SRR17… dendritic_… 7 d  
+    ##  9  0.407  -1.95   0.200  -0.315    0.742  -0.209 SRR17… monocyte    0 d  
+    ## 10  0.412  -1.90   0.198  -0.300    0.728  -0.186 SRR17… monocyte    1 d  
     ## # … with 38 more rows, and 6 more variables: condition <chr>, batch <dbl>,
     ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, TMM <dbl>,
     ## #   multiplier <dbl>
@@ -351,19 +351,19 @@ counts.norm.PCA %>% pivot_sample() %>% select(contains("PC"), everything())
 ```
 
     ## # A tibble: 48 x 15
-    ##       PC1     PC2     PC3    PC4     PC5   PC6 sample `Cell type` time 
-    ##     <dbl>   <dbl>   <dbl>  <dbl>   <dbl> <dbl> <chr>  <chr>       <chr>
-    ##  1  0.130  0.137  -0.144  0.248  -0.0598 0.138 SRR17… b_cell      0 d  
-    ##  2  0.128  0.137  -0.146  0.253  -0.0536 0.137 SRR17… b_cell      1 d  
-    ##  3  0.130  0.135  -0.146  0.251  -0.0481 0.138 SRR17… b_cell      3 d  
-    ##  4  0.128  0.138  -0.151  0.248  -0.0516 0.137 SRR17… b_cell      7 d  
-    ##  5 -0.177 -0.0647 -0.176  0.0304 -0.0878 0.147 SRR17… dendritic_… 0 d  
-    ##  6 -0.176 -0.0786 -0.171  0.0328 -0.0874 0.138 SRR17… dendritic_… 1 d  
-    ##  7 -0.174 -0.0719 -0.173  0.0312 -0.103  0.142 SRR17… dendritic_… 3 d  
-    ##  8 -0.175 -0.0722 -0.179  0.0306 -0.0856 0.147 SRR17… dendritic_… 7 d  
-    ##  9 -0.198 -0.0389 -0.102  0.0234 -0.0556 0.118 SRR17… monocyte    0 d  
-    ## 10 -0.192 -0.0567 -0.0966 0.0315 -0.0976 0.117 SRR17… monocyte    1 d  
-    ## # … with 38 more rows, and 6 more variables: condition <chr>, batch <dbl>,
+    ##       PC1     PC2    PC3    PC4    PC5   PC6 sample `Cell type` time  condition
+    ##     <dbl>   <dbl>  <dbl>  <dbl>  <dbl> <dbl> <chr>  <chr>       <chr> <chr>    
+    ##  1  0.130  0.137  -0.155 0.247  0.0594 0.129 SRR17… b_cell      0 d   TRUE     
+    ##  2  0.128  0.139  -0.156 0.251  0.0525 0.127 SRR17… b_cell      1 d   TRUE     
+    ##  3  0.129  0.137  -0.158 0.247  0.0488 0.128 SRR17… b_cell      3 d   TRUE     
+    ##  4  0.129  0.139  -0.159 0.247  0.0511 0.126 SRR17… b_cell      7 d   TRUE     
+    ##  5 -0.175 -0.0641 -0.180 0.0217 0.0930 0.143 SRR17… dendritic_… 0 d   FALSE    
+    ##  6 -0.174 -0.0792 -0.174 0.0224 0.0923 0.135 SRR17… dendritic_… 1 d   FALSE    
+    ##  7 -0.171 -0.0710 -0.178 0.0240 0.109  0.135 SRR17… dendritic_… 3 d   FALSE    
+    ##  8 -0.172 -0.0724 -0.183 0.0218 0.0890 0.142 SRR17… dendritic_… 7 d   FALSE    
+    ##  9 -0.195 -0.0447 -0.104 0.0321 0.0539 0.117 SRR17… monocyte    0 d   FALSE    
+    ## 10 -0.189 -0.0607 -0.101 0.0364 0.0929 0.119 SRR17… monocyte    1 d   FALSE    
+    ## # … with 38 more rows, and 5 more variables: batch <dbl>,
     ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, TMM <dbl>,
     ## #   multiplier <dbl>
 
@@ -429,16 +429,16 @@ counts.norm.tSNE %>%
     ## # A tibble: 251 x 6
     ##     tSNE1    tSNE2 sample                       Call    TMM multiplier
     ##     <dbl>    <dbl> <chr>                        <fct> <dbl>      <dbl>
-    ##  1  -1.24  -8.47   TCGA-A1-A0SD-01A-11R-A115-07 LumA  1.08       0.957
-    ##  2   7.31   7.30   TCGA-A1-A0SF-01A-11R-A144-07 LumA  1.12       0.858
-    ##  3  -6.64 -12.6    TCGA-A1-A0SG-01A-11R-A144-07 LumA  0.920      0.990
-    ##  4 -15.8    0.0394 TCGA-A1-A0SH-01A-11R-A084-07 LumA  0.650      0.817
-    ##  5 -15.6    2.87   TCGA-A1-A0SI-01A-11R-A144-07 LumB  0.794      0.991
-    ##  6  -4.32  -2.23   TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1.04       0.903
-    ##  7  -5.22  33.1    TCGA-A1-A0SK-01A-12R-A084-07 Basal 0.818      1.49 
-    ##  8 -12.9    0.711  TCGA-A1-A0SM-01A-11R-A084-07 LumA  0.843      0.821
-    ##  9 -11.3   -0.525  TCGA-A1-A0SN-01A-11R-A144-07 LumB  0.952      0.856
-    ## 10   2.83 -24.6    TCGA-A1-A0SQ-01A-21R-A144-07 LumA  0.812      1.06 
+    ##  1   8.86   1.17   TCGA-A1-A0SD-01A-11R-A115-07 LumA  1.08       0.957
+    ##  2 -11.2   -0.0936 TCGA-A1-A0SF-01A-11R-A144-07 LumA  1.12       0.858
+    ##  3  16.9    5.08   TCGA-A1-A0SG-01A-11R-A144-07 LumA  0.920      0.990
+    ##  4   3.28  -3.31   TCGA-A1-A0SH-01A-11R-A084-07 LumA  0.650      0.817
+    ##  5   5.18   1.63   TCGA-A1-A0SI-01A-11R-A144-07 LumB  0.794      0.991
+    ##  6  -3.66  -5.38   TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1.04       0.903
+    ##  7 -33.6  -12.5    TCGA-A1-A0SK-01A-12R-A084-07 Basal 0.818      1.49 
+    ##  8   2.82  -6.84   TCGA-A1-A0SM-01A-11R-A084-07 LumA  0.843      0.821
+    ##  9   3.25  -8.69   TCGA-A1-A0SN-01A-11R-A144-07 LumB  0.952      0.856
+    ## 10  20.8   -1.39   TCGA-A1-A0SQ-01A-21R-A144-07 LumA  0.812      1.06 
     ## # … with 241 more rows
 
 ``` r
@@ -817,16 +817,16 @@ counts.norm.SNN %>%
     ## # A tibble: 251 x 7
     ##     tSNE1    tSNE2 sample                   Call    TMM multiplier `cluster SNN`
     ##     <dbl>    <dbl> <chr>                    <fct> <dbl>      <dbl> <fct>        
-    ##  1  -1.24  -8.47   TCGA-A1-A0SD-01A-11R-A1… LumA  1.08       0.957 0            
-    ##  2   7.31   7.30   TCGA-A1-A0SF-01A-11R-A1… LumA  1.12       0.858 2            
-    ##  3  -6.64 -12.6    TCGA-A1-A0SG-01A-11R-A1… LumA  0.920      0.990 1            
-    ##  4 -15.8    0.0394 TCGA-A1-A0SH-01A-11R-A0… LumA  0.650      0.817 0            
-    ##  5 -15.6    2.87   TCGA-A1-A0SI-01A-11R-A1… LumB  0.794      0.991 0            
-    ##  6  -4.32  -2.23   TCGA-A1-A0SJ-01A-11R-A0… LumA  1.04       0.903 1            
-    ##  7  -5.22  33.1    TCGA-A1-A0SK-01A-12R-A0… Basal 0.818      1.49  3            
-    ##  8 -12.9    0.711  TCGA-A1-A0SM-01A-11R-A0… LumA  0.843      0.821 2            
-    ##  9 -11.3   -0.525  TCGA-A1-A0SN-01A-11R-A1… LumB  0.952      0.856 2            
-    ## 10   2.83 -24.6    TCGA-A1-A0SQ-01A-21R-A1… LumA  0.812      1.06  1            
+    ##  1   8.86   1.17   TCGA-A1-A0SD-01A-11R-A1… LumA  1.08       0.957 0            
+    ##  2 -11.2   -0.0936 TCGA-A1-A0SF-01A-11R-A1… LumA  1.12       0.858 2            
+    ##  3  16.9    5.08   TCGA-A1-A0SG-01A-11R-A1… LumA  0.920      0.990 1            
+    ##  4   3.28  -3.31   TCGA-A1-A0SH-01A-11R-A0… LumA  0.650      0.817 0            
+    ##  5   5.18   1.63   TCGA-A1-A0SI-01A-11R-A1… LumB  0.794      0.991 0            
+    ##  6  -3.66  -5.38   TCGA-A1-A0SJ-01A-11R-A0… LumA  1.04       0.903 1            
+    ##  7 -33.6  -12.5    TCGA-A1-A0SK-01A-12R-A0… Basal 0.818      1.49  3            
+    ##  8   2.82  -6.84   TCGA-A1-A0SM-01A-11R-A0… LumA  0.843      0.821 2            
+    ##  9   3.25  -8.69   TCGA-A1-A0SN-01A-11R-A1… LumB  0.952      0.856 2            
+    ## 10  20.8   -1.39   TCGA-A1-A0SQ-01A-21R-A1… LumA  0.812      1.06  1            
     ## # … with 241 more rows
 
 ``` r
@@ -978,7 +978,7 @@ We can calculate gene counts (using FeatureCounts; Liao Y et al.,
 tidy structure (similar to counts).
 
 ``` r
-counts = bam_sam_to_featureCounts_tibble(
+counts = tidybulk_SAM_BAM(
     file_names,
     genome = "hg38",
     isPairedEnd = TRUE,
@@ -1047,7 +1047,7 @@ data set
 ``` r
   counts.norm %>%
     reduce_dimensions(
-        .abundance = `count_scaled`,
+        .abundance = count_scaled,
         method="MDS" ,
         .element = sample,
         .feature = transcript,
@@ -1079,7 +1079,7 @@ selecting just the sample-wise column
 ``` r
   counts.norm %>%
     reduce_dimensions(
-        .abundance = `count_scaled`,
+        .abundance = count_scaled,
         method="MDS" ,
         .element = sample,
         .feature = transcript,
@@ -1110,7 +1110,7 @@ sample
 ``` r
   counts.norm %>%
     reduce_dimensions(
-        .abundance = `count_scaled`,
+        .abundance = count_scaled,
         method="MDS" ,
         .element = sample,
         .feature = transcript,
