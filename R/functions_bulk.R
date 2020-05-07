@@ -2524,3 +2524,119 @@ fill_NA_using_formula = function(.data,
 # 	nest(data = -symbol) %>%
 # 	mutate(how_many_bimod = map_int(data, ~ .x %>% pull(bimodal) %>% sum(na.rm=T))) %>%
 # 	filter(how_many_bimod == 0)
+
+
+#' This function performs gsea
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom msigdbr msigdbr
+#' @importFrom clusterProfiler enricher
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .abundance_scaled The name of the transcript/gene scaled abundance column
+#'
+#'
+#' @return A tibble with adjusted counts
+#'
+#'
+gsea_rank = function(.data,
+										 .entrez,
+										 .rank_by,
+										 .do_test,
+										 species){
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
+	# Get column names
+	.rank_by = enquo(.rank_by) 
+	.do_test = enquo(.do_test)
+	.entrez = enquo(.entrez)
+	
+	m_df <- msigdbr(species = species)
+	
+	my_entrez_rank = 
+		.data %>% 
+		filter(!!.entrez %in% unique(m_df$entrez_gene)) %>%
+		filter(!!.do_test) %>% 
+		distinct(!!.entrez, !!.rank_by) %>% 
+		arrange(!!.rank_by) %>%
+		pull(!!.entrez)
+	
+	m_df %>%
+		nest(data = -gs_cat) %>%
+		mutate(test = 
+					 	map(
+					 		data, 
+					 		~ enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene)) %>%
+					 			as_tibble
+					 		)) %>%
+		select(-data) %>%
+		unnest(test)
+	
+}
+
+#' This function performs gsea
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .abundance_scaled The name of the transcript/gene scaled abundance column
+#'
+#'
+#' @return A tibble with adjusted counts
+#'
+#'
+gsea_de = function(.data,
+								 .formula,
+								 .sample = NULL,
+								 .entrez,
+								 .abundance = NULL,
+								 .contrasts = NULL,
+								 species){
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
+	# Get column names
+	.sample = enquo(.sample)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_counts(.data, .sample, .abundance)
+	.sample = col_names$.sample
+	.abundance = col_names$.abundance
+	
+	
+	df_for_edgeR %>%
+		select(!!.sample, !!.entrez,!!.abundance)
+	
+	
+	library(msigdbr)
+	library(clusterProfiler)
+	
+	counts %>% tidybulk(sample, transcript, count) %>% test_differential_abundance(~ condition) %>% arrange(logFC %>% desc) %>% pull(transcript)
+	
+	
+	em <- enricher(gene, TERM2GENE=m_df %>% select(gs_name, entrez_gene))
+	
+	emGSEA(geneList, TERM2GENE = m_t2g)
+	
+	
+	m_t2g <- msigdbr(species = "Homo sapiens", category = "C6")
+	
+	
+	
+}
