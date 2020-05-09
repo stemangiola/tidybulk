@@ -3,7 +3,7 @@
 \docType{methods}
 \name{pivot_sample}
 \alias{pivot_sample}
-\title{Extract sampe-wise information}
+\title{Extract sample-wise information}
 \usage{
 pivot_sample(.data, .sample = NULL)
 }
@@ -16,7 +16,7 @@ pivot_sample(.data, .sample = NULL)
 A `tbl` object
 }
 \description{
-pivot_sample() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sampe-related columns
+pivot_sample() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 }
 \details{
 \lifecycle{maturing}

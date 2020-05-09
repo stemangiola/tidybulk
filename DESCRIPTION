@@ -47,7 +47,9 @@ Suggests:
     SummarizedExperiment,
     S4Vectors,
     ggplot2,
-    widyr
+    widyr,
+    clusterProfiler,
+    msigdbr
 VignetteBuilder: 
     knitr
 RdMacros: 

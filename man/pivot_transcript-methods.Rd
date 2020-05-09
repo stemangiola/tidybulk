@@ -16,7 +16,7 @@ pivot_transcript(.data, .transcript = NULL)
 A `tbl` object
 }
 \description{
-pivot_transcript() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sampe-related columns
+pivot_transcript() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 }
 \details{
 \lifecycle{maturing}

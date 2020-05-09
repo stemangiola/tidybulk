@@ -2762,11 +2762,118 @@ setMethod("test_gene_enrichment",
 					"tidybulk",
 					.test_gene_enrichment)
 
-#' Extract sampe-wise information
+#' analyse gene over-representation with GSEA
 #'
 #' \lifecycle{maturing}
 #'
-#' @description pivot_sample() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sampe-related columns
+#' @description test_gene_overrepresentation() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name test_gene_overrepresentation
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#' @param .entrez The ENTREZ ID of the transcripts/genes
+#' @param .do_test A boolean column name symbol. It indicates the transcript to check
+#' @param species A character. For example, human or mouse
+#'
+#' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA. This wrapper uses clusterProfiler on the backend.
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+#' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+#' df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+#'
+#' 	test_gene_overrepresentation(
+#'			df_entrez,
+#'			.sample = sample,
+#'			.entrez = entrez,
+#'			.do_test = do_test,
+#'			species="Homo sapiens"
+#'		)
+#'
+#'
+#' @docType methods
+#' @rdname test_gene_overrepresentation-methods
+#' @export
+#'
+#'
+setGeneric("test_gene_overrepresentation", function(.data,
+																										.sample = NULL,
+																										.entrez,
+																										.do_test,
+																										species)
+	standardGeneric("test_gene_overrepresentation"))
+
+# Set internal
+.test_gene_overrepresentation = 		function(.data,
+																					 .sample = NULL,
+																					 .entrez,
+																					 .do_test,
+																					 species)	{
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
+
+	# Get column names
+	.sample = enquo(.sample)
+	.sample =  get_sample(.data, .sample)$.sample
+	.do_test = enquo(.do_test)
+	.entrez = enquo(.entrez)
+	
+	# Check column type
+	if (.data %>% distinct(!!.do_test) %>% sapply(class) %in% c("logical") %>% `!` %>% any)
+		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
+	
+	#m_df <- msigdbr(species = species)
+	
+	
+	.data %>% 
+		#filter(!!.entrez %in% unique(m_df$entrez_gene)) %>%
+		filter(!!.do_test) %>% 
+		distinct(!!.entrez) %>% 
+		pull(!!.entrez) %>%
+		entrez_rank_to_gsea(species)
+	
+	
+}
+
+#' test_gene_overrepresentation
+#' @inheritParams test_gene_overrepresentation
+#' @return A `tbl` object
+setMethod("test_gene_overrepresentation",
+					"spec_tbl_df",
+					.test_gene_overrepresentation)
+
+#' test_gene_overrepresentation
+#' @inheritParams test_gene_overrepresentation
+#' @return A `tbl` object
+setMethod("test_gene_overrepresentation",
+					"tbl_df",
+					.test_gene_overrepresentation)
+
+#' test_gene_overrepresentation
+#' @inheritParams test_gene_overrepresentation
+#' @return A `tbl` object
+setMethod("test_gene_overrepresentation",
+					"tidybulk",
+					.test_gene_overrepresentation)
+
+
+#' Extract sample-wise information
+#'
+#' \lifecycle{maturing}
+#'
+#' @description pivot_sample() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 #'
 #' @importFrom magrittr "%>%"
 #'
@@ -2849,7 +2956,7 @@ setMethod("pivot_sample",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description pivot_transcript() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sampe-related columns
+#' @description pivot_transcript() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 #'
 #' @importFrom magrittr "%>%"
 #'

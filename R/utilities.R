@@ -488,6 +488,26 @@ get_sample_transcript = function(.data, .sample, .transcript){
 
 }
 
+#' Get column names either from user or from attributes
+#'
+#' @importFrom rlang quo_is_symbol
+#'
+#' @param .data A tibble
+#' @param .sample A character name of the sample column
+#'
+#' @return A list of column enquo or error
+get_sample = function(.data, .sample){
+  
+  if( .sample %>% quo_is_symbol() ) .sample = .sample
+  else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
+    .sample =  get_tt_columns(.data)$.sample
+  else my_stop()
+  
+  list(.sample = .sample)
+  
+}
+
+
 
 #' Get column names either from user or from attributes
 #'
