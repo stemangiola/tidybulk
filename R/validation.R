@@ -251,11 +251,11 @@ validation.tidybulk = function(.data,
 	if (type == "hard" &
 			!is_attr)
 		stop(
-			"tidybulk says: The object provided has tidybulk class but no attribute containing the column names. Insert a valid tidybulk object or provide `.sample`, `.transcript`, `.abundance` column names as arguments "
 		)
 	if (type == "soft" & !is_attr) {
+	# 		"tidybulk says: The object provided has tidybulk class but no attribute containing the column names (attr(., \"internals_tt\")). You must have used an external function that eliminated the attributes. Insert a valid tidybulk object or provide `.sample`, `.transcript`, `.abundance` column names as arguments "
 		warning(
-			"tidybulk says: The object provided has tidybulk class but no attribute containing the column names. The tidybulk object has been converted to a `tbl`"
+			"tidybulk says: The object provided has tidybulk class but no attribute containing the column names (attr(., \"internals_tt\")). You must have used an external function that eliminated the attributes. The tidybulk object has been converted to a `tbl`"
 		)
 		return(.data %>% tidybulk_to_tbl)
 	}
