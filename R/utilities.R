@@ -220,8 +220,8 @@ scale_design = function(df, .formula) {
 }
 
 get_tt_columns = function(.data){
-  if(.data %>% attr("tt_internals") %>% is.list())
-    .data %>% attr("tt_internals") %$% tt_columns
+  if(.data %>% attr("internals") %>% is.list())
+    .data %>% attr("internals") %$% tt_columns
   else NULL
 }
 
@@ -258,8 +258,8 @@ add_tt_columns = function(.data,
 initialise_tt_internals = function(.data){
   .data %>%
     ifelse_pipe(
-      "tt_internals" %in% ((.) %>% attributes %>% names) %>% `!`,
-      ~ .x %>% add_attr(list(), "tt_internals")
+      "internals" %in% ((.) %>% attributes %>% names) %>% `!`,
+      ~ .x %>% add_attr(list(), "internals")
     )
 }
 
@@ -267,25 +267,25 @@ reattach_internals = function(.data, .data_internals_from = NULL){
   if(.data_internals_from %>% is.null)
     .data_internals_from = .data
 
-  .data %>% add_attr(.data_internals_from %>% attr("tt_internals"), "tt_internals")
+  .data %>% add_attr(.data_internals_from %>% attr("internals"), "internals")
 }
 
 attach_to_internals = function(.data, .object, .name){
 
-  tt_internals =
+  internals =
     .data %>%
     initialise_tt_internals() %>%
-    attr("tt_internals")
+    attr("internals")
 
   # Add tt_bolumns
-  tt_internals[[.name]] = .object
+  internals[[.name]] = .object
 
-  .data %>% add_attr(tt_internals, "tt_internals")
+  .data %>% add_attr(internals, "internals")
 }
 
 drop_internals = function(.data){
 
-  .data %>% drop_attr("tt_internals")
+  .data %>% drop_attr("internals")
 }
 
 #' Add attribute to abject

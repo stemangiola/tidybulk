@@ -208,7 +208,7 @@ bind_rows.tidybulk <- function(..., .id = NULL)
   dplyr::bind_rows(..., .id = .id) %>%
 
     # Attach attributes from the first object
-    add_attr(tts[[1]] %>% attr("tt_internals"), "tt_internals")
+    add_attr(tts[[1]] %>% attr("internals"), "internals")
 
 }
 
@@ -237,7 +237,7 @@ bind_cols.tidybulk <- function(..., .id = NULL)
   dplyr::bind_cols(..., .id = .id) %>%
 
     # Attach attributes
-    add_attr(tts[[1]] %>% attr("tt_internals"), "tt_internals")
+    add_attr(tts[[1]] %>% attr("internals"), "internals")
 
 }
 
