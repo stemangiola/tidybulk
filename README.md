@@ -69,10 +69,12 @@ BiocManager::install("tidybulk")
 From Github
 
 ``` r
-devtools::install_github("stemangiola/tidybulk@dev")
+devtools::install_github("stemangiola/tidybulk")
 ```
 
-## Create `tidybulk` tibble. It memorises key column names
+## Create `tidybulk` tibble.
+
+It memorises key column names
 
 ``` r
 tt = counts %>% tidybulk(sample, transcript, count)
