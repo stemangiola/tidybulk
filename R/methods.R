@@ -21,8 +21,8 @@ setOldClass("tidybulk")
 #'
 #' @details This function created a tidybulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The tidybulk object have an attribute called tt_internals where these three
-#' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_internals").
+#' The tidybulk object have an attribute called internals where these three
+#' arguments are stored as metadata. They can be extracted as attr(<object>, "internals").
 #'
 #' @return A `tidybulk` object
 #'
@@ -180,8 +180,8 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 #'
 #' @details This function is based on FeatureCounts package. This function created a tidybulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The tidybulk object have an attribute called tt_internals where these three
-#' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_internals").
+#' The tidybulk object have an attribute called internals where these three
+#' arguments are stored as metadata. They can be extracted as attr(<object>, "internals").
 #'
 #' @return A `tidybulk` object
 #'

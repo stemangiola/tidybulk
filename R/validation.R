@@ -112,8 +112,8 @@ column_type_checking = function(.data, .sample, .transcript, .abundance) {
 }
 
 check_if_attribute_present = function(.data) {
-	"tt_internals" %in% (.data %>% attributes %>% names) &&
-	"tt_columns" %in% (.data %>% attr("tt_internals")  %>% names)
+	"internals" %in% (.data %>% attributes %>% names) &&
+	"tt_columns" %in% (.data %>% attr("internals")  %>% names)
 }
 
 eliminate_sparse_transcripts = function(.data, .transcript){

@@ -658,7 +658,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		# Communicate the attribute added
 		{
 			message(
-				"tidybulk says: to access the raw results (glmFit) do `attr(..., \"tt_internals\")$edgeR`"
+				"tidybulk says: to access the raw results (glmFit) do `attr(..., \"internals\")$edgeR`"
 			)
 			(.)
 		}
@@ -1085,7 +1085,7 @@ get_reduced_dimensions_MDS_bulk <-
 			attach_to_internals(mds_object, "MDS") %>%
 			# Communicate the attribute added
 			{
-				message("tidybulk says: to access the raw results do `attr(..., \"tt_internals\")$MDS`")
+				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$MDS`")
 				(.)
 			}
 
@@ -1225,7 +1225,7 @@ get_reduced_dimensions_PCA_bulk <-
 			attach_to_internals(prcomp_obj, "PCA") %>%
 			# Communicate the attribute added
 			{
-				message("tidybulk says: to access the raw results do `attr(..., \"tt_internals\")$PCA`")
+				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$PCA`")
 				(.)
 			}
 
