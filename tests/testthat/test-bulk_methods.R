@@ -16,7 +16,7 @@ test_that("Creating tt object from tibble, number of parameters, methods",{
 					.transcript = b,
 					.abundance = c
 				) ,
-				"tt_internals"
+				"internals"
 			)$tt_columns
 		),
 		3
@@ -62,7 +62,7 @@ test_that("Only scaled counts - no object",{
 		6
 	)
 
-	internals = attr(scale_abundance(tidybulk(input_df, a, b, c)), "tt_internals")
+	internals = attr(scale_abundance(tidybulk(input_df, a, b, c)), "internals")
 
 	expect_equal(length(internals$tt_columns), 4 )
 
@@ -203,7 +203,7 @@ test_that("Only differential trancript abundance - no object",{
 		8
 	)
 
-	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
 
 	# Continuous covariate
 	sam = distinct(input_df, a)
@@ -230,7 +230,7 @@ test_that("Only differential trancript abundance - no object",{
 		8
 	)
 
-	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
 
 	# Continuous and discrete
 	res =
@@ -254,7 +254,7 @@ test_that("Only differential trancript abundance - no object",{
 		8
 	)
 
-	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
 
 	# Just one covariate error
 	expect_error(
@@ -301,7 +301,7 @@ test_that("Only differential trancript abundance - no object",{
 		tolerance=1e-6
 	)
 
-	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
 
 	# Change scaling method
 	res =
@@ -340,7 +340,7 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 		14
 	)
 
-	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
 
 })
 
@@ -366,7 +366,7 @@ test_that("Get differential trancript abundance - no object",{
 	expect_equal(	ncol(res),	8)
 	expect_equal(	nrow(res),	527)
 
-	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
 
 })
 
@@ -394,7 +394,7 @@ test_that("Add differential trancript abundance - no object",{
 		13
 	)
 
-	expect_equal(	class(attr(res, "tt_internals")$edgeR)[1], 	"DGEGLM"  )
+	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
 
 })
 
@@ -721,7 +721,7 @@ test_that("Only reduced dimensions MDS - no object",{
 		3
 	)
 
-	expect_equal(	class(attr(res, "tt_internals")$MDS)[1], 	"MDS"  )
+	expect_equal(	class(attr(res, "internals")$MDS)[1], 	"MDS"  )
 
 })
 
@@ -751,7 +751,7 @@ test_that("Get reduced dimensions MDS - no object",{
 		nrow(res),
 		5
 	)
-	expect_equal(	class(attr(res, "tt_internals")$MDS)[1], 	"MDS"  )
+	expect_equal(	class(attr(res, "internals")$MDS)[1], 	"MDS"  )
 })
 
 test_that("Add reduced dimensions MDS - no object",{
@@ -777,7 +777,7 @@ test_that("Add reduced dimensions MDS - no object",{
 		8
 	)
 
-	expect_equal(	class(attr(res, "tt_internals")$MDS)[1], 	"MDS"  )
+	expect_equal(	class(attr(res, "internals")$MDS)[1], 	"MDS"  )
 })
 
 test_that("Only reduced dimensions PCA - no object",{
@@ -803,7 +803,7 @@ test_that("Only reduced dimensions PCA - no object",{
 		3
 	)
 
-	expect_equal(	class(attr(res, "tt_internals")$PCA), 	"prcomp"  )
+	expect_equal(	class(attr(res, "internals")$PCA), 	"prcomp"  )
 })
 
 test_that("Get reduced dimensions PCA - no object",{
@@ -828,7 +828,7 @@ test_that("Get reduced dimensions PCA - no object",{
 		6
 	)
 
-	expect_equal(	class(attr(res, "tt_internals")$PCA), 	"prcomp"  )
+	expect_equal(	class(attr(res, "internals")$PCA), 	"prcomp"  )
 
 })
 
@@ -855,7 +855,7 @@ test_that("Add reduced dimensions PCA - no object",{
 		8
 	)
 
-	expect_equal(	class(attr(res, "tt_internals")$PCA), 	"prcomp"  )
+	expect_equal(	class(attr(res, "internals")$PCA), 	"prcomp"  )
 
 })
 
@@ -1332,4 +1332,25 @@ test_that("impute missing - no object",{
 
 	expect_equal(	nrow(res),	nrow(input_df)	)
 
+})
+
+test_that("gene over representation",{
+	
+	df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+	df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+	
+	res =
+		test_gene_overrepresentation(
+			df_entrez,
+			.sample = sample,
+			.entrez = entrez,
+			.do_test = do_test,
+			species="Homo sapiens"
+		)
+	
+	expect_equal(	ncol(res),	10	)
+	
+
+	
 })

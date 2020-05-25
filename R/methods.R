@@ -21,8 +21,8 @@ setOldClass("tidybulk")
 #'
 #' @details This function created a tidybulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The tidybulk object have an attribute called tt_internals where these three
-#' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_internals").
+#' The tidybulk object have an attribute called internals where these three
+#' arguments are stored as metadata. They can be extracted as attr(<object>, "internals").
 #'
 #' @return A `tidybulk` object
 #'
@@ -180,8 +180,8 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 #'
 #' @details This function is based on FeatureCounts package. This function created a tidybulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
-#' The tidybulk object have an attribute called tt_internals where these three
-#' arguments are stored as metadata. They can be extracted as attr(<object>, "tt_internals").
+#' The tidybulk object have an attribute called internals where these three
+#' arguments are stored as metadata. They can be extracted as attr(<object>, "internals").
 #'
 #' @return A `tidybulk` object
 #'
@@ -435,7 +435,7 @@ setMethod("scale_abundance",
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function kmeans
-
+#'
 #' @details identifies clusters in the data, normally of samples.
 #' This function returns a tibble with additional columns for the cluster annotation.
 #' At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
@@ -711,7 +711,6 @@ setMethod("cluster_elements",
 #' @param top An integer. How many top genes to select for dimensionality reduction
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param .dims A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
-
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param scale A boolean for method="PCA", this will be passed to the `prcomp` function. It is not included in the ... argument because although the default for `prcomp` if FALSE, it is advisable to set it as TRUE.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
@@ -2334,7 +2333,7 @@ setMethod(
 
 
 
-#' Filter variable transcripts
+#' Keep variable transcripts
 #'
 #' \lifecycle{maturing}
 #'
@@ -2474,7 +2473,7 @@ setMethod("keep_variable",
 
 
 
-#' Filter abundant transcripts
+#' Keep abundant transcripts
 #'
 #' \lifecycle{maturing}
 #'
@@ -2763,11 +2762,118 @@ setMethod("test_gene_enrichment",
 					"tidybulk",
 					.test_gene_enrichment)
 
-#' Extract sampe-wise information
+#' analyse gene over-representation with GSEA
 #'
 #' \lifecycle{maturing}
 #'
-#' @description pivot_sample() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sampe-related columns
+#' @description test_gene_overrepresentation() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name test_gene_overrepresentation
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#' @param .entrez The ENTREZ ID of the transcripts/genes
+#' @param .do_test A boolean column name symbol. It indicates the transcript to check
+#' @param species A character. For example, human or mouse
+#'
+#' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA. This wrapper uses clusterProfiler on the backend.
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+#' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+#' df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+#'
+#' 	test_gene_overrepresentation(
+#'			df_entrez,
+#'			.sample = sample,
+#'			.entrez = entrez,
+#'			.do_test = do_test,
+#'			species="Homo sapiens"
+#'		)
+#'
+#'
+#' @docType methods
+#' @rdname test_gene_overrepresentation-methods
+#' @export
+#'
+#'
+setGeneric("test_gene_overrepresentation", function(.data,
+																										.sample = NULL,
+																										.entrez,
+																										.do_test,
+																										species)
+	standardGeneric("test_gene_overrepresentation"))
+
+# Set internal
+.test_gene_overrepresentation = 		function(.data,
+																					 .sample = NULL,
+																					 .entrez,
+																					 .do_test,
+																					 species)	{
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
+
+	# Get column names
+	.sample = enquo(.sample)
+	.sample =  get_sample(.data, .sample)$.sample
+	.do_test = enquo(.do_test)
+	.entrez = enquo(.entrez)
+	
+	# Check column type
+	if (.data %>% distinct(!!.do_test) %>% sapply(class) %in% c("logical") %>% `!` %>% any)
+		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
+	
+	#m_df <- msigdbr(species = species)
+	
+	
+	.data %>% 
+		#filter(!!.entrez %in% unique(m_df$entrez_gene)) %>%
+		filter(!!.do_test) %>% 
+		distinct(!!.entrez) %>% 
+		pull(!!.entrez) %>%
+		entrez_rank_to_gsea(species)
+	
+	
+}
+
+#' test_gene_overrepresentation
+#' @inheritParams test_gene_overrepresentation
+#' @return A `tbl` object
+setMethod("test_gene_overrepresentation",
+					"spec_tbl_df",
+					.test_gene_overrepresentation)
+
+#' test_gene_overrepresentation
+#' @inheritParams test_gene_overrepresentation
+#' @return A `tbl` object
+setMethod("test_gene_overrepresentation",
+					"tbl_df",
+					.test_gene_overrepresentation)
+
+#' test_gene_overrepresentation
+#' @inheritParams test_gene_overrepresentation
+#' @return A `tbl` object
+setMethod("test_gene_overrepresentation",
+					"tidybulk",
+					.test_gene_overrepresentation)
+
+
+#' Extract sample-wise information
+#'
+#' \lifecycle{maturing}
+#'
+#' @description pivot_sample() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 #'
 #' @importFrom magrittr "%>%"
 #'
@@ -2850,7 +2956,7 @@ setMethod("pivot_sample",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description pivot_transcript() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sampe-related columns
+#' @description pivot_transcript() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 #'
 #' @importFrom magrittr "%>%"
 #'

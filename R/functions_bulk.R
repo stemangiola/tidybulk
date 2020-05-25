@@ -1,6 +1,3 @@
-
-
-
 #' Create tt object from tibble
 #'
 #' @importFrom rlang enquo
@@ -661,7 +658,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		# Communicate the attribute added
 		{
 			message(
-				"tidybulk says: to access the raw results (glmFit) do `attr(..., \"tt_internals\")$edgeR`"
+				"tidybulk says: to access the raw results (glmFit) do `attr(..., \"internals\")$edgeR`"
 			)
 			(.)
 		}
@@ -1088,7 +1085,7 @@ get_reduced_dimensions_MDS_bulk <-
 			attach_to_internals(mds_object, "MDS") %>%
 			# Communicate the attribute added
 			{
-				message("tidybulk says: to access the raw results do `attr(..., \"tt_internals\")$MDS`")
+				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$MDS`")
 				(.)
 			}
 
@@ -1228,7 +1225,7 @@ get_reduced_dimensions_PCA_bulk <-
 			attach_to_internals(prcomp_obj, "PCA") %>%
 			# Communicate the attribute added
 			{
-				message("tidybulk says: to access the raw results do `attr(..., \"tt_internals\")$PCA`")
+				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$PCA`")
 				(.)
 			}
 
@@ -2527,3 +2524,91 @@ fill_NA_using_formula = function(.data,
 # 	nest(data = -symbol) %>%
 # 	mutate(how_many_bimod = map_int(data, ~ .x %>% pull(bimodal) %>% sum(na.rm=TRUE))) %>%
 # 	filter(how_many_bimod == 0)
+
+
+
+entrez_rank_to_gsea = function(my_entrez_rank, species){
+	
+	# Check packages
+	# Check if package is installed, otherwise install
+	if ("msigdbr" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("msigdbr not installed. Installing.")
+		BiocManager::install("msigdbr")
+	}
+
+	# Check if package is installed, otherwise install
+	if ("clusterProfiler" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("clusterProfiler not installed. Installing.")
+		BiocManager::install("clusterProfiler")
+	}
+	
+	m_df <- msigdbr::msigdbr(species = species)
+	
+	m_df %>%
+		nest(data = -gs_cat) %>%
+		mutate(test = 
+					 	map(
+					 		data, 
+					 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
+					 			as_tibble
+					 	)) %>%
+		select(-data) %>%
+		unnest(test)
+	
+}
+
+
+
+# gsea_de = function(.data,
+# 								 .formula,
+# 								 .sample = NULL,
+# 								 .entrez,
+# 								 .abundance = NULL,
+# 								 .contrasts = NULL,
+# 								 species){
+# 	
+# 	# Comply with CRAN NOTES
+# 	. = NULL
+# 	
+# 	# Check packages
+# 	# Check if package is installed, otherwise install
+# 	if ("EGSEA" %in% rownames(installed.packages()) == FALSE) {
+# 		writeLines("EGSEA not installed. Please install it with.")
+# 		writeLines("BiocManager::install(\"EGSEA\")")
+# 	}
+# 	if (!"EGSEA" %in% (.packages())) {
+# 		writeLines("EGSEA package not loaded. Please run library(\"EGSEA\")")
+# 	}
+# 	
+# 	# Check column type
+# 	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% `!` %>% any)
+# 		stop("tidybulk says: your reference has non-numeric/integer columns.")
+# 	
+# 	# Get column names
+# 	.sample = enquo(.sample)
+# 	.abundance = enquo(.abundance)
+# 	col_names = get_sample_counts(.data, .sample, .abundance)
+# 	.sample = col_names$.sample
+# 	.abundance = col_names$.abundance
+# 	
+# 	
+# 	df_for_edgeR %>%
+# 		select(!!.sample, !!.entrez,!!.abundance)
+# 	
+# 	
+# 	library(msigdbr)
+# 	library(clusterProfiler)
+# 	
+# 	counts %>% tidybulk(sample, transcript, count) %>% test_differential_abundance(~ condition) %>% arrange(logFC %>% desc) %>% pull(transcript)
+# 	
+# 	
+# 	em <- enricher(gene, TERM2GENE=m_df %>% select(gs_name, entrez_gene))
+# 	
+# 	emGSEA(geneList, TERM2GENE = m_t2g)
+# 	
+# 	
+# 	m_t2g <- msigdbr(species = "Homo sapiens", category = "C6")
+# 	
+# 	
+# 	
+# }

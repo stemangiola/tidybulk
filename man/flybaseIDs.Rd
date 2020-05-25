@@ -4,7 +4,9 @@
 \name{flybaseIDs}
 \alias{flybaseIDs}
 \title{flybaseIDs}
-\format{An object of class \code{character} of length 14599.}
+\format{
+An object of class \code{character} of length 14599.
+}
 \usage{
 flybaseIDs
 }

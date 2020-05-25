@@ -44,18 +44,16 @@ se_breast_tcga_mini = tidybulk:::tidybulk_to_SummarizedExperiment( tidybulk::bre
 se.cibersort =
 	tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk::counts,  sample ,  transcript, count)
 se.norm.batch =
-
 	tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk::counts,  sample ,  transcript, count) %>%
 	scale_abundance()
 
 ## -----------------------------------------------------------------------------
-counts = tidybulk(tidybulk::counts_mini, sample, transcript, count)
-counts
+tt = counts_mini %>% tidybulk(sample, transcript, count)
 
 ## ----aggregate, cache=TRUE----------------------------------------------------
-counts.aggr =  counts %>% aggregate_duplicates( 	aggregation_function = sum )
+tt.aggr =  tt %>% aggregate_duplicates( 	aggregation_function = sum )
 
-counts.aggr
+tt.aggr
 
 ## ----aggregate se, cache=TRUE-------------------------------------------------
 se.aggr =  se_mini %>% aggregate_duplicates( 	aggregation_function = sum )
@@ -63,12 +61,12 @@ se.aggr =  se_mini %>% aggregate_duplicates( 	aggregation_function = sum )
 se.aggr
 
 ## ----normalise, cache=TRUE----------------------------------------------------
-counts.norm =  counts.aggr %>% scale_abundance(method="TMM")
+tt.norm =  tt.aggr %>% scale_abundance(method="TMM")
 
-counts.norm %>% select(`count`, count_scaled, lowly_abundant, everything())
+tt.norm %>% select(`count`, count_scaled, lowly_abundant, everything())
 
 ## ----plot_normalise, cache=TRUE-----------------------------------------------
-counts.norm %>%
+tt.norm %>%
 	ggplot(aes(count_scaled + 1, group=sample, color=`Cell type`)) +
 	geom_density() +
 	scale_x_log10() +
@@ -79,13 +77,16 @@ se.norm =  se.aggr %>% scale_abundance(method="TMM")
 
 se.norm
 
-## ----mds, cache=TRUE----------------------------------------------------------
-counts.norm.MDS =  counts.norm %>% reduce_dimensions(.abundance = count_scaled, method="MDS", .dims = 3)
+## ----filter variable, cache=TRUE----------------------------------------------
+tt.norm.variable = tt.norm %>% keep_variable()
 
-counts.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
+## ----mds, cache=TRUE----------------------------------------------------------
+tt.norm.MDS =  tt.norm %>% reduce_dimensions(.abundance = count_scaled, method="MDS", .dims = 3)
+
+tt.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct()
 
 ## ----plot_mds, cache=TRUE-----------------------------------------------------
-counts.norm.MDS %>%
+tt.norm.MDS %>%
 	select(contains("Dim"), sample, `Cell type`) %>%
   distinct() %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
@@ -96,12 +97,12 @@ se.norm.MDS =  se.norm %>% reduce_dimensions(.abundance = count_scaled, method="
 se.norm.MDS
 
 ## ----pca, cache=TRUE----------------------------------------------------------
-counts.norm.PCA = counts.norm %>% reduce_dimensions(.abundance = count_scaled, method="PCA" ,  .dims = 3)
+tt.norm.PCA = tt.norm %>% reduce_dimensions(.abundance = count_scaled, method="PCA" ,  .dims = 3)
 
-counts.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
+tt.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct()
 
 ## ----plot_pca, cache=TRUE-----------------------------------------------------
-counts.norm.PCA %>%
+tt.norm.PCA %>%
 	select(contains("PC"), sample, `Cell type`) %>%
   distinct() %>%
   GGally::ggpairs(columns = 1:3, ggplot2::aes(colour=`Cell type`))
@@ -117,7 +118,7 @@ tt_tcga_breast =
 	tidybulk(sample, ens, `count`)
 
 ## ----tsne, cache=TRUE---------------------------------------------------------
-counts.norm.tSNE =
+tt.norm.tSNE =
 	tt_tcga_breast %>%
 	reduce_dimensions(
 		.abundance = count_scaled,
@@ -127,11 +128,11 @@ counts.norm.tSNE =
 		pca_scale =TRUE
 	)
 
-counts.norm.tSNE %>%
+tt.norm.tSNE %>%
 	select(contains("tSNE", ignore.case = FALSE), sample, Call) %>%
 	distinct()
 
-counts.norm.tSNE %>%
+tt.norm.tSNE %>%
 	pivot_sample() %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 
@@ -148,19 +149,19 @@ se.norm.tSNE =
 se.norm.tSNE
 
 ## ----rotate, cache=TRUE-------------------------------------------------------
-counts.norm.MDS.rotated =
-  counts.norm.MDS %>%
+tt.norm.MDS.rotated =
+  tt.norm.MDS %>%
 	rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 
 ## ----plot_rotate_1, cache=TRUE------------------------------------------------
-counts.norm.MDS.rotated %>%
+tt.norm.MDS.rotated %>%
 	pivot_sample() %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type` )) +
   geom_point() +
   my_theme
 
 ## ----plot_rotate_2, cache=TRUE------------------------------------------------
-counts.norm.MDS.rotated %>%
+tt.norm.MDS.rotated %>%
 	pivot_sample() %>%
 	ggplot(aes(x=`Dim1 rotated 45`, y=`Dim2 rotated 45`, color=`Cell type` )) +
   geom_point() +
@@ -171,14 +172,14 @@ se.norm.MDS %>%
 rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 
 ## ----de, cache=TRUE-----------------------------------------------------------
-counts %>%	test_differential_abundance(  ~ condition,  action="only")
+tt %>%	test_differential_abundance(  ~ condition,  action="only")
 
 ## ----de se, cache=TRUE--------------------------------------------------------
 se_mini %>%	test_differential_abundance(  ~ condition)
 
 ## ---- echo=FALSE, include=FALSE-----------------------------------------------
-counts.norm.batch =
-	counts.norm %>%
+tt.norm.batch =
+	tt.norm %>%
 
 	  # Add fake batch and factor of interest
 	  left_join(
@@ -190,15 +191,15 @@ counts.norm.batch =
 
 
 ## ----adjust, cache=TRUE-------------------------------------------------------
-counts.norm.adj =
-	counts.norm.batch %>%
+tt.norm.adj =
+	tt.norm.batch %>%
 	  adjust_abundance(
 	  	~ factor_of_interest + batch,
 	  	.abundance = count_scaled,
 	  	action = "only"
 	  )
 
-counts.norm.adj
+tt.norm.adj
 
 ## ----adjust se, cache=TRUE----------------------------------------------------
 se.norm.batch %>%
@@ -208,14 +209,14 @@ se.norm.batch %>%
   )
 
 ## ----cibersort, cache=TRUE----------------------------------------------------
-counts.cibersort =
-	counts %>%
+tt.cibersort =
+	tt %>%
 	deconvolve_cellularity(action="get", cores=2)
 
-counts.cibersort %>% select(sample, contains("cibersort:")) 
+tt.cibersort %>% select(sample, contains("cibersort:")) 
 
 ## ----plot_cibersort, cache=TRUE-----------------------------------------------
-counts.cibersort %>%
+tt.cibersort %>%
 	gather(`Cell type inferred`, `proportion`, 5:26) %>%
   distinct(sample, `Cell type`, `Cell type inferred`, proportion) %>%
   ggplot(aes(x=`Cell type inferred`, y=proportion, fill=`Cell type`)) +
@@ -230,13 +231,13 @@ se.cibersort %>% deconvolve_cellularity(cores=2)
 
 
 ## ----cluster, cache=TRUE------------------------------------------------------
-counts.norm.cluster = counts.norm %>%
+tt.norm.cluster = tt.norm %>%
   cluster_elements(.abundance = count_scaled, method="kmeans",	centers = 2 )
 
-counts.norm.cluster
+tt.norm.cluster
 
 ## ----plot_cluster, cache=TRUE-------------------------------------------------
- counts.norm.MDS %>%
+ tt.norm.MDS %>%
   cluster_elements(
   	.abundance = count_scaled,
   	method="kmeans",
@@ -253,12 +254,12 @@ se.norm %>%
 
 
 ## ----SNN, cache=TRUE----------------------------------------------------------
-counts.norm.SNN =	counts.norm.tSNE %>%	cluster_elements(.abundance= count_scaled, method = "SNN")
+tt.norm.SNN =	tt.norm.tSNE %>%	cluster_elements(.abundance= count_scaled, method = "SNN")
 
-counts.norm.SNN %>%
+tt.norm.SNN %>%
 	pivot_sample()
 
-counts.norm.SNN %>%
+tt.norm.SNN %>%
 	select(contains("tSNE", ignore.case = FALSE), `cluster SNN`, sample, Call) %>%
 	gather(source, Call, c("cluster SNN", "Call")) %>%
 	distinct() %>%
@@ -266,7 +267,7 @@ counts.norm.SNN %>%
 
 
 # Do differential transcription between clusters
-counts.norm.SNN %>%
+tt.norm.SNN %>%
 	mutate(factor_of_interest = `cluster SNN` == 3) %>%
 	test_differential_abundance(
     ~ factor_of_interest,
@@ -277,10 +278,10 @@ counts.norm.SNN %>%
 se.norm.tSNE %>%	cluster_elements(.abundance= count_scaled, method = "SNN")
 
 ## ----drop, cache=TRUE---------------------------------------------------------
-counts.norm.non_redundant = counts.norm.MDS %>%  remove_redundancy(	method = "correlation" )
+tt.norm.non_redundant = tt.norm.MDS %>%  remove_redundancy(	method = "correlation" )
 
 ## ----plot_drop, cache=TRUE----------------------------------------------------
-counts.norm.non_redundant %>%
+tt.norm.non_redundant %>%
 	pivot_sample() %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
@@ -291,8 +292,8 @@ counts.norm.non_redundant %>%
 se.norm.MDS %>%  remove_redundancy(	method = "correlation" )
 
 ## ----drop2, cache=TRUE--------------------------------------------------------
-counts.norm.non_redundant =
-	counts.norm.MDS %>%
+tt.norm.non_redundant =
+	tt.norm.MDS %>%
   remove_redundancy(
   	method = "reduced_dimensions",
   	.element = sample,
@@ -302,7 +303,7 @@ counts.norm.non_redundant =
   )
 
 ## ----plot_drop2, cache=TRUE---------------------------------------------------
-counts.norm.non_redundant %>%
+tt.norm.non_redundant %>%
 	pivot_sample() %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
   geom_point() +
@@ -334,10 +335,10 @@ remove_redundancy(
 counts_ensembl %>% ensembl_to_symbol(ens)
 
 ## ---- cache=TRUE--------------------------------------------------------------
-  counts.norm
+  tt.norm
 
 ## ---- cache=TRUE--------------------------------------------------------------
-  counts.norm %>%
+  tt.norm %>%
     reduce_dimensions(
     	.abundance = count_scaled,
     	method="MDS" ,
@@ -348,7 +349,7 @@ counts_ensembl %>% ensembl_to_symbol(ens)
     )
 
 ## ---- cache=TRUE--------------------------------------------------------------
-  counts.norm %>%
+  tt.norm %>%
     reduce_dimensions(
     	.abundance = count_scaled,
     	method="MDS" ,
@@ -359,7 +360,7 @@ counts_ensembl %>% ensembl_to_symbol(ens)
     )
 
 ## ---- cache=TRUE--------------------------------------------------------------
-  counts.norm %>%
+  tt.norm %>%
     reduce_dimensions(
     	.abundance = count_scaled,
     	method="MDS" ,

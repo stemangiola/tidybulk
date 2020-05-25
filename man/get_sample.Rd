@@ -5,6 +5,8 @@
 \title{Get column names either from user or from attributes}
 \usage{
 get_sample(.data, .sample)
+
+get_sample(.data, .sample)
 }
 \arguments{
 \item{.data}{A tibble}
@@ -13,7 +15,11 @@ get_sample(.data, .sample)
 }
 \value{
 A list of column enquo or error
+
+A list of column enquo or error
 }
 \description{
+Get column names either from user or from attributes
+
 Get column names either from user or from attributes
 }

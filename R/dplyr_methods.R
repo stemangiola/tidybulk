@@ -152,8 +152,8 @@ bind_rows.tidybulk <- function(..., .id = NULL)
 	par1 = tts[[1]] %>% get_tt_columns() %>% unlist
 	par2 = tts[[2]] %>% get_tt_columns() %>% unlist
 
-	# tt_columns of the two objects must match
-	error_if_parameters_not_match(par1, par2)
+	# # tt_columns of the two objects must match
+	# error_if_parameters_not_match(par1, par2)
 
 	dplyr::bind_rows(..., .id = .id) %>%
 

@@ -4,7 +4,9 @@
 \name{breast_tcga_mini}
 \alias{breast_tcga_mini}
 \title{Data set}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 125500 rows and 5 columns.}
+\format{
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 125500 rows and 5 columns.
+}
 \usage{
 breast_tcga_mini
 }
