@@ -1,6 +1,10 @@
 tidybulk - part of tidyTranscriptomics
 ================
 
+**Brings transcriptomics to the tidyverse\!**
+
+# <img src="inst/logo.png" height="139px" width="120px" />
+
 <!-- badges: start -->
 [![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
@@ -11,72 +15,61 @@ tidybulk - part of tidyTranscriptomics
 
 -->
 
-A modular framework and a tidy data structure for bulk transcriptional
-analyses. This package is part of a tidy transcriptomics suite for tidy
-and user-friendly grammar of RNA sequencing data exploration and
-analysis. A wide range of analyses are included in convenient wrappers,
-including: resolving duplicate gene symbol (e.g., isoforms), scaling
-(a.k.a., normalisation), identifying variable transcripts, removal of
-know unwanted variation, tidy differential transcript abundance analyses
-(tidy differential expression), reducing data dimensionality (MDS, PCA
-and tSNE), clustering (SNN and kmeans), gene enrichment analyses, remove
-redundancy (either samples or transcripts).
+## Functions/utilities available
 
-# <img src="inst/logo.png" height="139px" width="120px" />
+| Function                       | Description                                                           |
+| ------------------------------ | --------------------------------------------------------------------- |
+| `aggregate_duplicates`         | Aggregate robustly abundance and annotation of duplicated transcripts |
+| `scale_abundance`              | Scale (normalise) abundance for RNA requencing depth                  |
+| `reduce_dimensions`            | Perform dimensionality reduction (PCA, MDS, tSNE)                     |
+| `cluster_elements`             | Labels elements with cluster identity (kmeans, SNN)                   |
+| `remove_redundancy`            | Filter out elements with highly correlated features                   |
+| `adjust_abundance`             | Remove known unwanted variation (Combat)                              |
+| `test_differential_abundance`  | Differenatial abundance testing (DE)                                  |
+| `deconvolve_cellularity`       | Estimated tissue composition (Cibersort)                              |
+| `keep_variable`                | Filter top variable features                                          |
+| `keep_abundant`                | Filter out lowly abundant transcripts                                 |
+| `test_gene_enrichment`         | Gene enrichment analyses (EGSEA)                                      |
+| `test_gene_overrepresentation` | Gene enrichment on list of transcript names (no rank)                 |
+| `impute_abundance`             | Impute abundance for missing data points using sample groupings       |
 
-# Installation
+| Utilities           | Description                                |
+| ------------------- | ------------------------------------------ |
+| `tidybulk`          | add tidybulk attributes to a tibble object |
+| `tidybulk_SAM_BAM`  | Convert SAM BAM files into tidybulk tibble |
+| `pivot_sample`      | Select sample-wise columns/information     |
+| `pivot_transcript`  | Select transcript-wise columns/information |
+| `rotate_dimensions` | Rotate two dimensions of a degree          |
+| `ensembl_to_symbol` | Add gene symbol from ensembl IDs           |
+| `symbol_to_entrez`  | Add entrez ID from gene symbol             |
 
-Due to Bioconductor submission requiring R \>= 4.0 you need to install
-the **dev** branch
+## Minimal input data frame
+
+| sample          | transcript      | abundance | annotation |
+| --------------- | --------------- | --------- | ---------- |
+| `chr` or `fctr` | `chr` or `fctr` | `integer` | …          |
+
+## Output data frame
+
+| sample          | transcript      | abundance | annotation | new information |
+| --------------- | --------------- | --------- | ---------- | --------------- |
+| `chr` or `fctr` | `chr` or `fctr` | `integer` | …          | …               |
+
+## Installation
+
+From Bioconductor
+
+``` r
+BiocManager::install("tidybulk")
+```
+
+From Github
 
 ``` r
 devtools::install_github("stemangiola/tidybulk@dev")
 ```
 
-# Introduction
-
-tidybulk is a collection of wrapper functions for bulk tanscriptomic
-analyses that follows the “tidy” paradigm. The data structure is a
-tibble with columns for
-
-  - sample identifier column
-  - transcript identifier column
-  - count column
-  - annotation (and other info) columns
-
-<!-- end list -->
-
-``` r
-counts = tidybulk(tidybulk::counts, sample, transcript, count)
-counts_tcga = tidybulk(tidybulk::breast_tcga_mini, sample, ens, count)
-counts
-```
-
-    ## # A tibble: 938,112 x 8
-    ##    sample   transcript  `Cell type` count time  condition batch factor_of_inter…
-    ##    <fct>    <fct>       <fct>       <dbl> <fct> <lgl>     <int> <lgl>           
-    ##  1 SRR1740… DDX11L1     b_cell         17 0 d   TRUE          0 TRUE            
-    ##  2 SRR1740… WASH7P      b_cell       3568 0 d   TRUE          0 TRUE            
-    ##  3 SRR1740… MIR6859-1   b_cell         57 0 d   TRUE          0 TRUE            
-    ##  4 SRR1740… MIR1302-2   b_cell          1 0 d   TRUE          0 TRUE            
-    ##  5 SRR1740… FAM138A     b_cell          0 0 d   TRUE          0 TRUE            
-    ##  6 SRR1740… OR4F5       b_cell          0 0 d   TRUE          0 TRUE            
-    ##  7 SRR1740… LOC729737   b_cell       1764 0 d   TRUE          0 TRUE            
-    ##  8 SRR1740… LOC1027251… b_cell         11 0 d   TRUE          0 TRUE            
-    ##  9 SRR1740… MIR6859-2   b_cell         40 0 d   TRUE          0 TRUE            
-    ## 10 SRR1740… OR4F29      b_cell          0 0 d   TRUE          0 TRUE            
-    ## # … with 938,102 more rows
-
-In brief you can: + Going from BAM/SAM to a tidy data frame of counts
-(FeatureCounts) + Adding gene symbols from ensembl IDs + Aggregating
-duplicated gene symbols + Adding scaled counts + Adding principal
-components + Adding MDS components + Rotating principal component or MDS
-dimensions + Running differential transcript abunance analyses (edgeR) +
-Adding batch adjusted counts (Combat) + Eliminating redunant samples
-and/or genes + Clustering samples and/or genes with kmeans + Adding
-tissue composition (Cibersort)
-
-# Aggregate duplicated `transcripts`
+## Aggregate duplicated `transcripts`
 
 tidybulk provide the `aggregate_duplicates` function to aggregate
 duplicated transcripts (e.g., isoforms, ensembl). For example, we often
@@ -99,7 +92,7 @@ counts.aggr = counts %>% aggregate_duplicates()
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 temp = data.frame(
@@ -121,7 +114,7 @@ colnames(dge_list.nr) <- colnames(dge_list)
 
 </div>
 
-# Scale `counts`
+## Scale `counts`
 
 We may want to compensate for sequencing depth, scaling the transcript
 abundance (e.g., with TMM algorithm, Robinson and Oshlack
@@ -142,7 +135,7 @@ counts.norm = counts.aggr %>% scale_abundance()
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 library(edgeR)
@@ -180,7 +173,7 @@ counts.norm %>%
 
 ![](README_files/figure-gfm/plot_normalise-1.png)<!-- -->
 
-# Filter `variable transcripts`
+## Filter `variable transcripts`
 
 We may want to identify and filter variable transcripts.
 
@@ -198,7 +191,7 @@ counts.norm.variable = counts.norm %>% keep_variable()
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 library(edgeR)
@@ -226,7 +219,7 @@ norm_counts.table$cell_type = tidybulk::counts[
 
 </div>
 
-# Reduce `dimensions`
+## Reduce `dimensions`
 
 We may want to reduce the dimensions of our data, for example using PCA
 or MDS algorithms. `reduce_dimensions` takes a tibble, column names (as
@@ -250,7 +243,7 @@ counts.norm.MDS =
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 library(limma)
@@ -323,7 +316,7 @@ counts.norm.PCA =
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 count_m_log = log(count_m + 1)
@@ -396,7 +389,7 @@ counts.norm.tSNE =
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 count_m_log = log(count_m + 1)
@@ -449,7 +442,7 @@ counts.norm.tSNE %>%
 
 ![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
-# Rotate `dimensions`
+## Rotate `dimensions`
 
 We may want to rotate the reduced dimensions (or any two numeric columns
 really) of our data, of a set angle. `rotate_dimensions` takes a tibble,
@@ -473,7 +466,7 @@ counts.norm.MDS.rotated =
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 rotation = function(m, d) {
@@ -520,7 +513,7 @@ counts.norm.MDS.rotated %>%
 
 ![](README_files/figure-gfm/plot_rotate_2-1.png)<!-- -->
 
-# Test `differential abundance`
+## Test `differential abundance`
 
 We may want to test for differential transcription between sample-wise
 factors of interest (e.g., with edgeR). `test_differential_abundance`
@@ -545,7 +538,7 @@ counts.de
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 library(edgeR)
@@ -586,7 +579,7 @@ counts.de =
     )
 ```
 
-# Adjust `counts`
+## Adjust `counts`
 
 We may want to adjust `counts` for (known) unwanted variation.
 `adjust_abundance` takes as arguments a tibble, column names (as
@@ -610,7 +603,7 @@ counts.norm.adj =
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 library(sva)
@@ -643,7 +636,7 @@ count_m_log.sva$cell_type = counts[
 
 </div>
 
-# Deconvolve `Cell type composition`
+## Deconvolve `Cell type composition`
 
 We may want to infer the cell type composition of our samples (with the
 algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).
@@ -665,7 +658,7 @@ counts.cibersort =
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 source(‘CIBERSORT.R’)
@@ -707,7 +700,7 @@ counts.cibersort %>%
 
 ![](README_files/figure-gfm/plot_cibersort-1.png)<!-- -->
 
-# Cluster `samples`
+## Cluster `samples`
 
 We may want to cluster our data (e.g., using k-means sample-wise).
 `cluster_elements` takes as arguments a tibble, column names (as
@@ -731,7 +724,7 @@ counts.norm.cluster = counts.norm.MDS %>%
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 count_m_log = log(count_m + 1)
@@ -779,7 +772,7 @@ counts.norm.SNN =
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 library(Seurat)
@@ -864,7 +857,7 @@ counts.norm.SNN %>%
     ## 10 ENSG00000094… FALSE           4.85   9.22  258. 4.11e-58 2.06e-56 TRUE       
     ## # … with 490 more rows
 
-# Drop `redundant` transcripts
+## Drop `redundant` transcripts
 
 We may want to remove redundant elements from the original data set
 (e.g., samples or transcripts), for example if we want to define
@@ -897,7 +890,7 @@ counts.norm.non_redundant =
 
 <div class="column-right">
 
-Standard procedure
+Standard procedure (comparative purpose)
 
 ``` r
 library(widyr)
@@ -966,7 +959,7 @@ counts.norm.non_redundant %>%
 
 ![](README_files/figure-gfm/plot_drop2-1.png)<!-- -->
 
-# Other useful wrappers
+## Other useful wrappers
 
 The above wrapper streamline the most common processing of bulk RNA
 sequencing data. Other useful wrappers are listed above.
@@ -1012,7 +1005,7 @@ counts_ensembl %>% ensembl_to_symbol(ens)
     ## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ## # … with 109 more rows, and 1 more variable: ref_genome <chr>
 
-# ADD versus GET versus ONLY modes
+## ADD versus GET versus ONLY modes
 
 Every function takes a tidytranscriptomics structured data as input, and
 (i) with action=“add” outputs the new information joint to the original
