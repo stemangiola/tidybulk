@@ -750,9 +750,6 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	# Get column names
 	.sample = enquo(.sample)
 	.abundance = enquo(.abundance)
-	col_names = get_sample_counts(.data, .sample, .abundance)
-	.sample = col_names$.sample
-	.abundance = col_names$.abundance
 
 	.entrez = enquo(.entrez)
 
@@ -803,11 +800,13 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	# Check if package is installed, otherwise install
 	if ("EGSEA" %in% rownames(installed.packages()) == FALSE) {
-		writeLines("EGSEA not installed. Please install it with.")
-		writeLines("BiocManager::install(\"EGSEA\")")
+		stop("
+				 EGSEA not installed. Please install it. EGSEA require manual installation for not overwelming the user in case it is not needed. 
+				 BiocManager::install(\"EGSEA\")
+				 ")
 	}
 	if (!"EGSEA" %in% (.packages())) {
-		writeLines("EGSEA package not loaded. Please run library(\"EGSEA\")")
+		stop("EGSEA package not loaded. Please run library(\"EGSEA\"). With this setup, EGSEA require manual loading, for technical reasons.")
 	}
 
 	df_for_edgeR.filt <-
@@ -830,7 +829,11 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	idx =  buildIdx(entrezIDs = rownames(dge), species = species)
 
-	res =
+	# Due to a bug in kegg, this data set is run without report 
+	# http://supportupgrade.bioconductor.org/p/122172/#122218
+	message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
+	
+	res_kegg =
 		dge %>%
 
 		# Calculate weights
@@ -839,7 +842,34 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		# Execute EGSEA
 		egsea(
 			contrasts = .contrasts,
-			gs.annots = idx,
+			gs.annots = idx %>% .["kegg"],
+			baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
+			sort.by = "med.rank",
+			num.threads = cores,
+			report = F
+		)
+	
+	res_formatted_kegg = 
+		res_kegg@results %>%
+		map2_dfr(
+			(.) %>% names,
+			~ .x[[1]][[1]] %>%
+				as_tibble(rownames = "pathway") %>%
+				mutate(data_base = .y)
+		) %>%
+		arrange(med.rank) %>%
+		select(data_base, pathway, everything())
+
+	res =
+		dge %>%
+		
+		# Calculate weights
+		limma::voom(design, plot = FALSE) %>%
+		
+		# Execute EGSEA
+		egsea(
+			contrasts = .contrasts,
+			gs.annots = idx[which(names(idx)!="kegg")],
 			# symbolsMap=
 			# 	df_for_edgeR.filt %>%
 			# 	select(entrez, !!.transcript) %>%
@@ -848,19 +878,22 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			# 	setNames(c("FeatureID", "Symbols")),
 			baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
 			sort.by = "med.rank",
-			num.threads = cores
+			num.threads = cores, 
 		)
-
-	res@results %>%
+	
+	res_formatted_all = 
+		res@results %>%
 		map2_dfr(
-			res@results %>% names,
+			(.) %>% names,
 			~ .x[[1]][[1]] %>%
 				as_tibble(rownames = "pathway") %>%
 				mutate(data_base = .y)
 		) %>%
 		arrange(med.rank) %>%
 		select(data_base, pathway, everything())
-
+	
+	
+	bind_rows(res_formatted_all, res_formatted_kegg)
 
 }
 
