@@ -759,11 +759,11 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
 
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample,!!.entrez,!!.abundance) %>%
+		# # Stop if any counts is NA
+		# error_if_counts_is_na(!!.abundance) %>%
+		# 
+		# # Stop if there are duplicated transcripts
+		# error_if_duplicated_genes(!!.sample,!!.entrez,!!.abundance) %>%
 
 		# Prepare the data frame
 		select(!!.entrez, !!.sample, !!.abundance,
@@ -784,22 +784,27 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			`<` (2))
 		stop("tidybulk says: You need at least two replicated for each condition for EGSEA to work")
 
+	
 	# Create design matrix
 	design =
 		model.matrix(
 			object = .formula,
 			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
-		) %>%
-		magrittr::set_colnames(c("(Intercept)",
-														 (.) %>% colnames %>% `[` (-1)))
-
-	# # Check if package is installed, otherwise install
-	# if ("EGSEA" %in% rownames(installed.packages()) == FALSE) {
-	# 	writeLines("Installing EGSEA needed for differential transcript abundance analyses")
-	# 	if (!requireNamespace("BiocManager", quietly = TRUE))
-	# 		install.packages("BiocManager", repos = "https://cloud.r-project.org")
-	# 	BiocManager::install("EGSEA")
-	# }
+		)
+	
+	# Print the design column names in case I want constrasts
+	message(
+		sprintf(
+			"tidybulk says: The design column names are \"%s\"",
+			design %>% colnames %>% paste(collapse = ", ")
+		)
+	)
+	
+	my_contrasts =
+		.contrasts %>%
+		ifelse_pipe(length(.) > 0,
+								~ limma::makeContrasts(contrasts = .x, levels = design),
+								~ NULL)
 
 	# Check if package is installed, otherwise install
 	if ("EGSEA" %in% rownames(installed.packages()) == FALSE) {
@@ -810,20 +815,14 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		writeLines("EGSEA package not loaded. Please run library(\"EGSEA\")")
 	}
 
-	df_for_edgeR.filt <-
-		df_for_edgeR %>%
-		select(!!.entrez,!!.sample,!!.abundance) %>%
-		mutate(
-			lowly_abundant = !!.entrez %in% add_scaled_counts_bulk.get_low_expressed(.,!!.sample,!!.entrez,!!.abundance)
-		) %>%
-		filter(!lowly_abundant) %>%
-
-		# Make sure transcrpt names are adjacent
-		arrange(!!.entrez)
-
 	dge =
-		df_for_edgeR.filt %>%
-		select(!!.entrez,!!.sample,!!.abundance) %>%
+		df_for_edgeR %>%
+		keep_abundant(!!.sample, !!.entrez, !!.abundance )%>%
+		
+		# Make sure transcrpt names are adjacent
+		arrange(!!.entrez) %>%
+	
+		select(!!.sample, !!.entrez, !!.abundance) %>%
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.entrez) %>%
 		edgeR::DGEList(counts = .)

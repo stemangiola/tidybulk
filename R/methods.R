@@ -2724,7 +2724,7 @@ setGeneric("test_gene_enrichment", function(.data,
 	.entrez = enquo(.entrez)
 
 	# Validate data frame
-	validation(.data, !!.sample, !!.entrez)
+	validation(.data, !!.sample, !!.entrez, !!.abundance)
 
 	test_gene_enrichment_bulk_EGSEA(
 		.data,
