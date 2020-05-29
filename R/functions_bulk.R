@@ -840,7 +840,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 		# Execute EGSEA
 		egsea(
-			contrasts = .contrasts,
+			contrasts = my_contrasts,
 			gs.annots = idx %>% .["kegg"],
 			baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
 			sort.by = "med.rank",
@@ -867,7 +867,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		
 		# Execute EGSEA
 		egsea(
-			contrasts = .contrasts,
+			contrasts = my_contrasts,
 			gs.annots = idx[which(names(idx)!="kegg")],
 			# symbolsMap=
 			# 	df_for_edgeR.filt %>%
