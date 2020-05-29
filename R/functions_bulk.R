@@ -2561,6 +2561,9 @@ fill_NA_using_formula = function(.data,
 
 entrez_rank_to_gsea = function(my_entrez_rank, species){
 	
+	# From the page
+	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
+	
 	# Check packages
 	# Check if package is installed, otherwise install
 	if ("msigdbr" %in% rownames(installed.packages()) == FALSE) {
