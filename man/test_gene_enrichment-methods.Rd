@@ -23,7 +23,7 @@ test_gene_enrichment(
 
 \item{.sample}{The name of the sample column}
 
-\item{.entrez}{The ENTREZ doce of the transcripts/genes}
+\item{.entrez}{The ENTREZ ID of the transcripts/genes}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 

@@ -2661,7 +2661,7 @@ setMethod("keep_abundant",
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model
 #' @param .sample The name of the sample column
-#' @param .entrez The ENTREZ doce of the transcripts/genes
+#' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts = NULL,
 #' @param species A character. For example, human or mouse
@@ -2721,6 +2721,10 @@ setGeneric("test_gene_enrichment", function(.data,
 	# Make col names
 	.sample = enquo(.sample)
 	.abundance = enquo(.abundance)
+	col_names = get_sample_counts(.data, .sample, .abundance)
+	.sample = col_names$.sample
+	.abundance = col_names$.abundance
+	
 	.entrez = enquo(.entrez)
 
 	# Validate data frame
