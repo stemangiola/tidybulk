@@ -603,8 +603,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		edgeR::DGEList(counts = .) %>%
 		edgeR::calcNormFactors(method = scaling_method) %>%
-		edgeR::estimateGLMCommonDisp(design) %>%
-		edgeR::estimateGLMTagwiseDisp(design) %>%
+		edgeR::estimateDisp(design) %>%
 		
 		# select method
 		when(
