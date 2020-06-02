@@ -12,6 +12,7 @@ test_differential_abundance(
   .transcript = NULL,
   .abundance = NULL,
   .contrasts = NULL,
+  method = "edgeR_quasi_likelihood",
   significance_threshold = 0.05,
   minimum_counts = 10,
   minimum_proportion = 0.7,
@@ -33,6 +34,8 @@ test_differential_abundance(
 \item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
+
+\item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)}
 
 \item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
 

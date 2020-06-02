@@ -457,6 +457,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils installed.packages
 #' @importFrom utils install.packages
+#' @importFrom purrr when
 #'
 #'
 #' @param .data A tibble
@@ -465,6 +466,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
 #' @param significance_threshold A real between 0 and 1
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
@@ -480,6 +482,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
+																											 method = "edgeR_quasi_likelihood",
 																											 significance_threshold = 0.05,
 																											 minimum_counts = 10,
 																											 minimum_proportion = 0.7,
@@ -545,7 +548,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			(.) %>% distinct(n) %>%	pull(1) %>%	min %>%	`<` (2)
 		}
 	)
-	warning("tidybulk says: You have less than two replicated for each factorial condition")
+	message("tidybulk says: You have less than two replicated for each factorial combination")
 
 	# Create design matrix
 	design =
@@ -602,7 +605,13 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		edgeR::calcNormFactors(method = scaling_method) %>%
 		edgeR::estimateGLMCommonDisp(design) %>%
 		edgeR::estimateGLMTagwiseDisp(design) %>%
-		edgeR::glmFit(design)
+		
+		# select method
+		when(
+			method == "edgeR_likelihood_ratio" ~ (.) %>% edgeR::glmFit(design),
+			method == "edgeR_quasi_likelihood" ~ (.) %>% edgeR::glmQLFit(design)
+		)
+		
 
 	edgeR_object %>%
 
@@ -612,7 +621,14 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 			# Simple comparison
 			~ .x %>%
-				edgeR::glmLRT(coef = 2, contrast = my_contrasts) %>%
+				
+				# select method
+				when(
+					method == "edgeR_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
+					method == "edgeR_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) 
+				)	%>%
+				
+				# Convert to tibble
 				edgeR::topTags(n = 999999) %$%
 				table %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
@@ -630,7 +646,14 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				1:ncol(my_contrasts) %>%
 					map_dfr(
 						~ edgeR_obj %>%
-							edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) %>%
+							
+							# select method
+							when(
+								method == "edgeR_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
+								method == "edgeR_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x]) 
+							)	%>%
+							
+							# Convert to tibble
 							edgeR::topTags(n = 999999) %$%
 							table %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
@@ -658,7 +681,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		# Communicate the attribute added
 		{
 			message(
-				"tidybulk says: to access the raw results (glmFit) do `attr(..., \"internals\")$edgeR`"
+				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$edgeR`"
 			)
 			(.)
 		}

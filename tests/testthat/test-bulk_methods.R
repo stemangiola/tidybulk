@@ -189,6 +189,7 @@ test_that("Only differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
 
@@ -216,6 +217,7 @@ test_that("Only differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
 
@@ -240,6 +242,7 @@ test_that("Only differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
 
@@ -264,22 +267,24 @@ test_that("Only differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		),
 		"Design matrix not of full rank"
 	)
 
 	# Just one sample per covariate error
-	expect_warning(
+	expect_message(
 		test_differential_abundance(
 			filter(input_df, a %in% c("SRR1740034", "SRR1740035", "SRR1740043", "SRR1740058")),
 			~ condition,
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		),
-		"You have less than two replicated for each factorial condition"
+		"You have less than two replicated for each factorial combination"
 	)
 
 	# Setting filtering manually
@@ -290,6 +295,7 @@ test_that("Only differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only",
 			minimum_proportion = 0.5,
 			minimum_counts = 30
@@ -312,6 +318,7 @@ test_that("Only differential trancript abundance - no object",{
 			.transcript = b,
 			.abundance = c,
 			scaling_method = "TMM",
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
 })
@@ -326,6 +333,7 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 			.transcript = b,
 			.abundance = c,
 			.contrasts = c( "conditionTRUE - conditionFALSE",  "conditionFALSE - conditionTRUE"),
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
 
@@ -354,6 +362,7 @@ test_that("Get differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="get"
 		)
 
@@ -380,6 +389,7 @@ test_that("Add differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="add"
 		)
 
@@ -397,6 +407,49 @@ test_that("Add differential trancript abundance - no object",{
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
 
 })
+
+
+test_that("New method choice",{
+	
+	res =
+		test_differential_abundance(
+			input_df,
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "edgeR_quasi_likelihood",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-11.583570, -12.192736,  -8.927361,  -7.779824),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		8
+	)
+	
+	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
+	
+	# Wrong method
+	expect_error(
+		test_differential_abundance(
+			filter(input_df, condition),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "WRONG_METHOD",
+			action="only"
+		),
+		"the onyl methods supported"
+	)
+})
+
 
 test_that("Get entrez from symbol - no object",{
 
