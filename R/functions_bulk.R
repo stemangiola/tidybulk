@@ -1514,7 +1514,7 @@ aggregate_duplicated_transcripts_bulk =
 		# Through warning if there are logicals of factor in the data frame
 		# because they cannot be merged if they are not unique
 		if ((lapply(.data, class) %>% unlist %in% c("logical", "factor")) %>% any) {
-			warning("tidybulk says: for aggregation fctors and logical columns were converted to character")
+			warning("tidybulk says: for aggregation, factors and logical columns were converted to character")
 			message("Converted to characters")
 			message(lapply(.data, class) %>% unlist %>% `[` (. %in% c("logical", "factor") %>% which))
 		}
