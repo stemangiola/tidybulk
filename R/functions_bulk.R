@@ -485,7 +485,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 minimum_proportion = 0.7,
 																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM",
-																											 omit_contrast_in_colnames = F) {
+																											 omit_contrast_in_colnames = FALSE) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -494,7 +494,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	# Check if omit_contrast_in_colnames is correctly setup
 	if(omit_contrast_in_colnames & length(.contrasts) > 1){
 		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
-		omit_contrast_in_colnames = F
+		omit_contrast_in_colnames = FALSE
 	}
 
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
@@ -845,7 +845,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
 			sort.by = "med.rank",
 			num.threads = cores,
-			report = F
+			report = FALSE
 		)
 	
 	res_formatted_kegg = 
@@ -2454,7 +2454,7 @@ fill_NA_using_formula = function(.data,
 												mutate(
 													!!.abundance := ifelse(
 														!!.abundance %>% is.na,
-														median(!!.abundance, na.rm = T),!!.abundance
+														median(!!.abundance, na.rm = TRUE),!!.abundance
 													)
 												) %>%
 
@@ -2464,7 +2464,7 @@ fill_NA_using_formula = function(.data,
 													~ .x %>% mutate(
 														!!.abundance_scaled := ifelse(
 															!!.abundance_scaled %>% is.na,
-															median(!!.abundance_scaled, na.rm = T),!!.abundance_scaled
+															median(!!.abundance_scaled, na.rm = TRUE),!!.abundance_scaled
 														)
 													)
 												) %>%
@@ -2554,7 +2554,7 @@ fill_NA_using_formula = function(.data,
 # 	filter(n==max(n)) %>%
 # 	mutate(bimodal = ((bimodality_NB > 0.8 & bimodality_NB_diff > 20) | bimodality_NB_diff > 100) ) %>%
 # 	nest(data = -symbol) %>%
-# 	mutate(how_many_bimod = map_int(data, ~ .x %>% pull(bimodal) %>% sum(na.rm=T))) %>%
+# 	mutate(how_many_bimod = map_int(data, ~ .x %>% pull(bimodal) %>% sum(na.rm=TRUE))) %>%
 # 	filter(how_many_bimod == 0)
 
 
