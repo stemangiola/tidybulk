@@ -143,11 +143,16 @@ bind_rows.default <-  function(..., .id = NULL)
 	dplyr::bind_rows(..., .id = .id)
 }
 
+#' @importFrom rlang dots_values
+#' @importFrom rlang flatten_if
+#' @importFrom rlang is_spliced
+#' 
 #' @export
+#' 
 bind_rows.tidybulk <- function(..., .id = NULL)
 {
 
-	tts = dplyr:::flatten_bindable(rlang::dots_values(...))
+	tts = flatten_if(dots_values(...), is_spliced) # Original that fails Bioconductor dplyr:::flatten_bindable(rlang::dots_values(...))
 
 	par1 = tts[[1]] %>% get_tt_columns() %>% unlist
 	par2 = tts[[2]] %>% get_tt_columns() %>% unlist
@@ -178,11 +183,16 @@ bind_cols.default <-  function(..., .id = NULL)
 	dplyr::bind_cols(..., .id = .id)
 }
 
+#' @importFrom rlang dots_values
+#' @importFrom rlang flatten_if
+#' @importFrom rlang is_spliced
+#' 
 #' @export
+#' 
 bind_cols.tidybulk <- function(..., .id = NULL)
 {
 
-	tts = dplyr:::flatten_bindable(rlang::dots_values(...))
+	tts = 	tts = flatten_if(dots_values(...), is_spliced) # Original that fails Bioconductor dplyr:::flatten_bindable(rlang::dots_values(...))
 
 	dplyr::bind_cols(..., .id = .id) %>%
 
