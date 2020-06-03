@@ -16,7 +16,7 @@ test_gene_overrepresentation(.data, .sample = NULL, .entrez, .do_test, species)
 
 \item{.do_test}{A boolean column name symbol. It indicates the transcript to check}
 
-\item{species}{A character. For example, human or mouse}
+\item{species}{A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")}
 }
 \value{
 A `tbl` object

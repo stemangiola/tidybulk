@@ -750,20 +750,17 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	# Get column names
 	.sample = enquo(.sample)
 	.abundance = enquo(.abundance)
-	col_names = get_sample_counts(.data, .sample, .abundance)
-	.sample = col_names$.sample
-	.abundance = col_names$.abundance
 
 	.entrez = enquo(.entrez)
 
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
 
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample,!!.entrez,!!.abundance) %>%
+		# # Stop if any counts is NA
+		# error_if_counts_is_na(!!.abundance) %>%
+		# 
+		# # Stop if there are duplicated transcripts
+		# error_if_duplicated_genes(!!.sample,!!.entrez,!!.abundance) %>%
 
 		# Prepare the data frame
 		select(!!.entrez, !!.sample, !!.abundance,
@@ -784,53 +781,58 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			`<` (2))
 		stop("tidybulk says: You need at least two replicated for each condition for EGSEA to work")
 
+	
 	# Create design matrix
 	design =
 		model.matrix(
 			object = .formula,
 			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
-		) %>%
-		magrittr::set_colnames(c("(Intercept)",
-														 (.) %>% colnames %>% `[` (-1)))
-
-	# # Check if package is installed, otherwise install
-	# if ("EGSEA" %in% rownames(installed.packages()) == FALSE) {
-	# 	writeLines("Installing EGSEA needed for differential transcript abundance analyses")
-	# 	if (!requireNamespace("BiocManager", quietly = TRUE))
-	# 		install.packages("BiocManager", repos = "https://cloud.r-project.org")
-	# 	BiocManager::install("EGSEA")
-	# }
+		)
+	
+	# Print the design column names in case I want constrasts
+	message(
+		sprintf(
+			"tidybulk says: The design column names are \"%s\"",
+			design %>% colnames %>% paste(collapse = ", ")
+		)
+	)
+	
+	my_contrasts =
+		.contrasts %>%
+		ifelse_pipe(length(.) > 0,
+								~ limma::makeContrasts(contrasts = .x, levels = design),
+								~ NULL)
 
 	# Check if package is installed, otherwise install
 	if ("EGSEA" %in% rownames(installed.packages()) == FALSE) {
-		writeLines("EGSEA not installed. Please install it with.")
-		writeLines("BiocManager::install(\"EGSEA\")")
+		stop("
+				 EGSEA not installed. Please install it. EGSEA require manual installation for not overwelming the user in case it is not needed. 
+				 BiocManager::install(\"EGSEA\")
+				 ")
 	}
 	if (!"EGSEA" %in% (.packages())) {
-		writeLines("EGSEA package not loaded. Please run library(\"EGSEA\")")
+		stop("EGSEA package not loaded. Please run library(\"EGSEA\"). With this setup, EGSEA require manual loading, for technical reasons.")
 	}
 
-	df_for_edgeR.filt <-
-		df_for_edgeR %>%
-		select(!!.entrez,!!.sample,!!.abundance) %>%
-		mutate(
-			lowly_abundant = !!.entrez %in% add_scaled_counts_bulk.get_low_expressed(.,!!.sample,!!.entrez,!!.abundance)
-		) %>%
-		filter(!lowly_abundant) %>%
-
-		# Make sure transcrpt names are adjacent
-		arrange(!!.entrez)
-
 	dge =
-		df_for_edgeR.filt %>%
-		select(!!.entrez,!!.sample,!!.abundance) %>%
+		df_for_edgeR %>%
+		keep_abundant(!!.sample, !!.entrez, !!.abundance )%>%
+		
+		# Make sure transcrpt names are adjacent
+		arrange(!!.entrez) %>%
+	
+		select(!!.sample, !!.entrez, !!.abundance) %>%
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.entrez) %>%
 		edgeR::DGEList(counts = .)
 
 	idx =  buildIdx(entrezIDs = rownames(dge), species = species)
 
-	res =
+	# Due to a bug in kegg, this data set is run without report 
+	# http://supportupgrade.bioconductor.org/p/122172/#122218
+	message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
+	
+	res_kegg =
 		dge %>%
 
 		# Calculate weights
@@ -838,8 +840,35 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 		# Execute EGSEA
 		egsea(
-			contrasts = .contrasts,
-			gs.annots = idx,
+			contrasts = my_contrasts,
+			gs.annots = idx %>% .["kegg"],
+			baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
+			sort.by = "med.rank",
+			num.threads = cores,
+			report = FALSE
+		)
+	
+	res_formatted_kegg = 
+		res_kegg@results %>%
+		map2_dfr(
+			(.) %>% names,
+			~ .x[[1]][[1]] %>%
+				as_tibble(rownames = "pathway") %>%
+				mutate(data_base = .y)
+		) %>%
+		arrange(med.rank) %>%
+		select(data_base, pathway, everything())
+
+	res =
+		dge %>%
+		
+		# Calculate weights
+		limma::voom(design, plot = FALSE) %>%
+		
+		# Execute EGSEA
+		egsea(
+			contrasts = my_contrasts,
+			gs.annots = idx[which(names(idx)!="kegg")],
 			# symbolsMap=
 			# 	df_for_edgeR.filt %>%
 			# 	select(entrez, !!.transcript) %>%
@@ -848,19 +877,22 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			# 	setNames(c("FeatureID", "Symbols")),
 			baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
 			sort.by = "med.rank",
-			num.threads = cores
+			num.threads = cores, 
 		)
-
-	res@results %>%
+	
+	res_formatted_all = 
+		res@results %>%
 		map2_dfr(
-			res@results %>% names,
+			(.) %>% names,
 			~ .x[[1]][[1]] %>%
 				as_tibble(rownames = "pathway") %>%
 				mutate(data_base = .y)
 		) %>%
 		arrange(med.rank) %>%
 		select(data_base, pathway, everything())
-
+	
+	
+	bind_rows(res_formatted_all, res_formatted_kegg)
 
 }
 
@@ -1482,7 +1514,7 @@ aggregate_duplicated_transcripts_bulk =
 		# Through warning if there are logicals of factor in the data frame
 		# because they cannot be merged if they are not unique
 		if ((lapply(.data, class) %>% unlist %in% c("logical", "factor")) %>% any) {
-			warning("tidybulk says: for aggregation fctors and logical columns were converted to character")
+			warning("tidybulk says: for aggregation, factors and logical columns were converted to character")
 			message("Converted to characters")
 			message(lapply(.data, class) %>% unlist %>% `[` (. %in% c("logical", "factor") %>% which))
 		}
@@ -2529,12 +2561,8 @@ fill_NA_using_formula = function(.data,
 
 entrez_rank_to_gsea = function(my_entrez_rank, species){
 	
-	# Check packages
-	# Check if package is installed, otherwise install
-	if ("msigdbr" %in% rownames(installed.packages()) == FALSE) {
-		writeLines("msigdbr not installed. Installing.")
-		BiocManager::install("msigdbr")
-	}
+	# From the page
+	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
 
 	# Check if package is installed, otherwise install
 	if ("clusterProfiler" %in% rownames(installed.packages()) == FALSE) {

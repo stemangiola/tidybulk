@@ -2661,7 +2661,7 @@ setMethod("keep_abundant",
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model
 #' @param .sample The name of the sample column
-#' @param .entrez The ENTREZ doce of the transcripts/genes
+#' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts = NULL,
 #' @param species A character. For example, human or mouse
@@ -2721,10 +2721,14 @@ setGeneric("test_gene_enrichment", function(.data,
 	# Make col names
 	.sample = enquo(.sample)
 	.abundance = enquo(.abundance)
+	col_names = get_sample_counts(.data, .sample, .abundance)
+	.sample = col_names$.sample
+	.abundance = col_names$.abundance
+	
 	.entrez = enquo(.entrez)
 
 	# Validate data frame
-	validation(.data, !!.sample, !!.entrez)
+	validation(.data, !!.sample, !!.entrez, !!.abundance)
 
 	test_gene_enrichment_bulk_EGSEA(
 		.data,
@@ -2769,6 +2773,7 @@ setMethod("test_gene_enrichment",
 #' @description test_gene_overrepresentation() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
 #'
 #' @importFrom rlang enquo
+#' @importFrom rlang quo_is_missing
 #' @importFrom magrittr "%>%"
 #'
 #' @name test_gene_overrepresentation
@@ -2777,7 +2782,7 @@ setMethod("test_gene_enrichment",
 #' @param .sample The name of the sample column
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .do_test A boolean column name symbol. It indicates the transcript to check
-#' @param species A character. For example, human or mouse
+#' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
 #'
 #' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA. This wrapper uses clusterProfiler on the backend.
 #'
@@ -2830,12 +2835,26 @@ setGeneric("test_gene_overrepresentation", function(.data,
 	.do_test = enquo(.do_test)
 	.entrez = enquo(.entrez)
 	
+	# Check if entrez is set
+	if(quo_is_missing(.entrez))
+		stop("tidybulk says: the .entrez parameter appears to no be set")
+	
 	# Check column type
 	if (.data %>% distinct(!!.do_test) %>% sapply(class) %in% c("logical") %>% `!` %>% any)
 		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
 	
-	#m_df <- msigdbr(species = species)
+	# Check packages msigdbr
+	# Check if package is installed, otherwise install
+	if ("msigdbr" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("msigdbr not installed. Installing.")
+		BiocManager::install("msigdbr")
+	}
 	
+	# Check is correct species name
+	if(species %in% msigdbr::msigdbr_show_species() %>% `!`)
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_show_species(), collapse=", ")))
+	
+	#m_df <- msigdbr(species = species)
 	
 	.data %>% 
 		#filter(!!.entrez %in% unique(m_df$entrez_gene)) %>%
