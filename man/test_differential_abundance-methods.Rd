@@ -18,7 +18,7 @@ test_differential_abundance(
   minimum_proportion = 0.7,
   fill_missing_values = FALSE,
   scaling_method = "TMM",
-  omit_contrast_in_colnames = F,
+  omit_contrast_in_colnames = FALSE,
   action = "add"
 )
 }
