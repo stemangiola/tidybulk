@@ -96,7 +96,7 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 		writeLines("Installing SummarizedExperiment")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("SummarizedExperiment")
+		BiocManager::install("SummarizedExperiment", ask = FALSE)
 	}
 
 	# Make col names
@@ -2856,7 +2856,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 	# Check if package is installed, otherwise install
 	if ("msigdbr" %in% rownames(installed.packages()) == FALSE) {
 		writeLines("msigdbr not installed. Installing.")
-		BiocManager::install("msigdbr")
+		BiocManager::install("msigdbr", ask = FALSE)
 	}
 	
 	# Check is correct species name

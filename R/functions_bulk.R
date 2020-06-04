@@ -338,7 +338,7 @@ get_scaled_counts_bulk <- function(.data,
 		writeLines("Installing edgeR needed for analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("edgeR")
+		BiocManager::install("edgeR", ask = FALSE)
 	}
 
 	# Set column name for value scaled
@@ -574,7 +574,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		writeLines("Installing edgeR needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("edgeR")
+		BiocManager::install("edgeR", ask = FALSE)
 	}
 
 	df_for_edgeR.filt <-
@@ -712,7 +712,7 @@ symbol_to_entrez = function(.data,
 		writeLines("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Hs.eg.db")
+		BiocManager::install("org.Hs.eg.db", ask = FALSE)
 	}
 
 	.data %>%
@@ -826,7 +826,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	if (find.package("EGSEA", quiet = T) %>% length %>% equals(0)) {
 		stop("
 				 EGSEA not installed. Please install it. EGSEA require manual installation for not overwelming the user in case it is not needed. 
-				 BiocManager::install(\"EGSEA\")
+				 BiocManager::install(\"EGSEA\", ask = FALSE)
 				 ")
 	}
 	if (!"EGSEA" %in% (.packages())) {
@@ -1983,6 +1983,12 @@ get_cell_type_proportions = function(.data,
 	.abundance = enquo(.abundance)
 
 	# Check if package is installed, otherwise install
+	if (find.package("class", quiet = T) %>% length %>% equals(0)) {
+		writeLines("Installing class needed for Cibersort")
+		install.packages("class", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
+	}
+	
+	# Check if package is installed, otherwise install
 	if (find.package("e1071", quiet = T) %>% length %>% equals(0)) {
 		writeLines("Installing e1071 needed for Cibersort")
 		install.packages("e1071", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
@@ -1993,7 +1999,7 @@ get_cell_type_proportions = function(.data,
 		writeLines("Installing preprocessCore needed for Cibersort")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("preprocessCore")
+		BiocManager::install("preprocessCore", ask = FALSE)
 
 	}
 
@@ -2149,7 +2155,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		writeLines("Installing sva - Combat needed for adjustment for unwanted variation")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("sva")
+		BiocManager::install("sva", ask = FALSE)
 	}
 
 	my_batch =
@@ -2289,13 +2295,13 @@ tidybulk_to_SummarizedExperiment = function(.data,
 		writeLines("Installing SummarizedExperiment")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("SummarizedExperiment")
+		BiocManager::install("SummarizedExperiment", ask = FALSE)
 	}
 	if (find.package("S4Vectors", quiet = T) %>% length %>% equals(0)) {
 		writeLines("Installing S4Vectors")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("S4Vectors")
+		BiocManager::install("S4Vectors", ask = FALSE)
 	}
 	# If present get the scaled abundance
 	.abundance_scaled =
@@ -2581,7 +2587,7 @@ entrez_rank_to_gsea = function(my_entrez_rank, species){
 	# Check if package is installed, otherwise install
 	if (find.package("clusterProfiler", quiet = T) %>% length %>% equals(0)) {
 		writeLines("clusterProfiler not installed. Installing.")
-		BiocManager::install("clusterProfiler")
+		BiocManager::install("clusterProfiler", ask = FALSE)
 	}
 	
 	m_df <- msigdbr::msigdbr(species = species)
@@ -2616,7 +2622,7 @@ entrez_rank_to_gsea = function(my_entrez_rank, species){
 # 	# Check if package is installed, otherwise install
 # 	if (find.package("EGSEA", quiet = T) %>% length %>% equals(0)) {
 # 		writeLines("EGSEA not installed. Please install it with.")
-# 		writeLines("BiocManager::install(\"EGSEA\")")
+# 		writeLines("BiocManager::install(\"EGSEA\", ask = FALSE)")
 # 	}
 # 	if (!"EGSEA" %in% (.packages())) {
 # 		writeLines("EGSEA package not loaded. Please run library(\"EGSEA\")")
