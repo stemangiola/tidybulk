@@ -79,6 +79,7 @@ setMethod("tidybulk", "spec_tbl_df", .tidybulk)
 
 #' tidybulk
 #'
+#' @importFrom purrr map2
 #'
 #' @inheritParams tidybulk
 #' @return A `tidybulk` object
@@ -111,7 +112,7 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 								~ as.symbol(.x),
 								~ NULL)
 
-	# Do donversion
+	# Do conversion
 	SummarizedExperiment::assays(.data) %>%
 		as.list() %>%
 		map2(
@@ -148,7 +149,6 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 #' @importFrom purrr reduce
 #' @import dplyr
 #' @import tidyr
-#' @importFrom purrr map2
 #'
 #'
 #' @inheritParams tidybulk
@@ -2100,6 +2100,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
@@ -2148,6 +2149,7 @@ setGeneric("test_differential_abundance", function(.data,
 																									 .transcript = NULL,
 																									 .abundance = NULL,
 																									 .contrasts = NULL,
+																									 method = "edgeR_quasi_likelihood",
 																									 significance_threshold = 0.05,
 																									 minimum_counts = 10,
 																									 minimum_proportion = 0.7,
@@ -2165,6 +2167,7 @@ setGeneric("test_differential_abundance", function(.data,
 																					.transcript = NULL,
 																					.abundance = NULL,
 																					.contrasts = NULL,
+																					method = "edgeR_quasi_likelihood",
 																					significance_threshold = 0.05,
 																					minimum_counts = 10,
 																					minimum_proportion = 0.7,
@@ -2186,21 +2189,25 @@ setGeneric("test_differential_abundance", function(.data,
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	.data_processed =
-		get_differential_transcript_abundance_bulk(
-			.data,
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			.contrasts = .contrasts,
-			significance_threshold = significance_threshold,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			fill_missing_values = fill_missing_values,
-			scaling_method = scaling_method,
-			omit_contrast_in_colnames = omit_contrast_in_colnames
-		)
+	if(grepl("edgeR", method)){
+		.data_processed =
+			get_differential_transcript_abundance_bulk(
+				.data,
+				.formula,
+				.sample = !!.sample,
+				.transcript = !!.transcript,
+				.abundance = !!.abundance,
+				.contrasts = .contrasts,
+				method = method,
+				significance_threshold = significance_threshold,
+				minimum_counts = minimum_counts,
+				minimum_proportion = minimum_proportion,
+				fill_missing_values = fill_missing_values,
+				scaling_method = scaling_method,
+				omit_contrast_in_colnames = omit_contrast_in_colnames
+			)
+	}
+	else stop("tidybulk says: the onyl methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT)")
 
 	if (action == "add"){
 
@@ -2272,6 +2279,7 @@ setMethod("test_differential_abundance",
 																					 .transcript = NULL,
 																					 .abundance = NULL,
 																					 .contrasts = NULL,
+																					 method = "edgeR_quasi_likelihood",
 																					 significance_threshold = 0.05,
 																					 minimum_counts = 10,
 																					 minimum_proportion = 0.7,
@@ -2297,6 +2305,7 @@ setMethod("test_differential_abundance",
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
 			.contrasts = .contrasts,
+			method = method,
 			significance_threshold = significance_threshold,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion,
@@ -2661,7 +2670,7 @@ setMethod("keep_abundant",
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model
 #' @param .sample The name of the sample column
-#' @param .entrez The ENTREZ doce of the transcripts/genes
+#' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts = NULL,
 #' @param species A character. For example, human or mouse
@@ -2721,10 +2730,14 @@ setGeneric("test_gene_enrichment", function(.data,
 	# Make col names
 	.sample = enquo(.sample)
 	.abundance = enquo(.abundance)
+	col_names = get_sample_counts(.data, .sample, .abundance)
+	.sample = col_names$.sample
+	.abundance = col_names$.abundance
+	
 	.entrez = enquo(.entrez)
 
 	# Validate data frame
-	validation(.data, !!.sample, !!.entrez)
+	validation(.data, !!.sample, !!.entrez, !!.abundance)
 
 	test_gene_enrichment_bulk_EGSEA(
 		.data,
@@ -2769,6 +2782,7 @@ setMethod("test_gene_enrichment",
 #' @description test_gene_overrepresentation() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
 #'
 #' @importFrom rlang enquo
+#' @importFrom rlang quo_is_missing
 #' @importFrom magrittr "%>%"
 #'
 #' @name test_gene_overrepresentation
@@ -2777,7 +2791,7 @@ setMethod("test_gene_enrichment",
 #' @param .sample The name of the sample column
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .do_test A boolean column name symbol. It indicates the transcript to check
-#' @param species A character. For example, human or mouse
+#' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
 #'
 #' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA. This wrapper uses clusterProfiler on the backend.
 #'
@@ -2830,12 +2844,26 @@ setGeneric("test_gene_overrepresentation", function(.data,
 	.do_test = enquo(.do_test)
 	.entrez = enquo(.entrez)
 	
+	# Check if entrez is set
+	if(quo_is_missing(.entrez))
+		stop("tidybulk says: the .entrez parameter appears to no be set")
+	
 	# Check column type
 	if (.data %>% distinct(!!.do_test) %>% sapply(class) %in% c("logical") %>% `!` %>% any)
 		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
 	
-	#m_df <- msigdbr(species = species)
+	# Check packages msigdbr
+	# Check if package is installed, otherwise install
+	if ("msigdbr" %in% rownames(installed.packages()) == FALSE) {
+		writeLines("msigdbr not installed. Installing.")
+		BiocManager::install("msigdbr")
+	}
 	
+	# Check is correct species name
+	if(species %in% msigdbr::msigdbr_show_species() %>% `!`)
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_show_species(), collapse=", ")))
+	
+	#m_df <- msigdbr(species = species)
 	
 	.data %>% 
 		#filter(!!.entrez %in% unique(m_df$entrez_gene)) %>%

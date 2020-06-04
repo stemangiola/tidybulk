@@ -159,18 +159,66 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 
 test_that("Add differential trancript abundance - SummarizedExperiment",{
 
-	res =		test_differential_abundance(tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c),	~ condition	)
-
-	w = match(  c("HK3", "FCN1", "CLEC7A", "FAM198B"), rownames(res) )
+	res =		test_differential_abundance(
+		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c),	
+		~ condition	
+	)
+	
+	w = match(  c("CLEC7A" , "FAM198B", "FCN1"  ,  "HK3"   ), rownames(res) )
+	
+	# Quasi likelihood
+	res_tibble =		test_differential_abundance(
+		input_df,
+		~ condition	,
+		a, b, c
+	)
 
 	expect_equal(
 		res@elementMetadata[w,]$logFC,
-		c(-12.19282, -12.58096, -11.58243, -13.53479),
-		tolerance=1e-3
+		c(-11.58385, -13.53406, -12.58204, -12.19271),
+		tolerance=1e-4
+	)
+	
+	expect_equal(
+		res@elementMetadata[w,]$logFC,
+		res_tibble %>% 
+			pivot_transcript(b) %>% 
+			filter(b %in% rownames(res)[w]) %>% 
+			dplyr::arrange(b) %>%
+			dplyr::pull(logFC),
+		tolerance=1e-4
+	)
+	
+	# Likelihood ratio
+	res2 =		test_differential_abundance(
+		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c),	
+		~ condition, method = "edgeR_likelihood_ratio"	)
+	
+	res2_tibble =		test_differential_abundance(
+		input_df,
+		~ condition	,
+		a, b, c, method = "edgeR_likelihood_ratio"
 	)
 
+	expect_equal(
+		res2@elementMetadata[w,]$logFC,
+		c(-11.57989, -13.53476, -12.57969, -12.19303),
+		tolerance=1e-4
+	)
+
+	expect_equal(
+		res2@elementMetadata[w,]$logFC,
+		res2_tibble %>% 
+			pivot_transcript(b) %>% 
+			filter(b %in% rownames(res)[w]) %>% 
+			dplyr::arrange(b) %>%
+			dplyr::pull(logFC),
+		tolerance=1e-4
+	)
 
 })
+
+
 
 test_that("filter abundant - SummarizedExperiment",{
 
