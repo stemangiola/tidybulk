@@ -3,9 +3,8 @@ Package: tidybulk
 Title: Friendly tidy wrappers for streamlined bulk
     transcriptional analysis
 Version: 0.99.6
-Author: person("Stefano", "Mangiola",
-    email=mangiolastefano@gmail.com, role=c("cre", aut"), comment =
-    c(ORCID = "0000-0001-7474-836X")).
+Authors@R: person("Stefano", "Mangiola", email = "mangiolastefano@gmail.com",
+                  role = c("aut", "cre"))
 Maintainer: Stefano Mangiola <mangiolastefano@gmail.com>
 Description: This is a collection of utility function that allow
     to perform exploration of and calculations to RNA sequencing data, in
