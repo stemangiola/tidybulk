@@ -79,6 +79,7 @@ setMethod("tidybulk", "spec_tbl_df", .tidybulk)
 
 #' tidybulk
 #'
+#' @importFrom purrr map2
 #'
 #' @inheritParams tidybulk
 #' @return A `tidybulk` object
@@ -111,7 +112,7 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 								~ as.symbol(.x),
 								~ NULL)
 
-	# Do donversion
+	# Do conversion
 	SummarizedExperiment::assays(.data) %>%
 		as.list() %>%
 		map2(
@@ -148,7 +149,6 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 #' @importFrom purrr reduce
 #' @import dplyr
 #' @import tidyr
-#' @importFrom purrr map2
 #'
 #'
 #' @inheritParams tidybulk

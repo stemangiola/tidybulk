@@ -195,7 +195,7 @@ test_that("Only differential trancript abundance - no object",{
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-12.58096, -12.19282, -11.58243, -13.53479),
+		c(-12.19303, -11.57989, -12.57969, -11.88829),
 		tolerance=1e-6
 	)
 
@@ -223,7 +223,7 @@ test_that("Only differential trancript abundance - no object",{
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-3.673818, -3.250104 ,-3.041978 , 2.832697),
+		c(-3.673399, -3.251067, -3.042633,  2.833111),
 		tolerance=1e-6
 	)
 
@@ -248,7 +248,7 @@ test_that("Only differential trancript abundance - no object",{
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-4.992912, -4.290761, -2.987840, -3.353016),
+		c(-2.406553, -2.988076, -4.990209, -4.286571),
 		tolerance=1e-6
 	)
 
@@ -303,7 +303,7 @@ test_that("Only differential trancript abundance - no object",{
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-12.68354, -12.36412, -11.72906, -13.63015),
+		c(-11.72628, -12.36387, -12.68240, -11.80178),
 		tolerance=1e-6
 	)
 
@@ -339,7 +339,7 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 
 	expect_equal(
 		unique(res$`logFC_conditionTRUE - conditionFALSE`)[1:4],
-		c(-12.58096 ,-12.19282, -11.58243 ,-13.53479),
+		c(-12.19303, -11.57989, -12.57969, -11.88829),
 		tolerance=1e-6
 	)
 
@@ -367,8 +367,8 @@ test_that("Get differential trancript abundance - no object",{
 		)
 
 	expect_equal(
-		pull(slice(distinct(res, b, logFC), 1:4) , "logFC"),
-		c(-12.19282, -12.58096, -11.58243, -13.53479),
+		dplyr::pull(dplyr::slice(distinct(res, b, logFC), 1:4) , "logFC"),
+		c(-11.57989, -12.19303, -12.57969, -11.88829),
 		tolerance=1e-6
 	)
 
@@ -394,8 +394,8 @@ test_that("Add differential trancript abundance - no object",{
 		)
 
 	expect_equal(
-		pull(slice(distinct(res, b, logFC), 1:4) , "logFC"),
-		c(-12.19282, -12.58096, -11.58243, -13.53479),
+		dplyr::pull(dplyr::slice(distinct(res, b, logFC), 1:4) , "logFC"),
+		c(-11.57989, -12.19303, -12.57969, -11.88829),
 		tolerance=1e-6
 	)
 
@@ -424,7 +424,7 @@ test_that("New method choice",{
 	
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-11.583570, -12.192736,  -8.927361,  -7.779824),
+		c(-11.583849, -12.192713,  -8.927257,  -7.779931),
 		tolerance=1e-6
 	)
 	
