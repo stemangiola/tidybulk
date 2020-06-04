@@ -189,12 +189,13 @@ test_that("Only differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-12.58096, -12.19282, -11.58243, -13.53479),
+		c(-12.19303, -11.57989, -12.57969, -11.88829),
 		tolerance=1e-6
 	)
 
@@ -216,12 +217,13 @@ test_that("Only differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-3.673818, -3.250104 ,-3.041978 , 2.832697),
+		c(-3.673399, -3.251067, -3.042633,  2.833111),
 		tolerance=1e-6
 	)
 
@@ -240,12 +242,13 @@ test_that("Only differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-4.992912, -4.290761, -2.987840, -3.353016),
+		c(-2.406553, -2.988076, -4.990209, -4.286571),
 		tolerance=1e-6
 	)
 
@@ -264,22 +267,24 @@ test_that("Only differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		),
 		"Design matrix not of full rank"
 	)
 
 	# Just one sample per covariate error
-	expect_warning(
+	expect_message(
 		test_differential_abundance(
 			filter(input_df, a %in% c("SRR1740034", "SRR1740035", "SRR1740043", "SRR1740058")),
 			~ condition,
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		),
-		"You have less than two replicated for each factorial condition"
+		"You have less than two replicated for each factorial combination"
 	)
 
 	# Setting filtering manually
@@ -290,6 +295,7 @@ test_that("Only differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="only",
 			minimum_proportion = 0.5,
 			minimum_counts = 30
@@ -297,7 +303,7 @@ test_that("Only differential trancript abundance - no object",{
 
 	expect_equal(
 		unique(res$logFC)[1:4],
-		c(-12.68354, -12.36412, -11.72906, -13.63015),
+		c(-11.72628, -12.36387, -12.68240, -11.80178),
 		tolerance=1e-6
 	)
 
@@ -312,6 +318,7 @@ test_that("Only differential trancript abundance - no object",{
 			.transcript = b,
 			.abundance = c,
 			scaling_method = "TMM",
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
 })
@@ -326,12 +333,13 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 			.transcript = b,
 			.abundance = c,
 			.contrasts = c( "conditionTRUE - conditionFALSE",  "conditionFALSE - conditionTRUE"),
+			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
 
 	expect_equal(
 		unique(res$`logFC_conditionTRUE - conditionFALSE`)[1:4],
-		c(-12.58096 ,-12.19282, -11.58243 ,-13.53479),
+		c(-12.19303, -11.57989, -12.57969, -11.88829),
 		tolerance=1e-6
 	)
 
@@ -354,12 +362,13 @@ test_that("Get differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="get"
 		)
 
 	expect_equal(
-		pull(slice(distinct(res, b, logFC), 1:4) , "logFC"),
-		c(-12.19282, -12.58096, -11.58243, -13.53479),
+		dplyr::pull(dplyr::slice(distinct(res, b, logFC), 1:4) , "logFC"),
+		c(-11.57989, -12.19303, -12.57969, -11.88829),
 		tolerance=1e-6
 	)
 
@@ -380,12 +389,13 @@ test_that("Add differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_likelihood_ratio",
 			action="add"
 		)
 
 	expect_equal(
-		pull(slice(distinct(res, b, logFC), 1:4) , "logFC"),
-		c(-12.19282, -12.58096, -11.58243, -13.53479),
+		dplyr::pull(dplyr::slice(distinct(res, b, logFC), 1:4) , "logFC"),
+		c(-11.57989, -12.19303, -12.57969, -11.88829),
 		tolerance=1e-6
 	)
 
@@ -397,6 +407,49 @@ test_that("Add differential trancript abundance - no object",{
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
 
 })
+
+
+test_that("New method choice",{
+	
+	res =
+		test_differential_abundance(
+			input_df,
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "edgeR_quasi_likelihood",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-11.583849, -12.192713,  -8.927257,  -7.779931),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		8
+	)
+	
+	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
+	
+	# Wrong method
+	expect_error(
+		test_differential_abundance(
+			filter(input_df, condition),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "WRONG_METHOD",
+			action="only"
+		),
+		"the onyl methods supported"
+	)
+})
+
 
 test_that("Get entrez from symbol - no object",{
 
