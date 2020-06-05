@@ -11,6 +11,7 @@
 #'
 #' nest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript)
 #'
+#' @rdname tidyr-methods
 #'
 #' @export
 nest <- function (.data, ...)  {
@@ -18,12 +19,14 @@ nest <- function (.data, ...)  {
 }
 
 #' @export
+#' @rdname tidyr-methods
 nest.default <-  function (.data, ...)
 {
 	tidyr::nest(.data, ...)
 }
 
 #' @export
+#' @rdname tidyr-methods
 nest.tidybulk <- function (.data, ...)
 {
 	warning("nest is not fully supported yet by tidybulk. The nested data frame has been reverted to tbl_df")

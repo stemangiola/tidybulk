@@ -2,12 +2,9 @@
 % Please edit documentation in R/dplyr_methods.R
 \name{group_by}
 \alias{group_by}
-\alias{ungroup}
 \title{Group by one or more variables}
 \usage{
 group_by(.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))
-
-ungroup(x, ...)
 }
 \arguments{
 \item{.data}{A data frame, data frame extension (e.g. a tibble), or a
@@ -27,8 +24,6 @@ In `ungroup()`, variables to remove from the grouping.}
 
 \item{.drop}{When `.drop = TRUE`, empty groups are dropped. See [group_by_drop_default()] for
 what the default value is for this argument.}
-
-\item{x}{A [tbl()]}
 }
 \value{
 A [grouped data frame][grouped_df()], unless the combination of `...` and `add`

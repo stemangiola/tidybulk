@@ -2,9 +2,15 @@
 % Please edit documentation in R/tidyr_methods.R
 \name{nest}
 \alias{nest}
+\alias{nest.default}
+\alias{nest.tidybulk}
 \title{nest}
 \usage{
 nest(.data, ...)
+
+\method{nest}{default}(.data, ...)
+
+\method{nest}{tidybulk}(.data, ...)
 }
 \arguments{
 \item{.data}{A tbl. (See tidyr)}
@@ -20,6 +26,5 @@ nest
 \examples{
 
 nest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript)
-
 
 }

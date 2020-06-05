@@ -50,7 +50,7 @@ arrange <- function(.data, ..., .by_group = FALSE) {
 
 #' @param .by_group If `TRUE`, will sort first by grouping variable. Applies to
 #'   grouped data frames only.
-#' @rdname arrange
+#' @rdname dplyr-methods
 #' @export
 #'
 ############# START ADDED tidybulk ###################################
@@ -120,8 +120,8 @@ arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 #' @name bind
 NULL
 
-#' @export
-#' @rdname bind
+
+#' @rdname dplyr-methods
 #' @export
 #'
 ############# START ADDED tidybulk #####################################
@@ -163,7 +163,7 @@ bind_rows.tidybulk <- function(..., .id = NULL)
 ############# END ADDED tidybulk #####################################
 
 #' @export
-#' @rdname bind
+#' @rdname dplyr-methods
 ############# START ADDED tidybulk #####################################
 
 bind_cols <- function(..., .id = NULL) {
@@ -435,7 +435,7 @@ group_by.tidybulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_d
 ############# END ADDED tidybulk #####################################
 
 
-#' @rdname group_by
+#' @rdname dplyr-methods
 #' @export
 #' @param x A [tbl()]
 ungroup <- function(x, ...) {
@@ -595,13 +595,13 @@ summarise.tidybulk <- function (.data, ...)
 
 ############# END ADDED tidybulk #####################################
 
-# #' @rdname summarise_all
+# #' @rdname dplyr-methods
 # #' @export
 # summarize_all <- summarise_all
-# #' @rdname summarise_all
+# #' @rdname dplyr-methods
 # #' @export
 # summarize_if <- summarise_if
-# #' @rdname summarise_all
+# #' @rdname dplyr-methods
 # #' @export
 # summarize_at <- summarise_at
 

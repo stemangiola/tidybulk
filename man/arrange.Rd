@@ -2,12 +2,9 @@
 % Please edit documentation in R/dplyr_methods.R
 \name{arrange}
 \alias{arrange}
-\alias{arrange.default}
 \title{Arrange rows by column values}
 \usage{
 arrange(.data, ..., .by_group = FALSE)
-
-\method{arrange}{default}(.data, ..., .by_group = FALSE)
 }
 \arguments{
 \item{.data}{A data frame, data frame extension (e.g. a tibble), or a
@@ -16,9 +13,6 @@ more details.}
 
 \item{...}{<[`tidy-eval`][dplyr_tidy_eval]> Variables, or functions or
 variables. Use [desc()] to sort a variable in descending order.}
-
-\item{.by_group}{If `TRUE`, will sort first by grouping variable. Applies to
-grouped data frames only.}
 }
 \value{
 An object of the same type as `.data`.

@@ -29,7 +29,7 @@
 # License: http://cibersort.stanford.edu/CIBERSORT_License.txt
 
 
-#' Core algorithm of Cibersort
+# Core algorithm of Cibersort
 #' 
 #' @keywords internal
 #' 
@@ -37,7 +37,6 @@
 #' @importFrom stats cor
 #'
 #'
-#' Core algorithm
 CoreAlg <- function(X, y, cores = 3){
 
 
