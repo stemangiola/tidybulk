@@ -81,26 +81,8 @@ The following methods are currently available in loaded packages:
 `\%>\%` = magrittr::`\%>\%`
 # A summary applied to ungrouped tbl returns a single row
 mtcars \%>\%
-  summarise(mean = mean(disp), n = n())
+  summarise(mean = mean(disp))
 
-# Usually, you'll want to group first
-mtcars \%>\%
-  group_by(cyl) \%>\%
-  summarise(mean = mean(disp), n = n())
-
-# dplyr 1.0.0 allows to summarise to more than one value:
-
-# You use a data frame to create multiple columns so you can wrap
-# this up into a function:
-my_quantile <- function(x, probs) {
-  tibble(x = quantile(x, probs), probs = probs)
-}
-
-
-
-# Refer to column names stored as strings with the `.data` pronoun:
-var <- "mass"
-# Learn more in ?dplyr_tidy_eval
 }
 \seealso{
 Other single table verbs: 

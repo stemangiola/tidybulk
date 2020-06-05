@@ -1014,6 +1014,10 @@ get_clusters_SNN_bulk <-
 		.abundance = enquo(.abundance)
 
 		# Check if package is installed, otherwise install
+		if (find.package("cluster", quiet = T) %>% length %>% equals(0)) {
+			writeLines("Installing cluster")
+			install.packages("cluster", repos = "https://cloud.r-project.org")
+		}
 		if (find.package("Seurat", quiet = T) %>% length %>% equals(0)) {
 			writeLines("Installing Seurat")
 			install.packages("Seurat", repos = "https://cloud.r-project.org")
