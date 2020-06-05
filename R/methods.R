@@ -92,7 +92,7 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 											.abundance,
 											.abundance_scaled = NULL) {
 	# Check if package is installed, otherwise install
-	if ("SummarizedExperiment" %in% rownames(installed.packages()) == FALSE) {
+	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing SummarizedExperiment")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -2855,7 +2855,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 	
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
-	if ("msigdbr" %in% rownames(installed.packages()) == FALSE) {
+	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("msigdbr not installed. Installing.")
 		BiocManager::install("msigdbr", ask = FALSE)
 	}

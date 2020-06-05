@@ -334,7 +334,7 @@ get_scaled_counts_bulk <- function(.data,
 	factor_of_interest = enquo(factor_of_interest)
 
 	# Check if package is installed, otherwise install
-	if (find.package("edgeR", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing edgeR needed for analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -570,7 +570,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 								~ NULL)
 
 	# Check if package is installed, otherwise install
-	if (find.package("edgeR", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing edgeR needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -708,7 +708,7 @@ symbol_to_entrez = function(.data,
 	.transcript = col_names$.transcript
 
 	# Check if package is installed, otherwise install
-	if (find.package("org.Hs.eg.db", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -823,7 +823,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 								~ NULL)
 
 	# Check if package is installed, otherwise install
-	if (find.package("EGSEA", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
 		stop("
 				 EGSEA not installed. Please install it. EGSEA require manual installation for not overwelming the user in case it is not needed. 
 				 BiocManager::install(\"EGSEA\", ask = FALSE)
@@ -1014,15 +1014,15 @@ get_clusters_SNN_bulk <-
 		.abundance = enquo(.abundance)
 
 		# Check if package is installed, otherwise install
-		if (find.package("cluster", quiet = T) %>% length %>% equals(0)) {
+		if (find.package("cluster", quiet = TRUE) %>% length %>% equals(0)) {
 			writeLines("Installing cluster")
 			install.packages("cluster", repos = "https://cloud.r-project.org")
 		}
-		if (find.package("Seurat", quiet = T) %>% length %>% equals(0)) {
+		if (find.package("Seurat", quiet = TRUE) %>% length %>% equals(0)) {
 			writeLines("Installing Seurat")
 			install.packages("Seurat", repos = "https://cloud.r-project.org")
 		}
-		if (find.package("KernSmooth", quiet = T) %>% length %>% equals(0)) {
+		if (find.package("KernSmooth", quiet = TRUE) %>% length %>% equals(0)) {
 			writeLines("Installing KernSmooth")
 			install.packages("KernSmooth", repos = "https://cloud.r-project.org")
 		}
@@ -1336,7 +1336,7 @@ get_reduced_dimensions_TSNE_bulk <-
 
 
 		# Check if package is installed, otherwise install
-		if (find.package("Rtsne", quiet = T) %>% length %>% equals(0)) {
+		if (find.package("Rtsne", quiet = TRUE) %>% length %>% equals(0)) {
 			writeLines("Installing Rtsne")
 			install.packages("Rtsne", repos = "https://cloud.r-project.org")
 		}
@@ -1661,7 +1661,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.abundance = col_names$.abundance
 
 	# Check if package is installed, otherwise install
-	if (find.package("widyr", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("widyr", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing widyr needed for correlation analyses")
 		install.packages("widyr", repos = "https://cloud.r-project.org")
 	}
@@ -1987,19 +1987,19 @@ get_cell_type_proportions = function(.data,
 	.abundance = enquo(.abundance)
 
 	# Check if package is installed, otherwise install
-	if (find.package("class", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("class", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing class needed for Cibersort")
 		install.packages("class", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
 	}
 	
 	# Check if package is installed, otherwise install
-	if (find.package("e1071", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("e1071", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing e1071 needed for Cibersort")
 		install.packages("e1071", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
 	}
 
 	# Check if package is installed, otherwise install
-	if (find.package("preprocessCore", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing preprocessCore needed for Cibersort")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -2155,7 +2155,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		set_colnames(c("(Intercept)", parse_formula(.formula)[1]))
 
 	# Check if package is installed, otherwise install
-	if (find.package("sva", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("sva", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing sva - Combat needed for adjustment for unwanted variation")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -2295,13 +2295,13 @@ tidybulk_to_SummarizedExperiment = function(.data,
 	.abundance = col_names$.abundance
 
 	# Check if package is installed, otherwise install
-	if (find.package("SummarizedExperiment", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing SummarizedExperiment")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("SummarizedExperiment", ask = FALSE)
 	}
-	if (find.package("S4Vectors", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("S4Vectors", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing S4Vectors")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -2589,7 +2589,7 @@ entrez_rank_to_gsea = function(my_entrez_rank, species){
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
 
 	# Check if package is installed, otherwise install
-	if (find.package("clusterProfiler", quiet = T) %>% length %>% equals(0)) {
+	if (find.package("clusterProfiler", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("clusterProfiler not installed. Installing.")
 		BiocManager::install("clusterProfiler", ask = FALSE)
 	}
@@ -2624,7 +2624,7 @@ entrez_rank_to_gsea = function(my_entrez_rank, species){
 # 	
 # 	# Check packages
 # 	# Check if package is installed, otherwise install
-# 	if (find.package("EGSEA", quiet = T) %>% length %>% equals(0)) {
+# 	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
 # 		writeLines("EGSEA not installed. Please install it with.")
 # 		writeLines("BiocManager::install(\"EGSEA\", ask = FALSE)")
 # 	}
