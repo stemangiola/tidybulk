@@ -1,0 +1,11 @@
+base
+knitr
+tibble
+dplyr
+magrittr
+tidyr
+ggplot2
+rlang
+purrr
+tidybulk
+widyr

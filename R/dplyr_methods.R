@@ -1,3 +1,9 @@
+#' drplyr-methods
+#' 
+#' @rdname dplyr-methods
+#' 
+#' @return A tibble
+
 
 #' Arrange rows by column values
 #'
@@ -40,6 +46,8 @@
 #'   more details.
 #' @param ... <[`tidy-eval`][dplyr_tidy_eval]> Variables, or functions or
 #'   variables. Use [desc()] to sort a variable in descending order.
+#' @param .by_group If TRUE, will sort first by grouping variable. Applies to grouped data frames only.
+#' 
 #' @family single table verbs
 #' @examples
 #' `%>%` = magrittr::`%>%`
@@ -54,7 +62,7 @@ arrange <- function(.data, ..., .by_group = FALSE) {
 #' @export
 #'
 ############# START ADDED tidybulk ###################################
-
+#' @inheritParams arrange
 arrange.default <- function(.data, ..., .by_group = FALSE) {
 
 	dplyr::arrange(.data, ..., .by_group = .by_group)
@@ -62,6 +70,7 @@ arrange.default <- function(.data, ..., .by_group = FALSE) {
 }
 
 #' @export
+#' @inheritParams arrange
 arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 
 	.data %>%
@@ -120,12 +129,14 @@ arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 #' @name bind
 NULL
 
-
-#' @rdname dplyr-methods
-#' @export
-#'
 ############# START ADDED tidybulk #####################################
 
+#' @rdname dplyr-methods
+#' 
+#' @inheritParams bind
+#' 
+#' @export
+#'
 bind_rows <- function(..., .id = NULL) {
 	UseMethod("bind_rows")
 }
@@ -162,10 +173,13 @@ bind_rows.tidybulk <- function(..., .id = NULL)
 
 ############# END ADDED tidybulk #####################################
 
-#' @export
-#' @rdname dplyr-methods
-############# START ADDED tidybulk #####################################
 
+############# START ADDED tidybulk #####################################
+#' @export
+#' 
+#' @inheritParams bind
+#' 
+#' @rdname dplyr-methods
 bind_cols <- function(..., .id = NULL) {
 	UseMethod("bind_cols")
 }
@@ -434,7 +448,7 @@ group_by.tidybulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_d
 }
 ############# END ADDED tidybulk #####################################
 
-
+#' ungroup
 #' @rdname dplyr-methods
 #' @export
 #' @param x A [tbl()]
