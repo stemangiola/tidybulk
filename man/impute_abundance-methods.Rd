@@ -3,9 +3,54 @@
 \docType{methods}
 \name{impute_abundance}
 \alias{impute_abundance}
+\alias{impute_abundance,spec_tbl_df-method}
+\alias{impute_abundance,tbl_df-method}
+\alias{impute_abundance,tidybulk-method}
+\alias{impute_abundance,SummarizedExperiment-method}
+\alias{impute_abundance,RangedSummarizedExperiment-method}
 \title{Impute transcript abundance if missing from sample-transcript pairs}
 \usage{
 impute_abundance(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL
+)
+
+\S4method{impute_abundance}{spec_tbl_df}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL
+)
+
+\S4method{impute_abundance}{tbl_df}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL
+)
+
+\S4method{impute_abundance}{tidybulk}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL
+)
+
+\S4method{impute_abundance}{SummarizedExperiment}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL
+)
+
+\S4method{impute_abundance}{RangedSummarizedExperiment}(
   .data,
   .formula,
   .sample = NULL,
@@ -26,6 +71,16 @@ impute_abundance(
 }
 \value{
 A `tbl` non-sparse abundance
+
+A `tbl` with imputed abundnce
+
+A `tbl` with imputed abundnce
+
+A `tbl` with imputed abundnce
+
+A `SummarizedExperiment` object
+
+A `SummarizedExperiment` object
 }
 \description{
 impute_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.

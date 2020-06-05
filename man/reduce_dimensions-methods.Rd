@@ -3,9 +3,89 @@
 \docType{methods}
 \name{reduce_dimensions}
 \alias{reduce_dimensions}
+\alias{reduce_dimensions,spec_tbl_df-method}
+\alias{reduce_dimensions,tbl_df-method}
+\alias{reduce_dimensions,tidybulk-method}
+\alias{reduce_dimensions,SummarizedExperiment-method}
+\alias{reduce_dimensions,RangedSummarizedExperiment-method}
 \title{Dimension reduction of the transcript abundance data}
 \usage{
 reduce_dimensions(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  .dims = 2,
+  top = 500,
+  of_samples = TRUE,
+  log_transform = TRUE,
+  scale = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{reduce_dimensions}{spec_tbl_df}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  .dims = 2,
+  top = 500,
+  of_samples = TRUE,
+  log_transform = TRUE,
+  scale = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{reduce_dimensions}{tbl_df}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  .dims = 2,
+  top = 500,
+  of_samples = TRUE,
+  log_transform = TRUE,
+  scale = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{reduce_dimensions}{tidybulk}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  .dims = 2,
+  top = 500,
+  of_samples = TRUE,
+  log_transform = TRUE,
+  scale = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{reduce_dimensions}{SummarizedExperiment}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  .dims = 2,
+  top = 500,
+  of_samples = TRUE,
+  log_transform = TRUE,
+  scale = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{reduce_dimensions}{RangedSummarizedExperiment}(
   .data,
   .element = NULL,
   .feature = NULL,
@@ -47,6 +127,16 @@ reduce_dimensions(
 }
 \value{
 A tbl object with additional columns for the reduced dimensions
+
+A tbl object with additional columns for the reduced dimensions
+
+A tbl object with additional columns for the reduced dimensions
+
+A tbl object with additional columns for the reduced dimensions
+
+A `SummarizedExperiment` object
+
+A `SummarizedExperiment` object
 }
 \description{
 reduce_dimensions() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.

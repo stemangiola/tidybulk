@@ -3,9 +3,59 @@
 \docType{methods}
 \name{aggregate_duplicates}
 \alias{aggregate_duplicates}
+\alias{aggregate_duplicates,spec_tbl_df-method}
+\alias{aggregate_duplicates,tbl_df-method}
+\alias{aggregate_duplicates,tidybulk-method}
+\alias{aggregate_duplicates,SummarizedExperiment-method}
+\alias{aggregate_duplicates,RangedSummarizedExperiment-method}
 \title{Aggregates multiple counts from the same samples (e.g., from isoforms), concatenates other character columns, and averages other numeric columns}
 \usage{
 aggregate_duplicates(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  aggregation_function = sum,
+  keep_integer = TRUE
+)
+
+\S4method{aggregate_duplicates}{spec_tbl_df}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  aggregation_function = sum,
+  keep_integer = TRUE
+)
+
+\S4method{aggregate_duplicates}{tbl_df}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  aggregation_function = sum,
+  keep_integer = TRUE
+)
+
+\S4method{aggregate_duplicates}{tidybulk}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  aggregation_function = sum,
+  keep_integer = TRUE
+)
+
+\S4method{aggregate_duplicates}{SummarizedExperiment}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  aggregation_function = sum,
+  keep_integer = TRUE
+)
+
+\S4method{aggregate_duplicates}{RangedSummarizedExperiment}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -29,6 +79,16 @@ aggregate_duplicates(
 }
 \value{
 A `tbl` object with aggregated transcript abundance and annotation
+
+A `tbl` object with aggregated transcript abundance and annotation
+
+A `tbl` object with aggregated transcript abundance and annotation
+
+A `tbl` object with aggregated transcript abundance and annotation
+
+A `SummarizedExperiment` object
+
+A `SummarizedExperiment` object
 }
 \description{
 aggregate_duplicates() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.

@@ -3,9 +3,18 @@
 \docType{methods}
 \name{ensembl_to_symbol}
 \alias{ensembl_to_symbol}
+\alias{ensembl_to_symbol,spec_tbl_df-method}
+\alias{ensembl_to_symbol,tbl_df-method}
+\alias{ensembl_to_symbol,tidybulk-method}
 \title{Add transcript symbol column from ensembl id for human and mouse data}
 \usage{
 ensembl_to_symbol(.data, .ensembl, action = "add")
+
+\S4method{ensembl_to_symbol}{spec_tbl_df}(.data, .ensembl, action = "add")
+
+\S4method{ensembl_to_symbol}{tbl_df}(.data, .ensembl, action = "add")
+
+\S4method{ensembl_to_symbol}{tidybulk}(.data, .ensembl, action = "add")
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> |}
@@ -15,6 +24,12 @@ ensembl_to_symbol(.data, .ensembl, action = "add")
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
 \value{
+A `tbl` object including additional columns for transcript symbol
+
+A `tbl` object including additional columns for transcript symbol
+
+A `tbl` object including additional columns for transcript symbol
+
 A `tbl` object including additional columns for transcript symbol
 }
 \description{

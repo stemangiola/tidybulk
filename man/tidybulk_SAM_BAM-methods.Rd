@@ -3,9 +3,12 @@
 \docType{methods}
 \name{tidybulk_SAM_BAM}
 \alias{tidybulk_SAM_BAM}
+\alias{tidybulk_SAM_BAM,character,character-method}
 \title{Creates a `tt` object from a list of file names of BAM/SAM}
 \usage{
 tidybulk_SAM_BAM(file_names, genome = "hg38", ...)
+
+\S4method{tidybulk_SAM_BAM}{character,character}(file_names, genome = "hg38", ...)
 }
 \arguments{
 \item{file_names}{A character vector}
@@ -15,6 +18,8 @@ tidybulk_SAM_BAM(file_names, genome = "hg38", ...)
 \item{...}{Further parameters passed to the function Rsubread::featureCounts}
 }
 \value{
+A `tidybulk` object
+
 A `tidybulk` object
 }
 \description{

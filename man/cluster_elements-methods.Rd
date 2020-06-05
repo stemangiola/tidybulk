@@ -3,9 +3,74 @@
 \docType{methods}
 \name{cluster_elements}
 \alias{cluster_elements}
+\alias{cluster_elements,spec_tbl_df-method}
+\alias{cluster_elements,tbl_df-method}
+\alias{cluster_elements,tidybulk-method}
+\alias{cluster_elements,SummarizedExperiment-method}
+\alias{cluster_elements,RangedSummarizedExperiment-method}
 \title{Get clusters of elements (e.g., samples or transcripts)}
 \usage{
 cluster_elements(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  of_samples = TRUE,
+  log_transform = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{cluster_elements}{spec_tbl_df}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  of_samples = TRUE,
+  log_transform = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{cluster_elements}{tbl_df}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  of_samples = TRUE,
+  log_transform = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{cluster_elements}{tidybulk}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  of_samples = TRUE,
+  log_transform = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{cluster_elements}{SummarizedExperiment}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  of_samples = TRUE,
+  log_transform = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{cluster_elements}{RangedSummarizedExperiment}(
   .data,
   .element = NULL,
   .feature = NULL,
@@ -38,6 +103,16 @@ cluster_elements(
 }
 \value{
 A tbl object with additional columns with cluster labels
+
+A tbl object with additional columns with cluster labels
+
+A tbl object with additional columns with cluster labels
+
+A tbl object with additional columns with cluster labels
+
+A `SummarizedExperiment` object
+
+A `SummarizedExperiment` object
 }
 \description{
 cluster_elements() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and identify clusters in the data.

@@ -3,9 +3,64 @@
 \docType{methods}
 \name{keep_abundant}
 \alias{keep_abundant}
+\alias{keep_abundant,spec_tbl_df-method}
+\alias{keep_abundant,tbl_df-method}
+\alias{keep_abundant,tidybulk-method}
+\alias{keep_abundant,SummarizedExperiment-method}
+\alias{keep_abundant,RangedSummarizedExperiment-method}
 \title{Keep abundant transcripts}
 \usage{
 keep_abundant(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7
+)
+
+\S4method{keep_abundant}{spec_tbl_df}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7
+)
+
+\S4method{keep_abundant}{tbl_df}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7
+)
+
+\S4method{keep_abundant}{tidybulk}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7
+)
+
+\S4method{keep_abundant}{SummarizedExperiment}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7
+)
+
+\S4method{keep_abundant}{RangedSummarizedExperiment}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -32,6 +87,16 @@ keep_abundant(
 }
 \value{
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `SummarizedExperiment` object
+
+A `SummarizedExperiment` object
 }
 \description{
 keep_abundant() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.

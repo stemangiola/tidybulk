@@ -3,9 +3,18 @@
 \docType{methods}
 \name{test_gene_overrepresentation}
 \alias{test_gene_overrepresentation}
+\alias{test_gene_overrepresentation,spec_tbl_df-method}
+\alias{test_gene_overrepresentation,tbl_df-method}
+\alias{test_gene_overrepresentation,tidybulk-method}
 \title{analyse gene over-representation with GSEA}
 \usage{
 test_gene_overrepresentation(.data, .sample = NULL, .entrez, .do_test, species)
+
+\S4method{test_gene_overrepresentation}{spec_tbl_df}(.data, .sample = NULL, .entrez, .do_test, species)
+
+\S4method{test_gene_overrepresentation}{tbl_df}(.data, .sample = NULL, .entrez, .do_test, species)
+
+\S4method{test_gene_overrepresentation}{tidybulk}(.data, .sample = NULL, .entrez, .do_test, species)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
@@ -19,6 +28,12 @@ test_gene_overrepresentation(.data, .sample = NULL, .entrez, .do_test, species)
 \item{species}{A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")}
 }
 \value{
+A `tbl` object
+
+A `tbl` object
+
+A `tbl` object
+
 A `tbl` object
 }
 \description{

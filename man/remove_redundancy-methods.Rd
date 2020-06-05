@@ -3,6 +3,11 @@
 \docType{methods}
 \name{remove_redundancy}
 \alias{remove_redundancy}
+\alias{remove_redundancy,spec_tbl_df-method}
+\alias{remove_redundancy,tbl_df-method}
+\alias{remove_redundancy,tidybulk-method}
+\alias{remove_redundancy,SummarizedExperiment-method}
+\alias{remove_redundancy,RangedSummarizedExperiment-method}
 \title{Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) aboundances are correlated}
 \usage{
 remove_redundancy(
@@ -17,6 +22,76 @@ remove_redundancy(
   log_transform = FALSE,
   Dim_a_column,
   Dim_b_column
+)
+
+\S4method{remove_redundancy}{spec_tbl_df}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  of_samples = TRUE,
+  correlation_threshold = 0.9,
+  top = Inf,
+  log_transform = FALSE,
+  Dim_a_column = NULL,
+  Dim_b_column = NULL
+)
+
+\S4method{remove_redundancy}{tbl_df}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  of_samples = TRUE,
+  correlation_threshold = 0.9,
+  top = Inf,
+  log_transform = FALSE,
+  Dim_a_column = NULL,
+  Dim_b_column = NULL
+)
+
+\S4method{remove_redundancy}{tidybulk}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  of_samples = TRUE,
+  correlation_threshold = 0.9,
+  top = Inf,
+  log_transform = FALSE,
+  Dim_a_column = NULL,
+  Dim_b_column = NULL
+)
+
+\S4method{remove_redundancy}{SummarizedExperiment}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  of_samples = TRUE,
+  correlation_threshold = 0.9,
+  top = Inf,
+  log_transform = FALSE,
+  Dim_a_column = NULL,
+  Dim_b_column = NULL
+)
+
+\S4method{remove_redundancy}{RangedSummarizedExperiment}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .abundance = NULL,
+  method,
+  of_samples = TRUE,
+  correlation_threshold = 0.9,
+  top = Inf,
+  log_transform = FALSE,
+  Dim_a_column = NULL,
+  Dim_b_column = NULL
 )
 }
 \arguments{
@@ -44,6 +119,16 @@ remove_redundancy(
 }
 \value{
 A tbl object with with dropped recundant elements (e.g., samples).
+
+A tbl object with with dropped recundant elements (e.g., samples).
+
+A tbl object with with dropped recundant elements (e.g., samples).
+
+A tbl object with with dropped recundant elements (e.g., samples).
+
+A `SummarizedExperiment` object
+
+A `SummarizedExperiment` object
 }
 \description{
 remove_redundancy() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., samples).

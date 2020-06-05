@@ -3,9 +3,21 @@
 \docType{methods}
 \name{tidybulk}
 \alias{tidybulk}
+\alias{tidybulk,spec_tbl_df-method}
+\alias{tidybulk,tbl_df-method}
+\alias{tidybulk,SummarizedExperiment-method}
+\alias{tidybulk,RangedSummarizedExperiment-method}
 \title{Creates a `tt` object from a `tbl``}
 \usage{
 tidybulk(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
+
+\S4method{tidybulk}{spec_tbl_df}(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
+
+\S4method{tidybulk}{tbl_df}(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
+
+\S4method{tidybulk}{SummarizedExperiment}(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
+
+\S4method{tidybulk}{RangedSummarizedExperiment}(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
@@ -19,6 +31,14 @@ tidybulk(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
 \item{.abundance_scaled}{The name of the transcript/gene scaled abundance column}
 }
 \value{
+A `tidybulk` object
+
+A `tidybulk` object
+
+A `tidybulk` object
+
+A `tidybulk` object
+
 A `tidybulk` object
 }
 \description{

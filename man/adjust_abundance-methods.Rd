@@ -3,9 +3,69 @@
 \docType{methods}
 \name{adjust_abundance}
 \alias{adjust_abundance}
+\alias{adjust_abundance,spec_tbl_df-method}
+\alias{adjust_abundance,tbl_df-method}
+\alias{adjust_abundance,tidybulk-method}
+\alias{adjust_abundance,SummarizedExperiment-method}
+\alias{adjust_abundance,RangedSummarizedExperiment-method}
 \title{Adjust transcript abundance for unwanted variation}
 \usage{
 adjust_abundance(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  log_transform = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{adjust_abundance}{spec_tbl_df}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  log_transform = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{adjust_abundance}{tbl_df}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  log_transform = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{adjust_abundance}{tidybulk}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  log_transform = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{adjust_abundance}{SummarizedExperiment}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  log_transform = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{adjust_abundance}{RangedSummarizedExperiment}(
   .data,
   .formula,
   .sample = NULL,
@@ -35,6 +95,16 @@ adjust_abundance(
 }
 \value{
 A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
+
+A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
+
+A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
+
+A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
+
+A `SummarizedExperiment` object
+
+A `SummarizedExperiment` object
 }
 \description{
 adjust_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.

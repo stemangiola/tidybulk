@@ -3,9 +3,59 @@
 \docType{methods}
 \name{keep_variable}
 \alias{keep_variable}
+\alias{keep_variable,spec_tbl_df-method}
+\alias{keep_variable,tbl_df-method}
+\alias{keep_variable,tidybulk-method}
+\alias{keep_variable,SummarizedExperiment-method}
+\alias{keep_variable,RangedSummarizedExperiment-method}
 \title{Keep variable transcripts}
 \usage{
 keep_variable(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  top = 500,
+  log_transform = TRUE
+)
+
+\S4method{keep_variable}{spec_tbl_df}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  top = 500,
+  log_transform = TRUE
+)
+
+\S4method{keep_variable}{tbl_df}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  top = 500,
+  log_transform = TRUE
+)
+
+\S4method{keep_variable}{tidybulk}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  top = 500,
+  log_transform = TRUE
+)
+
+\S4method{keep_variable}{SummarizedExperiment}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  top = 500,
+  log_transform = TRUE
+)
+
+\S4method{keep_variable}{RangedSummarizedExperiment}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -29,6 +79,16 @@ keep_variable(
 }
 \value{
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `SummarizedExperiment` object
+
+A `SummarizedExperiment` object
 }
 \description{
 keep_variable() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.

@@ -73,6 +73,10 @@ setGeneric("tidybulk", function(.data,
 }
 #' tidybulk
 #' @inheritParams tidybulk
+#' 
+#' @docType methods
+#' @rdname tidybulk-methods
+#' 
 #' @return A `tidybulk` object
 #'
 setMethod("tidybulk", "spec_tbl_df", .tidybulk)
@@ -82,6 +86,10 @@ setMethod("tidybulk", "spec_tbl_df", .tidybulk)
 #' @importFrom purrr map2
 #'
 #' @inheritParams tidybulk
+#' 
+#' @docType methods
+#' @rdname tidybulk-methods
+#' 
 #' @return A `tidybulk` object
 #'
 setMethod("tidybulk", "tbl_df", .tidybulk)
@@ -152,12 +160,20 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 #'
 #'
 #' @inheritParams tidybulk
+#' 
+#' @docType methods
+#' @rdname tidybulk-methods
+#' 
 #' @return A `tidybulk` object
 #'
 setMethod("tidybulk", "SummarizedExperiment", .tidybulk_se)
 
 #' tidybulk
 #' @inheritParams tidybulk
+#' 
+#' @docType methods
+#' @rdname tidybulk-methods
+#' 
 #' @return A `tidybulk` object
 #'
 setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
@@ -197,7 +213,11 @@ setGeneric("tidybulk_SAM_BAM", function(file_names, genome = "hg38", ...)
 	standardGeneric("tidybulk_SAM_BAM"))
 
 #' tidybulk_SAM_BAM
-#' @inheritParams tidybulk_SAM_BAM
+#' @inheritParams tidybulk_SAM_BAM-methods
+#' 
+#' @docType methods
+#' @rdname tidybulk_SAM_BAM-methods
+#' 
 #' @return A `tidybulk` object
 #'
 setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"), 	function(file_names, genome = "hg38", ...)
@@ -340,18 +360,30 @@ setGeneric("scale_abundance", function(.data,
 
 #' scale_abundance
 #' @inheritParams scale_abundance
+#' 
+#' @docType methods
+#' @rdname scale_abundance-methods
+#' 
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
+#' 
+#' @docType methods
+#' @rdname scale_abundance-methods
+#' 
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 setMethod("scale_abundance", "tbl_df", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
+#' 
+#' @docType methods
+#' @rdname scale_abundance-methods
+#' 
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 setMethod("scale_abundance", "tidybulk", .scale_abundance)
@@ -398,6 +430,10 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
+#' 
+#' @docType methods
+#' @rdname scale_abundance-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("scale_abundance",
@@ -406,6 +442,10 @@ setMethod("scale_abundance",
 
 #' scale_abundance
 #' @inheritParams scale_abundance
+#' 
+#' @docType methods
+#' @rdname scale_abundance-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("scale_abundance",
@@ -621,18 +661,30 @@ setGeneric("cluster_elements", function(.data,
 
 #' cluster_elements
 #' @inheritParams cluster_elements
+#' 
+#' @docType methods
+#' @rdname cluster_elements-methods
+#' 
 #' @return A tbl object with additional columns with cluster labels
 #'
 setMethod("cluster_elements", "spec_tbl_df", .cluster_elements)
 
 #' cluster_elements
 #' @inheritParams cluster_elements
+#' 
+#' @docType methods
+#' @rdname cluster_elements-methods
+#' 
 #' @return A tbl object with additional columns with cluster labels
 #'
 setMethod("cluster_elements", "tbl_df", .cluster_elements)
 
 #' cluster_elements
 #' @inheritParams cluster_elements
+#' 
+#' @docType methods
+#' @rdname cluster_elements-methods
+#' 
 #' @return A tbl object with additional columns with cluster labels
 #'
 setMethod("cluster_elements", "tidybulk", .cluster_elements)
@@ -676,6 +728,10 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 
 #' cluster_elements
 #' @inheritParams cluster_elements
+#' 
+#' @docType methods
+#' @rdname cluster_elements-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("cluster_elements",
@@ -684,6 +740,10 @@ setMethod("cluster_elements",
 
 #' cluster_elements
 #' @inheritParams cluster_elements
+#' 
+#' @docType methods
+#' @rdname cluster_elements-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("cluster_elements",
@@ -936,16 +996,28 @@ setGeneric("reduce_dimensions", function(.data,
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
+#' 
+#' @docType methods
+#' @rdname reduce_dimensions-methods
+#' 
 #' @return A tbl object with additional columns for the reduced dimensions
 setMethod("reduce_dimensions", "spec_tbl_df", .reduce_dimensions)
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
+#' 
+#' @docType methods
+#' @rdname reduce_dimensions-methods
+#' 
 #' @return A tbl object with additional columns for the reduced dimensions
 setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
+#' 
+#' @docType methods
+#' @rdname reduce_dimensions-methods
+#' 
 #' @return A tbl object with additional columns for the reduced dimensions
 setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 
@@ -995,6 +1067,10 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
+#' 
+#' @docType methods
+#' @rdname reduce_dimensions-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("reduce_dimensions",
@@ -1003,6 +1079,10 @@ setMethod("reduce_dimensions",
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
+#' 
+#' @docType methods
+#' @rdname reduce_dimensions-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("reduce_dimensions",
@@ -1141,16 +1221,28 @@ setGeneric("rotate_dimensions", function(.data,
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
+#' 
+#' @docType methods
+#' @rdname rotate_dimensions-methods
+#' 
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
+#' 
+#' @docType methods
+#' @rdname rotate_dimensions-methods
+#' 
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
+#' 
+#' @docType methods
+#' @rdname rotate_dimensions-methods
+#' 
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 
@@ -1212,6 +1304,10 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
+#' 
+#' @docType methods
+#' @rdname rotate_dimensions-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("rotate_dimensions",
@@ -1220,6 +1316,10 @@ setMethod("rotate_dimensions",
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
+#' 
+#' @docType methods
+#' @rdname rotate_dimensions-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("rotate_dimensions",
@@ -1363,16 +1463,28 @@ setGeneric("remove_redundancy", function(.data,
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
+#' 
+#' @docType methods
+#' @rdname remove_redundancy-methods
+#' 
 #' @return A tbl object with with dropped recundant elements (e.g., samples).
 setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
+#' 
+#' @docType methods
+#' @rdname remove_redundancy-methods
+#' 
 #' @return A tbl object with with dropped recundant elements (e.g., samples).
 setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
+#' 
+#' @docType methods
+#' @rdname remove_redundancy-methods
+#' 
 #' @return A tbl object with with dropped recundant elements (e.g., samples).
 setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 
@@ -1431,6 +1543,10 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
+#' 
+#' @docType methods
+#' @rdname remove_redundancy-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("remove_redundancy",
@@ -1439,6 +1555,10 @@ setMethod("remove_redundancy",
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
+#' 
+#' @docType methods
+#' @rdname remove_redundancy-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("remove_redundancy",
@@ -1580,16 +1700,28 @@ setGeneric("adjust_abundance", function(.data,
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
+#' 
+#' @docType methods
+#' @rdname adjust_abundance-methods
+#' 
 #' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 setMethod("adjust_abundance", "spec_tbl_df", .adjust_abundance)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
+#' 
+#' @docType methods
+#' @rdname adjust_abundance-methods
+#' 
 #' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 setMethod("adjust_abundance", "tbl_df", .adjust_abundance)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
+#' 
+#' @docType methods
+#' @rdname adjust_abundance-methods
+#' 
 #' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 
@@ -1629,6 +1761,10 @@ setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
+#' 
+#' @docType methods
+#' @rdname adjust_abundance-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("adjust_abundance",
@@ -1637,6 +1773,10 @@ setMethod("adjust_abundance",
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
+#' 
+#' @docType methods
+#' @rdname adjust_abundance-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("adjust_abundance",
@@ -1734,16 +1874,28 @@ setGeneric("aggregate_duplicates", function(.data,
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
+#' 
+#' @docType methods
+#' @rdname aggregate_duplicates-methods
+#' 
 #' @return A `tbl` object with aggregated transcript abundance and annotation
 setMethod("aggregate_duplicates", "spec_tbl_df", .aggregate_duplicates)
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
+#' 
+#' @docType methods
+#' @rdname aggregate_duplicates-methods
+#' 
 #' @return A `tbl` object with aggregated transcript abundance and annotation
 setMethod("aggregate_duplicates", "tbl_df", .aggregate_duplicates)
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
+#' 
+#' @docType methods
+#' @rdname aggregate_duplicates-methods
+#' 
 #' @return A `tbl` object with aggregated transcript abundance and annotation
 setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 
@@ -1780,6 +1932,10 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
+#' 
+#' @docType methods
+#' @rdname aggregate_duplicates-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("aggregate_duplicates",
@@ -1788,6 +1944,10 @@ setMethod("aggregate_duplicates",
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
+#' 
+#' @docType methods
+#' @rdname aggregate_duplicates-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("aggregate_duplicates",
@@ -1912,6 +2072,10 @@ setGeneric("deconvolve_cellularity", function(.data,
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
+#' 
+#' @docType methods
+#' @rdname deconvolve_cellularity-methods
+#' 
 #' @return A `tbl` object including additional columns for each cell type estimated
 setMethod("deconvolve_cellularity",
 					"spec_tbl_df",
@@ -1919,11 +2083,19 @@ setMethod("deconvolve_cellularity",
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
+#' 
+#' @docType methods
+#' @rdname deconvolve_cellularity-methods
+#' 
 #' @return A `tbl` object including additional columns for each cell type estimated
 setMethod("deconvolve_cellularity", "tbl_df", .deconvolve_cellularity)
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
+#' 
+#' @docType methods
+#' @rdname deconvolve_cellularity-methods
+#' 
 #' @return A `tbl` object including additional columns for each cell type estimated
 setMethod("deconvolve_cellularity",
 					"tidybulk",
@@ -1967,6 +2139,10 @@ setMethod("deconvolve_cellularity",
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
+#' 
+#' @docType methods
+#' @rdname deconvolve_cellularity-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("deconvolve_cellularity",
@@ -1975,6 +2151,10 @@ setMethod("deconvolve_cellularity",
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
+#' 
+#' @docType methods
+#' @rdname deconvolve_cellularity-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod(
@@ -2116,16 +2296,28 @@ setGeneric("ensembl_to_symbol", function(.data,
 
 #' ensembl_to_symbol
 #' @inheritParams ensembl_to_symbol
+#' 
+#' @docType methods
+#' @rdname ensembl_to_symbol-methods
+#' 
 #' @return A `tbl` object including additional columns for transcript symbol
 setMethod("ensembl_to_symbol", "spec_tbl_df", .ensembl_to_symbol)
 
 #' ensembl_to_symbol
 #' @inheritParams ensembl_to_symbol
+#' 
+#' @docType methods
+#' @rdname ensembl_to_symbol-methods
+#' 
 #' @return A `tbl` object including additional columns for transcript symbol
 setMethod("ensembl_to_symbol", "tbl_df", .ensembl_to_symbol)
 
 #' ensembl_to_symbol
 #' @inheritParams ensembl_to_symbol
+#' 
+#' @docType methods
+#' @rdname ensembl_to_symbol-methods
+#' 
 #' @return A `tbl` object including additional columns for transcript symbol
 setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 
@@ -2299,6 +2491,10 @@ setGeneric("test_differential_abundance", function(.data,
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
+#' 
+#' @docType methods
+#' @rdname test_differential_abundance-methods
+#' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_abundance",
 					"spec_tbl_df",
@@ -2306,6 +2502,10 @@ setMethod("test_differential_abundance",
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
+#' 
+#' @docType methods
+#' @rdname test_differential_abundance-methods
+#' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_abundance",
 					"tbl_df",
@@ -2313,6 +2513,10 @@ setMethod("test_differential_abundance",
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
+#' 
+#' @docType methods
+#' @rdname test_differential_abundance-methods
+#' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_abundance",
 					"tidybulk",
@@ -2369,6 +2573,10 @@ setMethod("test_differential_abundance",
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
+#' 
+#' @docType methods
+#' @rdname test_differential_abundance-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod(
@@ -2379,6 +2587,10 @@ setMethod(
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
+#' 
+#' @docType methods
+#' @rdname test_differential_abundance-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod(
@@ -2467,16 +2679,28 @@ setGeneric("keep_variable", function(.data,
 
 #' keep_variable
 #' @inheritParams keep_variable
+#' 
+#' @docType methods
+#' @rdname keep_variable-methods
+#' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("keep_variable", "spec_tbl_df", .keep_variable)
 
 #' keep_variable
 #' @inheritParams keep_variable
+#' 
+#' @docType methods
+#' @rdname keep_variable-methods
+#' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("keep_variable", "tbl_df", .keep_variable)
 
 #' keep_variable
 #' @inheritParams keep_variable
+#' 
+#' @docType methods
+#' @rdname keep_variable-methods
+#' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("keep_variable", "tidybulk", .keep_variable)
 
@@ -2513,6 +2737,10 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 
 #' keep_variable
 #' @inheritParams keep_variable
+#' 
+#' @docType methods
+#' @rdname keep_variable-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("keep_variable",
@@ -2521,6 +2749,10 @@ setMethod("keep_variable",
 
 #' keep_variable
 #' @inheritParams keep_variable
+#' 
+#' @docType methods
+#' @rdname keep_variable-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("keep_variable",
@@ -2638,16 +2870,28 @@ setGeneric("keep_abundant", function(.data,
 
 #' keep_abundant
 #' @inheritParams keep_abundant
+#' 
+#' @docType methods
+#' @rdname keep_abundant-methods
+#' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("keep_abundant", "spec_tbl_df", .keep_abundant)
 
 #' keep_abundant
 #' @inheritParams keep_abundant
+#' 
+#' @docType methods
+#' @rdname keep_abundant-methods
+#' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("keep_abundant", "tbl_df", .keep_abundant)
 
 #' keep_abundant
 #' @inheritParams keep_abundant
+#' 
+#' @docType methods
+#' @rdname keep_abundant-methods
+#' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("keep_abundant", "tidybulk", .keep_abundant)
 
@@ -2687,6 +2931,10 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 
 #' keep_abundant
 #' @inheritParams keep_abundant
+#' 
+#' @docType methods
+#' @rdname keep_abundant-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("keep_abundant",
@@ -2695,6 +2943,10 @@ setMethod("keep_abundant",
 
 #' keep_abundant
 #' @inheritParams keep_abundant
+#' 
+#' @docType methods
+#' @rdname keep_abundant-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("keep_abundant",
@@ -2804,6 +3056,10 @@ setGeneric("test_gene_enrichment", function(.data,
 
 #' test_gene_enrichment
 #' @inheritParams test_gene_enrichment
+#'
+#' @docType methods
+#' @rdname test_gene_enrichment-methods
+#' 
 #' @return A `tbl` object
 setMethod("test_gene_enrichment",
 					"spec_tbl_df",
@@ -2811,6 +3067,10 @@ setMethod("test_gene_enrichment",
 
 #' test_gene_enrichment
 #' @inheritParams test_gene_enrichment
+#' 
+#' @docType methods
+#' @rdname test_gene_enrichment-methods
+#' 
 #' @return A `tbl` object
 setMethod("test_gene_enrichment",
 					"tbl_df",
@@ -2818,6 +3078,10 @@ setMethod("test_gene_enrichment",
 
 #' test_gene_enrichment
 #' @inheritParams test_gene_enrichment
+#' 
+#' @docType methods
+#' @rdname test_gene_enrichment-methods
+#' 
 #' @return A `tbl` object
 setMethod("test_gene_enrichment",
 					"tidybulk",
@@ -2925,6 +3189,10 @@ setGeneric("test_gene_overrepresentation", function(.data,
 
 #' test_gene_overrepresentation
 #' @inheritParams test_gene_overrepresentation
+#' 
+#' @docType methods
+#' @rdname test_gene_overrepresentation-methods
+#' 
 #' @return A `tbl` object
 setMethod("test_gene_overrepresentation",
 					"spec_tbl_df",
@@ -2932,6 +3200,10 @@ setMethod("test_gene_overrepresentation",
 
 #' test_gene_overrepresentation
 #' @inheritParams test_gene_overrepresentation
+#' 
+#' @docType methods
+#' @rdname test_gene_overrepresentation-methods
+#' 
 #' @return A `tbl` object
 setMethod("test_gene_overrepresentation",
 					"tbl_df",
@@ -2939,6 +3211,10 @@ setMethod("test_gene_overrepresentation",
 
 #' test_gene_overrepresentation
 #' @inheritParams test_gene_overrepresentation
+#' 
+#' @docType methods
+#' @rdname test_gene_overrepresentation-methods
+#' 
 #' @return A `tbl` object
 setMethod("test_gene_overrepresentation",
 					"tidybulk",
@@ -3009,6 +3285,10 @@ setGeneric("pivot_sample", function(.data,
 
 #' pivot_sample
 #' @inheritParams pivot_sample
+#' 
+#' @docType methods
+#' @rdname pivot_sample-methods
+#' 
 #' @return A `tbl` object
 setMethod("pivot_sample",
 					"spec_tbl_df",
@@ -3016,6 +3296,10 @@ setMethod("pivot_sample",
 
 #' pivot_sample
 #' @inheritParams pivot_sample
+#' 
+#' @docType methods
+#' @rdname pivot_sample-methods
+#' 
 #' @return A `tbl` object
 setMethod("pivot_sample",
 					"tbl_df",
@@ -3023,6 +3307,10 @@ setMethod("pivot_sample",
 
 #' pivot_sample
 #' @inheritParams pivot_sample
+#' 
+#' @docType methods
+#' @rdname pivot_sample-methods
+#' 
 #' @return A `tbl` object
 setMethod("pivot_sample",
 					"tidybulk",
@@ -3092,6 +3380,10 @@ setGeneric("pivot_transcript", function(.data,
 
 #' pivot_transcript
 #' @inheritParams pivot_transcript
+#' 
+#' @docType methods
+#' @rdname pivot_transcript-methods
+#' 
 #' @return A `tbl` object
 setMethod("pivot_transcript",
 					"spec_tbl_df",
@@ -3099,6 +3391,10 @@ setMethod("pivot_transcript",
 
 #' pivot_transcript
 #' @inheritParams pivot_transcript
+#' 
+#' @docType methods
+#' @rdname pivot_transcript-methods
+#' 
 #' @return A `tbl` object
 setMethod("pivot_transcript",
 					"tbl_df",
@@ -3106,6 +3402,10 @@ setMethod("pivot_transcript",
 
 #' pivot_transcript
 #' @inheritParams pivot_transcript
+#' 
+#' @docType methods
+#' @rdname pivot_transcript-methods
+#' 
 #' @return A `tbl` object
 setMethod("pivot_transcript",
 					"tidybulk",
@@ -3208,16 +3508,28 @@ setGeneric("impute_abundance", function(.data,
 
 #' impute_abundance
 #' @inheritParams impute_abundance
+#' 
+#' @docType methods
+#' @rdname impute_abundance-methods
+#' 
 #' @return A `tbl` with imputed abundnce
 setMethod("impute_abundance", "spec_tbl_df", .impute_abundance)
 
 #' impute_abundance
 #' @inheritParams impute_abundance
+#' 
+#' @docType methods
+#' @rdname impute_abundance-methods
+#' 
 #' @return A `tbl` with imputed abundnce
 setMethod("impute_abundance", "tbl_df", .impute_abundance)
 
 #' impute_abundance
 #' @inheritParams impute_abundance
+#' 
+#' @docType methods
+#' @rdname impute_abundance-methods
+#' 
 #' @return A `tbl` with imputed abundnce
 setMethod("impute_abundance", "tidybulk", .impute_abundance)
 
@@ -3251,6 +3563,10 @@ setMethod("impute_abundance", "tidybulk", .impute_abundance)
 
 #' impute_abundance
 #' @inheritParams impute_abundance
+#' 
+#' @docType methods
+#' @rdname impute_abundance-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("impute_abundance",
@@ -3259,6 +3575,10 @@ setMethod("impute_abundance",
 
 #' impute_abundance
 #' @inheritParams impute_abundance
+#' 
+#' @docType methods
+#' @rdname impute_abundance-methods
+#' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("impute_abundance",

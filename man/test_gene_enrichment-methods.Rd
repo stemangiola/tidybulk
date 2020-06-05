@@ -3,9 +3,45 @@
 \docType{methods}
 \name{test_gene_enrichment}
 \alias{test_gene_enrichment}
+\alias{test_gene_enrichment,spec_tbl_df-method}
+\alias{test_gene_enrichment,tbl_df-method}
+\alias{test_gene_enrichment,tidybulk-method}
 \title{analyse gene enrichment with EGSEA}
 \usage{
 test_gene_enrichment(
+  .data,
+  .formula,
+  .sample = NULL,
+  .entrez,
+  .abundance = NULL,
+  .contrasts = NULL,
+  species,
+  cores = 10
+)
+
+\S4method{test_gene_enrichment}{spec_tbl_df}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .entrez,
+  .abundance = NULL,
+  .contrasts = NULL,
+  species,
+  cores = 10
+)
+
+\S4method{test_gene_enrichment}{tbl_df}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .entrez,
+  .abundance = NULL,
+  .contrasts = NULL,
+  species,
+  cores = 10
+)
+
+\S4method{test_gene_enrichment}{tidybulk}(
   .data,
   .formula,
   .sample = NULL,
@@ -34,6 +70,12 @@ test_gene_enrichment(
 \item{cores}{An integer. The number of cores available}
 }
 \value{
+A `tbl` object
+
+A `tbl` object
+
+A `tbl` object
+
 A `tbl` object
 }
 \description{

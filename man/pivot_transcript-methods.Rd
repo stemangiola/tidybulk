@@ -3,9 +3,18 @@
 \docType{methods}
 \name{pivot_transcript}
 \alias{pivot_transcript}
+\alias{pivot_transcript,spec_tbl_df-method}
+\alias{pivot_transcript,tbl_df-method}
+\alias{pivot_transcript,tidybulk-method}
 \title{Extract transcript-wise information}
 \usage{
 pivot_transcript(.data, .transcript = NULL)
+
+\S4method{pivot_transcript}{spec_tbl_df}(.data, .transcript = NULL)
+
+\S4method{pivot_transcript}{tbl_df}(.data, .transcript = NULL)
+
+\S4method{pivot_transcript}{tidybulk}(.data, .transcript = NULL)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
@@ -13,6 +22,12 @@ pivot_transcript(.data, .transcript = NULL)
 \item{.transcript}{The name of the transcript column}
 }
 \value{
+A `tbl` object
+
+A `tbl` object
+
+A `tbl` object
+
 A `tbl` object
 }
 \description{

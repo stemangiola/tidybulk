@@ -3,9 +3,18 @@
 \docType{methods}
 \name{pivot_sample}
 \alias{pivot_sample}
+\alias{pivot_sample,spec_tbl_df-method}
+\alias{pivot_sample,tbl_df-method}
+\alias{pivot_sample,tidybulk-method}
 \title{Extract sample-wise information}
 \usage{
 pivot_sample(.data, .sample = NULL)
+
+\S4method{pivot_sample}{spec_tbl_df}(.data, .sample = NULL)
+
+\S4method{pivot_sample}{tbl_df}(.data, .sample = NULL)
+
+\S4method{pivot_sample}{tidybulk}(.data, .sample = NULL)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
@@ -13,6 +22,12 @@ pivot_sample(.data, .sample = NULL)
 \item{.sample}{The name of the sample column}
 }
 \value{
+A `tbl` object
+
+A `tbl` object
+
+A `tbl` object
+
 A `tbl` object
 }
 \description{

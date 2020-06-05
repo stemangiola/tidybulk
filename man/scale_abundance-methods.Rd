@@ -3,9 +3,79 @@
 \docType{methods}
 \name{scale_abundance}
 \alias{scale_abundance}
+\alias{scale_abundance,spec_tbl_df-method}
+\alias{scale_abundance,tbl_df-method}
+\alias{scale_abundance,tidybulk-method}
+\alias{scale_abundance,SummarizedExperiment-method}
+\alias{scale_abundance,RangedSummarizedExperiment-method}
 \title{Scale the counts of transcripts/genes}
 \usage{
 scale_abundance(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
+  method = "TMM",
+  reference_selection_function = median,
+  action = "add"
+)
+
+\S4method{scale_abundance}{spec_tbl_df}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
+  method = "TMM",
+  reference_selection_function = median,
+  action = "add"
+)
+
+\S4method{scale_abundance}{tbl_df}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
+  method = "TMM",
+  reference_selection_function = median,
+  action = "add"
+)
+
+\S4method{scale_abundance}{tidybulk}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
+  method = "TMM",
+  reference_selection_function = median,
+  action = "add"
+)
+
+\S4method{scale_abundance}{SummarizedExperiment}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  factor_of_interest = NULL,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
+  method = "TMM",
+  reference_selection_function = median,
+  action = "add"
+)
+
+\S4method{scale_abundance}{RangedSummarizedExperiment}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -41,6 +111,16 @@ scale_abundance(
 }
 \value{
 A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+
+A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+
+A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+
+A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+
+A `SummarizedExperiment` object
+
+A `SummarizedExperiment` object
 }
 \description{
 scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).

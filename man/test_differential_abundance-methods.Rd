@@ -3,9 +3,99 @@
 \docType{methods}
 \name{test_differential_abundance}
 \alias{test_differential_abundance}
+\alias{test_differential_abundance,spec_tbl_df-method}
+\alias{test_differential_abundance,tbl_df-method}
+\alias{test_differential_abundance,tidybulk-method}
+\alias{test_differential_abundance,SummarizedExperiment-method}
+\alias{test_differential_abundance,RangedSummarizedExperiment-method}
 \title{Add differential transcription information to a tbl using edgeR.}
 \usage{
 test_differential_abundance(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  .contrasts = NULL,
+  method = "edgeR_quasi_likelihood",
+  significance_threshold = 0.05,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
+  fill_missing_values = FALSE,
+  scaling_method = "TMM",
+  omit_contrast_in_colnames = FALSE,
+  action = "add"
+)
+
+\S4method{test_differential_abundance}{spec_tbl_df}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  .contrasts = NULL,
+  method = "edgeR_quasi_likelihood",
+  significance_threshold = 0.05,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
+  fill_missing_values = FALSE,
+  scaling_method = "TMM",
+  omit_contrast_in_colnames = FALSE,
+  action = "add"
+)
+
+\S4method{test_differential_abundance}{tbl_df}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  .contrasts = NULL,
+  method = "edgeR_quasi_likelihood",
+  significance_threshold = 0.05,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
+  fill_missing_values = FALSE,
+  scaling_method = "TMM",
+  omit_contrast_in_colnames = FALSE,
+  action = "add"
+)
+
+\S4method{test_differential_abundance}{tidybulk}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  .contrasts = NULL,
+  method = "edgeR_quasi_likelihood",
+  significance_threshold = 0.05,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
+  fill_missing_values = FALSE,
+  scaling_method = "TMM",
+  omit_contrast_in_colnames = FALSE,
+  action = "add"
+)
+
+\S4method{test_differential_abundance}{SummarizedExperiment}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  .contrasts = NULL,
+  method = "edgeR_quasi_likelihood",
+  significance_threshold = 0.05,
+  minimum_counts = 10,
+  minimum_proportion = 0.7,
+  fill_missing_values = FALSE,
+  scaling_method = "TMM",
+  omit_contrast_in_colnames = FALSE,
+  action = "add"
+)
+
+\S4method{test_differential_abundance}{RangedSummarizedExperiment}(
   .data,
   .formula,
   .sample = NULL,
@@ -53,6 +143,16 @@ test_differential_abundance(
 }
 \value{
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `SummarizedExperiment` object
+
+A `SummarizedExperiment` object
 }
 \description{
 test_differential_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.

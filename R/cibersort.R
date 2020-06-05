@@ -37,7 +37,7 @@
 #' @importFrom stats cor
 #'
 #'
-#Core algorithm
+#' Core algorithm
 CoreAlg <- function(X, y, cores = 3){
 
 
@@ -137,6 +137,8 @@ CoreAlg <- function(X, y, cores = 3){
 }
 
 #' @importFrom stats sd
+#' 
+#' @keywords internal
 #'
 doPerm <- function(perm, X, Y, cores = 3){
 
@@ -169,6 +171,9 @@ doPerm <- function(perm, X, Y, cores = 3){
 }
 
 #' @importFrom stats sd
+#' 
+#' @keywords internal
+#' 
 my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
 
 

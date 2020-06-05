@@ -19,3 +19,4 @@ A tbl
 \description{
 Check whether there are NA counts
 }
+\keyword{internal}

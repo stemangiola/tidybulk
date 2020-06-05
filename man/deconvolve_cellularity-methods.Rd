@@ -3,9 +3,69 @@
 \docType{methods}
 \name{deconvolve_cellularity}
 \alias{deconvolve_cellularity}
+\alias{deconvolve_cellularity,spec_tbl_df-method}
+\alias{deconvolve_cellularity,tbl_df-method}
+\alias{deconvolve_cellularity,tidybulk-method}
+\alias{deconvolve_cellularity,SummarizedExperiment-method}
+\alias{deconvolve_cellularity,RangedSummarizedExperiment-method}
 \title{Get cell type proportions from samples}
 \usage{
 deconvolve_cellularity(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  reference = X_cibersort,
+  method = "cibersort",
+  action = "add",
+  ...
+)
+
+\S4method{deconvolve_cellularity}{spec_tbl_df}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  reference = X_cibersort,
+  method = "cibersort",
+  action = "add",
+  ...
+)
+
+\S4method{deconvolve_cellularity}{tbl_df}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  reference = X_cibersort,
+  method = "cibersort",
+  action = "add",
+  ...
+)
+
+\S4method{deconvolve_cellularity}{tidybulk}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  reference = X_cibersort,
+  method = "cibersort",
+  action = "add",
+  ...
+)
+
+\S4method{deconvolve_cellularity}{SummarizedExperiment}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  reference = X_cibersort,
+  method = "cibersort",
+  action = "add",
+  ...
+)
+
+\S4method{deconvolve_cellularity}{RangedSummarizedExperiment}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -35,6 +95,16 @@ deconvolve_cellularity(
 }
 \value{
 A `tbl` object including additional columns for each cell type estimated
+
+A `tbl` object including additional columns for each cell type estimated
+
+A `tbl` object including additional columns for each cell type estimated
+
+A `tbl` object including additional columns for each cell type estimated
+
+A `SummarizedExperiment` object
+
+A `SummarizedExperiment` object
 }
 \description{
 deconvolve_cellularity() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
