@@ -1,7 +1,7 @@
 Type: Package
 Package: tidybulk
 Title: Brings transcriptomics to the tidyverse 
-Version: 1.2.1
+Version: 1.0.1
 Authors@R: person("Stefano", "Mangiola", email = "mangiolastefano@gmail.com",
                   role = c("aut", "cre"))
 Description: This is a collection of utility functions that allow
