@@ -17,3 +17,4 @@ A data frame
 \description{
 Perform linear equation system analysis through llsr
 }
+\keyword{internal}

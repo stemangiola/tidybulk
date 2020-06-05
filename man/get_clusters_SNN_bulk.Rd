@@ -35,3 +35,4 @@ A tibble with additional columns
 \description{
 Get SNN shared nearest neighbour clusters to a tibble
 }
+\keyword{internal}

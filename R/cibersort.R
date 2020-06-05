@@ -29,7 +29,10 @@
 # License: http://cibersort.stanford.edu/CIBERSORT_License.txt
 
 
-# Core algorithm of Cibersort
+#' Core algorithm of Cibersort
+#' 
+#' @keywords internal
+#' 
 #' @importFrom parallel mclapply
 #' @importFrom stats cor
 #'

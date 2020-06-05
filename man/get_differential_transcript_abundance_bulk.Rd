@@ -53,3 +53,4 @@ A tibble with edgeR results
 \description{
 Get differential transcription information to a tibble using edgeR.
 }
+\keyword{internal}

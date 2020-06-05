@@ -41,3 +41,4 @@ A list including the filtered data frame and the normalization factors
 \description{
 Calculate the norm factor with calcNormFactor from limma
 }
+\keyword{internal}

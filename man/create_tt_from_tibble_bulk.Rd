@@ -29,3 +29,4 @@ A tibble with an additional column
 \description{
 Create tt object from tibble
 }
+\keyword{internal}

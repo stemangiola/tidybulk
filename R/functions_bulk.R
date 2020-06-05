@@ -1,4 +1,6 @@
 #' Create tt object from tibble
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr %>%
@@ -36,6 +38,8 @@ create_tt_from_tibble_bulk = function(.data,
 
 
 #' Convert bam/sam files to a tidy gene transcript counts data frame
+#' 
+#' @keywords internal
 #'
 #' @importFrom purrr reduce
 #'
@@ -115,6 +119,8 @@ create_tt_from_bam_sam_bulk <-
 	}
 
 #' Drop lowly tanscribed genes for TMM normalization
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -198,6 +204,8 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 }
 
 #' Calculate the norm factor with calcNormFactor from limma
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -296,6 +304,8 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 }
 
 #' Get a tibble with scaled counts using TMM
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -448,6 +458,8 @@ get_scaled_counts_bulk <- function(.data,
 }
 
 #' Get differential transcription information to a tibble using edgeR.
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -684,56 +696,11 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		}
 }
 
-#' Get ENTREZ id from gene SYMBOL
-#'
-#' @param .data A tt or tbl object.
-#' @param .transcript A character. The name of the ene symbol column.
-#' @param .sample The name of the sample column
-#'
-#' @return A tbl
-#'
-#' @examples
-#'
-#' symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
-#'
-#' @export
-#'
-symbol_to_entrez = function(.data,
-														.transcript = NULL,
-														.sample = NULL) {
-	# Get column names
-	.transcript = enquo(.transcript)
-	.sample = enquo(.sample)
-	col_names = get_sample_transcript(.data, .sample, .transcript)
-	.transcript = col_names$.transcript
 
-	# Check if package is installed, otherwise install
-	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
-		writeLines("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Hs.eg.db", ask = FALSE)
-	}
-
-	.data %>%
-		dplyr::left_join(
-			# Get entrez mapping 1:1
-			AnnotationDbi::mapIds(
-				org.Hs.eg.db::org.Hs.eg.db,
-				.data %>% distinct(!!.transcript) %>% pull(1),
-				'ENTREZID',
-				'SYMBOL'
-			) %>%
-				enframe(name = quo_name(.transcript), value = "entrez") %>%
-				filter(entrez %>% is.na %>% `!`) %>%
-				group_by(!!.transcript) %>%
-				slice(1) %>%
-				ungroup()
-		)
-
-}
 
 #' Get gene enrichment analyses using EGSEA
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -916,6 +883,8 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 }
 
 #' Get K-mean clusters to a tibble
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -983,6 +952,8 @@ get_clusters_kmeans_bulk <-
 	}
 
 #' Get SNN shared nearest neighbour clusters to a tibble
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -1062,6 +1033,8 @@ get_clusters_SNN_bulk <-
 	}
 
 #' Get dimensionality information to a tibble using MDS
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -1146,6 +1119,8 @@ get_reduced_dimensions_MDS_bulk <-
 	}
 
 #' Get principal component information to a tibble using PCA
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -1286,6 +1261,8 @@ get_reduced_dimensions_PCA_bulk <-
 	}
 
 #' Get principal component information to a tibble using tSNE
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -1399,6 +1376,8 @@ get_reduced_dimensions_TSNE_bulk <-
 	}
 
 #' Get rotated dimensions of two principal components or MDS dimension of choice, of an angle
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -1480,6 +1459,8 @@ get_rotated_dimensions =
 #' Aggregates multiple counts from the same samples (e.g., from isoforms)
 #' This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns
 #'
+#' @keywords internal
+#' 
 #' @importFrom dplyr summarise_all
 #' @importFrom dplyr bind_rows
 #' @importFrom magrittr %$%
@@ -1623,6 +1604,8 @@ aggregate_duplicated_transcripts_bulk =
 
 #' Drop redundant elements (e.g., samples) for which feature (e.g., genes) aboundances are correlated
 #'
+#' @keywords internal
+#' 
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
@@ -1742,6 +1725,8 @@ remove_redundancy_elements_through_correlation <- function(.data,
 
 #' Identifies the closest pairs in a MDS contaxt and return one of them
 #'
+#' @keywords internal
+#' 
 #' @importFrom stats setNames
 #' @importFrom stats dist
 #'
@@ -1889,6 +1874,8 @@ remove_redundancy_elements_though_reduced_dimensions <-
 # }
 
 #' get_symbol_from_ensembl
+#' 
+#' @keywords internal
 #'
 #' @description Get transcript column from ensembl gene id
 #'
@@ -1929,6 +1916,8 @@ get_symbol_from_ensembl <-
 	}
 
 #' Perform linear equation system analysis through llsr
+#' 
+#' @keywords internal
 #'
 #' @importFrom stats lsfit
 #'
@@ -1955,6 +1944,8 @@ run_llsr = function(mix, reference) {
 
 
 #' Get cell type proportions from cibersort
+#' 
+#' @keywords internal
 #'
 #' @import parallel
 #' @import preprocessCore
@@ -2073,6 +2064,8 @@ get_cell_type_proportions = function(.data,
 }
 
 #' Get adjusted count for some batch effect
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -2217,6 +2210,8 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 }
 
 #' Identify variable genes for dimensionality reduction
+#' 
+#' @keywords internal
 #'
 #' @param .data A tibble
 #' @param .sample A character name of the sample column
@@ -2269,7 +2264,9 @@ keep_variable_transcripts = function(.data,
 	.data %>% filter(!!.transcript %in% variable_trancripts)
 }
 
-#'tidybulk_to_SummarizedExperiment
+#' tidybulk_to_SummarizedExperiment
+#'
+#' @keywords internal
 #'
 #' @importFrom utils data
 #'
@@ -2362,6 +2359,7 @@ tidybulk_to_SummarizedExperiment = function(.data,
 }
 
 #' Get matrix from tibble
+#' 
 #'
 #' @import dplyr
 #' @import tidyr
@@ -2417,6 +2415,8 @@ as_matrix <- function(tbl,
 
 #' This function is needed for DE in case the matrix is not rectangular, but includes NA
 #'
+#' @keywords internal
+#' 
 #' @import dplyr
 #' @import tidyr
 #' @import tibble

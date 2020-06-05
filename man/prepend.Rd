@@ -19,3 +19,4 @@ An array
 \description{
 From rlang deprecated
 }
+\keyword{internal}

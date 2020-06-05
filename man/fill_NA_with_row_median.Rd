@@ -15,3 +15,4 @@ A matrix
 \description{
 This function is needed for DE in case the matrix is not rectangular, but includes NA
 }
+\keyword{internal}

@@ -26,3 +26,4 @@ A SummarizedExperiment
 \description{
 tidybulk_to_SummarizedExperiment
 }
+\keyword{internal}

@@ -38,3 +38,4 @@ A tibble with additional rotated columns
 \description{
 Get rotated dimensions of two principal components or MDS dimension of choice, of an angle
 }
+\keyword{internal}

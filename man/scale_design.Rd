@@ -17,3 +17,4 @@ A tibble
 \description{
 Scale design matrix
 }
+\keyword{internal}

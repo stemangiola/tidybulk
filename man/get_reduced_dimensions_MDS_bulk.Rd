@@ -38,3 +38,4 @@ A tibble with additional columns
 \description{
 Get dimensionality information to a tibble using MDS
 }
+\keyword{internal}

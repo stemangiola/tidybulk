@@ -29,3 +29,4 @@ A tibble with pairs dropped
 \description{
 Identifies the closest pairs in a MDS contaxt and return one of them
 }
+\keyword{internal}

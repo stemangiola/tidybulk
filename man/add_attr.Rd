@@ -19,3 +19,4 @@ A tibble with an additional attribute
 \description{
 Add attribute to abject
 }
+\keyword{internal}

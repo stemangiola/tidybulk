@@ -17,3 +17,4 @@ A tibble with an additional attribute
 \description{
 Add class to abject
 }
+\keyword{internal}

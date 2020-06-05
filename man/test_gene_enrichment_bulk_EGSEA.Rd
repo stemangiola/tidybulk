@@ -38,3 +38,4 @@ A tibble with edgeR results
 \description{
 Get gene enrichment analyses using EGSEA
 }
+\keyword{internal}

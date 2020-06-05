@@ -34,3 +34,4 @@ A tibble with aggregated genes and annotation
 Aggregates multiple counts from the same samples (e.g., from isoforms)
 This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns
 }
+\keyword{internal}

@@ -41,3 +41,4 @@ A tibble including additional columns
 \description{
 Get a tibble with scaled counts using TMM
 }
+\keyword{internal}

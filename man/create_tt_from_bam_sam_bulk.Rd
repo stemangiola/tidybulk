@@ -19,3 +19,4 @@ A tibble of gene counts
 \description{
 Convert bam/sam files to a tidy gene transcript counts data frame
 }
+\keyword{internal}

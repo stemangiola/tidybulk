@@ -35,3 +35,4 @@ A tibble with adjusted counts
 \description{
 Get adjusted count for some batch effect
 }
+\keyword{internal}

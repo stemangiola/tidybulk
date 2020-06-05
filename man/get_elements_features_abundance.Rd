@@ -29,3 +29,4 @@ A list of column enquo or error
 \description{
 Get column names either from user or from attributes
 }
+\keyword{internal}

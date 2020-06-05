@@ -1,6 +1,8 @@
 
 
 #' Check whether there are NA counts
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -28,6 +30,8 @@ check_if_wrong_input = function(.data, list_input, expected_type) {
 }
 
 #' Check whether there are duplicated genes/transcripts
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -65,6 +69,8 @@ check_if_duplicated_genes <- function(.data,
 }
 
 #' Check whether there are NA counts
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr

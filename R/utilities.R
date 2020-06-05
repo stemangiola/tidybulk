@@ -8,6 +8,8 @@ my_stop = function() {
 
 #' This is a generalisation of ifelse that acceots an object and return an objects
 #'
+#' @keywords internal
+#' 
 #' @import dplyr
 #' @import tidyr
 #' @importFrom purrr as_mapper
@@ -30,6 +32,8 @@ ifelse_pipe = function(.x, .p, .f1, .f2 = NULL) {
 
 #' This is a generalisation of ifelse that acceots an object and return an objects
 #'
+#' @keywords internal
+#' 
 #' @import dplyr
 #' @import tidyr
 #'
@@ -67,6 +71,8 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
 
 #' Check whether a numeric vector has been log transformed
 #'
+#' @keywords internal
+#' 
 #' @param x A numeric vector
 #' @param .abundance A character name of the transcript/gene abundance column
 #'
@@ -83,6 +89,8 @@ error_if_log_transformed <- function(x, .abundance) {
 
 #' Check whether there are duplicated genes/transcripts
 #'
+#' @keywords internal
+#' 
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
@@ -122,6 +130,8 @@ error_if_duplicated_genes <- function(.data,
 
 #' Check whether there are NA counts
 #'
+#' @keywords internal
+#' 
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
@@ -144,6 +154,8 @@ error_if_counts_is_na = function(.data, .abundance) {
 
 #' Check whether there are NA counts
 #'
+#' @keywords internal
+#' 
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
@@ -178,6 +190,8 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
 
 #' .formula parser
 #'
+#' @keywords internal
+#' 
 #' @importFrom stats terms
 #'
 #' @param fm a formula
@@ -193,6 +207,8 @@ parse_formula <- function(fm) {
 
 #' Scale design matrix
 #'
+#' @keywords internal
+#' 
 #' @importFrom stats setNames
 #' @importFrom stats cov
 #'
@@ -289,6 +305,8 @@ drop_internals = function(.data){
 }
 
 #' Add attribute to abject
+#' 
+#' @keywords internal
 #'
 #'
 #' @param var A tibble
@@ -302,6 +320,8 @@ add_attr = function(var, attribute, name) {
 }
 
 #' Drop attribute to abject
+#' 
+#' @keywords internal
 #'
 #'
 #' @param var A tibble
@@ -314,18 +334,23 @@ drop_attr = function(var, name) {
 }
 
 #' Remove class to abject
+#' 
+#' @keywords internal
 #'
 #'
 #' @param var A tibble
 #' @param name A character name of the class
 #'
 #' @return A tibble with an additional attribute
+#' @keywords internal
 drop_class = function(var, name) {
   class(var) <- class(var)[!class(var)%in%name]
   var
 }
 
 #' From rlang deprecated
+#' 
+#' @keywords internal
 #'
 #' @param x An array
 #' @param values An array
@@ -346,6 +371,8 @@ prepend = function (x, values, before = 1)
 }
 
 #' Add class to abject
+#' 
+#' @keywords internal
 #'
 #' @param var A tibble
 #' @param name A character name of the attribute
@@ -359,6 +386,8 @@ add_class = function(var, name) {
 }
 
 #' Get column names either from user or from attributes
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -390,6 +419,8 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
 }
 
 #' Get column names either from user or from attributes
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -415,6 +446,8 @@ get_sample_counts = function(.data, .sample, .abundance){
 }
 
 #' Get column names either from user or from attributes
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -434,6 +467,8 @@ get_sample = function(.data, .sample){
 }
 
 #' Get column names either from user or from attributes
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -463,6 +498,8 @@ get_transcript = function(.data, .transcript){
 
 
 #' Get column names either from user or from attributes
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -489,6 +526,8 @@ get_sample_transcript = function(.data, .sample, .transcript){
 }
 
 #' Get column names either from user or from attributes
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -510,6 +549,8 @@ get_sample = function(.data, .sample){
 
 
 #' Get column names either from user or from attributes
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -561,6 +602,8 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
 }
 
 #' Get column names either from user or from attributes
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -606,6 +649,8 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
 }
 
 #' Get column names either from user or from attributes
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -648,6 +693,8 @@ get_elements = function(.data, .element, of_samples = TRUE){
 }
 
 #' Get column names either from user or from attributes
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -692,6 +739,8 @@ get_abundance_norm_if_exists = function(.data, .abundance){
 }
 
 #' Sub function of remove_redundancy_elements_though_reduced_dimensions
+#' 
+#' @keywords internal
 #'
 #' @importFrom stats dist
 #' @importFrom utils head
@@ -721,6 +770,8 @@ select_closest_pairs = function(df) {
 
 #' This function is needed for DE in case the matrix is not rectangular, but includes NA
 #'
+#' @keywords internal
+#' 
 #' @param .matrix A matrix
 #'
 #' @return A matrix
@@ -748,6 +799,8 @@ tibble::tibble
 tibble::as_tibble
 
 #' get_x_y_annotation_columns
+#' 
+#' @keywords internal
 #'
 #' @importFrom magrittr equals
 #'

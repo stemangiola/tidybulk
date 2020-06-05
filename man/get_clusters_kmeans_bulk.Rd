@@ -35,3 +35,4 @@ A tibble with additional columns
 \description{
 Get K-mean clusters to a tibble
 }
+\keyword{internal}

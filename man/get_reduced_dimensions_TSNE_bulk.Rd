@@ -41,3 +41,4 @@ A tibble with additional columns
 \description{
 Get principal component information to a tibble using tSNE
 }
+\keyword{internal}

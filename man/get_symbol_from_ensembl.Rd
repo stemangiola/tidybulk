@@ -25,3 +25,4 @@ A tibble with added annotation
 \description{
 Get transcript column from ensembl gene id
 }
+\keyword{internal}

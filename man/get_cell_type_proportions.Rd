@@ -35,3 +35,4 @@ A tibble including additional columns
 \description{
 Get cell type proportions from cibersort
 }
+\keyword{internal}

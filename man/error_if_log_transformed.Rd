@@ -17,3 +17,4 @@ NA
 \description{
 Check whether a numeric vector has been log transformed
 }
+\keyword{internal}

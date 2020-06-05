@@ -15,3 +15,4 @@ A tibble with pairs to drop
 \description{
 Sub function of remove_redundancy_elements_though_reduced_dimensions
 }
+\keyword{internal}

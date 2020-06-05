@@ -29,3 +29,4 @@ A list
 \description{
 This function recognise what are the sample-wise columns and transcrip-wise columns
 }
+\keyword{internal}

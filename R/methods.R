@@ -1983,7 +1983,54 @@ setMethod(
 	.deconvolve_cellularity_se
 )
 
-
+#' Get ENTREZ id from gene SYMBOL
+#'
+#' @param .data A tt or tbl object.
+#' @param .transcript A character. The name of the ene symbol column.
+#' @param .sample The name of the sample column
+#'
+#' @return A tbl
+#'
+#' @examples
+#'
+#' symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+#'
+#' @export
+#'
+symbol_to_entrez = function(.data,
+														.transcript = NULL,
+														.sample = NULL) {
+	# Get column names
+	.transcript = enquo(.transcript)
+	.sample = enquo(.sample)
+	col_names = get_sample_transcript(.data, .sample, .transcript)
+	.transcript = col_names$.transcript
+	
+	# Check if package is installed, otherwise install
+	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+		writeLines("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("org.Hs.eg.db", ask = FALSE)
+	}
+	
+	.data %>%
+		dplyr::left_join(
+			# Get entrez mapping 1:1
+			AnnotationDbi::mapIds(
+				org.Hs.eg.db::org.Hs.eg.db,
+				.data %>% distinct(!!.transcript) %>% pull(1),
+				'ENTREZID',
+				'SYMBOL'
+			) %>%
+				enframe(name = quo_name(.transcript), value = "entrez") %>%
+				filter(entrez %>% is.na %>% `!`) %>%
+				group_by(!!.transcript) %>%
+				slice(1) %>%
+				ungroup()
+		)
+	
+}
 
 
 #' Add transcript symbol column from ensembl id for human and mouse data

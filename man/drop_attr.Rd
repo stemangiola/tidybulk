@@ -17,3 +17,4 @@ A tibble with an additional attribute
 \description{
 Drop attribute to abject
 }
+\keyword{internal}
