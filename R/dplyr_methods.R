@@ -44,13 +44,6 @@
 #' @examples
 #' `%>%` = magrittr::`%>%`
 #' arrange(mtcars, cyl, disp)
-#' arrange(mtcars, desc(disp))
-#'
-#' # grouped arrange ignores groups
-#' by_cyl <- mtcars %>% group_by(cyl)
-#' by_cyl %>% arrange(desc(wt))
-#' # Unless you specifically ask:
-#' by_cyl %>% arrange(desc(wt), .by_group = TRUE)
 arrange <- function(.data, ..., .by_group = FALSE) {
 	UseMethod("arrange")
 }
@@ -387,97 +380,6 @@ filter.tidybulk <- function (.data, ..., .preserve = FALSE)
 #' @inheritParams arrange
 #' @param ... In `group_by()`, variables or computations to group by.
 #'   In `ungroup()`, variables to remove from the grouping.
-#' @return A [grouped data frame][grouped_df()], unless the combination of `...` and `add`
-#'   yields a non empty set of grouping columns, a regular (ungrouped) data frame
-#'   otherwise.
-#' @section Methods:
-#' These function are **generic**s, which means that packages can provide
-#' implementations (methods) for other classes. See the documentation of
-#' individual methods for extra arguments and differences in behaviour.
-#'
-#' Methods available in currently loaded packages:
-#'
-#' @export
-#' @examples
-#' `%>%` = magrittr::`%>%`
-#' by_cyl <- mtcars %>% group_by(cyl)
-#'
-#' # grouping doesn't change how the data looks (apart from listing
-#' # how it's grouped):
-#' by_cyl
-#'
-#' # It changes how it acts with the other dplyr verbs:
-#' by_cyl %>% summarise(
-#'   disp = mean(disp),
-#'   hp = mean(hp)
-#' )
-#' by_cyl %>% filter(disp == max(disp))
-#'
-#' # Each call to summarise() removes a layer of grouping
-#' `%>%` = magrittr::`%>%`
-#' by_vs_am <- mtcars %>% group_by(vs, am)
-#' by_vs <- by_vs_am %>% summarise(n = n())
-#' by_vs
-#' by_vs %>% summarise(n = sum(n))
-#'
-#' # To removing grouping, use ungroup
-#' by_vs %>%
-#'   ungroup() %>%
-#'   summarise(n = sum(n))
-#'
-#' # You can group by expressions: this is just short-hand for
-#' # a mutate() followed by a group_by()
-#' mtcars %>% group_by(vsam = vs + am)
-#'
-#'
-#'
-#'
-#' # when factors are involved, groups can be empty
-#' tbl <- tibble(
-#'   x = 1:10,
-#'   y = factor(rep(c("a", "c"), each  = 5), levels = c("a", "b", "c"))
-#' )
-#'
-############# START ADDED tidybulk #####################################
-#' @export
-filter <- function (.data, ..., .preserve = FALSE)  {
-	UseMethod("filter")
-}
-
-#' @export
-filter.default <-  function (.data, ..., .preserve = FALSE)
-{
-	dplyr::filter(.data, ..., .preserve = .preserve)
-}
-
-#' @export
-filter.tidybulk <- function (.data, ..., .preserve = FALSE)
-{
-	.data %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::filter(..., .preserve = .preserve) %>%
-
-		# Attach attributes
-		reattach_internals(.data) %>%
-
-		# Add class
-		add_class("tt") %>%
-		add_class("tidybulk")
-
-}
-############# END ADDED tidybulk #####################################
-
-#' Group by one or more variables
-#'
-#' @description
-#' Most data operations are done on groups defined by variables.
-#' `group_by()` takes an existing tbl and converts it into a grouped tbl
-#' where operations are performed "by group". `ungroup()` removes grouping.
-#'
-#' @family grouping functions
-#' @inheritParams arrange
-#' @param ... In `group_by()`, variables or computations to group by.
-#'   In `ungroup()`, variables to remove from the grouping.
 #' @param .add When `FALSE`, the default, `group_by()` will
 #'   override existing groups. To add to the existing groups, use
 #'   `.add = TRUE`.
@@ -502,40 +404,7 @@ filter.tidybulk <- function (.data, ..., .preserve = FALSE)
 #' `%>%` = magrittr::`%>%`
 #' by_cyl <- mtcars %>% group_by(cyl)
 #'
-#' # grouping doesn't change how the data looks (apart from listing
-#' # how it's grouped):
-#' by_cyl
-#'
-#' # It changes how it acts with the other dplyr verbs:
-#' by_cyl %>% summarise(
-#'   disp = mean(disp),
-#'   hp = mean(hp)
-#' )
-#' by_cyl %>% filter(disp == max(disp))
-#'
-#' # Each call to summarise() removes a layer of grouping
-#' by_vs_am <- mtcars %>% group_by(vs, am)
-#' by_vs <- by_vs_am %>% summarise(n = n())
-#' by_vs
-#' by_vs %>% summarise(n = sum(n))
-#'
-#' # To removing grouping, use ungroup
-#' by_vs %>%
-#'   ungroup() %>%
-#'   summarise(n = sum(n))
-#'
-#' # You can group by expressions: this is just short-hand for
-#' # a mutate() followed by a group_by()
-#' mtcars %>% group_by(vsam = vs + am)
-#'
-#'
-#'
-#'
-#' # when factors are involved, groups can be empty
-#' tbl <- tibble(
-#'   x = 1:10,
-#'   y = factor(rep(c("a", "c"), each  = 5), levels = c("a", "b", "c"))
-#' )
+
 ############# START ADDED tidybulk #####################################
 #' @export
 group_by <- function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))  {
@@ -679,26 +548,8 @@ ungroup.tidybulk <- function (x, ...)
 #' `%>%` = magrittr::`%>%`
 #' # A summary applied to ungrouped tbl returns a single row
 #' mtcars %>%
-#'   summarise(mean = mean(disp), n = n())
+#'   summarise(mean = mean(disp))
 #'
-#' # Usually, you'll want to group first
-#' mtcars %>%
-#'   group_by(cyl) %>%
-#'   summarise(mean = mean(disp), n = n())
-#'
-#' # dplyr 1.0.0 allows to summarise to more than one value:
-#'
-#' # You use a data frame to create multiple columns so you can wrap
-#' # this up into a function:
-#' my_quantile <- function(x, probs) {
-#'   tibble(x = quantile(x, probs), probs = probs)
-#' }
-#'
-#'
-#'
-#' # Refer to column names stored as strings with the `.data` pronoun:
-#' var <- "mass"
-#' # Learn more in ?dplyr_tidy_eval
 ############# START ADDED tidybulk #####################################
 #' @export
 summarise <- function (.data, ...)  {
@@ -971,8 +822,6 @@ rename.tidybulk <- function(.data, ...)
 #' `%>%` = magrittr::`%>%`
 #' df <- expand.grid(x = 1:3, y = 3:1)
 #' df_done <- df %>% rowwise() %>% do(i = seq(.$x, .$y))
-#' df_done
-#' df_done %>% summarise(n = length(i))
 ############# START ADDED tidybulk #####################################
 #' @export
 rowwise <- function(.data) {

@@ -45,7 +45,7 @@ test_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL
 This wrapper execute gene enrichment analyses of the dataset
 }
 \examples{
-\donttest{
+\dontrun{
 
 df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
 df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
@@ -58,7 +58,8 @@ library("EGSEA")
 		.sample = sample,
 		.entrez = entrez,
 		.abundance = count,
-		species="human"
+		species="human",
+		cores = 1
 	)
 
 }

@@ -5,16 +5,16 @@
 \title{Subset rows using column values}
 \usage{
 filter(.data, ..., .preserve = FALSE)
-
-filter(.data, ..., .preserve = FALSE)
 }
 \arguments{
 \item{.data}{A data frame, data frame extension (e.g. a tibble), or a
 lazy data frame (e.g. from dbplyr or dtplyr). See *Methods*, below, for
 more details.}
 
-\item{...}{In `group_by()`, variables or computations to group by.
-In `ungroup()`, variables to remove from the grouping.}
+\item{...}{<[`tidy-eval`][dplyr_tidy_eval]> Logical predicates defined in
+terms of the variables in `.data`.
+Multiple conditions are combined with `&`. Only rows where the
+condition evaluates to `TRUE` are kept.}
 
 \item{.preserve}{when `FALSE` (the default), the grouping structure
 is recalculated based on the resulting data, otherwise it is kept as is.}
@@ -26,19 +26,11 @@ An object of the same type as `.data`.
 * Columns are not modified.
 * The number of groups may be reduced (if `.preserve` is not `TRUE`).
 * Data frame attributes are preserved.
-
-A [grouped data frame][grouped_df()], unless the combination of `...` and `add`
-  yields a non empty set of grouping columns, a regular (ungrouped) data frame
-  otherwise.
 }
 \description{
 `filter()` retains the rows where the conditions you provide a `TRUE`. Note
 that, unlike base subsetting with `[`, rows where the condition evaluates
 to `NA` are dropped.
-
-Most data operations are done on groups defined by variables.
-`group_by()` takes an existing tbl and converts it into a grouped tbl
-where operations are performed "by group". `ungroup()` removes grouping.
 }
 \details{
 dplyr is not yet smart enough to optimise filtering optimisation
@@ -76,57 +68,11 @@ implementations (methods) for other classes. See the documentation of
 individual methods for extra arguments and differences in behaviour.
 
 The following methods are currently available in loaded packages:
-
-
-These function are **generic**s, which means that packages can provide
-implementations (methods) for other classes. See the documentation of
-individual methods for extra arguments and differences in behaviour.
-
-Methods available in currently loaded packages:
 }
 
 \examples{
 
 # Learn more in ?dplyr_tidy_eval
-`\%>\%` = magrittr::`\%>\%`
-by_cyl <- mtcars \%>\% group_by(cyl)
-
-# grouping doesn't change how the data looks (apart from listing
-# how it's grouped):
-by_cyl
-
-# It changes how it acts with the other dplyr verbs:
-by_cyl \%>\% summarise(
-  disp = mean(disp),
-  hp = mean(hp)
-)
-by_cyl \%>\% filter(disp == max(disp))
-
-# Each call to summarise() removes a layer of grouping
-`\%>\%` = magrittr::`\%>\%`
-by_vs_am <- mtcars \%>\% group_by(vs, am)
-by_vs <- by_vs_am \%>\% summarise(n = n())
-by_vs
-by_vs \%>\% summarise(n = sum(n))
-
-# To removing grouping, use ungroup
-by_vs \%>\%
-  ungroup() \%>\%
-  summarise(n = sum(n))
-
-# You can group by expressions: this is just short-hand for
-# a mutate() followed by a group_by()
-mtcars \%>\% group_by(vsam = vs + am)
-
-
-
-
-# when factors are involved, groups can be empty
-tbl <- tibble(
-  x = 1:10,
-  y = factor(rep(c("a", "c"), each  = 5), levels = c("a", "b", "c"))
-)
-
 }
 \seealso{
 [filter_all()], [filter_if()] and [filter_at()].
@@ -136,9 +82,5 @@ Other single table verbs:
 \code{\link{mutate}()},
 \code{\link{rename}()},
 \code{\link{summarise}()}
-
-Other grouping functions: 
-\code{\link{group_by}()}
 }
-\concept{grouping functions}
 \concept{single table verbs}

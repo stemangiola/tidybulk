@@ -92,11 +92,11 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 											.abundance,
 											.abundance_scaled = NULL) {
 	# Check if package is installed, otherwise install
-	if ("SummarizedExperiment" %in% rownames(installed.packages()) == FALSE) {
+	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("Installing SummarizedExperiment")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("SummarizedExperiment")
+		BiocManager::install("SummarizedExperiment", ask = FALSE)
 	}
 
 	# Make col names
@@ -2685,7 +2685,7 @@ setMethod("keep_abundant",
 #'
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'
 #' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
 #' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
@@ -2698,7 +2698,8 @@ setMethod("keep_abundant",
 #'			.sample = sample,
 #'			.entrez = entrez,
 #'			.abundance = count,
-#'			species="human"
+#'			species="human",
+#'			cores = 1
 #'		)
 #'
 #'}
@@ -2854,9 +2855,9 @@ setGeneric("test_gene_overrepresentation", function(.data,
 	
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
-	if ("msigdbr" %in% rownames(installed.packages()) == FALSE) {
+	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
 		writeLines("msigdbr not installed. Installing.")
-		BiocManager::install("msigdbr")
+		BiocManager::install("msigdbr", ask = FALSE)
 	}
 	
 	# Check is correct species name
