@@ -559,7 +559,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			(.) %>% distinct(n) %>%	pull(n) %>%	min %>%	`<` (2)
 		}
 	)
-	message("tidybulk says: Just so you know. You have less than two replicated for each factorial combination")
+	message("tidybulk says: Just so you know. You have less than two replicates for each factorial combination")
 
 	# Create design matrix
 	design =
