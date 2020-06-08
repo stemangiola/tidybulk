@@ -216,7 +216,7 @@ tt.norm.MDS %>% select(sample, contains("Dim"), `Cell type`, time ) %>% distinct
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.
 
-```{r plot_mds, cache=TRUE}
+```{r plot_mds, cache=TRUE, eval=FALSE}
 tt.norm.MDS %>%
 	select(contains("Dim"), sample, `Cell type`) %>%
   distinct() %>%
@@ -240,7 +240,7 @@ tt.norm.PCA %>% select(sample, contains("PC"), `Cell type`, time ) %>% distinct(
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.
 
-```{r plot_pca, cache=TRUE}
+```{r plot_pca, cache=TRUE, eval=FALSE}
 tt.norm.PCA %>%
 	select(contains("PC"), sample, `Cell type`) %>%
   distinct() %>%
