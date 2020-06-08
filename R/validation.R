@@ -145,7 +145,7 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance, ty
 		.data %>%
 		distinct(!!.sample, !!.transcript, !!.abundance) %>%
 		count(!!.sample) %>%
-		count(n) %>%
+		count(n, name = "nn") %>%
 		nrow %>%
 		equals(1)
 
