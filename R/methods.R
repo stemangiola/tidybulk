@@ -542,7 +542,8 @@ setGeneric("cluster_elements", function(.data,
 							of_samples = of_samples,
 							log_transform = log_transform,
 							...
-						)
+						),
+					by=quo_name(.element)
 				) %>%
 
 				# Attach attributes
@@ -569,7 +570,8 @@ setGeneric("cluster_elements", function(.data,
 							of_samples = of_samples,
 							log_transform = log_transform,
 							...
-						)
+						),
+					by=quo_name(.element)
 				) %>%
 
 				# Attach attributes
@@ -604,7 +606,8 @@ setGeneric("cluster_elements", function(.data,
 							of_samples = of_samples,
 							log_transform = log_transform,
 							...
-						)
+						),
+					by=quo_name(.element)
 				) %>%
 
 				# Attach attributes
@@ -631,7 +634,8 @@ setGeneric("cluster_elements", function(.data,
 							of_samples = of_samples,
 							log_transform = log_transform,
 							...
-						)
+						),
+					by=quo_name(.element)
 				) %>%
 
 				# Attach attributes
@@ -2199,7 +2203,7 @@ symbol_to_entrez = function(.data,
 			# Get entrez mapping 1:1
 			AnnotationDbi::mapIds(
 				org.Hs.eg.db::org.Hs.eg.db,
-				.data %>% distinct(!!.transcript) %>% pull(1),
+				.data %>% distinct(!!.transcript) %>% pull(!!.transcript) %>% as.character,
 				'ENTREZID',
 				'SYMBOL'
 			) %>%
@@ -2207,7 +2211,8 @@ symbol_to_entrez = function(.data,
 				filter(entrez %>% is.na %>% `!`) %>%
 				group_by(!!.transcript) %>%
 				slice(1) %>%
-				ungroup()
+				ungroup(),
+			by = quo_name(.transcript)
 		)
 	
 }
@@ -2266,7 +2271,7 @@ setGeneric("ensembl_to_symbol", function(.data,
 
 		# Add new symbols column
 		.data %>%
-			dplyr::left_join(.data_processed) %>%
+			dplyr::left_join(.data_processed, by=quo_name(.ensembl)) %>%
 
 			# Attach attributes
 			reattach_internals(.data)
@@ -2451,7 +2456,7 @@ setGeneric("test_differential_abundance", function(.data,
 	if (action == "add"){
 
 		.data %>%
-			dplyr::left_join(.data_processed) %>%
+			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
 
 			# Arrange
 			ifelse_pipe(.contrasts %>% is.null,
@@ -2472,7 +2477,7 @@ setGeneric("test_differential_abundance", function(.data,
 			) %>%
 			distinct() %>%
 
-			dplyr::left_join(.data_processed) %>%
+			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
 
 			# Arrange
 			ifelse_pipe(.contrasts %>% is.null,
