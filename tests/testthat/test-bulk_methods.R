@@ -466,7 +466,7 @@ test_that("Get entrez from symbol - no object",{
 # test_that("Get gene enrichment - no object",{
 #
 # 	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
-# 		writeLines("Installing EGSEA needed for differential transcript abundance analyses")
+# 		message("Installing EGSEA needed for differential transcript abundance analyses")
 # 		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos = "https://cloud.r-project.org")
 # 		BiocManager::install("EGSEA")
 # 	}

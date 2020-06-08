@@ -117,8 +117,8 @@ error_if_duplicated_genes <- function(.data,
     arrange(n %>% desc())
 
   if (duplicates %>% nrow() > 0) {
-    writeLines("Those are the duplicated genes")
-    duplicates %>% print()
+    message("Those are the duplicated genes")
+    duplicates %>% capture.output() %>% paste0(collapse = "\n") %>% message()
     stop(
       "tidybulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding."
     )

@@ -61,8 +61,8 @@ check_if_duplicated_genes <- function(.data,
 	is_unique = duplicates %>% nrow() %>% equals(0)
 
 	if (!is_unique) {
-		writeLines("tidybulk says: Those are the duplicated genes")
-		duplicates %>% print()
+		message("tidybulk says: Those are the duplicated genes")
+		duplicates %>% capture.output() %>% paste0(collapse = "\n") %>% message()
 	}
 
 	is_unique

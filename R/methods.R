@@ -101,7 +101,7 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 											.abundance_scaled = NULL) {
 	# Check if package is installed, otherwise install
 	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
-		writeLines("Installing SummarizedExperiment")
+		message("Installing SummarizedExperiment")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("SummarizedExperiment", ask = FALSE)
@@ -2188,7 +2188,7 @@ symbol_to_entrez = function(.data,
 	
 	# Check if package is installed, otherwise install
 	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
-		writeLines("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
+		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("org.Hs.eg.db", ask = FALSE)
@@ -3167,7 +3167,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
 	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
-		writeLines("msigdbr not installed. Installing.")
+		message("msigdbr not installed. Installing.")
 		BiocManager::install("msigdbr", ask = FALSE)
 	}
 	
