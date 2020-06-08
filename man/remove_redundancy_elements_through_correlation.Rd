@@ -33,7 +33,7 @@ remove_redundancy_elements_through_correlation(
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
-A tibble with redundant elemens removed
+A tibble with redundant elements removed
 }
 \description{
 Drop redundant elements (e.g., samples) for which feature (e.g., genes) aboundances are correlated

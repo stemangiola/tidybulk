@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_bulk.R
 \name{remove_redundancy_elements_though_reduced_dimensions}
 \alias{remove_redundancy_elements_though_reduced_dimensions}
-\title{Identifies the closest pairs in a MDS contaxt and return one of them}
+\title{Identifies the closest pairs in a MDS context and return one of them}
 \usage{
 remove_redundancy_elements_though_reduced_dimensions(
   .data,
@@ -27,6 +27,6 @@ remove_redundancy_elements_though_reduced_dimensions(
 A tibble with pairs dropped
 }
 \description{
-Identifies the closest pairs in a MDS contaxt and return one of them
+Identifies the closest pairs in a MDS context and return one of them
 }
 \keyword{internal}

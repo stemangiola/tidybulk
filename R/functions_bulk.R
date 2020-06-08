@@ -680,7 +680,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		# Add filtering info
 		full_join(df_for_edgeR.filt %>%
 								select(!!.transcript, lowly_abundant) %>%
-								distinct()) %>%
+								distinct(), by = quo_name(.transcript)) %>%
 
 
 		# Attach attributes
@@ -1621,7 +1621,7 @@ aggregate_duplicated_transcripts_bulk =
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
-#' @return A tibble with redundant elemens removed
+#' @return A tibble with redundant elements removed
 #'
 #'
 remove_redundancy_elements_through_correlation <- function(.data,
@@ -1687,12 +1687,16 @@ remove_redundancy_elements_through_correlation <- function(.data,
 
 			# Second function
 			~ {
-				warning(
-					"
-					tidybulk says: In calculating correlation there is < 100 genes that have non NA values is all samples.
-					The correlation calculation would not be reliable,
-					we suggest to partition the dataset for sample clusters.
-					"
+				# warning(
+				# 	"
+				# 	tidybulk says: In calculating correlation there is < 100 genes that have non NA values is all samples.
+				# 	The correlation calculation would not be reliable,
+				# 	we suggest to partition the dataset for sample clusters.
+				# 	"
+				# )
+				message(
+					"tidybulk says: In calculating correlation there is < 100 genes (that have non NA values) is all samples.
+The correlation calculation might not be reliable"
 				)
 				.x
 			}) %>%
@@ -1717,14 +1721,14 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		distinct(item1) %>%
 		dplyr::rename(!!.element := item1)
 
-	# Return non redudant data frame
-	.data %>% anti_join(.data.correlated) %>%
+	# Return non redundant data frame
+	.data %>% anti_join(.data.correlated, by = quo_name(.element)) %>%
 
 		# Attach attributes
 		reattach_internals(.data)
 }
 
-#' Identifies the closest pairs in a MDS contaxt and return one of them
+#' Identifies the closest pairs in a MDS context and return one of them
 #'
 #' @keywords internal
 #' 
@@ -1791,7 +1795,7 @@ remove_redundancy_elements_though_reduced_dimensions <-
 			setNames(quo_name(.element))
 
 		# Drop samples that are correlated with others and return
-		.data %>% anti_join(.data.redundant) %>%
+		.data %>% anti_join(.data.redundant, by = quo_name(.element)) %>%
 
 			# Attach attributes
 			reattach_internals(.data)
