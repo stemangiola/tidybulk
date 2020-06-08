@@ -553,9 +553,10 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		distinct %>%
 		group_by_at(vars(-!!.sample)) %>%
 		count() %>%
+		ungroup() %>%
 		{
 			(.) %>% nrow %>% `<` (2) |
-			(.) %>% distinct(n) %>%	pull(1) %>%	min %>%	`<` (2)
+			(.) %>% distinct(n) %>%	pull(n) %>%	min %>%	`<` (2)
 		}
 	)
 	message("tidybulk says: You have less than two replicated for each factorial combination")
@@ -762,7 +763,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			distinct %>%
 			count(!!as.symbol(parse_formula(.formula))) %>%
 			distinct(n) %>%
-			pull(1) %>%
+			pull(n) %>%
 			min %>%
 			`<` (2))
 		stop("tidybulk says: You need at least two replicated for each condition for EGSEA to work")
