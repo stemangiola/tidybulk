@@ -17,21 +17,21 @@ tidybulk - part of tidyTranscriptomics
 
 ## Functions/utilities available
 
-| Function                       | Description                                                           |
-| ------------------------------ | --------------------------------------------------------------------- |
-| `aggregate_duplicates`         | Aggregate robustly abundance and annotation of duplicated transcripts |
-| `scale_abundance`              | Scale (normalise) abundance for RNA requencing depth                  |
-| `reduce_dimensions`            | Perform dimensionality reduction (PCA, MDS, tSNE)                     |
-| `cluster_elements`             | Labels elements with cluster identity (kmeans, SNN)                   |
-| `remove_redundancy`            | Filter out elements with highly correlated features                   |
-| `adjust_abundance`             | Remove known unwanted variation (Combat)                              |
-| `test_differential_abundance`  | Differenatial abundance testing (DE)                                  |
-| `deconvolve_cellularity`       | Estimated tissue composition (Cibersort)                              |
-| `keep_variable`                | Filter top variable features                                          |
-| `keep_abundant`                | Filter out lowly abundant transcripts                                 |
-| `test_gene_enrichment`         | Gene enrichment analyses (EGSEA)                                      |
-| `test_gene_overrepresentation` | Gene enrichment on list of transcript names (no rank)                 |
-| `impute_abundance`             | Impute abundance for missing data points using sample groupings       |
+| Function                       | Description                                                                  |
+| ------------------------------ | ---------------------------------------------------------------------------- |
+| `aggregate_duplicates`         | Aggregate abundance and annotation of duplicated transcripts in a robust way |
+| `scale_abundance`              | Scale (normalise) abundance for RNA sequencing depth                         |
+| `reduce_dimensions`            | Perform dimensionality reduction (PCA, MDS, tSNE)                            |
+| `cluster_elements`             | Labels elements with cluster identity (kmeans, SNN)                          |
+| `remove_redundancy`            | Filter out elements with highly correlated features                          |
+| `adjust_abundance`             | Remove known unwanted variation (Combat)                                     |
+| `test_differential_abundance`  | Differential abundance testing (DE)                                          |
+| `deconvolve_cellularity`       | Estimated tissue composition (Cibersort)                                     |
+| `keep_variable`                | Filter for top variable features                                             |
+| `keep_abundant`                | Filter out lowly abundant transcripts                                        |
+| `test_gene_enrichment`         | Gene enrichment analyses (EGSEA)                                             |
+| `test_gene_overrepresentation` | Gene enrichment on list of transcript names (no rank)                        |
+| `impute_abundance`             | Impute abundance for missing data points using sample groupings              |
 
 | Utilities           | Description                                |
 | ------------------- | ------------------------------------------ |
@@ -56,7 +56,7 @@ tidybulk - part of tidyTranscriptomics
 | `chr` or `fctr` | `chr` or `fctr` | `integer` | …          | …               |
 
 All functions are also directly compatible with `SummarizedExperiment`
-object as well.
+object.
 
 ## Installation
 
@@ -65,6 +65,10 @@ From Bioconductor
 ``` r
 BiocManager::install("tidybulk")
 ```
+
+    ## 
+    ## The downloaded binary packages are in
+    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIkC4dP/downloaded_packages
 
 From Github
 
@@ -87,9 +91,9 @@ duplicated transcripts (e.g., isoforms, ensembl). For example, we often
 have to convert ensembl symbols to gene/transcript symbol, but in doing
 so we have to deal with duplicates. `aggregate_duplicates` takes a
 tibble and column names (as symbols; for `sample`, `transcript` and
-`count`) as arguments and returns a tibble with aggregate transcript
-with the same name. All the rest of the column are appended, and factors
-and boolean are appended as characters.
+`count`) as arguments and returns a tibble with transcripts with the
+same name aggregated. All the rest of the columns are appended, and
+factors and boolean are appended as characters.
 
 <div class="column-left">
 
@@ -151,17 +155,12 @@ Standard procedure (comparative purpose)
 ``` r
 library(edgeR)
 
-myCPM <- cpm(count_m)
-keep <- rowSums(myCPM > 0.5) >= 2
-count_m.keep <- count_m[keep,]
+dgList <- DGEList(count_m=x,group=group)
+keep <- filterByExpr(dgList)
+dgList <- dgList[keep,,keep.lib.sizes=FALSE]
 [...]
 dgList <- calcNormFactors(dgList, method="TMM")
-dgList <- estimateCommonDisp(dgList)
-dgList <- estimateTagwiseDisp(dgList)
-norm_counts.table <- t(
-    t(count_m)*
-        (dgList$samples$norm.factors)
-)
+norm_counts.table <- cpm(dgList)
 ```
 
 </div>
@@ -279,8 +278,7 @@ cmds$cell_type = tidybulk::counts[
 </div>
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is
-coloured by cell
-type.
+coloured by cell type.
 
 ``` r
 tt.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
@@ -430,18 +428,18 @@ tt.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##     tSNE1  tSNE2 sample                       Call 
-    ##     <dbl>  <dbl> <chr>                        <fct>
-    ##  1   9.42  -4.39 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2  -7.03  -2.09 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3  14.1  -15.6  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4   4.31   3.75 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5   5.61  -2.10 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6  -4.11   3.76 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7 -30.9    7.92 TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8   2.92  13.0  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9   2.09  11.3  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  21.4  -11.7  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##      tSNE1   tSNE2 sample                       Call 
+    ##      <dbl>   <dbl> <chr>                        <fct>
+    ##  1  10.9     2.07  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2  -4.46    7.53  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3   4.92   -9.26  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4  -0.307  -1.11  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5   9.15    0.894 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  -0.838  -6.55  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7 -31.1     9.64  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8  -7.37   -8.91  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9  -6.16   -7.87  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10  19.5   -13.3   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -553,20 +551,15 @@ Standard procedure (comparative purpose)
 ``` r
 library(edgeR)
 
-design =
-        model.matrix(
-            object = .formula,
-            data = df_for_edgeR
-        )
-
-DGEList(counts = counts) %>%
-        calcNormFactors(method = "TMM") %>%
-        estimateGLMCommonDisp(design) %>%
-        estimateGLMTagwiseDisp(design) %>%
-        glmFit(design) %>%
-        glmLRT(coef = 2) %>%
-        topTags(n = 999999) %$%
-        table
+dgList <- DGEList(counts=counts_m,group=group)
+keep <- filterByExpr(dgList)
+dgList <- dgList[keep,,keep.lib.sizes=FALSE]
+dgList <- calcNormFactors(dgList)
+design <- model.matrix(~group)
+dgList <- estimateDisp(dgList,design)
+fit <- glmQLFit(dgList,design)
+qlf <- glmQLFTest(fit,coef=2)
+topTags(qlf, n=Inf)
 ```
 
 </div>
@@ -663,6 +656,11 @@ tt.cibersort =
     tt %>%
     deconvolve_cellularity(action="get", cores=2)
 ```
+
+    ## Installing e1071 needed for Cibersort
+    ## 
+    ## The downloaded binary packages are in
+    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIkC4dP/downloaded_packages
 
 </div>
 
@@ -818,18 +816,18 @@ tt.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 5
-    ##     tSNE1  tSNE2 sample                       Call  `cluster SNN`
-    ##     <dbl>  <dbl> <chr>                        <fct> <fct>        
-    ##  1   9.42  -4.39 TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            
-    ##  2  -7.03  -2.09 TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
-    ##  3  14.1  -15.6  TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
-    ##  4   4.31   3.75 TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
-    ##  5   5.61  -2.10 TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
-    ##  6  -4.11   3.76 TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
-    ##  7 -30.9    7.92 TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
-    ##  8   2.92  13.0  TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
-    ##  9   2.09  11.3  TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
-    ## 10  21.4  -11.7  TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
+    ##      tSNE1   tSNE2 sample                       Call  `cluster SNN`
+    ##      <dbl>   <dbl> <chr>                        <fct> <fct>        
+    ##  1  10.9     2.07  TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            
+    ##  2  -4.46    7.53  TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
+    ##  3   4.92   -9.26  TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
+    ##  4  -0.307  -1.11  TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
+    ##  5   9.15    0.894 TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
+    ##  6  -0.838  -6.55  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
+    ##  7 -31.1     9.64  TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
+    ##  8  -7.37   -8.91  TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
+    ##  9  -6.16   -7.87  TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
+    ## 10  19.5   -13.3   TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
     ## # … with 241 more rows
 
 ``` r
@@ -853,18 +851,18 @@ tt.norm.SNN %>%
 ```
 
     ## # A tibble: 500 x 8
-    ##    ens           logFC logCPM    LR   PValue      FDR significant lowly_abundant
+    ##    ens           logFC logCPM     F   PValue      FDR significant lowly_abundant
     ##    <chr>         <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl>       <lgl>         
-    ##  1 ENSG00000186…  6.17   7.99  446. 4.54e-99 2.27e-96 TRUE        FALSE         
-    ##  2 ENSG00000111…  2.94   9.64  407. 1.32e-90 3.30e-88 TRUE        FALSE         
-    ##  3 ENSG00000181…  7.93   9.12  380. 1.15e-84 1.92e-82 TRUE        FALSE         
-    ##  4 ENSG00000140…  2.69   9.54  359. 3.65e-80 4.57e-78 TRUE        FALSE         
-    ##  5 ENSG00000065…  1.59  10.2   329. 1.85e-73 1.85e-71 TRUE        FALSE         
-    ##  6 ENSG00000137…  3.88   8.28  319. 2.16e-71 1.80e-69 TRUE        FALSE         
-    ##  7 ENSG00000124…  4.66   8.62  305. 3.37e-68 2.41e-66 TRUE        FALSE         
-    ##  8 ENSG00000196…  4.92   7.04  291. 3.24e-65 2.03e-63 TRUE        FALSE         
-    ##  9 ENSG00000092…  2.91   8.40  263. 3.37e-59 1.87e-57 TRUE        FALSE         
-    ## 10 ENSG00000094…  4.85   9.22  258. 4.11e-58 2.06e-56 TRUE        FALSE         
+    ##  1 ENSG00000065…  1.59  10.2   395. 1.31e-53 6.56e-51 TRUE        FALSE         
+    ##  2 ENSG00000111…  2.94   9.64  389. 4.51e-53 1.13e-50 TRUE        FALSE         
+    ##  3 ENSG00000140…  2.69   9.54  345. 3.67e-49 6.12e-47 TRUE        FALSE         
+    ##  4 ENSG00000186…  6.17   7.99  343. 5.74e-49 7.18e-47 TRUE        FALSE         
+    ##  5 ENSG00000181…  7.93   9.12  299. 8.93e-45 8.93e-43 TRUE        FALSE         
+    ##  6 ENSG00000137…  3.88   8.28  267. 1.85e-41 1.54e-39 TRUE        FALSE         
+    ##  7 ENSG00000083…  1.37   9.39  247. 2.79e-39 1.99e-37 TRUE        FALSE         
+    ##  8 ENSG00000143…  1.02  10.7   246. 3.56e-39 2.22e-37 TRUE        FALSE         
+    ##  9 ENSG00000124…  4.66   8.62  238. 2.37e-38 1.32e-36 TRUE        FALSE         
+    ## 10 ENSG00000092…  2.91   8.40  232. 1.36e-37 6.82e-36 TRUE        FALSE         
     ## # … with 490 more rows
 
 ## Drop `redundant` transcripts
@@ -874,8 +872,8 @@ We may want to remove redundant elements from the original data set
 cell-type specific signatures with low sample redundancy.
 `remove_redundancy` takes as arguments a tibble, column names (as
 symbols; for `sample`, `transcript` and `count`) and returns a tibble
-dropped recundant elements (e.g., samples). Two redundancy estimation
-approaches are supported:
+with redundant elements removed (e.g., samples). Two redundancy
+estimation approaches are supported:
 
   - removal of highly correlated clusters of elements (keeping a
     representative) with method=“correlation”
@@ -894,6 +892,10 @@ tt.norm.non_redundant =
   remove_redundancy(    method = "correlation" )
 ```
 
+    ## Installing widyr needed for correlation analyses
+    ## 
+    ## The downloaded binary packages are in
+    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIkC4dP/downloaded_packages
     ## Getting the 19544 most variable genes
 
 </div>
@@ -995,6 +997,7 @@ counts = tidybulk_SAM_BAM(
 
 We can add gene symbols from ensembl identifiers. This is useful since
 different resources use ensembl IDs while others use gene symbol IDs.
+This currently works for human and mouse.
 
 ``` r
 counts_ensembl %>% ensembl_to_symbol(ens)

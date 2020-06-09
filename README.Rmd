@@ -154,17 +154,12 @@ Standard procedure (comparative purpose)
 ```{r normalise long, eval=FALSE}
 library(edgeR)
 
-myCPM <- cpm(count_m)
-keep <- rowSums(myCPM > 0.5) >= 2
-count_m.keep <- count_m[keep,]
+dgList <- DGEList(count_m=x,group=group)
+keep <- filterByExpr(dgList)
+dgList <- dgList[keep,,keep.lib.sizes=FALSE]
 [...]
 dgList <- calcNormFactors(dgList, method="TMM")
-dgList <- estimateCommonDisp(dgList)
-dgList <- estimateTagwiseDisp(dgList)
-norm_counts.table <- t(
-	t(count_m)*
-		(dgList$samples$norm.factors)
-)
+norm_counts.table <- cpm(dgList)
 ```
 </div>
 <div style="clear:both;"></div>
@@ -416,20 +411,15 @@ Standard procedure (comparative purpose)
 ```{r, eval=FALSE}
 library(edgeR)
 
-design =
-		model.matrix(
-			object = .formula,
-			data = df_for_edgeR
-		)
-
-DGEList(counts = counts) %>%
-		calcNormFactors(method = "TMM") %>%
-		estimateGLMCommonDisp(design) %>%
-		estimateGLMTagwiseDisp(design) %>%
-		glmFit(design) %>%
-		glmLRT(coef = 2) %>%
-		topTags(n = 999999) %$%
-		table
+dgList <- DGEList(counts=counts_m,group=group)
+keep <- filterByExpr(dgList)
+dgList <- dgList[keep,,keep.lib.sizes=FALSE]
+dgList <- calcNormFactors(dgList)
+design <- model.matrix(~group)
+dgList <- estimateDisp(dgList,design)
+fit <- glmQLFit(dgList,design)
+qlf <- glmQLFTest(fit,coef=2)
+topTags(qlf, n=Inf)
 ```
 </div>
 <div style="clear:both;"></div>
