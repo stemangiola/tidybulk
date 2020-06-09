@@ -20,15 +20,15 @@ output: github_document
 
 Function | Description
 ------------ | -------------
-`aggregate_duplicates` | Aggregate robustly abundance and annotation of duplicated transcripts
-`scale_abundance` | Scale (normalise) abundance for RNA requencing depth
+`aggregate_duplicates` | Aggregate abundance and annotation of duplicated transcripts in a robust way
+`scale_abundance` | Scale (normalise) abundance for RNA sequencing depth
 `reduce_dimensions` | Perform dimensionality reduction (PCA, MDS, tSNE)
 `cluster_elements` | Labels elements with cluster identity (kmeans, SNN)
 `remove_redundancy` | Filter out elements with highly correlated features
 `adjust_abundance` | Remove known unwanted variation (Combat)
-`test_differential_abundance` | Differenatial abundance testing (DE) 
+`test_differential_abundance` | Differential abundance testing (DE) 
 `deconvolve_cellularity` | Estimated tissue composition (Cibersort)
-`keep_variable` | Filter top variable features
+`keep_variable` | Filter for top variable features
 `keep_abundant` | Filter out lowly abundant transcripts
 `test_gene_enrichment` | Gene enrichment analyses (EGSEA)
 `test_gene_overrepresentation` | Gene enrichment on list of transcript names (no rank)
@@ -58,7 +58,7 @@ sample | transcript | abundance | annotation | new information
 `chr` or `fctr` | `chr` or `fctr` | `integer` | ... | ...
 
 
-All functions are also directly compatible with `SummarizedExperiment` object as well.
+All functions are also directly compatible with `SummarizedExperiment` object.
 
 
 ```{r, echo=FALSE, include=FALSE, }
@@ -112,7 +112,7 @@ tt = counts %>% tidybulk(sample, transcript, count)
 
 ## Aggregate duplicated `transcripts`
 
-tidybulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with aggregate transcript with the same name. All the rest of the column are appended, and factors and boolean are appended as characters.
+tidybulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with transcripts with the same name aggregated. All the rest of the columns are appended, and factors and boolean are appended as characters.
 
 <div class="column-left">
 TidyTranscriptomics
@@ -632,7 +632,7 @@ tt.norm.SNN %>%
 
 ## Drop `redundant` transcripts
 
-We may want to remove redundant elements from the original data set (e.g., samples or transcripts), for example if we want to define cell-type specific signatures with low sample redundancy. `remove_redundancy` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble dropped recundant elements (e.g., samples). Two redundancy estimation approaches are supported:
+We may want to remove redundant elements from the original data set (e.g., samples or transcripts), for example if we want to define cell-type specific signatures with low sample redundancy. `remove_redundancy` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with redundant elements removed (e.g., samples). Two redundancy estimation approaches are supported:
 
 + removal of highly correlated clusters of elements (keeping a representative) with method="correlation"
 + removal of most proximal element pairs in a reduced dimensional space.
@@ -732,7 +732,7 @@ counts = tidybulk_SAM_BAM(
 
 ## From ensembl IDs to gene symbol IDs
 
-We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs.
+We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs. This currently works for human and mouse.
 
 ```{r ensembl, cache=TRUE}
 counts_ensembl %>% ensembl_to_symbol(ens)
