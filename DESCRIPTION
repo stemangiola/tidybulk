@@ -25,6 +25,7 @@ Imports:
     lifecycle
 Suggests:
     testthat,
+    vctrs,
     AnnotationDbi,
     BiocManager,
     Rsubread,
@@ -33,7 +34,6 @@ Suggests:
     limma,
     org.Hs.eg.db,
     sva,
-    vctrs,
     GGally,
     knitr,
     qpdf,
