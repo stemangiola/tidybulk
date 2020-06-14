@@ -537,29 +537,29 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
 		)
 
-	# Check if at least two samples for each group
-	if (
-		# If I have some discrete covariates
-		df_for_edgeR %>%
-		select(one_of(parse_formula(.formula))) %>%
-		select_if(function(col)
-			is.character(col) | is.factor(col) | is.logical(col)) %>%
-		ncol %>% `>` (0) &
-
-		# If I have at least 2 samples per group
-		df_for_edgeR %>%
-		select(!!.sample, one_of(parse_formula(.formula))) %>%
-		select_if(function(col) !is.numeric(col) & !is.integer(col) & !is.double(col) ) %>%
-		distinct %>%
-		group_by_at(vars(-!!.sample)) %>%
-		count() %>%
-		ungroup() %>%
-		{
-			(.) %>% nrow %>% `<` (2) |
-			(.) %>% distinct(n) %>%	pull(n) %>%	min %>%	`<` (2)
-		}
-	)
-	message("tidybulk says: Just so you know. You have less than two replicates for each factorial combination")
+	# # Check if at least two samples for each group
+	# if (
+	# 	# If I have some discrete covariates
+	# 	df_for_edgeR %>%
+	# 	select(one_of(parse_formula(.formula))) %>%
+	# 	select_if(function(col)
+	# 		is.character(col) | is.factor(col) | is.logical(col)) %>%
+	# 	ncol %>% `>` (0) &
+	# 
+	# 	# If I have at least 2 samples per group
+	# 	df_for_edgeR %>%
+	# 	select(!!.sample, one_of(parse_formula(.formula))) %>%
+	# 	select_if(function(col) !is.numeric(col) & !is.integer(col) & !is.double(col) ) %>%
+	# 	distinct %>%
+	# 	group_by_at(vars(-!!.sample)) %>%
+	# 	count() %>%
+	# 	ungroup() %>%
+	# 	{
+	# 		(.) %>% nrow %>% `<` (2) |
+	# 		(.) %>% distinct(n) %>%	pull(n) %>%	min %>%	`<` (2)
+	# 	}
+	# )
+	# message("tidybulk says: Just so you know. You have less than two replicates for each factorial combination")
 
 	# Create design matrix
 	design =
