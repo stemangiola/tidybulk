@@ -76,6 +76,18 @@ This wrapper execute gene enrichment analyses of the dataset using a list of tra
 }
 \examples{
 
+df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+df_entrez = mutate(df_entrez, do_test = transcript \%in\% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+
+	test_gene_overrepresentation(
+		df_entrez,
+		.sample = sample,
+		.entrez = entrez,
+		.do_test = do_test,
+		species="Homo sapiens", 
+   gene_set=c("C2")
+	)
 
 
 }
