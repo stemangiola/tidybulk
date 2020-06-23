@@ -3109,6 +3109,7 @@ setMethod("test_gene_enrichment",
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .do_test A boolean column name symbol. It indicates the transcript to check
 #' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
+#' @param gene_set A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
 #'
 #' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA. This wrapper uses clusterProfiler on the backend.
 #'
@@ -3122,14 +3123,15 @@ setMethod("test_gene_enrichment",
 #' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
 #' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 #' df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
-#'
+#' 
 #' 	test_gene_overrepresentation(
-#'			df_entrez,
-#'			.sample = sample,
-#'			.entrez = entrez,
-#'			.do_test = do_test,
-#'			species="Homo sapiens"
-#'		)
+#' 		df_entrez,
+#' 		.sample = sample,
+#' 		.entrez = entrez,
+#' 		.do_test = do_test,
+#' 		species="Homo sapiens", 
+#'    gene_set=c("C2")
+#' 	)
 #'
 #'
 #' @docType methods
@@ -3141,7 +3143,8 @@ setGeneric("test_gene_overrepresentation", function(.data,
 																										.sample = NULL,
 																										.entrez,
 																										.do_test,
-																										species)
+																										species,
+																										gene_set = NULL)
 	standardGeneric("test_gene_overrepresentation"))
 
 # Set internal
@@ -3149,7 +3152,8 @@ setGeneric("test_gene_overrepresentation", function(.data,
 																					 .sample = NULL,
 																					 .entrez,
 																					 .do_test,
-																					 species)	{
+																					 species,
+																					 gene_set = NULL)	{
 	
 	# Comply with CRAN NOTES
 	. = NULL
@@ -3187,7 +3191,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 		filter(!!.do_test) %>% 
 		distinct(!!.entrez) %>% 
 		pull(!!.entrez) %>%
-		entrez_rank_to_gsea(species)
+		entrez_rank_to_gsea(species, gene_set = gene_set)
 	
 	
 }

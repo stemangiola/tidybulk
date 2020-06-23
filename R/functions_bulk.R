@@ -2588,7 +2588,7 @@ fill_NA_using_formula = function(.data,
 
 
 
-entrez_rank_to_gsea = function(my_entrez_rank, species){
+entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	
 	# From the page
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
@@ -2599,18 +2599,25 @@ entrez_rank_to_gsea = function(my_entrez_rank, species){
 		BiocManager::install("clusterProfiler", ask = FALSE)
 	}
 	
-	m_df <- msigdbr::msigdbr(species = species)
-	
-	m_df %>%
-		nest(data = -gs_cat) %>%
-		mutate(test = 
-					 	map(
-					 		data, 
-					 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
-					 			as_tibble
-					 	)) %>%
-		select(-data) %>%
-		unnest(test)
+	# Get gene sets signatures
+	msigdbr::msigdbr(species = species) %>%
+		
+	# Filter specific gene_set if specified. This was introduced to speed up examples executionS
+	when(
+		!is.null(gene_set) ~ filter(., gs_cat %in% gene_set),
+		~ (.)
+	) %>%
+		
+	# Execute calculation
+	nest(data = -gs_cat) %>%
+	mutate(test = 
+				 	map(
+				 		data, 
+				 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
+				 			as_tibble
+				 	)) %>%
+	select(-data) %>%
+	unnest(test)
 	
 }
 
