@@ -1988,9 +1988,9 @@ setMethod("aggregate_duplicates",
 #'
 #'
 #' @examples
-#'
-#'
-#' deconvolve_cellularity(tidybulk::counts, sample, transcript, `count`, cores = 2)
+#' 
+#' # Subsetting for time efficiency
+#' deconvolve_cellularity(filter(tidybulk::counts, sample=="SRR1740034"), sample, transcript, `count`, cores = 1)
 #'
 #'
 #' @docType methods
