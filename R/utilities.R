@@ -205,6 +205,26 @@ parse_formula <- function(fm) {
     as.character(attr(terms(fm), "variables"))[-1]
 }
 
+#' Formula parser with survival
+#'
+#' @param fm A formula
+#'
+#' @return A character vector
+#'
+#'
+parse_formula_survival <- function(fm) {
+  pars = as.character(attr(terms(fm), "variables"))[-1]
+  
+  response = NULL
+  if(attr(terms(fm), "response") == 1) response = pars[1]
+  covariates = ifelse(attr(terms(fm), "response") == 1, pars[-1], pars)
+  
+  list(
+    response = response,
+    covariates = covariates
+  )
+}
+
 #' Scale design matrix
 #'
 #' @keywords internal

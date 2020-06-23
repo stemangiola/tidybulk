@@ -3592,3 +3592,275 @@ setMethod("impute_abundance",
 
 
 
+
+#' Add differential tissue composition information to a tbl 
+#'
+#' \lifecycle{maturing}
+#'
+#' @description test_differential_composition() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name test_differential_composition
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .formula A formula with no response variable, representing the desired linear model
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param significance_threshold A real between 0 and 1 (usually 0.05).
+#' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
+#'
+#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#' 	test_differential_composition(
+#' 	 tidybulk::counts_mini,
+#' 	    ~ condition,
+#' 	    sample,
+#' 	    transcript,
+#' 	    `count`
+#' 	)
+#'
+#' 	# The functon `test_differential_composition` operated with contrasts too
+#'
+#'  test_differential_composition(
+#' 	    tidybulk::counts_mini,
+#' 	    ~ 0 + condition,
+#' 	    sample,
+#' 	    transcript,
+#' 	    `count`,
+#' 	    .contrasts = c( "conditionTRUE - conditionFALSE")
+#'  )
+#'
+#'
+#' @docType methods
+#' @rdname test_differential_composition-methods
+#' @export
+#'
+setGeneric("test_differential_composition", function(.data,
+																									 .formula,
+																									 .sample = NULL,
+																									 .transcript = NULL,
+																									 .abundance = NULL,
+																									 .contrasts = NULL,
+																									 method = "edgeR_quasi_likelihood",
+																									 significance_threshold = 0.05,
+																									 minimum_counts = 10,
+																									 minimum_proportion = 0.7,
+																									 fill_missing_values = FALSE,
+																									 scaling_method = "TMM",
+																									 omit_contrast_in_colnames = FALSE,
+																									 
+																									 action = "add")
+					 standardGeneric("test_differential_composition"))
+
+# Set internal
+.test_differential_composition = 		function(.data,
+																					.formula,
+																					.sample = NULL,
+																					.transcript = NULL,
+																					.abundance = NULL,
+																					.contrasts = NULL,
+																					method = "edgeR_quasi_likelihood",
+																					significance_threshold = 0.05,
+																					minimum_counts = 10,
+																					minimum_proportion = 0.7,
+																					fill_missing_values = FALSE,
+																					scaling_method = "TMM",
+																					omit_contrast_in_colnames = FALSE,
+																					
+																					action = "add")
+{
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
+	
+	# Validate data frame
+	validation(.data, !!.sample, !!.transcript, !!.abundance)
+	
+	if(grepl("edgeR", method)){
+		.data_processed =
+			get_differential_transcript_composition_(
+				.data,
+				.formula,
+				.sample = !!.sample,
+				.transcript = !!.transcript,
+				.abundance = !!.abundance,
+				.contrasts = .contrasts,
+				method = method,
+				significance_threshold = significance_threshold,
+				minimum_counts = minimum_counts,
+				minimum_proportion = minimum_proportion,
+				fill_missing_values = fill_missing_values,
+				scaling_method = scaling_method,
+				omit_contrast_in_colnames = omit_contrast_in_colnames
+			)
+	}
+	else stop("tidybulk says: the onyl methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT)")
+	
+	if (action == "add"){
+		
+		.data %>%
+			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
+			
+			# Arrange
+			ifelse_pipe(.contrasts %>% is.null,
+									~ .x %>% arrange(FDR))	%>%
+			
+			# Attach attributes
+			reattach_internals(.data_processed)
+		
+	}
+	else if (action == "get"){
+		
+		.data %>%
+			
+			# Selecting the right columns
+			select(
+				!!.transcript,
+				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$vertical_cols
+			) %>%
+			distinct() %>%
+			
+			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
+			
+			# Arrange
+			ifelse_pipe(.contrasts %>% is.null,
+									~ .x %>% arrange(FDR))	%>%
+			
+			# Attach attributes
+			reattach_internals(.data_processed)
+		
+	}
+	else if (action == "only") .data_processed
+	else
+		stop(
+			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+		)
+}
+
+#' test_differential_composition
+#' @inheritParams test_differential_composition
+#' 
+#' @docType methods
+#' @rdname test_differential_composition-methods
+#' 
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_differential_composition",
+					"spec_tbl_df",
+					.test_differential_composition)
+
+#' test_differential_composition
+#' @inheritParams test_differential_composition
+#' 
+#' @docType methods
+#' @rdname test_differential_composition-methods
+#' 
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_differential_composition",
+					"tbl_df",
+					.test_differential_composition)
+
+#' test_differential_composition
+#' @inheritParams test_differential_composition
+#' 
+#' @docType methods
+#' @rdname test_differential_composition-methods
+#' 
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_differential_composition",
+					"tidybulk",
+					.test_differential_composition)
+
+
+
+.test_differential_composition_se = function(.data,
+																					 .formula,
+																					 .sample = NULL,
+																					 .transcript = NULL,
+																					 .abundance = NULL,
+																					 .contrasts = NULL,
+																					 method = "edgeR_quasi_likelihood",
+																					 significance_threshold = 0.05,
+																					 minimum_counts = 10,
+																					 minimum_proportion = 0.7,
+																					 fill_missing_values = FALSE,
+																					 scaling_method = "TMM",
+																					 omit_contrast_in_colnames = FALSE,
+																					 action = "add")
+{
+	# Make col names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	.data %>%
+		
+		# Convert to tidybulk
+		tidybulk() %>%
+		
+		# Apply scale method
+		test_differential_composition(
+			.formula,
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			.contrasts = .contrasts,
+			method = method,
+			significance_threshold = significance_threshold,
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion,
+			fill_missing_values = fill_missing_values,
+			scaling_method = scaling_method,
+			omit_contrast_in_colnames = omit_contrast_in_colnames,
+			action = action
+		) %>%
+		
+		# Convert to SummaizedExperiment
+		tidybulk_to_SummarizedExperiment()
+	
+}
+
+#' test_differential_composition
+#' @inheritParams test_differential_composition
+#' 
+#' @docType methods
+#' @rdname test_differential_composition-methods
+#' 
+#' @return A `SummarizedExperiment` object
+#'
+setMethod(
+	"test_differential_composition",
+	"SummarizedExperiment",
+	.test_differential_composition_se
+)
+
+#' test_differential_composition
+#' @inheritParams test_differential_composition
+#' 
+#' @docType methods
+#' @rdname test_differential_composition-methods
+#' 
+#' @return A `SummarizedExperiment` object
+#'
+setMethod(
+	"test_differential_composition",
+	"RangedSummarizedExperiment",
+	.test_differential_composition_se
+)
+
