@@ -1128,6 +1128,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats prcomp
+#' @importFrom utils capture.output
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
