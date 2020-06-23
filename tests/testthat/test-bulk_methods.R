@@ -273,19 +273,19 @@ test_that("Only differential trancript abundance - no object",{
 		"Design matrix not of full rank"
 	)
 
-	# Just one sample per covariate error
-	expect_message(
-		test_differential_abundance(
-			filter(input_df, a %in% c("SRR1740034", "SRR1740035", "SRR1740043", "SRR1740058")),
-			~ condition,
-			.sample = a,
-			.transcript = b,
-			.abundance = c,
-			method = "edgeR_likelihood_ratio",
-			action="only"
-		),
-		"You have less than two replicated for each factorial combination"
-	)
+	# # Just one sample per covariate error
+	# expect_message(
+	# 	test_differential_abundance(
+	# 		filter(input_df, a %in% c("SRR1740034", "SRR1740035", "SRR1740043", "SRR1740058")),
+	# 		~ condition,
+	# 		.sample = a,
+	# 		.transcript = b,
+	# 		.abundance = c,
+	# 		method = "edgeR_likelihood_ratio",
+	# 		action="only"
+	# 	),
+	# 	"You have less than two replicated for each factorial combination"
+	# )
 
 	# Setting filtering manually
 	res =
