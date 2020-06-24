@@ -94,6 +94,7 @@ error_if_log_transformed <- function(x, .abundance) {
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
+#' @importFrom utils capture.output
 #'
 #'
 #' @param .data A tibble of read counts
