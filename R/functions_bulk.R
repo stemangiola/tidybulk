@@ -537,29 +537,29 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
 		)
 
-	# Check if at least two samples for each group
-	if (
-		# If I have some discrete covariates
-		df_for_edgeR %>%
-		select(one_of(parse_formula(.formula))) %>%
-		select_if(function(col)
-			is.character(col) | is.factor(col) | is.logical(col)) %>%
-		ncol %>% `>` (0) &
-
-		# If I have at least 2 samples per group
-		df_for_edgeR %>%
-		select(!!.sample, one_of(parse_formula(.formula))) %>%
-		select_if(function(col) !is.numeric(col) & !is.integer(col) & !is.double(col) ) %>%
-		distinct %>%
-		group_by_at(vars(-!!.sample)) %>%
-		count() %>%
-		ungroup() %>%
-		{
-			(.) %>% nrow %>% `<` (2) |
-			(.) %>% distinct(n) %>%	pull(n) %>%	min %>%	`<` (2)
-		}
-	)
-	message("tidybulk says: Just so you know. You have less than two replicated for each factorial combination")
+	# # Check if at least two samples for each group
+	# if (
+	# 	# If I have some discrete covariates
+	# 	df_for_edgeR %>%
+	# 	select(one_of(parse_formula(.formula))) %>%
+	# 	select_if(function(col)
+	# 		is.character(col) | is.factor(col) | is.logical(col)) %>%
+	# 	ncol %>% `>` (0) &
+	# 
+	# 	# If I have at least 2 samples per group
+	# 	df_for_edgeR %>%
+	# 	select(!!.sample, one_of(parse_formula(.formula))) %>%
+	# 	select_if(function(col) !is.numeric(col) & !is.integer(col) & !is.double(col) ) %>%
+	# 	distinct %>%
+	# 	group_by_at(vars(-!!.sample)) %>%
+	# 	count() %>%
+	# 	ungroup() %>%
+	# 	{
+	# 		(.) %>% nrow %>% `<` (2) |
+	# 		(.) %>% distinct(n) %>%	pull(n) %>%	min %>%	`<` (2)
+	# 	}
+	# )
+	# message("tidybulk says: Just so you know. You have less than two replicates for each factorial combination")
 
 	# Create design matrix
 	design =
@@ -1128,6 +1128,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats prcomp
+#' @importFrom utils capture.output
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -2588,7 +2589,7 @@ fill_NA_using_formula = function(.data,
 
 
 
-entrez_rank_to_gsea = function(my_entrez_rank, species){
+entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	
 	# From the page
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
@@ -2599,18 +2600,25 @@ entrez_rank_to_gsea = function(my_entrez_rank, species){
 		BiocManager::install("clusterProfiler", ask = FALSE)
 	}
 	
-	m_df <- msigdbr::msigdbr(species = species)
-	
-	m_df %>%
-		nest(data = -gs_cat) %>%
-		mutate(test = 
-					 	map(
-					 		data, 
-					 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
-					 			as_tibble
-					 	)) %>%
-		select(-data) %>%
-		unnest(test)
+	# Get gene sets signatures
+	msigdbr::msigdbr(species = species) %>%
+		
+	# Filter specific gene_set if specified. This was introduced to speed up examples executionS
+	when(
+		!is.null(gene_set) ~ filter(., gs_cat %in% gene_set),
+		~ (.)
+	) %>%
+		
+	# Execute calculation
+	nest(data = -gs_cat) %>%
+	mutate(test = 
+				 	map(
+				 		data, 
+				 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
+				 			as_tibble
+				 	)) %>%
+	select(-data) %>%
+	unnest(test)
 	
 }
 
