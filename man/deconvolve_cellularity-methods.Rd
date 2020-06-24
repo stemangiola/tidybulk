@@ -116,8 +116,8 @@ This function infers the cell type composition of our samples (with the algorith
 }
 \examples{
 
-
-deconvolve_cellularity(tidybulk::counts, sample, transcript, `count`, cores = 2)
+# Subsetting for time efficiency
+deconvolve_cellularity(filter(tidybulk::counts, sample=="SRR1740034"), sample, transcript, `count`, cores = 1)
 
 
 }
