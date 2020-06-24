@@ -36,6 +36,7 @@ check_if_wrong_input = function(.data, list_input, expected_type) {
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
+#' @importFrom utils capture.output
 #'
 #'
 #' @param .data A tibble of read counts

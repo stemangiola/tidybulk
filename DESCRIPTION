@@ -25,6 +25,7 @@ Imports:
     lifecycle
 Suggests:
     testthat,
+    vctrs,
     AnnotationDbi,
     BiocManager,
     Rsubread,
@@ -40,7 +41,6 @@ Suggests:
     Seurat,
     KernSmooth,
     Rtsne,
-    EGSEA,
     SummarizedExperiment,
     S4Vectors,
     ggplot2,
