@@ -118,7 +118,9 @@ create_tt_from_bam_sam_bulk <-
 			add_class("tidybulk")
 	}
 
-#' Drop lowly tanscribed genes for TMM normalization
+
+
+#' Drop lowly transcribed genes for TMM normalization
 #' 
 #' @keywords internal
 #'

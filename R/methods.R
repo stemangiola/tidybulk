@@ -2170,7 +2170,7 @@ setMethod(
 #' Get ENTREZ id from gene SYMBOL
 #'
 #' @param .data A tt or tbl object.
-#' @param .transcript A character. The name of the ene symbol column.
+#' @param .transcript A character. The name of the gene symbol column.
 #' @param .sample The name of the sample column
 #'
 #' @return A tbl
@@ -2216,6 +2216,60 @@ symbol_to_entrez = function(.data,
 		)
 	
 }
+
+
+#' Get DESCRIPTION id from gene SYMBOL
+#'
+#' @param .data A tt or tbl object.
+#' @param .transcript A character. The name of the gene symbol column.
+#'
+#' @return A tbl
+#'
+#' @examples
+#'
+#' describe_transcript(tidybulk::counts_mini, .transcript = transcript)
+#'
+#' @export
+#'
+describe_transcript = function(.data,
+														.transcript = NULL) {
+	
+	# Get column names
+	.transcript = enquo(.transcript)
+	col_names = get_transcript(.data, .transcript)
+	.transcript = col_names$.transcript
+	
+	
+	# Check if package is installed, otherwise install
+	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("org.Hs.eg.db", ask = FALSE)
+	}
+	
+	# Check if package is installed, otherwise install
+	if (find.package("AnnotationDbi", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("AnnotationDbi", ask = FALSE)
+	}
+	
+	.data %>%
+		left_join(
+				AnnotationDbi::mapIds(
+					org.Hs.eg.db::org.Hs.eg.db,
+					keys = ensembl_symbol_mapping$transcript %>% unique,
+					column = "GENENAME",
+					keytype = "SYMBOL",
+					multiVals = "first"
+				) %>% 
+				enframe(name = quo_name(.transcript), value = "description"),
+				by = quo_name(.transcript)
+		)
+}
+
 
 
 #' Add transcript symbol column from ensembl id for human and mouse data
