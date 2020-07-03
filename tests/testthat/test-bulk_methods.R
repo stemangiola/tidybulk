@@ -1173,6 +1173,34 @@ test_that("Only symbol from ensambl - no object",{
 	)
 })
 
+test_that("Add description to symbol",{
+	
+	# Human
+	res =
+		describe_transcript(
+			tidybulk::counts,
+			.transcript = transcript
+		)
+	
+	
+	expect_equal(
+		ncol(res),
+		9
+	)
+	
+	res =
+		describe_transcript(
+			tidybulk::counts %>% tidybulk(sample, transcript, count)
+		)
+	
+	
+	expect_equal(
+		ncol(res),
+		9
+	)
+	
+})
+
 test_that("Add symbol from ensambl - no object",{
 
 	res =

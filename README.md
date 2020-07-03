@@ -33,15 +33,16 @@ tidybulk - part of tidyTranscriptomics
 | `test_gene_overrepresentation` | Gene enrichment on list of transcript names (no rank)                        |
 | `impute_abundance`             | Impute abundance for missing data points using sample groupings              |
 
-| Utilities           | Description                                |
-| ------------------- | ------------------------------------------ |
-| `tidybulk`          | add tidybulk attributes to a tibble object |
-| `tidybulk_SAM_BAM`  | Convert SAM BAM files into tidybulk tibble |
-| `pivot_sample`      | Select sample-wise columns/information     |
-| `pivot_transcript`  | Select transcript-wise columns/information |
-| `rotate_dimensions` | Rotate two dimensions of a degree          |
-| `ensembl_to_symbol` | Add gene symbol from ensembl IDs           |
-| `symbol_to_entrez`  | Add entrez ID from gene symbol             |
+| Utilities             | Description                                |
+| --------------------- | ------------------------------------------ |
+| `tidybulk`            | add tidybulk attributes to a tibble object |
+| `tidybulk_SAM_BAM`    | Convert SAM BAM files into tidybulk tibble |
+| `pivot_sample`        | Select sample-wise columns/information     |
+| `pivot_transcript`    | Select transcript-wise columns/information |
+| `rotate_dimensions`   | Rotate two dimensions of a degree          |
+| `ensembl_to_symbol`   | Add gene symbol from ensembl IDs           |
+| `symbol_to_entrez`    | Add entrez ID from gene symbol             |
+| `describe_transcript` | Add gene description from gene symbol      |
 
 ## Minimal input data frame
 
@@ -65,10 +66,6 @@ From Bioconductor
 ``` r
 BiocManager::install("tidybulk")
 ```
-
-    ## 
-    ## The downloaded binary packages are in
-    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIkC4dP/downloaded_packages
 
 From Github
 
@@ -194,8 +191,6 @@ TidyTranscriptomics
 ``` r
 tt.norm.variable = tt.norm %>% keep_variable()
 ```
-
-    ## Getting the 500 most variable genes
 
 </div>
 
@@ -428,18 +423,18 @@ tt.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##      tSNE1   tSNE2 sample                       Call 
-    ##      <dbl>   <dbl> <chr>                        <fct>
-    ##  1  10.9     2.07  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2  -4.46    7.53  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3   4.92   -9.26  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4  -0.307  -1.11  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5   9.15    0.894 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6  -0.838  -6.55  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7 -31.1     9.64  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8  -7.37   -8.91  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9  -6.16   -7.87  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  19.5   -13.3   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##     tSNE1    tSNE2 sample                       Call 
+    ##     <dbl>    <dbl> <chr>                        <fct>
+    ##  1  12.0    2.43   TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2  -3.79   7.58   TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3  17.7   -5.70   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4   2.35  -6.60   TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5   4.18  -9.88   TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  -5.47   0.865  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7 -41.1   -0.0288 TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8  -4.27 -14.0    TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9  -2.65 -13.8    TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10  28.3   -8.08   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -657,11 +652,6 @@ tt.cibersort =
     deconvolve_cellularity(action="get", cores=2)
 ```
 
-    ## Installing e1071 needed for Cibersort
-    ## 
-    ## The downloaded binary packages are in
-    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIkC4dP/downloaded_packages
-
 </div>
 
 <div class="column-right">
@@ -816,18 +806,18 @@ tt.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 5
-    ##      tSNE1   tSNE2 sample                       Call  `cluster SNN`
-    ##      <dbl>   <dbl> <chr>                        <fct> <fct>        
-    ##  1  10.9     2.07  TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            
-    ##  2  -4.46    7.53  TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
-    ##  3   4.92   -9.26  TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
-    ##  4  -0.307  -1.11  TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
-    ##  5   9.15    0.894 TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
-    ##  6  -0.838  -6.55  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
-    ##  7 -31.1     9.64  TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
-    ##  8  -7.37   -8.91  TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
-    ##  9  -6.16   -7.87  TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
-    ## 10  19.5   -13.3   TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
+    ##     tSNE1    tSNE2 sample                       Call  `cluster SNN`
+    ##     <dbl>    <dbl> <chr>                        <fct> <fct>        
+    ##  1  12.0    2.43   TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            
+    ##  2  -3.79   7.58   TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
+    ##  3  17.7   -5.70   TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
+    ##  4   2.35  -6.60   TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
+    ##  5   4.18  -9.88   TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
+    ##  6  -5.47   0.865  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
+    ##  7 -41.1   -0.0288 TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
+    ##  8  -4.27 -14.0    TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
+    ##  9  -2.65 -13.8    TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
+    ## 10  28.3   -8.08   TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
     ## # … with 241 more rows
 
 ``` r
@@ -891,12 +881,6 @@ tt.norm.non_redundant =
     tt.norm.MDS %>%
   remove_redundancy(    method = "correlation" )
 ```
-
-    ## Installing widyr needed for correlation analyses
-    ## 
-    ## The downloaded binary packages are in
-    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIkC4dP/downloaded_packages
-    ## Getting the 19544 most variable genes
 
 </div>
 
@@ -1017,6 +1001,30 @@ counts_ensembl %>% ensembl_to_symbol(ens)
     ##  9 ENSG… 13             751 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ## # … with 109 more rows, and 1 more variable: ref_genome <chr>
+
+## From gene symbol to gene description (gene name in full)
+
+We can add gene full name (and in future description) from symbol
+identifiers. This currently works for human and mouse.
+
+``` r
+tt %>% describe_transcript() %>% select(transcript, description, everything())
+```
+
+    ## # A tibble: 938,112 x 9
+    ##    transcript description sample `Cell type` count time  condition batch
+    ##    <chr>      <chr>       <fct>  <fct>       <dbl> <fct> <lgl>     <int>
+    ##  1 DDX11L1    DEAD/H-box… SRR17… b_cell         17 0 d   TRUE          0
+    ##  2 WASH7P     WASP famil… SRR17… b_cell       3568 0 d   TRUE          0
+    ##  3 MIR6859-1  microRNA 6… SRR17… b_cell         57 0 d   TRUE          0
+    ##  4 MIR1302-2  microRNA 1… SRR17… b_cell          1 0 d   TRUE          0
+    ##  5 FAM138A    family wit… SRR17… b_cell          0 0 d   TRUE          0
+    ##  6 OR4F5      olfactory … SRR17… b_cell          0 0 d   TRUE          0
+    ##  7 LOC729737  <NA>        SRR17… b_cell       1764 0 d   TRUE          0
+    ##  8 LOC102725… <NA>        SRR17… b_cell         11 0 d   TRUE          0
+    ##  9 MIR6859-2  microRNA 6… SRR17… b_cell         40 0 d   TRUE          0
+    ## 10 OR4F29     olfactory … SRR17… b_cell          0 0 d   TRUE          0
+    ## # … with 938,102 more rows, and 1 more variable: factor_of_interest <lgl>
 
 ## ADD versus GET versus ONLY modes
 
