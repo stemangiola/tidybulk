@@ -9,7 +9,7 @@ describe_transcript(.data, .transcript = NULL)
 \arguments{
 \item{.data}{A tt or tbl object.}
 
-\item{.transcript}{A character. The name of the ene symbol column.}
+\item{.transcript}{A character. The name of the gene symbol column.}
 }
 \value{
 A tbl
@@ -19,6 +19,6 @@ Get DESCRIPTION id from gene SYMBOL
 }
 \examples{
 
-symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+describe_transcript(tidybulk::counts_mini, .transcript = transcript)
 
 }
