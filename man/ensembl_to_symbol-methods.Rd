@@ -33,7 +33,7 @@ A `tbl` object including additional columns for transcript symbol
 A `tbl` object including additional columns for transcript symbol
 }
 \description{
-ensembl_to_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+ensembl_to_symbol() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 }
 \details{
 \lifecycle{maturing}
