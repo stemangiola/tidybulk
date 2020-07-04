@@ -368,7 +368,7 @@ test_that("Get differential trancript abundance - no object",{
 
 	expect_equal(
 		dplyr::pull(dplyr::slice(distinct(res, b, logFC), 1:4) , "logFC"),
-		c(-11.57989, -12.19303, -12.57969, -11.88829),
+		c(NA,  5.477110, -6.079712 ,       NA),
 		tolerance=1e-6
 	)
 
@@ -395,7 +395,7 @@ test_that("Add differential trancript abundance - no object",{
 
 	expect_equal(
 		dplyr::pull(dplyr::slice(distinct(res, b, logFC), 1:4) , "logFC"),
-		c(-11.57989, -12.19303, -12.57969, -11.88829),
+		c(NA , 5.477110, -6.079712 ,       NA),
 		tolerance=1e-6
 	)
 
@@ -448,6 +448,101 @@ test_that("New method choice",{
 		),
 		"the onyl methods supported"
 	)
+})
+
+test_that("DESeq2 differential trancript abundance - no object",{
+	
+	res =
+		test_differential_abundance(
+			input_df,
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "deseq2",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$log2FoldChange)[1:4],
+		c(-12.322037, -11.670005,  -9.048954, -12.603183),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		9
+	)
+	
+	expect_equal(	class(attr(res, "internals")$DESeq2)[1], 	"DESeqDataSet"  )
+	
+	# Continuous covariate
+	sam = distinct(input_df, a)
+	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
+	
+	res =
+		test_differential_abundance(
+			left_join(input_df, sam),
+			~ condition_cont,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "deseq2",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$log2FoldChange)[1:4],
+		c(-3.656244, -3.241215, -3.037658,  4.173217),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		9
+	)
+	
+	expect_equal(	class(attr(res, "internals")$DESeq2)[1], 	"DESeqDataSet"  )
+	
+	# Continuous and discrete
+	res =
+		test_differential_abundance(
+			left_join(input_df, sam),
+			~ condition_cont + condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "deseq2",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$log2FoldChange)[1:4],
+		c(-10.432623,  -6.747017 , -7.598174,   6.598429),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		9
+	)
+	
+	expect_equal(	class(attr(res, "internals")$DESeq2)[1], 	"DESeqDataSet"  )
+	
+	# Just one covariate error
+	expect_error(
+		test_differential_abundance(
+			filter(input_df, condition),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "deseq2",
+			action="only"
+		),
+		"design has a single variable"
+	)
+	
 })
 
 
@@ -1171,6 +1266,34 @@ test_that("Only symbol from ensambl - no object",{
 		ncol(res),
 		3
 	)
+})
+
+test_that("Add description to symbol",{
+	
+	# Human
+	res =
+		describe_transcript(
+			tidybulk::counts,
+			.transcript = transcript
+		)
+	
+	
+	expect_equal(
+		ncol(res),
+		9
+	)
+	
+	res =
+		describe_transcript(
+			tidybulk::counts %>% tidybulk(sample, transcript, count)
+		)
+	
+	
+	expect_equal(
+		ncol(res),
+		9
+	)
+	
 })
 
 test_that("Add symbol from ensambl - no object",{

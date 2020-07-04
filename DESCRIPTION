@@ -46,7 +46,8 @@ Suggests:
     ggplot2,
     widyr,
     clusterProfiler,
-    msigdbr
+    msigdbr,
+    DESeq2
 VignetteBuilder: 
     knitr
 RdMacros:
