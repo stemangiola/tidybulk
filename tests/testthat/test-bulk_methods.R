@@ -368,7 +368,7 @@ test_that("Get differential trancript abundance - no object",{
 
 	expect_equal(
 		dplyr::pull(dplyr::slice(distinct(res, b, logFC), 1:4) , "logFC"),
-		c(-11.57989, -12.19303, -12.57969, -11.88829),
+		c(NA,  5.477110, -6.079712 ,       NA),
 		tolerance=1e-6
 	)
 
@@ -395,7 +395,7 @@ test_that("Add differential trancript abundance - no object",{
 
 	expect_equal(
 		dplyr::pull(dplyr::slice(distinct(res, b, logFC), 1:4) , "logFC"),
-		c(-11.57989, -12.19303, -12.57969, -11.88829),
+		c(NA , 5.477110, -6.079712 ,       NA),
 		tolerance=1e-6
 	)
 
