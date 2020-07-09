@@ -457,6 +457,251 @@ get_scaled_counts_bulk <- function(.data,
 
 }
 
+
+
+#' Get differential transcription information to a tibble using edgeR.
+#' 
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom utils install.packages
+#' @importFrom purrr when
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param significance_threshold A real between 0 and 1
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#'
+#' @return A tibble with edgeR results
+#'
+get_differential_transcript_abundance_bulk <- function(.data,
+																											 .formula,
+																											 .sample = NULL,
+																											 .transcript = NULL,
+																											 .abundance = NULL,
+																											 .contrasts = NULL,
+																											 method = "edgeR_quasi_likelihood",
+																											 significance_threshold = 0.05,
+																											 minimum_counts = 10,
+																											 minimum_proportion = 0.7,
+																											 fill_missing_values = FALSE,
+																											 scaling_method = "TMM",
+																											 omit_contrast_in_colnames = FALSE) {
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	# Check if omit_contrast_in_colnames is correctly setup
+	if(omit_contrast_in_colnames & length(.contrasts) > 1){
+		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+		omit_contrast_in_colnames = FALSE
+	}
+	
+	# distinct_at is not released yet for dplyr, thus we have to use this trick
+	df_for_edgeR <- .data %>%
+		
+		# Stop if any counts is NA
+		error_if_counts_is_na(!!.abundance) %>%
+		
+		# Stop if there are duplicated transcripts
+		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
+		
+		# Prepare the data frame
+		select(!!.transcript,
+					 !!.sample,
+					 !!.abundance,
+					 one_of(parse_formula(.formula))) %>%
+		distinct() %>%
+		
+		# drop factors as it can affect design matrix
+		mutate_if(is.factor, as.character()) %>%
+		
+		# Check if data rectangular
+		ifelse2_pipe(
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
+			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		)
+	
+	# # Check if at least two samples for each group
+	# if (
+	# 	# If I have some discrete covariates
+	# 	df_for_edgeR %>%
+	# 	select(one_of(parse_formula(.formula))) %>%
+	# 	select_if(function(col)
+	# 		is.character(col) | is.factor(col) | is.logical(col)) %>%
+	# 	ncol %>% `>` (0) &
+	# 
+	# 	# If I have at least 2 samples per group
+	# 	df_for_edgeR %>%
+	# 	select(!!.sample, one_of(parse_formula(.formula))) %>%
+	# 	select_if(function(col) !is.numeric(col) & !is.integer(col) & !is.double(col) ) %>%
+	# 	distinct %>%
+	# 	group_by_at(vars(-!!.sample)) %>%
+	# 	count() %>%
+	# 	ungroup() %>%
+	# 	{
+	# 		(.) %>% nrow %>% `<` (2) |
+	# 		(.) %>% distinct(n) %>%	pull(n) %>%	min %>%	`<` (2)
+	# 	}
+	# )
+	# message("tidybulk says: Just so you know. You have less than two replicates for each factorial combination")
+	
+	# Create design matrix
+	design =
+		model.matrix(
+			object = .formula,
+			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
+		)
+	
+	# Print the design column names in case I want constrasts
+	message(
+		sprintf(
+			"tidybulk says: The design column names are \"%s\"",
+			design %>% colnames %>% paste(collapse = ", ")
+		)
+	)
+	
+	my_contrasts =
+		.contrasts %>%
+		ifelse_pipe(length(.) > 0,
+								~ limma::makeContrasts(contrasts = .x, levels = design),
+								~ NULL)
+	
+	# Check if package is installed, otherwise install
+	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing edgeR needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("edgeR", ask = FALSE)
+	}
+	
+	df_for_edgeR.filt <-
+		df_for_edgeR %>%
+		select(!!.transcript,!!.sample,!!.abundance, !!as.symbol(parse_formula(.formula))) %>%
+		mutate(
+			lowly_abundant = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(
+				.,
+				!!.sample,
+				!!.transcript,
+				!!.abundance,
+				factor_of_interest = !!(as.symbol(parse_formula(.formula)[1])),
+				minimum_counts = minimum_counts,
+				minimum_proportion = minimum_proportion
+			)
+		)
+	
+	edgeR_object =
+		df_for_edgeR.filt %>%
+		filter(!lowly_abundant) %>%
+		select(!!.transcript,!!.sample,!!.abundance) %>%
+		spread(!!.sample,!!.abundance) %>%
+		as_matrix(rownames = !!.transcript) %>%
+		
+		edgeR::DGEList(counts = .) %>%
+		edgeR::calcNormFactors(method = scaling_method) %>%
+		edgeR::estimateDisp(design) %>%
+		
+		# select method
+		when(
+			method == "edgeR_likelihood_ratio" ~ (.) %>% edgeR::glmFit(design),
+			method == "edgeR_quasi_likelihood" ~ (.) %>% edgeR::glmQLFit(design)
+		)
+	
+	
+	edgeR_object %>%
+		
+		# If I have multiple .contrasts merge the results
+		ifelse_pipe(
+			my_contrasts %>% is.null | omit_contrast_in_colnames,
+			
+			# Simple comparison
+			~ .x %>%
+				
+				# select method
+				when(
+					method == "edgeR_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
+					method == "edgeR_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) 
+				)	%>%
+				
+				# Convert to tibble
+				edgeR::topTags(n = 999999) %$%
+				table %>%
+				as_tibble(rownames = quo_name(.transcript)) %>%
+				
+				# Mark DE genes
+				mutate(significant = FDR < significance_threshold) 	%>%
+				
+				# Arrange
+				arrange(FDR),
+			
+			# Multiple comparisons
+			~ {
+				edgeR_obj = .x
+				
+				1:ncol(my_contrasts) %>%
+					map_dfr(
+						~ edgeR_obj %>%
+							
+							# select method
+							when(
+								method == "edgeR_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
+								method == "edgeR_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x]) 
+							)	%>%
+							
+							# Convert to tibble
+							edgeR::topTags(n = 999999) %$%
+							table %>%
+							as_tibble(rownames = quo_name(.transcript)) %>%
+							mutate(constrast = colnames(my_contrasts)[.x]) %>%
+							
+							# Mark DE genes
+							mutate(significant = FDR < significance_threshold)
+					) %>%
+					pivot_wider(values_from = -c(!!.transcript, constrast),
+											names_from = constrast)
+			}
+		)	 %>%
+		
+		# Add filtering info
+		full_join(df_for_edgeR.filt %>%
+								when(
+									!"lowly_abundant" %in% colnames(.data) ~ (.) %>% select(!!.transcript, lowly_abundant) ,
+									~ (.) %>% select(!!.transcript))	%>%
+								distinct(), by = quo_name(.transcript)
+		)%>%
+		
+		
+		# Attach attributes
+		reattach_internals(.data) %>%
+		
+		# Add raw object
+		attach_to_internals(edgeR_object, "edgeR") %>%
+		# Communicate the attribute added
+		{
+			message(
+				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$edgeR`"
+			)
+			(.)
+		}
+}
+
 #' Get differential composition information to a tibble using edgeR.
 #' 
 #' @keywords internal
