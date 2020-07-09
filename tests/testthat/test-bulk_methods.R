@@ -1297,7 +1297,7 @@ test_that("Add cell type proportions - no object",{
 test_that("differential composition",{
 	
 	res =
-		test_differential_composition(
+		test_differential_cellularity(
 			input_df,
 			~ condition,
 			.sample = a,

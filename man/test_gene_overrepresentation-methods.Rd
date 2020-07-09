@@ -37,7 +37,7 @@ A `tbl` object
 A `tbl` object
 }
 \description{
-test_gene_overrepresentation() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
+test_gene_overrepresentation() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
 }
 \details{
 \lifecycle{maturing}

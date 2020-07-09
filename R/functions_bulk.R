@@ -731,7 +731,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #'
 #' @return A tibble with edgeR results
 #'
-test_differential_composition_ <- function(.data,
+test_differential_cellularity_ <- function(.data,
 																											 .formula,
 																											 .sample = NULL,
 																											 .transcript = NULL,

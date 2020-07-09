@@ -3597,21 +3597,20 @@ setMethod("inpute_abundance",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description test_differential_composition() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#' @description test_differential_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name test_differential_composition
+#' @name test_differential_cellularity
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
-#' @param .formula A formula with no response variable, representing the desired linear model
+#' @param .formula A formula with no response variable, representing the desired linear model. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ x\"
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
-#' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
 #'
@@ -3623,7 +3622,7 @@ setMethod("inpute_abundance",
 #' @examples
 #'
 #'
-#' 	test_differential_composition(
+#' 	test_differential_cellularity(
 #' 	 tidybulk::counts_mini,
 #' 	    ~ condition,
 #' 	    sample,
@@ -3631,33 +3630,23 @@ setMethod("inpute_abundance",
 #' 	    `count`
 #' 	)
 #'
-#' 	# The functon `test_differential_composition` operated with contrasts too
-#'
-#'  test_differential_composition(
-#' 	    tidybulk::counts_mini,
-#' 	    ~ 0 + condition,
-#' 	    sample,
-#' 	    transcript,
-#' 	    `count`,
-#' 	    .contrasts = c( "conditionTRUE - conditionFALSE")
-#'  )
 #'
 #'
 #' @docType methods
-#' @rdname test_differential_composition-methods
+#' @rdname test_differential_cellularity-methods
 #' @export
 #'
-setGeneric("test_differential_composition", function(.data,
+setGeneric("test_differential_cellularity", function(.data,
 																										 .formula,
 																										 .sample = NULL,
 																										 .transcript = NULL,
 																										 .abundance = NULL,
 																										 method = "cibersort",
 																										 significance_threshold = 0.05)
-					 standardGeneric("test_differential_composition"))
+					 standardGeneric("test_differential_cellularity"))
 
 # Set internal
-.test_differential_composition = 		function(.data,
+.test_differential_cellularity = 		function(.data,
 																						.formula,
 																						.sample = NULL,
 																						.transcript = NULL,
@@ -3678,7 +3667,7 @@ setGeneric("test_differential_composition", function(.data,
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
 	.data_processed =
-		test_differential_composition_(
+		test_differential_cellularity_(
 			.data,
 			.formula = .formula,
 			.sample = !!.sample,
@@ -3690,42 +3679,42 @@ setGeneric("test_differential_composition", function(.data,
 
 }
 
-#' test_differential_composition
-#' @inheritParams test_differential_composition
+#' test_differential_cellularity
+#' @inheritParams test_differential_cellularity
 #' 
 #' @docType methods
-#' @rdname test_differential_composition-methods
+#' @rdname test_differential_cellularity-methods
 #' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("test_differential_composition",
+setMethod("test_differential_cellularity",
 					"spec_tbl_df",
-					.test_differential_composition)
+					.test_differential_cellularity)
 
-#' test_differential_composition
-#' @inheritParams test_differential_composition
+#' test_differential_cellularity
+#' @inheritParams test_differential_cellularity
 #' 
 #' @docType methods
-#' @rdname test_differential_composition-methods
+#' @rdname test_differential_cellularity-methods
 #' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("test_differential_composition",
+setMethod("test_differential_cellularity",
 					"tbl_df",
-					.test_differential_composition)
+					.test_differential_cellularity)
 
-#' test_differential_composition
-#' @inheritParams test_differential_composition
+#' test_differential_cellularity
+#' @inheritParams test_differential_cellularity
 #' 
 #' @docType methods
-#' @rdname test_differential_composition-methods
+#' @rdname test_differential_cellularity-methods
 #' 
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("test_differential_composition",
+setMethod("test_differential_cellularity",
 					"tidybulk",
-					.test_differential_composition)
+					.test_differential_cellularity)
 
 
 
-.test_differential_composition_se = function(.data,
+.test_differential_cellularity_se = function(.data,
 																						 .formula,
 																						 .sample = NULL,
 																						 .transcript = NULL,
@@ -3744,7 +3733,7 @@ setMethod("test_differential_composition",
 		tidybulk() %>%
 		
 		# Apply scale method
-		test_differential_composition_(
+		test_differential_cellularity_(
 			.data,
 			.formula = .formula,
 			.sample = .sample,
@@ -3756,31 +3745,31 @@ setMethod("test_differential_composition",
 	
 }
 
-#' test_differential_composition
-#' @inheritParams test_differential_composition
+#' test_differential_cellularity
+#' @inheritParams test_differential_cellularity
 #' 
 #' @docType methods
-#' @rdname test_differential_composition-methods
+#' @rdname test_differential_cellularity-methods
 #' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod(
-	"test_differential_composition",
+	"test_differential_cellularity",
 	"SummarizedExperiment",
-	.test_differential_composition_se
+	.test_differential_cellularity_se
 )
 
-#' test_differential_composition
-#' @inheritParams test_differential_composition
+#' test_differential_cellularity
+#' @inheritParams test_differential_cellularity
 #' 
 #' @docType methods
-#' @rdname test_differential_composition-methods
+#' @rdname test_differential_cellularity-methods
 #' 
 #' @return A `SummarizedExperiment` object
 #'
 setMethod(
-	"test_differential_composition",
+	"test_differential_cellularity",
 	"RangedSummarizedExperiment",
-	.test_differential_composition_se
+	.test_differential_cellularity_se
 )
 
