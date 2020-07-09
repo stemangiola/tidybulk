@@ -17,21 +17,22 @@ tidybulk - part of tidyTranscriptomics
 
 ## Functions/utilities available
 
-| Function                       | Description                                                           |
-| ------------------------------ | --------------------------------------------------------------------- |
-| `aggregate_duplicates`         | Aggregate robustly abundance and annotation of duplicated transcripts |
-| `scale_abundance`              | Scale (normalise) abundance for RNA requencing depth                  |
-| `reduce_dimensions`            | Perform dimensionality reduction (PCA, MDS, tSNE)                     |
-| `cluster_elements`             | Labels elements with cluster identity (kmeans, SNN)                   |
-| `remove_redundancy`            | Filter out elements with highly correlated features                   |
-| `adjust_abundance`             | Remove known unwanted variation (Combat)                              |
-| `test_differential_abundance`  | Differenatial abundance testing (DE)                                  |
-| `deconvolve_cellularity`       | Estimated tissue composition (Cibersort)                              |
-| `keep_variable`                | Filter top variable features                                          |
-| `keep_abundant`                | Filter out lowly abundant transcripts                                 |
-| `test_gene_enrichment`         | Gene enrichment analyses (EGSEA)                                      |
-| `test_gene_overrepresentation` | Gene enrichment on list of transcript names (no rank)                 |
-| `impute_abundance`             | Impute abundance for missing data points using sample groupings       |
+| Function                        | Description                                                           |
+| ------------------------------- | --------------------------------------------------------------------- |
+| `aggregate_duplicates`          | Aggregate robustly abundance and annotation of duplicated transcripts |
+| `scale_abundance`               | Scale (normalise) abundance for RNA sequencing depth                  |
+| `reduce_dimensions`             | Perform dimensionality reduction (PCA, MDS, tSNE)                     |
+| `cluster_elements`              | Labels elements with cluster identity (kmeans, SNN)                   |
+| `remove_redundancy`             | Filter out elements with highly correlated features                   |
+| `adjust_abundance`              | Remove known unwanted variation (Combat)                              |
+| `test_differential_abundance`   | Differential transcript abundance testing (DE)                        |
+| `deconvolve_cellularity`        | Estimated tissue composition (Cibersort or llsr)                      |
+| `test_differential_cellularity` | Differential cell-type abundance testing                              |
+| `keep_variable`                 | Filter top variable features                                          |
+| `keep_abundant`                 | Filter out lowly abundant transcripts                                 |
+| `test_gene_enrichment`          | Gene enrichment analyses (EGSEA)                                      |
+| `test_gene_overrepresentation`  | Gene enrichment on list of transcript names (no rank)                 |
+| `impute_abundance`              | Impute abundance for missing data points using sample groupings       |
 
 | Utilities           | Description                                |
 | ------------------- | ------------------------------------------ |
@@ -196,8 +197,6 @@ TidyTranscriptomics
 tt.norm.variable = tt.norm %>% keep_variable()
 ```
 
-    ## Getting the 500 most variable genes
-
 </div>
 
 <div class="column-right">
@@ -279,8 +278,7 @@ cmds$cell_type = tidybulk::counts[
 </div>
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is
-coloured by cell
-type.
+coloured by cell type.
 
 ``` r
 tt.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
@@ -430,18 +428,18 @@ tt.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##     tSNE1  tSNE2 sample                       Call 
-    ##     <dbl>  <dbl> <chr>                        <fct>
-    ##  1   9.42  -4.39 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2  -7.03  -2.09 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3  14.1  -15.6  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4   4.31   3.75 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5   5.61  -2.10 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6  -4.11   3.76 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7 -30.9    7.92 TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8   2.92  13.0  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9   2.09  11.3  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  21.4  -11.7  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##     tSNE1    tSNE2 sample                       Call 
+    ##     <dbl>    <dbl> <chr>                        <fct>
+    ##  1  12.0    2.43   TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2  -3.79   7.58   TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3  17.7   -5.70   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4   2.35  -6.60   TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5   4.18  -9.88   TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  -5.47   0.865  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7 -41.1   -0.0288 TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8  -4.27 -14.0    TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9  -2.65 -13.8    TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10  28.3   -8.08   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -710,6 +708,23 @@ tt.cibersort %>%
 
 ![](README_files/figure-gfm/plot_cibersort-1.png)<!-- -->
 
+## Test differential cell-type abundance
+
+We can also perform a statistical test on the differential cell-type
+abundance across conditions
+
+``` r
+    tt %>%
+    test_differential_cellularity(~ condition)
+```
+
+We can also perform regression analysis with censored data (coxph).
+
+``` r
+    tt %>%
+    test_differential_cellularity(survival::Surv(time, dead) ~ .)
+```
+
 ## Cluster `samples`
 
 We may want to cluster our data (e.g., using k-means sample-wise).
@@ -818,18 +833,18 @@ tt.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 5
-    ##     tSNE1  tSNE2 sample                       Call  `cluster SNN`
-    ##     <dbl>  <dbl> <chr>                        <fct> <fct>        
-    ##  1   9.42  -4.39 TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            
-    ##  2  -7.03  -2.09 TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
-    ##  3  14.1  -15.6  TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
-    ##  4   4.31   3.75 TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
-    ##  5   5.61  -2.10 TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
-    ##  6  -4.11   3.76 TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
-    ##  7 -30.9    7.92 TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
-    ##  8   2.92  13.0  TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
-    ##  9   2.09  11.3  TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
-    ## 10  21.4  -11.7  TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
+    ##     tSNE1    tSNE2 sample                       Call  `cluster SNN`
+    ##     <dbl>    <dbl> <chr>                        <fct> <fct>        
+    ##  1  12.0    2.43   TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            
+    ##  2  -3.79   7.58   TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
+    ##  3  17.7   -5.70   TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
+    ##  4   2.35  -6.60   TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
+    ##  5   4.18  -9.88   TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
+    ##  6  -5.47   0.865  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
+    ##  7 -41.1   -0.0288 TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
+    ##  8  -4.27 -14.0    TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
+    ##  9  -2.65 -13.8    TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
+    ## 10  28.3   -8.08   TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
     ## # … with 241 more rows
 
 ``` r
@@ -853,18 +868,18 @@ tt.norm.SNN %>%
 ```
 
     ## # A tibble: 500 x 8
-    ##    ens           logFC logCPM    LR   PValue      FDR significant lowly_abundant
+    ##    ens           logFC logCPM     F   PValue      FDR significant lowly_abundant
     ##    <chr>         <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl>       <lgl>         
-    ##  1 ENSG00000186…  6.17   7.99  446. 4.54e-99 2.27e-96 TRUE        FALSE         
-    ##  2 ENSG00000111…  2.94   9.64  407. 1.32e-90 3.30e-88 TRUE        FALSE         
-    ##  3 ENSG00000181…  7.93   9.12  380. 1.15e-84 1.92e-82 TRUE        FALSE         
-    ##  4 ENSG00000140…  2.69   9.54  359. 3.65e-80 4.57e-78 TRUE        FALSE         
-    ##  5 ENSG00000065…  1.59  10.2   329. 1.85e-73 1.85e-71 TRUE        FALSE         
-    ##  6 ENSG00000137…  3.88   8.28  319. 2.16e-71 1.80e-69 TRUE        FALSE         
-    ##  7 ENSG00000124…  4.66   8.62  305. 3.37e-68 2.41e-66 TRUE        FALSE         
-    ##  8 ENSG00000196…  4.92   7.04  291. 3.24e-65 2.03e-63 TRUE        FALSE         
-    ##  9 ENSG00000092…  2.91   8.40  263. 3.37e-59 1.87e-57 TRUE        FALSE         
-    ## 10 ENSG00000094…  4.85   9.22  258. 4.11e-58 2.06e-56 TRUE        FALSE         
+    ##  1 ENSG00000065…  1.59  10.2   395. 1.31e-53 6.56e-51 TRUE        FALSE         
+    ##  2 ENSG00000111…  2.94   9.64  389. 4.51e-53 1.13e-50 TRUE        FALSE         
+    ##  3 ENSG00000140…  2.69   9.54  345. 3.67e-49 6.12e-47 TRUE        FALSE         
+    ##  4 ENSG00000186…  6.17   7.99  343. 5.74e-49 7.18e-47 TRUE        FALSE         
+    ##  5 ENSG00000181…  7.93   9.12  299. 8.93e-45 8.93e-43 TRUE        FALSE         
+    ##  6 ENSG00000137…  3.88   8.28  267. 1.85e-41 1.54e-39 TRUE        FALSE         
+    ##  7 ENSG00000083…  1.37   9.39  247. 2.79e-39 1.99e-37 TRUE        FALSE         
+    ##  8 ENSG00000143…  1.02  10.7   246. 3.56e-39 2.22e-37 TRUE        FALSE         
+    ##  9 ENSG00000124…  4.66   8.62  238. 2.37e-38 1.32e-36 TRUE        FALSE         
+    ## 10 ENSG00000092…  2.91   8.40  232. 1.36e-37 6.82e-36 TRUE        FALSE         
     ## # … with 490 more rows
 
 ## Drop `redundant` transcripts
@@ -893,8 +908,6 @@ tt.norm.non_redundant =
     tt.norm.MDS %>%
   remove_redundancy(    method = "correlation" )
 ```
-
-    ## Getting the 19544 most variable genes
 
 </div>
 

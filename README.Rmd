@@ -21,13 +21,14 @@ output: github_document
 Function | Description
 ------------ | -------------
 `aggregate_duplicates` | Aggregate robustly abundance and annotation of duplicated transcripts
-`scale_abundance` | Scale (normalise) abundance for RNA requencing depth
+`scale_abundance` | Scale (normalise) abundance for RNA sequencing depth
 `reduce_dimensions` | Perform dimensionality reduction (PCA, MDS, tSNE)
 `cluster_elements` | Labels elements with cluster identity (kmeans, SNN)
 `remove_redundancy` | Filter out elements with highly correlated features
 `adjust_abundance` | Remove known unwanted variation (Combat)
-`test_differential_abundance` | Differenatial abundance testing (DE) 
-`deconvolve_cellularity` | Estimated tissue composition (Cibersort)
+`test_differential_abundance` | Differential transcript abundance testing (DE) 
+`deconvolve_cellularity` | Estimated tissue composition (Cibersort or llsr)
+`test_differential_cellularity` | Differential cell-type abundance testing
 `keep_variable` | Filter top variable features
 `keep_abundant` | Filter out lowly abundant transcripts
 `test_gene_enrichment` | Gene enrichment analyses (EGSEA)
@@ -94,7 +95,7 @@ my_theme =
 ## Installation
 
 From Bioconductor
-```{r}
+```{r eval=FALSE}
 BiocManager::install("tidybulk")
 ```
 
@@ -532,6 +533,26 @@ tt.cibersort %>%
   facet_wrap(~`Cell type`) +
   my_theme +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
+```
+
+## Test differential cell-type abundance
+
+We can also perform a statistical test on the differential cell-type abundance across conditions
+
+```{r DC, cache=TRUE}
+
+	tt %>%
+	test_differential_cellularity(~ condition)
+
+```
+
+We can also perform regression analysis with censored data (coxph).
+
+```{r DC_censored, eval=FALSE}
+
+	tt %>%
+	test_differential_cellularity(survival::Surv(time, dead) ~ .)
+
 ```
 
 ## Cluster `samples`
