@@ -1306,15 +1306,11 @@ test_that("differential composition",{
 		)
 	
 	expect_equal(
-		as.numeric(res[1,7:10]),
-		c(0.6223514, 0.2378625, 0.0000000 ,0.0000000),
-		tolerance=1e-3
+		as.integer(res$`estimate_(Intercept)`[1]),
+		-2, 
+		tollerance =1e-3
 	)
-	
-	expect_equal(
-		ncol(res),
-		28
-	)
+
 	
 })
 
@@ -1329,9 +1325,8 @@ test_that("filter abundant - no object",{
 		)
 
 	expect_equal(
-		res[1,3] %>% pull(1),
-		-2.547159, 
-		tollerance =1e-3
+		ncol(res),
+		6
 	)
 
 })
