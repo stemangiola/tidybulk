@@ -227,7 +227,7 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #'
 #' \lifecycle{maturing}
 #'
-#' @description scale_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+#' @description scale_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -458,7 +458,7 @@ setMethod("scale_abundance",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description cluster_elements() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and identify clusters in the data.
+#' @description cluster_elements() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and identify clusters in the data.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -759,7 +759,7 @@ setMethod("cluster_elements",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description reduce_dimensions() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
+#' @description reduce_dimensions() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1097,7 +1097,7 @@ setMethod("reduce_dimensions",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description rotate_dimensions() takes as imput a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
+#' @description rotate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1335,7 +1335,7 @@ setMethod("rotate_dimensions",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description remove_redundancy() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., samples).
+#' @description remove_redundancy() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., samples).
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1573,7 +1573,7 @@ setMethod("remove_redundancy",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description adjust_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
+#' @description adjust_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1793,7 +1793,7 @@ setMethod("adjust_abundance",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description aggregate_duplicates() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.
+#' @description aggregate_duplicates() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1964,7 +1964,7 @@ setMethod("aggregate_duplicates",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description deconvolve_cellularity() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
+#' @description deconvolve_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -2222,7 +2222,7 @@ symbol_to_entrez = function(.data,
 #'
 #' \lifecycle{maturing}
 #'
-#' @description ensembl_to_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+#' @description ensembl_to_symbol() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -2331,7 +2331,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description test_differential_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#' @description test_differential_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -2610,7 +2610,7 @@ setMethod(
 #'
 #' \lifecycle{maturing}
 #'
-#' @description keep_variable() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#' @description keep_variable() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -2770,7 +2770,7 @@ setMethod("keep_variable",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description keep_abundant() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#' @description keep_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -2964,7 +2964,7 @@ setMethod("keep_abundant",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description test_gene_enrichment() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+#' @description test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -3096,7 +3096,7 @@ setMethod("test_gene_enrichment",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description test_gene_overrepresentation() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
+#' @description test_gene_overrepresentation() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
 #'
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_missing
@@ -3230,7 +3230,7 @@ setMethod("test_gene_overrepresentation",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description pivot_sample() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
+#' @description pivot_sample() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 #'
 #' @importFrom magrittr "%>%"
 #'
@@ -3325,7 +3325,7 @@ setMethod("pivot_sample",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description pivot_transcript() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
+#' @description pivot_transcript() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 #'
 #' @importFrom magrittr "%>%"
 #'
@@ -3418,16 +3418,16 @@ setMethod("pivot_transcript",
 
 
 
-#' Impute transcript abundance if missing from sample-transcript pairs
+#' inpute transcript abundance if missing from sample-transcript pairs
 #'
 #' \lifecycle{maturing}
 #'
-#' @description impute_abundance() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
+#' @description inpute_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name impute_abundance
+#' @name inpute_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
@@ -3435,7 +3435,7 @@ setMethod("pivot_transcript",
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #'
-#' @details This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
+#' @details This function inputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 #'
 #' @return A `tbl` non-sparse abundance
 #'
@@ -3446,7 +3446,7 @@ setMethod("pivot_transcript",
 #'
 #'
 #' res =
-#' 	impute_abundance(
+#' 	inpute_abundance(
 #' 		tidybulk::counts_mini,
 #' 	~ condition,
 #' 	.sample = sample,
@@ -3456,20 +3456,20 @@ setMethod("pivot_transcript",
 #'
 #'
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname inpute_abundance-methods
 #'
 #' @export
 #'
 #'
-setGeneric("impute_abundance", function(.data,
+setGeneric("inpute_abundance", function(.data,
 																				.formula,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL)
-	standardGeneric("impute_abundance"))
+	standardGeneric("inpute_abundance"))
 
 # Set internal
-.impute_abundance = 	function(.data,
+.inpute_abundance = 	function(.data,
 															.formula,
 															.sample = NULL,
 															.transcript = NULL,
@@ -3511,34 +3511,34 @@ setGeneric("impute_abundance", function(.data,
 
 }
 
-#' impute_abundance
-#' @inheritParams impute_abundance
+#' inpute_abundance
+#' @inheritParams inpute_abundance
 #' 
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname inpute_abundance-methods
 #' 
-#' @return A `tbl` with imputed abundnce
-setMethod("impute_abundance", "spec_tbl_df", .impute_abundance)
+#' @return A `tbl` with inputed abundnce
+setMethod("inpute_abundance", "spec_tbl_df", .inpute_abundance)
 
-#' impute_abundance
-#' @inheritParams impute_abundance
+#' inpute_abundance
+#' @inheritParams inpute_abundance
 #' 
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname inpute_abundance-methods
 #' 
-#' @return A `tbl` with imputed abundnce
-setMethod("impute_abundance", "tbl_df", .impute_abundance)
+#' @return A `tbl` with inputed abundnce
+setMethod("inpute_abundance", "tbl_df", .inpute_abundance)
 
-#' impute_abundance
-#' @inheritParams impute_abundance
+#' inpute_abundance
+#' @inheritParams inpute_abundance
 #' 
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname inpute_abundance-methods
 #' 
-#' @return A `tbl` with imputed abundnce
-setMethod("impute_abundance", "tidybulk", .impute_abundance)
+#' @return A `tbl` with inputed abundnce
+setMethod("inpute_abundance", "tidybulk", .inpute_abundance)
 
-.impute_abundance_se = function(.data,
+.inpute_abundance_se = function(.data,
 																.formula,
 																.sample = NULL,
 																.transcript = NULL,
@@ -3554,7 +3554,7 @@ setMethod("impute_abundance", "tidybulk", .impute_abundance)
 		tidybulk() %>%
 
 		# Apply scale method
-		impute_abundance(
+		inpute_abundance(
 			.formula = .formula,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
@@ -3566,29 +3566,29 @@ setMethod("impute_abundance", "tidybulk", .impute_abundance)
 
 }
 
-#' impute_abundance
-#' @inheritParams impute_abundance
+#' inpute_abundance
+#' @inheritParams inpute_abundance
 #' 
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname inpute_abundance-methods
 #' 
 #' @return A `SummarizedExperiment` object
 #'
-setMethod("impute_abundance",
+setMethod("inpute_abundance",
 					"SummarizedExperiment",
-					.impute_abundance_se)
+					.inpute_abundance_se)
 
-#' impute_abundance
-#' @inheritParams impute_abundance
+#' inpute_abundance
+#' @inheritParams inpute_abundance
 #' 
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname inpute_abundance-methods
 #' 
 #' @return A `SummarizedExperiment` object
 #'
-setMethod("impute_abundance",
+setMethod("inpute_abundance",
 					"RangedSummarizedExperiment",
-					.impute_abundance_se)
+					.inpute_abundance_se)
 
 
 
@@ -3597,7 +3597,7 @@ setMethod("impute_abundance",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description test_differential_composition() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#' @description test_differential_composition() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
