@@ -3648,38 +3648,22 @@ setMethod("impute_abundance",
 #' @export
 #'
 setGeneric("test_differential_composition", function(.data,
-																									 .formula,
-																									 .sample = NULL,
-																									 .transcript = NULL,
-																									 .abundance = NULL,
-																									 .contrasts = NULL,
-																									 method = "edgeR_quasi_likelihood",
-																									 significance_threshold = 0.05,
-																									 minimum_counts = 10,
-																									 minimum_proportion = 0.7,
-																									 fill_missing_values = FALSE,
-																									 scaling_method = "TMM",
-																									 omit_contrast_in_colnames = FALSE,
-																									 
-																									 action = "add")
+																										 .formula,
+																										 .sample = NULL,
+																										 .transcript = NULL,
+																										 .abundance = NULL,
+																										 method = "cibersort",
+																										 significance_threshold = 0.05)
 					 standardGeneric("test_differential_composition"))
 
 # Set internal
 .test_differential_composition = 		function(.data,
-																					.formula,
-																					.sample = NULL,
-																					.transcript = NULL,
-																					.abundance = NULL,
-																					.contrasts = NULL,
-																					method = "edgeR_quasi_likelihood",
-																					significance_threshold = 0.05,
-																					minimum_counts = 10,
-																					minimum_proportion = 0.7,
-																					fill_missing_values = FALSE,
-																					scaling_method = "TMM",
-																					omit_contrast_in_colnames = FALSE,
-																					
-																					action = "add")
+																						.formula,
+																						.sample = NULL,
+																						.transcript = NULL,
+																						.abundance = NULL,
+																						method = "cibersort",
+																						significance_threshold = 0.05)
 {
 	# Get column names
 	.sample = enquo(.sample)
@@ -3692,66 +3676,18 @@ setGeneric("test_differential_composition", function(.data,
 	
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-	
-	if(grepl("edgeR", method)){
-		.data_processed =
-			test_differential_composition_(
-				.data,
-				.formula,
-				.sample = !!.sample,
-				.transcript = !!.transcript,
-				.abundance = !!.abundance,
-				.contrasts = .contrasts,
-				method = method,
-				significance_threshold = significance_threshold,
-				minimum_counts = minimum_counts,
-				minimum_proportion = minimum_proportion,
-				fill_missing_values = fill_missing_values,
-				scaling_method = scaling_method,
-				omit_contrast_in_colnames = omit_contrast_in_colnames
-			)
-	}
-	else stop("tidybulk says: the onyl methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT)")
-	
-	if (action == "add"){
-		
-		.data %>%
-			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
-			
-			# Arrange
-			ifelse_pipe(.contrasts %>% is.null,
-									~ .x %>% arrange(FDR))	%>%
-			
-			# Attach attributes
-			reattach_internals(.data_processed)
-		
-	}
-	else if (action == "get"){
-		
-		.data %>%
-			
-			# Selecting the right columns
-			select(
-				!!.transcript,
-				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$vertical_cols
-			) %>%
-			distinct() %>%
-			
-			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
-			
-			# Arrange
-			ifelse_pipe(.contrasts %>% is.null,
-									~ .x %>% arrange(FDR))	%>%
-			
-			# Attach attributes
-			reattach_internals(.data_processed)
-		
-	}
-	else if (action == "only") .data_processed
-	else
-		stop(
-			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+
+	.data_processed =
+		test_differential_composition_(
+			.data,
+			.formula = .formula,
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			method = method,
+			significance_threshold = significance_threshold
 		)
+
 }
 
 #' test_differential_composition
@@ -3790,19 +3726,12 @@ setMethod("test_differential_composition",
 
 
 .test_differential_composition_se = function(.data,
-																					 .formula,
-																					 .sample = NULL,
-																					 .transcript = NULL,
-																					 .abundance = NULL,
-																					 .contrasts = NULL,
-																					 method = "edgeR_quasi_likelihood",
-																					 significance_threshold = 0.05,
-																					 minimum_counts = 10,
-																					 minimum_proportion = 0.7,
-																					 fill_missing_values = FALSE,
-																					 scaling_method = "TMM",
-																					 omit_contrast_in_colnames = FALSE,
-																					 action = "add")
+																						 .formula,
+																						 .sample = NULL,
+																						 .transcript = NULL,
+																						 .abundance = NULL,
+																						 method = "cibersort",
+																						 significance_threshold = 0.05)
 {
 	# Make col names
 	.sample = enquo(.sample)
@@ -3815,24 +3744,15 @@ setMethod("test_differential_composition",
 		tidybulk() %>%
 		
 		# Apply scale method
-		test_differential_composition(
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			.contrasts = .contrasts,
+		test_differential_composition_(
+			.data,
+			.formula = .formula,
+			.sample = .sample,
+			.transcript = .transcript,
+			.abundance = .abundance,
 			method = method,
-			significance_threshold = significance_threshold,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			fill_missing_values = fill_missing_values,
-			scaling_method = scaling_method,
-			omit_contrast_in_colnames = omit_contrast_in_colnames,
-			action = action
-		) %>%
-		
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
+			significance_threshold = significance_threshold
+		)
 	
 }
 

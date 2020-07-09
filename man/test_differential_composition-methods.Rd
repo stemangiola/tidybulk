@@ -16,15 +16,8 @@ test_differential_composition(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
-  fill_missing_values = FALSE,
-  scaling_method = "TMM",
-  omit_contrast_in_colnames = FALSE,
-  action = "add"
+  method = "cibersort",
+  significance_threshold = 0.05
 )
 
 \S4method{test_differential_composition}{spec_tbl_df}(
@@ -33,15 +26,8 @@ test_differential_composition(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
-  fill_missing_values = FALSE,
-  scaling_method = "TMM",
-  omit_contrast_in_colnames = FALSE,
-  action = "add"
+  method = "cibersort",
+  significance_threshold = 0.05
 )
 
 \S4method{test_differential_composition}{tbl_df}(
@@ -50,15 +36,8 @@ test_differential_composition(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
-  fill_missing_values = FALSE,
-  scaling_method = "TMM",
-  omit_contrast_in_colnames = FALSE,
-  action = "add"
+  method = "cibersort",
+  significance_threshold = 0.05
 )
 
 \S4method{test_differential_composition}{tidybulk}(
@@ -67,15 +46,8 @@ test_differential_composition(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
-  fill_missing_values = FALSE,
-  scaling_method = "TMM",
-  omit_contrast_in_colnames = FALSE,
-  action = "add"
+  method = "cibersort",
+  significance_threshold = 0.05
 )
 
 \S4method{test_differential_composition}{SummarizedExperiment}(
@@ -84,15 +56,8 @@ test_differential_composition(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
-  fill_missing_values = FALSE,
-  scaling_method = "TMM",
-  omit_contrast_in_colnames = FALSE,
-  action = "add"
+  method = "cibersort",
+  significance_threshold = 0.05
 )
 
 \S4method{test_differential_composition}{RangedSummarizedExperiment}(
@@ -101,15 +66,8 @@ test_differential_composition(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
-  fill_missing_values = FALSE,
-  scaling_method = "TMM",
-  omit_contrast_in_colnames = FALSE,
-  action = "add"
+  method = "cibersort",
+  significance_threshold = 0.05
 )
 }
 \arguments{

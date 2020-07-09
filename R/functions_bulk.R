@@ -468,6 +468,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
+#' @importFrom stringr str_replace
 #'
 #'
 #' @param .data A tibble
@@ -504,14 +505,14 @@ test_differential_composition_ <- function(.data,
 		when(
 			
 			# If I have the dot, needed definitely for censored
-			format(.) %>% grepl("\\.", .) %>% any ~ format(.) %>% map_chr(~.x %>% gsub("\\.", ".proportion_0_corrected", .)),
+			format(.) %>% grepl("\\.", .) %>% any ~ format(.formula) %>% str_replace("([-\\+\\*~ ])(\\.)", "\\1.proportion_0_corrected"),
 			
 			# If normal formula
 			~ format(.) %>% prepend(".proportion_0_corrected")
 		) %>%
 		
 		as.formula
-		
+		 
 	.data %>%
 			
 		# Deconvolution
@@ -1419,7 +1420,7 @@ aggregate_duplicated_transcripts_bulk =
 			colnames() %>%
 			c("n_aggr")
 
-		# ggregates read .data over samples, concatenates other character columns, and averages other numeric columns
+		# aggregates read .data over samples, concatenates other character columns, and averages other numeric columns
 		.data %>%
 
 			# Through error if some counts are NA
@@ -1429,7 +1430,7 @@ aggregate_duplicated_transcripts_bulk =
 			mutate_if(is.factor, as.character) %>%
 			mutate_if(is.logical, as.character) %>%
 
-			# Add the nuber of duplicates for each gene
+			# Add the number of duplicates for each gene
 			dplyr::left_join((.) %>% count(!!.sample,!!.transcript, name = "n_aggr"),
 											 by = c(quo_name(.sample), quo_name(.transcript))) %>%
 
@@ -1449,7 +1450,7 @@ aggregate_duplicated_transcripts_bulk =
 						group_by(!!.sample,!!.transcript) %>%
 						dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
 
-						# If scaled abundance exists aggragate that as well
+						# If scaled abundance exists aggregate that as well
 						ifelse_pipe((
 							".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
 								# .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% `!` &&
@@ -1909,6 +1910,11 @@ get_cell_type_proportions = function(.data,
 		# Prepare data frame
 		distinct(!!.sample,!!.transcript,!!.abundance) %>%
 		spread(!!.sample,!!.abundance) %>%
+		
+		# Eliminate NA transcripts
+		filter(!!.transcript %>% is.na %>% `!`) %>%
+		
+		# Convert
 		data.frame(row.names = 1, check.names = FALSE) %>%
 
 		# Run Cibersort or llsr through custom function, depending on method choice
