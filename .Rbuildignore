@@ -11,3 +11,4 @@ README.Rmd
 ^.git$
 .coveralls.yml
 .travis.yml
+^.github$

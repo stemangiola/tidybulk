@@ -1,7 +1,7 @@
 Type: Package
 Package: tidybulk
 Title: Brings transcriptomics to the tidyverse 
-Version: 1.0.1
+Version: 1.1.2
 Authors@R: person("Stefano", "Mangiola", email = "mangiolastefano@gmail.com",
                   role = c("aut", "cre"))
 Description: This is a collection of utility functions that allow
@@ -25,6 +25,7 @@ Imports:
     lifecycle
 Suggests:
     testthat,
+    vctrs,
     AnnotationDbi,
     BiocManager,
     Rsubread,
@@ -40,13 +41,13 @@ Suggests:
     Seurat,
     KernSmooth,
     Rtsne,
-    EGSEA,
     SummarizedExperiment,
     S4Vectors,
     ggplot2,
     widyr,
     clusterProfiler,
-    msigdbr
+    msigdbr,
+    DESeq2
 VignetteBuilder: 
     knitr
 RdMacros:

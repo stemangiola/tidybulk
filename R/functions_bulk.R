@@ -118,7 +118,9 @@ create_tt_from_bam_sam_bulk <-
 			add_class("tidybulk")
 	}
 
-#' Drop lowly tanscribed genes for TMM normalization
+
+
+#' Drop lowly transcribed genes for TMM normalization
 #' 
 #' @keywords internal
 #'
@@ -538,7 +540,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
 		)
-	
+
 	# # Check if at least two samples for each group
 	# if (
 	# 	# If I have some discrete covariates
@@ -562,7 +564,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	# 	}
 	# )
 	# message("tidybulk says: Just so you know. You have less than two replicates for each factorial combination")
-	
+
 	# Create design matrix
 	design =
 		model.matrix(
@@ -687,7 +689,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 								distinct(), by = quo_name(.transcript)
 		)%>%
 		
-		
 		# Attach attributes
 		reattach_internals(.data) %>%
 		
@@ -702,6 +703,181 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		}
 }
 
+                                                           #' Get differential transcription information to a tibble using edgeR.
+#' 
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom utils install.packages
+#' @importFrom purrr when
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param significance_threshold A real between 0 and 1
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#'
+#' @return A tibble with edgeR results
+#'
+get_differential_transcript_abundance_deseq2 <- function(.data,
+																											 .formula,
+																											 .sample = NULL,
+																											 .transcript = NULL,
+																											 .abundance = NULL,
+																											 .contrasts = NULL,
+																											 method = "edgeR_quasi_likelihood",
+																											 significance_threshold = 0.05,
+																											 minimum_counts = 10,
+																											 minimum_proportion = 0.7,
+																											 fill_missing_values = FALSE,
+																											 scaling_method = "TMM",
+																											 omit_contrast_in_colnames = FALSE) {
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	# Check if omit_contrast_in_colnames is correctly setup
+	if(omit_contrast_in_colnames & length(.contrasts) > 1){
+		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+		omit_contrast_in_colnames = FALSE
+	}
+	
+	# Check if package is installed, otherwise install
+	if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing DESeq2 needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("DESeq2", ask = FALSE)
+	}
+	
+	# # Print the design column names in case I want contrasts
+	# message(
+	# 	sprintf(
+	# 		"tidybulk says: The design column names are \"%s\"",
+	# 		design %>% colnames %>% paste(collapse = ", ")
+	# 	)
+	# )
+	
+	my_contrasts =
+		NULL
+	
+	
+	deseq2_object = 
+		.data %>%
+		
+		# Stop if any counts is NA
+		error_if_counts_is_na(!!.abundance) %>%
+		
+		# Stop if there are duplicated transcripts
+		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
+		
+		# Prepare the data frame
+		select(!!.transcript,
+					 !!.sample,
+					 !!.abundance,
+					 one_of(parse_formula(.formula))) %>%
+		distinct() %>%
+		
+		# drop factors as it can affect design matrix
+		mutate_if(is.factor, as.character()) %>%
+		
+		# Check if data rectangular
+		ifelse2_pipe(
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
+			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		) %>%
+		
+		# Needed for DESeq2
+		mutate(!!.abundance := as.integer(!!.abundance)) %>%
+		rename(counts = !!.abundance) %>%
+		mutate_if(is.logical , as.factor) %>%
+		mutate_if(is.character , as.factor) %>%
+		
+		# Filter
+		tidybulk_to_SummarizedExperiment(!!.sample, !!.transcript, counts) %>%
+		keep_abundant(factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]])) %>%
+		
+		# DESeq2
+		DESeq2::DESeqDataSet( design = .formula) %>%
+		DESeq2::DESeq() 
+	
+	# Read ft object
+	deseq2_object %>%
+		
+		# If I have multiple .contrasts merge the results
+		ifelse_pipe(
+			my_contrasts %>% is.null | omit_contrast_in_colnames,
+			
+			# Simple comparison
+			~ .x %>%
+				
+				DESeq2::results() %>%
+				as_tibble(rownames = quo_name(.transcript)) %>%
+				
+				# Mark DE genes
+				mutate(significant = padj < significance_threshold) 	%>%
+				
+				# Arrange
+				arrange(padj),
+			
+			# Multiple comparisons
+			~ {
+				deseq2_obj = .x
+				
+				1:ncol(my_contrasts) %>%
+					map_dfr(
+						~ 	deseq2_obj %>%
+							
+							# select method
+							DESeq2::results()	%>%
+							
+							# Convert to tibble
+							as_tibble(rownames = quo_name(.transcript)) %>%
+							mutate(constrast = colnames(my_contrasts)[.x]) %>%
+							
+							# Mark DE genes
+							mutate(significant = padj < significance_threshold)
+					) %>%
+					pivot_wider(values_from = -c(!!.transcript, constrast),
+											names_from = constrast)
+			}
+		)	 %>%
+		
+		# Add filtering info
+		right_join(.data %>% distinct(!!.transcript)) %>%
+		when(!"lowly_abundant" %in% colnames(.data) ~ (.) %>%	mutate(lowly_abundant = if_else(is.na(log2FoldChange), T, F)) ,
+				 ~ (.))	%>%
+
+		# Attach attributes
+		reattach_internals(.data) %>%
+		
+		# Add raw object
+		attach_to_internals(deseq2_object, "DESeq2") %>%
+		# Communicate the attribute added
+		{
+			message(
+				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$DESeq2`"
+			)
+			(.)
+		}
+}
+  
 #' Get differential composition information to a tibble using edgeR.
 #' 
 #' @keywords internal
@@ -822,7 +998,7 @@ test_differential_cellularity_ <- function(.data,
 }
 
 
-
+                                                           
 #' Get gene enrichment analyses using EGSEA
 #' 
 #' @keywords internal
@@ -1252,6 +1428,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats prcomp
+#' @importFrom utils capture.output
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -2717,7 +2894,7 @@ fill_NA_using_formula = function(.data,
 
 
 
-entrez_rank_to_gsea = function(my_entrez_rank, species){
+entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	
 	# From the page
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
@@ -2728,18 +2905,25 @@ entrez_rank_to_gsea = function(my_entrez_rank, species){
 		BiocManager::install("clusterProfiler", ask = FALSE)
 	}
 	
-	m_df <- msigdbr::msigdbr(species = species)
-	
-	m_df %>%
-		nest(data = -gs_cat) %>%
-		mutate(test = 
-					 	map(
-					 		data, 
-					 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
-					 			as_tibble
-					 	)) %>%
-		select(-data) %>%
-		unnest(test)
+	# Get gene sets signatures
+	msigdbr::msigdbr(species = species) %>%
+		
+	# Filter specific gene_set if specified. This was introduced to speed up examples executionS
+	when(
+		!is.null(gene_set) ~ filter(., gs_cat %in% gene_set),
+		~ (.)
+	) %>%
+		
+	# Execute calculation
+	nest(data = -gs_cat) %>%
+	mutate(test = 
+				 	map(
+				 		data, 
+				 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
+				 			as_tibble
+				 	)) %>%
+	select(-data) %>%
+	unnest(test)
 	
 }
 

@@ -17,6 +17,7 @@ tidybulk - part of tidyTranscriptomics
 
 ## Functions/utilities available
 
+
 | Function                        | Description                                                           |
 | ------------------------------- | --------------------------------------------------------------------- |
 | `aggregate_duplicates`          | Aggregate robustly abundance and annotation of duplicated transcripts |
@@ -57,7 +58,7 @@ tidybulk - part of tidyTranscriptomics
 | `chr` or `fctr` | `chr` or `fctr` | `integer` | …          | …               |
 
 All functions are also directly compatible with `SummarizedExperiment`
-object as well.
+object.
 
 ## Installation
 
@@ -88,9 +89,9 @@ duplicated transcripts (e.g., isoforms, ensembl). For example, we often
 have to convert ensembl symbols to gene/transcript symbol, but in doing
 so we have to deal with duplicates. `aggregate_duplicates` takes a
 tibble and column names (as symbols; for `sample`, `transcript` and
-`count`) as arguments and returns a tibble with aggregate transcript
-with the same name. All the rest of the column are appended, and factors
-and boolean are appended as characters.
+`count`) as arguments and returns a tibble with transcripts with the
+same name aggregated. All the rest of the columns are appended, and
+factors and boolean are appended as characters.
 
 <div class="column-left">
 
@@ -152,17 +153,12 @@ Standard procedure (comparative purpose)
 ``` r
 library(edgeR)
 
-myCPM <- cpm(count_m)
-keep <- rowSums(myCPM > 0.5) >= 2
-count_m.keep <- count_m[keep,]
+dgList <- DGEList(count_m=x,group=group)
+keep <- filterByExpr(dgList)
+dgList <- dgList[keep,,keep.lib.sizes=FALSE]
 [...]
 dgList <- calcNormFactors(dgList, method="TMM")
-dgList <- estimateCommonDisp(dgList)
-dgList <- estimateTagwiseDisp(dgList)
-norm_counts.table <- t(
-    t(count_m)*
-        (dgList$samples$norm.factors)
-)
+norm_counts.table <- cpm(dgList)
 ```
 
 </div>
@@ -551,20 +547,15 @@ Standard procedure (comparative purpose)
 ``` r
 library(edgeR)
 
-design =
-        model.matrix(
-            object = .formula,
-            data = df_for_edgeR
-        )
-
-DGEList(counts = counts) %>%
-        calcNormFactors(method = "TMM") %>%
-        estimateGLMCommonDisp(design) %>%
-        estimateGLMTagwiseDisp(design) %>%
-        glmFit(design) %>%
-        glmLRT(coef = 2) %>%
-        topTags(n = 999999) %$%
-        table
+dgList <- DGEList(counts=counts_m,group=group)
+keep <- filterByExpr(dgList)
+dgList <- dgList[keep,,keep.lib.sizes=FALSE]
+dgList <- calcNormFactors(dgList)
+design <- model.matrix(~group)
+dgList <- estimateDisp(dgList,design)
+fit <- glmQLFit(dgList,design)
+qlf <- glmQLFTest(fit,coef=2)
+topTags(qlf, n=Inf)
 ```
 
 </div>
@@ -905,8 +896,8 @@ We may want to remove redundant elements from the original data set
 cell-type specific signatures with low sample redundancy.
 `remove_redundancy` takes as arguments a tibble, column names (as
 symbols; for `sample`, `transcript` and `count`) and returns a tibble
-dropped recundant elements (e.g., samples). Two redundancy estimation
-approaches are supported:
+with redundant elements removed (e.g., samples). Two redundancy
+estimation approaches are supported:
 
   - removal of highly correlated clusters of elements (keeping a
     representative) with method=“correlation”
@@ -1024,6 +1015,7 @@ counts = tidybulk_SAM_BAM(
 
 We can add gene symbols from ensembl identifiers. This is useful since
 different resources use ensembl IDs while others use gene symbol IDs.
+This currently works for human and mouse.
 
 ``` r
 counts_ensembl %>% ensembl_to_symbol(ens)
@@ -1043,6 +1035,30 @@ counts_ensembl %>% ensembl_to_symbol(ens)
     ##  9 ENSG… 13             751 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
     ## # … with 109 more rows, and 1 more variable: ref_genome <chr>
+
+## From gene symbol to gene description (gene name in full)
+
+We can add gene full name (and in future description) from symbol
+identifiers. This currently works for human and mouse.
+
+``` r
+tt %>% describe_transcript() %>% select(transcript, description, everything())
+```
+
+    ## # A tibble: 938,112 x 9
+    ##    transcript description sample `Cell type` count time  condition batch
+    ##    <chr>      <chr>       <fct>  <fct>       <dbl> <fct> <lgl>     <int>
+    ##  1 DDX11L1    DEAD/H-box… SRR17… b_cell         17 0 d   TRUE          0
+    ##  2 WASH7P     WASP famil… SRR17… b_cell       3568 0 d   TRUE          0
+    ##  3 MIR6859-1  microRNA 6… SRR17… b_cell         57 0 d   TRUE          0
+    ##  4 MIR1302-2  microRNA 1… SRR17… b_cell          1 0 d   TRUE          0
+    ##  5 FAM138A    family wit… SRR17… b_cell          0 0 d   TRUE          0
+    ##  6 OR4F5      olfactory … SRR17… b_cell          0 0 d   TRUE          0
+    ##  7 LOC729737  <NA>        SRR17… b_cell       1764 0 d   TRUE          0
+    ##  8 LOC102725… <NA>        SRR17… b_cell         11 0 d   TRUE          0
+    ##  9 MIR6859-2  microRNA 6… SRR17… b_cell         40 0 d   TRUE          0
+    ## 10 OR4F29     olfactory … SRR17… b_cell          0 0 d   TRUE          0
+    ## # … with 938,102 more rows, and 1 more variable: factor_of_interest <lgl>
 
 ## ADD versus GET versus ONLY modes
 
