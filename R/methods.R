@@ -3666,16 +3666,15 @@ setGeneric("test_differential_cellularity", function(.data,
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	.data_processed =
-		test_differential_cellularity_(
-			.data,
-			.formula = .formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			method = method,
-			significance_threshold = significance_threshold
-		)
+	test_differential_cellularity_(
+		.data,
+		.formula = .formula,
+		.sample = !!.sample,
+		.transcript = !!.transcript,
+		.abundance = !!.abundance,
+		method = method,
+		significance_threshold = significance_threshold
+	)
 
 }
 

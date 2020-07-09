@@ -715,8 +715,24 @@ abundance across conditions
 
 ``` r
     tt %>%
-    test_differential_cellularity(~ condition)
+    test_differential_cellularity( ~ condition )
 ```
+
+    ## # A tibble: 22 x 7
+    ##    .cell_type cell_type_propo… `estimate_(Inte… estimate_condit…
+    ##    <chr>      <list>                      <dbl>            <dbl>
+    ##  1 B cells n… <tibble [48 × 9…            -3.38           3.16  
+    ##  2 B cells m… <tibble [48 × 9…            -2.98           2.83  
+    ##  3 Plasma ce… <tibble [48 × 9…            -7.09          -0.508 
+    ##  4 T cells C… <tibble [48 × 9…            -4.05          -0.447 
+    ##  5 T cells C… <tibble [48 × 9…            -1.93           0.0171
+    ##  6 T cells C… <tibble [48 × 9…            -3.07          -0.534 
+    ##  7 T cells C… <tibble [48 × 9…            -5.97           1.46  
+    ##  8 T cells f… <tibble [48 × 9…            -5.17          -0.469 
+    ##  9 T cells r… <tibble [48 × 9…            -5.62          -0.602 
+    ## 10 T cells g… <tibble [48 × 9…            -5.53           1.02  
+    ## # … with 12 more rows, and 3 more variables: std.error_conditionTRUE <dbl>,
+    ## #   statistic_conditionTRUE <dbl>, p.value_conditionTRUE <dbl>
 
 We can also perform regression analysis with censored data (coxph).
 

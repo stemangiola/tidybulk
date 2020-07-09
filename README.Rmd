@@ -542,7 +542,7 @@ We can also perform a statistical test on the differential cell-type abundance a
 ```{r DC, cache=TRUE}
 
 	tt %>%
-	test_differential_cellularity(~ condition)
+	test_differential_cellularity( ~ condition )
 
 ```
 
