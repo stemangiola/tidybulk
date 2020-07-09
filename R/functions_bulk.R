@@ -493,7 +493,7 @@ test_differential_composition_ <- function(.data,
 																											 .abundance = NULL,
 																											 method = "cibersort",
 																											 significance_threshold = 0.05) {
- 	
+ 	 
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -508,7 +508,7 @@ test_differential_composition_ <- function(.data,
 			format(.) %>% grepl("\\.", .) %>% any ~ format(.formula) %>% str_replace("([-\\+\\*~ ])(\\.)", "\\1.proportion_0_corrected"),
 			
 			# If normal formula
-			~ format(.) %>% prepend(".proportion_0_corrected")
+			~ sprintf(".proportion_0_corrected%s", format(.))
 		) %>%
 		
 		as.formula
