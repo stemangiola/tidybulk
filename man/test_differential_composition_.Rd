@@ -29,8 +29,6 @@ test_differential_composition_(
 
 \item{significance_threshold}{A real between 0 and 1}
 
-\item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
-
 \item{minimum_counts}{A positive integer. Minimum counts required for at least some samples.}
 
 \item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}

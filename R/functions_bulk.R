@@ -492,41 +492,26 @@ test_differential_composition_ <- function(.data,
 																											 .abundance = NULL,
 																											 method = "cibersort",
 																											 significance_threshold = 0.05) {
-	
+ 	
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 	
-
+	# Parse formula
 	.my_formula = 
 		.formula %>%
-		as.character() %>%
-		prepend(".proportion_0_corrected") %>%
-		paste(collapse=" ") %>%
+		when(
+			
+			# If I have the dot, needed definitely for censored
+			format(.) %>% grepl("\\.", .) %>% any ~ format(.) %>% map_chr(~.x %>% gsub("\\.", ".proportion_0_corrected", .)),
+			
+			# If normal formula
+			~ format(.) %>% prepend(".proportion_0_corrected")
+		) %>%
+		
 		as.formula
 		
-	# formula_parsed = 
-	# 	parse_formula_survival(.my_formula)
-	# 
-	# "cc" %>% c(as.character(.formula)) %>% paste( collapse=" ") %>% as.formula
-	# 
-	# # Covariate column
-	# cov_columns =
-	# 	formula_parsed$covariates %>%
-	# 	purrr::map_chr(
-	# 		~ .x %>% 
-	# 			gsub("censored\\(|\\)| ", "", .) %>% 
-	# 			stringr::str_split("\\,") %>% 
-	# 			.[[1]] %>% .[1]
-	# 	) %>%
-	# 	ifelse_pipe((.) %>% is.null, ~ c())
-	# 
-	# # Censoring column
-	# .cens_column = formula_parsed$covariates %>% grep("censored(", ., fixed = T, value = T)  %>% gsub("censored\\(|\\)| ", "", .) %>% stringr::str_split("\\,") %>% ifelse_pipe(length(.)>0, ~.x %>% `[[` (1) %>% `[` (-1), ~NULL)
-	# .cens_value_column = formula_parsed$covariates %>% grep("censored(", ., fixed = T, value = T)  %>% gsub("censored\\(|\\)| ", "", .) %>% stringr::str_split("\\,") %>% ifelse_pipe(length(.)>0, ~.x %>% `[[` (1) %>% `[` (1), ~NULL)
-	# 
-	 
 	.data %>%
 			
 		# Deconvolution
@@ -546,38 +531,41 @@ test_differential_composition_ <- function(.data,
 		
 		# Test survival
 		nest(cell_type_proportions = -.cell_type) %>%
-		mutate(surv_test = map(cell_type_proportions, ~
-													 	
-													 	.x %>% 
-													 	when(
-													 		pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3) ~ NULL,
-													 		~ {
-													 			# Check if package is installed, otherwise install
-													 			if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
-													 				message("Installing betareg needed for analyses")
-													 				install.packages("betareg", repos = "https://cloud.r-project.org")
-													 				
-													 			}
-													 			
-													 			# Inference
-												 				betareg::betareg(.my_formula, .) %>%
-													 				
-													 				#mutate(dead = if_else(alive, 0, 1)) %>%
-													 				#mutate(.proportion = .proportion  %>% boot::logit()) %>%
-													 				#coxph(Surv(PFI.time.2, dead) ~ .proportion, .) %>%
-													 				
-													 				broom::tidy() %>%
-												 					
-												 					# Format data frame
-													 				filter(component != "precision") %>%
-													 				pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
-												 					select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
-												 					select(-component)
-												 					
-													 			
-													 		}							 		
-													 		
-													 	)	 
+		mutate(surv_test = map(cell_type_proportions, ~ {
+			if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
+			
+			# See if regression if censored or not
+			.x %>%
+				when(
+					grepl("Surv", .my_formula) %>% any ~ {
+						# Check if package is installed, otherwise install
+						if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
+							message("Installing betareg needed for analyses")
+							install.packages("survival", repos = "https://cloud.r-project.org")
+						}
+						
+						(.) %>%
+							mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
+							survival::coxph(.my_formula, .)	%>%
+							broom::tidy() %>%
+							select(-term)
+					} ,
+					~ {
+						# Check if package is installed, otherwise install
+						if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
+							message("Installing betareg needed for analyses")
+							install.packages("betareg", repos = "https://cloud.r-project.org")
+						}
+						betareg::betareg(.my_formula, .) %>%
+							broom::tidy() %>%
+							filter(component != "precision") %>%
+							pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
+							select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
+							select(-component)
+					}
+				) 
+		}
+												
 													 
 		)) %>%
 		

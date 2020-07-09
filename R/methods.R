@@ -3695,7 +3695,7 @@ setGeneric("test_differential_composition", function(.data,
 	
 	if(grepl("edgeR", method)){
 		.data_processed =
-			get_differential_transcript_composition_(
+			test_differential_composition_(
 				.data,
 				.formula,
 				.sample = !!.sample,
