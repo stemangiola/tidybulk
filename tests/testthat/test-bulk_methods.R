@@ -942,7 +942,7 @@ test_that("Only reduced dimensions PCA - no object",{
 
 	expect_equal(
 		res$PC1,
-		c( -0.5070361 ,-0.5086096, -0.4070171, -0.3378837, -0.4521088),
+		c( -7.214337, -7.563078, 11.638986, -8.069080 ,11.207509),
 		tolerance=1e-1
 	)
 
@@ -1091,7 +1091,7 @@ test_that("Only rotated dimensions - no object",{
 
 	expect_equal(
 		res$`PC1 rotated 45`,
-		c(-0.08299217 ,-0.08765521 ,-0.71713866 ,-0.03872173 ,-0.68530405),
+		c(-9.450807, -9.739338,  8.853659,  2.741059,  7.595427),
 		tolerance=1e-1
 	)
 
@@ -1126,7 +1126,7 @@ test_that("Get rotated dimensions - no object",{
 
 	expect_equal(
 		res$`PC1 rotated 45`[1:4],
-		c(  -0.09683410, -0.10076545, -0.71267271, -0.01774641),
+		c(  -9.450807, -9.739338 , 8.853659,  2.741059),
 		tolerance=1e-1
 	)
 
@@ -1165,7 +1165,7 @@ test_that("Add rotated dimensions - no object",{
 
 	expect_equal(
 		res$`PC1 rotated 45`[1:4],
-		c( -0.08299217, -0.08299217, -0.08299217, -0.08299217),
+		c( -9.450807 ,-9.450807, -9.450807 ,-9.450807),
 		tolerance=1e-1
 	)
 
