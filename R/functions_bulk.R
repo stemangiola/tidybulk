@@ -2454,6 +2454,7 @@ keep_variable_transcripts = function(.data,
 #' @keywords internal
 #'
 #' @importFrom utils data
+#' @importFrom tidyr pivot_longer
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2528,7 +2529,7 @@ tidybulk_to_SummarizedExperiment = function(.data,
 					 !!.abundance_scaled,
 					 counts_cols) %>%
 		distinct() %>%
-		gather(`assay`, .a,-!!.transcript,-!!.sample) %>%
+		pivot_longer( cols=-c(!!.transcript,!!.sample), names_to="assay", values_to= ".a") %>%
 		nest(`data` = -`assay`) %>%
 		mutate(`data` = `data` %>%  map(
 			~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))
