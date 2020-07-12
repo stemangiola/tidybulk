@@ -2,8 +2,11 @@ Type: Package
 Package: tidybulk
 Title: Brings transcriptomics to the tidyverse 
 Version: 1.1.2
-Authors@R: person("Stefano", "Mangiola", email = "mangiolastefano@gmail.com",
-                  role = c("aut", "cre"))
+Authors@R: c(person("Stefano", "Mangiola", email = "mangiolastefano@gmail.com",
+                  role = c("aut", "cre")),
+            person("Maria", "Doyle", email = "Maria.Doyle@petermac.org",
+            role = c("ctb"))
+                  )
 Description: This is a collection of utility functions that allow
     to perform exploration of and calculations to RNA sequencing data, in
     a modular, pipe-friendly and tidy fashion.
