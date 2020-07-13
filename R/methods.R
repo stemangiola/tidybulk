@@ -1647,10 +1647,10 @@ setGeneric("adjust_abundance", function(.data,
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
 
-	# Get scaled abundance if present, otherwise get abundance
-	.abundance = enquo(.abundance)
-	col_names = get_abundance_norm_if_exists(.data, .abundance)
-	.abundance = col_names$.abundance
+	# Get scaled abundance if present, otherwise get abundance (if present get scaled one)
+	.abundance = 
+		enquo(.abundance) %>% 
+		when(!quo_is_symbol(.) ~ get_abundance_norm_if_exists(.data, .)$.abundance, ~ (.))
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
@@ -2170,7 +2170,7 @@ setMethod(
 #' Get ENTREZ id from gene SYMBOL
 #'
 #' @param .data A tt or tbl object.
-#' @param .transcript A character. The name of the ene symbol column.
+#' @param .transcript A character. The name of the gene symbol column.
 #' @param .sample The name of the sample column
 #'
 #' @return A tbl
@@ -2192,7 +2192,7 @@ symbol_to_entrez = function(.data,
 	
 	# Check if package is installed, otherwise install
 	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
+		message("Installing org.Hs.eg.db needed for annotation")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("org.Hs.eg.db", ask = FALSE)
@@ -2218,11 +2218,65 @@ symbol_to_entrez = function(.data,
 }
 
 
+#' Get DESCRIPTION id from gene SYMBOL
+#'
+#' @param .data A tt or tbl object.
+#' @param .transcript A character. The name of the gene symbol column.
+#'
+#' @return A tbl
+#'
+#' @examples
+#'
+#' describe_transcript(tidybulk::counts_mini, .transcript = transcript)
+#'
+#' @export
+#'
+describe_transcript = function(.data,
+														.transcript = NULL) {
+	
+	# Get column names
+	.transcript = enquo(.transcript)
+	col_names = get_transcript(.data, .transcript)
+	.transcript = col_names$.transcript
+	
+	
+	# Check if package is installed, otherwise install
+	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("org.Hs.eg.db", ask = FALSE)
+	}
+	
+	# Check if package is installed, otherwise install
+	if (find.package("AnnotationDbi", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("AnnotationDbi", ask = FALSE)
+	}
+	
+	.data %>%
+		left_join(
+				AnnotationDbi::mapIds(
+					org.Hs.eg.db::org.Hs.eg.db,
+					keys = ensembl_symbol_mapping$transcript %>% unique,
+					column = "GENENAME",
+					keytype = "SYMBOL",
+					multiVals = "first"
+				) %>% 
+				enframe(name = quo_name(.transcript), value = "description"),
+				by = quo_name(.transcript)
+		)
+}
+
+
+
 #' Add transcript symbol column from ensembl id for human and mouse data
 #'
 #' \lifecycle{maturing}
 #'
-#' @description ensembl_to_symbol() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+#' @description ensembl_to_symbol() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -2344,12 +2398,12 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2"
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
-#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param scaling_method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
@@ -2451,16 +2505,34 @@ setGeneric("test_differential_abundance", function(.data,
 				omit_contrast_in_colnames = omit_contrast_in_colnames
 			)
 	}
-	else stop("tidybulk says: the onyl methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT)")
+	else if (tolower(method)=="deseq2"){
+		.data_processed =
+			get_differential_transcript_abundance_deseq2(
+				.data,
+				.formula,
+				.sample = !!.sample,
+				.transcript = !!.transcript,
+				.abundance = !!.abundance,
+				.contrasts = .contrasts,
+				method = method,
+				significance_threshold = significance_threshold,
+				minimum_counts = minimum_counts,
+				minimum_proportion = minimum_proportion,
+				fill_missing_values = fill_missing_values,
+				scaling_method = scaling_method,
+				omit_contrast_in_colnames = omit_contrast_in_colnames
+			)
+	}
+	else stop("tidybulk says: the onyl methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"DESeq2\"")
 
 	if (action == "add"){
 
 		.data %>%
 			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
 
-			# Arrange
-			ifelse_pipe(.contrasts %>% is.null,
-									~ .x %>% arrange(FDR))	%>%
+			# # Arrange
+			# ifelse_pipe(.contrasts %>% is.null,
+			# 						~ .x %>% arrange(FDR))	%>%
 
 			# Attach attributes
 			reattach_internals(.data_processed)
@@ -2479,9 +2551,9 @@ setGeneric("test_differential_abundance", function(.data,
 
 			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
 
-			# Arrange
-			ifelse_pipe(.contrasts %>% is.null,
-									~ .x %>% arrange(FDR))	%>%
+			# # Arrange
+			# ifelse_pipe(.contrasts %>% is.null,
+			# 						~ .x %>% arrange(FDR))	%>%
 
 			# Attach attributes
 			reattach_internals(.data_processed)

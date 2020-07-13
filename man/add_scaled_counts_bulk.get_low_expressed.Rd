@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_bulk.R
 \name{add_scaled_counts_bulk.get_low_expressed}
 \alias{add_scaled_counts_bulk.get_low_expressed}
-\title{Drop lowly tanscribed genes for TMM normalization}
+\title{Drop lowly transcribed genes for TMM normalization}
 \usage{
 add_scaled_counts_bulk.get_low_expressed(
   .data,
@@ -33,6 +33,6 @@ add_scaled_counts_bulk.get_low_expressed(
 A tibble filtered
 }
 \description{
-Drop lowly tanscribed genes for TMM normalization
+Drop lowly transcribed genes for TMM normalization
 }
 \keyword{internal}

@@ -9,7 +9,7 @@ symbol_to_entrez(.data, .transcript = NULL, .sample = NULL)
 \arguments{
 \item{.data}{A tt or tbl object.}
 
-\item{.transcript}{A character. The name of the ene symbol column.}
+\item{.transcript}{A character. The name of the gene symbol column.}
 
 \item{.sample}{The name of the sample column}
 }

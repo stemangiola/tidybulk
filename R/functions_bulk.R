@@ -118,7 +118,9 @@ create_tt_from_bam_sam_bulk <-
 			add_class("tidybulk")
 	}
 
-#' Drop lowly tanscribed genes for TMM normalization
+
+
+#' Drop lowly transcribed genes for TMM normalization
 #' 
 #' @keywords internal
 #'
@@ -679,8 +681,11 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		# Add filtering info
 		full_join(df_for_edgeR.filt %>%
-								select(!!.transcript, lowly_abundant) %>%
-								distinct(), by = quo_name(.transcript)) %>%
+								when(
+									!"lowly_abundant" %in% colnames(.data) ~ (.) %>% select(!!.transcript, lowly_abundant) ,
+										 ~ (.) %>% select(!!.transcript))	%>%
+								distinct(), by = quo_name(.transcript)
+							)%>%
 
 
 		# Attach attributes
@@ -697,6 +702,180 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		}
 }
 
+#' Get differential transcription information to a tibble using edgeR.
+#' 
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom utils install.packages
+#' @importFrom purrr when
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param significance_threshold A real between 0 and 1
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#'
+#' @return A tibble with edgeR results
+#'
+get_differential_transcript_abundance_deseq2 <- function(.data,
+																											 .formula,
+																											 .sample = NULL,
+																											 .transcript = NULL,
+																											 .abundance = NULL,
+																											 .contrasts = NULL,
+																											 method = "edgeR_quasi_likelihood",
+																											 significance_threshold = 0.05,
+																											 minimum_counts = 10,
+																											 minimum_proportion = 0.7,
+																											 fill_missing_values = FALSE,
+																											 scaling_method = "TMM",
+																											 omit_contrast_in_colnames = FALSE) {
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	# Check if omit_contrast_in_colnames is correctly setup
+	if(omit_contrast_in_colnames & length(.contrasts) > 1){
+		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+		omit_contrast_in_colnames = FALSE
+	}
+	
+	# Check if package is installed, otherwise install
+	if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing DESeq2 needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("DESeq2", ask = FALSE)
+	}
+	
+	# # Print the design column names in case I want contrasts
+	# message(
+	# 	sprintf(
+	# 		"tidybulk says: The design column names are \"%s\"",
+	# 		design %>% colnames %>% paste(collapse = ", ")
+	# 	)
+	# )
+	
+	my_contrasts =
+		NULL
+	
+	
+	deseq2_object = 
+		.data %>%
+		
+		# Stop if any counts is NA
+		error_if_counts_is_na(!!.abundance) %>%
+		
+		# Stop if there are duplicated transcripts
+		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
+		
+		# Prepare the data frame
+		select(!!.transcript,
+					 !!.sample,
+					 !!.abundance,
+					 one_of(parse_formula(.formula))) %>%
+		distinct() %>%
+		
+		# drop factors as it can affect design matrix
+		mutate_if(is.factor, as.character()) %>%
+		
+		# Check if data rectangular
+		ifelse2_pipe(
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
+			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		) %>%
+		
+		# Needed for DESeq2
+		mutate(!!.abundance := as.integer(!!.abundance)) %>%
+		rename(counts = !!.abundance) %>%
+		mutate_if(is.logical , as.factor) %>%
+		mutate_if(is.character , as.factor) %>%
+		
+		# Filter
+		tidybulk_to_SummarizedExperiment(!!.sample, !!.transcript, counts) %>%
+		keep_abundant(factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]])) %>%
+		
+		# DESeq2
+		DESeq2::DESeqDataSet( design = .formula) %>%
+		DESeq2::DESeq() 
+	
+	# Read ft object
+	deseq2_object %>%
+		
+		# If I have multiple .contrasts merge the results
+		ifelse_pipe(
+			my_contrasts %>% is.null | omit_contrast_in_colnames,
+			
+			# Simple comparison
+			~ .x %>%
+				
+				DESeq2::results() %>%
+				as_tibble(rownames = quo_name(.transcript)) %>%
+				
+				# Mark DE genes
+				mutate(significant = padj < significance_threshold) 	%>%
+				
+				# Arrange
+				arrange(padj),
+			
+			# Multiple comparisons
+			~ {
+				deseq2_obj = .x
+				
+				1:ncol(my_contrasts) %>%
+					map_dfr(
+						~ 	deseq2_obj %>%
+							
+							# select method
+							DESeq2::results()	%>%
+							
+							# Convert to tibble
+							as_tibble(rownames = quo_name(.transcript)) %>%
+							mutate(constrast = colnames(my_contrasts)[.x]) %>%
+							
+							# Mark DE genes
+							mutate(significant = padj < significance_threshold)
+					) %>%
+					pivot_wider(values_from = -c(!!.transcript, constrast),
+											names_from = constrast)
+			}
+		)	 %>%
+		
+		# Add filtering info
+		right_join(.data %>% distinct(!!.transcript)) %>%
+		when(!"lowly_abundant" %in% colnames(.data) ~ (.) %>%	mutate(lowly_abundant = if_else(is.na(log2FoldChange), T, F)) ,
+				 ~ (.))	%>%
+
+		# Attach attributes
+		reattach_internals(.data) %>%
+		
+		# Add raw object
+		attach_to_internals(deseq2_object, "DESeq2") %>%
+		# Communicate the attribute added
+		{
+			message(
+				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$DESeq2`"
+			)
+			(.)
+		}
+}
 
 
 #' Get gene enrichment analyses using EGSEA
@@ -1086,10 +1265,10 @@ get_reduced_dimensions_MDS_bulk <-
 			keep_abundant(!!.element, !!.feature,!!.abundance) %>%
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
-			# Check if logtansform is needed
+			# Check if log transform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
-
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
+			
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
 				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
@@ -1099,7 +1278,7 @@ get_reduced_dimensions_MDS_bulk <-
 			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
 			limma::plotMDS(ndim = .dims, plot = FALSE, top = top)
 
-		# Pase results
+		# Parse results
 		mds_object %$%	cmdscale.out %>%
 			as.data.frame %>%
 			as_tibble(rownames = quo_name(.element)) %>%
@@ -1173,21 +1352,22 @@ get_reduced_dimensions_PCA_bulk <-
 			# Through error if some counts are NA
 			error_if_counts_is_na(!!.abundance) %>%
 
+			# Filter most variable genes
+			keep_abundant(!!.element, !!.feature,!!.abundance) %>%
+			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
+			
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.abundance) %>%
-
-			# Check if logtansform is needed
+			
+			# Check if log transform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
 
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
 				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
 				~ stop("tidybulk says: .abundance must be numerical or integer")
 			) %>%
-
-			# Filter most variable genes
-			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
 
 			spread(!!.element,!!.abundance) %>%
 
@@ -1219,7 +1399,8 @@ get_reduced_dimensions_PCA_bulk <-
 
 			# Transform to matrix
 			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
-
+			t() %>%
+			
 			# Calculate principal components
 			prcomp(scale = scale, ...)
 
@@ -1245,7 +1426,7 @@ get_reduced_dimensions_PCA_bulk <-
 			} %$%
 
 			# Parse the PCA results to a tibble
-			rotation %>%
+			x %>%
 			as_tibble(rownames = quo_name(.element)) %>%
 			select(!!.element, sprintf("PC%s", components)) %>%
 
@@ -2275,6 +2456,7 @@ keep_variable_transcripts = function(.data,
 #' @keywords internal
 #'
 #' @importFrom utils data
+#' @importFrom tidyr pivot_longer
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2349,7 +2531,7 @@ tidybulk_to_SummarizedExperiment = function(.data,
 					 !!.abundance_scaled,
 					 counts_cols) %>%
 		distinct() %>%
-		gather(`assay`, .a,-!!.transcript,-!!.sample) %>%
+		pivot_longer( cols=-c(!!.transcript,!!.sample), names_to="assay", values_to= ".a") %>%
 		nest(`data` = -`assay`) %>%
 		mutate(`data` = `data` %>%  map(
 			~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))

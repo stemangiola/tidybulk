@@ -44,6 +44,7 @@ Utilities | Description
 `rotate_dimensions` | Rotate two dimensions of a degree
 `ensembl_to_symbol` | Add gene symbol from ensembl IDs
 `symbol_to_entrez` | Add entrez ID from gene symbol
+`describe_transcript` | Add gene description from gene symbol
 
 ## Minimal input data frame
 
@@ -94,7 +95,7 @@ my_theme =
 ## Installation
 
 From Bioconductor
-```{r}
+```{r eval=FALSE}
 BiocManager::install("tidybulk")
 ```
 
@@ -727,6 +728,15 @@ We can add gene symbols from ensembl identifiers. This is useful since different
 ```{r ensembl, cache=TRUE}
 counts_ensembl %>% ensembl_to_symbol(ens)
 ```
+
+## From gene symbol to gene description (gene name in full)
+
+We can add gene full name (and in future description) from symbol identifiers. This currently works for human and mouse.
+
+```{r description, cache=TRUE}
+tt %>% describe_transcript() %>% select(transcript, description, everything())
+```
+
 
 ## ADD versus GET versus ONLY modes
 
