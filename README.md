@@ -1,7 +1,7 @@
 tidybulk - part of tidyTranscriptomics
 ================
 
-**Brings transcriptomics to the tidyverse\!**
+**Brings transcriptomics to the tidyverse\!** (SEO: tidy differential expression)
 
 # <img src="inst/logo.png" height="139px" width="120px" />
 
