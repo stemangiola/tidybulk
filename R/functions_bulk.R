@@ -1265,10 +1265,10 @@ get_reduced_dimensions_MDS_bulk <-
 			keep_abundant(!!.element, !!.feature,!!.abundance) %>%
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
-			# Check if logtansform is needed
+			# Check if log transform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
-
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
+			
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
 				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
@@ -1278,7 +1278,7 @@ get_reduced_dimensions_MDS_bulk <-
 			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
 			limma::plotMDS(ndim = .dims, plot = FALSE, top = top)
 
-		# Pase results
+		# Parse results
 		mds_object %$%	cmdscale.out %>%
 			as.data.frame %>%
 			as_tibble(rownames = quo_name(.element)) %>%
@@ -1352,21 +1352,22 @@ get_reduced_dimensions_PCA_bulk <-
 			# Through error if some counts are NA
 			error_if_counts_is_na(!!.abundance) %>%
 
+			# Filter most variable genes
+			keep_abundant(!!.element, !!.feature,!!.abundance) %>%
+			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
+			
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.abundance) %>%
-
-			# Check if logtansform is needed
+			
+			# Check if log transform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
 
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
 				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
 				~ stop("tidybulk says: .abundance must be numerical or integer")
 			) %>%
-
-			# Filter most variable genes
-			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
 
 			spread(!!.element,!!.abundance) %>%
 
@@ -1398,7 +1399,8 @@ get_reduced_dimensions_PCA_bulk <-
 
 			# Transform to matrix
 			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
-
+			t() %>%
+			
 			# Calculate principal components
 			prcomp(scale = scale, ...)
 
@@ -1424,7 +1426,7 @@ get_reduced_dimensions_PCA_bulk <-
 			} %$%
 
 			# Parse the PCA results to a tibble
-			rotation %>%
+			x %>%
 			as_tibble(rownames = quo_name(.element)) %>%
 			select(!!.element, sprintf("PC%s", components)) %>%
 
@@ -2454,6 +2456,7 @@ keep_variable_transcripts = function(.data,
 #' @keywords internal
 #'
 #' @importFrom utils data
+#' @importFrom tidyr pivot_longer
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2528,7 +2531,7 @@ tidybulk_to_SummarizedExperiment = function(.data,
 					 !!.abundance_scaled,
 					 counts_cols) %>%
 		distinct() %>%
-		gather(`assay`, .a,-!!.transcript,-!!.sample) %>%
+		pivot_longer( cols=-c(!!.transcript,!!.sample), names_to="assay", values_to= ".a") %>%
 		nest(`data` = -`assay`) %>%
 		mutate(`data` = `data` %>%  map(
 			~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))

@@ -1647,10 +1647,10 @@ setGeneric("adjust_abundance", function(.data,
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
 
-	# Get scaled abundance if present, otherwise get abundance
-	.abundance = enquo(.abundance)
-	col_names = get_abundance_norm_if_exists(.data, .abundance)
-	.abundance = col_names$.abundance
+	# Get scaled abundance if present, otherwise get abundance (if present get scaled one)
+	.abundance = 
+		enquo(.abundance) %>% 
+		when(!quo_is_symbol(.) ~ get_abundance_norm_if_exists(.data, .)$.abundance, ~ (.))
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
