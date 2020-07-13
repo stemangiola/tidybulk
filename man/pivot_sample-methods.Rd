@@ -31,7 +31,7 @@ A `tbl` object
 A `tbl` object
 }
 \description{
-pivot_sample() takes as imput a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
+pivot_sample() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 }
 \details{
 \lifecycle{maturing}

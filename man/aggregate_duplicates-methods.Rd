@@ -91,7 +91,7 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-aggregate_duplicates() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.
+aggregate_duplicates() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.
 }
 \details{
 \lifecycle{maturing}

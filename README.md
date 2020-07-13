@@ -17,32 +17,33 @@ tidybulk - part of tidyTranscriptomics
 
 ## Functions/utilities available
 
-| Function                       | Description                                                                  |
-| ------------------------------ | ---------------------------------------------------------------------------- |
-| `aggregate_duplicates`         | Aggregate abundance and annotation of duplicated transcripts in a robust way |
-| `scale_abundance`              | Scale (normalise) abundance for RNA sequencing depth                         |
-| `reduce_dimensions`            | Perform dimensionality reduction (PCA, MDS, tSNE)                            |
-| `cluster_elements`             | Labels elements with cluster identity (kmeans, SNN)                          |
-| `remove_redundancy`            | Filter out elements with highly correlated features                          |
-| `adjust_abundance`             | Remove known unwanted variation (Combat)                                     |
-| `test_differential_abundance`  | Differential abundance testing (DE)                                          |
-| `deconvolve_cellularity`       | Estimated tissue composition (Cibersort)                                     |
-| `keep_variable`                | Filter for top variable features                                             |
-| `keep_abundant`                | Filter out lowly abundant transcripts                                        |
-| `test_gene_enrichment`         | Gene enrichment analyses (EGSEA)                                             |
-| `test_gene_overrepresentation` | Gene enrichment on list of transcript names (no rank)                        |
-| `impute_abundance`             | Impute abundance for missing data points using sample groupings              |
 
-| Utilities             | Description                                |
-| --------------------- | ------------------------------------------ |
-| `tidybulk`            | add tidybulk attributes to a tibble object |
-| `tidybulk_SAM_BAM`    | Convert SAM BAM files into tidybulk tibble |
-| `pivot_sample`        | Select sample-wise columns/information     |
-| `pivot_transcript`    | Select transcript-wise columns/information |
-| `rotate_dimensions`   | Rotate two dimensions of a degree          |
-| `ensembl_to_symbol`   | Add gene symbol from ensembl IDs           |
-| `symbol_to_entrez`    | Add entrez ID from gene symbol             |
-| `describe_transcript` | Add gene description from gene symbol      |
+| Function                        | Description                                                           |
+| ------------------------------- | --------------------------------------------------------------------- |
+| `aggregate_duplicates`          | Aggregate robustly abundance and annotation of duplicated transcripts |
+| `scale_abundance`               | Scale (normalise) abundance for RNA sequencing depth                  |
+| `reduce_dimensions`             | Perform dimensionality reduction (PCA, MDS, tSNE)                     |
+| `cluster_elements`              | Labels elements with cluster identity (kmeans, SNN)                   |
+| `remove_redundancy`             | Filter out elements with highly correlated features                   |
+| `adjust_abundance`              | Remove known unwanted variation (Combat)                              |
+| `test_differential_abundance`   | Differential transcript abundance testing (DE)                        |
+| `deconvolve_cellularity`        | Estimated tissue composition (Cibersort or llsr)                      |
+| `test_differential_cellularity` | Differential cell-type abundance testing                              |
+| `keep_variable`                 | Filter top variable features                                          |
+| `keep_abundant`                 | Filter out lowly abundant transcripts                                 |
+| `test_gene_enrichment`          | Gene enrichment analyses (EGSEA)                                      |
+| `test_gene_overrepresentation`  | Gene enrichment on list of transcript names (no rank)                 |
+| `impute_abundance`              | Impute abundance for missing data points using sample groupings       |
+
+| Utilities           | Description                                |
+| ------------------- | ------------------------------------------ |
+| `tidybulk`          | add tidybulk attributes to a tibble object |
+| `tidybulk_SAM_BAM`  | Convert SAM BAM files into tidybulk tibble |
+| `pivot_sample`      | Select sample-wise columns/information     |
+| `pivot_transcript`  | Select transcript-wise columns/information |
+| `rotate_dimensions` | Rotate two dimensions of a degree          |
+| `ensembl_to_symbol` | Add gene symbol from ensembl IDs           |
+| `symbol_to_entrez`  | Add entrez ID from gene symbol             |
 
 ## Minimal input data frame
 
@@ -697,6 +698,39 @@ tt.cibersort %>%
 ```
 
 ![](README_files/figure-gfm/plot_cibersort-1.png)<!-- -->
+
+## Test differential cell-type abundance
+
+We can also perform a statistical test on the differential cell-type
+abundance across conditions
+
+``` r
+    tt %>%
+    test_differential_cellularity( ~ condition )
+```
+
+    ## # A tibble: 22 x 7
+    ##    .cell_type cell_type_propo… `estimate_(Inte… estimate_condit…
+    ##    <chr>      <list>                      <dbl>            <dbl>
+    ##  1 B cells n… <tibble [48 × 9…            -3.38           3.16  
+    ##  2 B cells m… <tibble [48 × 9…            -2.98           2.83  
+    ##  3 Plasma ce… <tibble [48 × 9…            -7.09          -0.508 
+    ##  4 T cells C… <tibble [48 × 9…            -4.05          -0.447 
+    ##  5 T cells C… <tibble [48 × 9…            -1.93           0.0171
+    ##  6 T cells C… <tibble [48 × 9…            -3.07          -0.534 
+    ##  7 T cells C… <tibble [48 × 9…            -5.97           1.46  
+    ##  8 T cells f… <tibble [48 × 9…            -5.17          -0.469 
+    ##  9 T cells r… <tibble [48 × 9…            -5.62          -0.602 
+    ## 10 T cells g… <tibble [48 × 9…            -5.53           1.02  
+    ## # … with 12 more rows, and 3 more variables: std.error_conditionTRUE <dbl>,
+    ## #   statistic_conditionTRUE <dbl>, p.value_conditionTRUE <dbl>
+
+We can also perform regression analysis with censored data (coxph).
+
+``` r
+    tt %>%
+    test_differential_cellularity(survival::Surv(time, dead) ~ .)
+```
 
 ## Cluster `samples`
 

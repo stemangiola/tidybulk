@@ -115,7 +115,7 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-cluster_elements() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and identify clusters in the data.
+cluster_elements() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and identify clusters in the data.
 }
 \details{
 \lifecycle{maturing}
