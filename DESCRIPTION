@@ -19,6 +19,7 @@ Imports:
     dplyr,
     magrittr,
     tidyr,
+    stringr,
     rlang,
     purrr,
     preprocessCore,
