@@ -2249,6 +2249,14 @@ describe_transcript = function(.data,
 	}
 	
 	# Check if package is installed, otherwise install
+	if (find.package("org.Mm.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing org.Mm.eg.db needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("org.Mm.eg.db", ask = FALSE)
+	}
+	
+	# Check if package is installed, otherwise install
 	if (find.package("AnnotationDbi", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
