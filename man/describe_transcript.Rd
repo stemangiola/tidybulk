@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods.R
 \name{describe_transcript}
 \alias{describe_transcript}
-\title{Get DESCRIPTION id from gene SYMBOL}
+\title{Get DESCRIPTION from gene SYMBOL}
 \usage{
 describe_transcript(.data, .transcript = NULL)
 }
@@ -15,7 +15,7 @@ describe_transcript(.data, .transcript = NULL)
 A tbl
 }
 \description{
-Get DESCRIPTION id from gene SYMBOL
+Get DESCRIPTION from gene SYMBOL
 }
 \examples{
 
