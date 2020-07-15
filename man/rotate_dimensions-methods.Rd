@@ -115,7 +115,7 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-rotate_dimensions() takes as imput a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
+rotate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
 }
 \details{
 \lifecycle{maturing}

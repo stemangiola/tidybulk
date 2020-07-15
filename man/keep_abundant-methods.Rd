@@ -99,7 +99,7 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-keep_abundant() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+keep_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 }
 \details{
 \lifecycle{maturing}

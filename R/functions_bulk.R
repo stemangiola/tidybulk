@@ -459,6 +459,8 @@ get_scaled_counts_bulk <- function(.data,
 
 }
 
+
+
 #' Get differential transcription information to a tibble using edgeR.
 #' 
 #' @keywords internal
@@ -505,32 +507,32 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-
+	
 	# Check if omit_contrast_in_colnames is correctly setup
 	if(omit_contrast_in_colnames & length(.contrasts) > 1){
 		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
 		omit_contrast_in_colnames = FALSE
 	}
-
+	
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
-
+		
 		# Stop if any counts is NA
 		error_if_counts_is_na(!!.abundance) %>%
-
+		
 		# Stop if there are duplicated transcripts
 		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
-
+		
 		# Prepare the data frame
 		select(!!.transcript,
 					 !!.sample,
 					 !!.abundance,
 					 one_of(parse_formula(.formula))) %>%
 		distinct() %>%
-
+		
 		# drop factors as it can affect design matrix
 		mutate_if(is.factor, as.character()) %>%
-
+		
 		# Check if data rectangular
 		ifelse2_pipe(
 			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & fill_missing_values,
@@ -569,7 +571,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			object = .formula,
 			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
-
+	
 	# Print the design column names in case I want constrasts
 	message(
 		sprintf(
@@ -577,13 +579,13 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			design %>% colnames %>% paste(collapse = ", ")
 		)
 	)
-
+	
 	my_contrasts =
 		.contrasts %>%
 		ifelse_pipe(length(.) > 0,
 								~ limma::makeContrasts(contrasts = .x, levels = design),
 								~ NULL)
-
+	
 	# Check if package is installed, otherwise install
 	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing edgeR needed for differential transcript abundance analyses")
@@ -591,7 +593,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("edgeR", ask = FALSE)
 	}
-
+	
 	df_for_edgeR.filt <-
 		df_for_edgeR %>%
 		select(!!.transcript,!!.sample,!!.abundance, !!as.symbol(parse_formula(.formula))) %>%
@@ -606,14 +608,14 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				minimum_proportion = minimum_proportion
 			)
 		)
-
+	
 	edgeR_object =
 		df_for_edgeR.filt %>%
 		filter(!lowly_abundant) %>%
 		select(!!.transcript,!!.sample,!!.abundance) %>%
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.transcript) %>%
-
+		
 		edgeR::DGEList(counts = .) %>%
 		edgeR::calcNormFactors(method = scaling_method) %>%
 		edgeR::estimateDisp(design) %>%
@@ -623,14 +625,14 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			method == "edgeR_likelihood_ratio" ~ (.) %>% edgeR::glmFit(design),
 			method == "edgeR_quasi_likelihood" ~ (.) %>% edgeR::glmQLFit(design)
 		)
-		
-
+	
+	
 	edgeR_object %>%
-
+		
 		# If I have multiple .contrasts merge the results
 		ifelse_pipe(
 			my_contrasts %>% is.null | omit_contrast_in_colnames,
-
+			
 			# Simple comparison
 			~ .x %>%
 				
@@ -644,17 +646,17 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				edgeR::topTags(n = 999999) %$%
 				table %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
-
+				
 				# Mark DE genes
 				mutate(significant = FDR < significance_threshold) 	%>%
-
+				
 				# Arrange
 				arrange(FDR),
-
+			
 			# Multiple comparisons
 			~ {
 				edgeR_obj = .x
-
+				
 				1:ncol(my_contrasts) %>%
 					map_dfr(
 						~ edgeR_obj %>%
@@ -670,7 +672,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 							table %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
 							mutate(constrast = colnames(my_contrasts)[.x]) %>%
-
+							
 							# Mark DE genes
 							mutate(significant = FDR < significance_threshold)
 					) %>%
@@ -678,19 +680,18 @@ get_differential_transcript_abundance_bulk <- function(.data,
 											names_from = constrast)
 			}
 		)	 %>%
-
+		
 		# Add filtering info
 		full_join(df_for_edgeR.filt %>%
 								when(
 									!"lowly_abundant" %in% colnames(.data) ~ (.) %>% select(!!.transcript, lowly_abundant) ,
-										 ~ (.) %>% select(!!.transcript))	%>%
+									~ (.) %>% select(!!.transcript))	%>%
 								distinct(), by = quo_name(.transcript)
-							)%>%
-
-
+		)%>%
+		
 		# Attach attributes
 		reattach_internals(.data) %>%
-
+		
 		# Add raw object
 		attach_to_internals(edgeR_object, "edgeR") %>%
 		# Communicate the attribute added
@@ -702,7 +703,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		}
 }
 
-#' Get differential transcription information to a tibble using edgeR.
+                                                           #' Get differential transcription information to a tibble using edgeR.
 #' 
 #' @keywords internal
 #'
@@ -876,8 +877,128 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 			(.)
 		}
 }
+  
+#' Get differential composition information to a tibble using edgeR.
+#' 
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom utils install.packages
+#' @importFrom purrr when
+#' @importFrom stringr str_replace
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param significance_threshold A real between 0 and 1
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#'
+#' @return A tibble with edgeR results
+#'
+test_differential_cellularity_ <- function(.data,
+																											 .formula,
+																											 .sample = NULL,
+																											 .transcript = NULL,
+																											 .abundance = NULL,
+																											 method = "cibersort",
+																											 significance_threshold = 0.05) {
+ 	 
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	# Parse formula
+	.my_formula = 
+		.formula %>%
+		when(
+			
+			# If I have the dot, needed definitely for censored
+			format(.) %>% grepl("\\.", .) %>% any ~ format(.formula) %>% str_replace("([-\\+\\*~ ])(\\.)", "\\1.proportion_0_corrected"),
+			
+			# If normal formula
+			~ sprintf(".proportion_0_corrected%s", format(.))
+		) %>%
+		
+		as.formula
+		 
+	.data %>%
+			
+		# Deconvolution
+		deconvolve_cellularity(!!.sample, !!.transcript, !!.abundance, method=method, action="get")  %>%
+			
+		# Test
+		pivot_longer(
+			names_prefix = sprintf("%s: ", method), 
+			cols = starts_with("cibersort"), 
+			names_to = ".cell_type", 
+			values_to = ".proportion"
+		) %>%
+		
+		# Replace 0s
+		mutate(min_proportion = min(.proportion[.proportion!=0])) %>%
+		mutate(.proportion_0_corrected = if_else(.proportion==0, min_proportion, .proportion)) %>%
+		
+		# Test survival
+		nest(cell_type_proportions = -.cell_type) %>%
+		mutate(surv_test = map(cell_type_proportions, ~ {
+			if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
+			
+			# See if regression if censored or not
+			.x %>%
+				when(
+					grepl("Surv", .my_formula) %>% any ~ {
+						# Check if package is installed, otherwise install
+						if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
+							message("Installing betareg needed for analyses")
+							install.packages("survival", repos = "https://cloud.r-project.org")
+						}
+						
+						(.) %>%
+							mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
+							survival::coxph(.my_formula, .)	%>%
+							broom::tidy() %>%
+							select(-term)
+					} ,
+					~ {
+						# Check if package is installed, otherwise install
+						if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
+							message("Installing betareg needed for analyses")
+							install.packages("betareg", repos = "https://cloud.r-project.org")
+						}
+						betareg::betareg(.my_formula, .) %>%
+							broom::tidy() %>%
+							filter(component != "precision") %>%
+							pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
+							select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
+							select(-component)
+					}
+				) 
+		}
+												
+													 
+		)) %>%
+		
+	unnest(surv_test, keep_empty = TRUE) 
+	
+		
+
+}
 
 
+                                                           
 #' Get gene enrichment analyses using EGSEA
 #' 
 #' @keywords internal
@@ -1723,7 +1844,7 @@ aggregate_duplicated_transcripts_bulk =
 			colnames() %>%
 			c("n_aggr")
 
-		# ggregates read .data over samples, concatenates other character columns, and averages other numeric columns
+		# aggregates read .data over samples, concatenates other character columns, and averages other numeric columns
 		.data %>%
 
 			# Through error if some counts are NA
@@ -1733,7 +1854,7 @@ aggregate_duplicated_transcripts_bulk =
 			mutate_if(is.factor, as.character) %>%
 			mutate_if(is.logical, as.character) %>%
 
-			# Add the nuber of duplicates for each gene
+			# Add the number of duplicates for each gene
 			dplyr::left_join((.) %>% count(!!.sample,!!.transcript, name = "n_aggr"),
 											 by = c(quo_name(.sample), quo_name(.transcript))) %>%
 
@@ -1753,7 +1874,7 @@ aggregate_duplicated_transcripts_bulk =
 						group_by(!!.sample,!!.transcript) %>%
 						dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
 
-						# If scaled abundance exists aggragate that as well
+						# If scaled abundance exists aggregate that as well
 						ifelse_pipe((
 							".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
 								# .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% `!` &&
@@ -2213,6 +2334,11 @@ get_cell_type_proportions = function(.data,
 		# Prepare data frame
 		distinct(!!.sample,!!.transcript,!!.abundance) %>%
 		spread(!!.sample,!!.abundance) %>%
+		
+		# Eliminate NA transcripts
+		filter(!!.transcript %>% is.na %>% `!`) %>%
+		
+		# Convert
 		data.frame(row.names = 1, check.names = FALSE) %>%
 
 		# Run Cibersort or llsr through custom function, depending on method choice
