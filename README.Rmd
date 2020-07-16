@@ -12,6 +12,14 @@ output: github_document
   
 website: [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
 
+Please have a look also to 
+
+- [nanny](https://github.com/stemangiola/nanny) for tidy high-level data
+analysis and manipulation 
+- [tidygate](https://github.com/stemangiola/tidygate) for adding custom
+gate information to your tibble 
+- [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for heatmaps produced with tidy principles
+
 <!---
 
 [![Build Status](https://travis-ci.org/stemangiola/tidybulk.svg?branch=master)](https://travis-ci.org/stemangiola/tidybulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/tidybulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/tidybulk?branch=master)

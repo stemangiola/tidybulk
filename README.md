@@ -1,7 +1,8 @@
 tidybulk - part of tidyTranscriptomics
 ================
 
-**Brings transcriptomics to the tidyverse\!** (SEO: tidy differential expression)
+**Brings transcriptomics to the tidyverse\!** (SEO: tidy differential
+expression)
 
 # <img src="inst/logo.png" height="139px" width="120px" />
 
@@ -9,7 +10,17 @@ tidybulk - part of tidyTranscriptomics
 [![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
-website: [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
+website:
+[stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
+
+Please have a look also to
+
+  - [nanny](https://github.com/stemangiola/nanny) for tidy high-level
+    data analysis and manipulation
+  - [tidygate](https://github.com/stemangiola/tidygate) for adding
+    custom gate information to your tibble
+  - [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for
+    heatmaps produced with tidy principles
 
 <!---
 
