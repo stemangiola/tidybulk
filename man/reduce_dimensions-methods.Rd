@@ -111,7 +111,7 @@ reduce_dimensions(
 
 \item{method}{A character string. The dimension reduction algorithm to use (PCA, MDS, tSNE).}
 
-\item{.dims}{A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))}
+\item{.dims}{An integer. The number of dimensions your are interested in (e.g., 4 for returning the first four principal components).}
 
 \item{top}{An integer. How many top genes to select for dimensionality reduction}
 
@@ -139,7 +139,7 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-reduce_dimensions() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
+reduce_dimensions() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
 }
 \details{
 \lifecycle{maturing}
