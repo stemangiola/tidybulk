@@ -3685,7 +3685,7 @@ setMethod("inpute_abundance",
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param method A string character. Either \"cibersort\" or \"llsr\"
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #'
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
