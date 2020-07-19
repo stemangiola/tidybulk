@@ -8,7 +8,7 @@
 \alias{impute_abundance,tidybulk-method}
 \alias{impute_abundance,SummarizedExperiment-method}
 \alias{impute_abundance,RangedSummarizedExperiment-method}
-\title{inpute transcript abundance if missing from sample-transcript pairs}
+\title{impute transcript abundance if missing from sample-transcript pairs}
 \usage{
 impute_abundance(
   .data,
@@ -72,11 +72,11 @@ impute_abundance(
 \value{
 A `tbl` non-sparse abundance
 
-A `tbl` with inputed abundnce
+A `tbl` with imputed abundance
 
-A `tbl` with inputed abundnce
+A `tbl` with imputed abundance
 
-A `tbl` with inputed abundnce
+A `tbl` with imputed abundance
 
 A `SummarizedExperiment` object
 
@@ -88,7 +88,7 @@ impute_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT>
 \details{
 \lifecycle{maturing}
 
-This function inputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
+This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 }
 \examples{
 

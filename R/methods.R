@@ -3528,7 +3528,7 @@ setMethod("pivot_transcript",
 
 
 
-#' inpute transcript abundance if missing from sample-transcript pairs
+#' impute transcript abundance if missing from sample-transcript pairs
 #'
 #' \lifecycle{maturing}
 #'
@@ -3545,7 +3545,7 @@ setMethod("pivot_transcript",
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #'
-#' @details This function inputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
+#' @details This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 #'
 #' @return A `tbl` non-sparse abundance
 #'
@@ -3627,7 +3627,7 @@ setGeneric("impute_abundance", function(.data,
 #' @docType methods
 #' @rdname impute_abundance-methods
 #' 
-#' @return A `tbl` with inputed abundnce
+#' @return A `tbl` with imputed abundance
 setMethod("impute_abundance", "spec_tbl_df", .impute_abundance)
 
 #' impute_abundance
@@ -3636,7 +3636,7 @@ setMethod("impute_abundance", "spec_tbl_df", .impute_abundance)
 #' @docType methods
 #' @rdname impute_abundance-methods
 #' 
-#' @return A `tbl` with inputed abundnce
+#' @return A `tbl` with imputed abundance
 setMethod("impute_abundance", "tbl_df", .impute_abundance)
 
 #' impute_abundance
@@ -3645,7 +3645,7 @@ setMethod("impute_abundance", "tbl_df", .impute_abundance)
 #' @docType methods
 #' @rdname impute_abundance-methods
 #' 
-#' @return A `tbl` with inputed abundnce
+#' @return A `tbl` with imputed abundance
 setMethod("impute_abundance", "tidybulk", .impute_abundance)
 
 .impute_abundance_se = function(.data,
