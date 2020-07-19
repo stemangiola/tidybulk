@@ -2222,7 +2222,7 @@ symbol_to_entrez = function(.data,
 }
 
 
-#' Get DESCRIPTION from gene SYMBOL
+#' Get DESCRIPTION from gene SYMBOL for Human and Mouse
 #'
 #' @param .data A tt or tbl object.
 #' @param .transcript A character. The name of the gene symbol column.
@@ -2267,27 +2267,31 @@ describe_transcript = function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("AnnotationDbi", ask = FALSE)
 	}
-	 
+	  
 	description_df = 
-		
+	
+
 		# Human
-		suppressMessages(AnnotationDbi::mapIds(
+		tryCatch(suppressMessages(AnnotationDbi::mapIds(
 			org.Hs.eg.db::org.Hs.eg.db,
 			keys = pull(.data, !!.transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
 			column = "GENENAME",
 			keytype = "SYMBOL",
 			multiVals = "first"
 		))  %>%
-		.[!is.na(.)] %>%
+			.[!is.na(.)], error = function(x){}) %>%
 		
 		# Mouse
-		c(suppressMessages(AnnotationDbi::mapIds(
-			org.Mm.eg.db::org.Mm.eg.db,
-			keys = pull(.data, !!.transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
-			column = "GENENAME",
-			keytype = "SYMBOL",
-			multiVals = "first"
-		)) %>% .[!is.na(.)]) %>%
+		c(
+			tryCatch(suppressMessages(AnnotationDbi::mapIds(
+				org.Mm.eg.db::org.Mm.eg.db,
+				keys = pull(.data, !!.transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+				column = "GENENAME",
+				keytype = "SYMBOL",
+				multiVals = "first"
+			)) %>% .[!is.na(.)], error = function(x){})
+			
+		) %>%
 		
 		# Parse
 		unlist() %>%
