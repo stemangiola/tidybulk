@@ -139,7 +139,7 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-reduce_dimensions() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
+reduce_dimensions() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
 }
 \details{
 \lifecycle{maturing}

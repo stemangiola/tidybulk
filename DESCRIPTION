@@ -19,6 +19,7 @@ Imports:
     dplyr,
     magrittr,
     tidyr,
+    stringr,
     rlang,
     purrr,
     preprocessCore,
@@ -59,4 +60,4 @@ Biarch: true
 biocViews: AssayDomain, Infrastructure, RNASeq, DifferentialExpression, GeneExpression, Normalization, Clustering, QualityControl, Sequencing, Transcription, Transcriptomics
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
