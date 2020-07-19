@@ -18,7 +18,8 @@ test_differential_cellularity(
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
-  significance_threshold = 0.05
+  significance_threshold = 0.05,
+  ...
 )
 
 \S4method{test_differential_cellularity}{spec_tbl_df}(
@@ -29,7 +30,8 @@ test_differential_cellularity(
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
-  significance_threshold = 0.05
+  significance_threshold = 0.05,
+  ...
 )
 
 \S4method{test_differential_cellularity}{tbl_df}(
@@ -40,7 +42,8 @@ test_differential_cellularity(
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
-  significance_threshold = 0.05
+  significance_threshold = 0.05,
+  ...
 )
 
 \S4method{test_differential_cellularity}{tidybulk}(
@@ -51,7 +54,8 @@ test_differential_cellularity(
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
-  significance_threshold = 0.05
+  significance_threshold = 0.05,
+  ...
 )
 
 \S4method{test_differential_cellularity}{SummarizedExperiment}(
@@ -62,7 +66,8 @@ test_differential_cellularity(
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
-  significance_threshold = 0.05
+  significance_threshold = 0.05,
+  ...
 )
 
 \S4method{test_differential_cellularity}{RangedSummarizedExperiment}(
@@ -73,7 +78,8 @@ test_differential_cellularity(
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
-  significance_threshold = 0.05
+  significance_threshold = 0.05,
+  ...
 )
 }
 \arguments{
@@ -92,6 +98,8 @@ test_differential_cellularity(
 \item{reference}{A data frame. The transcript/cell_type data frame of integer transcript abundance}
 
 \item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
+
+\item{...}{Further parameters passed to the method deconvolve_cellularity}
 }
 \value{
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
@@ -122,7 +130,8 @@ At the moment this function uses edgeR only, but other inference algorithms will
 	    ~ condition,
 	    sample,
 	    transcript,
-	    `count`
+	    count,
+	    cores = 1
 	)
 
 

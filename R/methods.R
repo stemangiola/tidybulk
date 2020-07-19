@@ -3502,12 +3502,12 @@ setMethod("pivot_transcript",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description inpute_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
+#' @description impute_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name inpute_abundance
+#' @name impute_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
@@ -3526,7 +3526,7 @@ setMethod("pivot_transcript",
 #'
 #'
 #' res =
-#' 	inpute_abundance(
+#' 	impute_abundance(
 #' 		tidybulk::counts_mini,
 #' 	~ condition,
 #' 	.sample = sample,
@@ -3536,20 +3536,20 @@ setMethod("pivot_transcript",
 #'
 #'
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #'
 #' @export
 #'
 #'
-setGeneric("inpute_abundance", function(.data,
+setGeneric("impute_abundance", function(.data,
 																				.formula,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL)
-	standardGeneric("inpute_abundance"))
+	standardGeneric("impute_abundance"))
 
 # Set internal
-.inpute_abundance = 	function(.data,
+.impute_abundance = 	function(.data,
 															.formula,
 															.sample = NULL,
 															.transcript = NULL,
@@ -3591,34 +3591,34 @@ setGeneric("inpute_abundance", function(.data,
 
 }
 
-#' inpute_abundance
-#' @inheritParams inpute_abundance
+#' impute_abundance
+#' @inheritParams impute_abundance
 #' 
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #' 
 #' @return A `tbl` with inputed abundnce
-setMethod("inpute_abundance", "spec_tbl_df", .inpute_abundance)
+setMethod("impute_abundance", "spec_tbl_df", .impute_abundance)
 
-#' inpute_abundance
-#' @inheritParams inpute_abundance
+#' impute_abundance
+#' @inheritParams impute_abundance
 #' 
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #' 
 #' @return A `tbl` with inputed abundnce
-setMethod("inpute_abundance", "tbl_df", .inpute_abundance)
+setMethod("impute_abundance", "tbl_df", .impute_abundance)
 
-#' inpute_abundance
-#' @inheritParams inpute_abundance
+#' impute_abundance
+#' @inheritParams impute_abundance
 #' 
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #' 
 #' @return A `tbl` with inputed abundnce
-setMethod("inpute_abundance", "tidybulk", .inpute_abundance)
+setMethod("impute_abundance", "tidybulk", .impute_abundance)
 
-.inpute_abundance_se = function(.data,
+.impute_abundance_se = function(.data,
 																.formula,
 																.sample = NULL,
 																.transcript = NULL,
@@ -3634,7 +3634,7 @@ setMethod("inpute_abundance", "tidybulk", .inpute_abundance)
 		tidybulk() %>%
 
 		# Apply scale method
-		inpute_abundance(
+		impute_abundance(
 			.formula = .formula,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
@@ -3646,29 +3646,29 @@ setMethod("inpute_abundance", "tidybulk", .inpute_abundance)
 
 }
 
-#' inpute_abundance
-#' @inheritParams inpute_abundance
+#' impute_abundance
+#' @inheritParams impute_abundance
 #' 
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #' 
 #' @return A `SummarizedExperiment` object
 #'
-setMethod("inpute_abundance",
+setMethod("impute_abundance",
 					"SummarizedExperiment",
-					.inpute_abundance_se)
+					.impute_abundance_se)
 
-#' inpute_abundance
-#' @inheritParams inpute_abundance
+#' impute_abundance
+#' @inheritParams impute_abundance
 #' 
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #' 
 #' @return A `SummarizedExperiment` object
 #'
-setMethod("inpute_abundance",
+setMethod("impute_abundance",
 					"RangedSummarizedExperiment",
-					.inpute_abundance_se)
+					.impute_abundance_se)
 
 
 
@@ -3692,7 +3692,8 @@ setMethod("inpute_abundance",
 #' @param method A string character. Either \"cibersort\" or \"llsr\"
 #' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
-#'
+#' @param ... Further parameters passed to the method deconvolve_cellularity
+#' 
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
@@ -3708,7 +3709,8 @@ setMethod("inpute_abundance",
 #' 	    ~ condition,
 #' 	    sample,
 #' 	    transcript,
-#' 	    `count`
+#' 	    count,
+#' 	    cores = 1
 #' 	)
 #'
 #'
@@ -3724,7 +3726,8 @@ setGeneric("test_differential_cellularity", function(.data,
 																										 .abundance = NULL,
 																										 method = "cibersort",
 																										 reference = X_cibersort,
-																										 significance_threshold = 0.05)
+																										 significance_threshold = 0.05,
+																										 ...)
 					 standardGeneric("test_differential_cellularity"))
 
 # Set internal
@@ -3735,7 +3738,8 @@ setGeneric("test_differential_cellularity", function(.data,
 																						.abundance = NULL,
 																						method = "cibersort",
 																						reference = X_cibersort,
-																						significance_threshold = 0.05)
+																						significance_threshold = 0.05,
+																						...)
 {
 	# Get column names
 	.sample = enquo(.sample)
@@ -3757,7 +3761,8 @@ setGeneric("test_differential_cellularity", function(.data,
 		.abundance = !!.abundance,
 		method = method,
 		reference = reference,
-		significance_threshold = significance_threshold
+		significance_threshold = significance_threshold,
+		...
 	)
 
 }
@@ -3804,7 +3809,8 @@ setMethod("test_differential_cellularity",
 																						 .abundance = NULL,
 																						 method = "cibersort",
 																						 reference = X_cibersort,
-																						 significance_threshold = 0.05)
+																						 significance_threshold = 0.05,
+																						 ...)
 {
 	# Make col names
 	.sample = enquo(.sample)
@@ -3825,7 +3831,8 @@ setMethod("test_differential_cellularity",
 			.abundance = .abundance,
 			method = method,
 			reference = reference,
-			significance_threshold = significance_threshold
+			significance_threshold = significance_threshold,
+			...
 		)
 	
 }

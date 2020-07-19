@@ -904,17 +904,26 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 #' @return A tibble with edgeR results
 #'
 test_differential_cellularity_ <- function(.data,
-																											 .formula,
-																											 .sample = NULL,
-																											 .transcript = NULL,
-																											 .abundance = NULL,
-																											 method = "cibersort",	 reference = X_cibersort,
-																											 significance_threshold = 0.05) {
+																					 .formula,
+																					 .sample = NULL,
+																					 .transcript = NULL,
+																					 .abundance = NULL,
+																					 method = "cibersort",
+																					 reference = X_cibersort,
+																					 significance_threshold = 0.05,
+																					 ...
+) {
  	 
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	
+	
+	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing broom needed for analyses")
+		install.packages("broom", repos = "https://cloud.r-project.org")
+	}
 	
 	# Parse formula
 	.my_formula = 
@@ -937,7 +946,8 @@ test_differential_cellularity_ <- function(.data,
 			!!.sample, !!.transcript, !!.abundance,
 			method=method, 
 			reference = reference,
-			action="get"
+			action="get",
+			...
 		)  %>%
 			
 		# Test
@@ -951,7 +961,7 @@ test_differential_cellularity_ <- function(.data,
 		# Replace 0s
 		mutate(min_proportion = min(.proportion[.proportion!=0])) %>%
 		mutate(.proportion_0_corrected = if_else(.proportion==0, min_proportion, .proportion)) %>%
-		
+	
 		# Test survival
 		nest(cell_type_proportions = -.cell_type) %>%
 		mutate(surv_test = map(cell_type_proportions, ~ {
@@ -965,6 +975,11 @@ test_differential_cellularity_ <- function(.data,
 						if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
 							message("Installing betareg needed for analyses")
 							install.packages("survival", repos = "https://cloud.r-project.org")
+						}
+						
+						if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
+							message("Installing boot needed for analyses")
+							install.packages("boot", repos = "https://cloud.r-project.org")
 						}
 						
 						(.) %>%

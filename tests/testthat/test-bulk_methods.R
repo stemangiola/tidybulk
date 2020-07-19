@@ -1425,7 +1425,8 @@ test_that("differential composition",{
 			~ condition,
 			.sample = a,
 			.transcript = b,
-			.abundance = c
+			.abundance = c,
+			cores = 1
 		)
 	
 	expect_equal(

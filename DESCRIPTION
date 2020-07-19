@@ -51,7 +51,11 @@ Suggests:
     widyr,
     clusterProfiler,
     msigdbr,
-    DESeq2
+    DESeq2,
+    broom,
+    survival,
+    boot,
+    betareg
 VignetteBuilder: 
     knitr
 RdMacros:

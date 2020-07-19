@@ -12,7 +12,8 @@ test_differential_cellularity_(
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
-  significance_threshold = 0.05
+  significance_threshold = 0.05,
+  ...
 )
 }
 \arguments{
