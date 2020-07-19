@@ -2222,7 +2222,7 @@ symbol_to_entrez = function(.data,
 }
 
 
-#' Get DESCRIPTION id from gene SYMBOL
+#' Get DESCRIPTION from gene SYMBOL
 #'
 #' @param .data A tt or tbl object.
 #' @param .transcript A character. The name of the gene symbol column.
@@ -2253,25 +2253,55 @@ describe_transcript = function(.data,
 	}
 	
 	# Check if package is installed, otherwise install
+	if (find.package("org.Mm.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing org.Mm.eg.db needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("org.Mm.eg.db", ask = FALSE)
+	}
+	
+	# Check if package is installed, otherwise install
 	if (find.package("AnnotationDbi", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("AnnotationDbi", ask = FALSE)
 	}
+	 
+	description_df = 
+		
+		# Human
+		suppressMessages(AnnotationDbi::mapIds(
+			org.Hs.eg.db::org.Hs.eg.db,
+			keys = pull(.data, !!.transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+			column = "GENENAME",
+			keytype = "SYMBOL",
+			multiVals = "first"
+		))  %>%
+		.[!is.na(.)] %>%
+		
+		# Mouse
+		c(suppressMessages(AnnotationDbi::mapIds(
+			org.Mm.eg.db::org.Mm.eg.db,
+			keys = pull(.data, !!.transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+			column = "GENENAME",
+			keytype = "SYMBOL",
+			multiVals = "first"
+		)) %>% .[!is.na(.)]) %>%
+		
+		# Parse
+		unlist() %>%
+		#unique() %>%
+		enframe(name = quo_name(.transcript), value = "description") %>%
+		
+		# Select just one per transcript
+		distinct() %>%
+		group_by(!!.transcript) %>%
+		slice(1) %>%
+		ungroup()
 	
 	.data %>%
-		left_join(
-				AnnotationDbi::mapIds(
-					org.Hs.eg.db::org.Hs.eg.db,
-					keys = ensembl_symbol_mapping$transcript %>% unique,
-					column = "GENENAME",
-					keytype = "SYMBOL",
-					multiVals = "first"
-				) %>% 
-				enframe(name = quo_name(.transcript), value = "description"),
-				by = quo_name(.transcript)
-		)
+		left_join(description_df, by = quo_name(.transcript))
 }
 
 
