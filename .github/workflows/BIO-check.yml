@@ -1,0 +1,25 @@
+name: bioCHECK
+
+'on':
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    container:
+      image: bioconductor/bioconductor_full:devel
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@master
+      - name: Install Package Dependencies
+        run: |
+          Rscript -e "BiocManager::install(c('remotes', 'rcmdcheck', 'covr', 'pkgdown'))"
+          Rscript -e "remotes::install_deps(dependencies = TRUE)"
+      - name: System dependencies
+        run: |
+          sudo apt-get update && apt-get install -y --no-install-recommends \
+          texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
+          pip install ghp-import
+      - name: Check Package
+        run: Rscript -e "rcmdcheck::rcmdcheck(error_on = 'error', check_dir = 'check')"

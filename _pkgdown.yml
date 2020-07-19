@@ -1,0 +1,16 @@
+url: https://stemangiola.github.io/tidybulk
+
+template:
+	params:
+	bootswatch: flatly
+ganalytics: UA-93043521-1
+
+home:
+	title: "Inroduction to tidybulk"
+type: inverse
+
+
+navbar:
+	right:
+	- icon: fa-github
+href: https://github.com/stemangiola/tidybulk
