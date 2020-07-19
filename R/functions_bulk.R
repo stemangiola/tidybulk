@@ -898,27 +898,32 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param significance_threshold A real between 0 and 1
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
-#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
 #' @return A tibble with edgeR results
 #'
 test_differential_cellularity_ <- function(.data,
-																											 .formula,
-																											 .sample = NULL,
-																											 .transcript = NULL,
-																											 .abundance = NULL,
-																											 method = "cibersort",
-																											 significance_threshold = 0.05) {
+																					 .formula,
+																					 .sample = NULL,
+																					 .transcript = NULL,
+																					 .abundance = NULL,
+																					 method = "cibersort",
+																					 reference = X_cibersort,
+																					 significance_threshold = 0.05,
+																					 ...
+) {
  	 
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	
+	
+	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing broom needed for analyses")
+		install.packages("broom", repos = "https://cloud.r-project.org")
+	}
 	
 	# Parse formula
 	.my_formula = 
@@ -937,7 +942,13 @@ test_differential_cellularity_ <- function(.data,
 	.data %>%
 			
 		# Deconvolution
-		deconvolve_cellularity(!!.sample, !!.transcript, !!.abundance, method=method, action="get")  %>%
+		deconvolve_cellularity(
+			!!.sample, !!.transcript, !!.abundance,
+			method=method, 
+			reference = reference,
+			action="get",
+			...
+		)  %>%
 			
 		# Test
 		pivot_longer(
@@ -950,7 +961,7 @@ test_differential_cellularity_ <- function(.data,
 		# Replace 0s
 		mutate(min_proportion = min(.proportion[.proportion!=0])) %>%
 		mutate(.proportion_0_corrected = if_else(.proportion==0, min_proportion, .proportion)) %>%
-		
+	
 		# Test survival
 		nest(cell_type_proportions = -.cell_type) %>%
 		mutate(surv_test = map(cell_type_proportions, ~ {
@@ -964,6 +975,11 @@ test_differential_cellularity_ <- function(.data,
 						if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
 							message("Installing betareg needed for analyses")
 							install.packages("survival", repos = "https://cloud.r-project.org")
+						}
+						
+						if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
+							message("Installing boot needed for analyses")
+							install.packages("boot", repos = "https://cloud.r-project.org")
 						}
 						
 						(.) %>%

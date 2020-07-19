@@ -37,6 +37,7 @@ Suggests:
     edgeR,
     limma,
     org.Hs.eg.db,
+    org.Mm.eg.db,
     sva,
     GGally,
     knitr,
@@ -51,7 +52,11 @@ Suggests:
     widyr,
     clusterProfiler,
     msigdbr,
-    DESeq2
+    DESeq2,
+    broom,
+    survival,
+    boot,
+    betareg
 VignetteBuilder: 
     knitr
 RdMacros:

@@ -774,7 +774,7 @@ setMethod("cluster_elements",
 #' @param method A character string. The dimension reduction algorithm to use (PCA, MDS, tSNE).
 #' @param top An integer. How many top genes to select for dimensionality reduction
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
-#' @param .dims A list of integer vectors corresponding to principal components of interest (e.g., list(1:2, 3:4, 5:6))
+#' @param .dims An integer. The number of dimensions your are interested in (e.g., 4 for returning the first four principal components).
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param scale A boolean for method="PCA", this will be passed to the `prcomp` function. It is not included in the ... argument because although the default for `prcomp` if FALSE, it is advisable to set it as TRUE.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
@@ -2025,6 +2025,10 @@ setGeneric("deconvolve_cellularity", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	# Check that reference is matrix
+	if(reference %>% class %>% equals("data.frame") %>% `!`)
+		stop("tidybulk says: reference must be a data.frame")
+	
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
@@ -2218,7 +2222,7 @@ symbol_to_entrez = function(.data,
 }
 
 
-#' Get DESCRIPTION id from gene SYMBOL
+#' Get DESCRIPTION from gene SYMBOL for Human and Mouse
 #'
 #' @param .data A tt or tbl object.
 #' @param .transcript A character. The name of the gene symbol column.
@@ -2249,25 +2253,59 @@ describe_transcript = function(.data,
 	}
 	
 	# Check if package is installed, otherwise install
+	if (find.package("org.Mm.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing org.Mm.eg.db needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("org.Mm.eg.db", ask = FALSE)
+	}
+	
+	# Check if package is installed, otherwise install
 	if (find.package("AnnotationDbi", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("AnnotationDbi", ask = FALSE)
 	}
+	  
+	description_df = 
+	
+
+		# Human
+		tryCatch(suppressMessages(AnnotationDbi::mapIds(
+			org.Hs.eg.db::org.Hs.eg.db,
+			keys = pull(.data, !!.transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+			column = "GENENAME",
+			keytype = "SYMBOL",
+			multiVals = "first"
+		))  %>%
+			.[!is.na(.)], error = function(x){}) %>%
+		
+		# Mouse
+		c(
+			tryCatch(suppressMessages(AnnotationDbi::mapIds(
+				org.Mm.eg.db::org.Mm.eg.db,
+				keys = pull(.data, !!.transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+				column = "GENENAME",
+				keytype = "SYMBOL",
+				multiVals = "first"
+			)) %>% .[!is.na(.)], error = function(x){})
+			
+		) %>%
+		
+		# Parse
+		unlist() %>%
+		#unique() %>%
+		enframe(name = quo_name(.transcript), value = "description") %>%
+		
+		# Select just one per transcript
+		distinct() %>%
+		group_by(!!.transcript) %>%
+		slice(1) %>%
+		ungroup()
 	
 	.data %>%
-		left_join(
-				AnnotationDbi::mapIds(
-					org.Hs.eg.db::org.Hs.eg.db,
-					keys = ensembl_symbol_mapping$transcript %>% unique,
-					column = "GENENAME",
-					keytype = "SYMBOL",
-					multiVals = "first"
-				) %>% 
-				enframe(name = quo_name(.transcript), value = "description"),
-				by = quo_name(.transcript)
-		)
+		left_join(description_df, by = quo_name(.transcript))
 }
 
 
@@ -3494,16 +3532,16 @@ setMethod("pivot_transcript",
 
 
 
-#' inpute transcript abundance if missing from sample-transcript pairs
+#' impute transcript abundance if missing from sample-transcript pairs
 #'
 #' \lifecycle{maturing}
 #'
-#' @description inpute_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
+#' @description impute_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name inpute_abundance
+#' @name impute_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
@@ -3511,7 +3549,7 @@ setMethod("pivot_transcript",
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #'
-#' @details This function inputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
+#' @details This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 #'
 #' @return A `tbl` non-sparse abundance
 #'
@@ -3522,7 +3560,7 @@ setMethod("pivot_transcript",
 #'
 #'
 #' res =
-#' 	inpute_abundance(
+#' 	impute_abundance(
 #' 		tidybulk::counts_mini,
 #' 	~ condition,
 #' 	.sample = sample,
@@ -3532,20 +3570,20 @@ setMethod("pivot_transcript",
 #'
 #'
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #'
 #' @export
 #'
 #'
-setGeneric("inpute_abundance", function(.data,
+setGeneric("impute_abundance", function(.data,
 																				.formula,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL)
-	standardGeneric("inpute_abundance"))
+	standardGeneric("impute_abundance"))
 
 # Set internal
-.inpute_abundance = 	function(.data,
+.impute_abundance = 	function(.data,
 															.formula,
 															.sample = NULL,
 															.transcript = NULL,
@@ -3587,34 +3625,34 @@ setGeneric("inpute_abundance", function(.data,
 
 }
 
-#' inpute_abundance
-#' @inheritParams inpute_abundance
+#' impute_abundance
+#' @inheritParams impute_abundance
 #' 
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #' 
-#' @return A `tbl` with inputed abundnce
-setMethod("inpute_abundance", "spec_tbl_df", .inpute_abundance)
+#' @return A `tbl` with imputed abundance
+setMethod("impute_abundance", "spec_tbl_df", .impute_abundance)
 
-#' inpute_abundance
-#' @inheritParams inpute_abundance
+#' impute_abundance
+#' @inheritParams impute_abundance
 #' 
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #' 
-#' @return A `tbl` with inputed abundnce
-setMethod("inpute_abundance", "tbl_df", .inpute_abundance)
+#' @return A `tbl` with imputed abundance
+setMethod("impute_abundance", "tbl_df", .impute_abundance)
 
-#' inpute_abundance
-#' @inheritParams inpute_abundance
+#' impute_abundance
+#' @inheritParams impute_abundance
 #' 
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #' 
-#' @return A `tbl` with inputed abundnce
-setMethod("inpute_abundance", "tidybulk", .inpute_abundance)
+#' @return A `tbl` with imputed abundance
+setMethod("impute_abundance", "tidybulk", .impute_abundance)
 
-.inpute_abundance_se = function(.data,
+.impute_abundance_se = function(.data,
 																.formula,
 																.sample = NULL,
 																.transcript = NULL,
@@ -3630,7 +3668,7 @@ setMethod("inpute_abundance", "tidybulk", .inpute_abundance)
 		tidybulk() %>%
 
 		# Apply scale method
-		inpute_abundance(
+		impute_abundance(
 			.formula = .formula,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
@@ -3642,29 +3680,29 @@ setMethod("inpute_abundance", "tidybulk", .inpute_abundance)
 
 }
 
-#' inpute_abundance
-#' @inheritParams inpute_abundance
+#' impute_abundance
+#' @inheritParams impute_abundance
 #' 
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #' 
 #' @return A `SummarizedExperiment` object
 #'
-setMethod("inpute_abundance",
+setMethod("impute_abundance",
 					"SummarizedExperiment",
-					.inpute_abundance_se)
+					.impute_abundance_se)
 
-#' inpute_abundance
-#' @inheritParams inpute_abundance
+#' impute_abundance
+#' @inheritParams impute_abundance
 #' 
 #' @docType methods
-#' @rdname inpute_abundance-methods
+#' @rdname impute_abundance-methods
 #' 
 #' @return A `SummarizedExperiment` object
 #'
-setMethod("inpute_abundance",
+setMethod("impute_abundance",
 					"RangedSummarizedExperiment",
-					.inpute_abundance_se)
+					.impute_abundance_se)
 
 
 
@@ -3686,8 +3724,10 @@ setMethod("inpute_abundance",
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A string character. Either \"cibersort\" or \"llsr\"
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
-#'
+#' @param ... Further parameters passed to the method deconvolve_cellularity
+#' 
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
@@ -3703,7 +3743,8 @@ setMethod("inpute_abundance",
 #' 	    ~ condition,
 #' 	    sample,
 #' 	    transcript,
-#' 	    `count`
+#' 	    count,
+#' 	    cores = 1
 #' 	)
 #'
 #'
@@ -3718,7 +3759,9 @@ setGeneric("test_differential_cellularity", function(.data,
 																										 .transcript = NULL,
 																										 .abundance = NULL,
 																										 method = "cibersort",
-																										 significance_threshold = 0.05)
+																										 reference = X_cibersort,
+																										 significance_threshold = 0.05,
+																										 ...)
 					 standardGeneric("test_differential_cellularity"))
 
 # Set internal
@@ -3728,7 +3771,9 @@ setGeneric("test_differential_cellularity", function(.data,
 																						.transcript = NULL,
 																						.abundance = NULL,
 																						method = "cibersort",
-																						significance_threshold = 0.05)
+																						reference = X_cibersort,
+																						significance_threshold = 0.05,
+																						...)
 {
 	# Get column names
 	.sample = enquo(.sample)
@@ -3749,7 +3794,9 @@ setGeneric("test_differential_cellularity", function(.data,
 		.transcript = !!.transcript,
 		.abundance = !!.abundance,
 		method = method,
-		significance_threshold = significance_threshold
+		reference = reference,
+		significance_threshold = significance_threshold,
+		...
 	)
 
 }
@@ -3795,7 +3842,9 @@ setMethod("test_differential_cellularity",
 																						 .transcript = NULL,
 																						 .abundance = NULL,
 																						 method = "cibersort",
-																						 significance_threshold = 0.05)
+																						 reference = X_cibersort,
+																						 significance_threshold = 0.05,
+																						 ...)
 {
 	# Make col names
 	.sample = enquo(.sample)
@@ -3815,7 +3864,9 @@ setMethod("test_differential_cellularity",
 			.transcript = .transcript,
 			.abundance = .abundance,
 			method = method,
-			significance_threshold = significance_threshold
+			reference = reference,
+			significance_threshold = significance_threshold,
+			...
 		)
 	
 }
