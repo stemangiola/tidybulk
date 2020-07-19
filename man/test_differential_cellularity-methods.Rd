@@ -17,6 +17,7 @@ test_differential_cellularity(
   .transcript = NULL,
   .abundance = NULL,
   method = "cibersort",
+  reference = X_cibersort,
   significance_threshold = 0.05
 )
 
@@ -27,6 +28,7 @@ test_differential_cellularity(
   .transcript = NULL,
   .abundance = NULL,
   method = "cibersort",
+  reference = X_cibersort,
   significance_threshold = 0.05
 )
 
@@ -37,6 +39,7 @@ test_differential_cellularity(
   .transcript = NULL,
   .abundance = NULL,
   method = "cibersort",
+  reference = X_cibersort,
   significance_threshold = 0.05
 )
 
@@ -47,6 +50,7 @@ test_differential_cellularity(
   .transcript = NULL,
   .abundance = NULL,
   method = "cibersort",
+  reference = X_cibersort,
   significance_threshold = 0.05
 )
 
@@ -57,6 +61,7 @@ test_differential_cellularity(
   .transcript = NULL,
   .abundance = NULL,
   method = "cibersort",
+  reference = X_cibersort,
   significance_threshold = 0.05
 )
 
@@ -67,6 +72,7 @@ test_differential_cellularity(
   .transcript = NULL,
   .abundance = NULL,
   method = "cibersort",
+  reference = X_cibersort,
   significance_threshold = 0.05
 )
 }
@@ -81,7 +87,9 @@ test_differential_cellularity(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)}
+\item{method}{A string character. Either \"cibersort\" or \"llsr\"}
+
+\item{reference}{A data frame. The transcript/cell_type data frame of integer transcript abundance}
 
 \item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
 }

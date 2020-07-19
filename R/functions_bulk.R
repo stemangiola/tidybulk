@@ -898,12 +898,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param significance_threshold A real between 0 and 1
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
-#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
 #' @return A tibble with edgeR results
 #'
@@ -912,7 +908,7 @@ test_differential_cellularity_ <- function(.data,
 																											 .sample = NULL,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
-																											 method = "cibersort",
+																											 method = "cibersort",	 reference = X_cibersort,
 																											 significance_threshold = 0.05) {
  	 
 	# Get column names
@@ -937,7 +933,12 @@ test_differential_cellularity_ <- function(.data,
 	.data %>%
 			
 		# Deconvolution
-		deconvolve_cellularity(!!.sample, !!.transcript, !!.abundance, method=method, action="get")  %>%
+		deconvolve_cellularity(
+			!!.sample, !!.transcript, !!.abundance,
+			method=method, 
+			reference = reference,
+			action="get"
+		)  %>%
 			
 		# Test
 		pivot_longer(

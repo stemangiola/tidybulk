@@ -2025,6 +2025,10 @@ setGeneric("deconvolve_cellularity", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	# Check that reference is matrix
+	if(reference %>% class %>% equals("data.frame") %>% `!`)
+		stop("tidybulk says: reference must be a data.frame")
+	
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
@@ -3686,6 +3690,7 @@ setMethod("inpute_abundance",
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A string character. Either \"cibersort\" or \"llsr\"
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #'
 #' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
@@ -3718,6 +3723,7 @@ setGeneric("test_differential_cellularity", function(.data,
 																										 .transcript = NULL,
 																										 .abundance = NULL,
 																										 method = "cibersort",
+																										 reference = X_cibersort,
 																										 significance_threshold = 0.05)
 					 standardGeneric("test_differential_cellularity"))
 
@@ -3728,6 +3734,7 @@ setGeneric("test_differential_cellularity", function(.data,
 																						.transcript = NULL,
 																						.abundance = NULL,
 																						method = "cibersort",
+																						reference = X_cibersort,
 																						significance_threshold = 0.05)
 {
 	# Get column names
@@ -3749,6 +3756,7 @@ setGeneric("test_differential_cellularity", function(.data,
 		.transcript = !!.transcript,
 		.abundance = !!.abundance,
 		method = method,
+		reference = reference,
 		significance_threshold = significance_threshold
 	)
 
@@ -3795,6 +3803,7 @@ setMethod("test_differential_cellularity",
 																						 .transcript = NULL,
 																						 .abundance = NULL,
 																						 method = "cibersort",
+																						 reference = X_cibersort,
 																						 significance_threshold = 0.05)
 {
 	# Make col names
@@ -3815,6 +3824,7 @@ setMethod("test_differential_cellularity",
 			.transcript = .transcript,
 			.abundance = .abundance,
 			method = method,
+			reference = reference,
 			significance_threshold = significance_threshold
 		)
 	
