@@ -968,4 +968,32 @@ get_specific_annotation_columns = function(.data, .col){
 
 }
 
+#' log10_reverse_trans
+#' 
+#' \lifecycle{maturing}
+#' 
+#' @description it perform log scaling and reverse the axis. Useful to plot negative log probabilities. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
+#' 
+#' @importFrom scales trans_new
+#' @importFrom scales log_breaks
+#' 
+#' @return A scales object
+#' 
+#' @examples 
+#' 
+#' library(ggplot2)
+#' library(tibble)
+#' 
+#' tibble(pvalue = c(0.001, 0.05, 0.1), fold_change = 1:3) %>%
+#'  ggplot(aes(fold_change , pvalue)) + 
+#'  geom_point() +
+#'  scale_y_continuous(trans = "log10_reverse")
+#' 
+#' @export
+log10_reverse_trans <- function() {
+	trans <- function(x) -log10(x)
+	inv <- function(x) 10^(-x)
+	
+	trans_new("log10_reverse", trans, inv, log_breaks(base = 10))
+}
 
