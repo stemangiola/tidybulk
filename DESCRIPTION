@@ -19,13 +19,15 @@ Imports:
     dplyr,
     magrittr,
     tidyr,
+    stringr,
     rlang,
     purrr,
     preprocessCore,
     stats,
     parallel,
     utils,
-    lifecycle
+    lifecycle,
+    scales
 Suggests:
     testthat,
     vctrs,
@@ -36,6 +38,7 @@ Suggests:
     edgeR,
     limma,
     org.Hs.eg.db,
+    org.Mm.eg.db,
     sva,
     GGally,
     knitr,
@@ -50,7 +53,11 @@ Suggests:
     widyr,
     clusterProfiler,
     msigdbr,
-    DESeq2
+    DESeq2,
+    broom,
+    survival,
+    boot,
+    betareg
 VignetteBuilder: 
     knitr
 RdMacros:
@@ -59,4 +66,4 @@ Biarch: true
 biocViews: AssayDomain, Infrastructure, RNASeq, DifferentialExpression, GeneExpression, Normalization, Clustering, QualityControl, Sequencing, Transcription, Transcriptomics
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

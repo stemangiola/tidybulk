@@ -395,7 +395,7 @@ We may want to infer the cell type composition of our samples (with the algorith
 ```{r cibersort, cache=TRUE}
 tt.cibersort =
 	tt %>%
-	deconvolve_cellularity(action="get", cores=2)
+	deconvolve_cellularity(action="get", cores=1)
 
 tt.cibersort %>% select(sample, contains("cibersort:")) 
 ```
@@ -418,7 +418,7 @@ All functions are also directly compatible with `SummarizedExperiment`.
 
 ```{r cibersort se, cache=TRUE}
 
-se.cibersort %>% deconvolve_cellularity(cores=2)
+se.cibersort %>% deconvolve_cellularity(cores=1)
 
 ```
 

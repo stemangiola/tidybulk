@@ -211,7 +211,7 @@ se.norm.batch %>%
 ## ----cibersort, cache=TRUE----------------------------------------------------
 tt.cibersort =
 	tt %>%
-	deconvolve_cellularity(action="get", cores=2)
+	deconvolve_cellularity(action="get", cores=1)
 
 tt.cibersort %>% select(sample, contains("cibersort:")) 
 
@@ -227,7 +227,7 @@ tt.cibersort %>%
 
 ## ----cibersort se, cache=TRUE-------------------------------------------------
 
-se.cibersort %>% deconvolve_cellularity(cores=2)
+se.cibersort %>% deconvolve_cellularity(cores=1)
 
 
 ## ----cluster, cache=TRUE------------------------------------------------------

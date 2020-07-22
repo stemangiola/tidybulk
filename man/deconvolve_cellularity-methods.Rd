@@ -107,7 +107,7 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-deconvolve_cellularity() takes as imput a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
+deconvolve_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
 }
 \details{
 \lifecycle{maturing}

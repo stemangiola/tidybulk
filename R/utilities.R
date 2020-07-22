@@ -206,6 +206,26 @@ parse_formula <- function(fm) {
     as.character(attr(terms(fm), "variables"))[-1]
 }
 
+#' Formula parser with survival
+#'
+#' @param fm A formula
+#'
+#' @return A character vector
+#'
+#'
+parse_formula_survival <- function(fm) {
+  pars = as.character(attr(terms(fm), "variables"))[-1]
+  
+  response = NULL
+  if(attr(terms(fm), "response") == 1) response = pars[1]
+  covariates = ifelse(attr(terms(fm), "response") == 1, pars[-1], pars)
+  
+  list(
+    response = response,
+    covariates = covariates
+  )
+}
+
 #' Scale design matrix
 #'
 #' @keywords internal
@@ -948,4 +968,32 @@ get_specific_annotation_columns = function(.data, .col){
 
 }
 
+#' log10_reverse_trans
+#' 
+#' \lifecycle{maturing}
+#' 
+#' @description it perform log scaling and reverse the axis. Useful to plot negative log probabilities. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
+#' 
+#' @importFrom scales trans_new
+#' @importFrom scales log_breaks
+#' 
+#' @return A scales object
+#' 
+#' @examples 
+#' 
+#' library(ggplot2)
+#' library(tibble)
+#' 
+#' tibble(pvalue = c(0.001, 0.05, 0.1), fold_change = 1:3) %>%
+#'  ggplot(aes(fold_change , pvalue)) + 
+#'  geom_point() +
+#'  scale_y_continuous(trans = "log10_reverse")
+#' 
+#' @export
+log10_reverse_trans <- function() {
+	trans <- function(x) -log10(x)
+	inv <- function(x) 10^(-x)
+	
+	trans_new("log10_reverse", trans, inv, log_breaks(base = 10))
+}
 
