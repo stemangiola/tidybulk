@@ -499,7 +499,7 @@ TidyTranscriptomics
 ```{r cibersort, cache=TRUE}
 tt.cibersort =
 	tt %>%
-	deconvolve_cellularity(action="get", cores=2)
+	deconvolve_cellularity(action="get", cores=1)
 
 ```
 </div>
