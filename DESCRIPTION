@@ -26,7 +26,8 @@ Imports:
     stats,
     parallel,
     utils,
-    lifecycle
+    lifecycle,
+    scales
 Suggests:
     testthat,
     vctrs,
