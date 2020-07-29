@@ -84,7 +84,36 @@ test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL
 \details{
 \lifecycle{maturing}
 
-This wrapper execute gene enrichment analyses of the dataset
+This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
+
+
+dge =
+	data %>%
+	keep_abundant(		
+		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+		!!.sample, !!.entrez, !!.abundance 
+	) %>%
+	
+	# Make sure transcript names are adjacent
+	[...] %>%
+	as_matrix(rownames = !!.entrez) %>%
+	edgeR::DGEList(counts = .)
+
+idx =  buildIdx(entrezIDs = rownames(dge), species = species)
+
+dge %>%
+	
+	# Calculate weights
+	limma::voom(design, plot = FALSE) %>%
+	
+	# Execute EGSEA
+	egsea(
+		contrasts = my_contrasts,
+		baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
+		sort.by = "med.rank",
+		num.threads = cores,
+		report = FALSE
+	)
 }
 \examples{
 \dontrun{

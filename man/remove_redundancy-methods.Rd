@@ -8,7 +8,7 @@
 \alias{remove_redundancy,tidybulk-method}
 \alias{remove_redundancy,SummarizedExperiment-method}
 \alias{remove_redundancy,RangedSummarizedExperiment-method}
-\title{Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) aboundances are correlated}
+\title{Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) abundances are correlated}
 \usage{
 remove_redundancy(
   .data,
@@ -118,7 +118,7 @@ remove_redundancy(
 \item{Dim_b_column}{A character string. For reduced_dimension based calculation. The column of another principal component}
 }
 \value{
-A tbl object with with dropped recundant elements (e.g., samples).
+A tbl object with with dropped redundant elements (e.g., samples).
 
 A tbl object with with dropped recundant elements (e.g., samples).
 
@@ -134,9 +134,7 @@ A `SummarizedExperiment` object
 remove_redundancy() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., samples).
 }
 \details{
-\lifecycle{maturing}
 
-This function removes redundant elements from the original data set (e.g., samples or transcripts). For example, if we want to define cell-type specific signatures with low sample redundancy. This function returns a tibble with dropped recundant elements (e.g., samples). Two redundancy estimation approaches are supported: (i) removal of highly correlated clusters of elements (keeping a representative) with method="correlation"; (ii) removal of most proximal element pairs in a reduced dimensional space.
 }
 \examples{
 

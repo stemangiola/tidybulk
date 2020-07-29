@@ -72,7 +72,21 @@ test_gene_overrepresentation() takes as input a `tbl` formatted as | <SAMPLE> | 
 \details{
 \lifecycle{maturing}
 
-This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA. This wrapper uses clusterProfiler on the backend.
+This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA. 
+This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
+
+Undelying method:
+ msigdbr::msigdbr(species = species) %>%#' 
+	nest(data = -gs_cat) %>%
+	mutate(test = 
+			map(
+				data, 
+				~ clusterProfiler::enricher(
+					my_entrez_rank,
+				 	TERM2GENE=.x %>% select(gs_name, entrez_gene), 
+					pvalueCutoff = 1
+					) %>%	as_tibble
+			))
 }
 \examples{
 

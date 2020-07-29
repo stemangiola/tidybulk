@@ -811,7 +811,11 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		
 		# Filter
 		tidybulk_to_SummarizedExperiment(!!.sample, !!.transcript, counts) %>%
-		keep_abundant(factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]])) %>%
+		keep_abundant(
+			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion
+		) %>%
 		
 		# DESeq2
 		DESeq2::DESeqDataSet( design = .formula) %>%
@@ -1119,7 +1123,10 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	dge =
 		df_for_edgeR %>%
-		keep_abundant(!!.sample, !!.entrez, !!.abundance )%>%
+		keep_abundant(		
+			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+			!!.sample, !!.entrez, !!.abundance 
+		)%>%
 		
 		# Make sure transcrpt names are adjacent
 		arrange(!!.entrez) %>%
@@ -1985,7 +1992,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		# Filter variable genes
 		keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top = top) %>%
 
-		# Check if logtansform is needed
+		# Check if log transform is needed
 		ifelse_pipe(log_transform,
 								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 		distinct() %>%
