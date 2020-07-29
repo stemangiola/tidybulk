@@ -4108,3 +4108,63 @@ setMethod(
 	.test_differential_cellularity_se
 )
 
+#' Produces the bibliography list of your workflow
+#'
+#' \lifecycle{maturing}
+#'
+#' @description get_bibliography() takes as input a `tidybulk` 
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name get_bibliography
+#'
+#' @param .data A `tidybulk` tibble 
+#' 
+#' @details This methods returns the bibliography list of your workflow from the internals of a tidybulk tibble (attr(., "internals"))
+#'
+#'
+#' @examples
+#'
+#' # Define tidybulk tibble
+#' df = tidybulk( sample, transcript, count)
+#' 
+#' get_bibliography(df)
+#'
+#'
+#'
+#' @docType methods
+#' @rdname get_bibliography-methods
+#' @export
+#'
+setGeneric("get_bibliography", function(.data)
+	standardGeneric("get_bibliography"))
+
+# Set internal
+.get_bibliography = 		function(.data)
+{
+
+	my_methods = 	
+		.data %>%
+		attr("internals") %>%
+		.[["methods_used"]]
+
+	my_bibliography() %>%
+		.[my_methods] %>%
+		unlist %>%
+		writeLines()
+	
+}
+
+#' get_bibliography
+#' @inheritParams get_bibliography
+#' 
+#' @docType methods
+#' @rdname get_bibliography-methods
+#' 
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("get_bibliography",
+					"tidybulk",
+					.get_bibliography)
+
+

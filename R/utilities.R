@@ -325,6 +325,19 @@ drop_internals = function(.data){
   .data %>% drop_attr("internals")
 }
 
+memorise_methods_used = function(.data, .method){
+	
+	.data %>%
+		attach_to_internals(
+			.data %>% 
+				attr("internals") %>%
+				.[["methods_used"]] %>% 
+				c(.method) %>%	unique(), 
+			"methods_used"
+		)
+		
+}  
+
 #' Add attribute to abject
 #' 
 #' @keywords internal
