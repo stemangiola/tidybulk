@@ -1457,7 +1457,7 @@ test_that("filter abundant - no object",{
 
 test_that("nest - no object",{
 
-	expect_equal(	class(nest(tidybulk(input_df, a, b, c), data = a))[1],	"tbl_df"	)
+	expect_equal(	class(nest(tidybulk(input_df, a, b, c), data = a))[1],	"nested_tidybulk"	)
 
 })
 
