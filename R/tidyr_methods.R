@@ -24,7 +24,8 @@ unnest <- function (.data, cols, ..., keep_empty = FALSE, ptype = NULL,
 unnest.default <-  function (.data, cols, ..., keep_empty = FALSE, ptype = NULL, 
 														 names_sep = NULL, names_repair = "check_unique")
 {
-	tidyr::unnest(.data, cols, ..., keep_empty = keep_empty, ptype = ptype, 
+	cols <- enquo(cols)
+	tidyr::unnest(.data, !!cols, ..., keep_empty = keep_empty, ptype = ptype, 
 								names_sep = names_sep, names_repair = names_repair)
 }
 

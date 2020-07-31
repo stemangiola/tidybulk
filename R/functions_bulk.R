@@ -3014,10 +3014,18 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
 
 	# Check if package is installed, otherwise install
+	if (find.package("fastmatch", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing fastmatch needed for analyses")
+		install.packages("fastmatch", repos = "https://cloud.r-project.org")
+	}
+	
 	if (find.package("clusterProfiler", quiet = TRUE) %>% length %>% equals(0)) {
 		message("clusterProfiler not installed. Installing.")
 		BiocManager::install("clusterProfiler", ask = FALSE)
 	}
+	 
+	
+	
 	
 	# Get gene sets signatures
 	msigdbr::msigdbr(species = species) %>%
