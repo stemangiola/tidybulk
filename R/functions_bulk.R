@@ -535,8 +535,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		
 		# Check if data rectangular
 		ifelse2_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & fill_missing_values,
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% `!` & fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% `!` & !fill_missing_values,
 			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
 		)
@@ -1665,7 +1665,7 @@ get_reduced_dimensions_TSNE_bulk <-
 
 			# Check if data rectangular
 			ifelse_pipe(
-				(.) %>% check_if_data_rectangular(!!.element,!!.feature,!!.abundance, type = "soft"),
+				(.) %>% check_if_data_rectangular(!!.element,!!.feature,!!.abundance),
 				~ .x %>% eliminate_sparse_transcripts(!!.feature)
 			) %>%
 
