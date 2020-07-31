@@ -30,33 +30,34 @@ Please have a look also to
 
 ## Functions/utilities available
 
+| Function                        | Description                                                                  |
+| ------------------------------- | ---------------------------------------------------------------------------- |
+| `aggregate_duplicates`          | Aggregate abundance and annotation of duplicated transcripts in a robust way |
+| `scale_abundance`               | Scale (normalise) abundance for RNA sequencing depth                         |
+| `reduce_dimensions`             | Perform dimensionality reduction (PCA, MDS, tSNE)                            |
+| `cluster_elements`              | Labels elements with cluster identity (kmeans, SNN)                          |
+| `remove_redundancy`             | Filter out elements with highly correlated features                          |
+| `adjust_abundance`              | Remove known unwanted variation (Combat)                                     |
+| `test_differential_abundance`   | Differential transcript abundance testing (DE)                               |
+| `deconvolve_cellularity`        | Estimated tissue composition (Cibersort or llsr)                             |
+| `test_differential_cellularity` | Differential cell-type abundance testing                                     |
+| `keep_variable`                 | Filter for top variable features                                             |
+| `keep_abundant`                 | Filter out lowly abundant transcripts                                        |
+| `test_gene_enrichment`          | Gene enrichment analyses (EGSEA)                                             |
+| `test_gene_overrepresentation`  | Gene enrichment on list of transcript names (no rank)                        |
+| `impute_abundance`              | Impute abundance for missing data points using sample groupings              |
 
-| Function                        | Description                                                           |
-| ------------------------------- | --------------------------------------------------------------------- |
-| `aggregate_duplicates`          | Aggregate robustly abundance and annotation of duplicated transcripts |
-| `scale_abundance`               | Scale (normalise) abundance for RNA sequencing depth                  |
-| `reduce_dimensions`             | Perform dimensionality reduction (PCA, MDS, tSNE)                     |
-| `cluster_elements`              | Labels elements with cluster identity (kmeans, SNN)                   |
-| `remove_redundancy`             | Filter out elements with highly correlated features                   |
-| `adjust_abundance`              | Remove known unwanted variation (Combat)                              |
-| `test_differential_abundance`   | Differential transcript abundance testing (DE)                        |
-| `deconvolve_cellularity`        | Estimated tissue composition (Cibersort or llsr)                      |
-| `test_differential_cellularity` | Differential cell-type abundance testing                              |
-| `keep_variable`                 | Filter top variable features                                          |
-| `keep_abundant`                 | Filter out lowly abundant transcripts                                 |
-| `test_gene_enrichment`          | Gene enrichment analyses (EGSEA)                                      |
-| `test_gene_overrepresentation`  | Gene enrichment on list of transcript names (no rank)                 |
-| `impute_abundance`              | Impute abundance for missing data points using sample groupings       |
-
-| Utilities           | Description                                |
-| ------------------- | ------------------------------------------ |
-| `tidybulk`          | add tidybulk attributes to a tibble object |
-| `tidybulk_SAM_BAM`  | Convert SAM BAM files into tidybulk tibble |
-| `pivot_sample`      | Select sample-wise columns/information     |
-| `pivot_transcript`  | Select transcript-wise columns/information |
-| `rotate_dimensions` | Rotate two dimensions of a degree          |
-| `ensembl_to_symbol` | Add gene symbol from ensembl IDs           |
-| `symbol_to_entrez`  | Add entrez ID from gene symbol             |
+| Utilities             | Description                                |
+| --------------------- | ------------------------------------------ |
+| `tidybulk`            | add tidybulk attributes to a tibble object |
+| `tidybulk_SAM_BAM`    | Convert SAM BAM files into tidybulk tibble |
+| `pivot_sample`        | Select sample-wise columns/information     |
+| `pivot_transcript`    | Select transcript-wise columns/information |
+| `rotate_dimensions`   | Rotate two dimensions of a degree          |
+| `ensembl_to_symbol`   | Add gene symbol from ensembl IDs           |
+| `symbol_to_entrez`    | Add entrez ID from gene symbol             |
+| `describe_transcript` | Add gene description from gene symbol      |
+| `get_bibliography`    | Get the bibliography of your workflow      |
 
 ## Minimal input data frame
 
@@ -93,6 +94,17 @@ It memorises key column names
 
 ``` r
 tt = counts %>% tidybulk(sample, transcript, count)
+```
+
+## Get the bibliography of your workflow
+
+First of all, you can cite all articles utilised within your workflow
+automatically from any tidybulk tibble
+
+``` r
+tt %>%
+    # call analysis functions
+    get_bibliography()
 ```
 
 ## Aggregate duplicated `transcripts`
@@ -457,7 +469,7 @@ tt.norm.tSNE %>%
     ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ## Rotate `dimensions`
 
@@ -663,7 +675,7 @@ TidyTranscriptomics
 ``` r
 tt.cibersort =
     tt %>%
-    deconvolve_cellularity(action="get", cores=2)
+    deconvolve_cellularity(action="get", cores=1)
 ```
 
 </div>
