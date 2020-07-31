@@ -4127,7 +4127,7 @@ setMethod(
 #' @examples
 #'
 #' # Define tidybulk tibble
-#' df = tidybulk( sample, transcript, count)
+#' df = tidybulk(tidybulk::counts_mini, sample, transcript, count)
 #' 
 #' get_bibliography(df)
 #'

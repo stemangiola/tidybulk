@@ -74,7 +74,7 @@ my_bibliography = function() {
   title={Beta regression in R},
   author={Cribari-Neto, Francisco and Zeileis, Achim},
   year={2009},
-  publisher={Department of Statistics and Mathematics x, WU Vienna University of~…}
+  publisher={Department of Statistics and Mathematics x, WU Vienna University}
 	}",
 	stats = "  @Manual{,
     title = {R: A Language and Environment for Statistical Computing},
@@ -152,7 +152,7 @@ my_bibliography = function() {
   }",
 	"@article{liberzon2011molecular,
   title={Molecular signatures database (MSigDB) 3.0},
-  author={Liberzon, Arthur and Subramanian, Aravind and Pinchback, Reid and Thorvaldsd{\'o}ttir, Helga and Tamayo, Pablo and Mesirov, Jill P},
+  author={Liberzon, Arthur and Subramanian, Aravind and Pinchback, Reid and Thorvaldsdottir, Helga and Tamayo, Pablo and Mesirov, Jill P},
   journal={Bioinformatics},
   volume={27},
   number={12},
