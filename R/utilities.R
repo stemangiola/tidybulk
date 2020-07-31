@@ -419,7 +419,7 @@ add_class = function(var, name) {
 #'
 #' @return A list of column enquo or error
 get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance){
-
+ 
     if( .sample %>% quo_is_symbol() ) .sample = .sample
     else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
       .sample =  get_tt_columns(.data)$.sample
@@ -997,3 +997,20 @@ log10_reverse_trans <- function() {
 	trans_new("log10_reverse", trans, inv, log_breaks(base = 10))
 }
 
+#' Convert array of quosure (e.g. c(col_a, col_b)) into character vector
+#' 
+#' @keywords internal
+#'
+#' @importFrom rlang quo_name
+#' @importFrom rlang quo_squash
+#'
+#' @param v A array of quosures (e.g. c(col_a, col_b))
+#'
+#' @return A character vector
+quo_names <- function(v) {
+	
+	v = quo_name(quo_squash(v))
+	gsub('^c\\(|`|\\)$', '', v) %>% 
+		strsplit(', ') %>% 
+		unlist 
+}
