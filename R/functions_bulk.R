@@ -756,6 +756,11 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		omit_contrast_in_colnames = FALSE
 	}
 	
+	if (find.package("acepack", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing acepack needed for analyses")
+		install.packages("acepack", repos = "https://cloud.r-project.org")
+	}
+	
 	# Check if package is installed, otherwise install
 	if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing DESeq2 needed for differential transcript abundance analyses")
@@ -763,6 +768,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("DESeq2", ask = FALSE)
 	}
+	
+
 	
 	# # Print the design column names in case I want contrasts
 	# message(
@@ -797,8 +804,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		
 		# Check if data rectangular
 		ifelse2_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & fill_missing_values,
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% `!` & fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% `!` & !fill_missing_values,
 			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
 		) %>%
@@ -963,7 +970,7 @@ test_differential_cellularity_ <- function(.data,
 		mutate(.proportion_0_corrected = if_else(.proportion==0, min_proportion, .proportion)) %>%
 	
 		# Test survival
-		nest(cell_type_proportions = -.cell_type) %>%
+		tidyr::nest(cell_type_proportions = -.cell_type) %>%
 		mutate(surv_test = map(cell_type_proportions, ~ {
 			if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
 			
@@ -994,7 +1001,8 @@ test_differential_cellularity_ <- function(.data,
 							message("Installing betareg needed for analyses")
 							install.packages("betareg", repos = "https://cloud.r-project.org")
 						}
-						betareg::betareg(.my_formula, .) %>%
+						(.) %>%
+							betareg::betareg(.my_formula, .) %>%
 							broom::tidy() %>%
 							filter(component != "precision") %>%
 							pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
@@ -1007,7 +1015,7 @@ test_differential_cellularity_ <- function(.data,
 													 
 		)) %>%
 		
-	unnest(surv_test, keep_empty = TRUE) 
+	tidyr::unnest(surv_test, keep_empty = TRUE) 
 	
 		
 
