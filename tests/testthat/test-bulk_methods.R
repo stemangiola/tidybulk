@@ -1476,7 +1476,7 @@ test_that("pivot",{
 test_that("impute missing - no object",{
 
 	res =
-		impute_abundance(
+		impute_missing_abundance(
 			dplyr::slice(input_df, -1),
 			~ condition,
 			.sample = a,
