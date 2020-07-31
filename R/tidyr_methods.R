@@ -75,8 +75,7 @@ nest <- function (.data, ...)  {
 #' @rdname tidyr-methods
 nest.default <-  function (.data, ...)
 {
-	tidyr::nest(.data, cols, ..., keep_empty = keep_empty, ptype = ptype, 
-								names_sep = names_sep, names_repair = names_repair)
+	tidyr::nest(.data, ...)
 }
 
 #' @export
