@@ -3559,7 +3559,7 @@ setMethod("pivot_transcript",
 #'
 #' @examples
 #'
-#' fill_missing_abundance(mtcars_tidy, car_model, transcript, abundance, fill_with = 0)
+#' fill_missing_abundance(tidybulk::counts_mini, sample, transcript, count, fill_with = 0)
 #'
 #'
 #' @docType methods
