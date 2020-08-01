@@ -454,8 +454,6 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	library(DESeq2)
 	
-	library(DESeq2)
-	
 	res_deseq2 = 
 		test_deseq2_df %>%
 		DESeq() %>%
@@ -468,7 +466,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 
 	expect_equal(
-		res_tidybulk %>% dplyr::slice(c(1, 3,4, 6)) %>% pull(log2FoldChange),
+		res_tidybulk %>% dplyr::slice(c(1, 3,4, 6)) %>% dplyr::pull(log2FoldChange),
 		res_deseq2[c(1, 3,4, 6),2], 
 		tolerance =0.005
 	)
@@ -486,7 +484,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
-		c(NA,   5.463140,  -6.073348, -11.938286),
+		c(-s12.322037, -11.670005 , -9.048954 ,-12.603183),
 		tolerance=1e-6
 	)
 	
@@ -514,7 +512,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
-		c(NA, -2.283351,  2.595410, -1.568892),
+		c(-3.656244 ,-3.241215, -3.037658,  4.173217),
 		tolerance=1e-6
 	)
 	
@@ -539,7 +537,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
-		c(NA,  3.8798472, -9.1104795, -0.4513277),
+		c(-10.432623,  -6.747017,  -7.598174 ,  6.598429),
 		tolerance=1e-6
 	)
 	
