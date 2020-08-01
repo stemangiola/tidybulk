@@ -19,7 +19,7 @@
 #'   If you previously created new variable in `unnest()` you'll now need to
 #'   do it explicitly with `mutate()`. Convert `df %>% unnest(y = fun(x, y, z))`
 #'   to `df %>% mutate(y = fun(x, y, z)) %>% unnest(y)`.
-#' @param names_sep,.names_sep If `NULL`, the default, the names will be left
+#' @param names_sep If `NULL`, the default, the names will be left
 #'   as is. In `nest()`, inner names will come from the former outer names;
 #'   in `unnest()`, the new outer names will come from the inner names.
 #'
@@ -37,7 +37,10 @@
 #'
 #' @examples
 #'
-#' unnest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript)
+#' library(dplyr)
+#' 
+#' nest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript) %>%
+#' unnest(data)
 #'
 #' @rdname tidyr-methods
 #'

@@ -59,7 +59,7 @@ standard tidyverse recycling rules).}
 
 \item{ptype}{See tidyr::unnest}
 
-\item{names_sep, .names_sep}{If `NULL`, the default, the names will be left
+\item{names_sep}{If `NULL`, the default, the names will be left
   as is. In `nest()`, inner names will come from the former outer names;
   in `unnest()`, the new outer names will come from the inner names.
 
@@ -83,7 +83,10 @@ nest
 }
 \examples{
 
-unnest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript)
+library(dplyr)
+
+nest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript) \%>\%
+unnest(data)
 
 
 nest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript)

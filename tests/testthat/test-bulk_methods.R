@@ -484,7 +484,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
-		c(-s12.322037, -11.670005 , -9.048954 ,-12.603183),
+		c(-12.322037, -11.670005 , -9.048954 ,-12.603183),
 		tolerance=1e-6
 	)
 	
