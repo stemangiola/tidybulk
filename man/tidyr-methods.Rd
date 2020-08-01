@@ -48,7 +48,28 @@ nest(.data, ...)
 \arguments{
 \item{.data}{A tbl. (See tidyr)}
 
+\item{cols}{<[`tidy-select`][tidyr_tidy_select]> Columns to unnest.
+If you `unnest()` multiple columns, parallel entries must be of
+compatible sizes, i.e. they're either equal or length 1 (following the
+standard tidyverse recycling rules).}
+
 \item{...}{Name-variable pairs of the form new_col = c(col1, col2, col3) (See tidyr)}
+
+\item{keep_empty}{See tidyr::unnest}
+
+\item{ptype}{See tidyr::unnest}
+
+\item{names_sep, .names_sep}{If `NULL`, the default, the names will be left
+  as is. In `nest()`, inner names will come from the former outer names;
+  in `unnest()`, the new outer names will come from the inner names.
+
+  If a string, the inner and outer names will be used together. In `nest()`,
+  the names of the new outer columns will be formed by pasting together the
+  outer and the inner column names, separated by `names_sep`. In `unnest()`,
+  the new inner names will have the outer names (+ `names_sep`) automatically
+  stripped. This makes `names_sep` roughly symmetric between nesting and unnesting.}
+
+\item{names_repair}{See tidyr::unnest}
 }
 \value{
 A tt object
