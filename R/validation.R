@@ -135,7 +135,7 @@ eliminate_sparse_transcripts = function(.data, .transcript){
 		select(-my_n)
 }
 
-check_if_data_rectangular = function(.data, .sample, .transcript, .abundance, type = "hard"){
+check_if_data_rectangular = function(.data, .sample, .transcript, .abundance){
 
 	# Parse column names
 	.sample = enquo(.sample)
@@ -152,15 +152,29 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance, ty
 
 	is_rectangular
 
-	# if(!is_rectangular & type == "hard") stop("tidybulk says: the data must have the same number of transcript per sample.")
-	#
-	# if(!is_rectangular & type == "soft") warning("tidybulk says: the data should have the same number of transcript per sample.")
+}
 
+warning_if_data_is_not_rectangular = function(.data, .sample, .transcript, .abundance){
+	
+	# Parse column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	if(!check_if_data_rectangular(.data, !!.sample, !!.transcript, !!.abundance))
+		warning("tidybulk says: the data does not have the same number of transcript per sample. The data set is not rectangular.")
+	
+}
 
-	# # Eliminate sparse transcripts
-	# .data %>% eliminate_sparse_transcripts(!!.transcript)
-
-
+error_if_data_is_not_rectangular = function(.data, .sample, .transcript, .abundance){
+	
+	# Parse column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	if(!check_if_data_rectangular(.data, !!.sample, !!.transcript, !!.abundance))
+		stop("tidybulk says: the data must have the same number of transcript per sample. Check again that you have not filtered single observations accidentally. If you have missing data you can use fill_missing_abundance() or impute_missing_abundance()")	
 }
 
 tidybulk_to_tbl = function(.data) {

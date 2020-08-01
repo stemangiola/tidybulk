@@ -452,6 +452,25 @@ test_that("New method choice",{
 
 test_that("DESeq2 differential trancript abundance - no object",{
 	
+	library(DESeq2)
+	
+	res_deseq2 = 
+		test_deseq2_df %>%
+		DESeq() %>%
+		results()
+	
+	res_tidybulk = 
+		test_deseq2_df %>%
+		tidybulk %>%
+		test_differential_abundance(~condition, method="DeSEQ2", action="get")
+	
+
+	expect_equal(
+		res_tidybulk %>% dplyr::slice(c(1, 3,4, 6)) %>% dplyr::pull(log2FoldChange),
+		res_deseq2[c(1, 3,4, 6),2], 
+		tolerance =0.005
+	)
+	
 	res =
 		test_differential_abundance(
 			input_df,
@@ -465,7 +484,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
-		c(-12.322037, -11.670005,  -9.048954, -12.603183),
+		c(-12.322037, -11.670005 , -9.048954 ,-12.603183),
 		tolerance=1e-6
 	)
 	
@@ -493,7 +512,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
-		c(-3.656244, -3.241215, -3.037658,  4.173217),
+		c(-3.656244 ,-3.241215, -3.037658,  4.173217),
 		tolerance=1e-6
 	)
 	
@@ -518,7 +537,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
-		c(-10.432623,  -6.747017 , -7.598174,   6.598429),
+		c(-10.432623,  -6.747017,  -7.598174 ,  6.598429),
 		tolerance=1e-6
 	)
 	
@@ -1457,7 +1476,7 @@ test_that("filter abundant - no object",{
 
 test_that("nest - no object",{
 
-	expect_equal(	class(nest(tidybulk(input_df, a, b, c), data = a))[1],	"tbl_df"	)
+	expect_equal(	class(nest(tidybulk(input_df, a, b, c), data = a))[1],	"nested_tidybulk"	)
 
 })
 
@@ -1476,7 +1495,7 @@ test_that("pivot",{
 test_that("impute missing - no object",{
 
 	res =
-		impute_abundance(
+		impute_missing_abundance(
 			dplyr::slice(input_df, -1),
 			~ condition,
 			.sample = a,
