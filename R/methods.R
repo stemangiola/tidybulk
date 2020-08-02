@@ -2438,7 +2438,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2"
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom"
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
@@ -2544,8 +2544,23 @@ setGeneric("test_differential_abundance", function(.data,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames
 			)
-	}
-	else if (tolower(method)=="deseq2"){
+	}	else if (tolower(method)=="limma_voom"){
+		.data_processed =
+			get_differential_transcript_abundance_bulk_voom(
+			.data,
+			.formula,
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			.contrasts = .contrasts,
+			significance_threshold = significance_threshold,
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion,
+			fill_missing_values = fill_missing_values,
+			scaling_method = scaling_method,
+			omit_contrast_in_colnames = omit_contrast_in_colnames
+		)
+	}	else if (tolower(method)=="deseq2"){
 		.data_processed =
 			get_differential_transcript_abundance_deseq2(
 				.data,
