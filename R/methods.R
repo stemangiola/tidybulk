@@ -3814,8 +3814,8 @@ setGeneric("fill_missing_abundance", function(.data,
 #'
 #' @docType methods
 #' @rdname fill_missing_abundance-methods
-#'
-#' @return A `tbl` with imputed abundance
+#' 
+#' @return A `tbl` with filled abundance
 setMethod("fill_missing_abundance", "spec_tbl_df", .fill_missing_abundance)
 
 #' fill_missing_abundance
@@ -3823,8 +3823,8 @@ setMethod("fill_missing_abundance", "spec_tbl_df", .fill_missing_abundance)
 #'
 #' @docType methods
 #' @rdname fill_missing_abundance-methods
-#'
-#' @return A `tbl` with imputed abundance
+#' 
+#' @return A `tbl` with filled abundance
 setMethod("fill_missing_abundance", "tbl_df", .fill_missing_abundance)
 
 #' fill_missing_abundance
@@ -3832,8 +3832,8 @@ setMethod("fill_missing_abundance", "tbl_df", .fill_missing_abundance)
 #'
 #' @docType methods
 #' @rdname fill_missing_abundance-methods
-#'
-#' @return A `tbl` with imputed abundance
+#' 
+#' @return A `tbl` with filled abundance
 setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
 
 .fill_missing_abundance_se = function(.data,
