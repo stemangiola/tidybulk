@@ -56,6 +56,7 @@ Utilities | Description
 `ensembl_to_symbol` | Add gene symbol from ensembl IDs
 `symbol_to_entrez` | Add entrez ID from gene symbol
 `describe_transcript` | Add gene description from gene symbol
+`get_bibliography` | Get the bibliography of your workflow
 
 ## Minimal input data frame
 
@@ -120,6 +121,15 @@ It memorises key column names
 
 ```{r}
 tt = counts %>% tidybulk(sample, transcript, count)
+```
+
+## Get the bibliography of your workflow 
+First of all, you can cite all articles utilised within your workflow automatically from any tidybulk tibble
+
+```{r eval=FALSE}
+tt %>%
+	# call analysis functions
+	get_bibliography()
 ```
 
 ## Aggregate duplicated `transcripts`

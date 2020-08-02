@@ -29,6 +29,7 @@ create_tt_from_tibble_bulk = function(.data,
 
 		# Add tt_columns attribute
 		add_tt_columns(!!.sample,!!.transcript,!!.abundance,!!.abundance_scaled) %>%
+		memorise_methods_used("tidyverse") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -112,198 +113,12 @@ create_tt_from_bam_sam_bulk <-
 
 			# Add tt_columns attribute
 			add_tt_columns(sample,transcript,count) %>%
+			memorise_methods_used("featurecounts") %>%
 
 			# Add class
 			add_class("tt") %>%
 			add_class("tidybulk")
 	}
-
-
-
-#' Drop lowly transcribed genes for TMM normalization
-#' 
-#' @keywords internal
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#' @importFrom rlang :=
-#' @importFrom stats median
-#'
-#' @param .data A tibble
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
-#' @param factor_of_interest The name of the column of the factor of interest
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#'
-#' @return A tibble filtered
-add_scaled_counts_bulk.get_low_expressed <- function(.data,
-																										 .sample = `sample`,
-																										 .transcript = `transcript`,
-																										 .abundance = `count`,
-																										 factor_of_interest = NULL,
-																										 minimum_counts = 10,
-																										 minimum_proportion = 0.7) {
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
-	.sample = col_names$.sample
-	.transcript = col_names$.transcript
-	.abundance = col_names$.abundance
-
-	factor_of_interest = enquo(factor_of_interest)
-
-	# Check if factor_of_interest is continuous and exists
-	string_factor_of_interest =
-
-		factor_of_interest %>%
-		ifelse2_pipe(
-			quo_is_symbol(.) &&
-				select(.data, !!(.)) %>% lapply(class) %>%	as.character() %in% c("numeric", "integer", "double"),
-			quo_is_symbol(.),
-			~ {
-				message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
-				NULL
-			},
-			~ .data %>%
-				distinct(!!.sample, !!factor_of_interest) %>%
-				arrange(!!.sample) %>%
-				pull(!!factor_of_interest),
-			~ NULL
-		)
-
-	if (minimum_counts < 0)
-		stop("The parameter minimum_counts must be > 0")
-	if (minimum_proportion < 0 |
-			minimum_proportion > 1)
-		stop("The parameter minimum_proportion must be between 0 and 1")
-
-	.data %>%
-		select(!!.sample,!!.transcript, !!.abundance) %>%
-		spread(!!.sample, !!.abundance) %>%
-
-		# Drop if transcript have missing value
-		drop_na() %>%
-		#eliminate_sparse_transcripts(!!.transcript) %>%
-
-		# Call edgeR
-		as_matrix(rownames = !!.transcript) %>%
-		edgeR::filterByExpr(
-			min.count = minimum_counts,
-			group = string_factor_of_interest,
-			min.prop = minimum_proportion
-		) %>%
-		`!` %>%
-		which %>%
-		names %>%
-
-		# Attach attributes
-		reattach_internals(.data)
-}
-
-#' Calculate the norm factor with calcNormFactor from limma
-#' 
-#' @keywords internal
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#' @importFrom rlang :=
-#' @importFrom stats setNames
-#'
-#' @param .data A tibble
-#' @param reference A reference matrix, not sure if used anymore
-#' @param factor_of_interest The name of the column of the factor of interest
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
-#' @param method A string character. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#'
-#'
-#' @return A list including the filtered data frame and the normalization factors
-add_scaled_counts_bulk.calcNormFactor <- function(.data,
-																									reference = NULL,
-																									factor_of_interest = NULL,
-																									minimum_counts = 10,
-																									minimum_proportion = 0.7,
-																									.sample = `sample`,
-																									.transcript = `transcript`,
-																									.abundance = `count`,
-																									method) {
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-
-	factor_of_interest = enquo(factor_of_interest)
-
-	error_if_log_transformed(.data,!!.abundance)
-
-	# Get list of low transcribed genes
-	gene_to_exclude <-
-		add_scaled_counts_bulk.get_low_expressed(
-			.data %>%
-				filter(!!.sample != "reference"),!!.sample,!!.transcript,!!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion
-		)
-
-	# Check if transcript after filtering is 0
-	if (length(gene_to_exclude) == .data %>%
-			dplyr::distinct(!!.transcript) %>%
-			nrow()) {
-		stop("The gene expression matrix has been filtered completely for lowly expressed genes")
-	}
-
-	# Get data frame for the highly transcribed transcripts
-	df.filt <-
-		.data %>%
-		dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
-		droplevels() %>%
-		select(!!.sample, !!.transcript, !!.abundance)
-
-	# scaled data set
-	nf =
-		tibble::tibble(
-			# Sample factor
-			sample = factor(levels(df.filt %>% pull(!!.sample))),
-
-			# scaled data frame
-			nf = edgeR::calcNormFactors(
-				df.filt %>%
-					tidyr::spread(!!.sample,!!.abundance) %>%
-					tidyr::drop_na() %>%
-					dplyr::select(-!!.transcript),
-				refColumn = which(reference == factor(levels(
-					df.filt %>% pull(!!.sample)
-				))),
-				method = method
-			)
-		) %>%
-
-		setNames(c(quo_name(.sample), "nf")) %>%
-
-		# Add the statistics about the number of genes filtered
-		dplyr::left_join(
-			df.filt %>%
-				dplyr::group_by(!!.sample) %>%
-				dplyr::summarise(tot_filt = sum(!!.abundance, na.rm = TRUE)) %>%
-				dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))),
-			by = quo_name(.sample)
-		)
-
-	# Return
-	list(gene_to_exclude = gene_to_exclude, nf = nf) %>%
-
-		# Attach attributes
-		reattach_internals(.data)
-}
 
 #' Get a tibble with scaled counts using TMM
 #' 
@@ -455,7 +270,10 @@ get_scaled_counts_bulk <- function(.data,
 	# Attach attributes
 	df_norm %>%
 		add_tt_columns(!!.sample,!!.transcript,!!.abundance,!!(function(x, v)
-			enquo(v))(x,!!value_scaled))
+			enquo(v))(x,!!value_scaled)) %>%
+		
+		# Add methods
+		memorise_methods_used(c("edger", "tmm")) 
 
 }
 
@@ -691,6 +509,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		
 		# Attach attributes
 		reattach_internals(.data) %>%
+		memorise_methods_used(c("edger", "limma")) %>%
 		
 		# Add raw object
 		attach_to_internals(edgeR_object, "edgeR") %>%
@@ -703,7 +522,214 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		}
 }
 
-                                                           #' Get differential transcription information to a tibble using edgeR.
+
+#' Get differential transcription information to a tibble using voom.
+#' 
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom utils install.packages
+#' @importFrom purrr when
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .contrasts A character vector. See voom makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param significance_threshold A real between 0 and 1
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#'
+#' @return A tibble with voom results
+#'
+get_differential_transcript_abundance_bulk_voom <- function(.data,
+																											 .formula,
+																											 .sample = NULL,
+																											 .transcript = NULL,
+																											 .abundance = NULL,
+																											 .contrasts = NULL,
+																											 significance_threshold = 0.05,
+																											 minimum_counts = 10,
+																											 minimum_proportion = 0.7,
+																											 fill_missing_values = FALSE,
+																											 scaling_method = "TMM",
+																											 omit_contrast_in_colnames = FALSE) {
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	# Check if omit_contrast_in_colnames is correctly setup
+	if(omit_contrast_in_colnames & length(.contrasts) > 1){
+		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+		omit_contrast_in_colnames = FALSE
+	}
+	
+	# distinct_at is not released yet for dplyr, thus we have to use this trick
+	df_for_voom <- .data %>%
+		
+		# Stop if any counts is NA
+		error_if_counts_is_na(!!.abundance) %>%
+		
+		# Stop if there are duplicated transcripts
+		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
+		
+		# Prepare the data frame
+		select(!!.transcript,
+					 !!.sample,
+					 !!.abundance,
+					 one_of(parse_formula(.formula))) %>%
+		distinct() %>%
+		
+		# drop factors as it can affect design matrix
+		mutate_if(is.factor, as.character()) %>%
+		
+		# Check if data rectangular
+		ifelse2_pipe(
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% `!` & fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% `!` & !fill_missing_values,
+			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
+			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		)
+	
+	# Create design matrix
+	design =
+		model.matrix(
+			object = .formula,
+			data = df_for_voom %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
+		)
+	
+	# Print the design column names in case I want constrasts
+	message(
+		sprintf(
+			"tidybulk says: The design column names are \"%s\"",
+			design %>% colnames %>% paste(collapse = ", ")
+		)
+	)
+	
+	my_contrasts =
+		.contrasts %>%
+		ifelse_pipe(length(.) > 0,
+								~ limma::makeContrasts(contrasts = .x, levels = design),
+								~ NULL)
+	
+	# Check if package is installed, otherwise install
+	if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing limma needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("limma", ask = FALSE)
+	}
+	
+	df_for_voom.filt <-
+		df_for_voom %>%
+		select(!!.transcript,!!.sample,!!.abundance, !!as.symbol(parse_formula(.formula))) %>%
+		mutate(
+			lowly_abundant = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(
+				.,
+				!!.sample,
+				!!.transcript,
+				!!.abundance,
+				factor_of_interest = !!(as.symbol(parse_formula(.formula)[1])),
+				minimum_counts = minimum_counts,
+				minimum_proportion = minimum_proportion
+			)
+		)
+	
+	voom_object =
+		df_for_voom.filt %>%
+		filter(!lowly_abundant) %>%
+		select(!!.transcript,!!.sample,!!.abundance) %>%
+		spread(!!.sample,!!.abundance) %>%
+		as_matrix(rownames = !!.transcript) %>%
+		
+		edgeR::DGEList() %>%
+		edgeR::calcNormFactors(method = scaling_method) %>%
+		
+		limma::voom(design, plot=FALSE) %>%
+		limma::lmFit(design) 
+	   
+	voom_object %>%
+		
+		# If I have multiple .contrasts merge the results
+		ifelse_pipe(
+			my_contrasts %>% is.null | omit_contrast_in_colnames,
+			
+			# Simple comparison
+			~ .x %>%
+				
+				# Contrasts
+				limma::contrasts.fit(contrasts=my_contrasts, coefficients =  when(my_contrasts, is.null(.) ~ 2)) %>%
+				limma::eBayes() %>%
+			
+			# Convert to tibble
+				limma::topTable(n = 999999) %>%
+				as_tibble(rownames = quo_name(.transcript)) %>%
+				
+				# Mark DE genes
+				mutate(significant = adj.P.Val < significance_threshold) 	%>%
+				
+				# Arrange
+				arrange(adj.P.Val),
+			
+			# Multiple comparisons
+			~ {
+				voom_obj = .x
+				
+				1:ncol(my_contrasts) %>%
+					map_dfr(
+						~ voom_obj %>%
+							
+							# Contrasts
+							limma::contrasts.fit(contrasts=my_contrasts[, .x]) %>%
+							limma::eBayes() %>%
+							
+							# Convert to tibble
+							limma::topTable(n = 999999) %>%
+							as_tibble(rownames = quo_name(.transcript)) %>%
+							mutate(constrast = colnames(my_contrasts)[.x]) %>%
+							
+							# Mark DE genes
+							mutate(significant = adj.P.Val < significance_threshold) 
+					) %>%
+					pivot_wider(values_from = -c(!!.transcript, constrast),
+											names_from = constrast)
+			}
+		)	 %>%
+		
+		# Add filtering info
+		full_join(df_for_voom.filt %>%
+								when(
+									!"lowly_abundant" %in% colnames(.data) ~ (.) %>% select(!!.transcript, lowly_abundant) ,
+									~ (.) %>% select(!!.transcript))	%>%
+								distinct(), by = quo_name(.transcript)
+		)%>%
+		
+		# Attach attributes
+		reattach_internals(.data) %>%
+		
+		# Add raw object
+		attach_to_internals(voom_object, "voom") %>%
+		# Communicate the attribute added
+		{
+			message(
+				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$voom`"
+			)
+			(.)
+		}
+}
+
+
+#' Get differential transcription information to a tibble using DESeq2
 #' 
 #' @keywords internal
 #'
@@ -818,7 +844,11 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		
 		# Filter
 		tidybulk_to_SummarizedExperiment(!!.sample, !!.transcript, counts) %>%
-		keep_abundant(factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]])) %>%
+		keep_abundant(
+			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion
+		) %>%
 		
 		# DESeq2
 		DESeq2::DESeqDataSet( design = .formula) %>%
@@ -873,6 +903,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 		# Attach attributes
 		reattach_internals(.data) %>%
+		memorise_methods_used("deseq2") %>%
 		
 		# Add raw object
 		attach_to_internals(deseq2_object, "DESeq2") %>%
@@ -1015,7 +1046,19 @@ test_differential_cellularity_ <- function(.data,
 													 
 		)) %>%
 		
-	tidyr::unnest(surv_test, keep_empty = TRUE) 
+
+		unnest(surv_test, keep_empty = TRUE) %>%
+		
+		# Attach attributes
+		reattach_internals(.data) %>%
+		
+		# Add methods used
+		when(
+			grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+			~ (.) %>% memorise_methods_used("betareg")
+		)
+		
+
 	
 		
 
@@ -1127,7 +1170,10 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	dge =
 		df_for_edgeR %>%
-		keep_abundant(!!.sample, !!.entrez, !!.abundance )%>%
+		keep_abundant(		
+			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+			!!.sample, !!.entrez, !!.abundance 
+		)%>%
 		
 		# Make sure transcrpt names are adjacent
 		arrange(!!.entrez) %>%
@@ -1273,7 +1319,8 @@ get_clusters_kmeans_bulk <-
 			mutate(`cluster kmeans` = `cluster kmeans` %>% as.factor()) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data) %>%
+			memorise_methods_used("stats") 
 	}
 
 #' Get SNN shared nearest neighbour clusters to a tibble
@@ -1354,7 +1401,8 @@ get_clusters_SNN_bulk <-
 			dplyr::mutate(!!.element := gsub("\\.", "-",!!.element)) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data) %>%
+			memorise_methods_used("seurat") 
 	}
 
 #' Get dimensionality information to a tibble using MDS
@@ -1432,6 +1480,7 @@ get_reduced_dimensions_MDS_bulk <-
 
 			# Attach attributes
 			reattach_internals(.data) %>%
+			memorise_methods_used("limma") %>%
 
 			# Add raw object
 			attach_to_internals(mds_object, "MDS") %>%
@@ -1577,7 +1626,8 @@ get_reduced_dimensions_PCA_bulk <-
 
 			# Attach attributes
 			reattach_internals(.data) %>%
-
+			memorise_methods_used("stats") %>%
+			
 			# Add raw object
 			attach_to_internals(prcomp_obj, "PCA") %>%
 			# Communicate the attribute added
@@ -1699,7 +1749,8 @@ get_reduced_dimensions_TSNE_bulk <-
 			select(!!.element, everything()) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data) %>%
+			memorise_methods_used("rtsne") 
 
 	}
 
@@ -1993,7 +2044,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		# Filter variable genes
 		keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top = top) %>%
 
-		# Check if logtansform is needed
+		# Check if log transform is needed
 		ifelse_pipe(log_transform,
 								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 		distinct() %>%
@@ -2052,7 +2103,8 @@ The correlation calculation might not be reliable"
 	.data %>% anti_join(.data.correlated, by = quo_name(.element)) %>%
 
 		# Attach attributes
-		reattach_internals(.data)
+		reattach_internals(.data) %>%
+		memorise_methods_used("widyr") 
 }
 
 #' Identifies the closest pairs in a MDS context and return one of them
@@ -2395,7 +2447,8 @@ get_cell_type_proportions = function(.data,
 		#gather(`Cell type`, proportion,-!!.sample) %>%
 
 		# Attach attributes
-		reattach_internals(.data)
+		reattach_internals(.data) %>%
+		memorise_methods_used("cibersort") 
 
 
 }
@@ -2543,7 +2596,8 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		# )%>%
 
 		# Attach attributes
-		reattach_internals(.data)
+		reattach_internals(.data) %>%
+		memorise_methods_used("sva") 
 }
 
 #' Identify variable genes for dimensionality reduction
@@ -2598,7 +2652,11 @@ keep_variable_transcripts = function(.data,
 	x <- x[o[1L:top], , drop = FALSE]
 	variable_trancripts = rownames(x)
 
-	.data %>% filter(!!.transcript %in% variable_trancripts)
+	.data %>% 
+		filter(!!.transcript %in% variable_trancripts) %>%
+		
+		# Add methods used
+		memorise_methods_used(c("edger")) 
 }
 
 #' tidybulk_to_SummarizedExperiment
@@ -3045,7 +3103,10 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 				 			as_tibble
 				 	)) %>%
 	select(-data) %>%
-	unnest(test)
+	unnest(test) %>%
+		
+		# Add methods used
+		memorise_methods_used(c("clusterProfiler", "msigdbr")) 
 	
 }
 

@@ -352,7 +352,6 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 
 })
 
-
 test_that("Get differential trancript abundance - no object",{
 
 	res =
@@ -378,7 +377,6 @@ test_that("Get differential trancript abundance - no object",{
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
 
 })
-
 
 test_that("Add differential trancript abundance - no object",{
 
@@ -408,6 +406,163 @@ test_that("Add differential trancript abundance - no object",{
 
 })
 
+test_that("Only differential trancript abundance voom - no object",{
+	
+	res =
+		test_differential_abundance(
+			input_df,
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "limma_voom",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-12.25012, -11.48490, -10.29393, -11.69070),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		9
+	)
+	
+	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
+	
+	# Continuous covariate
+	sam = distinct(input_df, a)
+	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
+	
+	res =
+		test_differential_abundance(
+			left_join(input_df, sam),
+			~ condition_cont,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "limma_voom",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-3.659127, -3.233295, -3.750860 ,-3.033059),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		9
+	)
+	
+	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
+	
+	# Continuous and discrete
+	res =
+		test_differential_abundance(
+			left_join(input_df, sam),
+			~ condition_cont + condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "limma_voom",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-2.981563, -4.883692, -1.702294,  2.423231),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		9
+	)
+	
+	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
+	
+	# Just one covariate error
+	expect_error(
+		test_differential_abundance(
+			filter(input_df, condition),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "limma_voom",
+			action="only"
+		),
+		"Subsetting to non-estimable coefficients is not allowed"
+	)
+	
+	# Setting filtering manually
+	res =
+		test_differential_abundance(
+			input_df,
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "limma_voom",
+			action="only",
+			minimum_proportion = 0.5,
+			minimum_counts = 30
+		)
+	
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-12.431094 ,-11.671673,  -9.154676, -11.886902),
+		tolerance=1e-6
+	)
+	
+	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
+	
+	# Change scaling method
+	res =
+		test_differential_abundance(
+			input_df,
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			scaling_method = "TMM",
+			method = "limma_voom",
+			action="only"
+		)
+})
+
+test_that("Only differential trancript abundance - no object - with contrasts",{
+	
+	res =
+		test_differential_abundance(
+			input_df,
+			~ 0 + condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			.contrasts = c( "conditionTRUE - conditionFALSE",  "conditionFALSE - conditionTRUE"),
+			method = "limma_voom",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$`logFC_conditionTRUE - conditionFALSE`)[1:4],
+		c(-12.25012, -11.48490 ,-10.29393, -11.69070),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		16
+	)
+	
+	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
+	
+})
 
 test_that("New method choice",{
 	
@@ -563,7 +718,6 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	)
 	
 })
-
 
 test_that("Get entrez from symbol - no object",{
 
@@ -1529,5 +1683,19 @@ test_that("gene over representation",{
 	expect_equal(	ncol(res),	10	)
 	
 
+	
+})
+
+
+test_that("bibliography",{
+	
+		tidybulk(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c
+		) %>% 
+		scale_abundance() %>%
+		get_bibliography()
 	
 })

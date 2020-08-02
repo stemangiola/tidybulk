@@ -80,6 +80,12 @@ keep_variable(
 \value{
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 
+Underlying method: 
+	s <- rowMeans((x - rowMeans(x)) ^ 2)
+o <- order(s, decreasing = TRUE)
+x <- x[o[1L:top], , drop = FALSE]
+variable_trancripts = rownames(x)
+
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
@@ -96,7 +102,7 @@ keep_variable() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | 
 \details{
 \lifecycle{maturing}
 
-At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
 }
 \examples{
 

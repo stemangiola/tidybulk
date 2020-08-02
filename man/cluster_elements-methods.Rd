@@ -91,7 +91,7 @@ cluster_elements(
 
 \item{.abundance}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
 
-\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
+\item{method}{A character string. The cluster algorithm to use, at the moment k-means is the only algorithm included.}
 
 \item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 
@@ -122,7 +122,19 @@ cluster_elements() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT>
 
 identifies clusters in the data, normally of samples.
 This function returns a tibble with additional columns for the cluster annotation.
-At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
+At the moment only k-means (DOI: 10.2307/2346830) and SNN clustering (DOI:10.1016/j.cell.2019.05.031) is supported, the plan is to introduce more clustering methods.
+
+Underlying method for kmeans
+do.call(kmeans(.data, iter.max = 1000, ...)
+
+Underlying method for SNN
+.data %>%
+Seurat::CreateSeuratObject() %>%
+Seurat::ScaleData(display.progress = TRUE,num.cores = 4, do.par = TRUE) %>%
+Seurat::FindVariableFeatures(selection.method = "vst") %>%
+Seurat::RunPCA(npcs = 30) %>%
+Seurat::FindNeighbors() %>%
+Seurat::FindClusters(method = "igraph", ...)
 }
 \examples{
 

@@ -325,6 +325,19 @@ drop_internals = function(.data){
   .data %>% drop_attr("internals")
 }
 
+memorise_methods_used = function(.data, .method){
+	
+	.data %>%
+		attach_to_internals(
+			.data %>% 
+				attr("internals") %>%
+				.[["methods_used"]] %>% 
+				c(.method) %>%	unique(), 
+			"methods_used"
+		)
+		
+}  
+
 #' Add attribute to abject
 #' 
 #' @keywords internal
@@ -1013,4 +1026,189 @@ quo_names <- function(v) {
 	gsub('^c\\(|`|\\)$', '', v) %>% 
 		strsplit(', ') %>% 
 		unlist 
+}
+
+#' Drop lowly transcribed genes for TMM normalization
+#' 
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats median
+#'
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param factor_of_interest The name of the column of the factor of interest
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#'
+#' @return A tibble filtered
+add_scaled_counts_bulk.get_low_expressed <- function(.data,
+																										 .sample = `sample`,
+																										 .transcript = `transcript`,
+																										 .abundance = `count`,
+																										 factor_of_interest = NULL,
+																										 minimum_counts = 10,
+																										 minimum_proportion = 0.7) {
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
+	
+	factor_of_interest = enquo(factor_of_interest)
+	
+	# Check if factor_of_interest is continuous and exists
+	string_factor_of_interest =
+		
+		factor_of_interest %>%
+		ifelse2_pipe(
+			quo_is_symbol(.) &&
+				select(.data, !!(.)) %>% lapply(class) %>%	as.character() %in% c("numeric", "integer", "double"),
+			quo_is_symbol(.),
+			~ {
+				message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
+				NULL
+			},
+			~ .data %>%
+				distinct(!!.sample, !!factor_of_interest) %>%
+				arrange(!!.sample) %>%
+				pull(!!factor_of_interest),
+			~ NULL
+		)
+	
+	if (minimum_counts < 0)
+		stop("The parameter minimum_counts must be > 0")
+	if (minimum_proportion < 0 |
+			minimum_proportion > 1)
+		stop("The parameter minimum_proportion must be between 0 and 1")
+	
+	.data %>%
+		select(!!.sample,!!.transcript, !!.abundance) %>%
+		spread(!!.sample, !!.abundance) %>%
+		
+		# Drop if transcript have missing value
+		drop_na() %>%
+		#eliminate_sparse_transcripts(!!.transcript) %>%
+		
+		# Call edgeR
+		as_matrix(rownames = !!.transcript) %>%
+		edgeR::filterByExpr(
+			min.count = minimum_counts,
+			group = string_factor_of_interest,
+			min.prop = minimum_proportion
+		) %>%
+		`!` %>%
+		which %>%
+		names %>%
+		
+		# Attach attributes
+		reattach_internals(.data)
+}
+
+#' Calculate the norm factor with calcNormFactor from limma
+#' 
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats setNames
+#'
+#' @param .data A tibble
+#' @param reference A reference matrix, not sure if used anymore
+#' @param factor_of_interest The name of the column of the factor of interest
+#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A string character. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#'
+#'
+#' @return A list including the filtered data frame and the normalization factors
+add_scaled_counts_bulk.calcNormFactor <- function(.data,
+																									reference = NULL,
+																									factor_of_interest = NULL,
+																									minimum_counts = 10,
+																									minimum_proportion = 0.7,
+																									.sample = `sample`,
+																									.transcript = `transcript`,
+																									.abundance = `count`,
+																									method) {
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	factor_of_interest = enquo(factor_of_interest)
+	
+	error_if_log_transformed(.data,!!.abundance)
+	
+	# Get list of low transcribed genes
+	gene_to_exclude <-
+		add_scaled_counts_bulk.get_low_expressed(
+			.data %>%
+				filter(!!.sample != "reference"),!!.sample,!!.transcript,!!.abundance,
+			factor_of_interest = !!factor_of_interest,
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion
+		)
+	
+	# Check if transcript after filtering is 0
+	if (length(gene_to_exclude) == .data %>%
+			dplyr::distinct(!!.transcript) %>%
+			nrow()) {
+		stop("The gene expression matrix has been filtered completely for lowly expressed genes")
+	}
+	
+	# Get data frame for the highly transcribed transcripts
+	df.filt <-
+		.data %>%
+		dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
+		droplevels() %>%
+		select(!!.sample, !!.transcript, !!.abundance)
+	
+	# scaled data set
+	nf =
+		tibble::tibble(
+			# Sample factor
+			sample = factor(levels(df.filt %>% pull(!!.sample))),
+			
+			# scaled data frame
+			nf = edgeR::calcNormFactors(
+				df.filt %>%
+					tidyr::spread(!!.sample,!!.abundance) %>%
+					tidyr::drop_na() %>%
+					dplyr::select(-!!.transcript),
+				refColumn = which(reference == factor(levels(
+					df.filt %>% pull(!!.sample)
+				))),
+				method = method
+			)
+		) %>%
+		
+		setNames(c(quo_name(.sample), "nf")) %>%
+		
+		# Add the statistics about the number of genes filtered
+		dplyr::left_join(
+			df.filt %>%
+				dplyr::group_by(!!.sample) %>%
+				dplyr::summarise(tot_filt = sum(!!.abundance, na.rm = TRUE)) %>%
+				dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))),
+			by = quo_name(.sample)
+		)
+	
+	# Return
+	list(gene_to_exclude = gene_to_exclude, nf = nf) %>%
+		
+		# Attach attributes
+		reattach_internals(.data)
 }
