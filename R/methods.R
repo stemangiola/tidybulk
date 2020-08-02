@@ -549,7 +549,8 @@ setGeneric("cluster_elements", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.abundance)
-
+	error_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
+	
 	if (method == "kmeans") {
 		if (action == "add"){
 
@@ -878,7 +879,8 @@ setGeneric("reduce_dimensions", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
+		
 	if (method == "MDS") {
 
 		.data_processed =
@@ -3713,17 +3715,168 @@ setMethod("pivot_transcript",
 					.pivot_transcript)
 
 
+#' Fill transcript abundance if missing from sample-transcript pairs
+#'
+#' \lifecycle{maturing}
+#'
+#' @description fill_missing_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with new observations
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name fill_missing_abundance
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT>  | <...> |
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript column
+#' @param .abundance The name of the transcript abundance column
+#' @param fill_with A numerical abundance with which fill the missing data points
+#'
+#' @details This function fills the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
+#'
+#' @return A `tbl` non-sparse abundance
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#' fill_missing_abundance(tidybulk::counts_mini, sample, transcript, count, fill_with = 0)
+#'
+#'
+#' @docType methods
+#' @rdname fill_missing_abundance-methods
+#'
+#' @export
+#'
+#'
+setGeneric("fill_missing_abundance", function(.data,
+																		.sample= NULL,
+																		.transcript= NULL,
+																		.abundance= NULL,
+																		fill_with)
+	standardGeneric("fill_missing_abundance"))
+
+# Set internal
+.fill_missing_abundance = 	function(.data,
+													.sample = NULL,
+													.transcript= NULL,
+													.abundance= NULL,
+													fill_with)
+{
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
+	
+	
+	# Check the abundance is set
+	if(length(fill_with)==0) stop("nanny says: the argument fill_with must not be empty.")
+	
+	# Validate data frame
+	validation(.data, !!.sample, !!.transcript, !!.abundance)
+	
+	fill_NA_using_value(
+		.data,
+		.sample = !!.sample,
+		.transcript = !!.transcript,
+		.abundance = !!.abundance,
+		fill_with = fill_with)
+}
+
+#' fill_missing_abundance
+#' @inheritParams fill_missing_abundance
+#' 
+#' @docType methods
+#' @rdname fill_missing_abundance-methods
+#' 
+#' @return A `tbl` with imputed abundance
+setMethod("fill_missing_abundance", "spec_tbl_df", .fill_missing_abundance)
+
+#' fill_missing_abundance
+#' @inheritParams fill_missing_abundance
+#' 
+#' @docType methods
+#' @rdname fill_missing_abundance-methods
+#' 
+#' @return A `tbl` with imputed abundance
+setMethod("fill_missing_abundance", "tbl_df", .fill_missing_abundance)
+
+#' fill_missing_abundance
+#' @inheritParams fill_missing_abundance
+#' 
+#' @docType methods
+#' @rdname fill_missing_abundance-methods
+#' 
+#' @return A `tbl` with imputed abundance
+setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
+
+.fill_missing_abundance_se = function(.data,
+																			.sample = NULL,
+																			.transcript= NULL,
+																			.abundance= NULL,
+																			fill_with) {
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	.data %>%
+		
+		# Convert to tidybulk
+		tidybulk() %>%
+		
+		# Apply scale method
+		fill_missing_abundance(
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			fill_with = fill_with
+		) %>%
+		
+		# Convert to SummaizedExperiment
+		tidybulk_to_SummarizedExperiment()
+	
+}
+
+#' fill_missing_abundance
+#' @inheritParams fill_missing_abundance
+#' 
+#' @docType methods
+#' @rdname fill_missing_abundance-methods
+#' 
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("fill_missing_abundance",
+					"SummarizedExperiment",
+					.fill_missing_abundance_se)
+
+#' fill_missing_abundance
+#' @inheritParams fill_missing_abundance
+#' 
+#' @docType methods
+#' @rdname fill_missing_abundance-methods
+#' 
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("fill_missing_abundance",
+					"RangedSummarizedExperiment",
+					.fill_missing_abundance_se)
 
 #' impute transcript abundance if missing from sample-transcript pairs
 #'
 #' \lifecycle{maturing}
 #'
-#' @description impute_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
+#' @description impute_missing_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name impute_abundance
+#' @name impute_missing_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
@@ -3742,7 +3895,7 @@ setMethod("pivot_transcript",
 #'
 #'
 #' res =
-#' 	impute_abundance(
+#' 	impute_missing_abundance(
 #' 		tidybulk::counts_mini,
 #' 	~ condition,
 #' 	.sample = sample,
@@ -3752,20 +3905,20 @@ setMethod("pivot_transcript",
 #'
 #'
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname impute_missing_abundance-methods
 #'
 #' @export
 #'
 #'
-setGeneric("impute_abundance", function(.data,
+setGeneric("impute_missing_abundance", function(.data,
 																				.formula,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL)
-	standardGeneric("impute_abundance"))
+	standardGeneric("impute_missing_abundance"))
 
 # Set internal
-.impute_abundance = 	function(.data,
+.impute_missing_abundance = 	function(.data,
 															.formula,
 															.sample = NULL,
 															.transcript = NULL,
@@ -3807,34 +3960,34 @@ setGeneric("impute_abundance", function(.data,
 
 }
 
-#' impute_abundance
-#' @inheritParams impute_abundance
+#' impute_missing_abundance
+#' @inheritParams impute_missing_abundance
 #' 
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname impute_missing_abundance-methods
 #' 
 #' @return A `tbl` with imputed abundance
-setMethod("impute_abundance", "spec_tbl_df", .impute_abundance)
+setMethod("impute_missing_abundance", "spec_tbl_df", .impute_missing_abundance)
 
-#' impute_abundance
-#' @inheritParams impute_abundance
+#' impute_missing_abundance
+#' @inheritParams impute_missing_abundance
 #' 
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname impute_missing_abundance-methods
 #' 
 #' @return A `tbl` with imputed abundance
-setMethod("impute_abundance", "tbl_df", .impute_abundance)
+setMethod("impute_missing_abundance", "tbl_df", .impute_missing_abundance)
 
-#' impute_abundance
-#' @inheritParams impute_abundance
+#' impute_missing_abundance
+#' @inheritParams impute_missing_abundance
 #' 
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname impute_missing_abundance-methods
 #' 
 #' @return A `tbl` with imputed abundance
-setMethod("impute_abundance", "tidybulk", .impute_abundance)
+setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 
-.impute_abundance_se = function(.data,
+.impute_missing_abundance_se = function(.data,
 																.formula,
 																.sample = NULL,
 																.transcript = NULL,
@@ -3850,7 +4003,7 @@ setMethod("impute_abundance", "tidybulk", .impute_abundance)
 		tidybulk() %>%
 
 		# Apply scale method
-		impute_abundance(
+		impute_missing_abundance(
 			.formula = .formula,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
@@ -3862,29 +4015,29 @@ setMethod("impute_abundance", "tidybulk", .impute_abundance)
 
 }
 
-#' impute_abundance
-#' @inheritParams impute_abundance
+#' impute_missing_abundance
+#' @inheritParams impute_missing_abundance
 #' 
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname impute_missing_abundance-methods
 #' 
 #' @return A `SummarizedExperiment` object
 #'
-setMethod("impute_abundance",
+setMethod("impute_missing_abundance",
 					"SummarizedExperiment",
-					.impute_abundance_se)
+					.impute_missing_abundance_se)
 
-#' impute_abundance
-#' @inheritParams impute_abundance
+#' impute_missing_abundance
+#' @inheritParams impute_missing_abundance
 #' 
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname impute_missing_abundance-methods
 #' 
 #' @return A `SummarizedExperiment` object
 #'
-setMethod("impute_abundance",
+setMethod("impute_missing_abundance",
 					"RangedSummarizedExperiment",
-					.impute_abundance_se)
+					.impute_missing_abundance_se)
 
 
 

@@ -540,8 +540,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		
 		# Check if data rectangular
 		ifelse2_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & fill_missing_values,
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% `!` & fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% `!` & !fill_missing_values,
 			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
 		)
@@ -762,6 +762,11 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		omit_contrast_in_colnames = FALSE
 	}
 	
+	if (find.package("acepack", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing acepack needed for analyses")
+		install.packages("acepack", repos = "https://cloud.r-project.org")
+	}
+	
 	# Check if package is installed, otherwise install
 	if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing DESeq2 needed for differential transcript abundance analyses")
@@ -769,6 +774,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("DESeq2", ask = FALSE)
 	}
+	
+
 	
 	# # Print the design column names in case I want contrasts
 	# message(
@@ -803,8 +810,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		
 		# Check if data rectangular
 		ifelse2_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & fill_missing_values,
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance, type = "soft") %>% `!` & !fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% `!` & fill_missing_values,
+			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% `!` & !fill_missing_values,
 			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
 		) %>%
@@ -974,7 +981,7 @@ test_differential_cellularity_ <- function(.data,
 		mutate(.proportion_0_corrected = if_else(.proportion==0, min_proportion, .proportion)) %>%
 	
 		# Test survival
-		nest(cell_type_proportions = -.cell_type) %>%
+		tidyr::nest(cell_type_proportions = -.cell_type) %>%
 		mutate(surv_test = map(cell_type_proportions, ~ {
 			if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
 			
@@ -1005,7 +1012,8 @@ test_differential_cellularity_ <- function(.data,
 							message("Installing betareg needed for analyses")
 							install.packages("betareg", repos = "https://cloud.r-project.org")
 						}
-						betareg::betareg(.my_formula, .) %>%
+						(.) %>%
+							betareg::betareg(.my_formula, .) %>%
 							broom::tidy() %>%
 							filter(component != "precision") %>%
 							pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
@@ -1018,6 +1026,7 @@ test_differential_cellularity_ <- function(.data,
 													 
 		)) %>%
 		
+
 		unnest(surv_test, keep_empty = TRUE) %>%
 		
 		# Attach attributes
@@ -1029,6 +1038,7 @@ test_differential_cellularity_ <- function(.data,
 			~ (.) %>% memorise_methods_used("betareg")
 		)
 		
+
 	
 		
 
@@ -1693,7 +1703,7 @@ get_reduced_dimensions_TSNE_bulk <-
 
 			# Check if data rectangular
 			ifelse_pipe(
-				(.) %>% check_if_data_rectangular(!!.element,!!.feature,!!.abundance, type = "soft"),
+				(.) %>% check_if_data_rectangular(!!.element,!!.feature,!!.abundance),
 				~ .x %>% eliminate_sparse_transcripts(!!.feature)
 			) %>%
 
@@ -2875,9 +2885,96 @@ fill_NA_using_formula = function(.data,
 
 		# Add oiginal dataset
 		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_name(.transcript), col_formula))) %>%
-		select(.data %>% colnames)
+		select(.data %>% colnames) %>%
+		
+		# Reattach internals
+		reattach_internals(.data)
 
 }
+
+#' This function is needed for DE in case the matrix is not rectangular, but includes NA
+#' 
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom stats as.formula
+#'
+#' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
+#' @param .sample The name of the element column
+#' @param .transcript The name of the feature/gene column
+#' @param .abundance The name of the feature/gene value column
+#' @param fill_with A numerical value with which fill the missing data points
+#'
+#'
+#' @return A tibble with adjusted counts
+#'
+#'
+fill_NA_using_value = function(.data,
+															 .sample,
+															 .transcript,
+															 .abundance,
+															 fill_with){
+	 
+	# Comply with CRAN NOTES
+	. = NULL
+	
+	# Get column names
+	.element = enquo(.sample)
+	.feature = enquo(.transcript)
+	.value = enquo(.abundance)
+
+	# Create NAs for missing element/feature pair
+	df_to_impute =
+		.data %>%
+		select(!!.element, !!.feature, !!.value) %>%
+		distinct %>%
+		pivot_wider(
+			names_from = !!.feature,
+			values_from = !!.value,
+			names_sep = "___", 
+			names_prefix = "fill_miss_"
+		) %>%
+		pivot_longer(
+			names_to = .data %>% select(!!.feature) %>% names, 
+			values_to = quo_names(.value), 
+			names_sep = purrr::when(quo_names(.feature), length(.) > 1 ~ "___", ~ NULL), 
+			names_prefix = "fill_miss_", 
+			cols = contains("fill_miss_")
+		)
+	
+	# Select just features/covariates that have missing
+	combo_to_impute = df_to_impute %>% anti_join(.data, by=c(quo_names(.element), quo_names(.feature))) %>% select(!!.feature, !!.element) %>% distinct()
+	
+	# Impute using median
+	df_to_impute %>%
+		inner_join(combo_to_impute, by = c(quo_names(.element), quo_names(.feature))) %>%
+		
+		# Fill
+		mutate(!!.value := if_else(!!.value %>% is.na, fill_with, !!.value)) %>%
+		# when(
+		# 	quo_is_symbol(.value_scaled) ~ mutate(., !!.value_scaled := !!.value)) ,
+		# 	~ (.)
+		# ) %>%
+	
+		# In next command avoid error if no data to impute
+		ifelse_pipe(
+			nrow(.) > 0,
+			~ .x %>% left_join(.data %>% pivot_sample(!!.element), by=quo_names(.element))
+		) %>%
+		
+		# Add oiginal dataset
+		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_names(.feature), quo_names(.element)))) %>%
+		select(.data %>% colnames) %>%
+		
+		# Reattach internals
+		reattach_internals(.data)
+	
+}
+
 
 # # Iterative version of Siberg function because fails
 # siberg_iterative = function(x) {
@@ -2955,10 +3052,18 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
 
 	# Check if package is installed, otherwise install
+	if (find.package("fastmatch", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing fastmatch needed for analyses")
+		install.packages("fastmatch", repos = "https://cloud.r-project.org")
+	}
+	
 	if (find.package("clusterProfiler", quiet = TRUE) %>% length %>% equals(0)) {
 		message("clusterProfiler not installed. Installing.")
 		BiocManager::install("clusterProfiler", ask = FALSE)
 	}
+	 
+	
+	
 	
 	# Get gene sets signatures
 	msigdbr::msigdbr(species = species) %>%

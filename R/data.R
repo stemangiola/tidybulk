@@ -42,3 +42,8 @@
 #'
 #'
 "se_mini"
+
+#' SummarizedExperiment mini for vignette
+#'
+#'
+"test_deseq2_df"
