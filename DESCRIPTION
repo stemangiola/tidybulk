@@ -27,7 +27,8 @@ Imports:
     parallel,
     utils,
     lifecycle,
-    scales
+    scales,
+    SummarizedExperiment
 Suggests:
     testthat,
     vctrs,
@@ -47,7 +48,6 @@ Suggests:
     Seurat,
     KernSmooth,
     Rtsne,
-    SummarizedExperiment,
     S4Vectors,
     ggplot2,
     widyr,

@@ -89,11 +89,11 @@ This wrapper execute ensemble gene enrichment analyses of the dataset using EGSE
 
 dge =
 	data %>%
-	keep_abundant(		
+	keep_abundant(
 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
-		!!.sample, !!.entrez, !!.abundance 
+		!!.sample, !!.entrez, !!.abundance
 	) %>%
-	
+
 	# Make sure transcript names are adjacent
 	[...] %>%
 	as_matrix(rownames = !!.entrez) %>%
@@ -102,10 +102,10 @@ dge =
 idx =  buildIdx(entrezIDs = rownames(dge), species = species)
 
 dge %>%
-	
+
 	# Calculate weights
 	limma::voom(design, plot = FALSE) %>%
-	
+
 	# Execute EGSEA
 	egsea(
 		contrasts = my_contrasts,
