@@ -15,6 +15,7 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
+  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   species,
   cores = 10
 )
@@ -26,6 +27,7 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
+  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   species,
   cores = 10
 )
@@ -37,6 +39,7 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
+  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   species,
   cores = 10
 )
@@ -48,6 +51,7 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
+  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   species,
   cores = 10
 )
@@ -64,6 +68,8 @@ test_gene_enrichment(
 \item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{.contrasts}{= NULL,}
+
+\item{method}{A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.}
 
 \item{species}{A character. For example, human or mouse}
 
@@ -109,7 +115,7 @@ dge %>%
 	# Execute EGSEA
 	egsea(
 		contrasts = my_contrasts,
-		baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
+		baseGSEAs = method,
 		sort.by = "med.rank",
 		num.threads = cores,
 		report = FALSE
@@ -129,8 +135,9 @@ library("EGSEA")
 		.sample = sample,
 		.entrez = entrez,
 		.abundance = count,
+      method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
 		species="human",
-		cores = 1
+		cores = 2
 	)
 
 }

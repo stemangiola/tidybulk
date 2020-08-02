@@ -1082,9 +1082,10 @@ test_differential_cellularity_ <- function(.data,
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model
 #' @param .sample The name of the sample column
-#' @param .entrez The ENTREZ doce of the transcripts/genes
+#' @param .entrez The ENTREZ code of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .contrasts = NULL,
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
 #'
@@ -1096,6 +1097,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 																							 .entrez,
 																							 .abundance = NULL,
 																							 .contrasts = NULL,
+																						method,
 																							 species,
 																							 cores = 10) {
 	# Comply with CRAN NOTES
@@ -1199,7 +1201,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		egsea(
 			contrasts = my_contrasts,
 			gs.annots = idx %>% .["kegg"],
-			baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
+			baseGSEAs = method,
 			sort.by = "med.rank",
 			num.threads = cores,
 			report = FALSE
@@ -1232,7 +1234,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			# 	distinct() %>%
 			# 	arrange(match(entrez, rownames(dge))) %>%
 			# 	setNames(c("FeatureID", "Symbols")),
-			baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
+			baseGSEAs = method,
 			sort.by = "med.rank",
 			num.threads = cores,
 		)
@@ -1502,6 +1504,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @importFrom rlang :=
 #' @importFrom stats prcomp
 #' @importFrom utils capture.output
+#' @importFrom magrittr divide_by
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1608,7 +1611,7 @@ get_reduced_dimensions_PCA_bulk <-
 
 				(.) %$% sdev %>% pow(2) %>% # Eigen value
 					divide_by(sum(.)) %>%
-					.[components] %>%
+					`[` (components) %>%
 					enframe() %>%
 					select(-name) %>%
 					rename(`Fraction of variance` = value) %>%

@@ -3244,6 +3244,7 @@ setMethod("keep_abundant",
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts = NULL,
+#' @param method A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
 #'
@@ -3273,7 +3274,7 @@ setMethod("keep_abundant",
 #' 	# Execute EGSEA
 #' 	egsea(
 #' 		contrasts = my_contrasts,
-#' 		baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
+#' 		baseGSEAs = method,
 #' 		sort.by = "med.rank",
 #' 		num.threads = cores,
 #' 		report = FALSE
@@ -3298,8 +3299,9 @@ setMethod("keep_abundant",
 #'			.sample = sample,
 #'			.entrez = entrez,
 #'			.abundance = count,
+#'       method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
 #'			species="human",
-#'			cores = 1
+#'			cores = 2
 #'		)
 #'
 #'}
@@ -3315,6 +3317,7 @@ setGeneric("test_gene_enrichment", function(.data,
 																							 .entrez,
 																							 .abundance = NULL,
 																							 .contrasts = NULL,
+																								method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																							 species,
 																							 cores = 10)
 	standardGeneric("test_gene_enrichment"))
@@ -3326,6 +3329,7 @@ setGeneric("test_gene_enrichment", function(.data,
 																			.entrez,
 																			.abundance = NULL,
 																			.contrasts = NULL,
+																	    method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																			species,
 																			cores = 10)	{
 	# Make col names
@@ -3347,6 +3351,7 @@ setGeneric("test_gene_enrichment", function(.data,
 		.entrez = !!.entrez,
 		.abundance = !!.abundance,
 		.contrasts = .contrasts,
+		method = method,
 		species = species,
 		cores = cores
 	)
@@ -4319,7 +4324,7 @@ setGeneric("get_bibliography", function(.data)
 		.[["methods_used"]]
 
 	my_bibliography() %>%
-		.[my_methods] %>%
+		`[` (my_methods) %>%
 		unlist %>%
 		writeLines()
 
