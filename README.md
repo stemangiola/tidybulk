@@ -45,19 +45,20 @@ Please have a look also to
 | `keep_abundant`                 | Filter out lowly abundant transcripts                                        |
 | `test_gene_enrichment`          | Gene enrichment analyses (EGSEA)                                             |
 | `test_gene_overrepresentation`  | Gene enrichment on list of transcript names (no rank)                        |
-| `impute_abundance`              | Impute abundance for missing data points using sample groupings              |
 
-| Utilities             | Description                                |
-| --------------------- | ------------------------------------------ |
-| `tidybulk`            | add tidybulk attributes to a tibble object |
-| `tidybulk_SAM_BAM`    | Convert SAM BAM files into tidybulk tibble |
-| `pivot_sample`        | Select sample-wise columns/information     |
-| `pivot_transcript`    | Select transcript-wise columns/information |
-| `rotate_dimensions`   | Rotate two dimensions of a degree          |
-| `ensembl_to_symbol`   | Add gene symbol from ensembl IDs           |
-| `symbol_to_entrez`    | Add entrez ID from gene symbol             |
-| `describe_transcript` | Add gene description from gene symbol      |
-| `get_bibliography`    | Get the bibliography of your workflow      |
+| Utilities                  | Description                                                     |
+| -------------------------- | --------------------------------------------------------------- |
+| `get_bibliography`         | Get the bibliography of your workflow                           |
+| `tidybulk`                 | add tidybulk attributes to a tibble object                      |
+| `tidybulk_SAM_BAM`         | Convert SAM BAM files into tidybulk tibble                      |
+| `pivot_sample`             | Select sample-wise columns/information                          |
+| `pivot_transcript`         | Select transcript-wise columns/information                      |
+| `rotate_dimensions`        | Rotate two dimensions of a degree                               |
+| `ensembl_to_symbol`        | Add gene symbol from ensembl IDs                                |
+| `symbol_to_entrez`         | Add entrez ID from gene symbol                                  |
+| `describe_transcript`      | Add gene description from gene symbol                           |
+| `impute_missing_abundance` | Impute abundance for missing data points using sample groupings |
+| `fill_missing_abundance`   | Fill abundance for missing data points using an arbitrary value |
 
 ## Minimal input data frame
 
