@@ -80,7 +80,7 @@ keep_variable(
 \value{
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 
-Underlying method: 
+Underlying method:
 	s <- rowMeans((x - rowMeans(x)) ^ 2)
 o <- order(s, decreasing = TRUE)
 x <- x[o[1L:top], , drop = FALSE]

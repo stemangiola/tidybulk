@@ -112,7 +112,7 @@ deconvolve_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANS
 \details{
 \lifecycle{maturing}
 
-This function infers the cell type composition of our samples 
+This function infers the cell type composition of our samples
 (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).
 
 Underlying method:
