@@ -29,6 +29,7 @@ create_tt_from_tibble_bulk = function(.data,
 
 		# Add tt_columns attribute
 		add_tt_columns(!!.sample,!!.transcript,!!.abundance,!!.abundance_scaled) %>%
+		memorise_methods_used("tidyverse") %>%
 
 		# Add class
 		add_class("tt") %>%
@@ -112,14 +113,12 @@ create_tt_from_bam_sam_bulk <-
 
 			# Add tt_columns attribute
 			add_tt_columns(sample,transcript,count) %>%
+			memorise_methods_used("featurecounts") %>%
 
 			# Add class
 			add_class("tt") %>%
 			add_class("tidybulk")
 	}
-
-
-
 
 #' Get a tibble with scaled counts using TMM
 #' 
@@ -271,7 +270,10 @@ get_scaled_counts_bulk <- function(.data,
 	# Attach attributes
 	df_norm %>%
 		add_tt_columns(!!.sample,!!.transcript,!!.abundance,!!(function(x, v)
-			enquo(v))(x,!!value_scaled))
+			enquo(v))(x,!!value_scaled)) %>%
+		
+		# Add methods
+		memorise_methods_used(c("edger", "tmm")) 
 
 }
 
@@ -507,6 +509,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		
 		# Attach attributes
 		reattach_internals(.data) %>%
+		memorise_methods_used(c("edger", "limma")) %>%
 		
 		# Add raw object
 		attach_to_internals(edgeR_object, "edgeR") %>%
@@ -634,7 +637,11 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		
 		# Filter
 		tidybulk_to_SummarizedExperiment(!!.sample, !!.transcript, counts) %>%
-		keep_abundant(factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]])) %>%
+		keep_abundant(
+			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion
+		) %>%
 		
 		# DESeq2
 		DESeq2::DESeqDataSet( design = .formula) %>%
@@ -689,6 +696,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 		# Attach attributes
 		reattach_internals(.data) %>%
+		memorise_methods_used("deseq2") %>%
 		
 		# Add raw object
 		attach_to_internals(deseq2_object, "DESeq2") %>%
@@ -831,7 +839,19 @@ test_differential_cellularity_ <- function(.data,
 													 
 		)) %>%
 		
-	tidyr::unnest(surv_test, keep_empty = TRUE) 
+
+		unnest(surv_test, keep_empty = TRUE) %>%
+		
+		# Attach attributes
+		reattach_internals(.data) %>%
+		
+		# Add methods used
+		when(
+			grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+			~ (.) %>% memorise_methods_used("betareg")
+		)
+		
+
 	
 		
 
@@ -943,7 +963,10 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	dge =
 		df_for_edgeR %>%
-		keep_abundant(!!.sample, !!.entrez, !!.abundance )%>%
+		keep_abundant(		
+			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+			!!.sample, !!.entrez, !!.abundance 
+		)%>%
 		
 		# Make sure transcrpt names are adjacent
 		arrange(!!.entrez) %>%
@@ -1089,7 +1112,8 @@ get_clusters_kmeans_bulk <-
 			mutate(`cluster kmeans` = `cluster kmeans` %>% as.factor()) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data) %>%
+			memorise_methods_used("stats") 
 	}
 
 #' Get SNN shared nearest neighbour clusters to a tibble
@@ -1170,7 +1194,8 @@ get_clusters_SNN_bulk <-
 			dplyr::mutate(!!.element := gsub("\\.", "-",!!.element)) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data) %>%
+			memorise_methods_used("seurat") 
 	}
 
 #' Get dimensionality information to a tibble using MDS
@@ -1248,6 +1273,7 @@ get_reduced_dimensions_MDS_bulk <-
 
 			# Attach attributes
 			reattach_internals(.data) %>%
+			memorise_methods_used("limma") %>%
 
 			# Add raw object
 			attach_to_internals(mds_object, "MDS") %>%
@@ -1393,7 +1419,8 @@ get_reduced_dimensions_PCA_bulk <-
 
 			# Attach attributes
 			reattach_internals(.data) %>%
-
+			memorise_methods_used("stats") %>%
+			
 			# Add raw object
 			attach_to_internals(prcomp_obj, "PCA") %>%
 			# Communicate the attribute added
@@ -1515,7 +1542,8 @@ get_reduced_dimensions_TSNE_bulk <-
 			select(!!.element, everything()) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data) %>%
+			memorise_methods_used("rtsne") 
 
 	}
 
@@ -1809,7 +1837,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		# Filter variable genes
 		keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top = top) %>%
 
-		# Check if logtansform is needed
+		# Check if log transform is needed
 		ifelse_pipe(log_transform,
 								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 		distinct() %>%
@@ -1868,7 +1896,8 @@ The correlation calculation might not be reliable"
 	.data %>% anti_join(.data.correlated, by = quo_name(.element)) %>%
 
 		# Attach attributes
-		reattach_internals(.data)
+		reattach_internals(.data) %>%
+		memorise_methods_used("widyr") 
 }
 
 #' Identifies the closest pairs in a MDS context and return one of them
@@ -2211,7 +2240,8 @@ get_cell_type_proportions = function(.data,
 		#gather(`Cell type`, proportion,-!!.sample) %>%
 
 		# Attach attributes
-		reattach_internals(.data)
+		reattach_internals(.data) %>%
+		memorise_methods_used("cibersort") 
 
 
 }
@@ -2359,7 +2389,8 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		# )%>%
 
 		# Attach attributes
-		reattach_internals(.data)
+		reattach_internals(.data) %>%
+		memorise_methods_used("sva") 
 }
 
 #' Identify variable genes for dimensionality reduction
@@ -2414,7 +2445,11 @@ keep_variable_transcripts = function(.data,
 	x <- x[o[1L:top], , drop = FALSE]
 	variable_trancripts = rownames(x)
 
-	.data %>% filter(!!.transcript %in% variable_trancripts)
+	.data %>% 
+		filter(!!.transcript %in% variable_trancripts) %>%
+		
+		# Add methods used
+		memorise_methods_used(c("edger")) 
 }
 
 #' tidybulk_to_SummarizedExperiment
@@ -2861,7 +2896,10 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 				 			as_tibble
 				 	)) %>%
 	select(-data) %>%
-	unnest(test)
+	unnest(test) %>%
+		
+		# Add methods used
+		memorise_methods_used(c("clusterProfiler", "msigdbr")) 
 	
 }
 

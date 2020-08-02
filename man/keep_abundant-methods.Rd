@@ -104,7 +104,15 @@ keep_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | 
 \details{
 \lifecycle{maturing}
 
-At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
+
+ Underlying method:
+ edgeR::filterByExpr(
+   data,
+	min.count = minimum_counts,
+	group = string_factor_of_interest,
+	min.prop = minimum_proportion
+)
 }
 \examples{
 

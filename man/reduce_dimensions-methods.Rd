@@ -145,7 +145,17 @@ reduce_dimensions() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT
 \lifecycle{maturing}
 
 This function reduces the dimensions of the transcript abundances.
-It can use multi-dimensional scaling (MDS) of principal component analysis (PCA).
+It can use multi-dimensional scaling (MDS; DOI.org/10.1186/gb-2010-11-3-r25),
+principal component analysis (PCA), or tSNE (Jesse Krijthe et al. 2018)
+
+Underlying method for PCA:
+prcomp(scale = scale, ...)
+
+Underlying method for MDS:
+limma::plotMDS(ndim = .dims, plot = FALSE, top = top)
+
+Underlying method for tSNE:
+Rtsne::Rtsne(data, ...)
 }
 \examples{
 

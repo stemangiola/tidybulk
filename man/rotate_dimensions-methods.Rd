@@ -121,6 +121,17 @@ rotate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMEN
 \lifecycle{maturing}
 
 This function to rotate two dimensions such as the reduced dimensions.
+
+Underlying custom method:
+	rotation = function(m, d) {
+		// r = the angle
+		// m data matrix
+   r = d * pi / 180
+   ((dplyr::bind_rows(
+	  c(`1` = cos(r), `2` = -sin(r)),
+	  c(`1` = sin(r), `2` = cos(r))
+  ) %>% as_matrix) %*% m)
+ }
 }
 \examples{
 

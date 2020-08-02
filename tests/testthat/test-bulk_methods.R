@@ -1531,3 +1531,17 @@ test_that("gene over representation",{
 
 	
 })
+
+
+test_that("bibliography",{
+	
+		tidybulk(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c
+		) %>% 
+		scale_abundance() %>%
+		get_bibliography()
+	
+})

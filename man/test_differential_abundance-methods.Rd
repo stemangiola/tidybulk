@@ -8,7 +8,7 @@
 \alias{test_differential_abundance,tidybulk-method}
 \alias{test_differential_abundance,SummarizedExperiment-method}
 \alias{test_differential_abundance,RangedSummarizedExperiment-method}
-\title{Add differential transcription information to a tbl using edgeR.}
+\title{Add differential transcription information to a tbl using edgeR or DeSEQ2 from raw counts.}
 \usage{
 test_differential_abundance(
   .data,
@@ -160,7 +160,44 @@ test_differential_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <
 \details{
 \lifecycle{maturing}
 
-At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+At the moment this function uses either edgeR (DOI: 10.18129/B9.bioc.edgeR) or DeSEQ2 (DOI: 10.1186/s13059-014-0550-8)
+Bith methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
+
+Underlying method for edgeR framework:
+	.data %>%
+	
+	# Filter
+keep_abundant(
+		factor_of_interest = !!(as.symbol(parse_formula(.formula)[1])),
+		minimum_counts = minimum_counts,
+		minimum_proportion = minimum_proportion
+	) %>%
+		
+		# Format
+		select(!!.transcript,!!.sample,!!.abundance) %>%
+		spread(!!.sample,!!.abundance) %>%
+		as_matrix(rownames = !!.transcript) %>%
+		
+		# edgeR
+		edgeR::DGEList(counts = .) %>%
+		edgeR::calcNormFactors(method = scaling_method) %>%
+		edgeR::estimateDisp(design) %>%
+		
+		# Fit
+		edgeR::glmQLFit(design) %>% // or glmFit according to choice
+		edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
+		
+Underlying method for DeSEQ2 framework:
+keep_abundant(
+		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+		minimum_counts = minimum_counts,
+		minimum_proportion = minimum_proportion
+) %>%
+			
+# DESeq2
+DESeq2::DESeqDataSet( design = .formula) %>%
+DESeq2::DESeq() %>%
+DESeq2::results()
 }
 \examples{
 

@@ -1,7 +1,7 @@
 # setOldClass("spec_tbl_df")
 setOldClass("tidybulk")
 
-#' Creates a `tt` object from a `tbl``
+#' Creates a `tt` object from a `tbl` or `SummarizedExperiment` object
 #'
 #' \lifecycle{maturing}
 #'
@@ -19,7 +19,7 @@ setOldClass("tidybulk")
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .abundance_scaled The name of the transcript/gene scaled abundance column
 #'
-#' @details This function created a tidybulk object and is useful if you want
+#' @details This function creates a tidybulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
 #' The tidybulk object have an attribute called internals where these three
 #' arguments are stored as metadata. They can be extracted as attr(<object>, "internals").
@@ -194,10 +194,13 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 #' @param genome A character string
 #' @param ... Further parameters passed to the function Rsubread::featureCounts
 #'
-#' @details This function is based on FeatureCounts package. This function created a tidybulk object and is useful if you want
+#' @details This function is based on FeatureCounts package (DOI: 10.1093/bioinformatics/btt656). This function creates a tidybulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
 #' The tidybulk object have an attribute called internals where these three
 #' arguments are stored as metadata. They can be extracted as attr(<object>, "internals").
+#' 
+#' Underlying core function
+#' Rsubread::featureCounts(annot.inbuilt = genome,nthreads = n_cores, ...) 
 #'
 #' @return A `tidybulk` object
 #'
@@ -243,15 +246,20 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @param factor_of_interest The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param reference_selection_function A fucntion that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
+#' @param method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param reference_selection_function A function that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
 #' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
 #'
-#' @details Scales transcript abundance compansating for sequencing depth
+#' @details Scales transcript abundance compensating for sequencing depth
 #' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #' Lowly transcribed transcripts/genes (defined with minimum_counts and minimum_proportion parameters)
 #' are filtered out from the scaling procedure.
 #' The scaling inference is then applied back to all unfiltered data.
+#' 
+#' Underlying method
+#' edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))
+#' 
+#' 
 #'
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
@@ -470,7 +478,7 @@ setMethod("scale_abundance",
 #' @param .feature The name of the feature column (normally transcripts/genes)
 #' @param .abundance The name of the column including the numerical value the clustering is based on (normally transcript abundance)
 #'
-#' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
+#' @param method A character string. The cluster algorithm to use, at the moment k-means is the only algorithm included.
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
@@ -478,7 +486,20 @@ setMethod("scale_abundance",
 #'
 #' @details identifies clusters in the data, normally of samples.
 #' This function returns a tibble with additional columns for the cluster annotation.
-#' At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
+#' At the moment only k-means (DOI: 10.2307/2346830) and SNN clustering (DOI:10.1016/j.cell.2019.05.031) is supported, the plan is to introduce more clustering methods.
+#' 
+#' Underlying method for kmeans
+#' do.call(kmeans(.data, iter.max = 1000, ...)
+#' 
+#' Underlying method for SNN
+#' .data %>%
+#' Seurat::CreateSeuratObject() %>%
+#' Seurat::ScaleData(display.progress = TRUE,num.cores = 4, do.par = TRUE) %>%
+#' Seurat::FindVariableFeatures(selection.method = "vst") %>%
+#' Seurat::RunPCA(npcs = 30) %>%
+#' Seurat::FindNeighbors() %>%
+#' Seurat::FindClusters(method = "igraph", ...)
+#' 
 #'
 #' @return A tbl object with additional columns with cluster labels
 #'
@@ -782,7 +803,18 @@ setMethod("cluster_elements",
 #' @param ... Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"
 #'
 #' @details This function reduces the dimensions of the transcript abundances.
-#' It can use multi-dimensional scaling (MDS) of principal component analysis (PCA).
+#' It can use multi-dimensional scaling (MDS; DOI.org/10.1186/gb-2010-11-3-r25),
+#' principal component analysis (PCA), or tSNE (Jesse Krijthe et al. 2018)
+#' 
+#' Underlying method for PCA:
+#' prcomp(scale = scale, ...)
+#' 
+#' Underlying method for MDS:
+#' limma::plotMDS(ndim = .dims, plot = FALSE, top = top)
+#' 
+#' Underlying method for tSNE:
+#' Rtsne::Rtsne(data, ...)
+#' 
 #'
 #' @return A tbl object with additional columns for the reduced dimensions
 #'
@@ -1118,6 +1150,18 @@ setMethod("reduce_dimensions",
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
 #' @details This function to rotate two dimensions such as the reduced dimensions.
+#' 
+#' Underlying custom method:
+#' 	rotation = function(m, d) {
+#' 		// r = the angle
+#' 		// m data matrix
+#'    r = d * pi / 180
+#'    ((dplyr::bind_rows(
+#' 	  c(`1` = cos(r), `2` = -sin(r)),
+#' 	  c(`1` = sin(r), `2` = cos(r))
+#'   ) %>% as_matrix) %*% m)
+#'  }
+#' 
 #'
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 #'
@@ -1333,7 +1377,7 @@ setMethod("rotate_dimensions",
 					.rotate_dimensions_se)
 
 
-#' Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) aboundances are correlated
+#' Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) abundances are correlated
 #'
 #' \lifecycle{maturing}
 #'
@@ -1358,9 +1402,39 @@ setMethod("rotate_dimensions",
 #' @param Dim_b_column A character string. For reduced_dimension based calculation. The column of another principal component
 #'
 #'
-#' @details This function removes redundant elements from the original data set (e.g., samples or transcripts). For example, if we want to define cell-type specific signatures with low sample redundancy. This function returns a tibble with dropped recundant elements (e.g., samples). Two redundancy estimation approaches are supported: (i) removal of highly correlated clusters of elements (keeping a representative) with method="correlation"; (ii) removal of most proximal element pairs in a reduced dimensional space.
+#' @details This function removes redundant elements from the original data set (e.g., samples or transcripts). 
+#' For example, if we want to define cell-type specific signatures with low sample redundancy. 
+#' This function returns a tibble with dropped redundant elements (e.g., samples).
+#' Two redundancy estimation approaches are supported:
+#' (i) removal of highly correlated clusters of elements (keeping a representative) with method="correlation"; 
+#' (ii) removal of most proximal element pairs in a reduced dimensional space.
+#' 
+#' Underlying method for correlation:
+#' widyr::pairwise_cor(sample, transcript,count, sort = TRUE, diag = FALSE, upper = FALSE)
+#' 
+#' Underlying custom method for reduced dimensions:
+#' select_closest_pairs = function(df) {
+#' 		couples <- df %>% head(n = 0)
+#' 		
+#' 		while (df %>% nrow() > 0) {
+#' 			pair <- df %>%
+#' 			arrange(dist) %>%
+#' 			head(n = 1)
+#' 			couples <- couples %>% bind_rows(pair)
+#' 			df <- df %>%
+#' 				filter(
+#' 					!`sample 1` %in% (pair %>% select(1:2) %>% as.character()) &
+#' 						!`sample 2` %in% (pair %>% select(1:2) %>% as.character())
+#' 				)
+#' 		}
+#' 		
+#' 		couples
+#' 		
+#' 	}
+#' 
+#' 
 #'
-#' @return A tbl object with with dropped recundant elements (e.g., samples).
+#' @return A tbl object with with dropped redundant elements (e.g., samples).
 #'
 #' @examples
 #'
@@ -1592,7 +1666,11 @@ setMethod("remove_redundancy",
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function sva::ComBat
 #'
-#' @details This function adjusts the abundance for (known) unwanted variation. At the moment just an unwanted covariated is allowed at a time.
+#' @details This function adjusts the abundance for (known) unwanted variation. 
+#' At the moment just an unwanted covariated is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
+#' 
+#' Underlying method:
+#' 	sva::ComBat(data, batch = my_batch,	mod = design,	prior.plots = FALSE, ...)
 #'
 #' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 #'
@@ -1816,6 +1894,12 @@ setMethod("adjust_abundance",
 #'  and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and
 #'  returns a tibble with aggregate transcript with the same name. All the rest of the column
 #'  are appended, and factors and boolean are appended as characters.
+#'  
+#'  Underlying custom method:
+#'  data %>%
+#' 		filter(n_aggr > 1) %>%
+#' 		group_by(!!.sample,!!.transcript) %>%
+#' 		dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function())
 #'
 #' @return A `tbl` object with aggregated transcript abundance and annotation
 #'
@@ -1982,7 +2066,11 @@ setMethod("aggregate_duplicates",
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function Cibersort
 #'
-#' @details This function infers the cell type composition of our samples (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).
+#' @details This function infers the cell type composition of our samples 
+#' (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).
+#' 
+#' Underlying method:
+#' CIBERSORT(Y = data, X = reference, ...)
 #'
 #' @return A `tbl` object including additional columns for each cell type estimated
 #'
@@ -2421,7 +2509,7 @@ setMethod("ensembl_to_symbol", "tbl_df", .ensembl_to_symbol)
 setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 
 
-#' Add differential transcription information to a tbl using edgeR.
+#' Add differential transcription information to a tbl using edgeR or DeSEQ2 from raw counts.
 #'
 #' \lifecycle{maturing}
 #'
@@ -2447,7 +2535,45 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
-#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#' @details At the moment this function uses either edgeR (DOI: 10.18129/B9.bioc.edgeR) or DeSEQ2 (DOI: 10.1186/s13059-014-0550-8)
+#' Bith methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
+#' 
+#' Underlying method for edgeR framework:
+#' 	.data %>%
+#' 	
+#' 	# Filter
+#'	keep_abundant(
+#'			factor_of_interest = !!(as.symbol(parse_formula(.formula)[1])),
+#'			minimum_counts = minimum_counts,
+#'			minimum_proportion = minimum_proportion
+#'		) %>%
+#'			
+#'			# Format
+#'			select(!!.transcript,!!.sample,!!.abundance) %>%
+#'			spread(!!.sample,!!.abundance) %>%
+#'			as_matrix(rownames = !!.transcript) %>%
+#'			
+#'			# edgeR
+#'			edgeR::DGEList(counts = .) %>%
+#'			edgeR::calcNormFactors(method = scaling_method) %>%
+#'			edgeR::estimateDisp(design) %>%
+#'			
+#'			# Fit
+#'			edgeR::glmQLFit(design) %>% // or glmFit according to choice
+#'			edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
+#'			
+#'	Underlying method for DeSEQ2 framework:
+#'	keep_abundant(
+#'			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+#'			minimum_counts = minimum_counts,
+#'			minimum_proportion = minimum_proportion
+#'	) %>%
+#'				
+#'	# DESeq2
+#'	DESeq2::DESeqDataSet( design = .formula) %>%
+#'	DESeq2::DESeq() %>%
+#'	DESeq2::results()
+#' 
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 #'
@@ -2736,10 +2862,15 @@ setMethod(
 #' @param top Integer. Number of top transcript to consider
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
-#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#' @details At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 #'
+#' Underlying method: 
+#' 	s <- rowMeans((x - rowMeans(x)) ^ 2)
+#'	o <- order(s, decreasing = TRUE)
+#'	x <- x[o[1L:top], , drop = FALSE]
+#'	variable_trancripts = rownames(x)
 #'
 #'
 #'
@@ -2898,7 +3029,15 @@ setMethod("keep_variable",
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #'
-#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#' @details At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
+#' 
+#'  Underlying method:
+#'  edgeR::filterByExpr(
+#'    data,
+#'		min.count = minimum_counts,
+#'		group = string_factor_of_interest,
+#'		min.prop = minimum_proportion
+#'	) 
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 #'
@@ -3092,8 +3231,37 @@ setMethod("keep_abundant",
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
 #'
-#'
-#' @details This wrapper execute gene enrichment analyses of the dataset
+#' 
+#' @details This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
+#' 
+#' 
+#' dge =
+#' 	data %>%
+#' 	keep_abundant(		
+#' 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+#' 		!!.sample, !!.entrez, !!.abundance 
+#' 	) %>%
+#' 	
+#' 	# Make sure transcript names are adjacent
+#' 	[...] %>%
+#' 	as_matrix(rownames = !!.entrez) %>%
+#' 	edgeR::DGEList(counts = .)
+#' 
+#' idx =  buildIdx(entrezIDs = rownames(dge), species = species)
+#' 
+#' dge %>%
+#' 	
+#' 	# Calculate weights
+#' 	limma::voom(design, plot = FALSE) %>%
+#' 	
+#' 	# Execute EGSEA
+#' 	egsea(
+#' 		contrasts = my_contrasts,
+#' 		baseGSEAs = egsea.base()[-c(6, 7, 8, 9, 12)],
+#' 		sort.by = "med.rank",
+#' 		num.threads = cores,
+#' 		report = FALSE
+#' 	)
 #'
 #' @return A `tbl` object
 #'
@@ -3223,7 +3391,21 @@ setMethod("test_gene_enrichment",
 #' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
 #' @param gene_set A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
 #'
-#' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA. This wrapper uses clusterProfiler on the backend.
+#' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA. 
+#' This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
+#' 
+#' Undelying method:
+#'  msigdbr::msigdbr(species = species) %>%#' 
+#' 	nest(data = -gs_cat) %>%
+#' 	mutate(test = 
+#' 			map(
+#' 				data, 
+#' 				~ clusterProfiler::enricher(
+#' 					my_entrez_rank,
+#' 				 	TERM2GENE=.x %>% select(gs_name, entrez_gene), 
+#' 					pvalueCutoff = 1
+#' 					) %>%	as_tibble
+#' 			)) 
 #'
 #' @return A `tbl` object
 #'
@@ -3881,7 +4063,34 @@ setMethod("impute_missing_abundance",
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #' @param ... Further parameters passed to the method deconvolve_cellularity
 #' 
-#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#' @details This routine applies a deconvolution method (e.g., Cibersort; DOI: 10.1038/nmeth.3337) 
+#' and passes the proportions inferred into a generalised linear model (DOI:dx.doi.org/10.1007/s11749-010-0189-z) 
+#' or a cox regression model (ISBN: 978-1-4757-3294-8)
+#' 
+#' Underlying method for the generalised linear model:
+#' data %>%
+#' deconvolve_cellularity(
+#' 	!!.sample, !!.transcript, !!.abundance,
+#' 	method=method, 
+#' 	reference = reference,
+#' 	action="get",
+#' 	...
+#' )  %>%
+#' 	[..] %>%
+#' 	betareg::betareg(.my_formula, .)
+#' 	
+#' Underlying method for the cox regression:
+#' data %>%
+#' deconvolve_cellularity(
+#' 	!!.sample, !!.transcript, !!.abundance,
+#' 	method=method, 
+#' 	reference = reference,
+#' 	action="get",
+#' 	...
+#' )  %>%
+#' 	[..] %>%
+#' 	mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
+#' 	survival::coxph(.my_formula, .)
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 #'
@@ -4051,4 +4260,64 @@ setMethod(
 	"RangedSummarizedExperiment",
 	.test_differential_cellularity_se
 )
+
+#' Produces the bibliography list of your workflow
+#'
+#' \lifecycle{maturing}
+#'
+#' @description get_bibliography() takes as input a `tidybulk` 
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name get_bibliography
+#'
+#' @param .data A `tidybulk` tibble 
+#' 
+#' @details This methods returns the bibliography list of your workflow from the internals of a tidybulk tibble (attr(., "internals"))
+#'
+#'
+#' @examples
+#'
+#' # Define tidybulk tibble
+#' df = tidybulk(tidybulk::counts_mini, sample, transcript, count)
+#' 
+#' get_bibliography(df)
+#'
+#'
+#'
+#' @docType methods
+#' @rdname get_bibliography-methods
+#' @export
+#'
+setGeneric("get_bibliography", function(.data)
+	standardGeneric("get_bibliography"))
+
+# Set internal
+.get_bibliography = 		function(.data)
+{
+
+	my_methods = 	
+		.data %>%
+		attr("internals") %>%
+		.[["methods_used"]]
+
+	my_bibliography() %>%
+		.[my_methods] %>%
+		unlist %>%
+		writeLines()
+	
+}
+
+#' get_bibliography
+#' @inheritParams get_bibliography
+#' 
+#' @docType methods
+#' @rdname get_bibliography-methods
+#' 
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("get_bibliography",
+					"tidybulk",
+					.get_bibliography)
+
 
