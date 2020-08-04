@@ -120,27 +120,27 @@ test_differential_cellularity() takes as input a `tbl` formatted as | <SAMPLE> |
 \details{
 \lifecycle{maturing}
 
-This routine applies a deconvolution method (e.g., Cibersort; DOI: 10.1038/nmeth.3337) 
-and passes the proportions inferred into a generalised linear model (DOI:dx.doi.org/10.1007/s11749-010-0189-z) 
+This routine applies a deconvolution method (e.g., Cibersort; DOI: 10.1038/nmeth.3337)
+and passes the proportions inferred into a generalised linear model (DOI:dx.doi.org/10.1007/s11749-010-0189-z)
 or a cox regression model (ISBN: 978-1-4757-3294-8)
 
 Underlying method for the generalised linear model:
 data %>%
 deconvolve_cellularity(
 	!!.sample, !!.transcript, !!.abundance,
-	method=method, 
+	method=method,
 	reference = reference,
 	action="get",
 	...
 )  %>%
 	[..] %>%
 	betareg::betareg(.my_formula, .)
-	
+
 Underlying method for the cox regression:
 data %>%
 deconvolve_cellularity(
 	!!.sample, !!.transcript, !!.abundance,
-	method=method, 
+	method=method,
 	reference = reference,
 	action="get",
 	...

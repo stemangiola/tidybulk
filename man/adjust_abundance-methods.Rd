@@ -112,7 +112,7 @@ adjust_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT>
 \details{
 \lifecycle{maturing}
 
-This function adjusts the abundance for (known) unwanted variation. 
+This function adjusts the abundance for (known) unwanted variation.
 At the moment just an unwanted covariated is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
 
 Underlying method:

@@ -9,7 +9,7 @@ my_stop = function() {
 #' This is a generalisation of ifelse that acceots an object and return an objects
 #'
 #' @keywords internal
-#' 
+#'
 #' @import dplyr
 #' @import tidyr
 #' @importFrom purrr as_mapper
@@ -21,9 +21,9 @@ my_stop = function() {
 #'
 #' @return A tibble
 ifelse_pipe = function(.x, .p, .f1, .f2 = NULL) {
-  switch(.p %>% `!` %>% sum(1),
+  switch(.p %>% not() %>% sum(1),
          as_mapper(.f1)(.x),
-         if (.f2 %>% is.null %>% `!`)
+         if (.f2 %>% is.null %>% not())
            as_mapper(.f2)(.x)
          else
            .x)
@@ -33,7 +33,7 @@ ifelse_pipe = function(.x, .p, .f1, .f2 = NULL) {
 #' This is a generalisation of ifelse that acceots an object and return an objects
 #'
 #' @keywords internal
-#' 
+#'
 #' @import dplyr
 #' @import tidyr
 #'
@@ -48,19 +48,19 @@ ifelse_pipe = function(.x, .p, .f1, .f2 = NULL) {
 ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
   # Nested switch
   switch(# First condition
-    .p1 %>% `!` %>% sum(1),
+    .p1 %>% not() %>% sum(1),
 
     # First outcome
     as_mapper(.f1)(.x),
     switch(
       # Second condition
-      .p2 %>% `!` %>% sum(1),
+      .p2 %>% not() %>% sum(1),
 
       # Second outcome
       as_mapper(.f2)(.x),
 
       # Third outcome - if there is not .f3 just return the original data frame
-      if (.f3 %>% is.null %>% `!`)
+      if (.f3 %>% is.null %>% not())
         as_mapper(.f3)(.x)
       else
         .x
@@ -72,7 +72,7 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
 #' Check whether a numeric vector has been log transformed
 #'
 #' @keywords internal
-#' 
+#'
 #' @param x A numeric vector
 #' @param .abundance A character name of the transcript/gene abundance column
 #'
@@ -80,7 +80,7 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
 error_if_log_transformed <- function(x, .abundance) {
   .abundance = enquo(.abundance)
 
-  if (x %>% nrow %>% `>` (0))
+  if (x %>% nrow %>% gt(0))
     if (x %>% summarise(m = !!.abundance %>% max) %>% pull(m) < 50)
       stop(
         "tidybulk says: The input was log transformed, this algorithm requires raw (un-scaled) read counts"
@@ -90,7 +90,7 @@ error_if_log_transformed <- function(x, .abundance) {
 #' Check whether there are duplicated genes/transcripts
 #'
 #' @keywords internal
-#' 
+#'
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
@@ -132,7 +132,7 @@ error_if_duplicated_genes <- function(.data,
 #' Check whether there are NA counts
 #'
 #' @keywords internal
-#' 
+#'
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
@@ -146,7 +146,7 @@ error_if_counts_is_na = function(.data, .abundance) {
   .abundance = enquo(.abundance)
 
   # Do the check
-  if (.data %>% filter(!!.abundance %>% is.na) %>% nrow %>% `>` (0))
+  if (.data %>% filter(!!.abundance %>% is.na) %>% nrow %>% gt(0))
     stop("tidybulk says: You have NA values in your counts")
 
   # If all good return original data frame
@@ -156,7 +156,7 @@ error_if_counts_is_na = function(.data, .abundance) {
 #' Check whether there are NA counts
 #'
 #' @keywords internal
-#' 
+#'
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
@@ -180,7 +180,7 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
     map(~ .x %>% class() %>% `[` (1)) %>%
     unlist %>%
     equals(expected_type) %>%
-    `!`
+    not()
   )
     stop("tidybulk says: You have passed the wrong argument to the function. Please check again.")
 
@@ -192,7 +192,7 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
 #' .formula parser
 #'
 #' @keywords internal
-#' 
+#'
 #' @importFrom stats terms
 #'
 #' @param fm a formula
@@ -215,11 +215,11 @@ parse_formula <- function(fm) {
 #'
 parse_formula_survival <- function(fm) {
   pars = as.character(attr(terms(fm), "variables"))[-1]
-  
+
   response = NULL
   if(attr(terms(fm), "response") == 1) response = pars[1]
   covariates = ifelse(attr(terms(fm), "response") == 1, pars[-1], pars)
-  
+
   list(
     response = response,
     covariates = covariates
@@ -229,7 +229,7 @@ parse_formula_survival <- function(fm) {
 #' Scale design matrix
 #'
 #' @keywords internal
-#' 
+#'
 #' @importFrom stats setNames
 #' @importFrom stats cov
 #'
@@ -295,7 +295,7 @@ add_tt_columns = function(.data,
 initialise_tt_internals = function(.data){
   .data %>%
     ifelse_pipe(
-      "internals" %in% ((.) %>% attributes %>% names) %>% `!`,
+      "internals" %in% ((.) %>% attributes %>% names) %>% not(),
       ~ .x %>% add_attr(list(), "internals")
     )
 }
@@ -326,20 +326,20 @@ drop_internals = function(.data){
 }
 
 memorise_methods_used = function(.data, .method){
-	
+
 	.data %>%
 		attach_to_internals(
-			.data %>% 
+			.data %>%
 				attr("internals") %>%
-				.[["methods_used"]] %>% 
-				c(.method) %>%	unique(), 
+				.[["methods_used"]] %>%
+				c(.method) %>%	unique(),
 			"methods_used"
 		)
-		
-}  
+
+}
 
 #' Add attribute to abject
-#' 
+#'
 #' @keywords internal
 #'
 #'
@@ -354,7 +354,7 @@ add_attr = function(var, attribute, name) {
 }
 
 #' Drop attribute to abject
-#' 
+#'
 #' @keywords internal
 #'
 #'
@@ -368,7 +368,7 @@ drop_attr = function(var, name) {
 }
 
 #' Remove class to abject
-#' 
+#'
 #' @keywords internal
 #'
 #'
@@ -383,7 +383,7 @@ drop_class = function(var, name) {
 }
 
 #' From rlang deprecated
-#' 
+#'
 #' @keywords internal
 #'
 #' @param x An array
@@ -405,7 +405,7 @@ prepend = function (x, values, before = 1)
 }
 
 #' Add class to abject
-#' 
+#'
 #' @keywords internal
 #'
 #' @param var A tibble
@@ -420,7 +420,7 @@ add_class = function(var, name) {
 }
 
 #' Get column names either from user or from attributes
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
@@ -432,7 +432,7 @@ add_class = function(var, name) {
 #'
 #' @return A list of column enquo or error
 get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance){
- 
+
     if( .sample %>% quo_is_symbol() ) .sample = .sample
     else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
       .sample =  get_tt_columns(.data)$.sample
@@ -453,7 +453,7 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
 }
 
 #' Get column names either from user or from attributes
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
@@ -480,7 +480,7 @@ get_sample_counts = function(.data, .sample, .abundance){
 }
 
 #' Get column names either from user or from attributes
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
@@ -501,7 +501,7 @@ get_sample = function(.data, .sample){
 }
 
 #' Get column names either from user or from attributes
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
@@ -532,7 +532,7 @@ get_transcript = function(.data, .transcript){
 
 
 #' Get column names either from user or from attributes
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
@@ -560,7 +560,7 @@ get_sample_transcript = function(.data, .sample, .transcript){
 }
 
 #' Get column names either from user or from attributes
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
@@ -570,20 +570,20 @@ get_sample_transcript = function(.data, .sample, .transcript){
 #'
 #' @return A list of column enquo or error
 get_sample = function(.data, .sample){
-  
+
   if( .sample %>% quo_is_symbol() ) .sample = .sample
   else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
     .sample =  get_tt_columns(.data)$.sample
   else my_stop()
-  
+
   list(.sample = .sample)
-  
+
 }
 
 
 
 #' Get column names either from user or from attributes
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
@@ -611,16 +611,16 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
   else {
 
     # If so, take them from the attribute
-    if(.data %>% get_tt_columns() %>% is.null %>% `!`)
+    if(.data %>% get_tt_columns() %>% is.null %>% not())
 
       return(list(
         .element =  switch(
-          of_samples %>% `!` %>% sum(1),
+          of_samples %>% not() %>% sum(1),
           get_tt_columns(.data)$.sample,
           get_tt_columns(.data)$.transcript
         ),
         .feature = switch(
-          of_samples %>% `!` %>% sum(1),
+          of_samples %>% not() %>% sum(1),
           get_tt_columns(.data)$.transcript,
           get_tt_columns(.data)$.sample
         )
@@ -636,7 +636,7 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
 }
 
 #' Get column names either from user or from attributes
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
@@ -683,7 +683,7 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
 }
 
 #' Get column names either from user or from attributes
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
@@ -707,11 +707,11 @@ get_elements = function(.data, .element, of_samples = TRUE){
   else {
 
     # If so, take them from the attribute
-    if(.data %>% get_tt_columns() %>% is.null %>% `!`)
+    if(.data %>% get_tt_columns() %>% is.null %>% not())
 
       return(list(
         .element =  switch(
-          of_samples %>% `!` %>% sum(1),
+          of_samples %>% not() %>% sum(1),
           get_tt_columns(.data)$.sample,
           get_tt_columns(.data)$.transcript
         )
@@ -727,7 +727,7 @@ get_elements = function(.data, .element, of_samples = TRUE){
 }
 
 #' Get column names either from user or from attributes
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
@@ -750,14 +750,14 @@ get_abundance_norm_if_exists = function(.data, .abundance){
   else {
 
     # If so, take them from the attribute
-    if(.data %>% get_tt_columns() %>% is.null %>% `!`)
+    if(.data %>% get_tt_columns() %>% is.null %>% not())
 
       return(list(
         .abundance =  switch(
           (".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
-             # .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% `!` &&
+             # .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% not() &&
              quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)
-           ) %>% `!` %>% sum(1),
+           ) %>% not() %>% sum(1),
           get_tt_columns(.data)$.abundance_scaled,
           get_tt_columns(.data)$.abundance
         )
@@ -773,7 +773,7 @@ get_abundance_norm_if_exists = function(.data, .abundance){
 }
 
 #' Sub function of remove_redundancy_elements_though_reduced_dimensions
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom stats dist
@@ -805,7 +805,7 @@ select_closest_pairs = function(df) {
 #' This function is needed for DE in case the matrix is not rectangular, but includes NA
 #'
 #' @keywords internal
-#' 
+#'
 #' @param .matrix A matrix
 #'
 #' @return A matrix
@@ -833,7 +833,7 @@ tibble::tibble
 tibble::as_tibble
 
 #' get_x_y_annotation_columns
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom magrittr equals
@@ -982,36 +982,36 @@ get_specific_annotation_columns = function(.data, .col){
 }
 
 #' log10_reverse_trans
-#' 
+#'
 #' \lifecycle{maturing}
-#' 
+#'
 #' @description it perform log scaling and reverse the axis. Useful to plot negative log probabilities. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
-#' 
+#'
 #' @importFrom scales trans_new
 #' @importFrom scales log_breaks
-#' 
+#'
 #' @return A scales object
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' library(ggplot2)
 #' library(tibble)
-#' 
+#'
 #' tibble(pvalue = c(0.001, 0.05, 0.1), fold_change = 1:3) %>%
-#'  ggplot(aes(fold_change , pvalue)) + 
+#'  ggplot(aes(fold_change , pvalue)) +
 #'  geom_point() +
 #'  scale_y_continuous(trans = "log10_reverse")
-#' 
+#'
 #' @export
 log10_reverse_trans <- function() {
 	trans <- function(x) -log10(x)
 	inv <- function(x) 10^(-x)
-	
+
 	trans_new("log10_reverse", trans, inv, log_breaks(base = 10))
 }
 
 #' Convert array of quosure (e.g. c(col_a, col_b)) into character vector
-#' 
+#'
 #' @keywords internal
 #'
 #' @importFrom rlang quo_name
@@ -1021,15 +1021,15 @@ log10_reverse_trans <- function() {
 #'
 #' @return A character vector
 quo_names <- function(v) {
-	
+
 	v = quo_name(quo_squash(v))
-	gsub('^c\\(|`|\\)$', '', v) %>% 
-		strsplit(', ') %>% 
-		unlist 
+	gsub('^c\\(|`|\\)$', '', v) %>%
+		strsplit(', ') %>%
+		unlist
 }
 
 #' Drop lowly transcribed genes for TMM normalization
-#' 
+#'
 #' @keywords internal
 #'
 #' @import dplyr
@@ -1062,12 +1062,12 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
-	
+
 	factor_of_interest = enquo(factor_of_interest)
-	
+
 	# Check if factor_of_interest is continuous and exists
 	string_factor_of_interest =
-		
+
 		factor_of_interest %>%
 		ifelse2_pipe(
 			quo_is_symbol(.) &&
@@ -1083,21 +1083,21 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 				pull(!!factor_of_interest),
 			~ NULL
 		)
-	
+
 	if (minimum_counts < 0)
 		stop("The parameter minimum_counts must be > 0")
 	if (minimum_proportion < 0 |
 			minimum_proportion > 1)
 		stop("The parameter minimum_proportion must be between 0 and 1")
-	
+
 	.data %>%
 		select(!!.sample,!!.transcript, !!.abundance) %>%
 		spread(!!.sample, !!.abundance) %>%
-		
+
 		# Drop if transcript have missing value
 		drop_na() %>%
 		#eliminate_sparse_transcripts(!!.transcript) %>%
-		
+
 		# Call edgeR
 		as_matrix(rownames = !!.transcript) %>%
 		edgeR::filterByExpr(
@@ -1105,16 +1105,16 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 			group = string_factor_of_interest,
 			min.prop = minimum_proportion
 		) %>%
-		`!` %>%
+		not() %>%
 		which %>%
 		names %>%
-		
+
 		# Attach attributes
 		reattach_internals(.data)
 }
 
 #' Calculate the norm factor with calcNormFactor from limma
-#' 
+#'
 #' @keywords internal
 #'
 #' @import dplyr
@@ -1147,11 +1147,11 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-	
+
 	factor_of_interest = enquo(factor_of_interest)
-	
+
 	error_if_log_transformed(.data,!!.abundance)
-	
+
 	# Get list of low transcribed genes
 	gene_to_exclude <-
 		add_scaled_counts_bulk.get_low_expressed(
@@ -1161,27 +1161,27 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion
 		)
-	
+
 	# Check if transcript after filtering is 0
 	if (length(gene_to_exclude) == .data %>%
 			dplyr::distinct(!!.transcript) %>%
 			nrow()) {
 		stop("The gene expression matrix has been filtered completely for lowly expressed genes")
 	}
-	
+
 	# Get data frame for the highly transcribed transcripts
 	df.filt <-
 		.data %>%
 		dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
 		droplevels() %>%
 		select(!!.sample, !!.transcript, !!.abundance)
-	
+
 	# scaled data set
 	nf =
 		tibble::tibble(
 			# Sample factor
 			sample = factor(levels(df.filt %>% pull(!!.sample))),
-			
+
 			# scaled data frame
 			nf = edgeR::calcNormFactors(
 				df.filt %>%
@@ -1194,9 +1194,9 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 				method = method
 			)
 		) %>%
-		
+
 		setNames(c(quo_name(.sample), "nf")) %>%
-		
+
 		# Add the statistics about the number of genes filtered
 		dplyr::left_join(
 			df.filt %>%
@@ -1205,10 +1205,22 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 				dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))),
 			by = quo_name(.sample)
 		)
-	
+
 	# Return
 	list(gene_to_exclude = gene_to_exclude, nf = nf) %>%
-		
+
 		# Attach attributes
 		reattach_internals(.data)
 }
+
+# Greater than
+gt = function(a, b){	a > b }
+
+# Smaller than
+st = function(a, b){	a < b }
+
+# Negation
+not = function(is){	!is }
+
+# Raise to the power
+pow = function(a,b){	a^b }
