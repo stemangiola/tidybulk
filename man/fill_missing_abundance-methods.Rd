@@ -72,11 +72,11 @@ fill_missing_abundance(
 \value{
 A `tbl` non-sparse abundance
 
-A `tbl` with imputed abundance
+A `tbl` with filled abundance
 
-A `tbl` with imputed abundance
+A `tbl` with filled abundance
 
-A `tbl` with imputed abundance
+A `tbl` with filled abundance
 
 A `SummarizedExperiment` object
 
