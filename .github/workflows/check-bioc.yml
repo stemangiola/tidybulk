@@ -38,6 +38,7 @@ on:
     branches:
       - master
       - 'RELEASE_*'
+      - dev
 
 name: R-CMD-check-bioc
 
