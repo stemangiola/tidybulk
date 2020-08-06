@@ -312,7 +312,8 @@ setGeneric("scale_abundance", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+		
 	.data_norm =
 		.data %>%
 		get_scaled_counts_bulk(
@@ -1510,7 +1511,8 @@ setGeneric("remove_redundancy", function(.data,
 	if (method == "correlation") {
 		# Validate data frame
 		validation(.data, !!.element, !!.feature, !!.abundance)
-
+		warning_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
+		
 		remove_redundancy_elements_through_correlation(
 			.data,
 			.abundance = !!.abundance,
@@ -1734,7 +1736,8 @@ setGeneric("adjust_abundance", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
 	.data_processed =
 		get_adjusted_counts_for_unwanted_variation_bulk(
 			.data,
@@ -2121,7 +2124,8 @@ setGeneric("deconvolve_cellularity", function(.data,
 	
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
 	.data_processed =
 		get_cell_type_proportions(
 		.data,
@@ -2652,7 +2656,8 @@ setGeneric("test_differential_abundance", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
 	if(grepl("edgeR", method)){
 		.data_processed =
 			get_differential_transcript_abundance_bulk(
@@ -2929,7 +2934,8 @@ setGeneric("keep_variable", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
 	keep_variable_transcripts(
 		.data,
 		.sample = !!.sample,
@@ -3106,7 +3112,7 @@ setGeneric("keep_abundant", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 
 	.data %>%
 
@@ -3338,7 +3344,8 @@ setGeneric("test_gene_enrichment", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.entrez, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
 	test_gene_enrichment_bulk_EGSEA(
 		.data,
 		.formula,
