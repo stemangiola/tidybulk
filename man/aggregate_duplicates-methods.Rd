@@ -102,7 +102,7 @@ For example, we often have to convert ensembl symbols to gene/transcript symbol,
  and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and
  returns a tibble with aggregate transcript with the same name. All the rest of the column
  are appended, and factors and boolean are appended as characters.
- 
+
  Underlying custom method:
  data %>%
 		filter(n_aggr > 1) %>%

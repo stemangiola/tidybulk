@@ -11,6 +11,7 @@ test_gene_enrichment_bulk_EGSEA(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
+  method,
   species,
   cores = 10
 )
@@ -22,11 +23,13 @@ test_gene_enrichment_bulk_EGSEA(
 
 \item{.sample}{The name of the sample column}
 
-\item{.entrez}{The ENTREZ doce of the transcripts/genes}
+\item{.entrez}{The ENTREZ code of the transcripts/genes}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{.contrasts}{= NULL,}
+\item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
+
+\item{method}{A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.}
 
 \item{species}{A character. For example, human or mouse}
 
