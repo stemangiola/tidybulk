@@ -61,7 +61,7 @@ jobs:
           ## Find what Bioconductor RELEASE branch we are working on
           ## otherwise, assume we are working on bioc-devel.
           if echo "$GITHUB_REF" | grep -q "RELEASE_"; then
-              biocversion="release"
+              biocversion="$(basename -- $GITHUB_REF | tr '[:upper:]' '[:lower:]')"
           else
               biocversion="devel"
           fi
@@ -146,7 +146,7 @@ jobs:
         run: |
           ## Find what branch we are working on
           if echo "$GITHUB_REF" | grep -q "RELEASE_"; then
-              biocversion="$(basename -- $GITHUB_REF | tr '[:upper:]' '[:lower:]')"
+              biocversion="release"
           else
               biocversion="devel"
           fi
