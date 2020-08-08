@@ -30,6 +30,7 @@ Imports:
     scales,
     SummarizedExperiment
 Suggests:
+    BiocStyle,
     testthat,
     vctrs,
     AnnotationDbi,
