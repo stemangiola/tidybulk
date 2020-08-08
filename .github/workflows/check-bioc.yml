@@ -29,16 +29,7 @@
 ## Bioconductor uses branches such as master (bioc-devel) and RELEASE_* like
 ## RELEASE_3_10. For more details check
 ## http://bioconductor.org/developers/how-to/git/
-on:
-  push:
-    branches:
-      - master
-      - 'RELEASE_*'
-  pull_request:
-    branches:
-      - master
-      - 'RELEASE_*'
-      - dev
+on: [push]
 
 name: R-CMD-check-bioc
 
@@ -70,7 +61,7 @@ jobs:
           ## Find what Bioconductor RELEASE branch we are working on
           ## otherwise, assume we are working on bioc-devel.
           if echo "$GITHUB_REF" | grep -q "RELEASE_"; then
-              biocversion="$(basename -- $GITHUB_REF | tr '[:upper:]' '[:lower:]')"
+              biocversion="release"
           else
               biocversion="devel"
           fi
@@ -154,10 +145,10 @@ jobs:
         name: Find Bioc and R versions
         run: |
           ## Find what branch we are working on
-          if echo "$GITHUB_REF" | grep -q "master"; then
+          if echo "$GITHUB_REF" | grep -q "RELEASE_"; then
+              biocversion="$(basename -- $GITHUB_REF | tr '[:upper:]' '[:lower:]')"
+          else
               biocversion="devel"
-          elif echo "$GITHUB_REF" | grep -q "RELEASE_"; then
-              biocversion="release"
           fi
 
           ## Define the R and Bioconductor version numbers
@@ -253,29 +244,29 @@ jobs:
         shell: Rscript {0}
 
       - name: Install covr
-        if: github.ref == 'refs/heads/master' && env.run_covr == 'true'
+        if: env.run_covr == 'true'
         run: |
           remotes::install_cran("covr")
         shell: Rscript {0}
 
       - name: Test coverage
-        if: github.ref == 'refs/heads/master' && env.run_covr == 'true'
+        if: env.run_covr == 'true'
         run: |
           covr::codecov()
         shell: Rscript {0}
 
       - name: Install pkgdown
-        if: github.ref == 'refs/heads/master' && env.run_pkgdown == 'true'
+        if: env.run_pkgdown == 'true'
         run: |
           remotes::install_github("r-lib/pkgdown")
         shell: Rscript {0}
 
       - name: Install package
-        if: github.ref == 'refs/heads/master' && env.run_pkgdown == 'true'
+        if: env.run_pkgdown == 'true'
         run: R CMD INSTALL .
 
       - name: Deploy package
-        if: github.ref == 'refs/heads/master' && env.run_pkgdown == 'true'
+        if: env.run_pkgdown == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
