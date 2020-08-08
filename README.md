@@ -1,14 +1,17 @@
 tidybulk - part of tidyTranscriptomics
 ================
 
+<!-- badges: start -->
+
+[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![R build
+status](https://github.com/stemangiola/tidybulk/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/stemangiola/tidybulk/actions)
+<!-- badges: end -->
+
 **Brings transcriptomics to the tidyverse\!** (SEO: tidy differential
 expression)
 
 # <img src="inst/logo.png" height="139px" width="120px" />
-
-<!-- badges: start -->
-[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
-<!-- badges: end -->
 
 website:
 [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
@@ -450,18 +453,18 @@ tt.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##      tSNE1   tSNE2 sample                       Call 
-    ##      <dbl>   <dbl> <chr>                        <fct>
-    ##  1   1.29    9.12  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2   0.891  -6.20  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3  13.7     7.86  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4  -6.78    7.44  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5  -2.85    7.10  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6  -5.26   -0.763 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7  -9.03  -29.8   TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8 -14.0     5.42  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9 -12.7     4.75  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  16.4    14.6   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##     tSNE1  tSNE2 sample                       Call 
+    ##     <dbl>  <dbl> <chr>                        <fct>
+    ##  1  -4.95   5.57 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2   6.24 -11.3  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3 -11.4    2.97 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4  -6.53  -8.35 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5  -7.29 -12.6  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6   1.78   5.05 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7  28.4  -13.7  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8  10.1    2.78 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9   9.19   3.94 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10 -17.8    9.12 TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -866,18 +869,18 @@ tt.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 5
-    ##      tSNE1   tSNE2 sample                       Call  `cluster SNN`
-    ##      <dbl>   <dbl> <chr>                        <fct> <fct>        
-    ##  1   1.29    9.12  TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            
-    ##  2   0.891  -6.20  TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
-    ##  3  13.7     7.86  TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
-    ##  4  -6.78    7.44  TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
-    ##  5  -2.85    7.10  TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
-    ##  6  -5.26   -0.763 TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
-    ##  7  -9.03  -29.8   TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
-    ##  8 -14.0     5.42  TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
-    ##  9 -12.7     4.75  TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
-    ## 10  16.4    14.6   TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
+    ##     tSNE1  tSNE2 sample                       Call  `cluster SNN`
+    ##     <dbl>  <dbl> <chr>                        <fct> <fct>        
+    ##  1  -4.95   5.57 TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            
+    ##  2   6.24 -11.3  TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
+    ##  3 -11.4    2.97 TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
+    ##  4  -6.53  -8.35 TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
+    ##  5  -7.29 -12.6  TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
+    ##  6   1.78   5.05 TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
+    ##  7  28.4  -13.7  TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
+    ##  8  10.1    2.78 TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
+    ##  9   9.19   3.94 TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
+    ## 10 -17.8    9.12 TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
     ## # … with 241 more rows
 
 ``` r
