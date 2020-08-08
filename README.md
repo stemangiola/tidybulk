@@ -205,7 +205,7 @@ tt.norm %>%
     my_theme
 ```
 
-![](README_files/figure-gfm/plot_normalise-1.png)<!-- -->
+![](man/figures/plot_normalise-1.png)<!-- -->
 
 ## Filter `variable transcripts`
 
@@ -329,7 +329,7 @@ tt.norm.MDS %>%
   GGally::ggpairs(columns = 10:15, ggplot2::aes(colour=`Cell type`))
 ```
 
-![](README_files/figure-gfm/plot_mds-1.png)<!-- -->
+![](man/figures/plot_mds-1.png)<!-- -->
 
 **PCA**
 
@@ -374,18 +374,18 @@ tt.norm.PCA %>% pivot_sample() %>% select(contains("PC"), everything())
 ```
 
     ## # A tibble: 48 x 15
-    ##       PC1     PC2    PC3    PC4    PC5   PC6 sample `Cell type` time  condition
-    ##     <dbl>   <dbl>  <dbl>  <dbl>  <dbl> <dbl> <chr>  <chr>       <chr> <chr>    
-    ##  1  0.130  0.137  -0.155 0.247  0.0594 0.129 SRR17… b_cell      0 d   TRUE     
-    ##  2  0.128  0.139  -0.156 0.251  0.0525 0.127 SRR17… b_cell      1 d   TRUE     
-    ##  3  0.129  0.137  -0.158 0.247  0.0488 0.128 SRR17… b_cell      3 d   TRUE     
-    ##  4  0.129  0.139  -0.159 0.247  0.0511 0.126 SRR17… b_cell      7 d   TRUE     
-    ##  5 -0.175 -0.0641 -0.180 0.0217 0.0930 0.143 SRR17… dendritic_… 0 d   FALSE    
-    ##  6 -0.174 -0.0792 -0.174 0.0224 0.0923 0.135 SRR17… dendritic_… 1 d   FALSE    
-    ##  7 -0.171 -0.0710 -0.178 0.0240 0.109  0.135 SRR17… dendritic_… 3 d   FALSE    
-    ##  8 -0.172 -0.0724 -0.183 0.0218 0.0890 0.142 SRR17… dendritic_… 7 d   FALSE    
-    ##  9 -0.195 -0.0447 -0.104 0.0321 0.0539 0.117 SRR17… monocyte    0 d   FALSE    
-    ## 10 -0.189 -0.0607 -0.101 0.0364 0.0929 0.119 SRR17… monocyte    1 d   FALSE    
+    ##        PC1   PC2    PC3     PC4    PC5   PC6 sample `Cell type` time  condition
+    ##      <dbl> <dbl>  <dbl>   <dbl>  <dbl> <dbl> <chr>  <chr>       <chr> <chr>    
+    ##  1 -12.8   -1.94 -15.6  -0.578  -0.600 -1.32 SRR17… b_cell      0 d   TRUE     
+    ##  2 -12.8   -1.94 -15.8  -0.279  -0.396 -1.36 SRR17… b_cell      1 d   TRUE     
+    ##  3 -12.8   -1.86 -15.2  -0.803  -0.388 -1.20 SRR17… b_cell      3 d   TRUE     
+    ##  4 -12.7   -1.73 -15.5  -0.850  -0.489 -1.05 SRR17… b_cell      7 d   TRUE     
+    ##  5   1.29  13.4    1.79  0.0409  4.82  -1.46 SRR17… dendritic_… 0 d   FALSE    
+    ##  6   0.794 13.3    1.90 -0.0114  4.32  -1.39 SRR17… dendritic_… 1 d   FALSE    
+    ##  7   1.43  13.4    1.55 -0.0722  5.59  -1.19 SRR17… dendritic_… 3 d   FALSE    
+    ##  8   0.412 13.5    1.90 -0.188   4.28  -1.19 SRR17… dendritic_… 7 d   FALSE    
+    ##  9   3.84  13.7    2.64  2.16   -4.48  -1.36 SRR17… monocyte    0 d   FALSE    
+    ## 10   3.86  13.3    2.51  2.00   -4.48  -1.49 SRR17… monocyte    1 d   FALSE    
     ## # … with 38 more rows, and 5 more variables: batch <dbl>,
     ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, TMM <dbl>,
     ## #   multiplier <dbl>
@@ -396,7 +396,7 @@ tt.norm.PCA %>%
   GGally::ggpairs(columns = 10:12, ggplot2::aes(colour=`Cell type`))
 ```
 
-![](README_files/figure-gfm/plot_pca-1.png)<!-- -->
+![](man/figures/plot_pca-1.png)<!-- -->
 
 **tSNE**
 
@@ -450,18 +450,18 @@ tt.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##     tSNE1    tSNE2 sample                       Call 
-    ##     <dbl>    <dbl> <chr>                        <fct>
-    ##  1  12.0    2.43   TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2  -3.79   7.58   TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3  17.7   -5.70   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4   2.35  -6.60   TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5   4.18  -9.88   TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6  -5.47   0.865  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7 -41.1   -0.0288 TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8  -4.27 -14.0    TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9  -2.65 -13.8    TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  28.3   -8.08   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##      tSNE1   tSNE2 sample                       Call 
+    ##      <dbl>   <dbl> <chr>                        <fct>
+    ##  1   1.29    9.12  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2   0.891  -6.20  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3  13.7     7.86  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4  -6.78    7.44  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5  -2.85    7.10  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  -5.26   -0.763 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7  -9.03  -29.8   TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8 -14.0     5.42  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9 -12.7     4.75  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10  16.4    14.6   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -470,7 +470,7 @@ tt.norm.tSNE %>%
     ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](man/figures/unnamed-chunk-11-1.png)<!-- -->
 
 ## Rotate `dimensions`
 
@@ -529,7 +529,7 @@ tt.norm.MDS.rotated %>%
   my_theme
 ```
 
-![](README_files/figure-gfm/plot_rotate_1-1.png)<!-- -->
+![](man/figures/plot_rotate_1-1.png)<!-- -->
 
 **Rotated** On the x and y axes axis we have the first two reduced
 dimensions rotated of 45 degrees, data is coloured by cell type.
@@ -541,7 +541,7 @@ tt.norm.MDS.rotated %>%
   my_theme
 ```
 
-![](README_files/figure-gfm/plot_rotate_2-1.png)<!-- -->
+![](man/figures/plot_rotate_2-1.png)<!-- -->
 
 ## Test `differential abundance`
 
@@ -723,7 +723,7 @@ tt.cibersort %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
 ```
 
-![](README_files/figure-gfm/plot_cibersort-1.png)<!-- -->
+![](man/figures/plot_cibersort-1.png)<!-- -->
 
 ## Test differential cell-type abundance
 
@@ -738,12 +738,12 @@ abundance across conditions
     ## # A tibble: 22 x 7
     ##    .cell_type cell_type_propo… `estimate_(Inte… estimate_condit…
     ##    <chr>      <list>                      <dbl>            <dbl>
-    ##  1 B cells n… <tibble [48 × 9…            -3.38           3.16  
+    ##  1 B cells n… <tibble [48 × 9…            -3.38           3.17  
     ##  2 B cells m… <tibble [48 × 9…            -2.98           2.83  
     ##  3 Plasma ce… <tibble [48 × 9…            -7.09          -0.508 
-    ##  4 T cells C… <tibble [48 × 9…            -4.05          -0.447 
-    ##  5 T cells C… <tibble [48 × 9…            -1.93           0.0171
-    ##  6 T cells C… <tibble [48 × 9…            -3.07          -0.534 
+    ##  4 T cells C… <tibble [48 × 9…            -4.05          -0.445 
+    ##  5 T cells C… <tibble [48 × 9…            -1.93           0.0167
+    ##  6 T cells C… <tibble [48 × 9…            -3.07          -0.533 
     ##  7 T cells C… <tibble [48 × 9…            -5.97           1.46  
     ##  8 T cells f… <tibble [48 × 9…            -5.17          -0.469 
     ##  9 T cells r… <tibble [48 × 9…            -5.62          -0.602 
@@ -812,7 +812,7 @@ plot.
   my_theme
 ```
 
-![](README_files/figure-gfm/plot_cluster-1.png)<!-- -->
+![](man/figures/plot_cluster-1.png)<!-- -->
 
 **SNN**
 
@@ -866,18 +866,18 @@ tt.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 5
-    ##     tSNE1    tSNE2 sample                       Call  `cluster SNN`
-    ##     <dbl>    <dbl> <chr>                        <fct> <fct>        
-    ##  1  12.0    2.43   TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            
-    ##  2  -3.79   7.58   TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
-    ##  3  17.7   -5.70   TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
-    ##  4   2.35  -6.60   TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
-    ##  5   4.18  -9.88   TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
-    ##  6  -5.47   0.865  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
-    ##  7 -41.1   -0.0288 TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
-    ##  8  -4.27 -14.0    TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
-    ##  9  -2.65 -13.8    TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
-    ## 10  28.3   -8.08   TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
+    ##      tSNE1   tSNE2 sample                       Call  `cluster SNN`
+    ##      <dbl>   <dbl> <chr>                        <fct> <fct>        
+    ##  1   1.29    9.12  TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            
+    ##  2   0.891  -6.20  TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
+    ##  3  13.7     7.86  TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
+    ##  4  -6.78    7.44  TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
+    ##  5  -2.85    7.10  TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
+    ##  6  -5.26   -0.763 TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
+    ##  7  -9.03  -29.8   TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
+    ##  8 -14.0     5.42  TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
+    ##  9 -12.7     4.75  TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
+    ## 10  16.4    14.6   TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
     ## # … with 241 more rows
 
 ``` r
@@ -888,7 +888,7 @@ tt.norm.SNN %>%
     ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
 ```
 
-![](README_files/figure-gfm/SNN_plot-1.png)<!-- -->
+![](man/figures/SNN_plot-1.png)<!-- -->
 
 ``` r
 # Do differential transcription between clusters
@@ -901,18 +901,18 @@ tt.norm.SNN %>%
 ```
 
     ## # A tibble: 500 x 8
-    ##    ens           logFC logCPM     F   PValue      FDR significant lowly_abundant
-    ##    <chr>         <dbl>  <dbl> <dbl>    <dbl>    <dbl> <lgl>       <lgl>         
-    ##  1 ENSG00000065…  1.59  10.2   395. 1.31e-53 6.56e-51 TRUE        FALSE         
-    ##  2 ENSG00000111…  2.94   9.64  389. 4.51e-53 1.13e-50 TRUE        FALSE         
-    ##  3 ENSG00000140…  2.69   9.54  345. 3.67e-49 6.12e-47 TRUE        FALSE         
-    ##  4 ENSG00000186…  6.17   7.99  343. 5.74e-49 7.18e-47 TRUE        FALSE         
-    ##  5 ENSG00000181…  7.93   9.12  299. 8.93e-45 8.93e-43 TRUE        FALSE         
-    ##  6 ENSG00000137…  3.88   8.28  267. 1.85e-41 1.54e-39 TRUE        FALSE         
-    ##  7 ENSG00000083…  1.37   9.39  247. 2.79e-39 1.99e-37 TRUE        FALSE         
-    ##  8 ENSG00000143…  1.02  10.7   246. 3.56e-39 2.22e-37 TRUE        FALSE         
-    ##  9 ENSG00000124…  4.66   8.62  238. 2.37e-38 1.32e-36 TRUE        FALSE         
-    ## 10 ENSG00000092…  2.91   8.40  232. 1.36e-37 6.82e-36 TRUE        FALSE         
+    ##    ens          logFC logCPM      F   PValue      FDR significant lowly_abundant
+    ##    <chr>        <dbl>  <dbl>  <dbl>    <dbl>    <dbl> <lgl>       <lgl>         
+    ##  1 ENSG00000… -0.981   10.7  42.9   3.13e-10 8.86e-10 TRUE        FALSE         
+    ##  2 ENSG00000… -3.54     9.92 81.9   3.99e-17 2.10e-16 TRUE        FALSE         
+    ##  3 ENSG00000… -0.154   10.6   1.20  2.74e- 1 2.96e- 1 FALSE       FALSE         
+    ##  4 ENSG00000… -0.669   10.7  30.5   8.14e- 8 1.75e- 7 TRUE        FALSE         
+    ##  5 ENSG00000…  0.826   11.3  78.4   1.49e-16 7.45e-16 TRUE        FALSE         
+    ##  6 ENSG00000…  0.412   11.3  32.1   3.92e- 8 8.72e- 8 TRUE        FALSE         
+    ##  7 ENSG00000…  0.0782  10.5   0.569 4.51e- 1 4.73e- 1 FALSE       FALSE         
+    ##  8 ENSG00000… -1.13    11.1  34.5   1.33e- 8 3.19e- 8 TRUE        FALSE         
+    ##  9 ENSG00000…  0.238   11.8   0.256 6.13e- 1 6.31e- 1 FALSE       FALSE         
+    ## 10 ENSG00000… -1.68    10.5  92.0   8.66e-19 5.15e-18 TRUE        FALSE         
     ## # … with 490 more rows
 
 ## Drop `redundant` transcripts
@@ -988,7 +988,7 @@ tt.norm.non_redundant %>%
   my_theme
 ```
 
-![](README_files/figure-gfm/plot_drop-1.png)<!-- -->
+![](man/figures/plot_drop-1.png)<!-- -->
 
 **Approach 2**
 
@@ -1013,7 +1013,7 @@ tt.norm.non_redundant %>%
   my_theme
 ```
 
-![](README_files/figure-gfm/plot_drop2-1.png)<!-- -->
+![](man/figures/plot_drop2-1.png)<!-- -->
 
 ## Other useful wrappers
 
@@ -1080,8 +1080,8 @@ tt %>% describe_transcript() %>% select(transcript, description, everything())
     ##  4 MIR1302-2  microRNA 1… SRR17… b_cell          1 0 d   TRUE          0
     ##  5 FAM138A    family wit… SRR17… b_cell          0 0 d   TRUE          0
     ##  6 OR4F5      olfactory … SRR17… b_cell          0 0 d   TRUE          0
-    ##  7 LOC729737  <NA>        SRR17… b_cell       1764 0 d   TRUE          0
-    ##  8 LOC102725… <NA>        SRR17… b_cell         11 0 d   TRUE          0
+    ##  7 LOC729737  uncharacte… SRR17… b_cell       1764 0 d   TRUE          0
+    ##  8 LOC102725… DEAD/H-box… SRR17… b_cell         11 0 d   TRUE          0
     ##  9 MIR6859-2  microRNA 6… SRR17… b_cell         40 0 d   TRUE          0
     ## 10 OR4F29     olfactory … SRR17… b_cell          0 0 d   TRUE          0
     ## # … with 938,102 more rows, and 1 more variable: factor_of_interest <lgl>
