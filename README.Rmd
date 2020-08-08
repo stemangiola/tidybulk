@@ -2,6 +2,11 @@
 title: "tidybulk - part of tidyTranscriptomics"
 output: github_document
 ---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set( fig.path = "man/figures/")
+```
+
 **Brings transcriptomics to the tidyverse!** (SEO: tidy differential expression)
 
 #  <img src="inst/logo.png" height="139px" width="120px" />
