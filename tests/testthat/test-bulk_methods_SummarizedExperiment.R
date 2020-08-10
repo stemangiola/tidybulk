@@ -160,7 +160,8 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 test_that("Add differential trancript abundance - SummarizedExperiment",{
 
 	res =		test_differential_abundance(
-		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c),	
+		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>% 
+			identify_abundant(factor_of_interest = condition),	
 		~ condition	
 	)
 	
@@ -168,7 +169,7 @@ test_that("Add differential trancript abundance - SummarizedExperiment",{
 	
 	# Quasi likelihood
 	res_tibble =		test_differential_abundance(
-		input_df,
+		input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
 		~ condition	,
 		a, b, c
 	)
@@ -191,11 +192,12 @@ test_that("Add differential trancript abundance - SummarizedExperiment",{
 	
 	# Likelihood ratio
 	res2 =		test_differential_abundance(
-		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c),	
+		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>%
+			identify_abundant(factor_of_interest = condition),	
 		~ condition, method = "edgeR_likelihood_ratio"	)
 	
 	res2_tibble =		test_differential_abundance(
-		input_df,
+		input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
 		~ condition	,
 		a, b, c, method = "edgeR_likelihood_ratio"
 	)

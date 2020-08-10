@@ -357,7 +357,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
 			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
-		)
+		) 
+		
 
 	# # Check if at least two samples for each group
 	# if (
@@ -412,24 +413,10 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		BiocManager::install("edgeR", ask = FALSE)
 	}
 
-	df_for_edgeR.filt <-
-		df_for_edgeR %>%
-		select(!!.transcript,!!.sample,!!.abundance, !!as.symbol(parse_formula(.formula))) %>%
-		mutate(
-			lowly_abundant = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(
-				.,
-				!!.sample,
-				!!.transcript,
-				!!.abundance,
-				factor_of_interest = !!(as.symbol(parse_formula(.formula)[1])),
-				minimum_counts = minimum_counts,
-				minimum_proportion = minimum_proportion
-			)
-		)
+
 
 	edgeR_object =
-		df_for_edgeR.filt %>%
-		filter(!lowly_abundant) %>%
+		df_for_edgeR %>%
 		select(!!.transcript,!!.sample,!!.abundance) %>%
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.transcript) %>%
@@ -498,14 +485,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 											names_from = constrast, names_sep = "___")
 			}
 		)	 %>%
-
-		# Add filtering info
-		full_join(df_for_edgeR.filt %>%
-								when(
-									!"lowly_abundant" %in% colnames(.data) ~ (.) %>% select(!!.transcript, lowly_abundant) ,
-									~ (.) %>% select(!!.transcript))	%>%
-								distinct(), by = quo_name(.transcript)
-		)%>%
 
 		# Attach attributes
 		reattach_internals(.data) %>%
@@ -599,7 +578,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
 			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
 			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
-		)
+		) 
+		
 
 	# Create design matrix
 	design =
@@ -630,24 +610,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		BiocManager::install("limma", ask = FALSE)
 	}
 
-	df_for_voom.filt <-
-		df_for_voom %>%
-		select(!!.transcript,!!.sample,!!.abundance, !!as.symbol(parse_formula(.formula))) %>%
-		mutate(
-			lowly_abundant = !!.transcript %in% add_scaled_counts_bulk.get_low_expressed(
-				.,
-				!!.sample,
-				!!.transcript,
-				!!.abundance,
-				factor_of_interest = !!(as.symbol(parse_formula(.formula)[1])),
-				minimum_counts = minimum_counts,
-				minimum_proportion = minimum_proportion
-			)
-		)
-
 	voom_object =
-		df_for_voom.filt %>%
-		filter(!lowly_abundant) %>%
+		df_for_voom %>%
 		select(!!.transcript,!!.sample,!!.abundance) %>%
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.transcript) %>%
@@ -705,14 +669,6 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 											names_from = constrast, names_sep = "___")
 			}
 		)	 %>%
-
-		# Add filtering info
-		full_join(df_for_voom.filt %>%
-								when(
-									!"lowly_abundant" %in% colnames(.data) ~ (.) %>% select(!!.transcript, lowly_abundant) ,
-									~ (.) %>% select(!!.transcript))	%>%
-								distinct(), by = quo_name(.transcript)
-		)%>%
 
 		# Attach attributes
 		reattach_internals(.data) %>%
@@ -844,11 +800,6 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 		# Filter
 		tidybulk_to_SummarizedExperiment(!!.sample, !!.transcript, counts) %>%
-		keep_abundant(
-			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion
-		) %>%
 
 		# DESeq2
 		DESeq2::DESeqDataSet( design = .formula) %>%
@@ -896,10 +847,10 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 			}
 		)	 %>%
 
-		# Add filtering info
-		right_join(.data %>% distinct(!!.transcript)) %>%
-		when(!"lowly_abundant" %in% colnames(.data) ~ (.) %>%	mutate(lowly_abundant = if_else(is.na(log2FoldChange), T, F)) ,
-				 ~ (.))	%>%
+		# # Add filtering info
+		# right_join(.data %>% distinct(!!.transcript)) %>%
+		# when(!"lowly_abundant" %in% colnames(.data) ~ (.) %>%	mutate(lowly_abundant = if_else(is.na(log2FoldChange), T, F)) ,
+		# 		 ~ (.))	%>%
 
 		# Attach attributes
 		reattach_internals(.data) %>%
@@ -1228,12 +1179,6 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		egsea(
 			contrasts = my_contrasts,
 			gs.annots = idx[which(names(idx)!="kegg")],
-			# symbolsMap=
-			# 	df_for_edgeR.filt %>%
-			# 	select(entrez, !!.transcript) %>%
-			# 	distinct() %>%
-			# 	arrange(match(entrez, rownames(dge))) %>%
-			# 	setNames(c("FeatureID", "Symbols")),
 			baseGSEAs = method,
 			sort.by = "med.rank",
 			num.threads = cores,
@@ -2578,7 +2523,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		as_tibble(rownames = quo_name(.transcript)) %>%
 		gather(!!.sample,!!.abundance,-!!.transcript) %>%
 
-		# ReverseLog transform if tranformed in the first place
+		# ReverseLog transform if transformed in the first place
 		ifelse_pipe(
 			log_transform,
 			~ .x %>%
