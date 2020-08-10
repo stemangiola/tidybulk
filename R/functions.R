@@ -495,7 +495,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 							mutate(significant = FDR < significance_threshold)
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
-											names_from = constrast)
+											names_from = constrast, names_sep = "___")
 			}
 		)	 %>%
 
@@ -702,7 +702,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 							mutate(significant = adj.P.Val < significance_threshold)
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
-											names_from = constrast)
+											names_from = constrast, names_sep = "___")
 			}
 		)	 %>%
 
@@ -892,7 +892,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 							mutate(significant = padj < significance_threshold)
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
-											names_from = constrast)
+											names_from = constrast, names_sep = "___")
 			}
 		)	 %>%
 
@@ -1562,7 +1562,7 @@ get_reduced_dimensions_PCA_bulk <-
 
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
-				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% not() %>% any(),
+				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer", "bouble")) %>% not() %>% any(),
 				~ stop("tidybulk says: .abundance must be numerical or integer")
 			) %>%
 
