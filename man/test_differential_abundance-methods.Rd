@@ -145,7 +145,7 @@ test_differential_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <
 \lifecycle{maturing}
 
 At the moment this function uses either edgeR (DOI: 10.18129/B9.bioc.edgeR) or DeSEQ2 (DOI: 10.1186/s13059-014-0550-8)
-Bith methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
+Both methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
 
 Underlying method for edgeR framework:
 	.data %>%
