@@ -338,7 +338,7 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 		)
 
 	expect_equal(
-		unique(res$`logFC_conditionTRUE - conditionFALSE`)[1:4],
+		unique(res$`logFC___conditionTRUE - conditionFALSE`)[1:4],
 		c(-12.19303, -11.57989, -12.57969, -11.88829),
 		tolerance=1e-6
 	)
@@ -550,7 +550,7 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 		)
 	
 	expect_equal(
-		unique(res$`logFC_conditionTRUE - conditionFALSE`)[1:4],
+		unique(res$`logFC___conditionTRUE - conditionFALSE`)[1:4],
 		c(-12.25012, -11.48490 ,-10.29393, -11.69070),
 		tolerance=1e-6
 	)
