@@ -1614,6 +1614,19 @@ test_that("differential composition",{
 test_that("filter abundant - no object",{
 
 	res =
+		identify_abundant(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c
+		)
+	
+	expect_equal(
+		ncol(res),
+		7
+	)
+	
+	res =
 		keep_abundant(
 			input_df,
 			.sample = a,
@@ -1623,9 +1636,29 @@ test_that("filter abundant - no object",{
 
 	expect_equal(
 		ncol(res),
-		6
+		7
 	)
 
+})
+
+test_that("filter abundant with design - no object",{
+	
+	res =
+		identify_abundant(
+			input_df,
+			.sample = a,
+			.transcript = b,
+			.abundance = c, 
+			factor_of_interest = condition
+		)
+	
+	expect_equal(
+		ncol(res),
+		7
+	)
+	
+
+	
 })
 
 test_that("nest - no object",{
