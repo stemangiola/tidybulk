@@ -709,7 +709,7 @@ test_that("Get entrez from symbol - no object",{
 # 				.transcript = d,
 # 				.sample = a,
 # 				.abundance = c
-# 			),
+# 			) %>% identify_abundant(a, b, c, factor_of_interest = condition),
 # 			~ condition,
 # 			.sample = a,
 # 			.entrez = d,
@@ -738,7 +738,7 @@ test_that("Only adjusted counts - no object",{
 
 	res =
 		adjust_abundance(
-			cm,
+			cm %>% identify_abundant(a, b, c),
 			~ condition + batch,
 			.sample = a,
 			.transcript = b,
@@ -767,7 +767,7 @@ test_that("Get adjusted counts - no object",{
 
 	res =
 		adjust_abundance(
-			cm,
+			cm %>% identify_abundant(a, b, c),
 			~ condition + batch,
 			.sample = a,
 			.transcript = b,
@@ -796,7 +796,7 @@ test_that("Add adjusted counts - no object",{
 
 	res =
 		adjust_abundance(
-			cm,
+			cm %>% identify_abundant(a, b, c),
 			~ condition + batch,
 			.sample = a,
 			.transcript = b,
@@ -812,7 +812,7 @@ test_that("Add adjusted counts - no object",{
 
 	expect_equal(
 		ncol(res),
-		8
+		9
 	)
 
 })
@@ -980,7 +980,7 @@ test_that("Only reduced dimensions MDS - no object",{
 
 	res =
 		reduce_dimensions(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			method = "MDS",
 			.abundance = c,
 			.element = a,
@@ -1007,7 +1007,7 @@ test_that("Get reduced dimensions MDS - no object",{
 
 	res =
 		reduce_dimensions(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			method = "MDS",
 			.abundance = c,
 			.element = a,
@@ -1036,7 +1036,7 @@ test_that("Add reduced dimensions MDS - no object",{
 
 	res =
 		reduce_dimensions(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			method = "MDS",
 			.abundance = c,
 			.element = a,
@@ -1052,7 +1052,7 @@ test_that("Add reduced dimensions MDS - no object",{
 
 	expect_equal(
 		ncol(res),
-		8
+		9
 	)
 
 	expect_equal(	class(attr(res, "internals")$MDS)[1], 	"MDS"  )
@@ -1062,7 +1062,7 @@ test_that("Only reduced dimensions PCA - no object",{
 
 	res =
 		reduce_dimensions(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			method="PCA",
 			.abundance = c,
 			.element = a,
@@ -1088,7 +1088,7 @@ test_that("Get reduced dimensions PCA - no object",{
 
 	res =
 		reduce_dimensions(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			method="PCA",
 			.abundance = c,
 			.element = a,
@@ -1115,7 +1115,7 @@ test_that("Add reduced dimensions PCA - no object",{
 
 	res =
 		reduce_dimensions(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			method="PCA",
 			.abundance = c,
 			.element = a,
@@ -1130,7 +1130,7 @@ test_that("Add reduced dimensions PCA - no object",{
 
 	expect_equal(
 		ncol(res),
-		8
+		9
 	)
 
 	expect_equal(	class(attr(res, "internals")$PCA), 	"prcomp"  )
@@ -1143,7 +1143,7 @@ test_that("Get reduced dimensions tSNE - no object",{
 
 	res =
 		reduce_dimensions(
-			setNames(tidybulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) ,
+			setNames(tidybulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) %>% identify_abundant(a, b, c),
 			method="tSNE",
 			.abundance = c,
 			.element = a,
@@ -1176,7 +1176,7 @@ test_that("Add reduced dimensions tSNE - no object",{
 
 	res =
 		reduce_dimensions(
-			setNames(tidybulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) ,
+			setNames(tidybulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) %>% identify_abundant(a, b, c),
 			method="tSNE",
 			.abundance = c,
 			.element = a,
@@ -1192,7 +1192,7 @@ test_that("Add reduced dimensions tSNE - no object",{
 
 	expect_equal(
 		ncol(res),
-		10
+		11
 	)
 
 })
@@ -1201,7 +1201,7 @@ test_that("Only rotated dimensions - no object",{
 
 	res.pca =
 		reduce_dimensions(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			method="PCA",
 			.abundance = c,
 			.element = a,
@@ -1236,7 +1236,7 @@ test_that("Get rotated dimensions - no object",{
 
 	res.pca =
 		reduce_dimensions(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			method="PCA",
 			.abundance = c,
 			.element = a,
@@ -1275,7 +1275,7 @@ test_that("Add rotated dimensions - no object",{
 
 	res.pca =
 		reduce_dimensions(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			method="PCA",
 			.abundance = c,
 			.element = a,
@@ -1301,7 +1301,7 @@ test_that("Add rotated dimensions - no object",{
 
 	expect_equal(
 		ncol(res),
-		10
+		11
 	)
 
 })

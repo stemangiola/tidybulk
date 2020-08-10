@@ -679,11 +679,21 @@ setGeneric("reduce_dimensions", function(.data,
 	validation(.data, !!.element, !!.feature, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
 
-	if (method == "MDS") {
-
-		.data_processed =
-			.data %>%
-			get_reduced_dimensions_MDS_bulk(
+	.data_processed = 
+		
+		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
+		when(
+			method == "MDS" ~ 	get_reduced_dimensions_MDS_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -692,47 +702,8 @@ setGeneric("reduce_dimensions", function(.data,
 				of_samples = of_samples,
 				log_transform = log_transform,
 				...
-			)
-
-		if (action == "add"){
-
-			.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				pivot_sample(!!.element) %>%
-				# 
-				# select(
-				# 	!!.element,
-				# 	get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				# ) %>%
-				# distinct() %>%
-
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-
-		else if (action == "only") .data_processed
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-	}
-	else if (method == "PCA") {
-
-		.data_processed =
-			.data %>%
-			get_reduced_dimensions_PCA_bulk(
+			),
+			method == "PCA" ~ 	get_reduced_dimensions_PCA_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -742,50 +713,8 @@ setGeneric("reduce_dimensions", function(.data,
 				log_transform = log_transform,
 				scale = scale,
 				...
-			)
-
-		if (action == "add"){
-
-			.data %>%
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				pivot_sample(!!.element) %>%
-				# 
-				# select(
-				# 	!!.element,
-				# 	get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				# ) %>%
-				# distinct() %>%
-
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-
-		else if (action == "only")	.data_processed
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-
-	}
-	else if (method == "tSNE") {
-
-		.data_processed =
-			.data %>%
-			get_reduced_dimensions_TSNE_bulk(
+			),
+			method == "tSNE" ~ 	get_reduced_dimensions_TSNE_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -794,45 +723,40 @@ setGeneric("reduce_dimensions", function(.data,
 				of_samples = of_samples,
 				log_transform = log_transform,
 				...
-			)
+			),
+			TRUE ~ 	stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\"")
+		)
+		
+		
 
-		if (action == "add"){
+	if (action == "add"){
 
-			.data %>%
-				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
+		.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
 
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				pivot_sample(!!.element) %>%
-				# 
-				# select(
-				# 	!!.element,
-				# 	get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				# ) %>%
-				# distinct() %>%
-
-				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
-
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-		else if (action == "only") .data_processed
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
+			# Attach attributes
+			reattach_internals(.data_processed)
 
 	}
+	else if (action == "get"){
+
+		.data %>%
+
+			# Selecting the right columns
+			pivot_sample(!!.element) %>%
+
+			dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+			# Attach attributes
+			reattach_internals(.data_processed)
+
+	}
+
+	else if (action == "only") .data_processed
 	else
-		stop("tidybulk says: method must be either \"MDS\" or \"PCA\"")
+		stop(
+			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+		)
+	
 
 }
 
@@ -1322,8 +1246,19 @@ setGeneric("adjust_abundance", function(.data,
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 	
 	.data_processed =
+		
+		.data %>%
+	
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
 		get_adjusted_counts_for_unwanted_variation_bulk(
-			.data,
 			.formula,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
@@ -1336,7 +1271,7 @@ setGeneric("adjust_abundance", function(.data,
 
 		.data %>%
 
-			# Add adjsted column
+			# Add adjusted column
 			dplyr::left_join(.data_processed,	by = c(quo_name(.transcript), quo_name(.sample))) %>%
 
 			# Attach attributes
@@ -1953,7 +1888,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
 #' @details At the moment this function uses either edgeR (DOI: 10.18129/B9.bioc.edgeR) or DeSEQ2 (DOI: 10.1186/s13059-014-0550-8)
-#' Bith methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
+#' Both methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
 #'
 #' Underlying method for edgeR framework:
 #' 	.data %>%
@@ -2707,17 +2642,27 @@ setGeneric("test_gene_enrichment", function(.data,
 	validation(.data, !!.sample, !!.entrez, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 	
-	test_gene_enrichment_bulk_EGSEA(
-		.data,
-		.formula,
-		.sample = !!.sample,
-		.entrez = !!.entrez,
-		.abundance = !!.abundance,
-		.contrasts = .contrasts,
-		method = method,
-		species = species,
-		cores = cores
-	)
+	.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
+		test_gene_enrichment_bulk_EGSEA(
+			.formula,
+			.sample = !!.sample,
+			.entrez = !!.entrez,
+			.abundance = !!.abundance,
+			.contrasts = .contrasts,
+			method = method,
+			species = species,
+			cores = cores
+		)
 
 
 

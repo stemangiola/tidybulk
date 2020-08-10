@@ -74,7 +74,7 @@ test_that("tidybulk SummarizedExperiment clustering",{
 
 test_that("tidybulk SummarizedExperiment clustering",{
 
-	res = reduce_dimensions(se, method="PCA")
+	res = reduce_dimensions(se %>% identify_abundant(), method="PCA")
 
 	expect_equal(
 		tail(names(SummarizedExperiment::colData(res)), 1),
@@ -86,7 +86,7 @@ test_that("tidybulk SummarizedExperiment clustering",{
 test_that("Get rotated dimensions - SummarizedExperiment",{
 
 	res.pca =
-		reduce_dimensions(se,		method="PCA"	)
+		reduce_dimensions(se %>% identify_abundant(),		method="PCA"	)
 
 	res =
 		rotate_dimensions(
@@ -125,7 +125,7 @@ test_that("Get adjusted counts - SummarizedExperiment",{
 
 	res =
 		adjust_abundance(
-			tidybulk:::tidybulk_to_SummarizedExperiment(cm, a, b, c),
+			tidybulk:::tidybulk_to_SummarizedExperiment(cm, a, b, c) %>% identify_abundant(),
 			~ condition + batch
 		)
 
