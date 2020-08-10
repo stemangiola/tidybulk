@@ -1123,10 +1123,6 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	dge =
 		df_for_edgeR %>%
-		# keep_abundant(
-		# 	factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
-		# 	!!.sample, !!.entrez, !!.abundance
-		# )%>%
 
 		# Make sure transcript names are adjacent
 		arrange(!!.entrez) %>%
@@ -1401,8 +1397,6 @@ get_reduced_dimensions_MDS_bulk <-
 			# Through error if some counts are NA
 			error_if_counts_is_na(!!.abundance) %>%
 
-			# # Filter lowly transcribed (I have to avoid the use of scaling function)
-			# keep_abundant(!!.element, !!.feature,!!.abundance) %>%
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
 			# Check if log transform is needed
@@ -1495,7 +1489,6 @@ get_reduced_dimensions_PCA_bulk <-
 			error_if_counts_is_na(!!.abundance) %>%
 
 			# # Filter most variable genes
-			# keep_abundant(!!.element, !!.feature,!!.abundance) %>%
 			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
 
 			# Prepare data frame
@@ -2454,16 +2447,6 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 	df_for_combat <-
 		.data %>%
-
-		# # Filter low counts
-		# keep_abundant(!!.sample, !!.transcript, !!.abundance) %>%
-		# {
-		# 	# Give warning of filtering
-		# 	message(
-		# 		"tidybulk says: Combat is applied excluding lowly_abundant, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts "
-		# 	)
-		# 	(.)
-		# } %>%
 
 		select(!!.transcript,
 					 !!.sample,
