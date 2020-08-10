@@ -2302,13 +2302,13 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description find_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#' @description identify_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #' @importFrom dplyr filter
 #'
-#' @name find_abundant
+#' @name identify_abundant
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
@@ -2337,7 +2337,7 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 #'
 #'
 #'
-#' 	find_abundant(
+#' 	identify_abundant(
 #' 	tidybulk::counts_mini,
 #' 	    sample,
 #' 	    transcript,
@@ -2346,20 +2346,20 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 #'
 #'
 #' @docType methods
-#' @rdname find_abundant-methods
+#' @rdname identify_abundant-methods
 #' @export
 #'
-setGeneric("find_abundant", function(.data,
+setGeneric("identify_abundant", function(.data,
 																		 .sample = NULL,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
 																		 factor_of_interest = NULL,
 																		 minimum_counts = 10,
 																		 minimum_proportion = 0.7)
-	standardGeneric("find_abundant"))
+	standardGeneric("identify_abundant"))
 
 # Set internal
-.find_abundant = 		function(.data,
+.identify_abundant = 		function(.data,
 														.sample = NULL,
 														.transcript = NULL,
 														.abundance = NULL,
@@ -2385,65 +2385,61 @@ setGeneric("find_abundant", function(.data,
 	.data %>%
 		
 		# Filter
-		ifelse_pipe("lowly_abundant" %in% colnames((.)),
-								
-								# If column is present use this instead of doing more work
-								~ {
-									#message("tidybulk says: \"lowly_abundant\" column is present. Using this to filter data")
-									.x %>% dplyr::filter(!lowly_abundant)
-								},
-								
-								# If no column is present go
-								~ {
-									gene_to_exclude =
-										add_scaled_counts_bulk.get_low_expressed(
-											.data,
-											.sample = !!.sample,
-											.transcript = !!.transcript,
-											.abundance = !!.abundance,
-											factor_of_interest = !!factor_of_interest,
-											minimum_counts = minimum_counts,
-											minimum_proportion = minimum_proportion
-										)
-									
-									.x %>% dplyr::filter(!!.transcript %in% gene_to_exclude %>% not())
-								})	%>%
-		
+		when(
+			
+			# If column is present use this instead of doing more work
+			".abundant" %in% colnames(.) %>% not ~  {
+					gene_to_exclude =
+						add_scaled_counts_bulk.get_low_expressed(
+							.data,
+							.sample = !!.sample,
+							.transcript = !!.transcript,
+							.abundance = !!.abundance,
+							factor_of_interest = !!factor_of_interest,
+							minimum_counts = minimum_counts,
+							minimum_proportion = minimum_proportion
+						)
+					
+					dplyr::mutate(., .abundant := !!.transcript %in% gene_to_exclude %>% not())
+				},
+			~ (.)
+		)	%>%
+
 		# Attach attributes
 		reattach_internals(.data)
 }
 
 #' keep_abundant
-#' @inheritParams find_abundant
+#' @inheritParams identify_abundant
 #'
 #' @docType methods
-#' @rdname find_abundant-methods
+#' @rdname identify_abundant-methods
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("find_abundant", "spec_tbl_df", .find_abundant)
+setMethod("identify_abundant", "spec_tbl_df", .identify_abundant)
 
-#' find_abundant
-#' @inheritParams find_abundant
+#' identify_abundant
+#' @inheritParams identify_abundant
 #'
 #' @docType methods
-#' @rdname find_abundant-methods
+#' @rdname identify_abundant-methods
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("find_abundant", "tbl_df", .find_abundant)
+setMethod("identify_abundant", "tbl_df", .identify_abundant)
 
-#' find_abundant
-#' @inheritParams find_abundant
+#' identify_abundant
+#' @inheritParams identify_abundant
 #'
 #' @docType methods
-#' @rdname find_abundant-methods
+#' @rdname identify_abundant-methods
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("find_abundant", "tidybulk", .find_abundant)
+setMethod("identify_abundant", "tidybulk", .identify_abundant)
 
 
 #' Keep abundant transcripts
 #'
-#' \lifecycle{maturing}
+#' \lifecycle{questioning}
 #'
 #' @description keep_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -2528,29 +2524,15 @@ setGeneric("keep_abundant", function(.data,
 	.data %>%
 
 		# Filter
-		ifelse_pipe("lowly_abundant" %in% colnames((.)),
-
-								# If column is present use this instead of doing more work
-								~ {
-									#message("tidybulk says: \"lowly_abundant\" column is present. Using this to filter data")
-									.x %>% dplyr::filter(!lowly_abundant)
-								},
-
-								# If no column is present go
-								~ {
-									gene_to_exclude =
-										add_scaled_counts_bulk.get_low_expressed(
-											.data,
-											.sample = !!.sample,
-											.transcript = !!.transcript,
-											.abundance = !!.abundance,
-											factor_of_interest = !!factor_of_interest,
-											minimum_counts = minimum_counts,
-											minimum_proportion = minimum_proportion
-										)
-
-									.x %>% dplyr::filter(!!.transcript %in% gene_to_exclude %>% not())
-								})	%>%
+		identify_abundant(
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			factor_of_interest = !!factor_of_interest,
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion
+		) %>%
+		dplyr::filter(.abundant) %>%
 
 		# Attach attributes
 		reattach_internals(.data)
