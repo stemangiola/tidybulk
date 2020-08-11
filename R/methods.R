@@ -181,7 +181,10 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @examples
 #'
 #'
-#'  scale_abundance(tidybulk::counts_mini,  sample, transcript, `count`)
+#'  tidybulk::counts_mini %>% 
+#'    tidybulk(sample, transcript, count) %>% 
+#'    identify_abundant() %>% 
+#'    scale_abundance()
 #'
 #'
 #'
@@ -549,10 +552,18 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 #'
 #'
 #'
-#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'  reduce_dimensions( method="MDS", .dims = 3)
 #'
 #'
-#' counts.PCA =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="PCA", .dims = 3)
+#' counts.PCA =  
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'  reduce_dimensions(method="PCA", .dims = 3)
 #'
 #'
 #'
@@ -757,7 +768,11 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 #'
 #' @examples
 #'
-#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'  reduce_dimensions( method="MDS", .dims = 3)
 #'
 #' counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 #'
@@ -950,16 +965,21 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 #' @examples
 #'
 #'
-#'
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
 #'    remove_redundancy(
-#'     tidybulk::counts_mini,
 #' 	   .element = sample,
 #' 	   .feature = transcript,
 #' 	   	.abundance =  count,
 #' 	   	method = "correlation"
 #' 	   	)
 #'
-#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS = 
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'   reduce_dimensions( method="MDS", .dims = 3)
 #'
 #' remove_redundancy(
 #' 	counts.MDS,
@@ -1059,7 +1079,7 @@ setGeneric("remove_redundancy", function(.data,
 #' @docType methods
 #' @rdname remove_redundancy-methods
 #'
-#' @return A tbl object with with dropped recundant elements (e.g., samples).
+#' @return A tbl object with with dropped redundant elements (e.g., samples).
 setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 
 #' remove_redundancy
@@ -1068,7 +1088,7 @@ setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 #' @docType methods
 #' @rdname remove_redundancy-methods
 #'
-#' @return A tbl object with with dropped recundant elements (e.g., samples).
+#' @return A tbl object with with dropped redundant elements (e.g., samples).
 setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 
 #' remove_redundancy
@@ -1077,7 +1097,7 @@ setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 #' @docType methods
 #' @rdname remove_redundancy-methods
 #'
-#' @return A tbl object with with dropped recundant elements (e.g., samples).
+#' @return A tbl object with with dropped redundant elements (e.g., samples).
 setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 
 
@@ -1104,7 +1124,7 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' @param ... Further parameters passed to the function sva::ComBat
 #'
 #' @details This function adjusts the abundance for (known) unwanted variation.
-#' At the moment just an unwanted covariated is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
+#' At the moment just an unwanted covariate is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
 #'
 #' Underlying method:
 #' 	sva::ComBat(data, batch = my_batch,	mod = design,	prior.plots = FALSE, ...)
@@ -1123,13 +1143,10 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' cm$batch[cm$sample %in% c("SRR1740035", "SRR1740043")] = 1
 #'
 #' res =
-#' 	adjust_abundance(
-#' 		cm,
-#'		~ condition + batch,
-#'		.sample = sample,
-#'		.transcript = transcript,
-#'		.abundance = count
-#'	)
+#'  cm %>%
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#' 	adjust_abundance(	~ condition + batch	)
 #'
 #'
 #' @docType methods
@@ -1862,23 +1879,19 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #' @examples
 #'
-#'
-#' 	test_differential_abundance(
-#' 	 tidybulk::counts_mini,
-#' 	    ~ condition,
-#' 	    sample,
-#' 	    transcript,
-#' 	    `count`
-#' 	)
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#' 	test_differential_abundance( ~ condition )
 #'
 #' 	# The function `test_differential_abundance` operated with contrasts too
 #'
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'    remove_redundancy(
 #'  test_differential_abundance(
-#' 	    tidybulk::counts_mini,
-#' 	    ~ 0 + condition,
-#' 	    sample,
-#' 	    transcript,
-#' 	    `count`,
+#' 	    ~ 0 + condition, 	    
 #' 	    .contrasts = c( "conditionTRUE - conditionFALSE")
 #'  )
 #'

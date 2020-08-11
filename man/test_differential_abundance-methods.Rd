@@ -185,23 +185,19 @@ DESeq2::results()
 }
 \examples{
 
+ tidybulk::counts_mini \%>\% 
+ tidybulk(sample, transcript, count) \%>\% 
+ identify_abundant() \%>\% 
+	test_differential_abundance( ~ condition )
 
-	test_differential_abundance(
-	 tidybulk::counts_mini,
-	    ~ condition,
-	    sample,
-	    transcript,
-	    `count`
-	)
+	# The function `test_differential_abundance` operated with contrasts too
 
-	# The functon `test_differential_abundance` operated with contrasts too
-
+ tidybulk::counts_mini \%>\% 
+ tidybulk(sample, transcript, count) \%>\% 
+ identify_abundant() \%>\% 
+   remove_redundancy(
  test_differential_abundance(
-	    tidybulk::counts_mini,
-	    ~ 0 + condition,
-	    sample,
-	    transcript,
-	    `count`,
+	    ~ 0 + condition, 	    
 	    .contrasts = c( "conditionTRUE - conditionFALSE")
  )
 
