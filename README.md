@@ -28,6 +28,13 @@ Please have a look also to
 
 -->
 
+**IMPORTANT\!** From version 1.1.6, the detection of abundant/lowly
+abundant transcripts has to be done explicitly
+(**identify\_abundant()**; you will be warned otherwise). This because,
+it is better to make each function do one thing only, without
+hidden/implicit procedures (as stated in the tidy data manifesto). This
+improves logical flow, and software modularity.
+
 ## Functions/utilities available
 
 | Function                        | Description                                                                  |
@@ -408,6 +415,7 @@ TidyTranscriptomics
 tt.norm.tSNE =
     breast_tcga_mini %>%
     tidybulk(       sample, ens, count_scaled) %>%
+    identify_abundant() %>%
     reduce_dimensions(
         method = "tSNE",
         perplexity=10,
@@ -597,6 +605,7 @@ The constrasts hve the name of the design matrix (generally
 ``` r
 tt.de =
     tt %>%
+    identify_abundant(factor_of_interest = condition) %>%
     test_differential_abundance(
         ~ 0 + condition,                  
         .contrasts = c( "conditionTRUE - conditionFALSE"),
