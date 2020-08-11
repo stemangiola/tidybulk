@@ -116,7 +116,10 @@ edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))
 \examples{
 
 
- scale_abundance(tidybulk::counts_mini,  sample, transcript, `count`)
+ tidybulk::counts_mini \%>\% 
+   tidybulk(sample, transcript, count) \%>\% 
+   identify_abundant() \%>\% 
+   scale_abundance()
 
 
 
