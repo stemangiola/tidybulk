@@ -87,9 +87,6 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 															 .sample = NULL,
 															 .transcript = NULL,
 															 .abundance = NULL,
-															 factor_of_interest = NULL,
-															 minimum_counts = 10,
-															 minimum_proportion = 0.7,
 															 method = "TMM",
 															 reference_selection_function = median,
 															 action = "add") {
@@ -97,8 +94,6 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-	
-	factor_of_interest = enquo(factor_of_interest)
 	
 	.data %>%
 		
@@ -110,9 +105,6 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 			!!.sample,
 			!!.transcript,
 			!!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
 			method = method,
 			reference_selection_function = reference_selection_function,
 			action = action

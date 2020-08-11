@@ -44,7 +44,7 @@ test_that("Only scaled counts - no object",{
 
 	res =
 		scale_abundance(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
@@ -71,11 +71,10 @@ test_that("Only scaled counts - no object",{
 	# With factor of interest
 	res =
 		scale_abundance(
-			input_df,
+			input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			factor_of_interest = condition,
 			action = "only"
 		)
 
@@ -96,11 +95,10 @@ test_that("Only scaled counts - no object",{
 
 	expect_message(
 		scale_abundance(
-			left_join(input_df, sam),
+			left_join(input_df, sam) %>% identify_abundant(a, b, c, factor_of_interest = condition),
 			.sample = a,
 			.transcript = b,
-			.abundance = c,
-			factor_of_interest = condition_cont
+			.abundance = c
 		),
 		"The factor of interest is continuous"
 	)
@@ -111,7 +109,7 @@ test_that("Getting scaled counts - no object",{
 
 	res =
 		scale_abundance(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
@@ -136,7 +134,7 @@ test_that("Adding scaled counts - no object",{
 
 	res =
 		scale_abundance(
-			input_df,
+			input_df %>% identify_abundant(a, b, c),
 			.sample = a,
 			.transcript = b,
 			.abundance = c,

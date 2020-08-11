@@ -136,9 +136,6 @@ create_tt_from_bam_sam_bulk <-
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param factor_of_interest The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A function between median, mean and max
 #'
@@ -149,16 +146,12 @@ get_scaled_counts_bulk <- function(.data,
 																	 .sample = NULL,
 																	 .transcript = NULL,
 																	 .abundance = NULL,
-																	 factor_of_interest = NULL,
-																	 minimum_counts = 10,
-																	 minimum_proportion = 0.7,
 																	 method = "TMM",
 																	 reference_selection_function = median) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-	factor_of_interest = enquo(factor_of_interest)
 
 	# Check if package is installed, otherwise install
 	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
@@ -167,9 +160,6 @@ get_scaled_counts_bulk <- function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("edgeR", ask = FALSE)
 	}
-
-	# Set column name for value scaled
-	value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
 
 	# Reformat input data set
 	df <-
@@ -182,8 +172,7 @@ get_scaled_counts_bulk <- function(.data,
 		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Rename
-		dplyr::select(!!.sample,!!.transcript,!!.abundance, !!factor_of_interest) %>%
-		#setNames(c("!!.sample", "gene", "count")) %>%
+		dplyr::select(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Set samples and genes as factors
 		dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript))
@@ -205,18 +194,14 @@ get_scaled_counts_bulk <- function(.data,
 		add_scaled_counts_bulk.calcNormFactor(
 			df,
 			reference,
-			!!factor_of_interest,
-			minimum_counts,
-			minimum_proportion,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
 			method
 		)
-
+ 
 	# Calculate normalization factors
-
-	nf <- nf_obj$nf %>%
+	nf_obj$nf %>%
 		dplyr::left_join(
 			df %>%
 				group_by(!!.sample) %>%
@@ -242,38 +227,42 @@ get_scaled_counts_bulk <- function(.data,
 						filter(!!.sample == "reference") %>%
 						pull(multiplier)
 				)
-		)
-
-	# Return
-	df_norm =
-		df %>%
-
-		# drop factor of interest
-		select(!!.sample, !!.transcript, !!.abundance) %>%
-
-		# Manipulate
-		dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
-		dplyr::left_join(nf, by = quo_name(.sample)) %>%
-
-		# Calculate scaled values
-		dplyr::mutate(!!value_scaled := !!.abundance * multiplier) %>%
-
-		# Format df for join
-		dplyr::select(!!.sample, !!.transcript, !!value_scaled,
-									everything()) %>%
-		dplyr::mutate(lowly_abundant = !!.transcript %in% nf_obj$gene_to_exclude) %>%
-		dplyr::select(-!!.abundance,-tot,-tot_filt) %>%
+		) %>%
+		
+		dplyr::select(-tot,-tot_filt) %>%
 		dplyr::rename(TMM = nf) %>%
-		arrange(!!.sample,!!.transcript)
-	#dplyr::select(-!!.sample,-!!.transcript)
-
-	# Attach attributes
-	df_norm %>%
-		add_tt_columns(!!.sample,!!.transcript,!!.abundance,!!(function(x, v)
-			enquo(v))(x,!!value_scaled)) %>%
-
+		
+		# # Attach internals
+		# add_tt_columns(!!.sample,!!.transcript,!!.abundance) %>%
+		
 		# Add methods
 		memorise_methods_used(c("edger", "tmm"))
+		
+	# Return
+	
+	# df_norm =
+	# 	df %>%
+	# 
+	# 	# drop factor of interest
+	# 	select(!!.sample, !!.transcript, !!.abundance) %>%
+	# 
+	# 	# Manipulate
+	# 	dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
+	# 	dplyr::left_join(nf, by = quo_name(.sample)) %>%
+	# 
+	# 	# Calculate scaled values
+	# 	dplyr::mutate(!!value_scaled := !!.abundance * multiplier) %>%
+	# 
+	# 	# Format df for join
+	# 	dplyr::select(!!.sample, !!.transcript, !!value_scaled,	everything()) %>%
+	# 	# dplyr::mutate(lowly_abundant = !!.transcript %in% nf_obj$gene_to_exclude) %>%
+	# 	dplyr::select(-!!.abundance,-tot,-tot_filt) %>%
+	# 	dplyr::rename(TMM = nf) %>%
+	# 	arrange(!!.sample,!!.transcript)
+	# #dplyr::select(-!!.sample,-!!.transcript)
+
+	# # Attach attributes
+	# df_norm 
 
 }
 
@@ -1243,7 +1232,7 @@ get_clusters_kmeans_bulk <-
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
-			# Check if log tranfrom is needed
+			# Check if log transform is needed
 			ifelse_pipe(log_transform,
 									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
 
@@ -1251,7 +1240,7 @@ get_clusters_kmeans_bulk <-
 			spread(!!.feature,!!.abundance) %>%
 			as_matrix(rownames = !!.element) %>%
 
-			# Wrap the do.call because of the centers check
+			# Wrap the do.call because of the centrers check
 			{
 				do.call(kmeans, list(x = (.), iter.max = 1000) %>% c(dots_args))
 			}	 %$%
@@ -1525,8 +1514,8 @@ get_reduced_dimensions_PCA_bulk <-
 					warning(
 						"
 						tidybulk says: In PCA correlation there is < 100 genes that have non NA values is all samples.
-						The correlation calculation would not be reliable,
-						we suggest to partition the dataset for sample clusters.
+The correlation calculation would not be reliable,
+we suggest to partition the dataset for sample clusters.
 						"
 					)
 					.x
@@ -2006,13 +1995,6 @@ remove_redundancy_elements_through_correlation <- function(.data,
 
 			# Second function
 			~ {
-				# warning(
-				# 	"
-				# 	tidybulk says: In calculating correlation there is < 100 genes that have non NA values is all samples.
-				# 	The correlation calculation would not be reliable,
-				# 	we suggest to partition the dataset for sample clusters.
-				# 	"
-				# )
 				message(
 					"tidybulk says: In calculating correlation there is < 100 genes (that have non NA values) is all samples.
 The correlation calculation might not be reliable"
@@ -2407,7 +2389,7 @@ get_cell_type_proportions = function(.data,
 #' @importFrom utils install.packages
 #'
 #' @param .data A tibble
-#' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
+#' @param .formula a formula with no response variable, of the kind ~ factor_of_interest + batch
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column

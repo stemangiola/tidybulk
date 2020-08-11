@@ -26,7 +26,7 @@ test_that("tidybulk SummarizedExperiment conversion",{
 
 test_that("tidybulk SummarizedExperiment normalisation manual",{
 
-	res = tidybulk(tidybulk:::tidybulk_to_SummarizedExperiment(scale_abundance(tidybulk(se))))
+	res = tidybulk(tidybulk:::tidybulk_to_SummarizedExperiment(scale_abundance(tidybulk(se) %>% identify_abundant())))
 
 	expect_equal(
 		res[1:4,]$`counts_scaled`,
@@ -47,7 +47,7 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 
 test_that("tidybulk SummarizedExperiment normalisation",{
 
-	res = scale_abundance(se)
+	res = scale_abundance(se %>% identify_abundant())
 
 	expect_equal(
 		names(SummarizedExperiment::assays(res)),
