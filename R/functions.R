@@ -3108,6 +3108,10 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 		select(-data) %>%
 		unnest(test) %>%
 
+		# format transcripts
+		mutate(entrez = strsplit(geneID, "/")) %>% 
+		select(-geneID) %>% 
+		
 		# Add methods used
 		memorise_methods_used(c("clusterProfiler", "msigdbr"))
 
