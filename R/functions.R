@@ -993,7 +993,7 @@ test_differential_cellularity_ <- function(.data,
 
 		# Attach attributes
 		reattach_internals(.data) %>%
-
+		
 		# Add methods used
 		when(
 			grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
@@ -2480,7 +2480,10 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		as_matrix(rownames = !!.transcript,
 							do_check = FALSE)
 	mat %>%
-
+		
+		# Add little noise to avoid all 0s for a covariate that would error combat code (not statistics that would be fine) 
+		`+` (rnorm(length(mat), 0, 0.000001)) %>%
+		
 		# Run combat
 		sva::ComBat(batch = my_batch,
 								mod = design,
