@@ -31,6 +31,8 @@ gate information to your tibble
 
 -->
 
+**IMPORTANT!** From version 1.1.6, the detection of abundant/lowly abundant transcripts has to be done explicitly (**identify_abundant()**; you will be warned otherwise). This because, it is better to make each function do one thing only, without hidden/implicit procedures (as stated in the tidy data manifesto). This improves logical flow, and software modularity.
+
 ## Functions/utilities available
 
 Function | Description
