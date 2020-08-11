@@ -1145,7 +1145,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
 
-	# Print the design column names in case I want constrasts
+	# Print the design column names in case I want contrasts
 	message(
 		sprintf(
 			"tidybulk says: The design column names are \"%s\"",
@@ -1177,7 +1177,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			!!.sample, !!.entrez, !!.abundance
 		)%>%
 
-		# Make sure transcrpt names are adjacent
+		# Make sure transcript names are adjacent
 		arrange(!!.entrez) %>%
 
 		select(!!.sample, !!.entrez, !!.abundance) %>%
@@ -2989,7 +2989,7 @@ fill_NA_using_value = function(.data,
 			~ .x %>% left_join(.data %>% pivot_sample(!!.element), by=quo_names(.element))
 		) %>%
 
-		# Add oiginal dataset
+		# Add original dataset
 		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_names(.feature), quo_names(.element)))) %>%
 		select(.data %>% colnames) %>%
 
@@ -3091,23 +3091,30 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	# Get gene sets signatures
 	msigdbr::msigdbr(species = species) %>%
 
-	# Filter specific gene_set if specified. This was introduced to speed up examples executionS
-	when(
-		!is.null(gene_set) ~ filter(., gs_cat %in% gene_set),
-		~ (.)
-	) %>%
+		# Filter specific gene_set if specified. This was introduced to speed up examples executionS
+		when(
+			!is.null(gene_set) ~ filter(., gs_cat %in% gene_set),
+			~ (.)
+		) %>%
+		
+		# Execute calculation
+		nest(data = -gs_cat) %>%
+		mutate(test =
+					 	map(
+					 		data,
+					 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
+					 			as_tibble
+					 	)) %>%
+		select(-data) %>%
+		unnest(test) %>%
+		
+		# Order
+		arrange(p.adjust) %>%
 
-	# Execute calculation
-	nest(data = -gs_cat) %>%
-	mutate(test =
-				 	map(
-				 		data,
-				 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
-				 			as_tibble
-				 	)) %>%
-	select(-data) %>%
-	unnest(test) %>%
-
+		# format transcripts
+		mutate(entrez = strsplit(geneID, "/")) %>% 
+		select(-geneID) %>% 
+		
 		# Add methods used
 		memorise_methods_used(c("clusterProfiler", "msigdbr"))
 
