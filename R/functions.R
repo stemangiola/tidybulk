@@ -3107,6 +3107,9 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 					 	)) %>%
 		select(-data) %>%
 		unnest(test) %>%
+		
+		# Order
+		arrange(p.adjust) %>%
 
 		# format transcripts
 		mutate(entrez = strsplit(geneID, "/")) %>% 
