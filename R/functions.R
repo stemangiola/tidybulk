@@ -213,6 +213,8 @@ get_scaled_counts_bulk <- function(.data,
 		mutate(multiplier =
 					 	1 /
 					 	(tot_filt * nf) *
+					 	
+					 	# Put everything to the reference sample scale
 					 	((.) %>% filter(!!.sample == reference) %>% pull(tot))) %>%
 
 		# I have correct the strange behaviour of edgeR of reference
