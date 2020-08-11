@@ -269,11 +269,9 @@ setGeneric("scale_abundance", function(.data,
 
 			# Selecting the right columns
 			pivot_sample(!!.sample) %>%
-			mutate_if(is.character, as.factor) %>%
 
 			# Join result
 			left_join(.data_norm, by=quo_name(.sample)) %>%
-			dplyr::mutate(!!value_scaled := !!.abundance * multiplier) %>%
 			
 
 			# Attach attributes
