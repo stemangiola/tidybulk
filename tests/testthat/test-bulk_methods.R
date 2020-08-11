@@ -53,13 +53,13 @@ test_that("Only scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.835983, 1.607034, 2.554334, 1.323492, 2.561279),
+		c(1.1364132 ,1.0303535 ,2.2409094, 0.8191984,1.8383722),
 		tolerance=1e-6
 	)
 
 	expect_equal(
 		ncol(res),
-		6
+		3
 	)
 
 	internals = attr(scale_abundance(tidybulk(input_df, a, b, c)), "internals")
@@ -80,13 +80,13 @@ test_that("Only scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.1509530, 1.0821210, 1.3929492, 0.8779399, 1.1334760),
+		c(1.1097162, 1.0433503 ,1.3430420, 0.8464847, 1.0928654),
 		tolerance=1e-6
 	)
 
 	expect_equal(
 		ncol(res),
-		6
+		3
 	)
 
 	# Warnings on continuous
@@ -95,7 +95,7 @@ test_that("Only scaled counts - no object",{
 
 	expect_message(
 		scale_abundance(
-			left_join(input_df, sam) %>% identify_abundant(a, b, c, factor_of_interest = condition),
+			left_join(input_df, sam) %>% identify_abundant(a, b, c, factor_of_interest = condition_cont),
 			.sample = a,
 			.transcript = b,
 			.abundance = c
@@ -118,13 +118,13 @@ test_that("Getting scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.835983, 1.607034, 2.554334, 1.323492, 2.561279),
+		c(1.1364132, 1.0303535, 2.2409094 ,0.8191984, 1.8383722),
 		tolerance=1e-6
 	)
 
 	expect_equal(
 		ncol(res),
-		9
+		6
 	)
 
 })
@@ -143,7 +143,7 @@ test_that("Adding scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.835983, 1.607034, 2.554334, 1.323492, 2.561279),
+		c(1.1364132, 1.0303535, 2.2409094, 0.8191984, 1.8383722),
 		tolerance=1e-6
 	)
 
