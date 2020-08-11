@@ -1871,7 +1871,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' 	    `count`
 #' 	)
 #'
-#' 	# The functon `test_differential_abundance` operated with contrasts too
+#' 	# The function `test_differential_abundance` operated with contrasts too
 #'
 #'  test_differential_abundance(
 #' 	    tidybulk::counts_mini,
