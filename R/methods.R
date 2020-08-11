@@ -1886,12 +1886,11 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #' 	# The function `test_differential_abundance` operated with contrasts too
 #'
-#'  tidybulk::counts_mini %>% 
-#'  tidybulk(sample, transcript, count) %>% 
-#'  identify_abundant() %>% 
-#'    remove_redundancy(
+#'  tidybulk::counts_mini %>%
+#'  tidybulk(sample, transcript, count) %>%
+#'  identify_abundant() %>%
 #'  test_differential_abundance(
-#' 	    ~ 0 + condition, 	    
+#' 	    ~ 0 + condition,
 #' 	    .contrasts = c( "conditionTRUE - conditionFALSE")
 #'  )
 #'

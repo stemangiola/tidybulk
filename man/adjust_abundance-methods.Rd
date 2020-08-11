@@ -113,7 +113,7 @@ adjust_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT>
 \lifecycle{maturing}
 
 This function adjusts the abundance for (known) unwanted variation.
-At the moment just an unwanted covariated is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
+At the moment just an unwanted covariate is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
 
 Underlying method:
 	sva::ComBat(data, batch = my_batch,	mod = design,	prior.plots = FALSE, ...)
@@ -127,11 +127,10 @@ cm$batch = 0
 cm$batch[cm$sample \%in\% c("SRR1740035", "SRR1740043")] = 1
 
 res =
-cm \%>\%
- 
+ cm \%>\%
  tidybulk(sample, transcript, count) \%>\% 
  identify_abundant() \%>\% 
-	adjust_abundance(		cm,	~ condition + batch	)
+	adjust_abundance(	~ condition + batch	)
 
 
 }

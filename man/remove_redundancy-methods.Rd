@@ -120,11 +120,11 @@ remove_redundancy(
 \value{
 A tbl object with with dropped redundant elements (e.g., samples).
 
-A tbl object with with dropped recundant elements (e.g., samples).
+A tbl object with with dropped redundant elements (e.g., samples).
 
-A tbl object with with dropped recundant elements (e.g., samples).
+A tbl object with with dropped redundant elements (e.g., samples).
 
-A tbl object with with dropped recundant elements (e.g., samples).
+A tbl object with with dropped redundant elements (e.g., samples).
 
 A `SummarizedExperiment` object
 
