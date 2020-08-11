@@ -172,9 +172,9 @@ se.aggr
 We may want to compensate for sequencing depth, scaling the transcript abundance (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`.
 
 ```{r normalise, cache=TRUE}
-tt.norm =  tt.aggr %>% scale_abundance(method="TMM")
+tt.norm =  tt.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance(method="TMM")
 
-tt.norm %>% select(`count`, count_scaled, lowly_abundant, everything())
+tt.norm %>% select(`count`, count_scaled, .abundant, everything())
 ```
 
 
@@ -190,7 +190,7 @@ tt.norm %>%
 
 All functions are also directly compatible with `SummarizedExperiment`.
 ```{r normalise se, cache=TRUE}
-se.norm =  se.aggr %>% scale_abundance(method="TMM")
+se.norm =  se.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance(method="TMM")
 
 se.norm
 ```
@@ -265,6 +265,7 @@ tt_tcga_breast =
 ```{r tsne, cache=TRUE}
 tt.norm.tSNE =
 	tt_tcga_breast %>%
+	identify_abundant() %>%
 	reduce_dimensions(
 		.abundance = count_scaled,
 		method = "tSNE",
@@ -286,6 +287,7 @@ All functions are also directly compatible with `SummarizedExperiment`.
 ```{r tsne se, cache=TRUE}
 se.norm.tSNE =
 	se_breast_tcga_mini %>%
+	identify_abundant() %>%
 	reduce_dimensions(
 		.abundance = count_scaled,
 		method = "tSNE",
@@ -339,7 +341,7 @@ rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). `test_differential_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 
 ```{r de, cache=TRUE}
-tt %>%	test_differential_abundance(  ~ condition,  action="only")
+tt %>% identify_abundant(factor_of_interest = condition) %>%	test_differential_abundance(  ~ condition,  action="only")
 ```
 
 All functions are also directly compatible with `SummarizedExperiment`.

@@ -1086,8 +1086,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 
 	if (minimum_counts < 0)
 		stop("The parameter minimum_counts must be > 0")
-	if (minimum_proportion < 0 |
-			minimum_proportion > 1)
+	if (minimum_proportion < 0 |	minimum_proportion > 1)
 		stop("The parameter minimum_proportion must be between 0 and 1")
 
 	.data %>%
@@ -1125,9 +1124,6 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 #'
 #' @param .data A tibble
 #' @param reference A reference matrix, not sure if used anymore
-#' @param factor_of_interest The name of the column of the factor of interest
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
@@ -1137,9 +1133,6 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 #' @return A list including the filtered data frame and the normalization factors
 add_scaled_counts_bulk.calcNormFactor <- function(.data,
 																									reference = NULL,
-																									factor_of_interest = NULL,
-																									minimum_counts = 10,
-																									minimum_proportion = 0.7,
 																									.sample = `sample`,
 																									.transcript = `transcript`,
 																									.abundance = `count`,
@@ -1147,32 +1140,32 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-
-	factor_of_interest = enquo(factor_of_interest)
+ 
+	# factor_of_interest = enquo(factor_of_interest)
 
 	error_if_log_transformed(.data,!!.abundance)
 
-	# Get list of low transcribed genes
-	gene_to_exclude <-
-		add_scaled_counts_bulk.get_low_expressed(
-			.data %>%
-				filter(!!.sample != "reference"),!!.sample,!!.transcript,!!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion
-		)
+	# # Get list of low transcribed genes
+	# gene_to_exclude <-
+	# 	add_scaled_counts_bulk.get_low_expressed(
+	# 		.data %>%
+	# 			filter(!!.sample != "reference"),!!.sample,!!.transcript,!!.abundance,
+	# 		factor_of_interest = !!factor_of_interest,
+	# 		minimum_counts = minimum_counts,
+	# 		minimum_proportion = minimum_proportion
+	# 	)
 
-	# Check if transcript after filtering is 0
-	if (length(gene_to_exclude) == .data %>%
-			dplyr::distinct(!!.transcript) %>%
-			nrow()) {
-		stop("The gene expression matrix has been filtered completely for lowly expressed genes")
-	}
+	# # Check if transcript after filtering is 0
+	# if (length(gene_to_exclude) == .data %>%
+	# 		dplyr::distinct(!!.transcript) %>%
+	# 		nrow()) {
+	# 	stop("The gene expression matrix has been filtered completely for lowly expressed genes")
+	# }
 
 	# Get data frame for the highly transcribed transcripts
 	df.filt <-
 		.data %>%
-		dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
+		# dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
 		droplevels() %>%
 		select(!!.sample, !!.transcript, !!.abundance)
 
@@ -1207,7 +1200,10 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 		)
 
 	# Return
-	list(gene_to_exclude = gene_to_exclude, nf = nf) %>%
+	list(
+		# gene_to_exclude = gene_to_exclude, 
+		nf = nf
+	) %>%
 
 		# Attach attributes
 		reattach_internals(.data)

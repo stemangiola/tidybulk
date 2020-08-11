@@ -31,6 +31,8 @@ gate information to your tibble
 
 -->
 
+**IMPORTANT!** From version 1.1.6, the detection of abundant/lowly abundant transcripts has to be done explicitly (**identify_abundant()**; you will be warned otherwise). This because, it is better to make each function do one thing only, without hidden/implicit procedures (as stated in the tidy data manifesto). This improves logical flow, and software modularity.
+
 ## Functions/utilities available
 
 Function | Description
@@ -173,7 +175,7 @@ We may want to compensate for sequencing depth, scaling the transcript abundance
 <div class="column-left">
 TidyTranscriptomics
 ```{r normalise, cache=TRUE}
-tt.norm = tt.aggr %>% scale_abundance()
+tt.norm = tt.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance()
 ```
 
 </div>
@@ -193,7 +195,7 @@ norm_counts.table <- cpm(dgList)
 <div style="clear:both;"></div>
 
 ```{r, include=FALSE}
-tt.norm %>% select(`count`, count_scaled, lowly_abundant, everything())
+tt.norm %>% select(`count`, count_scaled, .abundant, everything())
 ```
 
 We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.
@@ -333,6 +335,7 @@ TidyTranscriptomics
 tt.norm.tSNE =
 	breast_tcga_mini %>%
 	tidybulk(		sample, ens, count_scaled) %>%
+	identify_abundant() %>%
 	reduce_dimensions(
 		method = "tSNE",
 		perplexity=10,
@@ -456,6 +459,7 @@ The functon `test_differential_abundance` operated with contrasts too. The const
 ```{r de contrast, cache=TRUE, message=FALSE, warning=FALSE, results='hide', eval=FALSE}
 tt.de =
 	tt %>%
+	identify_abundant(factor_of_interest = condition) %>%
 	test_differential_abundance(
 		~ 0 + condition,                  
 		.contrasts = c( "conditionTRUE - conditionFALSE"),
