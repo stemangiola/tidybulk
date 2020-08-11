@@ -17,7 +17,7 @@ get_adjusted_counts_for_unwanted_variation_bulk(
 \arguments{
 \item{.data}{A tibble}
 
-\item{.formula}{a formula with no response variable, of the kind ~ factor_of_intrest + batch}
+\item{.formula}{a formula with no response variable, of the kind ~ factor_of_interest + batch}
 
 \item{.sample}{The name of the sample column}
 

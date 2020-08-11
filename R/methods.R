@@ -160,10 +160,6 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#'
-#' @param factor_of_interest The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.
-#' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A function that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
 #' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
@@ -197,9 +193,6 @@ setGeneric("scale_abundance", function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
-																			 factor_of_interest = NULL,
-																			 minimum_counts = 10,
-																			 minimum_proportion = 0.7,
 																			 method = "TMM",
 																			 reference_selection_function = median,
 																			 action = "add")
@@ -210,9 +203,6 @@ setGeneric("scale_abundance", function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
-														 factor_of_interest = NULL,
-														 minimum_counts = 10,
-														 minimum_proportion = 0.7,
 														 method = "TMM",
 														 reference_selection_function = median,
 														 action = "add")
@@ -226,38 +216,51 @@ setGeneric("scale_abundance", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
-	factor_of_interest = enquo(factor_of_interest)
-
+	# Set column name for value scaled
+	value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
+	
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 		
 	.data_norm =
 		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
 		get_scaled_counts_bulk(
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
 			method = method,
 			reference_selection_function = reference_selection_function
 		) %>%
-		arrange(!!.sample,!!.transcript)
+		
+		# Attach column internals
+		add_tt_columns(
+			!!.sample,
+			!!.transcript,
+			!!.abundance,
+			!!(function(x, v)	enquo(v))(x,!!value_scaled)
+		) 
 
 
 	if (action == "add"){
 
 		.data %>%
-			arrange(!!.sample,!!.transcript) %>%
 
-			# Add scaled data set
-			bind_cols(.data_norm %>%
-									select(-one_of(quo_name(.sample)), -one_of(quo_name(.transcript))))		%>%
-
+			left_join(.data_norm, by=quo_name(.sample)) %>%
+			dplyr::mutate(!!value_scaled := !!.abundance * multiplier) %>%
+			
 			# Attach attributes
-			reattach_internals(.data_norm)
+			reattach_internals(.data_norm) 
 
 	}
 	else if (action == "get"){
@@ -266,16 +269,12 @@ setGeneric("scale_abundance", function(.data,
 
 			# Selecting the right columns
 			pivot_sample(!!.sample) %>%
-			# 
-			# select(
-			# 	!!.sample,
-			# 	get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
-			# ) %>%
-			# distinct() %>%
 			mutate_if(is.character, as.factor) %>%
 
 			# Join result
 			left_join(.data_norm, by=quo_name(.sample)) %>%
+			dplyr::mutate(!!value_scaled := !!.abundance * multiplier) %>%
+			
 
 			# Attach attributes
 			reattach_internals(.data_norm)
@@ -407,22 +406,48 @@ setGeneric("cluster_elements", function(.data,
 	validation(.data, !!.element, !!.feature, !!.abundance)
 	error_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
 
-	if (method == "kmeans") {
+	
+	.data_procesed = 
+		
+		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
+		# Choose algorithm
+		when(
+			method == "kmeans" ~ 	get_clusters_kmeans_bulk(.,
+				.abundance = !!.abundance,
+				.element = !!.element,
+				.feature = !!.feature,
+				of_samples = of_samples,
+				log_transform = log_transform,
+				...
+			),
+			method == "SNN" ~ get_clusters_SNN_bulk(.,
+				.abundance = !!.abundance,
+				.element = !!.element,
+				.feature = !!.feature,
+				of_samples = of_samples,
+				log_transform = log_transform,
+				...
+			),
+			TRUE ~ 		stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
+
+		)
+	
+	
+	# Actions
 		if (action == "add"){
 
 			.data %>%
-				dplyr::left_join(
-					(.) %>%
-						get_clusters_kmeans_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
+				dplyr::left_join(	.data_procesed,		by=quo_name(.element)	) %>%
 
 				# Attach attributes
 				reattach_internals(.data)
@@ -434,113 +459,18 @@ setGeneric("cluster_elements", function(.data,
 
 				# Selecting the right columns
 				pivot_sample(!!.element) %>%
-				# 
-				# select(
-				# 	!!.element,
-				# 	get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				# ) %>%
-				# distinct() %>%
 
-				dplyr::left_join(
-					.data %>%
-						get_clusters_kmeans_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
-
+				dplyr::left_join(	.data_procesed,		by=quo_name(.element)	) %>%
+				
 				# Attach attributes
 				reattach_internals(.data)
 
 		}
-		else if (action == "only")
-			get_clusters_kmeans_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
+		else if (action == "only") 	.data_procesed
 		else
 			stop(
 				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
-	}
-	else if (method == "SNN") {
-		if (action == "add"){
-
-			.data %>%
-				dplyr::left_join(
-					(.) %>%
-						get_clusters_SNN_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
-
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				pivot_sample(!!.element) %>%
-				# select(
-				# 	!!.element,
-				# 	get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				# ) %>%
-				distinct() %>%
-
-				dplyr::left_join(
-					.data %>%
-						get_clusters_SNN_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
-
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-
-		else if (action == "only")
-			get_clusters_SNN_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-	}
-	else
-		stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
 
 }
 
