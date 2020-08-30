@@ -62,6 +62,8 @@ arrange <- function(.data, ..., .by_group = FALSE) {
 #' @export
 #'
 ############# START ADDED tidybulk ###################################
+
+#' @export
 #' @inheritParams arrange
 arrange.default <- function(.data, ..., .by_group = FALSE) {
 

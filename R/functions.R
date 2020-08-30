@@ -2389,6 +2389,7 @@ get_cell_type_proportions = function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
 #' @importFrom utils install.packages
+#' @importFrom stats rnorm
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, of the kind ~ factor_of_interest + batch
@@ -2983,7 +2984,7 @@ fill_NA_using_value = function(.data,
 # 	filter(how_many_bimod == 0)
 
 
-
+#' @importFrom stats p.adjust
 entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 
 	# From the page
@@ -3024,7 +3025,7 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 		unnest(test) %>%
 		
 		# Order
-		arrange(p.adjust) %>%
+		arrange(`p.adjust`) %>%
 
 		# format transcripts
 		mutate(entrez = strsplit(geneID, "/")) %>% 

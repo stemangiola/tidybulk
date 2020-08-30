@@ -15,6 +15,8 @@ website:
 
 Please have a look also to
 
+  - [tidyseurat](https://github.com/stemangiola/tidyseurat) for tidy
+    high-level data analysis and manipulation
   - [nanny](https://github.com/stemangiola/nanny) for tidy high-level
     data analysis and manipulation
   - [tidygate](https://github.com/stemangiola/tidygate) for adding
@@ -39,6 +41,7 @@ improves logical flow, and software modularity.
 
 | Function                        | Description                                                                  |
 | ------------------------------- | ---------------------------------------------------------------------------- |
+| `identify_abundant`             | identify the abundant genes                                                  |
 | `aggregate_duplicates`          | Aggregate abundance and annotation of duplicated transcripts in a robust way |
 | `scale_abundance`               | Scale (normalise) abundance for RNA sequencing depth                         |
 | `reduce_dimensions`             | Perform dimensionality reduction (PCA, MDS, tSNE)                            |

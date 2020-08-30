@@ -8,4 +8,6 @@
 #' @export
 #' @importFrom magrittr %>%
 #' @usage lhs \%>\% rhs
+#' 
+#' @return NA
 NULL
