@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -217,21 +217,23 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='fu'>fill_missing_abundance</span>(<span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>, <span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>, fill_with = <span class='fl'>0</span>)</div><div class='output co'>#&gt; # A tibble: 2,635 x 6
+<span class='fu'>fill_missing_abundance</span>(<span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>, <span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>, fill_with = <span class='fl'>0</span>)
+</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 2,635 x 6</span><span>
 #&gt;    sample     transcript `Cell type` count time  condition
-#&gt;    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;    
-#&gt;  1 SRR1740034 TNFRSF4    b_cell          6 0 d   TRUE     
-#&gt;  2 SRR1740034 PLCH2      b_cell        926 0 d   TRUE     
-#&gt;  3 SRR1740034 PADI4      b_cell         21 0 d   TRUE     
-#&gt;  4 SRR1740034 PAX7       b_cell          0 0 d   TRUE     
-#&gt;  5 SRR1740034 CDA        b_cell          1 0 d   TRUE     
-#&gt;  6 SRR1740034 RCAN3      b_cell        905 0 d   TRUE     
-#&gt;  7 SRR1740034 SMPDL3B    b_cell          3 0 d   TRUE     
-#&gt;  8 SRR1740034 EPB41      b_cell       4667 0 d   TRUE     
-#&gt;  9 SRR1740034 LCK        b_cell        436 0 d   TRUE     
-#&gt; 10 SRR1740034 COL8A2     b_cell          1 0 d   TRUE     
-#&gt; # … with 2,625 more rows</div><div class='input'>
-</div></pre>
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>    
+#&gt; </span><span style='color: #555555;'> 1</span><span> SRR1740034 TNFRSF4    b_cell          6 0 d   TRUE     
+#&gt; </span><span style='color: #555555;'> 2</span><span> SRR1740034 PLCH2      b_cell        926 0 d   TRUE     
+#&gt; </span><span style='color: #555555;'> 3</span><span> SRR1740034 PADI4      b_cell         21 0 d   TRUE     
+#&gt; </span><span style='color: #555555;'> 4</span><span> SRR1740034 PAX7       b_cell          0 0 d   TRUE     
+#&gt; </span><span style='color: #555555;'> 5</span><span> SRR1740034 CDA        b_cell          1 0 d   TRUE     
+#&gt; </span><span style='color: #555555;'> 6</span><span> SRR1740034 RCAN3      b_cell        905 0 d   TRUE     
+#&gt; </span><span style='color: #555555;'> 7</span><span> SRR1740034 SMPDL3B    b_cell          3 0 d   TRUE     
+#&gt; </span><span style='color: #555555;'> 8</span><span> SRR1740034 EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE     
+#&gt; </span><span style='color: #555555;'> 9</span><span> SRR1740034 LCK        b_cell        436 0 d   TRUE     
+#&gt; </span><span style='color: #555555;'>10</span><span> SRR1740034 COL8A2     b_cell          1 0 d   TRUE     
+#&gt; </span><span style='color: #555555;'># … with 2,625 more rows</span><span></div><div class='input'>
+
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

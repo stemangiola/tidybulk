@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -218,30 +218,34 @@ This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the ba
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>df_entrez</span> <span class='op'>=</span> <span class='fu'><a href='symbol_to_entrez.html'>symbol_to_entrez</a></span>(<span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>, .transcript = <span class='kw'>transcript</span>, .sample = <span class='kw'>sample</span>)</div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='input'><span class='kw'>df_entrez</span> <span class='op'>=</span> <span class='fu'><a href='aggregate_duplicates.html'>aggregate_duplicates</a></span>(<span class='kw'>df_entrez</span>, aggregation_function = <span class='kw'>sum</span>, .sample = <span class='kw'>sample</span>, .transcript = <span class='kw'>entrez</span>, .abundance = <span class='kw'>count</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: tidybulk says: for aggregation, factors and logical columns were converted to character</span></div><div class='output co'>#&gt; <span class='message'>Converted to characters</span></div><div class='output co'>#&gt; <span class='message'>logical</span></div><div class='input'><span class='kw'>df_entrez</span> <span class='op'>=</span> <span class='fu'><a href='mutate.html'>mutate</a></span>(<span class='kw'>df_entrez</span>, do_test = <span class='kw'>transcript</span> <span class='op'>%in%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"TNFRSF4"</span>, <span class='st'>"PLCH2"</span>, <span class='st'>"PADI4"</span>, <span class='st'>"PAX7"</span>))
+<span class='kw'>df_entrez</span> <span class='op'>=</span> <span class='fu'><a href='symbol_to_entrez.html'>symbol_to_entrez</a></span>(<span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>, .transcript = <span class='kw'>transcript</span>, .sample = <span class='kw'>sample</span>)
+</div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='input'><span class='kw'>df_entrez</span> <span class='op'>=</span> <span class='fu'><a href='aggregate_duplicates.html'>aggregate_duplicates</a></span>(<span class='kw'>df_entrez</span>, aggregation_function = <span class='kw'>sum</span>, .sample = <span class='kw'>sample</span>, .transcript = <span class='kw'>entrez</span>, .abundance = <span class='kw'>count</span>)
+</div><div class='output co'>#&gt; <span class='warning'>Warning: tidybulk says: for aggregation, factors and logical columns were converted to character</span></div><div class='output co'>#&gt; <span class='message'>Converted to characters</span></div><div class='output co'>#&gt; <span class='message'>logical</span></div><div class='input'><span class='kw'>df_entrez</span> <span class='op'>=</span> <span class='fu'><a href='mutate.html'>mutate</a></span>(<span class='kw'>df_entrez</span>, do_test = <span class='kw'>transcript</span> <span class='op'>%in%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"TNFRSF4"</span>, <span class='st'>"PLCH2"</span>, <span class='st'>"PADI4"</span>, <span class='st'>"PAX7"</span>))
 
-	test_ge<span class='fu'>test_gene_overrepresentation</span>
-		df_entrez,<span class='kw'>df_entrez</span>
-		.sample = sample,<span class='kw'>sample</span>
-		.entrez = entrez,<span class='kw'>entrez</span>
-		.do_test = do_test,<span class='kw'>do_test</span>
-		species="Homo sapiens"<span class='st'>"Homo sapiens"</span>
+  <span class='fu'>test_gene_overrepresentation</span>(
+    <span class='kw'>df_entrez</span>,
+    .sample = <span class='kw'>sample</span>,
+    .entrez = <span class='kw'>entrez</span>,
+    .do_test = <span class='kw'>do_test</span>,
+    species=<span class='st'>"Homo sapiens"</span>,
    gene_set=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"C2"</span>)
-	)</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; # A tibble: 57 x 10
-#&gt;    gs_cat ID    Description GeneRatio BgRatio  pvalue p.adjust qvalue geneID
-#&gt;    &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;     &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt; 
-#&gt;  1 C2     HOFF… HOFFMAN_CL… 1/4       10/207… 0.00193   0.0399 0.0133 7293  
-#&gt;  2 C2     PEDR… PEDRIOLI_M… 2/4       412/20… 0.00230   0.0399 0.0133 7293/…
-#&gt;  3 C2     LIM_… LIM_MAMMAR… 1/4       14/207… 0.00270   0.0399 0.0133 9651  
-#&gt;  4 C2     MYLL… MYLLYKANGA… 1/4       18/207… 0.00347   0.0399 0.0133 5081  
-#&gt;  5 C2     GAVI… GAVIN_IL2_… 1/4       19/207… 0.00366   0.0399 0.0133 7293  
-#&gt;  6 C2     REAC… REACTOME_S… 1/4       26/207… 0.00501   0.0399 0.0133 9651  
-#&gt;  7 C2     REAC… REACTOME_T… 1/4       29/207… 0.00558   0.0399 0.0133 7293  
-#&gt;  8 C2     PEPP… PEPPER_CHR… 1/4       32/207… 0.00616   0.0399 0.0133 23569 
-#&gt;  9 C2     VALK… VALK_AML_C… 1/4       34/207… 0.00654   0.0399 0.0133 7293  
-#&gt; 10 C2     LEE_… LEE_AGING_… 1/4       37/207… 0.00712   0.0399 0.0133 7293  
-#&gt; # … with 47 more rows, and 1 more variable: Count &lt;int&gt;</div><div class='input'>
-</div></pre>
+  )
+</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 57 x 10</span><span>
+#&gt;    gs_cat ID    Description GeneRatio BgRatio  pvalue p.adjust qvalue Count
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>    </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>
+#&gt; </span><span style='color: #555555;'> 1</span><span> C2     HOFF… HOFFMAN_CL… 1/4       10/207… 0.001</span><span style='text-decoration: underline;'>93</span><span>   0.039</span><span style='text-decoration: underline;'>9</span><span> 0.013</span><span style='text-decoration: underline;'>3</span><span>     1
+#&gt; </span><span style='color: #555555;'> 2</span><span> C2     PEDR… PEDRIOLI_M… 2/4       412/20… 0.002</span><span style='text-decoration: underline;'>30</span><span>   0.039</span><span style='text-decoration: underline;'>9</span><span> 0.013</span><span style='text-decoration: underline;'>3</span><span>     2
+#&gt; </span><span style='color: #555555;'> 3</span><span> C2     LIM_… LIM_MAMMAR… 1/4       14/207… 0.002</span><span style='text-decoration: underline;'>70</span><span>   0.039</span><span style='text-decoration: underline;'>9</span><span> 0.013</span><span style='text-decoration: underline;'>3</span><span>     1
+#&gt; </span><span style='color: #555555;'> 4</span><span> C2     MYLL… MYLLYKANGA… 1/4       18/207… 0.003</span><span style='text-decoration: underline;'>47</span><span>   0.039</span><span style='text-decoration: underline;'>9</span><span> 0.013</span><span style='text-decoration: underline;'>3</span><span>     1
+#&gt; </span><span style='color: #555555;'> 5</span><span> C2     GAVI… GAVIN_IL2_… 1/4       19/207… 0.003</span><span style='text-decoration: underline;'>66</span><span>   0.039</span><span style='text-decoration: underline;'>9</span><span> 0.013</span><span style='text-decoration: underline;'>3</span><span>     1
+#&gt; </span><span style='color: #555555;'> 6</span><span> C2     REAC… REACTOME_S… 1/4       26/207… 0.005</span><span style='text-decoration: underline;'>01</span><span>   0.039</span><span style='text-decoration: underline;'>9</span><span> 0.013</span><span style='text-decoration: underline;'>3</span><span>     1
+#&gt; </span><span style='color: #555555;'> 7</span><span> C2     REAC… REACTOME_T… 1/4       29/207… 0.005</span><span style='text-decoration: underline;'>58</span><span>   0.039</span><span style='text-decoration: underline;'>9</span><span> 0.013</span><span style='text-decoration: underline;'>3</span><span>     1
+#&gt; </span><span style='color: #555555;'> 8</span><span> C2     PEPP… PEPPER_CHR… 1/4       32/207… 0.006</span><span style='text-decoration: underline;'>16</span><span>   0.039</span><span style='text-decoration: underline;'>9</span><span> 0.013</span><span style='text-decoration: underline;'>3</span><span>     1
+#&gt; </span><span style='color: #555555;'> 9</span><span> C2     VALK… VALK_AML_C… 1/4       34/207… 0.006</span><span style='text-decoration: underline;'>54</span><span>   0.039</span><span style='text-decoration: underline;'>9</span><span> 0.013</span><span style='text-decoration: underline;'>3</span><span>     1
+#&gt; </span><span style='color: #555555;'>10</span><span> C2     LEE_… LEE_AGING_… 1/4       37/207… 0.007</span><span style='text-decoration: underline;'>12</span><span>   0.039</span><span style='text-decoration: underline;'>9</span><span> 0.013</span><span style='text-decoration: underline;'>3</span><span>     1
+#&gt; </span><span style='color: #555555;'># … with 47 more rows, and 1 more variable: entrez </span><span style='color: #555555;font-style: italic;'>&lt;list&gt;</span><span></div><div class='input'>
+
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -127,9 +127,6 @@
     <pre class="usage"><span class='fu'>add_scaled_counts_bulk.calcNormFactor</span>(
   <span class='kw'>.data</span>,
   reference = <span class='kw'>NULL</span>,
-  factor_of_interest = <span class='kw'>NULL</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>,
   .sample = <span class='kw'>sample</span>,
   .transcript = <span class='kw'>transcript</span>,
   .abundance = <span class='kw'>count</span>,
@@ -146,18 +143,6 @@
     <tr>
       <th>reference</th>
       <td><p>A reference matrix, not sure if used anymore</p></td>
-    </tr>
-    <tr>
-      <th>factor_of_interest</th>
-      <td><p>The name of the column of the factor of interest</p></td>
-    </tr>
-    <tr>
-      <th>minimum_counts</th>
-      <td><p>A positive integer. Minimum counts required for at least some samples.</p></td>
-    </tr>
-    <tr>
-      <th>minimum_proportion</th>
-      <td><p>A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.</p></td>
     </tr>
     <tr>
       <th>.sample</th>

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -265,9 +265,9 @@
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A tbl object with with dropped redundant elements (e.g., samples).</p>
-<p>A tbl object with with dropped recundant elements (e.g., samples).</p>
-<p>A tbl object with with dropped recundant elements (e.g., samples).</p>
-<p>A tbl object with with dropped recundant elements (e.g., samples).</p>
+<p>A tbl object with with dropped redundant elements (e.g., samples).</p>
+<p>A tbl object with with dropped redundant elements (e.g., samples).</p>
+<p>A tbl object with with dropped redundant elements (e.g., samples).</p>
 <p>A `SummarizedExperiment` object</p>
 <p>A `SummarizedExperiment` object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
@@ -279,51 +279,60 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 
-
+ <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>) <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span>() <span class='op'>%&gt;%</span> 
    <span class='fu'>remove_redundancy</span>(
-    <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>,
-	   .element = sample,<span class='kw'>sample</span>
-	   .feature = transcr<span class='kw'>transcript</span>
-	   	.abundance =  count,<span class='kw'>count</span>
-	   	method = "correlatio<span class='st'>"correlation"</span>
-	   	)</div><div class='output co'>#&gt; <span class='message'>Getting the 527 most variable genes</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `tbl_df()` is deprecated as of dplyr 1.0.0.</span>
+     .element = <span class='kw'>sample</span>,
+     .feature = <span class='kw'>transcript</span>,
+       .abundance =  <span class='kw'>count</span>,
+       method = <span class='st'>"correlation"</span>
+       )
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>Getting the 527 most variable genes</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `tbl_df()` is deprecated as of dplyr 1.0.0.</span>
 #&gt; <span class='warning'>Please use `tibble::as_tibble()` instead.</span>
-#&gt; <span class='warning'>This warning is displayed once every 8 hours.</span>
-#&gt; <span class='warning'>Call `lifecycle::last_warnings()` to see where this warning was generated.</span></div><div class='output co'>#&gt; # A tibble: 2,108 x 6
-#&gt;    sample     transcript `Cell type` count time  condition
-#&gt;    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;    
-#&gt;  1 SRR1740035 TNFRSF4    b_cell          6 1 d   TRUE     
-#&gt;  2 SRR1740035 PLCH2      b_cell       1134 1 d   TRUE     
-#&gt;  3 SRR1740035 PADI4      b_cell         17 1 d   TRUE     
-#&gt;  4 SRR1740035 PAX7       b_cell          0 1 d   TRUE     
-#&gt;  5 SRR1740035 CDA        b_cell          0 1 d   TRUE     
-#&gt;  6 SRR1740035 RCAN3      b_cell        832 1 d   TRUE     
-#&gt;  7 SRR1740035 SMPDL3B    b_cell          5 1 d   TRUE     
-#&gt;  8 SRR1740035 EPB41      b_cell       4709 1 d   TRUE     
-#&gt;  9 SRR1740035 LCK        b_cell        507 1 d   TRUE     
-#&gt; 10 SRR1740035 COL8A2     b_cell          5 1 d   TRUE     
-#&gt; # … with 2,098 more rows</div><div class='input'>
-<span class='kw'>counts.MDS</span> <span class='op'>=</span>  <span class='fu'><a href='reduce_dimensions.html'>reduce_dimensions</a></span>(<span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>, <span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>, method=<span class='st'>"MDS"</span>, .dims = <span class='fl'>3</span>)</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results do `attr(..., "internals")$MDS`</span></div><div class='input'>
+#&gt; <span class='warning'><span style='color: #555555;'>This warning is displayed once every 8 hours.</span><span></span>
+#&gt; <span class='warning'></span><span style='color: #555555;'>Call `lifecycle::last_warnings()` to see where this warning was generated.</span><span></span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 2,108 x 7</span><span>
+#&gt;    sample     transcript `Cell type` count time  condition .abundant
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>    
+#&gt; </span><span style='color: #555555;'> 1</span><span> SRR1740035 TNFRSF4    b_cell          6 1 d   TRUE      FALSE    
+#&gt; </span><span style='color: #555555;'> 2</span><span> SRR1740035 PLCH2      b_cell       </span><span style='text-decoration: underline;'>1</span><span>134 1 d   TRUE      TRUE     
+#&gt; </span><span style='color: #555555;'> 3</span><span> SRR1740035 PADI4      b_cell         17 1 d   TRUE      TRUE     
+#&gt; </span><span style='color: #555555;'> 4</span><span> SRR1740035 PAX7       b_cell          0 1 d   TRUE      FALSE    
+#&gt; </span><span style='color: #555555;'> 5</span><span> SRR1740035 CDA        b_cell          0 1 d   TRUE      FALSE    
+#&gt; </span><span style='color: #555555;'> 6</span><span> SRR1740035 RCAN3      b_cell        832 1 d   TRUE      TRUE     
+#&gt; </span><span style='color: #555555;'> 7</span><span> SRR1740035 SMPDL3B    b_cell          5 1 d   TRUE      FALSE    
+#&gt; </span><span style='color: #555555;'> 8</span><span> SRR1740035 EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>709 1 d   TRUE      TRUE     
+#&gt; </span><span style='color: #555555;'> 9</span><span> SRR1740035 LCK        b_cell        507 1 d   TRUE      TRUE     
+#&gt; </span><span style='color: #555555;'>10</span><span> SRR1740035 COL8A2     b_cell          5 1 d   TRUE      FALSE    
+#&gt; </span><span style='color: #555555;'># … with 2,098 more rows</span><span></div><div class='input'>
+<span class='kw'>counts.MDS</span> <span class='op'>=</span> 
+ <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>) <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span>() <span class='op'>%&gt;%</span> 
+  <span class='fu'><a href='reduce_dimensions.html'>reduce_dimensions</a></span>( method=<span class='st'>"MDS"</span>, .dims = <span class='fl'>3</span>)
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results do `attr(..., "internals")$MDS`</span></div><div class='input'>
 <span class='fu'>remove_redundancy</span>(
-	counts.<span class='kw'>counts.MDS</span>
-	Dim_a_column = `Dim1`,<span class='kw'>`Dim1`</span>
-	Dim_b_column = `Dim2`,<span class='kw'>`Dim2`</span>
-	.element = sample,<span class='kw'>sample</span>
+  <span class='kw'>counts.MDS</span>,
+  Dim_a_column = <span class='kw'>`Dim1`</span>,
+  Dim_b_column = <span class='kw'>`Dim2`</span>,
+  .element = <span class='kw'>sample</span>,
   method = <span class='st'>"reduced_dimensions"</span>
-)</div><div class='output co'>#&gt; # A tibble: 1,581 x 9
-#&gt;    sample     transcript `Cell type` count time  condition   Dim1   Dim2    Dim3
-#&gt;    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;      &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
-#&gt;  1 SRR1740035 TNFRSF4    b_cell          6 1 d   TRUE      -0.898 -0.724 0.00694
-#&gt;  2 SRR1740035 PLCH2      b_cell       1134 1 d   TRUE      -0.898 -0.724 0.00694
-#&gt;  3 SRR1740035 PADI4      b_cell         17 1 d   TRUE      -0.898 -0.724 0.00694
-#&gt;  4 SRR1740035 PAX7       b_cell          0 1 d   TRUE      -0.898 -0.724 0.00694
-#&gt;  5 SRR1740035 CDA        b_cell          0 1 d   TRUE      -0.898 -0.724 0.00694
-#&gt;  6 SRR1740035 RCAN3      b_cell        832 1 d   TRUE      -0.898 -0.724 0.00694
-#&gt;  7 SRR1740035 SMPDL3B    b_cell          5 1 d   TRUE      -0.898 -0.724 0.00694
-#&gt;  8 SRR1740035 EPB41      b_cell       4709 1 d   TRUE      -0.898 -0.724 0.00694
-#&gt;  9 SRR1740035 LCK        b_cell        507 1 d   TRUE      -0.898 -0.724 0.00694
-#&gt; 10 SRR1740035 COL8A2     b_cell          5 1 d   TRUE      -0.898 -0.724 0.00694
-#&gt; # … with 1,571 more rows</div><div class='input'></div></pre>
+)
+</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 1,581 x 10</span><span>
+#&gt;    sample transcript `Cell type` count time  condition .abundant   Dim1   Dim2
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
+#&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… TNFRSF4    b_cell          6 1 d   TRUE      FALSE     -</span><span style='color: #BB0000;'>0.898</span><span> -</span><span style='color: #BB0000;'>0.724</span><span>
+#&gt; </span><span style='color: #555555;'> 2</span><span> SRR17… PLCH2      b_cell       </span><span style='text-decoration: underline;'>1</span><span>134 1 d   TRUE      TRUE      -</span><span style='color: #BB0000;'>0.898</span><span> -</span><span style='color: #BB0000;'>0.724</span><span>
+#&gt; </span><span style='color: #555555;'> 3</span><span> SRR17… PADI4      b_cell         17 1 d   TRUE      TRUE      -</span><span style='color: #BB0000;'>0.898</span><span> -</span><span style='color: #BB0000;'>0.724</span><span>
+#&gt; </span><span style='color: #555555;'> 4</span><span> SRR17… PAX7       b_cell          0 1 d   TRUE      FALSE     -</span><span style='color: #BB0000;'>0.898</span><span> -</span><span style='color: #BB0000;'>0.724</span><span>
+#&gt; </span><span style='color: #555555;'> 5</span><span> SRR17… CDA        b_cell          0 1 d   TRUE      FALSE     -</span><span style='color: #BB0000;'>0.898</span><span> -</span><span style='color: #BB0000;'>0.724</span><span>
+#&gt; </span><span style='color: #555555;'> 6</span><span> SRR17… RCAN3      b_cell        832 1 d   TRUE      TRUE      -</span><span style='color: #BB0000;'>0.898</span><span> -</span><span style='color: #BB0000;'>0.724</span><span>
+#&gt; </span><span style='color: #555555;'> 7</span><span> SRR17… SMPDL3B    b_cell          5 1 d   TRUE      FALSE     -</span><span style='color: #BB0000;'>0.898</span><span> -</span><span style='color: #BB0000;'>0.724</span><span>
+#&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>709 1 d   TRUE      TRUE      -</span><span style='color: #BB0000;'>0.898</span><span> -</span><span style='color: #BB0000;'>0.724</span><span>
+#&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… LCK        b_cell        507 1 d   TRUE      TRUE      -</span><span style='color: #BB0000;'>0.898</span><span> -</span><span style='color: #BB0000;'>0.724</span><span>
+#&gt; </span><span style='color: #555555;'>10</span><span> SRR17… COL8A2     b_cell          5 1 d   TRUE      FALSE     -</span><span style='color: #BB0000;'>0.898</span><span> -</span><span style='color: #BB0000;'>0.724</span><span>
+#&gt; </span><span style='color: #555555;'># … with 1,571 more rows, and 1 more variable: Dim3 </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span></div><div class='input'>
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

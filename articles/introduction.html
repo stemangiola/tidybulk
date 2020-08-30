@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -75,7 +75,7 @@
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2020-08-08</h4>
+            <h4 class="date">2020-08-30</h4>
       
       
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -128,40 +128,48 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><code>aggregate_duplicates</code></td>
-<td>Aggregate robustly abundance and annotation of duplicated transcripts</td>
+<td><code>identify_abundant</code></td>
+<td>identify the abundant genes</td>
 </tr>
 <tr class="even">
-<td><code>scale_abundance</code></td>
-<td>Scale (normalise) abundance for RNA requencing depth</td>
+<td><code>aggregate_duplicates</code></td>
+<td>Aggregate abundance and annotation of duplicated transcripts in a robust way</td>
 </tr>
 <tr class="odd">
+<td><code>scale_abundance</code></td>
+<td>Scale (normalise) abundance for RNA sequencing depth</td>
+</tr>
+<tr class="even">
 <td><code>reduce_dimensions</code></td>
 <td>Perform dimensionality reduction (PCA, MDS, tSNE)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>cluster_elements</code></td>
 <td>Labels elements with cluster identity (kmeans, SNN)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>remove_redundancy</code></td>
 <td>Filter out elements with highly correlated features</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>adjust_abundance</code></td>
 <td>Remove known unwanted variation (Combat)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>test_differential_abundance</code></td>
-<td>Differenatial abundance testing (DE)</td>
+<td>Differential transcript abundance testing (DE)</td>
+</tr>
+<tr class="odd">
+<td><code>deconvolve_cellularity</code></td>
+<td>Estimated tissue composition (Cibersort or llsr)</td>
 </tr>
 <tr class="even">
-<td><code>deconvolve_cellularity</code></td>
-<td>Estimated tissue composition (Cibersort)</td>
+<td><code>test_differential_cellularity</code></td>
+<td>Differential cell-type abundance testing</td>
 </tr>
 <tr class="odd">
 <td><code>keep_variable</code></td>
-<td>Filter top variable features</td>
+<td>Filter for top variable features</td>
 </tr>
 <tr class="even">
 <td><code>keep_abundant</code></td>
@@ -175,45 +183,61 @@
 <td><code>test_gene_overrepresentation</code></td>
 <td>Gene enrichment on list of transcript names (no rank)</td>
 </tr>
-<tr class="odd">
-<td><code>impute_abundance</code></td>
-<td>Impute abundance for missing data points using sample groupings</td>
-</tr>
 </tbody>
 </table>
 <table class="table">
+<colgroup>
+<col width="48%">
+<col width="52%">
+</colgroup>
 <thead><tr class="header">
 <th>Utilities</th>
 <th>Description</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td><code>get_bibliography</code></td>
+<td>Get the bibliography of your workflow</td>
+</tr>
+<tr class="even">
 <td><code>tidybulk</code></td>
 <td>add tidybulk attributes to a tibble object</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>tidybulk_SAM_BAM</code></td>
 <td>Convert SAM BAM files into tidybulk tibble</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>pivot_sample</code></td>
 <td>Select sample-wise columns/information</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>pivot_transcript</code></td>
 <td>Select transcript-wise columns/information</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>rotate_dimensions</code></td>
 <td>Rotate two dimensions of a degree</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>ensembl_to_symbol</code></td>
 <td>Add gene symbol from ensembl IDs</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>symbol_to_entrez</code></td>
 <td>Add entrez ID from gene symbol</td>
+</tr>
+<tr class="odd">
+<td><code>describe_transcript</code></td>
+<td>Add gene description from gene symbol</td>
+</tr>
+<tr class="even">
+<td><code>impute_missing_abundance</code></td>
+<td>Impute abundance for missing data points using sample groupings</td>
+</tr>
+<tr class="odd">
+<td><code>fill_missing_abundance</code></td>
+<td>Fill abundance for missing data points using an arbitrary value</td>
 </tr>
 </tbody>
 </table>
@@ -317,25 +341,25 @@
 </h2>
 <p>We may want to compensate for sequencing depth, scaling the transcript abundance (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). <code>scale_abundance</code> takes a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and a method as arguments and returns a tibble with additional columns with scaled data as <code>&lt;NAME OF COUNT COLUMN&gt;_scaled</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="kw">tt.norm</span> <span class="op">=</span>  <span class="kw">tt.aggr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span>(method=<span class="st">"TMM"</span>)
+<span class="kw">tt.norm</span> <span class="op">=</span>  <span class="kw">tt.aggr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>(factor_of_interest = <span class="kw">condition</span>) <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span>(method=<span class="st">"TMM"</span>)
 
-<span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">`count`</span>, <span class="kw">count_scaled</span>, <span class="kw">lowly_abundant</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span>())
+<span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">`count`</span>, <span class="kw">count_scaled</span>, <span class="kw">.abundant</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span>())
 </pre></div>
 <pre><code>## # A tibble: 2,635 x 11
-##    count count_scaled lowly_abundant sample transcript `Cell type` time 
-##    &lt;dbl&gt;        &lt;dbl&gt; &lt;lgl&gt;          &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;
-##  1  1035      1900.   TRUE           SRR17… ABCB4      b_cell      0 d  
-##  2    45        82.6  TRUE           SRR17… ABCB9      b_cell      0 d  
-##  3  7151     13129.   FALSE          SRR17… ACAP1      b_cell      0 d  
-##  4     2         3.67 TRUE           SRR17… ACHE       b_cell      0 d  
-##  5  2278      4182.   FALSE          SRR17… ACP5       b_cell      0 d  
-##  6 11156     20482.   TRUE           SRR17… ADAM28     b_cell      0 d  
-##  7    72       132.   TRUE           SRR17… ADAMDEC1   b_cell      0 d  
-##  8     0         0    TRUE           SRR17… ADAMTS3    b_cell      0 d  
-##  9   298       547.   FALSE          SRR17… ADRB2      b_cell      0 d  
-## 10     8        14.7  TRUE           SRR17… AIF1       b_cell      0 d  
-## # … with 2,625 more rows, and 4 more variables: condition &lt;chr&gt;, `merged
-## #   transcripts` &lt;dbl&gt;, TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;</code></pre>
+##    count count_scaled .abundant sample transcript `Cell type` time  condition
+##    &lt;dbl&gt;        &lt;dbl&gt; &lt;lgl&gt;     &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;    
+##  1     6         6.66 FALSE     SRR17… TNFRSF4    b_cell      0 d   TRUE     
+##  2   926      1028.   TRUE      SRR17… PLCH2      b_cell      0 d   TRUE     
+##  3    21        23.3  TRUE      SRR17… PADI4      b_cell      0 d   TRUE     
+##  4     0         0    FALSE     SRR17… PAX7       b_cell      0 d   TRUE     
+##  5     1         1.11 TRUE      SRR17… CDA        b_cell      0 d   TRUE     
+##  6   905      1004.   TRUE      SRR17… RCAN3      b_cell      0 d   TRUE     
+##  7     3         3.33 FALSE     SRR17… SMPDL3B    b_cell      0 d   TRUE     
+##  8  4667      5179.   TRUE      SRR17… EPB41      b_cell      0 d   TRUE     
+##  9   436       484.   TRUE      SRR17… LCK        b_cell      0 d   TRUE     
+## 10     1         1.11 TRUE      SRR17… COL8A2     b_cell      0 d   TRUE     
+## # … with 2,625 more rows, and 3 more variables: `merged transcripts` &lt;dbl&gt;,
+## #   TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;</code></pre>
 <p>We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="kw">tt.norm</span> <span class="op">%&gt;%</span>
@@ -347,7 +371,7 @@
 <p><img src="introduction_files/figure-html/plot_normalise-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="kw">se.norm</span> <span class="op">=</span>  <span class="kw">se.aggr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span>(method=<span class="st">"TMM"</span>)
+<span class="kw">se.norm</span> <span class="op">=</span>  <span class="kw">se.aggr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>(factor_of_interest = <span class="kw">condition</span>) <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span>(method=<span class="st">"TMM"</span>)
 
 <span class="kw">se.norm</span>
 </pre></div>
@@ -356,7 +380,7 @@
 ## metadata(0):
 ## assays(2): count count_scaled
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
-## rowData names(1): lowly_abundant
+## rowData names(1): .abundant
 ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
 ## colData names(6): Cell.type time ... TMM multiplier</code></pre>
 </div>
@@ -381,13 +405,13 @@
 <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">sample</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"Dim"</span>), <span class="kw">`Cell type`</span>, <span class="kw">time</span> ) <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/distinct.html">distinct</a></span>()
 </pre></div>
 <pre><code>## # A tibble: 5 x 6
-##   sample       Dim1    Dim2       Dim3 `Cell type`       time 
-##   &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;             &lt;chr&gt;
-## 1 SRR1740034 -0.882 -0.708  -0.0291    b_cell            0 d  
-## 2 SRR1740035 -0.870 -0.715   0.0000434 b_cell            1 d  
-## 3 SRR1740043  1.40   0.0479 -0.471     monocyte          1 d  
-## 4 SRR1740058 -0.935  1.39    0.00575   t_cell            0 d  
-## 5 SRR1740067  1.29  -0.0121  0.494     dendritic_myeloid 1 d</code></pre>
+##   sample       Dim1   Dim2     Dim3 `Cell type`       time 
+##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;             &lt;chr&gt;
+## 1 SRR1740034 -1.62  -0.826 -0.0249  b_cell            0 d  
+## 2 SRR1740035 -1.59  -0.845 -0.0429  b_cell            1 d  
+## 3 SRR1740043  2.18  -0.241 -0.627   monocyte          1 d  
+## 4 SRR1740058 -0.759  2.19  -0.00659 t_cell            0 d  
+## 5 SRR1740067  1.79  -0.276  0.702   dendritic_myeloid 1 d</code></pre>
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit">
 <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
@@ -406,7 +430,7 @@
 ## metadata(0):
 ## assays(2): count count_scaled
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
-## rowData names(1): lowly_abundant
+## rowData names(1): .abundant
 ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
 ## colData names(9): Cell.type time ... Dim2 Dim3</code></pre>
 <p><strong>PCA</strong></p>
@@ -416,13 +440,13 @@
 <span class="kw">tt.norm.PCA</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">sample</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"PC"</span>), <span class="kw">`Cell type`</span>, <span class="kw">time</span> ) <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/distinct.html">distinct</a></span>()
 </pre></div>
 <pre><code>## # A tibble: 5 x 6
-##   sample       PC1    PC2     PC3 `Cell type`       time 
-##   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;             &lt;chr&gt;
-## 1 SRR1740034 -7.42 -6.29  -0.487  b_cell            0 d  
-## 2 SRR1740035 -7.18 -6.38  -0.0111 b_cell            1 d  
-## 3 SRR1740043 11.5   0.643 -5.89   monocyte          1 d  
-## 4 SRR1740058 -7.71 12.4    0.244  t_cell            0 d  
-## 5 SRR1740067 10.8  -0.386  6.15   dendritic_myeloid 1 d</code></pre>
+##   sample        PC1    PC2     PC3 `Cell type`       time 
+##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;             &lt;chr&gt;
+## 1 SRR1740034 -11.9  -8.41   0.0394 b_cell            0 d  
+## 2 SRR1740035 -12.0  -8.62   0.591  b_cell            1 d  
+## 3 SRR1740043  17.9  -0.748  7.75   monocyte          1 d  
+## 4 SRR1740058  -9.32 18.8    0.152  t_cell            0 d  
+## 5 SRR1740067  15.2  -0.983 -8.53   dendritic_myeloid 1 d</code></pre>
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit">
 <span class="kw">tt.norm.PCA</span> <span class="op">%&gt;%</span>
@@ -441,13 +465,14 @@
 ## metadata(0):
 ## assays(2): count count_scaled
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
-## rowData names(1): lowly_abundant
+## rowData names(1): .abundant
 ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
 ## colData names(9): Cell.type time ... PC2 PC3</code></pre>
 <p><strong>tSNE</strong></p>
 <div class="sourceCode" id="cb22"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">=</span>
     <span class="kw">tt_tcga_breast</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>() <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span>(
         .abundance = <span class="kw">count_scaled</span>,
         method = <span class="st">"tSNE"</span>,
@@ -462,47 +487,47 @@
 ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
 ## Computing input similarities...
 ## Building tree...
-## Done in 0.01 seconds (sparsity = 0.183394)!
+## Done in 0.01 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 66.165586 (50 iterations in 0.04 seconds)
-## Iteration 100: error is 67.158930 (50 iterations in 0.04 seconds)
-## Iteration 150: error is 68.357932 (50 iterations in 0.04 seconds)
-## Iteration 200: error is 69.911419 (50 iterations in 0.04 seconds)
-## Iteration 250: error is 67.860294 (50 iterations in 0.04 seconds)
-## Iteration 300: error is 1.540732 (50 iterations in 0.04 seconds)
-## Iteration 350: error is 1.250115 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.189901 (50 iterations in 0.03 seconds)
-## Iteration 450: error is 1.160104 (50 iterations in 0.03 seconds)
-## Iteration 500: error is 1.135350 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.128585 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.118486 (50 iterations in 0.03 seconds)
-## Iteration 650: error is 1.108773 (50 iterations in 0.03 seconds)
-## Iteration 700: error is 1.096734 (50 iterations in 0.03 seconds)
-## Iteration 750: error is 1.090017 (50 iterations in 0.03 seconds)
-## Iteration 800: error is 1.086164 (50 iterations in 0.03 seconds)
-## Iteration 850: error is 1.085002 (50 iterations in 0.03 seconds)
-## Iteration 900: error is 1.080266 (50 iterations in 0.03 seconds)
-## Iteration 950: error is 1.078875 (50 iterations in 0.03 seconds)
-## Iteration 1000: error is 1.078771 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.66 seconds.</code></pre>
+## Iteration 50: error is 67.639008 (50 iterations in 0.03 seconds)
+## Iteration 100: error is 68.606485 (50 iterations in 0.03 seconds)
+## Iteration 150: error is 69.935180 (50 iterations in 0.04 seconds)
+## Iteration 200: error is 67.461132 (50 iterations in 0.04 seconds)
+## Iteration 250: error is 68.691371 (50 iterations in 0.04 seconds)
+## Iteration 300: error is 1.689746 (50 iterations in 0.04 seconds)
+## Iteration 350: error is 1.245981 (50 iterations in 0.03 seconds)
+## Iteration 400: error is 1.165496 (50 iterations in 0.02 seconds)
+## Iteration 450: error is 1.147413 (50 iterations in 0.02 seconds)
+## Iteration 500: error is 1.123755 (50 iterations in 0.02 seconds)
+## Iteration 550: error is 1.106828 (50 iterations in 0.03 seconds)
+## Iteration 600: error is 1.098996 (50 iterations in 0.03 seconds)
+## Iteration 650: error is 1.096011 (50 iterations in 0.02 seconds)
+## Iteration 700: error is 1.093258 (50 iterations in 0.02 seconds)
+## Iteration 750: error is 1.087825 (50 iterations in 0.02 seconds)
+## Iteration 800: error is 1.082595 (50 iterations in 0.02 seconds)
+## Iteration 850: error is 1.079883 (50 iterations in 0.02 seconds)
+## Iteration 900: error is 1.078946 (50 iterations in 0.02 seconds)
+## Iteration 950: error is 1.079473 (50 iterations in 0.02 seconds)
+## Iteration 1000: error is 1.078622 (50 iterations in 0.02 seconds)
+## Fitting performed in 0.58 seconds.</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"tSNE"</span>, ignore.case = <span class="fl">FALSE</span>), <span class="kw">sample</span>, <span class="kw">Call</span>) <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/distinct.html">distinct</a></span>()
 </pre></div>
 <pre><code>## # A tibble: 251 x 4
-##      tSNE1  tSNE2 sample                       Call 
-##      &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
-##  1   8.73   -4.55 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  2  -6.01    4.90 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  3   4.92   -9.92 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  4   0.419  -5.60 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  5   9.54   -1.31 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  6  -6.92   -1.58 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  7 -32.1    10.9  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  8  -6.02  -12.0  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  9  -4.75  -11.3  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-## 10  22.8    -5.18 TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##     tSNE1  tSNE2 sample                       Call 
+##     &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
+##  1   4.67  -9.63 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  2  -3.21   5.71 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  3  11.5   -6.37 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  4   8.11  -3.15 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  5   6.09  -4.88 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  6   4.47   7.00 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  7 -16.2   26.2  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  8  15.6    4.47 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  9  14.9    3.14 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+## 10   9.05 -23.6  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
@@ -514,6 +539,7 @@
 <div class="sourceCode" id="cb27"><pre class="downlit">
 <span class="kw">se.norm.tSNE</span> <span class="op">=</span>
     <span class="kw">se_breast_tcga_mini</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>() <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span>(
         .abundance = <span class="kw">count_scaled</span>,
         method = <span class="st">"tSNE"</span>,
@@ -528,29 +554,29 @@
 ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
 ## Computing input similarities...
 ## Building tree...
-## Done in 0.01 seconds (sparsity = 0.183394)!
+## Done in 0.02 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 67.959174 (50 iterations in 0.04 seconds)
-## Iteration 100: error is 68.236118 (50 iterations in 0.05 seconds)
-## Iteration 150: error is 67.266817 (50 iterations in 0.06 seconds)
-## Iteration 200: error is 68.298090 (50 iterations in 0.05 seconds)
-## Iteration 250: error is 66.373457 (50 iterations in 0.04 seconds)
-## Iteration 300: error is 1.577390 (50 iterations in 0.03 seconds)
-## Iteration 350: error is 1.197813 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.152450 (50 iterations in 0.03 seconds)
-## Iteration 450: error is 1.125588 (50 iterations in 0.03 seconds)
-## Iteration 500: error is 1.117460 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.114191 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.110691 (50 iterations in 0.03 seconds)
-## Iteration 650: error is 1.108145 (50 iterations in 0.03 seconds)
-## Iteration 700: error is 1.100130 (50 iterations in 0.03 seconds)
-## Iteration 750: error is 1.095856 (50 iterations in 0.03 seconds)
-## Iteration 800: error is 1.093141 (50 iterations in 0.03 seconds)
-## Iteration 850: error is 1.093535 (50 iterations in 0.03 seconds)
-## Iteration 900: error is 1.093052 (50 iterations in 0.03 seconds)
-## Iteration 950: error is 1.092108 (50 iterations in 0.03 seconds)
-## Iteration 1000: error is 1.092111 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.70 seconds.</code></pre>
+## Iteration 50: error is 65.894972 (50 iterations in 0.04 seconds)
+## Iteration 100: error is 67.727898 (50 iterations in 0.04 seconds)
+## Iteration 150: error is 68.844940 (50 iterations in 0.03 seconds)
+## Iteration 200: error is 67.185198 (50 iterations in 0.04 seconds)
+## Iteration 250: error is 70.331459 (50 iterations in 0.04 seconds)
+## Iteration 300: error is 1.792368 (50 iterations in 0.04 seconds)
+## Iteration 350: error is 1.327800 (50 iterations in 0.03 seconds)
+## Iteration 400: error is 1.191146 (50 iterations in 0.02 seconds)
+## Iteration 450: error is 1.141101 (50 iterations in 0.02 seconds)
+## Iteration 500: error is 1.120732 (50 iterations in 0.02 seconds)
+## Iteration 550: error is 1.095732 (50 iterations in 0.03 seconds)
+## Iteration 600: error is 1.089203 (50 iterations in 0.03 seconds)
+## Iteration 650: error is 1.088850 (50 iterations in 0.02 seconds)
+## Iteration 700: error is 1.085941 (50 iterations in 0.02 seconds)
+## Iteration 750: error is 1.081151 (50 iterations in 0.02 seconds)
+## Iteration 800: error is 1.079941 (50 iterations in 0.02 seconds)
+## Iteration 850: error is 1.078622 (50 iterations in 0.02 seconds)
+## Iteration 900: error is 1.075803 (50 iterations in 0.02 seconds)
+## Iteration 950: error is 1.073752 (50 iterations in 0.02 seconds)
+## Iteration 1000: error is 1.071761 (50 iterations in 0.03 seconds)
+## Fitting performed in 0.56 seconds.</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit">
 <span class="kw">se.norm.tSNE</span>
 </pre></div>
@@ -560,7 +586,7 @@
 ## assays(2): count count_scaled
 ## rownames(500): ENSG00000002834 ENSG00000003989 ... ENSG00000265972
 ##   ENSG00000272398
-## rowData names(0):
+## rowData names(1): .abundant
 ## colnames(251): TCGA-A1-A0SD-01A-11R-A115-07
 ##   TCGA-A1-A0SF-01A-11R-A144-07 ... TCGA-GM-A2DM-01A-11R-A180-07
 ##   TCGA-GM-A2DN-01A-11R-A180-07
@@ -604,7 +630,7 @@
 ## metadata(0):
 ## assays(2): count count_scaled
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
-## rowData names(1): lowly_abundant
+## rowData names(1): .abundant
 ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
 ## colData names(11): Cell.type time ... Dim1.rotated.45 Dim2.rotated.45</code></pre>
 </div>
@@ -614,22 +640,22 @@
 </h2>
 <p>We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). <code>test_differential_abundance</code> takes a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g., log fold change, p-value and false discovery rate).</p>
 <div class="sourceCode" id="cb36"><pre class="downlit">
-<span class="kw">tt</span> <span class="op">%&gt;%</span>  <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span>(  <span class="op">~</span> <span class="kw">condition</span>,  action=<span class="st">"only"</span>)
+<span class="kw">tt</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>(factor_of_interest = <span class="kw">condition</span>) <span class="op">%&gt;%</span>    <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span>(  <span class="op">~</span> <span class="kw">condition</span>,  action=<span class="st">"only"</span>)
 </pre></div>
-<pre><code>## # A tibble: 527 x 8
-##    transcript  logFC logCPM     F   PValue    FDR significant lowly_abundant
-##    &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;lgl&gt;       &lt;lgl&gt;         
-##  1 CLEC7A     -11.6   12.7  109.  0.000142 0.0170 TRUE        FALSE         
-##  2 HK3        -12.2   13.5   90.1 0.000225 0.0170 TRUE        FALSE         
-##  3 APOBEC3A    -8.93  11.1   77.7 0.000319 0.0170 TRUE        FALSE         
-##  4 IGSF6       -7.78  10.5   71.8 0.000385 0.0170 TRUE        FALSE         
-##  5 RASSF4      -8.38  12.4   69.0 0.000422 0.0170 TRUE        FALSE         
-##  6 IL2RA        8.37   9.18  65.5 0.000477 0.0170 TRUE        FALSE         
-##  7 TLR8        -9.94  11.6   64.3 0.000497 0.0170 TRUE        FALSE         
-##  8 C5AR1       -9.97  12.2   56.7 0.000667 0.0170 TRUE        FALSE         
-##  9 FCN1       -12.6   15.4   56.6 0.000670 0.0170 TRUE        FALSE         
-## 10 CCR7         8.35  11.9   56.0 0.000687 0.0170 TRUE        FALSE         
-## # … with 517 more rows</code></pre>
+<pre><code>## # A tibble: 393 x 7
+##    transcript  logFC logCPM     F   PValue    FDR significant
+##    &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;lgl&gt;      
+##  1 CLEC7A     -11.6   12.7  109.  0.000142 0.0170 TRUE       
+##  2 HK3        -12.2   13.5   90.1 0.000225 0.0170 TRUE       
+##  3 APOBEC3A    -8.93  11.1   77.7 0.000319 0.0170 TRUE       
+##  4 IGSF6       -7.78  10.5   71.8 0.000385 0.0170 TRUE       
+##  5 RASSF4      -8.38  12.4   69.0 0.000422 0.0170 TRUE       
+##  6 IL2RA        8.37   9.18  65.5 0.000477 0.0170 TRUE       
+##  7 TLR8        -9.94  11.6   64.3 0.000497 0.0170 TRUE       
+##  8 C5AR1       -9.97  12.2   56.7 0.000667 0.0170 TRUE       
+##  9 FCN1       -12.6   15.4   56.6 0.000670 0.0170 TRUE       
+## 10 CCR7         8.35  11.9   56.0 0.000687 0.0170 TRUE       
+## # … with 383 more rows</code></pre>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb38"><pre class="downlit">
 <span class="kw">se_mini</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span>(  <span class="op">~</span> <span class="kw">condition</span>)
@@ -639,7 +665,7 @@
 ## metadata(0):
 ## assays(1): count
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
-## rowData names(7): logFC logCPM ... significant lowly_abundant
+## rowData names(6): logFC logCPM ... FDR significant
 ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
 ## colData names(3): Cell.type time condition</code></pre>
 </div>
@@ -659,20 +685,20 @@
 
 <span class="kw">tt.norm.adj</span>
 </pre></div>
-<pre><code>## # A tibble: 910 x 3
+<pre><code>## # A tibble: 1,965 x 3
 ##    transcript sample     count_scaled_adjusted
 ##    &lt;chr&gt;      &lt;chr&gt;                      &lt;int&gt;
-##  1 ACAP1      SRR1740034                 14644
-##  2 ACP5       SRR1740034                  3903
-##  3 ADRB2      SRR1740034                   719
-##  4 AIM2       SRR1740034                  3707
-##  5 ALOX5      SRR1740034                  7358
-##  6 APOBEC3G   SRR1740034                  3104
-##  7 APOL3      SRR1740034                  2417
-##  8 APOL6      SRR1740034                  1110
-##  9 ARHGAP22   SRR1740034                    69
-## 10 BACH2      SRR1740034                 29826
-## # … with 900 more rows</code></pre>
+##  1 ABCB4      SRR1740034                  1706
+##  2 ABCB9      SRR1740034                    71
+##  3 ACAP1      SRR1740034                  8678
+##  4 ACP5       SRR1740034                  2362
+##  5 ADAM28     SRR1740034                  7696
+##  6 ADAMDEC1   SRR1740034                    42
+##  7 ADRB2      SRR1740034                   414
+##  8 AIF1       SRR1740034                     4
+##  9 AIM2       SRR1740034                  2430
+## 10 ALOX15     SRR1740034                    40
+## # … with 1,955 more rows</code></pre>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb42"><pre class="downlit">
 <span class="kw">se.norm.batch</span> <span class="op">%&gt;%</span>
@@ -686,7 +712,7 @@
 ## metadata(0):
 ## assays(3): count count_scaled count_scaled_adjusted
 ## rownames(19544): A1BG A1BG-AS1 ... ZZEF1 ZZZ3
-## rowData names(1): lowly_abundant
+## rowData names(0):
 ## colnames(48): SRR1740034 SRR1740035 ... SRR1740088 SRR1740089
 ## colData names(7): Cell.type time ... TMM multiplier</code></pre>
 </div>
@@ -764,18 +790,18 @@
 <pre><code>## # A tibble: 2,635 x 12
 ##    sample transcript `Cell type` count time  condition `merged transcripts`
 ##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
-##  1 SRR17… ABCB4      b_cell       1035 0 d   TRUE                         1
-##  2 SRR17… ABCB9      b_cell         45 0 d   TRUE                         1
-##  3 SRR17… ACAP1      b_cell       7151 0 d   TRUE                         1
-##  4 SRR17… ACHE       b_cell          2 0 d   TRUE                         1
-##  5 SRR17… ACP5       b_cell       2278 0 d   TRUE                         1
-##  6 SRR17… ADAM28     b_cell      11156 0 d   TRUE                         1
-##  7 SRR17… ADAMDEC1   b_cell         72 0 d   TRUE                         1
-##  8 SRR17… ADAMTS3    b_cell          0 0 d   TRUE                         1
-##  9 SRR17… ADRB2      b_cell        298 0 d   TRUE                         1
-## 10 SRR17… AIF1       b_cell          8 0 d   TRUE                         1
-## # … with 2,625 more rows, and 5 more variables: count_scaled &lt;dbl&gt;, TMM &lt;dbl&gt;,
-## #   multiplier &lt;dbl&gt;, lowly_abundant &lt;lgl&gt;, `cluster kmeans` &lt;fct&gt;</code></pre>
+##  1 SRR17… TNFRSF4    b_cell          6 0 d   TRUE                         1
+##  2 SRR17… PLCH2      b_cell        926 0 d   TRUE                         1
+##  3 SRR17… PADI4      b_cell         21 0 d   TRUE                         1
+##  4 SRR17… PAX7       b_cell          0 0 d   TRUE                         1
+##  5 SRR17… CDA        b_cell          1 0 d   TRUE                         1
+##  6 SRR17… RCAN3      b_cell        905 0 d   TRUE                         1
+##  7 SRR17… SMPDL3B    b_cell          3 0 d   TRUE                         1
+##  8 SRR17… EPB41      b_cell       4667 0 d   TRUE                         1
+##  9 SRR17… LCK        b_cell        436 0 d   TRUE                         1
+## 10 SRR17… COL8A2     b_cell          1 0 d   TRUE                         1
+## # … with 2,625 more rows, and 5 more variables: .abundant &lt;lgl&gt;, TMM &lt;dbl&gt;,
+## #   multiplier &lt;dbl&gt;, count_scaled &lt;dbl&gt;, `cluster kmeans` &lt;fct&gt;</code></pre>
 <p>We can add cluster annotation to the MDS dimesion reduced data set and plot.</p>
 <div class="sourceCode" id="cb51"><pre class="downlit">
  <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
@@ -800,7 +826,7 @@
 ## metadata(0):
 ## assays(2): count count_scaled
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
-## rowData names(1): lowly_abundant
+## rowData names(1): .abundant
 ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
 ## colData names(7): Cell.type time ... multiplier cluster.kmeans</code></pre>
 <p><strong>SNN</strong></p>
@@ -810,10 +836,10 @@
 <pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 ## 
 ## Number of nodes: 251
-## Number of edges: 8484
+## Number of edges: 8500
 ## 
 ## Running Louvain algorithm...
-## Maximum modularity in 10 random starts: 0.5329
+## Maximum modularity in 10 random starts: 0.5277
 ## Number of communities: 4
 ## Elapsed time: 0 seconds</code></pre>
 <div class="sourceCode" id="cb56"><pre class="downlit">
@@ -821,18 +847,18 @@
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>()
 </pre></div>
 <pre><code>## # A tibble: 251 x 5
-##    sample                       Call    tSNE1  tSNE2 `cluster SNN`
-##    &lt;chr&gt;                        &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;        
-##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA    8.73   -4.55 0            
-##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA   -6.01    4.90 2            
-##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA    4.92   -9.92 1            
-##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA    0.419  -5.60 0            
-##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB    9.54   -1.31 0            
-##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA   -6.92   -1.58 1            
-##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal -32.1    10.9  3            
-##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA   -6.02  -12.0  2            
-##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB   -4.75  -11.3  2            
-## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA   22.8    -5.18 1            
+##    sample                       Call   tSNE1  tSNE2 `cluster SNN`
+##    &lt;chr&gt;                        &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;        
+##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA    4.67  -9.63 1            
+##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA   -3.21   5.71 2            
+##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA   11.5   -6.37 1            
+##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA    8.11  -3.15 0            
+##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB    6.09  -4.88 0            
+##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA    4.47   7.00 1            
+##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal -16.2   26.2  3            
+##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA   15.6    4.47 2            
+##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB   14.9    3.14 2            
+## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA    9.05 -23.6  1            
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb58"><pre class="downlit">
 <span class="kw">tt.norm.SNN</span> <span class="op">%&gt;%</span>
@@ -851,20 +877,20 @@
     action=<span class="st">"only"</span>
    )
 </pre></div>
-<pre><code>## # A tibble: 500 x 8
-##    ens           logFC logCPM     F   PValue      FDR significant lowly_abundant
-##    &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;lgl&gt;       &lt;lgl&gt;         
-##  1 ENSG00000065…  1.59  10.2   395. 1.31e-53 6.56e-51 TRUE        FALSE         
-##  2 ENSG00000111…  2.94   9.64  389. 4.51e-53 1.13e-50 TRUE        FALSE         
-##  3 ENSG00000140…  2.69   9.54  345. 3.67e-49 6.12e-47 TRUE        FALSE         
-##  4 ENSG00000186…  6.17   7.99  343. 5.74e-49 7.18e-47 TRUE        FALSE         
-##  5 ENSG00000181…  7.93   9.12  299. 8.93e-45 8.93e-43 TRUE        FALSE         
-##  6 ENSG00000137…  3.88   8.28  267. 1.85e-41 1.54e-39 TRUE        FALSE         
-##  7 ENSG00000083…  1.37   9.39  247. 2.79e-39 1.99e-37 TRUE        FALSE         
-##  8 ENSG00000143…  1.02  10.7   246. 3.56e-39 2.22e-37 TRUE        FALSE         
-##  9 ENSG00000124…  4.66   8.62  238. 2.37e-38 1.32e-36 TRUE        FALSE         
-## 10 ENSG00000092…  2.91   8.40  232. 1.36e-37 6.82e-36 TRUE        FALSE         
-## # … with 490 more rows</code></pre>
+<pre><code>## # A tibble: 488 x 7
+##    ens             logFC logCPM     F   PValue      FDR significant
+##    &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;lgl&gt;      
+##  1 ENSG00000111716  2.96   9.64  395. 1.22e-53 5.96e-51 TRUE       
+##  2 ENSG00000065978  1.59  10.2   381. 2.11e-52 5.14e-50 TRUE       
+##  3 ENSG00000186832  6.25   8.04  354. 4.93e-50 8.02e-48 TRUE       
+##  4 ENSG00000140545  2.69   9.53  343. 5.61e-49 6.85e-47 TRUE       
+##  5 ENSG00000181617  7.98   9.13  307. 1.39e-45 1.36e-43 TRUE       
+##  6 ENSG00000137673  3.89   8.26  273. 4.00e-42 3.25e-40 TRUE       
+##  7 ENSG00000143947  1.02  10.7   255. 3.95e-40 2.76e-38 TRUE       
+##  8 ENSG00000124107  4.66   8.61  240. 1.55e-38 9.47e-37 TRUE       
+##  9 ENSG00000092621  2.92   8.40  233. 9.35e-38 5.07e-36 TRUE       
+## 10 ENSG00000083444  1.37   9.40  232. 1.25e-37 6.08e-36 TRUE       
+## # … with 478 more rows</code></pre>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb61"><pre class="downlit">
 <span class="kw">se.norm.tSNE</span> <span class="op">%&gt;%</span>    <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span>(.abundance= <span class="kw">count_scaled</span>, method = <span class="st">"SNN"</span>)
@@ -872,10 +898,10 @@
 <pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 ## 
 ## Number of nodes: 251
-## Number of edges: 8484
+## Number of edges: 8500
 ## 
 ## Running Louvain algorithm...
-## Maximum modularity in 10 random starts: 0.5329
+## Maximum modularity in 10 random starts: 0.5277
 ## Number of communities: 4
 ## Elapsed time: 0 seconds</code></pre>
 <pre><code>## class: SummarizedExperiment 
@@ -884,7 +910,7 @@
 ## assays(2): count count_scaled
 ## rownames(500): ENSG00000002834 ENSG00000003989 ... ENSG00000265972
 ##   ENSG00000272398
-## rowData names(0):
+## rowData names(1): .abundant
 ## colnames(251): TCGA-A1-A0SD-01A-11R-A115-07
 ##   TCGA-A1-A0SF-01A-11R-A144-07 ... TCGA-GM-A2DM-01A-11R-A180-07
 ##   TCGA-GM-A2DN-01A-11R-A180-07
@@ -921,7 +947,7 @@
 ## metadata(0):
 ## assays(2): count count_scaled
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
-## rowData names(1): lowly_abundant
+## rowData names(1): .abundant
 ## colnames(4): SRR1740035 SRR1740043 SRR1740058 SRR1740067
 ## colData names(9): Cell.type time ... Dim2 Dim3</code></pre>
 <p><strong>Approach 2</strong></p>
@@ -961,7 +987,7 @@
 ## metadata(0):
 ## assays(2): count count_scaled
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
-## rowData names(1): lowly_abundant
+## rowData names(1): .abundant
 ## colnames(3): SRR1740035 SRR1740058 SRR1740067
 ## colData names(9): Cell.type time ... Dim2 Dim3</code></pre>
 </div>
@@ -1018,18 +1044,18 @@
 <pre><code>## # A tibble: 2,635 x 11
 ##    sample transcript `Cell type` count time  condition `merged transcripts`
 ##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
-##  1 SRR17… ABCB4      b_cell       1035 0 d   TRUE                         1
-##  2 SRR17… ABCB9      b_cell         45 0 d   TRUE                         1
-##  3 SRR17… ACAP1      b_cell       7151 0 d   TRUE                         1
-##  4 SRR17… ACHE       b_cell          2 0 d   TRUE                         1
-##  5 SRR17… ACP5       b_cell       2278 0 d   TRUE                         1
-##  6 SRR17… ADAM28     b_cell      11156 0 d   TRUE                         1
-##  7 SRR17… ADAMDEC1   b_cell         72 0 d   TRUE                         1
-##  8 SRR17… ADAMTS3    b_cell          0 0 d   TRUE                         1
-##  9 SRR17… ADRB2      b_cell        298 0 d   TRUE                         1
-## 10 SRR17… AIF1       b_cell          8 0 d   TRUE                         1
-## # … with 2,625 more rows, and 4 more variables: count_scaled &lt;dbl&gt;, TMM &lt;dbl&gt;,
-## #   multiplier &lt;dbl&gt;, lowly_abundant &lt;lgl&gt;</code></pre>
+##  1 SRR17… TNFRSF4    b_cell          6 0 d   TRUE                         1
+##  2 SRR17… PLCH2      b_cell        926 0 d   TRUE                         1
+##  3 SRR17… PADI4      b_cell         21 0 d   TRUE                         1
+##  4 SRR17… PAX7       b_cell          0 0 d   TRUE                         1
+##  5 SRR17… CDA        b_cell          1 0 d   TRUE                         1
+##  6 SRR17… RCAN3      b_cell        905 0 d   TRUE                         1
+##  7 SRR17… SMPDL3B    b_cell          3 0 d   TRUE                         1
+##  8 SRR17… EPB41      b_cell       4667 0 d   TRUE                         1
+##  9 SRR17… LCK        b_cell        436 0 d   TRUE                         1
+## 10 SRR17… COL8A2     b_cell          1 0 d   TRUE                         1
+## # … with 2,625 more rows, and 4 more variables: .abundant &lt;lgl&gt;, TMM &lt;dbl&gt;,
+## #   multiplier &lt;dbl&gt;, count_scaled &lt;dbl&gt;</code></pre>
 <p><strong>action=“add”</strong> (Default) We can add the MDS dimensions to the original data set</p>
 <div class="sourceCode" id="cb77"><pre class="downlit">
   <span class="kw">tt.norm</span> <span class="op">%&gt;%</span>
@@ -1045,18 +1071,18 @@
 <pre><code>## # A tibble: 2,635 x 14
 ##    sample transcript `Cell type` count time  condition `merged transcripts`
 ##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
-##  1 SRR17… ABCB4      b_cell       1035 0 d   TRUE                         1
-##  2 SRR17… ABCB9      b_cell         45 0 d   TRUE                         1
-##  3 SRR17… ACAP1      b_cell       7151 0 d   TRUE                         1
-##  4 SRR17… ACHE       b_cell          2 0 d   TRUE                         1
-##  5 SRR17… ACP5       b_cell       2278 0 d   TRUE                         1
-##  6 SRR17… ADAM28     b_cell      11156 0 d   TRUE                         1
-##  7 SRR17… ADAMDEC1   b_cell         72 0 d   TRUE                         1
-##  8 SRR17… ADAMTS3    b_cell          0 0 d   TRUE                         1
-##  9 SRR17… ADRB2      b_cell        298 0 d   TRUE                         1
-## 10 SRR17… AIF1       b_cell          8 0 d   TRUE                         1
-## # … with 2,625 more rows, and 7 more variables: count_scaled &lt;dbl&gt;, TMM &lt;dbl&gt;,
-## #   multiplier &lt;dbl&gt;, lowly_abundant &lt;lgl&gt;, Dim1 &lt;dbl&gt;, Dim2 &lt;dbl&gt;, Dim3 &lt;dbl&gt;</code></pre>
+##  1 SRR17… TNFRSF4    b_cell          6 0 d   TRUE                         1
+##  2 SRR17… PLCH2      b_cell        926 0 d   TRUE                         1
+##  3 SRR17… PADI4      b_cell         21 0 d   TRUE                         1
+##  4 SRR17… PAX7       b_cell          0 0 d   TRUE                         1
+##  5 SRR17… CDA        b_cell          1 0 d   TRUE                         1
+##  6 SRR17… RCAN3      b_cell        905 0 d   TRUE                         1
+##  7 SRR17… SMPDL3B    b_cell          3 0 d   TRUE                         1
+##  8 SRR17… EPB41      b_cell       4667 0 d   TRUE                         1
+##  9 SRR17… LCK        b_cell        436 0 d   TRUE                         1
+## 10 SRR17… COL8A2     b_cell          1 0 d   TRUE                         1
+## # … with 2,625 more rows, and 7 more variables: .abundant &lt;lgl&gt;, TMM &lt;dbl&gt;,
+## #   multiplier &lt;dbl&gt;, count_scaled &lt;dbl&gt;, Dim1 &lt;dbl&gt;, Dim2 &lt;dbl&gt;, Dim3 &lt;dbl&gt;</code></pre>
 <p><strong>action=“get”</strong> We can add the MDS dimensions to the original data set selecting just the sample-wise column</p>
 <div class="sourceCode" id="cb79"><pre class="downlit">
   <span class="kw">tt.norm</span> <span class="op">%&gt;%</span>
@@ -1072,11 +1098,11 @@
 <pre><code>## # A tibble: 5 x 10
 ##   sample `Cell type` time  condition `merged transcripts`   TMM multiplier
 ##   &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
-## 1 SRR17… b_cell      0 d   TRUE                         1 0.791       1.84
-## 2 SRR17… b_cell      1 d   TRUE                         1 0.799       1.61
-## 3 SRR17… monocyte    1 d   FALSE                        1 1.14        2.55
-## 4 SRR17… t_cell      0 d   TRUE                         1 1.06        1.32
-## 5 SRR17… dendritic_… 1 d   FALSE                        1 1.30        2.56
+## 1 SRR17… b_cell      0 d   TRUE                         1 0.814      1.11 
+## 2 SRR17… b_cell      1 d   TRUE                         1 0.772      1.04 
+## 3 SRR17… monocyte    1 d   FALSE                        1 0.929      1.34 
+## 4 SRR17… t_cell      0 d   TRUE                         1 1.18       0.846
+## 5 SRR17… dendritic_… 1 d   FALSE                        1 1.45       1.09 
 ## # … with 3 more variables: Dim1 &lt;dbl&gt;, Dim2 &lt;dbl&gt;, Dim3 &lt;dbl&gt;</code></pre>
 <p><strong>action=“only”</strong> We can get just the MDS dimensions relative to each sample</p>
 <div class="sourceCode" id="cb81"><pre class="downlit">
@@ -1091,13 +1117,13 @@
     )
 </pre></div>
 <pre><code>## # A tibble: 5 x 4
-##   sample       Dim1    Dim2       Dim3
-##   &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;
-## 1 SRR1740034 -0.882 -0.708  -0.0291   
-## 2 SRR1740035 -0.870 -0.715   0.0000434
-## 3 SRR1740043  1.40   0.0479 -0.471    
-## 4 SRR1740058 -0.935  1.39    0.00575  
-## 5 SRR1740067  1.29  -0.0121  0.494</code></pre>
+##   sample       Dim1   Dim2     Dim3
+##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+## 1 SRR1740034 -1.62  -0.826 -0.0249 
+## 2 SRR1740035 -1.59  -0.845 -0.0429 
+## 3 SRR1740043  2.18  -0.241 -0.627  
+## 4 SRR1740058 -0.759  2.19  -0.00659
+## 5 SRR1740067  1.79  -0.276  0.702</code></pre>
 </div>
 <div id="appendix" class="section level2">
 <h2 class="hasAnchor">
@@ -1105,7 +1131,7 @@
 <div class="sourceCode" id="cb83"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()
 </pre></div>
-<pre><code>## R version 4.0.2 Patched (2020-08-06 r78974)
+<pre><code>## R version 4.0.2 Patched (2020-08-27 r79088)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 20.04.1 LTS
 ## 
@@ -1124,85 +1150,86 @@
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] tidybulk_1.1.5   purrr_0.3.4      rlang_0.4.7      ggplot2_3.3.2   
-##  [5] tidyr_1.1.1      magrittr_1.5     dplyr_1.0.1      tibble_3.0.3    
+##  [1] tidybulk_1.2.0   purrr_0.3.4      rlang_0.4.7      ggplot2_3.3.2   
+##  [5] tidyr_1.1.1      magrittr_1.5     dplyr_1.0.2      tibble_3.0.3    
 ##  [9] knitr_1.29       BiocStyle_2.17.0
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] backports_1.1.8             tidytext_0.2.5             
-##   [3] plyr_1.8.6                  igraph_1.2.5               
-##   [5] lazyeval_0.2.2              splines_4.0.2              
-##   [7] BiocParallel_1.23.2         listenv_0.8.0              
-##   [9] SnowballC_0.7.0             GenomeInfoDb_1.25.10       
-##  [11] sva_3.37.0                  digest_0.6.25              
-##  [13] htmltools_0.5.0             fansi_0.4.1                
-##  [15] memoise_1.1.0               tensor_1.5                 
-##  [17] cluster_2.1.0               ROCR_1.0-11                
-##  [19] limma_3.45.9                globals_0.12.5             
-##  [21] readr_1.3.1                 annotate_1.67.0            
-##  [23] matrixStats_0.56.0          pkgdown_1.5.1.9000         
-##  [25] colorspace_1.4-1            blob_1.2.1                 
-##  [27] rappdirs_0.3.1              ggrepel_0.8.2              
-##  [29] xfun_0.16                   crayon_1.3.4               
-##  [31] RCurl_1.98-1.2              jsonlite_1.7.0             
-##  [33] spatstat.data_1.4-3         spatstat_1.64-1            
-##  [35] genefilter_1.71.0           survival_3.2-3             
-##  [37] zoo_1.8-8                   ape_5.4                    
-##  [39] glue_1.4.1                  polyclip_1.10-0            
-##  [41] gtable_0.3.0                zlibbioc_1.35.0            
-##  [43] XVector_0.29.3              leiden_0.3.3               
-##  [45] DelayedArray_0.15.7         future.apply_1.6.0         
-##  [47] BiocGenerics_0.35.4         abind_1.4-5                
-##  [49] scales_1.1.1                DBI_1.1.0                  
-##  [51] edgeR_3.31.4                miniUI_0.1.1.1             
-##  [53] Rcpp_1.0.5                  widyr_0.1.3                
-##  [55] viridisLite_0.3.0           xtable_1.8-4               
-##  [57] reticulate_1.16             bit_4.0.4                  
-##  [59] rsvd_1.0.3                  preprocessCore_1.51.0      
-##  [61] stats4_4.0.2                htmlwidgets_1.5.1          
-##  [63] httr_1.4.2                  RColorBrewer_1.1-2         
-##  [65] ellipsis_0.3.1              Seurat_3.2.0               
-##  [67] ica_1.0-2                   pkgconfig_2.0.3            
-##  [69] XML_3.99-0.5                farver_2.0.3               
-##  [71] uwot_0.1.8                  deldir_0.1-28              
-##  [73] locfit_1.5-9.4              utf8_1.1.4                 
-##  [75] tidyselect_1.1.0            labeling_0.3               
-##  [77] reshape2_1.4.4              later_1.1.0.1              
-##  [79] AnnotationDbi_1.51.3        munsell_0.5.0              
-##  [81] tools_4.0.2                 cli_2.0.2                  
-##  [83] generics_0.0.2              RSQLite_2.2.0              
-##  [85] broom_0.7.0                 ggridges_0.5.2             
-##  [87] evaluate_0.14               stringr_1.4.0              
-##  [89] fastmap_1.0.1               goftest_1.2-2              
-##  [91] yaml_2.2.1                  bit64_4.0.2                
-##  [93] fs_1.5.0                    fitdistrplus_1.1-1         
-##  [95] RANN_2.6.1                  pbapply_1.4-2              
-##  [97] future_1.18.0               nlme_3.1-148               
-##  [99] mime_0.9                    tokenizers_0.2.1           
-## [101] compiler_4.0.2              plotly_4.9.2.1             
-## [103] png_0.1-7                   e1071_1.7-3                
-## [105] spatstat.utils_1.17-0       stringi_1.4.6              
-## [107] desc_1.2.0                  lattice_0.20-41            
-## [109] Matrix_1.2-18               vctrs_0.3.2                
-## [111] pillar_1.4.6                lifecycle_0.2.0            
-## [113] BiocManager_1.30.10         lmtest_0.9-37              
-## [115] RcppAnnoy_0.0.16            data.table_1.13.0          
-## [117] cowplot_1.0.0               bitops_1.0-6               
-## [119] irlba_2.3.3                 httpuv_1.5.4               
-## [121] patchwork_1.0.1             GenomicRanges_1.41.5       
-## [123] R6_2.4.1                    bookdown_0.20              
-## [125] promises_1.1.1              gridExtra_2.3              
-## [127] KernSmooth_2.23-17          janeaustenr_0.1.5          
-## [129] IRanges_2.23.10             codetools_0.2-16           
-## [131] MASS_7.3-51.6               assertthat_0.2.1           
-## [133] SummarizedExperiment_1.19.6 rprojroot_1.3-2            
-## [135] withr_2.2.0                 sctransform_0.2.1          
-## [137] S4Vectors_0.27.12           GenomeInfoDbData_1.2.3     
-## [139] mgcv_1.8-31                 parallel_4.0.2             
-## [141] hms_0.5.3                   rpart_4.1-15               
-## [143] grid_4.0.2                  class_7.3-17               
-## [145] rmarkdown_2.3               Rtsne_0.15                 
-## [147] Biobase_2.49.0              shiny_1.5.0</code></pre>
+##   [1] backports_1.1.9             tidytext_0.2.5             
+##   [3] systemfonts_0.2.3           plyr_1.8.6                 
+##   [5] igraph_1.2.5                lazyeval_0.2.2             
+##   [7] splines_4.0.2               BiocParallel_1.23.2        
+##   [9] listenv_0.8.0               SnowballC_0.7.0            
+##  [11] GenomeInfoDb_1.25.10        sva_3.37.0                 
+##  [13] digest_0.6.25               htmltools_0.5.0            
+##  [15] fansi_0.4.1                 memoise_1.1.0              
+##  [17] tensor_1.5                  cluster_2.1.0              
+##  [19] ROCR_1.0-11                 limma_3.45.10              
+##  [21] globals_0.12.5              readr_1.3.1                
+##  [23] annotate_1.67.1             matrixStats_0.56.0         
+##  [25] pkgdown_1.5.1.9000          colorspace_1.4-1           
+##  [27] blob_1.2.1                  rappdirs_0.3.1             
+##  [29] ggrepel_0.8.2               xfun_0.16                  
+##  [31] crayon_1.3.4                RCurl_1.98-1.2             
+##  [33] jsonlite_1.7.0              spatstat.data_1.4-3        
+##  [35] spatstat_1.64-1             genefilter_1.71.0          
+##  [37] survival_3.2-3              zoo_1.8-8                  
+##  [39] ape_5.4-1                   glue_1.4.1                 
+##  [41] polyclip_1.10-0             gtable_0.3.0               
+##  [43] zlibbioc_1.35.0             XVector_0.29.3             
+##  [45] leiden_0.3.3                DelayedArray_0.15.7        
+##  [47] future.apply_1.6.0          BiocGenerics_0.35.4        
+##  [49] abind_1.4-5                 scales_1.1.1               
+##  [51] DBI_1.1.0                   edgeR_3.31.4               
+##  [53] miniUI_0.1.1.1              Rcpp_1.0.5                 
+##  [55] widyr_0.1.3                 viridisLite_0.3.0          
+##  [57] xtable_1.8-4                reticulate_1.16            
+##  [59] bit_4.0.4                   rsvd_1.0.3                 
+##  [61] preprocessCore_1.51.0       stats4_4.0.2               
+##  [63] htmlwidgets_1.5.1           httr_1.4.2                 
+##  [65] RColorBrewer_1.1-2          ellipsis_0.3.1             
+##  [67] Seurat_3.2.0                ica_1.0-2                  
+##  [69] pkgconfig_2.0.3             XML_3.99-0.5               
+##  [71] farver_2.0.3                uwot_0.1.8                 
+##  [73] deldir_0.1-28               locfit_1.5-9.4             
+##  [75] utf8_1.1.4                  reshape2_1.4.4             
+##  [77] tidyselect_1.1.0            labeling_0.3               
+##  [79] later_1.1.0.1               AnnotationDbi_1.51.3       
+##  [81] munsell_0.5.0               tools_4.0.2                
+##  [83] cli_2.0.2                   generics_0.0.2             
+##  [85] RSQLite_2.2.0               broom_0.7.0                
+##  [87] ggridges_0.5.2              evaluate_0.14              
+##  [89] stringr_1.4.0               fastmap_1.0.1              
+##  [91] goftest_1.2-2               yaml_2.2.1                 
+##  [93] ragg_0.3.1                  bit64_4.0.2                
+##  [95] fs_1.5.0                    fitdistrplus_1.1-1         
+##  [97] RANN_2.6.1                  pbapply_1.4-3              
+##  [99] future_1.18.0               nlme_3.1-149               
+## [101] mime_0.9                    tokenizers_0.2.1           
+## [103] compiler_4.0.2              plotly_4.9.2.1             
+## [105] png_0.1-7                   e1071_1.7-3                
+## [107] spatstat.utils_1.17-0       stringi_1.4.6              
+## [109] desc_1.2.0                  lattice_0.20-41            
+## [111] Matrix_1.2-18               vctrs_0.3.2                
+## [113] pillar_1.4.6                lifecycle_0.2.0            
+## [115] BiocManager_1.30.10         lmtest_0.9-37              
+## [117] RcppAnnoy_0.0.16            data.table_1.13.0          
+## [119] cowplot_1.0.0               bitops_1.0-6               
+## [121] irlba_2.3.3                 httpuv_1.5.4               
+## [123] patchwork_1.0.1             GenomicRanges_1.41.6       
+## [125] R6_2.4.1                    bookdown_0.20              
+## [127] promises_1.1.1              gridExtra_2.3              
+## [129] KernSmooth_2.23-17          janeaustenr_0.1.5          
+## [131] IRanges_2.23.10             codetools_0.2-16           
+## [133] MASS_7.3-52                 assertthat_0.2.1           
+## [135] SummarizedExperiment_1.19.6 rprojroot_1.3-2            
+## [137] withr_2.2.0                 sctransform_0.2.1          
+## [139] S4Vectors_0.27.12           GenomeInfoDbData_1.2.3     
+## [141] mgcv_1.8-32                 parallel_4.0.2             
+## [143] hms_0.5.3                   rpart_4.1-15               
+## [145] grid_4.0.2                  class_7.3-17               
+## [147] rmarkdown_2.3               Rtsne_0.15                 
+## [149] Biobase_2.49.0              shiny_1.5.0</code></pre>
 </div>
 </div>
   </div>

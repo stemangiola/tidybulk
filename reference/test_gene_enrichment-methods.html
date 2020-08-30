@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -258,18 +258,19 @@
 
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'>"EGSEA"</span>)
 
-	test_ge<span class='fu'>test_gene_enrichment</span>
-		df_entrez,<span class='kw'>df_entrez</span>
-		~ condition,<span class='op'>~</span><span class='kw'>condition</span>
-		.sample = sample,<span class='kw'>sample</span>
-		.entrez = entrez,<span class='kw'>entrez</span>
-		.abundance = count,<span class='kw'>count</span>
+  <span class='fu'>test_gene_enrichment</span>(
+    <span class='kw'>df_entrez</span>,
+    <span class='op'>~</span> <span class='kw'>condition</span>,
+    .sample = <span class='kw'>sample</span>,
+    .entrez = <span class='kw'>entrez</span>,
+    .abundance = <span class='kw'>count</span>,
       method = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"roast"</span> , <span class='st'>"safe"</span>, <span class='st'>"gage"</span>  ,  <span class='st'>"padog"</span> , <span class='st'>"globaltest"</span>, <span class='st'>"ora"</span> ),
-		species="human",<span class='st'>"human"</span>
-		cores = 2<span class='fl'>2</span>
-	)
+    species=<span class='st'>"human"</span>,
+    cores = <span class='fl'>2</span>
+  )
 
 }
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

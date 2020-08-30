@@ -77,7 +77,7 @@ for each of the summary statistics that you have specified.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -213,8 +213,10 @@ individual methods for extra arguments and differences in behaviour.</p>
     <pre class="examples"><div class='input'><span class='kw'>`%&gt;%`</span> <span class='op'>=</span> <span class='kw'>magrittr</span>::<span class='kw'>`%&gt;%`</span>
 <span class='co'># A summary applied to ungrouped tbl returns a single row</span>
 <span class='kw'>mtcars</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>summarise</span>(mean = <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>disp</span>))</div><div class='output co'>#&gt;       mean
-#&gt; 1 230.7219</div><div class='input'></div></pre>
+  <span class='fu'>summarise</span>(mean = <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>disp</span>))
+</div><div class='output co'>#&gt;       mean
+#&gt; 1 230.7219</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

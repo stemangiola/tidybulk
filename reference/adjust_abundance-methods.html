@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -244,7 +244,7 @@
 
     <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
 <p>This function adjusts the abundance for (known) unwanted variation.
-At the moment just an unwanted covariated is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)</p>
+At the moment just an unwanted covariate is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)</p>
 <p>Underlying method:
 	sva::ComBat(data, batch = my_batch,	mod = design,	prior.plots = FALSE, ...)</p>
 
@@ -257,13 +257,12 @@ At the moment just an unwanted covariated is allowed at a time using Combat (DOI
 <span class='kw'>cm</span><span class='op'>$</span><span class='kw'>batch</span>[<span class='kw'>cm</span><span class='op'>$</span><span class='kw'>sample</span> <span class='op'>%in%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SRR1740035"</span>, <span class='st'>"SRR1740043"</span>)] <span class='op'>=</span> <span class='fl'>1</span>
 
 <span class='kw'>res</span> <span class='op'>=</span>
-	adjust_<span class='fu'>adjust_abundance</span>
-		cm,<span class='kw'>cm</span>
-	~ condi<span class='op'>~</span>i<span class='kw'>condition</span>h<span class='op'>+</span><span class='kw'>batch</span>
-	.sample = sample,<span class='kw'>sample</span>
-	.transcript = transcr<span class='kw'>transcript</span>
-	.abundance = count<span class='kw'>count</span>
-)</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: Combat is applied excluding lowly_abundant, as it performs on non sparse matrices. Therefore NAs will be used for those lowly abundant transcripts </span></div><div class='output co'>#&gt; <span class='message'>Found2batches</span></div><div class='output co'>#&gt; <span class='message'>Adjusting for1covariate(s) or covariate level(s)</span></div><div class='output co'>#&gt; <span class='message'>Standardizing Data across genes</span></div><div class='output co'>#&gt; <span class='message'>Fitting L/S model and finding priors</span></div><div class='output co'>#&gt; <span class='message'>Finding parametric adjustments</span></div><div class='output co'>#&gt; <span class='message'>Adjusting the Data</span></div><div class='input'>
+ <span class='kw'>cm</span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>) <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span>() <span class='op'>%&gt;%</span> 
+  <span class='fu'>adjust_abundance</span>(  <span class='op'>~</span> <span class='kw'>condition</span> <span class='op'>+</span> <span class='kw'>batch</span>  )
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>Found2batches</span></div><div class='output co'>#&gt; <span class='message'>Adjusting for1covariate(s) or covariate level(s)</span></div><div class='output co'>#&gt; <span class='message'>Standardizing Data across genes</span></div><div class='output co'>#&gt; <span class='message'>Fitting L/S model and finding priors</span></div><div class='output co'>#&gt; <span class='message'>Finding parametric adjustments</span></div><div class='output co'>#&gt; <span class='message'>Adjusting the Data</span></div><div class='input'>
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

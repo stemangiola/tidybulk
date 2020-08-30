@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -133,8 +133,6 @@
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
   significance_threshold = <span class='fl'>0.05</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>,
   fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
@@ -151,8 +149,6 @@
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
   significance_threshold = <span class='fl'>0.05</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>,
   fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
@@ -169,8 +165,6 @@
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
   significance_threshold = <span class='fl'>0.05</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>,
   fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
@@ -187,8 +181,6 @@
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
   significance_threshold = <span class='fl'>0.05</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>,
   fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
@@ -205,8 +197,6 @@
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
   significance_threshold = <span class='fl'>0.05</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>,
   fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
@@ -223,8 +213,6 @@
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
   significance_threshold = <span class='fl'>0.05</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>,
   fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
@@ -267,14 +255,6 @@
       <td><p>A real between 0 and 1 (usually 0.05).</p></td>
     </tr>
     <tr>
-      <th>minimum_counts</th>
-      <td><p>A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.</p></td>
-    </tr>
-    <tr>
-      <th>minimum_proportion</th>
-      <td><p>A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.</p></td>
-    </tr>
-    <tr>
       <th>fill_missing_values</th>
       <td><p>A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.</p></td>
     </tr>
@@ -304,7 +284,7 @@
 
     <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
 <p>At the moment this function uses either edgeR (DOI: 10.18129/B9.bioc.edgeR) or DeSEQ2 (DOI: 10.1186/s13059-014-0550-8)
-Bith methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.</p>
+Both methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.</p>
 <p>Underlying method for edgeR framework:
 	.data <!-- %&gt;% --></p>
 <p># Filter
@@ -337,56 +317,54 @@ DESeq2::results()</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
+ <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>) <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span>() <span class='op'>%&gt;%</span> 
+  <span class='fu'>test_differential_abundance</span>( <span class='op'>~</span> <span class='kw'>condition</span> )
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "(Intercept), conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 2,635 x 13</span><span>
+#&gt;    sample transcript `Cell type` count time  condition .abundant  logFC logCPM
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
+#&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… TNFRSF4    b_cell          6 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
+#&gt; </span><span style='color: #555555;'> 2</span><span> SRR17… PLCH2      b_cell        926 0 d   TRUE      TRUE       5.14    10.8
+#&gt; </span><span style='color: #555555;'> 3</span><span> SRR17… PADI4      b_cell         21 0 d   TRUE      TRUE      -</span><span style='color: #BB0000;'>6.27</span><span>    11.0
+#&gt; </span><span style='color: #555555;'> 4</span><span> SRR17… PAX7       b_cell          0 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
+#&gt; </span><span style='color: #555555;'> 5</span><span> SRR17… CDA        b_cell          1 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
+#&gt; </span><span style='color: #555555;'> 6</span><span> SRR17… RCAN3      b_cell        905 0 d   TRUE      TRUE       2.67    11.5
+#&gt; </span><span style='color: #555555;'> 7</span><span> SRR17… SMPDL3B    b_cell          3 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
+#&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE      TRUE       0.858   13.2
+#&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… LCK        b_cell        436 0 d   TRUE      TRUE       6.88    12.2
+#&gt; </span><span style='color: #555555;'>10</span><span> SRR17… COL8A2     b_cell          1 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
+#&gt; </span><span style='color: #555555;'># … with 2,625 more rows, and 4 more variables: F </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, PValue </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
+#&gt; </span><span style='color: #555555;'>#   FDR </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, significant </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span></div><div class='input'>
+  <span class='co'># The function `test_differential_abundance` operated with contrasts too</span>
 
-	test_di<span class='fu'>test_differential_abundance</span>
-	 tidybul<span class='kw'>tidybulk</span>s_<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>
-	    ~ condi<span class='op'>~</span>i<span class='kw'>condition</span>
-	    sample,<span class='kw'>sample</span>
-	    transcr<span class='kw'>transcript</span>
-	    `count`<span class='kw'>`count`</span>
-	)</div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "(Intercept), conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; # A tibble: 2,635 x 13
-#&gt;    sample transcript `Cell type` count time  condition  logFC logCPM     F
-#&gt;    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;      &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
-#&gt;  1 SRR17… TNFRSF4    b_cell          6 0 d   TRUE       NA     NA    NA   
-#&gt;  2 SRR17… PLCH2      b_cell        926 0 d   TRUE        5.48  10.1  32.7 
-#&gt;  3 SRR17… PADI4      b_cell         21 0 d   TRUE       -6.08  10.1  15.3 
-#&gt;  4 SRR17… PAX7       b_cell          0 0 d   TRUE       NA     NA    NA   
-#&gt;  5 SRR17… CDA        b_cell          1 0 d   TRUE      -11.4    9.42 48.0 
-#&gt;  6 SRR17… RCAN3      b_cell        905 0 d   TRUE        2.86  10.7   5.65
-#&gt;  7 SRR17… SMPDL3B    b_cell          3 0 d   TRUE       NA     NA    NA   
-#&gt;  8 SRR17… EPB41      b_cell       4667 0 d   TRUE        1.22  12.5   2.59
-#&gt;  9 SRR17… LCK        b_cell        436 0 d   TRUE        6.99  11.3  10.1 
-#&gt; 10 SRR17… COL8A2     b_cell          1 0 d   TRUE       -6.67   7.49 36.1 
-#&gt; # … with 2,625 more rows, and 4 more variables: PValue &lt;dbl&gt;, FDR &lt;dbl&gt;,
-#&gt; #   significant &lt;lgl&gt;, lowly_abundant &lt;lgl&gt;</div><div class='input'>
-	# The f<span class='co'># The functon `test_differential_abundance` operated with contrasts too</span>
-
+ <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>) <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span>() <span class='op'>%&gt;%</span>
  <span class='fu'>test_differential_abundance</span>(
-	    tidybul<span class='kw'>tidybulk</span>s_<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>
-	    ~ 0 + c<span class='op'>~</span>n<span class='fl'>0</span>i<span class='op'>+</span>i<span class='kw'>condition</span>
-	    sample,<span class='kw'>sample</span>
-	    transcr<span class='kw'>transcript</span>
-	    `count`<span class='kw'>`count`</span>
-	    .contrasts = c( "con<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>it<span class='st'>"conditionTRUE - conditionFALSE"</span>
- )</div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "conditionFALSE, conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; # A tibble: 2,635 x 13
-#&gt;    sample transcript `Cell type` count time  condition `logFC_conditio…
-#&gt;    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;                &lt;dbl&gt;
-#&gt;  1 SRR17… TNFRSF4    b_cell          6 0 d   TRUE                 NA   
-#&gt;  2 SRR17… PLCH2      b_cell        926 0 d   TRUE                  5.48
-#&gt;  3 SRR17… PADI4      b_cell         21 0 d   TRUE                 -6.08
-#&gt;  4 SRR17… PAX7       b_cell          0 0 d   TRUE                 NA   
-#&gt;  5 SRR17… CDA        b_cell          1 0 d   TRUE                -11.4 
-#&gt;  6 SRR17… RCAN3      b_cell        905 0 d   TRUE                  2.86
-#&gt;  7 SRR17… SMPDL3B    b_cell          3 0 d   TRUE                 NA   
-#&gt;  8 SRR17… EPB41      b_cell       4667 0 d   TRUE                  1.22
-#&gt;  9 SRR17… LCK        b_cell        436 0 d   TRUE                  6.99
-#&gt; 10 SRR17… COL8A2     b_cell          1 0 d   TRUE                 -6.67
-#&gt; # … with 2,625 more rows, and 6 more variables: `logCPM_conditionTRUE -
-#&gt; #   conditionFALSE` &lt;dbl&gt;, `F_conditionTRUE - conditionFALSE` &lt;dbl&gt;,
-#&gt; #   `PValue_conditionTRUE - conditionFALSE` &lt;dbl&gt;, `FDR_conditionTRUE -
-#&gt; #   conditionFALSE` &lt;dbl&gt;, `significant_conditionTRUE - conditionFALSE` &lt;lgl&gt;,
-#&gt; #   lowly_abundant &lt;lgl&gt;</div><div class='input'>
-</div></pre>
+      <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>+</span> <span class='kw'>condition</span>,
+      .contrasts = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>( <span class='st'>"conditionTRUE - conditionFALSE"</span>)
+ )
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "conditionFALSE, conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 2,635 x 13</span><span>
+#&gt;    sample transcript `Cell type` count time  condition .abundant
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>    
+#&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… TNFRSF4    b_cell          6 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #555555;'> 2</span><span> SRR17… PLCH2      b_cell        926 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #555555;'> 3</span><span> SRR17… PADI4      b_cell         21 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #555555;'> 4</span><span> SRR17… PAX7       b_cell          0 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #555555;'> 5</span><span> SRR17… CDA        b_cell          1 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #555555;'> 6</span><span> SRR17… RCAN3      b_cell        905 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #555555;'> 7</span><span> SRR17… SMPDL3B    b_cell          3 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… LCK        b_cell        436 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #555555;'>10</span><span> SRR17… COL8A2     b_cell          1 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #555555;'># … with 2,625 more rows, and 6 more variables: `logFC___conditionTRUE -</span><span>
+#&gt; </span><span style='color: #555555;'>#   conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `logCPM___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
+#&gt; </span><span style='color: #555555;'>#   `F___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `PValue___conditionTRUE -</span><span>
+#&gt; </span><span style='color: #555555;'>#   conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `FDR___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
+#&gt; </span><span style='color: #555555;'>#   `significant___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span></div><div class='input'>
+
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

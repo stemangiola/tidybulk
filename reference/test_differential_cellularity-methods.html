@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -283,30 +283,32 @@ deconvolve_cellularity(
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 
-	test_di<span class='fu'>test_differential_cellularity</span>
-	 tidybul<span class='kw'>tidybulk</span>s_<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>
-	    ~ condi<span class='op'>~</span>i<span class='kw'>condition</span>
-	    sample,<span class='kw'>sample</span>
-	    transcr<span class='kw'>transcript</span>
-	    count,<span class='kw'>count</span>
-	    cores = 1<span class='fl'>1</span>
-	)</div><div class='output co'>#&gt; # A tibble: 22 x 7
+  <span class='fu'>test_differential_cellularity</span>(
+   <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>,
+      <span class='op'>~</span> <span class='kw'>condition</span>,
+      <span class='kw'>sample</span>,
+      <span class='kw'>transcript</span>,
+      <span class='kw'>count</span>,
+      cores = <span class='fl'>1</span>
+  )
+</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 22 x 7</span><span>
 #&gt;    .cell_type cell_type_propo… `estimate_(Inte… estimate_condit…
-#&gt;    &lt;chr&gt;      &lt;list&gt;                      &lt;dbl&gt;            &lt;dbl&gt;
-#&gt;  1 B cells n… &lt;tibble [5 × 7]&gt;            -2.55             1.74
-#&gt;  2 B cells m… &lt;tibble [5 × 7]&gt;            NA               NA   
-#&gt;  3 Plasma ce… &lt;tibble [5 × 7]&gt;            NA               NA   
-#&gt;  4 T cells C… &lt;tibble [5 × 7]&gt;            NA               NA   
-#&gt;  5 T cells C… &lt;tibble [5 × 7]&gt;            NA               NA   
-#&gt;  6 T cells C… &lt;tibble [5 × 7]&gt;            -3.93             2.12
-#&gt;  7 T cells C… &lt;tibble [5 × 7]&gt;            NA               NA   
-#&gt;  8 T cells f… &lt;tibble [5 × 7]&gt;            NA               NA   
-#&gt;  9 T cells r… &lt;tibble [5 × 7]&gt;            NA               NA   
-#&gt; 10 T cells g… &lt;tibble [5 × 7]&gt;            NA               NA   
-#&gt; # … with 12 more rows, and 3 more variables: std.error_conditionTRUE &lt;dbl&gt;,
-#&gt; #   statistic_conditionTRUE &lt;dbl&gt;, p.value_conditionTRUE &lt;dbl&gt;</div><div class='input'>
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;list&gt;</span><span>                      </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>            </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
+#&gt; </span><span style='color: #555555;'> 1</span><span> B cells n… </span><span style='color: #555555;'>&lt;tibble [5 × 7]&gt;</span><span>            -</span><span style='color: #BB0000;'>2.55</span><span>             1.74
+#&gt; </span><span style='color: #555555;'> 2</span><span> B cells m… </span><span style='color: #555555;'>&lt;tibble [5 × 7]&gt;</span><span>            </span><span style='color: #BB0000;'>NA</span><span>               </span><span style='color: #BB0000;'>NA</span><span>   
+#&gt; </span><span style='color: #555555;'> 3</span><span> Plasma ce… </span><span style='color: #555555;'>&lt;tibble [5 × 7]&gt;</span><span>            </span><span style='color: #BB0000;'>NA</span><span>               </span><span style='color: #BB0000;'>NA</span><span>   
+#&gt; </span><span style='color: #555555;'> 4</span><span> T cells C… </span><span style='color: #555555;'>&lt;tibble [5 × 7]&gt;</span><span>            </span><span style='color: #BB0000;'>NA</span><span>               </span><span style='color: #BB0000;'>NA</span><span>   
+#&gt; </span><span style='color: #555555;'> 5</span><span> T cells C… </span><span style='color: #555555;'>&lt;tibble [5 × 7]&gt;</span><span>            </span><span style='color: #BB0000;'>NA</span><span>               </span><span style='color: #BB0000;'>NA</span><span>   
+#&gt; </span><span style='color: #555555;'> 6</span><span> T cells C… </span><span style='color: #555555;'>&lt;tibble [5 × 7]&gt;</span><span>            -</span><span style='color: #BB0000;'>3.93</span><span>             2.12
+#&gt; </span><span style='color: #555555;'> 7</span><span> T cells C… </span><span style='color: #555555;'>&lt;tibble [5 × 7]&gt;</span><span>            </span><span style='color: #BB0000;'>NA</span><span>               </span><span style='color: #BB0000;'>NA</span><span>   
+#&gt; </span><span style='color: #555555;'> 8</span><span> T cells f… </span><span style='color: #555555;'>&lt;tibble [5 × 7]&gt;</span><span>            </span><span style='color: #BB0000;'>NA</span><span>               </span><span style='color: #BB0000;'>NA</span><span>   
+#&gt; </span><span style='color: #555555;'> 9</span><span> T cells r… </span><span style='color: #555555;'>&lt;tibble [5 × 7]&gt;</span><span>            </span><span style='color: #BB0000;'>NA</span><span>               </span><span style='color: #BB0000;'>NA</span><span>   
+#&gt; </span><span style='color: #555555;'>10</span><span> T cells g… </span><span style='color: #555555;'>&lt;tibble [5 × 7]&gt;</span><span>            </span><span style='color: #BB0000;'>NA</span><span>               </span><span style='color: #BB0000;'>NA</span><span>   
+#&gt; </span><span style='color: #555555;'># … with 12 more rows, and 3 more variables: std.error_conditionTRUE </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
+#&gt; </span><span style='color: #555555;'>#   statistic_conditionTRUE </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, p.value_conditionTRUE </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span></div><div class='input'>
 
-</div></pre>
+
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
