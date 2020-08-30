@@ -160,10 +160,6 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#'
-#' @param factor_of_interest The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.
-#' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_selection_function A function that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
 #' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
@@ -185,7 +181,10 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @examples
 #'
 #'
-#'  scale_abundance(tidybulk::counts_mini,  sample, transcript, `count`)
+#'  tidybulk::counts_mini %>% 
+#'    tidybulk(sample, transcript, count) %>% 
+#'    identify_abundant() %>% 
+#'    scale_abundance()
 #'
 #'
 #'
@@ -197,9 +196,6 @@ setGeneric("scale_abundance", function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
-																			 factor_of_interest = NULL,
-																			 minimum_counts = 10,
-																			 minimum_proportion = 0.7,
 																			 method = "TMM",
 																			 reference_selection_function = median,
 																			 action = "add")
@@ -210,9 +206,6 @@ setGeneric("scale_abundance", function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
-														 factor_of_interest = NULL,
-														 minimum_counts = 10,
-														 minimum_proportion = 0.7,
 														 method = "TMM",
 														 reference_selection_function = median,
 														 action = "add")
@@ -226,38 +219,51 @@ setGeneric("scale_abundance", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
-	factor_of_interest = enquo(factor_of_interest)
-
+	# Set column name for value scaled
+	value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
+	
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 		
 	.data_norm =
 		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
 		get_scaled_counts_bulk(
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
 			method = method,
 			reference_selection_function = reference_selection_function
 		) %>%
-		arrange(!!.sample,!!.transcript)
+		
+		# Attach column internals
+		add_tt_columns(
+			!!.sample,
+			!!.transcript,
+			!!.abundance,
+			!!(function(x, v)	enquo(v))(x,!!value_scaled)
+		) 
 
 
 	if (action == "add"){
 
 		.data %>%
-			arrange(!!.sample,!!.transcript) %>%
 
-			# Add scaled data set
-			bind_cols(.data_norm %>%
-									select(-one_of(quo_name(.sample)), -one_of(quo_name(.transcript))))		%>%
-
+			left_join(.data_norm, by=quo_name(.sample)) %>%
+			dplyr::mutate(!!value_scaled := !!.abundance * multiplier) %>%
+			
 			# Attach attributes
-			reattach_internals(.data_norm)
+			reattach_internals(.data_norm) 
 
 	}
 	else if (action == "get"){
@@ -265,15 +271,11 @@ setGeneric("scale_abundance", function(.data,
 		.data %>%
 
 			# Selecting the right columns
-			select(
-				!!.sample,
-				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
-			) %>%
-			distinct() %>%
-			mutate_if(is.character, as.factor) %>%
+			pivot_sample(!!.sample) %>%
 
 			# Join result
 			left_join(.data_norm, by=quo_name(.sample)) %>%
+			
 
 			# Attach attributes
 			reattach_internals(.data_norm)
@@ -405,22 +407,48 @@ setGeneric("cluster_elements", function(.data,
 	validation(.data, !!.element, !!.feature, !!.abundance)
 	error_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
 
-	if (method == "kmeans") {
+	
+	.data_procesed = 
+		
+		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
+		# Choose algorithm
+		when(
+			method == "kmeans" ~ 	get_clusters_kmeans_bulk(.,
+				.abundance = !!.abundance,
+				.element = !!.element,
+				.feature = !!.feature,
+				of_samples = of_samples,
+				log_transform = log_transform,
+				...
+			),
+			method == "SNN" ~ get_clusters_SNN_bulk(.,
+				.abundance = !!.abundance,
+				.element = !!.element,
+				.feature = !!.feature,
+				of_samples = of_samples,
+				log_transform = log_transform,
+				...
+			),
+			TRUE ~ 		stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
+
+		)
+	
+	
+	# Actions
 		if (action == "add"){
 
 			.data %>%
-				dplyr::left_join(
-					(.) %>%
-						get_clusters_kmeans_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
+				dplyr::left_join(	.data_procesed,		by=quo_name(.element)	) %>%
 
 				# Attach attributes
 				reattach_internals(.data)
@@ -431,111 +459,19 @@ setGeneric("cluster_elements", function(.data,
 			.data %>%
 
 				# Selecting the right columns
-				select(
-					!!.element,
-					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				) %>%
-				distinct() %>%
+				pivot_sample(!!.element) %>%
 
-				dplyr::left_join(
-					.data %>%
-						get_clusters_kmeans_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
-
+				dplyr::left_join(	.data_procesed,		by=quo_name(.element)	) %>%
+				
 				# Attach attributes
 				reattach_internals(.data)
 
 		}
-		else if (action == "only")
-			get_clusters_kmeans_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
+		else if (action == "only") 	.data_procesed
 		else
 			stop(
 				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
-	}
-	else if (method == "SNN") {
-		if (action == "add"){
-
-			.data %>%
-				dplyr::left_join(
-					(.) %>%
-						get_clusters_SNN_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
-
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				select(
-					!!.element,
-					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				) %>%
-				distinct() %>%
-
-				dplyr::left_join(
-					.data %>%
-						get_clusters_SNN_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
-
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-
-		else if (action == "only")
-			get_clusters_SNN_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-	}
-	else
-		stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
 
 }
 
@@ -616,10 +552,18 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 #'
 #'
 #'
-#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'  reduce_dimensions( method="MDS", .dims = 3)
 #'
 #'
-#' counts.PCA =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="PCA", .dims = 3)
+#' counts.PCA =  
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'  reduce_dimensions(method="PCA", .dims = 3)
 #'
 #'
 #'
@@ -674,11 +618,21 @@ setGeneric("reduce_dimensions", function(.data,
 	validation(.data, !!.element, !!.feature, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
 
-	if (method == "MDS") {
-
-		.data_processed =
-			.data %>%
-			get_reduced_dimensions_MDS_bulk(
+	.data_processed = 
+		
+		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
+		when(
+			method == "MDS" ~ 	get_reduced_dimensions_MDS_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -687,45 +641,8 @@ setGeneric("reduce_dimensions", function(.data,
 				of_samples = of_samples,
 				log_transform = log_transform,
 				...
-			)
-
-		if (action == "add"){
-
-			.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				select(
-					!!.element,
-					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				) %>%
-				distinct() %>%
-
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-
-		else if (action == "only") .data_processed
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-	}
-	else if (method == "PCA") {
-
-		.data_processed =
-			.data %>%
-			get_reduced_dimensions_PCA_bulk(
+			),
+			method == "PCA" ~ 	get_reduced_dimensions_PCA_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -735,48 +652,8 @@ setGeneric("reduce_dimensions", function(.data,
 				log_transform = log_transform,
 				scale = scale,
 				...
-			)
-
-		if (action == "add"){
-
-			.data %>%
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				select(
-					!!.element,
-					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				) %>%
-				distinct() %>%
-
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-
-		else if (action == "only")	.data_processed
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-
-	}
-	else if (method == "tSNE") {
-
-		.data_processed =
-			.data %>%
-			get_reduced_dimensions_TSNE_bulk(
+			),
+			method == "tSNE" ~ 	get_reduced_dimensions_TSNE_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -785,43 +662,40 @@ setGeneric("reduce_dimensions", function(.data,
 				of_samples = of_samples,
 				log_transform = log_transform,
 				...
-			)
+			),
+			TRUE ~ 	stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\"")
+		)
+		
+		
 
-		if (action == "add"){
+	if (action == "add"){
 
-			.data %>%
-				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
+		.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
 
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				select(
-					!!.element,
-					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				) %>%
-				distinct() %>%
-
-				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
-
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-		else if (action == "only") .data_processed
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
+			# Attach attributes
+			reattach_internals(.data_processed)
 
 	}
+	else if (action == "get"){
+
+		.data %>%
+
+			# Selecting the right columns
+			pivot_sample(!!.element) %>%
+
+			dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+			# Attach attributes
+			reattach_internals(.data_processed)
+
+	}
+
+	else if (action == "only") .data_processed
 	else
-		stop("tidybulk says: method must be either \"MDS\" or \"PCA\"")
+		stop(
+			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+		)
+	
 
 }
 
@@ -894,7 +768,11 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 #'
 #' @examples
 #'
-#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'  reduce_dimensions( method="MDS", .dims = 3)
 #'
 #' counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 #'
@@ -1087,16 +965,21 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 #' @examples
 #'
 #'
-#'
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
 #'    remove_redundancy(
-#'     tidybulk::counts_mini,
 #' 	   .element = sample,
 #' 	   .feature = transcript,
 #' 	   	.abundance =  count,
 #' 	   	method = "correlation"
 #' 	   	)
 #'
-#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS = 
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'   reduce_dimensions( method="MDS", .dims = 3)
 #'
 #' remove_redundancy(
 #' 	counts.MDS,
@@ -1196,7 +1079,7 @@ setGeneric("remove_redundancy", function(.data,
 #' @docType methods
 #' @rdname remove_redundancy-methods
 #'
-#' @return A tbl object with with dropped recundant elements (e.g., samples).
+#' @return A tbl object with with dropped redundant elements (e.g., samples).
 setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 
 #' remove_redundancy
@@ -1205,7 +1088,7 @@ setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 #' @docType methods
 #' @rdname remove_redundancy-methods
 #'
-#' @return A tbl object with with dropped recundant elements (e.g., samples).
+#' @return A tbl object with with dropped redundant elements (e.g., samples).
 setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 
 #' remove_redundancy
@@ -1214,7 +1097,7 @@ setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 #' @docType methods
 #' @rdname remove_redundancy-methods
 #'
-#' @return A tbl object with with dropped recundant elements (e.g., samples).
+#' @return A tbl object with with dropped redundant elements (e.g., samples).
 setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 
 
@@ -1241,7 +1124,7 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' @param ... Further parameters passed to the function sva::ComBat
 #'
 #' @details This function adjusts the abundance for (known) unwanted variation.
-#' At the moment just an unwanted covariated is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
+#' At the moment just an unwanted covariate is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
 #'
 #' Underlying method:
 #' 	sva::ComBat(data, batch = my_batch,	mod = design,	prior.plots = FALSE, ...)
@@ -1260,13 +1143,10 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' cm$batch[cm$sample %in% c("SRR1740035", "SRR1740043")] = 1
 #'
 #' res =
-#' 	adjust_abundance(
-#' 		cm,
-#'		~ condition + batch,
-#'		.sample = sample,
-#'		.transcript = transcript,
-#'		.abundance = count
-#'	)
+#'  cm %>%
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#' 	adjust_abundance(	~ condition + batch	)
 #'
 #'
 #' @docType methods
@@ -1311,8 +1191,19 @@ setGeneric("adjust_abundance", function(.data,
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 	
 	.data_processed =
+		
+		.data %>%
+	
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
 		get_adjusted_counts_for_unwanted_variation_bulk(
-			.data,
 			.formula,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
@@ -1325,7 +1216,7 @@ setGeneric("adjust_abundance", function(.data,
 
 		.data %>%
 
-			# Add adjsted column
+			# Add adjusted column
 			dplyr::left_join(.data_processed,	by = c(quo_name(.transcript), quo_name(.sample))) %>%
 
 			# Attach attributes
@@ -1337,13 +1228,15 @@ setGeneric("adjust_abundance", function(.data,
 		.data %>%
 
 			# Selecting the right columns
-			select(
-				!!.sample,
-				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
-			) %>%
-			distinct() %>%
+			pivot_sample(!!.sample) %>%
+			# 
+			# select(
+			# 	!!.sample,
+			# 	get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
+			# ) %>%
+			# distinct() %>%
 
-			# Add adjsted column
+			# Add adjusted column
 			dplyr::left_join(.data_processed,	by = quo_name(.sample)) %>%
 
 			# Attach attributes
@@ -1611,11 +1504,13 @@ setGeneric("deconvolve_cellularity", function(.data,
 
 
 			# Selecting the right columns
-			select(
-				!!.sample,
-				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
-			) %>%
-			distinct() %>%
+			pivot_sample(!!.sample) %>%
+			# 
+			# select(
+			# 	!!.sample,
+			# 	get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
+			# ) %>%
+			# distinct() %>%
 
 			# Add new annotation
 			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
@@ -1932,15 +1827,13 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom"
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
-#' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
 #' @details At the moment this function uses either edgeR (DOI: 10.18129/B9.bioc.edgeR) or DeSEQ2 (DOI: 10.1186/s13059-014-0550-8)
-#' Bith methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
+#' Both methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
 #'
 #' Underlying method for edgeR framework:
 #' 	.data %>%
@@ -1986,23 +1879,18 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #' @examples
 #'
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#' 	test_differential_abundance( ~ condition )
 #'
-#' 	test_differential_abundance(
-#' 	 tidybulk::counts_mini,
-#' 	    ~ condition,
-#' 	    sample,
-#' 	    transcript,
-#' 	    `count`
-#' 	)
+#' 	# The function `test_differential_abundance` operated with contrasts too
 #'
-#' 	# The functon `test_differential_abundance` operated with contrasts too
-#'
+#'  tidybulk::counts_mini %>%
+#'  tidybulk(sample, transcript, count) %>%
+#'  identify_abundant() %>%
 #'  test_differential_abundance(
-#' 	    tidybulk::counts_mini,
 #' 	    ~ 0 + condition,
-#' 	    sample,
-#' 	    transcript,
-#' 	    `count`,
 #' 	    .contrasts = c( "conditionTRUE - conditionFALSE")
 #'  )
 #'
@@ -2019,8 +1907,6 @@ setGeneric("test_differential_abundance", function(.data,
 																									 .contrasts = NULL,
 																									 method = "edgeR_quasi_likelihood",
 																									 significance_threshold = 0.05,
-																									 minimum_counts = 10,
-																									 minimum_proportion = 0.7,
 																									 fill_missing_values = FALSE,
 																									 scaling_method = "TMM",
 																									 omit_contrast_in_colnames = FALSE,
@@ -2037,8 +1923,6 @@ setGeneric("test_differential_abundance", function(.data,
 																					.contrasts = NULL,
 																					method = "edgeR_quasi_likelihood",
 																					significance_threshold = 0.05,
-																					minimum_counts = 10,
-																					minimum_proportion = 0.7,
 																					fill_missing_values = FALSE,
 																					scaling_method = "TMM",
 																					omit_contrast_in_colnames = FALSE,
@@ -2058,10 +1942,24 @@ setGeneric("test_differential_abundance", function(.data,
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 	
-	if(grepl("edgeR", method)){
-		.data_processed =
-			get_differential_transcript_abundance_bulk(
-				.data,
+	.data_processed = 
+		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
+		# Choose method
+		when(
+			
+			# edgeR
+			grepl("edgeR", method) ~ get_differential_transcript_abundance_bulk(
+				.,
 				.formula,
 				.sample = !!.sample,
 				.transcript = !!.transcript,
@@ -2069,47 +1967,45 @@ setGeneric("test_differential_abundance", function(.data,
 				.contrasts = .contrasts,
 				method = method,
 				significance_threshold = significance_threshold,
-				minimum_counts = minimum_counts,
-				minimum_proportion = minimum_proportion,
 				fill_missing_values = fill_missing_values,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames
-			)
-	}	else if (tolower(method)=="limma_voom"){
-		.data_processed =
-			get_differential_transcript_abundance_bulk_voom(
-			.data,
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			.contrasts = .contrasts,
-			significance_threshold = significance_threshold,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			fill_missing_values = fill_missing_values,
-			scaling_method = scaling_method,
-			omit_contrast_in_colnames = omit_contrast_in_colnames
+			),
+			
+			# Voom
+			tolower(method)=="limma_voom" ~ 	
+				get_differential_transcript_abundance_bulk_voom(
+					.,
+					.formula,
+					.sample = !!.sample,
+					.transcript = !!.transcript,
+					.abundance = !!.abundance,
+					.contrasts = .contrasts,
+					significance_threshold = significance_threshold,
+					fill_missing_values = fill_missing_values,
+					scaling_method = scaling_method,
+					omit_contrast_in_colnames = omit_contrast_in_colnames
+				),
+			
+			# DESeq2
+			tolower(method)=="deseq2" ~ get_differential_transcript_abundance_deseq2(
+				.,
+				.formula,
+				.sample = !!.sample,
+				.transcript = !!.transcript,
+				.abundance = !!.abundance,
+				.contrasts = .contrasts,
+				method = method,
+				significance_threshold = significance_threshold,
+				fill_missing_values = fill_missing_values,
+				scaling_method = scaling_method,
+				omit_contrast_in_colnames = omit_contrast_in_colnames
+			),
+			
+			# Else error
+			TRUE ~  stop("tidybulk says: the onyl methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"DESeq2\"")
 		)
-	}	else if (tolower(method)=="deseq2"){
-		.data_processed =
-			get_differential_transcript_abundance_deseq2(
-				.data,
-				.formula,
-				.sample = !!.sample,
-				.transcript = !!.transcript,
-				.abundance = !!.abundance,
-				.contrasts = .contrasts,
-				method = method,
-				significance_threshold = significance_threshold,
-				minimum_counts = minimum_counts,
-				minimum_proportion = minimum_proportion,
-				fill_missing_values = fill_missing_values,
-				scaling_method = scaling_method,
-				omit_contrast_in_colnames = omit_contrast_in_colnames
-			)
-	}
-	else stop("tidybulk says: the onyl methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"DESeq2\"")
+
 
 	if (action == "add"){
 
@@ -2129,11 +2025,12 @@ setGeneric("test_differential_abundance", function(.data,
 		.data %>%
 
 			# Selecting the right columns
-			select(
-				!!.transcript,
-				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$vertical_cols
-			) %>%
-			distinct() %>%
+			pivot_transcript(!!.transcript) %>%
+			# select(
+			# 	!!.transcript,
+			# 	get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$vertical_cols
+			# ) %>%
+			# distinct() %>%
 
 			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
 
@@ -2298,11 +2195,148 @@ setMethod("keep_variable", "tbl_df", .keep_variable)
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("keep_variable", "tidybulk", .keep_variable)
 
+#' find abundant transcripts
+#'
+#' \lifecycle{maturing}
+#'
+#' @description identify_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#' @importFrom dplyr filter
+#'
+#' @name identify_abundant
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param factor_of_interest The name of the column of the factor of interest. This is used for defining sample groups for the filtering process. It uses the filterByExpr function from edgeR.
+#' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#'
+#' @details At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
+#'
+#'  Underlying method:
+#'  edgeR::filterByExpr(
+#'    data,
+#'		min.count = minimum_counts,
+#'		group = string_factor_of_interest,
+#'		min.prop = minimum_proportion
+#'	)
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#'
+#' 	identify_abundant(
+#' 	tidybulk::counts_mini,
+#' 	    sample,
+#' 	    transcript,
+#' 	    `count`
+#' 	)
+#'
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#' @export
+#'
+setGeneric("identify_abundant", function(.data,
+																		 .sample = NULL,
+																		 .transcript = NULL,
+																		 .abundance = NULL,
+																		 factor_of_interest = NULL,
+																		 minimum_counts = 10,
+																		 minimum_proportion = 0.7)
+	standardGeneric("identify_abundant"))
+
+# Set internal
+.identify_abundant = 		function(.data,
+														.sample = NULL,
+														.transcript = NULL,
+														.abundance = NULL,
+														factor_of_interest = NULL,
+														minimum_counts = 10,
+														minimum_proportion = 0.7)
+{
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
+	
+	factor_of_interest = enquo(factor_of_interest)
+	
+	# Validate data frame
+	validation(.data, !!.sample, !!.transcript, !!.abundance)
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
+	.data %>%
+		
+		# Filter
+		when(
+			
+			# If column is present use this instead of doing more work
+			".abundant" %in% colnames(.) %>% not ~  {
+					gene_to_exclude =
+						add_scaled_counts_bulk.get_low_expressed(
+							.data,
+							.sample = !!.sample,
+							.transcript = !!.transcript,
+							.abundance = !!.abundance,
+							factor_of_interest = !!factor_of_interest,
+							minimum_counts = minimum_counts,
+							minimum_proportion = minimum_proportion
+						)
+					
+					dplyr::mutate(., .abundant := !!.transcript %in% gene_to_exclude %>% not())
+				},
+			~ (.)
+		)	%>%
+
+		# Attach attributes
+		reattach_internals(.data)
+}
+
+#' keep_abundant
+#' @inheritParams identify_abundant
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("identify_abundant", "spec_tbl_df", .identify_abundant)
+
+#' identify_abundant
+#' @inheritParams identify_abundant
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("identify_abundant", "tbl_df", .identify_abundant)
+
+#' identify_abundant
+#' @inheritParams identify_abundant
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("identify_abundant", "tidybulk", .identify_abundant)
 
 
 #' Keep abundant transcripts
 #'
-#' \lifecycle{maturing}
+#' \lifecycle{questioning}
 #'
 #' @description keep_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -2387,29 +2421,15 @@ setGeneric("keep_abundant", function(.data,
 	.data %>%
 
 		# Filter
-		ifelse_pipe("lowly_abundant" %in% colnames((.)),
-
-								# If column is present use this instead of doing more work
-								~ {
-									#message("tidybulk says: \"lowly_abundant\" column is present. Using this to filter data")
-									.x %>% dplyr::filter(!lowly_abundant)
-								},
-
-								# If no column is present go
-								~ {
-									gene_to_exclude =
-										add_scaled_counts_bulk.get_low_expressed(
-											.data,
-											.sample = !!.sample,
-											.transcript = !!.transcript,
-											.abundance = !!.abundance,
-											factor_of_interest = !!factor_of_interest,
-											minimum_counts = minimum_counts,
-											minimum_proportion = minimum_proportion
-										)
-
-									.x %>% dplyr::filter(!!.transcript %in% gene_to_exclude %>% not())
-								})	%>%
+		identify_abundant(
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			factor_of_interest = !!factor_of_interest,
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion
+		) %>%
+		dplyr::filter(.abundant) %>%
 
 		# Attach attributes
 		reattach_internals(.data)
@@ -2562,17 +2582,27 @@ setGeneric("test_gene_enrichment", function(.data,
 	validation(.data, !!.sample, !!.entrez, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 	
-	test_gene_enrichment_bulk_EGSEA(
-		.data,
-		.formula,
-		.sample = !!.sample,
-		.entrez = !!.entrez,
-		.abundance = !!.abundance,
-		.contrasts = .contrasts,
-		method = method,
-		species = species,
-		cores = cores
-	)
+	.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
+		test_gene_enrichment_bulk_EGSEA(
+			.formula,
+			.sample = !!.sample,
+			.entrez = !!.entrez,
+			.abundance = !!.abundance,
+			.contrasts = .contrasts,
+			method = method,
+			species = species,
+			cores = cores
+		)
 
 
 

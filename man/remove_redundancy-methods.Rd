@@ -120,11 +120,11 @@ remove_redundancy(
 \value{
 A tbl object with with dropped redundant elements (e.g., samples).
 
-A tbl object with with dropped recundant elements (e.g., samples).
+A tbl object with with dropped redundant elements (e.g., samples).
 
-A tbl object with with dropped recundant elements (e.g., samples).
+A tbl object with with dropped redundant elements (e.g., samples).
 
-A tbl object with with dropped recundant elements (e.g., samples).
+A tbl object with with dropped redundant elements (e.g., samples).
 
 A `SummarizedExperiment` object
 
@@ -139,16 +139,21 @@ remove_redundancy() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT
 \examples{
 
 
-
+ tidybulk::counts_mini \%>\% 
+ tidybulk(sample, transcript, count) \%>\% 
+ identify_abundant() \%>\% 
    remove_redundancy(
-    tidybulk::counts_mini,
 	   .element = sample,
 	   .feature = transcript,
 	   	.abundance =  count,
 	   	method = "correlation"
 	   	)
 
-counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+counts.MDS = 
+ tidybulk::counts_mini \%>\% 
+ tidybulk(sample, transcript, count) \%>\% 
+ identify_abundant() \%>\% 
+  reduce_dimensions( method="MDS", .dims = 3)
 
 remove_redundancy(
 	counts.MDS,

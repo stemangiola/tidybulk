@@ -87,9 +87,6 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 															 .sample = NULL,
 															 .transcript = NULL,
 															 .abundance = NULL,
-															 factor_of_interest = NULL,
-															 minimum_counts = 10,
-															 minimum_proportion = 0.7,
 															 method = "TMM",
 															 reference_selection_function = median,
 															 action = "add") {
@@ -97,8 +94,6 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-	
-	factor_of_interest = enquo(factor_of_interest)
 	
 	.data %>%
 		
@@ -110,9 +105,6 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 			!!.sample,
 			!!.transcript,
 			!!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
 			method = method,
 			reference_selection_function = reference_selection_function,
 			action = action
@@ -626,8 +618,6 @@ setMethod(
 																					 .contrasts = NULL,
 																					 method = "edgeR_quasi_likelihood",
 																					 significance_threshold = 0.05,
-																					 minimum_counts = 10,
-																					 minimum_proportion = 0.7,
 																					 fill_missing_values = FALSE,
 																					 scaling_method = "TMM",
 																					 omit_contrast_in_colnames = FALSE,
@@ -652,8 +642,6 @@ setMethod(
 			.contrasts = .contrasts,
 			method = method,
 			significance_threshold = significance_threshold,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
 			fill_missing_values = fill_missing_values,
 			scaling_method = scaling_method,
 			omit_contrast_in_colnames = omit_contrast_in_colnames,
@@ -749,6 +737,65 @@ setMethod("keep_variable",
 setMethod("keep_variable",
 					"RangedSummarizedExperiment",
 					.keep_variable_se)
+
+.identify_abundant_se = function(.data,
+														 .sample = NULL,
+														 .transcript = NULL,
+														 .abundance = NULL,
+														 factor_of_interest = NULL,
+														 minimum_counts = 10,
+														 minimum_proportion = 0.7)
+{
+	# Make col names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	factor_of_interest = enquo(factor_of_interest)
+	
+	.data %>%
+		
+		# Convert to tidybulk
+		tidybulk() %>%
+		
+		# Apply scale method
+		identify_abundant(
+			.sample = !!.sample,
+			.transcript = !!.transcript,
+			.abundance = !!.abundance,
+			factor_of_interest = !!factor_of_interest,
+			minimum_counts = minimum_counts,
+			minimum_proportion = minimum_proportion
+		) %>%
+		
+		# Convert to SummaizedExperiment
+		tidybulk_to_SummarizedExperiment()
+	
+}
+
+#' identify_abundant
+#' @inheritParams identify_abundant
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("identify_abundant",
+					"SummarizedExperiment",
+					.identify_abundant_se)
+
+#' identify_abundant
+#' @inheritParams identify_abundant
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("identify_abundant",
+					"RangedSummarizedExperiment",
+					.identify_abundant_se)
+
 
 
 

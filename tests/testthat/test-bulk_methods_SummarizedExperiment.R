@@ -26,11 +26,11 @@ test_that("tidybulk SummarizedExperiment conversion",{
 
 test_that("tidybulk SummarizedExperiment normalisation manual",{
 
-	res = tidybulk(tidybulk:::tidybulk_to_SummarizedExperiment(scale_abundance(tidybulk(se))))
+	res = tidybulk(tidybulk:::tidybulk_to_SummarizedExperiment(scale_abundance(tidybulk(se) %>% identify_abundant())))
 
 	expect_equal(
 		res[1:4,]$`counts_scaled`,
-		c(1345.385350 , 871.024558,  910.895401 ,   2.044659),
+		c(1341.524911 , 868.525246,  908.281684 ,   2.038792),
 		tolerance=1e-3
 	)
 
@@ -47,7 +47,7 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 
 test_that("tidybulk SummarizedExperiment normalisation",{
 
-	res = scale_abundance(se)
+	res = scale_abundance(se %>% identify_abundant())
 
 	expect_equal(
 		names(SummarizedExperiment::assays(res)),
@@ -74,7 +74,7 @@ test_that("tidybulk SummarizedExperiment clustering",{
 
 test_that("tidybulk SummarizedExperiment clustering",{
 
-	res = reduce_dimensions(se, method="PCA")
+	res = reduce_dimensions(se %>% identify_abundant(), method="PCA")
 
 	expect_equal(
 		tail(names(SummarizedExperiment::colData(res)), 1),
@@ -86,7 +86,7 @@ test_that("tidybulk SummarizedExperiment clustering",{
 test_that("Get rotated dimensions - SummarizedExperiment",{
 
 	res.pca =
-		reduce_dimensions(se,		method="PCA"	)
+		reduce_dimensions(se %>% identify_abundant(),		method="PCA"	)
 
 	res =
 		rotate_dimensions(
@@ -125,7 +125,7 @@ test_that("Get adjusted counts - SummarizedExperiment",{
 
 	res =
 		adjust_abundance(
-			tidybulk:::tidybulk_to_SummarizedExperiment(cm, a, b, c),
+			tidybulk:::tidybulk_to_SummarizedExperiment(cm, a, b, c) %>% identify_abundant(),
 			~ condition + batch
 		)
 
@@ -160,7 +160,8 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 test_that("Add differential trancript abundance - SummarizedExperiment",{
 
 	res =		test_differential_abundance(
-		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c),	
+		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>% 
+			identify_abundant(factor_of_interest = condition),	
 		~ condition	
 	)
 	
@@ -168,7 +169,7 @@ test_that("Add differential trancript abundance - SummarizedExperiment",{
 	
 	# Quasi likelihood
 	res_tibble =		test_differential_abundance(
-		input_df,
+		input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
 		~ condition	,
 		a, b, c
 	)
@@ -191,11 +192,12 @@ test_that("Add differential trancript abundance - SummarizedExperiment",{
 	
 	# Likelihood ratio
 	res2 =		test_differential_abundance(
-		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c),	
+		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>%
+			identify_abundant(factor_of_interest = condition),	
 		~ condition, method = "edgeR_likelihood_ratio"	)
 	
 	res2_tibble =		test_differential_abundance(
-		input_df,
+		input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
 		~ condition	,
 		a, b, c, method = "edgeR_likelihood_ratio"
 	)

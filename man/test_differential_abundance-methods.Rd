@@ -19,8 +19,6 @@ test_differential_abundance(
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
   fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -36,8 +34,6 @@ test_differential_abundance(
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
   fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -53,8 +49,6 @@ test_differential_abundance(
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
   fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -70,8 +64,6 @@ test_differential_abundance(
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
   fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -87,8 +79,6 @@ test_differential_abundance(
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
   fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -104,8 +94,6 @@ test_differential_abundance(
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   significance_threshold = 0.05,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
   fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -128,10 +116,6 @@ test_differential_abundance(
 \item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom"}
 
 \item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
-
-\item{minimum_counts}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.}
-
-\item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
 \item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
 
@@ -161,7 +145,7 @@ test_differential_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <
 \lifecycle{maturing}
 
 At the moment this function uses either edgeR (DOI: 10.18129/B9.bioc.edgeR) or DeSEQ2 (DOI: 10.1186/s13059-014-0550-8)
-Bith methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
+Both methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
 
 Underlying method for edgeR framework:
 	.data %>%
@@ -201,23 +185,18 @@ DESeq2::results()
 }
 \examples{
 
+ tidybulk::counts_mini \%>\% 
+ tidybulk(sample, transcript, count) \%>\% 
+ identify_abundant() \%>\% 
+	test_differential_abundance( ~ condition )
 
-	test_differential_abundance(
-	 tidybulk::counts_mini,
-	    ~ condition,
-	    sample,
-	    transcript,
-	    `count`
-	)
+	# The function `test_differential_abundance` operated with contrasts too
 
-	# The functon `test_differential_abundance` operated with contrasts too
-
+ tidybulk::counts_mini \%>\%
+ tidybulk(sample, transcript, count) \%>\%
+ identify_abundant() \%>\%
  test_differential_abundance(
-	    tidybulk::counts_mini,
 	    ~ 0 + condition,
-	    sample,
-	    transcript,
-	    `count`,
 	    .contrasts = c( "conditionTRUE - conditionFALSE")
  )
 

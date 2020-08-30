@@ -61,9 +61,9 @@ se.aggr =  se_mini %>% aggregate_duplicates( 	aggregation_function = sum )
 se.aggr
 
 ## ----normalise, cache=TRUE----------------------------------------------------
-tt.norm =  tt.aggr %>% scale_abundance(method="TMM")
+tt.norm =  tt.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance(method="TMM")
 
-tt.norm %>% select(`count`, count_scaled, lowly_abundant, everything())
+tt.norm %>% select(`count`, count_scaled, .abundant, everything())
 
 ## ----plot_normalise, cache=TRUE-----------------------------------------------
 tt.norm %>%
@@ -73,7 +73,7 @@ tt.norm %>%
 	my_theme
 
 ## ----normalise se, cache=TRUE-------------------------------------------------
-se.norm =  se.aggr %>% scale_abundance(method="TMM")
+se.norm =  se.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance(method="TMM")
 
 se.norm
 
@@ -120,6 +120,7 @@ tt_tcga_breast =
 ## ----tsne, cache=TRUE---------------------------------------------------------
 tt.norm.tSNE =
 	tt_tcga_breast %>%
+	identify_abundant() %>%
 	reduce_dimensions(
 		.abundance = count_scaled,
 		method = "tSNE",
@@ -139,6 +140,7 @@ tt.norm.tSNE %>%
 ## ----tsne se, cache=TRUE------------------------------------------------------
 se.norm.tSNE =
 	se_breast_tcga_mini %>%
+	identify_abundant() %>%
 	reduce_dimensions(
 		.abundance = count_scaled,
 		method = "tSNE",
@@ -172,7 +174,7 @@ se.norm.MDS %>%
 rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 
 ## ----de, cache=TRUE-----------------------------------------------------------
-tt %>%	test_differential_abundance(  ~ condition,  action="only")
+tt %>% identify_abundant(factor_of_interest = condition) %>%	test_differential_abundance(  ~ condition,  action="only")
 
 ## ----de se, cache=TRUE--------------------------------------------------------
 se_mini %>%	test_differential_abundance(  ~ condition)

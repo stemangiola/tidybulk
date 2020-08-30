@@ -7,9 +7,6 @@
 add_scaled_counts_bulk.calcNormFactor(
   .data,
   reference = NULL,
-  factor_of_interest = NULL,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
   .sample = sample,
   .transcript = transcript,
   .abundance = count,
@@ -20,12 +17,6 @@ add_scaled_counts_bulk.calcNormFactor(
 \item{.data}{A tibble}
 
 \item{reference}{A reference matrix, not sure if used anymore}
-
-\item{factor_of_interest}{The name of the column of the factor of interest}
-
-\item{minimum_counts}{A positive integer. Minimum counts required for at least some samples.}
-
-\item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
 
 \item{.sample}{The name of the sample column}
 
