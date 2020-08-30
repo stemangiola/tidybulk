@@ -1,14 +1,17 @@
 tidybulk - part of tidyTranscriptomics
 ================
 
+<!-- badges: start -->
+
+[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![R build
+status](https://github.com/stemangiola/tidybulk/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/stemangiola/tidybulk/actions)
+<!-- badges: end -->
+
 **Brings transcriptomics to the tidyverse\!** (SEO: tidy differential
 expression)
 
 # <img src="inst/logo.png" height="139px" width="120px" />
-
-<!-- badges: start -->
-[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
-<!-- badges: end -->
 
 website:
 [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
