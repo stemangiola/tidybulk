@@ -1808,7 +1808,7 @@ setMethod("ensembl_to_symbol", "tbl_df", .ensembl_to_symbol)
 setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 
 
-#' Add differential transcription information to a tbl using edgeR or DeSEQ2 from raw counts.
+#' Perform differential transcription testing using edgeR, limma-voom or DESeq2
 #'
 #' \lifecycle{maturing}
 #'
@@ -1832,8 +1832,8 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
-#' @details At the moment this function uses either edgeR (DOI: 10.18129/B9.bioc.edgeR) or DeSEQ2 (DOI: 10.1186/s13059-014-0550-8)
-#' Both methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
+#' @details This function provides the option to use edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}, limma-voom \url{https://doi.org/10.1186/gb-2014-15-2-r29}, or  DESeq2 \url{https://doi.org/10.1186/s13059-014-0550-8} to perform the testing.
+#' All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.
 #'
 #' Underlying method for edgeR framework:
 #' 	.data %>%
@@ -1859,7 +1859,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'			edgeR::glmQLFit(design) %>% // or glmFit according to choice
 #'			edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
 #'
-#'	Underlying method for DeSEQ2 framework:
+#'	Underlying method for DESeq2 framework:
 #'	keep_abundant(
 #'			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 #'			minimum_counts = minimum_counts,
@@ -1872,7 +1872,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'	DESeq2::results()
 #'
 #'
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A `tbl` with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
 #'
 #'
 #'
@@ -1884,7 +1884,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'  identify_abundant() %>% 
 #' 	test_differential_abundance( ~ condition )
 #'
-#' 	# The function `test_differential_abundance` operated with contrasts too
+#' 	# The function `test_differential_abundance` operates with contrasts too
 #'
 #'  tidybulk::counts_mini %>%
 #'  tidybulk(sample, transcript, count) %>%
@@ -2003,7 +2003,7 @@ setGeneric("test_differential_abundance", function(.data,
 			),
 			
 			# Else error
-			TRUE ~  stop("tidybulk says: the onyl methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"DESeq2\"")
+			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"DESeq2\"")
 		)
 
 
@@ -2055,7 +2055,7 @@ setGeneric("test_differential_abundance", function(.data,
 #' @docType methods
 #' @rdname test_differential_abundance-methods
 #'
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A `tbl` with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_abundance",
 					"spec_tbl_df",
 					.test_differential_abundance)
@@ -2104,7 +2104,7 @@ setMethod("test_differential_abundance",
 #' @param top Integer. Number of top transcript to consider
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
-#' @details At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
+#' @details At the moment this function uses edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 #'
