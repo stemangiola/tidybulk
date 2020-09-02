@@ -918,7 +918,7 @@ test_differential_cellularity_ <- function(.data,
 		) %>%
 
 		as.formula
-
+ 
 	.data %>%
 
 		# Deconvolution
@@ -933,7 +933,7 @@ test_differential_cellularity_ <- function(.data,
 		# Test
 		pivot_longer(
 			names_prefix = sprintf("%s: ", method),
-			cols = starts_with("cibersort"),
+			cols = starts_with(method),
 			names_to = ".cell_type",
 			values_to = ".proportion"
 		) %>%
@@ -2251,6 +2251,41 @@ run_llsr = function(mix, reference) {
 	results
 }
 
+#' Perform linear equation system analysis through llsr
+#'
+#' @keywords internal
+#'
+#' @importFrom stats lsfit
+#'
+#' @param mix A data frame
+#' @param reference A data frame
+#'
+#' @return A data frame
+#'
+#'
+run_epic = function(mix, reference = NULL) {
+	# Get common markers
+	markers = intersect(rownames(mix), rownames(reference))
+	
+	X <- (reference[markers, , drop = FALSE])
+	Y <- (mix[markers, , drop = FALSE])
+	
+	if(!is.null(reference))
+		reference = list(
+			refProfiles = X,
+			sigGenes = rownames(X)
+		)
+	
+	
+	
+	results <- EPIC(Y, reference = reference)$cellFractions %>% data.frame()
+	#results[results < 0] <- 0
+	#results <- results / apply(results, 1, sum)
+	rownames(results) = colnames(Y)
+	
+	results
+}
+
 
 #' Get cell type proportions from cibersort
 #'
@@ -2285,27 +2320,8 @@ get_cell_type_proportions = function(.data,
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+ 
 
-	# Check if package is installed, otherwise install
-	if (find.package("class", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing class needed for Cibersort")
-		install.packages("class", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("e1071", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing e1071 needed for Cibersort")
-		install.packages("e1071", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing preprocessCore needed for Cibersort")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("preprocessCore", ask = FALSE)
-
-	}
 
 	# Load library which is optional for the whole package
 	#library(preprocessCore)
@@ -2343,21 +2359,64 @@ get_cell_type_proportions = function(.data,
 		data.frame(row.names = 1, check.names = FALSE) %>%
 
 		# Run Cibersort or llsr through custom function, depending on method choice
-		ifelse2_pipe(
-			method %>% tolower %>% equals("cibersort"),
-			method %>% tolower %>% equals("llsr"),
-
+		when(
+			
 			# Execute do.call because I have to deal with ...
-			~ do.call(my_CIBERSORT, list(Y = .x, X = reference) %>% c(dots_args)) %$%
+			method %>% tolower %>% equals("cibersort") 	~ {
+				
+				# Check if package is installed, otherwise install
+				if (find.package("class", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing class needed for Cibersort")
+					install.packages("class", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
+				}
+				
+				# Check if package is installed, otherwise install
+				if (find.package("e1071", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing e1071 needed for Cibersort")
+					install.packages("e1071", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
+				}
+				
+				# Check if package is installed, otherwise install
+				if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing preprocessCore needed for Cibersort")
+					if (!requireNamespace("BiocManager", quietly = TRUE))
+						install.packages("BiocManager", repos = "https://cloud.r-project.org")
+					BiocManager::install("preprocessCore", ask = FALSE)
+					
+				}
+				
+				do.call(my_CIBERSORT, list(Y = ., X = reference) %>% c(dots_args)) %$%
 				proportions %>%
 				as_tibble(rownames = quo_name(.sample)) %>%
-				select(-`P-value`,-Correlation,-RMSE),
-
+				select(-`P-value`,-Correlation,-RMSE)
+			},
+			
 			# Don't need to execute do.call
-			~ .x %>%
+			method %>% tolower %>% equals("llsr") ~ (.) %>%
 				run_llsr(reference) %>%
 				as_tibble(rownames = quo_name(.sample)),
 
+			# Don't need to execute do.call
+			method %>% tolower %>% equals("epic") ~ {
+				
+				
+				# Check if package is installed, otherwise install
+				if (find.package("devtools", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing class needed for EPIC")
+					install.packages("devtools", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
+				}
+				
+				# Check if package is installed, otherwise install
+				if (find.package("EPIC", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing class needed for EPIC")
+					devtools::install_github("GfellerLab/EPIC")
+				}
+				
+				(.) %>%
+				run_llsr(reference) %>%
+				as_tibble(rownames = quo_name(.sample))
+			},
+			
 			~ stop(
 				"tidybulk syas: please choose between cibersort and llsr methods"
 			)
