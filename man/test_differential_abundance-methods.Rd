@@ -8,7 +8,7 @@
 \alias{test_differential_abundance,tidybulk-method}
 \alias{test_differential_abundance,SummarizedExperiment-method}
 \alias{test_differential_abundance,RangedSummarizedExperiment-method}
-\title{Add differential transcription information to a tbl using edgeR or DeSEQ2 from raw counts.}
+\title{Perform differential transcription testing using edgeR, limma-voom or DESeq2}
 \usage{
 test_differential_abundance(
   .data,
@@ -126,9 +126,9 @@ test_differential_abundance(
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
 \value{
-A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A `tbl` with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
 
-A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A `tbl` with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
 
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 
@@ -144,8 +144,8 @@ test_differential_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <
 \details{
 \lifecycle{maturing}
 
-At the moment this function uses either edgeR (DOI: 10.18129/B9.bioc.edgeR) or DeSEQ2 (DOI: 10.1186/s13059-014-0550-8)
-Both methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
+This function provides the option to use edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}, limma-voom \url{https://doi.org/10.1186/gb-2014-15-2-r29}, or  DESeq2 \url{https://doi.org/10.1186/s13059-014-0550-8} to perform the testing.
+All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.
 
 Underlying method for edgeR framework:
 	.data %>%
@@ -171,7 +171,7 @@ keep_abundant(
 		edgeR::glmQLFit(design) %>% // or glmFit according to choice
 		edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
 
-Underlying method for DeSEQ2 framework:
+Underlying method for DESeq2 framework:
 keep_abundant(
 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 		minimum_counts = minimum_counts,
@@ -190,7 +190,7 @@ DESeq2::results()
  identify_abundant() \%>\% 
 	test_differential_abundance( ~ condition )
 
-	# The function `test_differential_abundance` operated with contrasts too
+	# The function `test_differential_abundance` operates with contrasts too
 
  tidybulk::counts_mini \%>\%
  tidybulk(sample, transcript, count) \%>\%
