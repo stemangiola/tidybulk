@@ -2,18 +2,25 @@
 title: "tidybulk - part of tidyTranscriptomics"
 output: github_document
 ---
+
+<!-- badges: start -->
+[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing) [![R build status](https://github.com/stemangiola/tidybulk/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/stemangiola/tidybulk/actions)
+<!-- badges: end -->
+
+```{r echo=FALSE}
+knitr::opts_chunk$set( fig.path = "man/figures/")
+```
+
 **Brings transcriptomics to the tidyverse!** (SEO: tidy differential expression)
 
 #  <img src="inst/logo.png" height="139px" width="120px" />
-
- <!-- badges: start -->
-  [![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
-  <!-- badges: end -->
   
 website: [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
 
 Please have a look also to 
 
+- [tidyseurat](https://github.com/stemangiola/tidyseurat) for tidy high-level data
+analysis and manipulation 
 - [nanny](https://github.com/stemangiola/nanny) for tidy high-level data
 analysis and manipulation 
 - [tidygate](https://github.com/stemangiola/tidygate) for adding custom
@@ -26,10 +33,13 @@ gate information to your tibble
 
 -->
 
+**IMPORTANT!** From version 1.1.6, the detection of abundant/lowly abundant transcripts has to be done explicitly (**identify_abundant()**; you will be warned otherwise). This because, it is better to make each function do one thing only, without hidden/implicit procedures (as stated in the tidy data manifesto). This improves logical flow, and software modularity.
+
 ## Functions/utilities available
 
 Function | Description
 ------------ | -------------
+`identify_abundant` | identify the abundant genes
 `aggregate_duplicates` | Aggregate abundance and annotation of duplicated transcripts in a robust way
 `scale_abundance` | Scale (normalise) abundance for RNA sequencing depth
 `reduce_dimensions` | Perform dimensionality reduction (PCA, MDS, tSNE)
@@ -43,11 +53,11 @@ Function | Description
 `keep_abundant` | Filter out lowly abundant transcripts
 `test_gene_enrichment` | Gene enrichment analyses (EGSEA)
 `test_gene_overrepresentation` | Gene enrichment on list of transcript names (no rank)
-`impute_abundance` | Impute abundance for missing data points using sample groupings 
 
 
 Utilities | Description
 ------------ | -------------
+`get_bibliography` | Get the bibliography of your workflow
 `tidybulk` | add tidybulk attributes to a tibble object
 `tidybulk_SAM_BAM` | Convert SAM BAM files into tidybulk tibble
 `pivot_sample` | Select sample-wise columns/information
@@ -56,6 +66,8 @@ Utilities | Description
 `ensembl_to_symbol` | Add gene symbol from ensembl IDs
 `symbol_to_entrez` | Add entrez ID from gene symbol
 `describe_transcript` | Add gene description from gene symbol
+`impute_missing_abundance` | Impute abundance for missing data points using sample groupings 
+`fill_missing_abundance` | Fill abundance for missing data points using an arbitrary value
 
 ## Minimal input data frame
 
@@ -83,6 +95,7 @@ library(tidyr)
 library(tibble)
 library(magrittr)
 library(ggplot2)
+library(ggrepel)
 library(tidybulk)
 
 
@@ -122,6 +135,15 @@ It memorises key column names
 tt = counts %>% tidybulk(sample, transcript, count)
 ```
 
+## Get the bibliography of your workflow 
+First of all, you can cite all articles utilised within your workflow automatically from any tidybulk tibble
+
+```{r eval=FALSE}
+tt %>%
+	# call analysis functions
+	get_bibliography()
+```
+
 ## Aggregate duplicated `transcripts`
 
 tidybulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with transcripts with the same name aggregated. All the rest of the columns are appended, and factors and boolean are appended as characters.
@@ -157,7 +179,7 @@ We may want to compensate for sequencing depth, scaling the transcript abundance
 <div class="column-left">
 TidyTranscriptomics
 ```{r normalise, cache=TRUE}
-tt.norm = tt.aggr %>% scale_abundance()
+tt.norm = tt.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance()
 ```
 
 </div>
@@ -177,7 +199,7 @@ norm_counts.table <- cpm(dgList)
 <div style="clear:both;"></div>
 
 ```{r, include=FALSE}
-tt.norm %>% select(`count`, count_scaled, lowly_abundant, everything())
+tt.norm %>% select(`count`, count_scaled, .abundant, everything())
 ```
 
 We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.
@@ -317,6 +339,7 @@ TidyTranscriptomics
 tt.norm.tSNE =
 	breast_tcga_mini %>%
 	tidybulk(		sample, ens, count_scaled) %>%
+	identify_abundant() %>%
 	reduce_dimensions(
 		method = "tSNE",
 		perplexity=10,
@@ -440,6 +463,7 @@ The functon `test_differential_abundance` operated with contrasts too. The const
 ```{r de contrast, cache=TRUE, message=FALSE, warning=FALSE, results='hide', eval=FALSE}
 tt.de =
 	tt %>%
+	identify_abundant(factor_of_interest = condition) %>%
 	test_differential_abundance(
 		~ 0 + condition,                  
 		.contrasts = c( "conditionTRUE - conditionFALSE"),
