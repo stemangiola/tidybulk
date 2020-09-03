@@ -102,7 +102,7 @@ keep_variable() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | 
 \details{
 \lifecycle{maturing}
 
-At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
+At the moment this function uses edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}
 }
 \examples{
 
