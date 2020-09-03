@@ -15,6 +15,7 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
+  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   species,
   cores = 10
 )
@@ -26,6 +27,7 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
+  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   species,
   cores = 10
 )
@@ -37,6 +39,7 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
+  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   species,
   cores = 10
 )
@@ -48,6 +51,7 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
+  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   species,
   cores = 10
 )
@@ -64,6 +68,8 @@ test_gene_enrichment(
 \item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{.contrasts}{= NULL,}
+
+\item{method}{A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.}
 
 \item{species}{A character. For example, human or mouse}
 
@@ -84,7 +90,36 @@ test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL
 \details{
 \lifecycle{maturing}
 
-This wrapper execute gene enrichment analyses of the dataset
+This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
+
+
+dge =
+	data %>%
+	keep_abundant(
+		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+		!!.sample, !!.entrez, !!.abundance
+	) %>%
+
+	# Make sure transcript names are adjacent
+	[...] %>%
+	as_matrix(rownames = !!.entrez) %>%
+	edgeR::DGEList(counts = .)
+
+idx =  buildIdx(entrezIDs = rownames(dge), species = species)
+
+dge %>%
+
+	# Calculate weights
+	limma::voom(design, plot = FALSE) %>%
+
+	# Execute EGSEA
+	egsea(
+		contrasts = my_contrasts,
+		baseGSEAs = method,
+		sort.by = "med.rank",
+		num.threads = cores,
+		report = FALSE
+	)
 }
 \examples{
 \dontrun{
@@ -100,8 +135,9 @@ library("EGSEA")
 		.sample = sample,
 		.entrez = entrez,
 		.abundance = count,
+      method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
 		species="human",
-		cores = 1
+		cores = 2
 	)
 
 }

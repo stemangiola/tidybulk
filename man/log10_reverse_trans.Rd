@@ -21,7 +21,7 @@ library(ggplot2)
 library(tibble)
 
 tibble(pvalue = c(0.001, 0.05, 0.1), fold_change = 1:3) \%>\%
- ggplot(aes(fold_change , pvalue)) + 
+ ggplot(aes(fold_change , pvalue)) +
  geom_point() +
  scale_y_continuous(trans = "log10_reverse")
 

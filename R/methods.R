@@ -1,7 +1,7 @@
 # setOldClass("spec_tbl_df")
 setOldClass("tidybulk")
 
-#' Creates a `tt` object from a `tbl``
+#' Creates a `tt` object from a `tbl` or `SummarizedExperiment` object
 #'
 #' \lifecycle{maturing}
 #'
@@ -10,6 +10,7 @@ setOldClass("tidybulk")
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #' @import readr
+#' @import SummarizedExperiment
 #'
 #' @name tidybulk
 #'
@@ -19,7 +20,7 @@ setOldClass("tidybulk")
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .abundance_scaled The name of the transcript/gene scaled abundance column
 #'
-#' @details This function created a tidybulk object and is useful if you want
+#' @details This function creates a tidybulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
 #' The tidybulk object have an attribute called internals where these three
 #' arguments are stored as metadata. They can be extracted as attr(<object>, "internals").
@@ -73,10 +74,10 @@ setGeneric("tidybulk", function(.data,
 }
 #' tidybulk
 #' @inheritParams tidybulk
-#' 
+#'
 #' @docType methods
 #' @rdname tidybulk-methods
-#' 
+#'
 #' @return A `tidybulk` object
 #'
 setMethod("tidybulk", "spec_tbl_df", .tidybulk)
@@ -86,97 +87,14 @@ setMethod("tidybulk", "spec_tbl_df", .tidybulk)
 #' @importFrom purrr map2
 #'
 #' @inheritParams tidybulk
-#' 
+#'
 #' @docType methods
 #' @rdname tidybulk-methods
-#' 
+#'
 #' @return A `tidybulk` object
 #'
 setMethod("tidybulk", "tbl_df", .tidybulk)
 
-.tidybulk_se = function(.data,
-											.sample,
-											.transcript,
-											.abundance,
-											.abundance_scaled = NULL) {
-	# Check if package is installed, otherwise install
-	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing SummarizedExperiment")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("SummarizedExperiment", ask = FALSE)
-	}
-
-	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	.abundance_scaled = enquo(.abundance_scaled)
-
-	# Set scaled col names
-	norm_col =
-		SummarizedExperiment::assays(.data)[1] %>% names %>% paste0(scaled_string) %>%
-		ifelse_pipe((.) %in% names(SummarizedExperiment::assays(.data)),
-								~ as.symbol(.x),
-								~ NULL)
-
-	# Do conversion
-	SummarizedExperiment::assays(.data) %>%
-		as.list() %>%
-		map2(
-			SummarizedExperiment::assays(.data) %>%  names,
-			~ .x %>%
-				as_tibble(rownames = "feature") %>%
-				gather(sample,!!.y,-feature)
-		) %>%
-
-		# Join the assays
-		purrr::reduce(dplyr::left_join, by = c("sample", "feature")) %>%
-
-		# Attach annotation
-		left_join(
-			SummarizedExperiment::rowData(.data) %>% as.data.frame() %>% as_tibble(rownames = "feature"),
-			by = "feature"
-		) %>%
-		left_join(SummarizedExperiment::colData(.data) %>% as_tibble(rownames =
-																																 	"sample"),
-							by = "sample") %>%
-		mutate_if(is.character, as.factor) %>%
-		tidybulk(
-			sample,
-			feature,
-			!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
-			!!norm_col # scaled counts if any
-		)
-
-}
-
-#' tidybulk
-#'
-#' @importFrom tibble as_tibble
-#' @importFrom purrr reduce
-#' @import dplyr
-#' @import tidyr
-#'
-#'
-#' @inheritParams tidybulk
-#' 
-#' @docType methods
-#' @rdname tidybulk-methods
-#' 
-#' @return A `tidybulk` object
-#'
-setMethod("tidybulk", "SummarizedExperiment", .tidybulk_se)
-
-#' tidybulk
-#' @inheritParams tidybulk
-#' 
-#' @docType methods
-#' @rdname tidybulk-methods
-#' 
-#' @return A `tidybulk` object
-#'
-setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 
 
 #' Creates a `tt` object from a list of file names of BAM/SAM
@@ -194,10 +112,13 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 #' @param genome A character string
 #' @param ... Further parameters passed to the function Rsubread::featureCounts
 #'
-#' @details This function is based on FeatureCounts package. This function created a tidybulk object and is useful if you want
+#' @details This function is based on FeatureCounts package (DOI: 10.1093/bioinformatics/btt656). This function creates a tidybulk object and is useful if you want
 #' to avoid to specify .sample, .transcript and .abundance arguments all the times.
 #' The tidybulk object have an attribute called internals where these three
 #' arguments are stored as metadata. They can be extracted as attr(<object>, "internals").
+#'
+#' Underlying core function
+#' Rsubread::featureCounts(annot.inbuilt = genome,nthreads = n_cores, ...)
 #'
 #' @return A `tidybulk` object
 #'
@@ -214,10 +135,10 @@ setGeneric("tidybulk_SAM_BAM", function(file_names, genome = "hg38", ...)
 
 #' tidybulk_SAM_BAM
 #' @inheritParams tidybulk_SAM_BAM-methods
-#' 
+#'
 #' @docType methods
 #' @rdname tidybulk_SAM_BAM-methods
-#' 
+#'
 #' @return A `tidybulk` object
 #'
 setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"), 	function(file_names, genome = "hg38", ...)
@@ -239,19 +160,20 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#'
-#' @param factor_of_interest The name of the column of the factor of interest. This is used for identifying lowly abundant transcript, to be ignored for calculating scaling fators.
-#' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure. The scaling inference is then applied back to all unfiltered data.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param reference_selection_function A fucntion that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
+#' @param method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param reference_selection_function A function that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
 #' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
 #'
-#' @details Scales transcript abundance compansating for sequencing depth
+#' @details Scales transcript abundance compensating for sequencing depth
 #' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #' Lowly transcribed transcripts/genes (defined with minimum_counts and minimum_proportion parameters)
 #' are filtered out from the scaling procedure.
 #' The scaling inference is then applied back to all unfiltered data.
+#'
+#' Underlying method
+#' edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))
+#'
+#'
 #'
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
@@ -259,7 +181,10 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @examples
 #'
 #'
-#'  scale_abundance(tidybulk::counts_mini,  sample, transcript, `count`)
+#'  tidybulk::counts_mini %>% 
+#'    tidybulk(sample, transcript, count) %>% 
+#'    identify_abundant() %>% 
+#'    scale_abundance()
 #'
 #'
 #'
@@ -271,9 +196,6 @@ setGeneric("scale_abundance", function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
-																			 factor_of_interest = NULL,
-																			 minimum_counts = 10,
-																			 minimum_proportion = 0.7,
 																			 method = "TMM",
 																			 reference_selection_function = median,
 																			 action = "add")
@@ -284,9 +206,6 @@ setGeneric("scale_abundance", function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
-														 factor_of_interest = NULL,
-														 minimum_counts = 10,
-														 minimum_proportion = 0.7,
 														 method = "TMM",
 														 reference_selection_function = median,
 														 action = "add")
@@ -300,37 +219,51 @@ setGeneric("scale_abundance", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
-	factor_of_interest = enquo(factor_of_interest)
-
+	# Set column name for value scaled
+	value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
+	
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+		
 	.data_norm =
 		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
 		get_scaled_counts_bulk(
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
 			method = method,
 			reference_selection_function = reference_selection_function
 		) %>%
-		arrange(!!.sample,!!.transcript)
+		
+		# Attach column internals
+		add_tt_columns(
+			!!.sample,
+			!!.transcript,
+			!!.abundance,
+			!!(function(x, v)	enquo(v))(x,!!value_scaled)
+		) 
 
 
 	if (action == "add"){
 
 		.data %>%
-			arrange(!!.sample,!!.transcript) %>%
 
-			# Add scaled data set
-			bind_cols(.data_norm %>%
-									select(-one_of(quo_name(.sample)), -one_of(quo_name(.transcript))))		%>%
-
+			left_join(.data_norm, by=quo_name(.sample)) %>%
+			dplyr::mutate(!!value_scaled := !!.abundance * multiplier) %>%
+			
 			# Attach attributes
-			reattach_internals(.data_norm)
+			reattach_internals(.data_norm) 
 
 	}
 	else if (action == "get"){
@@ -338,15 +271,11 @@ setGeneric("scale_abundance", function(.data,
 		.data %>%
 
 			# Selecting the right columns
-			select(
-				!!.sample,
-				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
-			) %>%
-			distinct() %>%
-			mutate_if(is.character, as.factor) %>%
+			pivot_sample(!!.sample) %>%
 
 			# Join result
 			left_join(.data_norm, by=quo_name(.sample)) %>%
+			
 
 			# Attach attributes
 			reattach_internals(.data_norm)
@@ -360,98 +289,33 @@ setGeneric("scale_abundance", function(.data,
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' 
+#'
 #' @docType methods
 #' @rdname scale_abundance-methods
-#' 
+#'
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' 
+#'
 #' @docType methods
 #' @rdname scale_abundance-methods
-#' 
+#'
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 setMethod("scale_abundance", "tbl_df", .scale_abundance)
 
 #' scale_abundance
 #' @inheritParams scale_abundance
-#' 
+#'
 #' @docType methods
 #' @rdname scale_abundance-methods
-#' 
+#'
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 setMethod("scale_abundance", "tidybulk", .scale_abundance)
-
-.scale_abundance_se = function(.data,
-															 .sample = NULL,
-															 .transcript = NULL,
-															 .abundance = NULL,
-															 factor_of_interest = NULL,
-															 minimum_counts = 10,
-															 minimum_proportion = 0.7,
-															 method = "TMM",
-															 reference_selection_function = median,
-															 action = "add") {
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-
-	factor_of_interest = enquo(factor_of_interest)
-
-	.data %>%
-
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		scale_abundance(
-			!!.sample,
-			!!.transcript,
-			!!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			method = method,
-			reference_selection_function = reference_selection_function,
-			action = action
-		) %>%
-
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
-}
-
-#' scale_abundance
-#' @inheritParams scale_abundance
-#' 
-#' @docType methods
-#' @rdname scale_abundance-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("scale_abundance",
-					"SummarizedExperiment",
-					.scale_abundance_se)
-
-#' scale_abundance
-#' @inheritParams scale_abundance
-#' 
-#' @docType methods
-#' @rdname scale_abundance-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("scale_abundance",
-					"RangedSummarizedExperiment",
-					.scale_abundance_se)
-
 
 
 #' Get clusters of elements (e.g., samples or transcripts)
@@ -470,7 +334,7 @@ setMethod("scale_abundance",
 #' @param .feature The name of the feature column (normally transcripts/genes)
 #' @param .abundance The name of the column including the numerical value the clustering is based on (normally transcript abundance)
 #'
-#' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
+#' @param method A character string. The cluster algorithm to use, at the moment k-means is the only algorithm included.
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
@@ -478,7 +342,20 @@ setMethod("scale_abundance",
 #'
 #' @details identifies clusters in the data, normally of samples.
 #' This function returns a tibble with additional columns for the cluster annotation.
-#' At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
+#' At the moment only k-means (DOI: 10.2307/2346830) and SNN clustering (DOI:10.1016/j.cell.2019.05.031) is supported, the plan is to introduce more clustering methods.
+#'
+#' Underlying method for kmeans
+#' do.call(kmeans(.data, iter.max = 1000, ...)
+#'
+#' Underlying method for SNN
+#' .data %>%
+#' Seurat::CreateSeuratObject() %>%
+#' Seurat::ScaleData(display.progress = TRUE,num.cores = 4, do.par = TRUE) %>%
+#' Seurat::FindVariableFeatures(selection.method = "vst") %>%
+#' Seurat::RunPCA(npcs = 30) %>%
+#' Seurat::FindNeighbors() %>%
+#' Seurat::FindClusters(method = "igraph", ...)
+#'
 #'
 #' @return A tbl object with additional columns with cluster labels
 #'
@@ -528,23 +405,50 @@ setGeneric("cluster_elements", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.abundance)
+	error_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
 
-	if (method == "kmeans") {
+	
+	.data_procesed = 
+		
+		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
+		# Choose algorithm
+		when(
+			method == "kmeans" ~ 	get_clusters_kmeans_bulk(.,
+				.abundance = !!.abundance,
+				.element = !!.element,
+				.feature = !!.feature,
+				of_samples = of_samples,
+				log_transform = log_transform,
+				...
+			),
+			method == "SNN" ~ get_clusters_SNN_bulk(.,
+				.abundance = !!.abundance,
+				.element = !!.element,
+				.feature = !!.feature,
+				of_samples = of_samples,
+				log_transform = log_transform,
+				...
+			),
+			TRUE ~ 		stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
+
+		)
+	
+	
+	# Actions
 		if (action == "add"){
 
 			.data %>%
-				dplyr::left_join(
-					(.) %>%
-						get_clusters_kmeans_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
+				dplyr::left_join(	.data_procesed,		by=quo_name(.element)	) %>%
 
 				# Attach attributes
 				reattach_internals(.data)
@@ -555,204 +459,51 @@ setGeneric("cluster_elements", function(.data,
 			.data %>%
 
 				# Selecting the right columns
-				select(
-					!!.element,
-					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				) %>%
-				distinct() %>%
+				pivot_sample(!!.element) %>%
 
-				dplyr::left_join(
-					.data %>%
-						get_clusters_kmeans_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
-
+				dplyr::left_join(	.data_procesed,		by=quo_name(.element)	) %>%
+				
 				# Attach attributes
 				reattach_internals(.data)
 
 		}
-		else if (action == "only")
-			get_clusters_kmeans_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
+		else if (action == "only") 	.data_procesed
 		else
 			stop(
 				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
-	}
-	else if (method == "SNN") {
-		if (action == "add"){
-
-			.data %>%
-				dplyr::left_join(
-					(.) %>%
-						get_clusters_SNN_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
-
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				select(
-					!!.element,
-					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				) %>%
-				distinct() %>%
-
-				dplyr::left_join(
-					.data %>%
-						get_clusters_SNN_bulk(
-							.abundance = !!.abundance,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_samples = of_samples,
-							log_transform = log_transform,
-							...
-						),
-					by=quo_name(.element)
-				) %>%
-
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-
-		else if (action == "only")
-			get_clusters_SNN_bulk(
-				.data,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			)
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-	}
-	else
-		stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
 
 }
 
 #' cluster_elements
 #' @inheritParams cluster_elements
-#' 
+#'
 #' @docType methods
 #' @rdname cluster_elements-methods
-#' 
+#'
 #' @return A tbl object with additional columns with cluster labels
 #'
 setMethod("cluster_elements", "spec_tbl_df", .cluster_elements)
 
 #' cluster_elements
 #' @inheritParams cluster_elements
-#' 
+#'
 #' @docType methods
 #' @rdname cluster_elements-methods
-#' 
+#'
 #' @return A tbl object with additional columns with cluster labels
 #'
 setMethod("cluster_elements", "tbl_df", .cluster_elements)
 
 #' cluster_elements
 #' @inheritParams cluster_elements
-#' 
+#'
 #' @docType methods
 #' @rdname cluster_elements-methods
-#' 
+#'
 #' @return A tbl object with additional columns with cluster labels
 #'
 setMethod("cluster_elements", "tidybulk", .cluster_elements)
-
-.cluster_elements_se = function(.data,
-																.element = NULL,
-																.feature = NULL,
-																.abundance = NULL,
-																method ,
-																of_samples = TRUE,
-																log_transform = TRUE,
-																action = "add",
-																...) {
-	# Get column names
-	.element = enquo(.element)
-	.feature = enquo(.feature)
-	.abundance = enquo(.abundance)
-
-
-	.data %>%
-
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		cluster_elements(
-			.element = !!.element ,
-			.feature = !!.feature ,
-			.abundance = !!.abundance,
-			method = method ,
-			of_samples = of_samples,
-			log_transform = log_transform,
-			action = action,
-			...
-		) %>%
-
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
-}
-
-#' cluster_elements
-#' @inheritParams cluster_elements
-#' 
-#' @docType methods
-#' @rdname cluster_elements-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("cluster_elements",
-					"SummarizedExperiment",
-					.cluster_elements_se)
-
-#' cluster_elements
-#' @inheritParams cluster_elements
-#' 
-#' @docType methods
-#' @rdname cluster_elements-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("cluster_elements",
-					"RangedSummarizedExperiment",
-					.cluster_elements_se)
 
 
 #' Dimension reduction of the transcript abundance data
@@ -781,7 +532,18 @@ setMethod("cluster_elements",
 #' @param ... Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"
 #'
 #' @details This function reduces the dimensions of the transcript abundances.
-#' It can use multi-dimensional scaling (MDS) of principal component analysis (PCA).
+#' It can use multi-dimensional scaling (MDS; DOI.org/10.1186/gb-2010-11-3-r25),
+#' principal component analysis (PCA), or tSNE (Jesse Krijthe et al. 2018)
+#'
+#' Underlying method for PCA:
+#' prcomp(scale = scale, ...)
+#'
+#' Underlying method for MDS:
+#' limma::plotMDS(ndim = .dims, plot = FALSE, top = top)
+#'
+#' Underlying method for tSNE:
+#' Rtsne::Rtsne(data, ...)
+#'
 #'
 #' @return A tbl object with additional columns for the reduced dimensions
 #'
@@ -790,10 +552,18 @@ setMethod("cluster_elements",
 #'
 #'
 #'
-#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'  reduce_dimensions( method="MDS", .dims = 3)
 #'
 #'
-#' counts.PCA =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="PCA", .dims = 3)
+#' counts.PCA =  
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'  reduce_dimensions(method="PCA", .dims = 3)
 #'
 #'
 #'
@@ -846,12 +616,23 @@ setGeneric("reduce_dimensions", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.abundance)
+	warning_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
 
-	if (method == "MDS") {
-
-		.data_processed =
-			.data %>%
-			get_reduced_dimensions_MDS_bulk(
+	.data_processed = 
+		
+		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
+		when(
+			method == "MDS" ~ 	get_reduced_dimensions_MDS_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -860,45 +641,8 @@ setGeneric("reduce_dimensions", function(.data,
 				of_samples = of_samples,
 				log_transform = log_transform,
 				...
-			)
-
-		if (action == "add"){
-
-			.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				select(
-					!!.element,
-					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				) %>%
-				distinct() %>%
-
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-
-		else if (action == "only") .data_processed
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-	}
-	else if (method == "PCA") {
-
-		.data_processed =
-			.data %>%
-			get_reduced_dimensions_PCA_bulk(
+			),
+			method == "PCA" ~ 	get_reduced_dimensions_PCA_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -908,48 +652,8 @@ setGeneric("reduce_dimensions", function(.data,
 				log_transform = log_transform,
 				scale = scale,
 				...
-			)
-
-		if (action == "add"){
-
-			.data %>%
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				select(
-					!!.element,
-					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				) %>%
-				distinct() %>%
-
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
-
-				# Attach attributes
-				reattach_internals(.data_processed)
-
-		}
-
-		else if (action == "only")	.data_processed
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-
-	}
-	else if (method == "tSNE") {
-
-		.data_processed =
-			.data %>%
-			get_reduced_dimensions_TSNE_bulk(
+			),
+			method == "tSNE" ~ 	get_reduced_dimensions_TSNE_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -958,140 +662,70 @@ setGeneric("reduce_dimensions", function(.data,
 				of_samples = of_samples,
 				log_transform = log_transform,
 				...
-			)
+			),
+			TRUE ~ 	stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\"")
+		)
+		
+		
 
-		if (action == "add"){
+	if (action == "add"){
 
-			.data %>%
-				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
+		.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
 
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-		else if (action == "get"){
-
-			.data %>%
-
-				# Selecting the right columns
-				select(
-					!!.element,
-					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.abundance, NULL)$horizontal_cols
-				) %>%
-				distinct() %>%
-
-				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
-
-				# Attach attributes
-				reattach_internals(.data)
-
-		}
-		else if (action == "only") .data_processed
-		else
-			stop(
-				"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
+			# Attach attributes
+			reattach_internals(.data_processed)
 
 	}
+	else if (action == "get"){
+
+		.data %>%
+
+			# Selecting the right columns
+			pivot_sample(!!.element) %>%
+
+			dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+
+			# Attach attributes
+			reattach_internals(.data_processed)
+
+	}
+
+	else if (action == "only") .data_processed
 	else
-		stop("tidybulk says: method must be either \"MDS\" or \"PCA\"")
+		stop(
+			"tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+		)
+	
 
 }
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
-#' 
+#'
 #' @docType methods
 #' @rdname reduce_dimensions-methods
-#' 
+#'
 #' @return A tbl object with additional columns for the reduced dimensions
 setMethod("reduce_dimensions", "spec_tbl_df", .reduce_dimensions)
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
-#' 
+#'
 #' @docType methods
 #' @rdname reduce_dimensions-methods
-#' 
+#'
 #' @return A tbl object with additional columns for the reduced dimensions
 setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 
 #' reduce_dimensions
 #' @inheritParams reduce_dimensions
-#' 
+#'
 #' @docType methods
 #' @rdname reduce_dimensions-methods
-#' 
+#'
 #' @return A tbl object with additional columns for the reduced dimensions
 setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 
-.reduce_dimensions_se = function(.data,
-																 .element = NULL,
-																 .feature = NULL,
-																 .abundance = NULL,
-																 method,
-																 .dims = 2,
-
-																 top = 500,
-																 of_samples = TRUE,
-																 log_transform = TRUE,
-																 scale = TRUE,
-																 action = "add",
-																 ...) {
-	# Get column names
-	.element = enquo(.element)
-	.feature = enquo(.feature)
-	.abundance = enquo(.abundance)
-
-	.data %>%
-
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		reduce_dimensions(
-			.element = !!.element,
-			.feature  = !!.feature,
-			.abundance  = !!.abundance,
-			method = method,
-			.dims = .dims,
-
-			top = top,
-			of_samples = of_samples,
-			log_transform = log_transform,
-			scale = scale,
-			action = action,
-			...
-		) %>%
-
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
-}
-
-#' reduce_dimensions
-#' @inheritParams reduce_dimensions
-#' 
-#' @docType methods
-#' @rdname reduce_dimensions-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("reduce_dimensions",
-					"SummarizedExperiment",
-					.reduce_dimensions_se)
-
-#' reduce_dimensions
-#' @inheritParams reduce_dimensions
-#' 
-#' @docType methods
-#' @rdname reduce_dimensions-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("reduce_dimensions",
-					"RangedSummarizedExperiment",
-					.reduce_dimensions_se)
 
 #' Rotate two dimensions (e.g., principal components) of an arbitrary angle
 #'
@@ -1117,12 +751,28 @@ setMethod("reduce_dimensions",
 #'
 #' @details This function to rotate two dimensions such as the reduced dimensions.
 #'
+#' Underlying custom method:
+#' 	rotation = function(m, d) {
+#' 		// r = the angle
+#' 		// m data matrix
+#'    r = d * pi / 180
+#'    ((dplyr::bind_rows(
+#' 	  c(`1` = cos(r), `2` = -sin(r)),
+#' 	  c(`1` = sin(r), `2` = cos(r))
+#'   ) %>% as_matrix) %*% m)
+#'  }
+#'
+#'
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 #'
 #'
 #' @examples
 #'
-#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS =  
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'  reduce_dimensions( method="MDS", .dims = 3)
 #'
 #' counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 #'
@@ -1225,113 +875,35 @@ setGeneric("rotate_dimensions", function(.data,
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
-#' 
+#'
 #' @docType methods
 #' @rdname rotate_dimensions-methods
-#' 
+#'
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
-#' 
+#'
 #' @docType methods
 #' @rdname rotate_dimensions-methods
-#' 
+#'
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 
 #' rotate_dimensions
 #' @inheritParams rotate_dimensions
-#' 
+#'
 #' @docType methods
 #' @rdname rotate_dimensions-methods
-#' 
+#'
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 
 
-.rotate_dimensions_se = function(.data,
-																 dimension_1_column,
-																 dimension_2_column,
-																 rotation_degrees,
-																 .element = NULL,
-																 of_samples = TRUE,
-																 dimension_1_column_rotated = NULL,
-																 dimension_2_column_rotated = NULL,
-																 action =
-																 	"add") {
-	# Get column names
-	.element = enquo(.element)
-
-	# Parse other colnames
-	dimension_1_column = enquo(dimension_1_column)
-	dimension_2_column = enquo(dimension_2_column)
-	dimension_1_column_rotated = enquo(dimension_1_column_rotated)
-	dimension_2_column_rotated = enquo(dimension_2_column_rotated)
-
-	# Set default col names for rotated dimensions if not set
-	if (quo_is_null(dimension_1_column_rotated))
-		dimension_1_column_rotated = as.symbol(sprintf(
-			"%s rotated %s",
-			quo_name(dimension_1_column),
-			rotation_degrees
-		))
-	if (quo_is_null(dimension_2_column_rotated))
-		dimension_2_column_rotated = as.symbol(sprintf(
-			"%s rotated %s",
-			quo_name(dimension_2_column),
-			rotation_degrees
-		))
-
-	.data %>%
-
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		rotate_dimensions(
-			dimension_1_column = !!dimension_1_column,
-			dimension_2_column = !!dimension_2_column,
-			rotation_degrees = rotation_degrees,
-			.element = !!.element,
-			of_samples = of_samples,
-			dimension_1_column_rotated = !!dimension_1_column_rotated,
-			dimension_2_column_rotated = !!dimension_2_column_rotated,
-			action = action
-		) %>%
-
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
-}
-
-#' rotate_dimensions
-#' @inheritParams rotate_dimensions
-#' 
-#' @docType methods
-#' @rdname rotate_dimensions-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("rotate_dimensions",
-					"SummarizedExperiment",
-					.rotate_dimensions_se)
-
-#' rotate_dimensions
-#' @inheritParams rotate_dimensions
-#' 
-#' @docType methods
-#' @rdname rotate_dimensions-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("rotate_dimensions",
-					"RangedSummarizedExperiment",
-					.rotate_dimensions_se)
 
 
-#' Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) aboundances are correlated
+#' Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) abundances are correlated
 #'
 #' \lifecycle{maturing}
 #'
@@ -1356,23 +928,58 @@ setMethod("rotate_dimensions",
 #' @param Dim_b_column A character string. For reduced_dimension based calculation. The column of another principal component
 #'
 #'
-#' @details This function removes redundant elements from the original data set (e.g., samples or transcripts). For example, if we want to define cell-type specific signatures with low sample redundancy. This function returns a tibble with dropped recundant elements (e.g., samples). Two redundancy estimation approaches are supported: (i) removal of highly correlated clusters of elements (keeping a representative) with method="correlation"; (ii) removal of most proximal element pairs in a reduced dimensional space.
+#' @details This function removes redundant elements from the original data set (e.g., samples or transcripts).
+#' For example, if we want to define cell-type specific signatures with low sample redundancy.
+#' This function returns a tibble with dropped redundant elements (e.g., samples).
+#' Two redundancy estimation approaches are supported:
+#' (i) removal of highly correlated clusters of elements (keeping a representative) with method="correlation";
+#' (ii) removal of most proximal element pairs in a reduced dimensional space.
 #'
-#' @return A tbl object with with dropped recundant elements (e.g., samples).
+#' Underlying method for correlation:
+#' widyr::pairwise_cor(sample, transcript,count, sort = TRUE, diag = FALSE, upper = FALSE)
+#'
+#' Underlying custom method for reduced dimensions:
+#' select_closest_pairs = function(df) {
+#' 		couples <- df %>% head(n = 0)
+#'
+#' 		while (df %>% nrow() > 0) {
+#' 			pair <- df %>%
+#' 			arrange(dist) %>%
+#' 			head(n = 1)
+#' 			couples <- couples %>% bind_rows(pair)
+#' 			df <- df %>%
+#' 				filter(
+#' 					!`sample 1` %in% (pair %>% select(1:2) %>% as.character()) &
+#' 						!`sample 2` %in% (pair %>% select(1:2) %>% as.character())
+#' 				)
+#' 		}
+#'
+#' 		couples
+#'
+#' 	}
+#'
+#'
+#'
+#' @return A tbl object with with dropped redundant elements (e.g., samples).
 #'
 #' @examples
 #'
 #'
-#'
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
 #'    remove_redundancy(
-#'     tidybulk::counts_mini,
 #' 	   .element = sample,
 #' 	   .feature = transcript,
 #' 	   	.abundance =  count,
 #' 	   	method = "correlation"
 #' 	   	)
 #'
-#' counts.MDS =  reduce_dimensions(tidybulk::counts_mini, sample, transcript, count, method="MDS", .dims = 3)
+#' counts.MDS = 
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#'   reduce_dimensions( method="MDS", .dims = 3)
 #'
 #' remove_redundancy(
 #' 	counts.MDS,
@@ -1434,7 +1041,8 @@ setGeneric("remove_redundancy", function(.data,
 	if (method == "correlation") {
 		# Validate data frame
 		validation(.data, !!.element, !!.feature, !!.abundance)
-
+		warning_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
+		
 		remove_redundancy_elements_through_correlation(
 			.data,
 			.abundance = !!.abundance,
@@ -1467,107 +1075,32 @@ setGeneric("remove_redundancy", function(.data,
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
-#' 
+#'
 #' @docType methods
 #' @rdname remove_redundancy-methods
-#' 
-#' @return A tbl object with with dropped recundant elements (e.g., samples).
+#'
+#' @return A tbl object with with dropped redundant elements (e.g., samples).
 setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
-#' 
+#'
 #' @docType methods
 #' @rdname remove_redundancy-methods
-#' 
-#' @return A tbl object with with dropped recundant elements (e.g., samples).
+#'
+#' @return A tbl object with with dropped redundant elements (e.g., samples).
 setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 
 #' remove_redundancy
 #' @inheritParams remove_redundancy
-#' 
+#'
 #' @docType methods
 #' @rdname remove_redundancy-methods
-#' 
-#' @return A tbl object with with dropped recundant elements (e.g., samples).
+#'
+#' @return A tbl object with with dropped redundant elements (e.g., samples).
 setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 
-.remove_redundancy_se = function(.data,
-																 .element = NULL,
-																 .feature = NULL,
-																 .abundance = NULL,
-																 method,
 
-																 of_samples = TRUE,
-
-
-
-																 correlation_threshold = 0.9,
-																 top = Inf,
-																 log_transform = FALSE,
-
-																 Dim_a_column = NULL,
-																 Dim_b_column = NULL) {
-	# Make col names
-	.abundance = enquo(.abundance)
-	.element = enquo(.element)
-	.feature = enquo(.feature)
-
-	Dim_a_column = enquo(Dim_a_column)
-	Dim_b_column = enquo(Dim_b_column)
-
-	.data %>%
-
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		remove_redundancy(
-			.element = !!.element,
-			.feature = !!.feature,
-			.abundance = !!.abundance,
-			method = method,
-
-			of_samples = of_samples,
-
-
-
-			correlation_threshold = correlation_threshold,
-			top = top,
-			log_transform = log_transform,
-
-			Dim_a_column = !!Dim_a_column,
-			Dim_b_column = !!Dim_b_column
-		) %>%
-
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
-}
-
-#' remove_redundancy
-#' @inheritParams remove_redundancy
-#' 
-#' @docType methods
-#' @rdname remove_redundancy-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("remove_redundancy",
-					"SummarizedExperiment",
-					.remove_redundancy_se)
-
-#' remove_redundancy
-#' @inheritParams remove_redundancy
-#' 
-#' @docType methods
-#' @rdname remove_redundancy-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("remove_redundancy",
-					"RangedSummarizedExperiment",
-					.remove_redundancy_se)
 
 #' Adjust transcript abundance for unwanted variation
 #'
@@ -1590,7 +1123,11 @@ setMethod("remove_redundancy",
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function sva::ComBat
 #'
-#' @details This function adjusts the abundance for (known) unwanted variation. At the moment just an unwanted covariated is allowed at a time.
+#' @details This function adjusts the abundance for (known) unwanted variation.
+#' At the moment just an unwanted covariate is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
+#'
+#' Underlying method:
+#' 	sva::ComBat(data, batch = my_batch,	mod = design,	prior.plots = FALSE, ...)
 #'
 #' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 #'
@@ -1606,13 +1143,10 @@ setMethod("remove_redundancy",
 #' cm$batch[cm$sample %in% c("SRR1740035", "SRR1740043")] = 1
 #'
 #' res =
-#' 	adjust_abundance(
-#' 		cm,
-#'		~ condition + batch,
-#'		.sample = sample,
-#'		.transcript = transcript,
-#'		.abundance = count
-#'	)
+#'  cm %>%
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#' 	adjust_abundance(	~ condition + batch	)
 #'
 #'
 #' @docType methods
@@ -1648,16 +1182,28 @@ setGeneric("adjust_abundance", function(.data,
 	.transcript = col_names$.transcript
 
 	# Get scaled abundance if present, otherwise get abundance (if present get scaled one)
-	.abundance = 
-		enquo(.abundance) %>% 
+	.abundance =
+		enquo(.abundance) %>%
 		when(!quo_is_symbol(.) ~ get_abundance_norm_if_exists(.data, .)$.abundance, ~ (.))
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
 	.data_processed =
+		
+		.data %>%
+	
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
 		get_adjusted_counts_for_unwanted_variation_bulk(
-			.data,
 			.formula,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
@@ -1670,7 +1216,7 @@ setGeneric("adjust_abundance", function(.data,
 
 		.data %>%
 
-			# Add adjsted column
+			# Add adjusted column
 			dplyr::left_join(.data_processed,	by = c(quo_name(.transcript), quo_name(.sample))) %>%
 
 			# Attach attributes
@@ -1682,13 +1228,15 @@ setGeneric("adjust_abundance", function(.data,
 		.data %>%
 
 			# Selecting the right columns
-			select(
-				!!.sample,
-				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
-			) %>%
-			distinct() %>%
+			pivot_sample(!!.sample) %>%
+			# 
+			# select(
+			# 	!!.sample,
+			# 	get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
+			# ) %>%
+			# distinct() %>%
 
-			# Add adjsted column
+			# Add adjusted column
 			dplyr::left_join(.data_processed,	by = quo_name(.sample)) %>%
 
 			# Attach attributes
@@ -1704,88 +1252,30 @@ setGeneric("adjust_abundance", function(.data,
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' 
+#'
 #' @docType methods
 #' @rdname adjust_abundance-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 setMethod("adjust_abundance", "spec_tbl_df", .adjust_abundance)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' 
+#'
 #' @docType methods
 #' @rdname adjust_abundance-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 setMethod("adjust_abundance", "tbl_df", .adjust_abundance)
 
 #' adjust_abundance
 #' @inheritParams adjust_abundance
-#' 
+#'
 #' @docType methods
 #' @rdname adjust_abundance-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
-
-.adjust_abundance_se = function(.data,
-																.formula,
-																.sample = NULL,
-																.transcript = NULL,
-																.abundance = NULL,
-																log_transform = TRUE,
-																action = "add",
-																...) {
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-
-	.data %>%
-
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		adjust_abundance(
-			.formula = .formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			log_transform = log_transform,
-			action = action,
-			...
-		) %>%
-
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
-}
-
-#' adjust_abundance
-#' @inheritParams adjust_abundance
-#' 
-#' @docType methods
-#' @rdname adjust_abundance-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("adjust_abundance",
-					"SummarizedExperiment",
-					.adjust_abundance_se)
-
-#' adjust_abundance
-#' @inheritParams adjust_abundance
-#' 
-#' @docType methods
-#' @rdname adjust_abundance-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("adjust_abundance",
-					"RangedSummarizedExperiment",
-					.adjust_abundance_se)
 
 
 
@@ -1814,6 +1304,12 @@ setMethod("adjust_abundance",
 #'  and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and
 #'  returns a tibble with aggregate transcript with the same name. All the rest of the column
 #'  are appended, and factors and boolean are appended as characters.
+#'
+#'  Underlying custom method:
+#'  data %>%
+#' 		filter(n_aggr > 1) %>%
+#' 		group_by(!!.sample,!!.transcript) %>%
+#' 		dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function())
 #'
 #' @return A `tbl` object with aggregated transcript abundance and annotation
 #'
@@ -1878,85 +1374,30 @@ setGeneric("aggregate_duplicates", function(.data,
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
-#' 
+#'
 #' @docType methods
 #' @rdname aggregate_duplicates-methods
-#' 
+#'
 #' @return A `tbl` object with aggregated transcript abundance and annotation
 setMethod("aggregate_duplicates", "spec_tbl_df", .aggregate_duplicates)
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
-#' 
+#'
 #' @docType methods
 #' @rdname aggregate_duplicates-methods
-#' 
+#'
 #' @return A `tbl` object with aggregated transcript abundance and annotation
 setMethod("aggregate_duplicates", "tbl_df", .aggregate_duplicates)
 
 #' aggregate_duplicates
 #' @inheritParams aggregate_duplicates
-#' 
+#'
 #' @docType methods
 #' @rdname aggregate_duplicates-methods
-#' 
+#'
 #' @return A `tbl` object with aggregated transcript abundance and annotation
 setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
-
-.aggregate_duplicates_se = function(.data,
-
-																		.sample = NULL,
-																		.transcript = NULL,
-																		.abundance = NULL,
-																		aggregation_function = sum,
-																		keep_integer = TRUE) {
-	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-
-	.data %>%
-
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		aggregate_duplicates(
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			aggregation_function = aggregation_function,
-			keep_integer = keep_integer
-		) %>%
-
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
-}
-
-#' aggregate_duplicates
-#' @inheritParams aggregate_duplicates
-#' 
-#' @docType methods
-#' @rdname aggregate_duplicates-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("aggregate_duplicates",
-					"SummarizedExperiment",
-					.aggregate_duplicates_se)
-
-#' aggregate_duplicates
-#' @inheritParams aggregate_duplicates
-#' 
-#' @docType methods
-#' @rdname aggregate_duplicates-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("aggregate_duplicates",
-					"RangedSummarizedExperiment",
-					.aggregate_duplicates_se)
 
 
 
@@ -1980,7 +1421,11 @@ setMethod("aggregate_duplicates",
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function Cibersort
 #'
-#' @details This function infers the cell type composition of our samples (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).
+#' @details This function infers the cell type composition of our samples
+#' (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).
+#'
+#' Underlying method:
+#' CIBERSORT(Y = data, X = reference, ...)
 #'
 #' @return A `tbl` object including additional columns for each cell type estimated
 #'
@@ -1988,7 +1433,7 @@ setMethod("aggregate_duplicates",
 #'
 #'
 #' @examples
-#' 
+#'
 #' # Subsetting for time efficiency
 #' deconvolve_cellularity(filter(tidybulk::counts, sample=="SRR1740034"), sample, transcript, `count`, cores = 1)
 #'
@@ -2026,12 +1471,13 @@ setGeneric("deconvolve_cellularity", function(.data,
 	.abundance = col_names$.abundance
 
 	# Check that reference is matrix
-	if(reference %>% class %>% equals("data.frame") %>% `!`)
+	if(reference %>% class %>% equals("data.frame") %>% not())
 		stop("tidybulk says: reference must be a data.frame")
-	
+
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
 	.data_processed =
 		get_cell_type_proportions(
 		.data,
@@ -2058,11 +1504,13 @@ setGeneric("deconvolve_cellularity", function(.data,
 
 
 			# Selecting the right columns
-			select(
-				!!.sample,
-				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
-			) %>%
-			distinct() %>%
+			pivot_sample(!!.sample) %>%
+			# 
+			# select(
+			# 	!!.sample,
+			# 	get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
+			# ) %>%
+			# distinct() %>%
 
 			# Add new annotation
 			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
@@ -2080,10 +1528,10 @@ setGeneric("deconvolve_cellularity", function(.data,
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
-#' 
+#'
 #' @docType methods
 #' @rdname deconvolve_cellularity-methods
-#' 
+#'
 #' @return A `tbl` object including additional columns for each cell type estimated
 setMethod("deconvolve_cellularity",
 					"spec_tbl_df",
@@ -2091,19 +1539,19 @@ setMethod("deconvolve_cellularity",
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
-#' 
+#'
 #' @docType methods
 #' @rdname deconvolve_cellularity-methods
-#' 
+#'
 #' @return A `tbl` object including additional columns for each cell type estimated
 setMethod("deconvolve_cellularity", "tbl_df", .deconvolve_cellularity)
 
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
-#' 
+#'
 #' @docType methods
 #' @rdname deconvolve_cellularity-methods
-#' 
+#'
 #' @return A `tbl` object including additional columns for each cell type estimated
 setMethod("deconvolve_cellularity",
 					"tidybulk",
@@ -2111,65 +1559,6 @@ setMethod("deconvolve_cellularity",
 
 
 
-.deconvolve_cellularity_se = function(.data,
-																			.sample = NULL,
-																			.transcript = NULL,
-																			.abundance = NULL,
-																			reference = X_cibersort,
-																			method = "cibersort",
-																			action = "add",
-																			...) {
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-
-	.data %>%
-
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		deconvolve_cellularity(
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			reference = reference,
-			method = method,
-			action = action,
-			...
-		) %>%
-
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
-}
-
-#' deconvolve_cellularity
-#' @inheritParams deconvolve_cellularity
-#' 
-#' @docType methods
-#' @rdname deconvolve_cellularity-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("deconvolve_cellularity",
-					"SummarizedExperiment",
-					.deconvolve_cellularity_se)
-
-#' deconvolve_cellularity
-#' @inheritParams deconvolve_cellularity
-#' 
-#' @docType methods
-#' @rdname deconvolve_cellularity-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod(
-	"deconvolve_cellularity",
-	"RangedSummarizedExperiment",
-	.deconvolve_cellularity_se
-)
 
 #' Get ENTREZ id from gene SYMBOL
 #'
@@ -2193,7 +1582,7 @@ symbol_to_entrez = function(.data,
 	.sample = enquo(.sample)
 	col_names = get_sample_transcript(.data, .sample, .transcript)
 	.transcript = col_names$.transcript
-	
+
 	# Check if package is installed, otherwise install
 	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing org.Hs.eg.db needed for annotation")
@@ -2201,7 +1590,7 @@ symbol_to_entrez = function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("org.Hs.eg.db", ask = FALSE)
 	}
-	
+
 	.data %>%
 		dplyr::left_join(
 			# Get entrez mapping 1:1
@@ -2212,13 +1601,13 @@ symbol_to_entrez = function(.data,
 				'SYMBOL'
 			) %>%
 				enframe(name = quo_name(.transcript), value = "entrez") %>%
-				filter(entrez %>% is.na %>% `!`) %>%
+				filter(entrez %>% is.na %>% not()) %>%
 				group_by(!!.transcript) %>%
 				slice(1) %>%
 				ungroup(),
 			by = quo_name(.transcript)
 		)
-	
+
 }
 
 
@@ -2237,13 +1626,13 @@ symbol_to_entrez = function(.data,
 #'
 describe_transcript = function(.data,
 														.transcript = NULL) {
-	
+
 	# Get column names
 	.transcript = enquo(.transcript)
 	col_names = get_transcript(.data, .transcript)
 	.transcript = col_names$.transcript
-	
-	
+
+
 	# Check if package is installed, otherwise install
 	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
@@ -2251,7 +1640,7 @@ describe_transcript = function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("org.Hs.eg.db", ask = FALSE)
 	}
-	
+
 	# Check if package is installed, otherwise install
 	if (find.package("org.Mm.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing org.Mm.eg.db needed for differential transcript abundance analyses")
@@ -2259,7 +1648,7 @@ describe_transcript = function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("org.Mm.eg.db", ask = FALSE)
 	}
-	
+
 	# Check if package is installed, otherwise install
 	if (find.package("AnnotationDbi", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
@@ -2267,9 +1656,9 @@ describe_transcript = function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("AnnotationDbi", ask = FALSE)
 	}
-	  
-	description_df = 
-	
+
+	description_df =
+
 
 		# Human
 		tryCatch(suppressMessages(AnnotationDbi::mapIds(
@@ -2280,7 +1669,7 @@ describe_transcript = function(.data,
 			multiVals = "first"
 		))  %>%
 			.[!is.na(.)], error = function(x){}) %>%
-		
+
 		# Mouse
 		c(
 			tryCatch(suppressMessages(AnnotationDbi::mapIds(
@@ -2290,20 +1679,20 @@ describe_transcript = function(.data,
 				keytype = "SYMBOL",
 				multiVals = "first"
 			)) %>% .[!is.na(.)], error = function(x){})
-			
+
 		) %>%
-		
+
 		# Parse
 		unlist() %>%
 		#unique() %>%
 		enframe(name = quo_name(.transcript), value = "description") %>%
-		
+
 		# Select just one per transcript
 		distinct() %>%
 		group_by(!!.transcript) %>%
 		slice(1) %>%
 		ungroup()
-	
+
 	.data %>%
 		left_join(description_df, by = quo_name(.transcript))
 }
@@ -2393,33 +1782,33 @@ setGeneric("ensembl_to_symbol", function(.data,
 
 #' ensembl_to_symbol
 #' @inheritParams ensembl_to_symbol
-#' 
+#'
 #' @docType methods
 #' @rdname ensembl_to_symbol-methods
-#' 
+#'
 #' @return A `tbl` object including additional columns for transcript symbol
 setMethod("ensembl_to_symbol", "spec_tbl_df", .ensembl_to_symbol)
 
 #' ensembl_to_symbol
 #' @inheritParams ensembl_to_symbol
-#' 
+#'
 #' @docType methods
 #' @rdname ensembl_to_symbol-methods
-#' 
+#'
 #' @return A `tbl` object including additional columns for transcript symbol
 setMethod("ensembl_to_symbol", "tbl_df", .ensembl_to_symbol)
 
 #' ensembl_to_symbol
 #' @inheritParams ensembl_to_symbol
-#' 
+#'
 #' @docType methods
 #' @rdname ensembl_to_symbol-methods
-#' 
+#'
 #' @return A `tbl` object including additional columns for transcript symbol
 setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 
 
-#' Add differential transcription information to a tbl using edgeR.
+#' Add differential transcription information to a tbl using edgeR or DeSEQ2 from raw counts.
 #'
 #' \lifecycle{maturing}
 #'
@@ -2436,16 +1825,52 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2"
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom"
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
-#' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
-#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#' @details At the moment this function uses either edgeR (DOI: 10.18129/B9.bioc.edgeR) or DeSEQ2 (DOI: 10.1186/s13059-014-0550-8)
+#' Both methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.
+#'
+#' Underlying method for edgeR framework:
+#' 	.data %>%
+#'
+#' 	# Filter
+#'	keep_abundant(
+#'			factor_of_interest = !!(as.symbol(parse_formula(.formula)[1])),
+#'			minimum_counts = minimum_counts,
+#'			minimum_proportion = minimum_proportion
+#'		) %>%
+#'
+#'			# Format
+#'			select(!!.transcript,!!.sample,!!.abundance) %>%
+#'			spread(!!.sample,!!.abundance) %>%
+#'			as_matrix(rownames = !!.transcript) %>%
+#'
+#'			# edgeR
+#'			edgeR::DGEList(counts = .) %>%
+#'			edgeR::calcNormFactors(method = scaling_method) %>%
+#'			edgeR::estimateDisp(design) %>%
+#'
+#'			# Fit
+#'			edgeR::glmQLFit(design) %>% // or glmFit according to choice
+#'			edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
+#'
+#'	Underlying method for DeSEQ2 framework:
+#'	keep_abundant(
+#'			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+#'			minimum_counts = minimum_counts,
+#'			minimum_proportion = minimum_proportion
+#'	) %>%
+#'
+#'	# DESeq2
+#'	DESeq2::DESeqDataSet( design = .formula) %>%
+#'	DESeq2::DESeq() %>%
+#'	DESeq2::results()
+#'
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 #'
@@ -2454,23 +1879,18 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #' @examples
 #'
+#'  tidybulk::counts_mini %>% 
+#'  tidybulk(sample, transcript, count) %>% 
+#'  identify_abundant() %>% 
+#' 	test_differential_abundance( ~ condition )
 #'
-#' 	test_differential_abundance(
-#' 	 tidybulk::counts_mini,
-#' 	    ~ condition,
-#' 	    sample,
-#' 	    transcript,
-#' 	    `count`
-#' 	)
+#' 	# The function `test_differential_abundance` operated with contrasts too
 #'
-#' 	# The functon `test_differential_abundance` operated with contrasts too
-#'
+#'  tidybulk::counts_mini %>%
+#'  tidybulk(sample, transcript, count) %>%
+#'  identify_abundant() %>%
 #'  test_differential_abundance(
-#' 	    tidybulk::counts_mini,
 #' 	    ~ 0 + condition,
-#' 	    sample,
-#' 	    transcript,
-#' 	    `count`,
 #' 	    .contrasts = c( "conditionTRUE - conditionFALSE")
 #'  )
 #'
@@ -2487,8 +1907,6 @@ setGeneric("test_differential_abundance", function(.data,
 																									 .contrasts = NULL,
 																									 method = "edgeR_quasi_likelihood",
 																									 significance_threshold = 0.05,
-																									 minimum_counts = 10,
-																									 minimum_proportion = 0.7,
 																									 fill_missing_values = FALSE,
 																									 scaling_method = "TMM",
 																									 omit_contrast_in_colnames = FALSE,
@@ -2505,8 +1923,6 @@ setGeneric("test_differential_abundance", function(.data,
 																					.contrasts = NULL,
 																					method = "edgeR_quasi_likelihood",
 																					significance_threshold = 0.05,
-																					minimum_counts = 10,
-																					minimum_proportion = 0.7,
 																					fill_missing_values = FALSE,
 																					scaling_method = "TMM",
 																					omit_contrast_in_colnames = FALSE,
@@ -2524,44 +1940,72 @@ setGeneric("test_differential_abundance", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
+	.data_processed = 
+		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
+		# Choose method
+		when(
+			
+			# edgeR
+			grepl("edgeR", method) ~ get_differential_transcript_abundance_bulk(
+				.,
+				.formula,
+				.sample = !!.sample,
+				.transcript = !!.transcript,
+				.abundance = !!.abundance,
+				.contrasts = .contrasts,
+				method = method,
+				significance_threshold = significance_threshold,
+				fill_missing_values = fill_missing_values,
+				scaling_method = scaling_method,
+				omit_contrast_in_colnames = omit_contrast_in_colnames
+			),
+			
+			# Voom
+			tolower(method)=="limma_voom" ~ 	
+				get_differential_transcript_abundance_bulk_voom(
+					.,
+					.formula,
+					.sample = !!.sample,
+					.transcript = !!.transcript,
+					.abundance = !!.abundance,
+					.contrasts = .contrasts,
+					significance_threshold = significance_threshold,
+					fill_missing_values = fill_missing_values,
+					scaling_method = scaling_method,
+					omit_contrast_in_colnames = omit_contrast_in_colnames
+				),
+			
+			# DESeq2
+			tolower(method)=="deseq2" ~ get_differential_transcript_abundance_deseq2(
+				.,
+				.formula,
+				.sample = !!.sample,
+				.transcript = !!.transcript,
+				.abundance = !!.abundance,
+				.contrasts = .contrasts,
+				method = method,
+				significance_threshold = significance_threshold,
+				fill_missing_values = fill_missing_values,
+				scaling_method = scaling_method,
+				omit_contrast_in_colnames = omit_contrast_in_colnames
+			),
+			
+			# Else error
+			TRUE ~  stop("tidybulk says: the onyl methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"DESeq2\"")
+		)
 
-	if(grepl("edgeR", method)){
-		.data_processed =
-			get_differential_transcript_abundance_bulk(
-				.data,
-				.formula,
-				.sample = !!.sample,
-				.transcript = !!.transcript,
-				.abundance = !!.abundance,
-				.contrasts = .contrasts,
-				method = method,
-				significance_threshold = significance_threshold,
-				minimum_counts = minimum_counts,
-				minimum_proportion = minimum_proportion,
-				fill_missing_values = fill_missing_values,
-				scaling_method = scaling_method,
-				omit_contrast_in_colnames = omit_contrast_in_colnames
-			)
-	}
-	else if (tolower(method)=="deseq2"){
-		.data_processed =
-			get_differential_transcript_abundance_deseq2(
-				.data,
-				.formula,
-				.sample = !!.sample,
-				.transcript = !!.transcript,
-				.abundance = !!.abundance,
-				.contrasts = .contrasts,
-				method = method,
-				significance_threshold = significance_threshold,
-				minimum_counts = minimum_counts,
-				minimum_proportion = minimum_proportion,
-				fill_missing_values = fill_missing_values,
-				scaling_method = scaling_method,
-				omit_contrast_in_colnames = omit_contrast_in_colnames
-			)
-	}
-	else stop("tidybulk says: the onyl methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"DESeq2\"")
 
 	if (action == "add"){
 
@@ -2581,11 +2025,12 @@ setGeneric("test_differential_abundance", function(.data,
 		.data %>%
 
 			# Selecting the right columns
-			select(
-				!!.transcript,
-				get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$vertical_cols
-			) %>%
-			distinct() %>%
+			pivot_transcript(!!.transcript) %>%
+			# select(
+			# 	!!.transcript,
+			# 	get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$vertical_cols
+			# ) %>%
+			# distinct() %>%
 
 			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
 
@@ -2606,10 +2051,10 @@ setGeneric("test_differential_abundance", function(.data,
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
-#' 
+#'
 #' @docType methods
 #' @rdname test_differential_abundance-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_abundance",
 					"spec_tbl_df",
@@ -2617,10 +2062,10 @@ setMethod("test_differential_abundance",
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
-#' 
+#'
 #' @docType methods
 #' @rdname test_differential_abundance-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_abundance",
 					"tbl_df",
@@ -2628,91 +2073,16 @@ setMethod("test_differential_abundance",
 
 #' test_differential_abundance
 #' @inheritParams test_differential_abundance
-#' 
+#'
 #' @docType methods
 #' @rdname test_differential_abundance-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_abundance",
 					"tidybulk",
 					.test_differential_abundance)
 
 
-
-.test_differential_abundance_se = function(.data,
-																					 .formula,
-																					 .sample = NULL,
-																					 .transcript = NULL,
-																					 .abundance = NULL,
-																					 .contrasts = NULL,
-																					 method = "edgeR_quasi_likelihood",
-																					 significance_threshold = 0.05,
-																					 minimum_counts = 10,
-																					 minimum_proportion = 0.7,
-																					 fill_missing_values = FALSE,
-																					 scaling_method = "TMM",
-																					 omit_contrast_in_colnames = FALSE,
-																					 action = "add")
-{
-	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-
-	.data %>%
-
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		test_differential_abundance(
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			.contrasts = .contrasts,
-			method = method,
-			significance_threshold = significance_threshold,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			fill_missing_values = fill_missing_values,
-			scaling_method = scaling_method,
-			omit_contrast_in_colnames = omit_contrast_in_colnames,
-			action = action
-		) %>%
-
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
-}
-
-#' test_differential_abundance
-#' @inheritParams test_differential_abundance
-#' 
-#' @docType methods
-#' @rdname test_differential_abundance-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod(
-	"test_differential_abundance",
-	"SummarizedExperiment",
-	.test_differential_abundance_se
-)
-
-#' test_differential_abundance
-#' @inheritParams test_differential_abundance
-#' 
-#' @docType methods
-#' @rdname test_differential_abundance-methods
-#' 
-#' @return A `SummarizedExperiment` object
-#'
-setMethod(
-	"test_differential_abundance",
-	"RangedSummarizedExperiment",
-	.test_differential_abundance_se
-)
 
 
 
@@ -2734,10 +2104,15 @@ setMethod(
 #' @param top Integer. Number of top transcript to consider
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
-#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#' @details At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 #'
+#' Underlying method:
+#' 	s <- rowMeans((x - rowMeans(x)) ^ 2)
+#'	o <- order(s, decreasing = TRUE)
+#'	x <- x[o[1L:top], , drop = FALSE]
+#'	variable_trancripts = rownames(x)
 #'
 #'
 #'
@@ -2781,7 +2156,8 @@ setGeneric("keep_variable", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
 	keep_variable_transcripts(
 		.data,
 		.sample = !!.sample,
@@ -2794,91 +2170,173 @@ setGeneric("keep_variable", function(.data,
 
 #' keep_variable
 #' @inheritParams keep_variable
-#' 
+#'
 #' @docType methods
 #' @rdname keep_variable-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("keep_variable", "spec_tbl_df", .keep_variable)
 
 #' keep_variable
 #' @inheritParams keep_variable
-#' 
+#'
 #' @docType methods
 #' @rdname keep_variable-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("keep_variable", "tbl_df", .keep_variable)
 
 #' keep_variable
 #' @inheritParams keep_variable
-#' 
+#'
 #' @docType methods
 #' @rdname keep_variable-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("keep_variable", "tidybulk", .keep_variable)
 
-.keep_variable_se = function(.data,
-															 .sample = NULL,
-															 .transcript = NULL,
-															 .abundance = NULL,
-															 top = 500,
-															 log_transform = TRUE)
+#' find abundant transcripts
+#'
+#' \lifecycle{maturing}
+#'
+#' @description identify_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#' @importFrom dplyr filter
+#'
+#' @name identify_abundant
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param factor_of_interest The name of the column of the factor of interest. This is used for defining sample groups for the filtering process. It uses the filterByExpr function from edgeR.
+#' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
+#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#'
+#' @details At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
+#'
+#'  Underlying method:
+#'  edgeR::filterByExpr(
+#'    data,
+#'		min.count = minimum_counts,
+#'		group = string_factor_of_interest,
+#'		min.prop = minimum_proportion
+#'	)
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#'
+#' 	identify_abundant(
+#' 	tidybulk::counts_mini,
+#' 	    sample,
+#' 	    transcript,
+#' 	    `count`
+#' 	)
+#'
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#' @export
+#'
+setGeneric("identify_abundant", function(.data,
+																		 .sample = NULL,
+																		 .transcript = NULL,
+																		 .abundance = NULL,
+																		 factor_of_interest = NULL,
+																		 minimum_counts = 10,
+																		 minimum_proportion = 0.7)
+	standardGeneric("identify_abundant"))
+
+# Set internal
+.identify_abundant = 		function(.data,
+														.sample = NULL,
+														.transcript = NULL,
+														.abundance = NULL,
+														factor_of_interest = NULL,
+														minimum_counts = 10,
+														minimum_proportion = 0.7)
 {
-	# Make col names
+	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
+	
+	factor_of_interest = enquo(factor_of_interest)
+	
+	# Validate data frame
+	validation(.data, !!.sample, !!.transcript, !!.abundance)
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
 	.data %>%
+		
+		# Filter
+		when(
+			
+			# If column is present use this instead of doing more work
+			".abundant" %in% colnames(.) %>% not ~  {
+					gene_to_exclude =
+						add_scaled_counts_bulk.get_low_expressed(
+							.data,
+							.sample = !!.sample,
+							.transcript = !!.transcript,
+							.abundance = !!.abundance,
+							factor_of_interest = !!factor_of_interest,
+							minimum_counts = minimum_counts,
+							minimum_proportion = minimum_proportion
+						)
+					
+					dplyr::mutate(., .abundant := !!.transcript %in% gene_to_exclude %>% not())
+				},
+			~ (.)
+		)	%>%
 
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		keep_variable(
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			top = top,
-			log_transform = log_transform
-		) %>%
-
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
+		# Attach attributes
+		reattach_internals(.data)
 }
 
-#' keep_variable
-#' @inheritParams keep_variable
-#' 
-#' @docType methods
-#' @rdname keep_variable-methods
-#' 
-#' @return A `SummarizedExperiment` object
+#' keep_abundant
+#' @inheritParams identify_abundant
 #'
-setMethod("keep_variable",
-					"SummarizedExperiment",
-					.keep_variable_se)
-
-#' keep_variable
-#' @inheritParams keep_variable
-#' 
 #' @docType methods
-#' @rdname keep_variable-methods
-#' 
-#' @return A `SummarizedExperiment` object
+#' @rdname identify_abundant-methods
 #'
-setMethod("keep_variable",
-					"RangedSummarizedExperiment",
-					.keep_variable_se)
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("identify_abundant", "spec_tbl_df", .identify_abundant)
 
+#' identify_abundant
+#' @inheritParams identify_abundant
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("identify_abundant", "tbl_df", .identify_abundant)
+
+#' identify_abundant
+#' @inheritParams identify_abundant
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("identify_abundant", "tidybulk", .identify_abundant)
 
 
 #' Keep abundant transcripts
 #'
-#' \lifecycle{maturing}
+#' \lifecycle{questioning}
 #'
 #' @description keep_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -2896,7 +2354,15 @@ setMethod("keep_variable",
 #' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
 #'
-#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#' @details At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
+#'
+#'  Underlying method:
+#'  edgeR::filterByExpr(
+#'    data,
+#'		min.count = minimum_counts,
+#'		group = string_factor_of_interest,
+#'		min.prop = minimum_proportion
+#'	)
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 #'
@@ -2950,87 +2416,12 @@ setGeneric("keep_abundant", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 
 	.data %>%
 
 		# Filter
-		ifelse_pipe("lowly_abundant" %in% colnames((.)),
-
-								# If column is present use this instead of doing more work
-								~ {
-									#message("tidybulk says: \"lowly_abundant\" column is present. Using this to filter data")
-									.x %>% dplyr::filter(!lowly_abundant)
-								},
-
-								# If no column is present go
-								~ {
-									gene_to_exclude =
-										add_scaled_counts_bulk.get_low_expressed(
-											.data,
-											.sample = !!.sample,
-											.transcript = !!.transcript,
-											.abundance = !!.abundance,
-											factor_of_interest = !!factor_of_interest,
-											minimum_counts = minimum_counts,
-											minimum_proportion = minimum_proportion
-										)
-
-									.x %>% dplyr::filter(!!.transcript %in% gene_to_exclude %>% `!`)
-								})	%>%
-
-		# Attach attributes
-		reattach_internals(.data)
-}
-
-#' keep_abundant
-#' @inheritParams keep_abundant
-#' 
-#' @docType methods
-#' @rdname keep_abundant-methods
-#' 
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("keep_abundant", "spec_tbl_df", .keep_abundant)
-
-#' keep_abundant
-#' @inheritParams keep_abundant
-#' 
-#' @docType methods
-#' @rdname keep_abundant-methods
-#' 
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("keep_abundant", "tbl_df", .keep_abundant)
-
-#' keep_abundant
-#' @inheritParams keep_abundant
-#' 
-#' @docType methods
-#' @rdname keep_abundant-methods
-#' 
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-setMethod("keep_abundant", "tidybulk", .keep_abundant)
-
-.keep_abundant_se = function(.data,
-															 .sample = NULL,
-															 .transcript = NULL,
-															 .abundance = NULL,
-															 factor_of_interest = NULL,
-															 minimum_counts = 10,
-															 minimum_proportion = 0.7)
-{
-	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	factor_of_interest = enquo(factor_of_interest)
-
-	.data %>%
-
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		keep_abundant(
+		identify_abundant(
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
@@ -3038,35 +2429,38 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion
 		) %>%
+		dplyr::filter(.abundant) %>%
 
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
+		# Attach attributes
+		reattach_internals(.data)
 }
 
 #' keep_abundant
 #' @inheritParams keep_abundant
-#' 
+#'
 #' @docType methods
 #' @rdname keep_abundant-methods
-#' 
-#' @return A `SummarizedExperiment` object
 #'
-setMethod("keep_abundant",
-					"SummarizedExperiment",
-					.keep_abundant_se)
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("keep_abundant", "spec_tbl_df", .keep_abundant)
 
 #' keep_abundant
 #' @inheritParams keep_abundant
-#' 
+#'
 #' @docType methods
 #' @rdname keep_abundant-methods
-#' 
-#' @return A `SummarizedExperiment` object
 #'
-setMethod("keep_abundant",
-					"RangedSummarizedExperiment",
-					.keep_abundant_se)
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("keep_abundant", "tbl_df", .keep_abundant)
+
+#' keep_abundant
+#' @inheritParams keep_abundant
+#'
+#' @docType methods
+#' @rdname keep_abundant-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("keep_abundant", "tidybulk", .keep_abundant)
 
 
 
@@ -3087,11 +2481,41 @@ setMethod("keep_abundant",
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts = NULL,
+#' @param method A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
 #'
 #'
-#' @details This wrapper execute gene enrichment analyses of the dataset
+#' @details This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
+#'
+#'
+#' dge =
+#' 	data %>%
+#' 	keep_abundant(
+#' 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+#' 		!!.sample, !!.entrez, !!.abundance
+#' 	) %>%
+#'
+#' 	# Make sure transcript names are adjacent
+#' 	[...] %>%
+#' 	as_matrix(rownames = !!.entrez) %>%
+#' 	edgeR::DGEList(counts = .)
+#'
+#' idx =  buildIdx(entrezIDs = rownames(dge), species = species)
+#'
+#' dge %>%
+#'
+#' 	# Calculate weights
+#' 	limma::voom(design, plot = FALSE) %>%
+#'
+#' 	# Execute EGSEA
+#' 	egsea(
+#' 		contrasts = my_contrasts,
+#' 		baseGSEAs = method,
+#' 		sort.by = "med.rank",
+#' 		num.threads = cores,
+#' 		report = FALSE
+#' 	)
 #'
 #' @return A `tbl` object
 #'
@@ -3112,8 +2536,9 @@ setMethod("keep_abundant",
 #'			.sample = sample,
 #'			.entrez = entrez,
 #'			.abundance = count,
+#'       method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
 #'			species="human",
-#'			cores = 1
+#'			cores = 2
 #'		)
 #'
 #'}
@@ -3129,6 +2554,7 @@ setGeneric("test_gene_enrichment", function(.data,
 																							 .entrez,
 																							 .abundance = NULL,
 																							 .contrasts = NULL,
+																								method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																							 species,
 																							 cores = 10)
 	standardGeneric("test_gene_enrichment"))
@@ -3140,6 +2566,7 @@ setGeneric("test_gene_enrichment", function(.data,
 																			.entrez,
 																			.abundance = NULL,
 																			.contrasts = NULL,
+																	    method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																			species,
 																			cores = 10)	{
 	# Make col names
@@ -3148,22 +2575,34 @@ setGeneric("test_gene_enrichment", function(.data,
 	col_names = get_sample_counts(.data, .sample, .abundance)
 	.sample = col_names$.sample
 	.abundance = col_names$.abundance
-	
+
 	.entrez = enquo(.entrez)
 
 	# Validate data frame
 	validation(.data, !!.sample, !!.entrez, !!.abundance)
-
-	test_gene_enrichment_bulk_EGSEA(
-		.data,
-		.formula,
-		.sample = !!.sample,
-		.entrez = !!.entrez,
-		.abundance = !!.abundance,
-		.contrasts = .contrasts,
-		species = species,
-		cores = cores
-	)
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	
+	.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% colnames(.) ~ filter(., .abundant),
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		) %>%
+		
+		test_gene_enrichment_bulk_EGSEA(
+			.formula,
+			.sample = !!.sample,
+			.entrez = !!.entrez,
+			.abundance = !!.abundance,
+			.contrasts = .contrasts,
+			method = method,
+			species = species,
+			cores = cores
+		)
 
 
 
@@ -3174,7 +2613,7 @@ setGeneric("test_gene_enrichment", function(.data,
 #'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("test_gene_enrichment",
 					"spec_tbl_df",
@@ -3182,10 +2621,10 @@ setMethod("test_gene_enrichment",
 
 #' test_gene_enrichment
 #' @inheritParams test_gene_enrichment
-#' 
+#'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("test_gene_enrichment",
 					"tbl_df",
@@ -3193,10 +2632,10 @@ setMethod("test_gene_enrichment",
 
 #' test_gene_enrichment
 #' @inheritParams test_gene_enrichment
-#' 
+#'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("test_gene_enrichment",
 					"tidybulk",
@@ -3221,7 +2660,21 @@ setMethod("test_gene_enrichment",
 #' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
 #' @param gene_set A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
 #'
-#' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA. This wrapper uses clusterProfiler on the backend.
+#' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
+#' This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
+#'
+#' Undelying method:
+#'  msigdbr::msigdbr(species = species) %>%#'
+#' 	nest(data = -gs_cat) %>%
+#' 	mutate(test =
+#' 			map(
+#' 				data,
+#' 				~ clusterProfiler::enricher(
+#' 					my_entrez_rank,
+#' 				 	TERM2GENE=.x %>% select(gs_name, entrez_gene),
+#' 					pvalueCutoff = 1
+#' 					) %>%	as_tibble
+#' 			))
 #'
 #' @return A `tbl` object
 #'
@@ -3233,13 +2686,13 @@ setMethod("test_gene_enrichment",
 #' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
 #' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 #' df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
-#' 
+#'
 #' 	test_gene_overrepresentation(
 #' 		df_entrez,
 #' 		.sample = sample,
 #' 		.entrez = entrez,
 #' 		.do_test = do_test,
-#' 		species="Homo sapiens", 
+#' 		species="Homo sapiens",
 #'    gene_set=c("C2")
 #' 	)
 #'
@@ -3264,54 +2717,54 @@ setGeneric("test_gene_overrepresentation", function(.data,
 																					 .do_test,
 																					 species,
 																					 gene_set = NULL)	{
-	
+
 	# Comply with CRAN NOTES
 	. = NULL
-	
+
 
 	# Get column names
 	.sample = enquo(.sample)
 	.sample =  get_sample(.data, .sample)$.sample
 	.do_test = enquo(.do_test)
 	.entrez = enquo(.entrez)
-	
+
 	# Check if entrez is set
 	if(quo_is_missing(.entrez))
 		stop("tidybulk says: the .entrez parameter appears to no be set")
-	
+
 	# Check column type
-	if (.data %>% distinct(!!.do_test) %>% sapply(class) %in% c("logical") %>% `!` %>% any)
+	if (.data %>% distinct(!!.do_test) %>% sapply(class) %in% c("logical") %>% not() %>% any)
 		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
-	
+
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
 	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
 		message("msigdbr not installed. Installing.")
 		BiocManager::install("msigdbr", ask = FALSE)
 	}
-	
+
 	# Check is correct species name
-	if(species %in% msigdbr::msigdbr_show_species() %>% `!`)
+	if(species %in% msigdbr::msigdbr_show_species() %>% not())
 		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_show_species(), collapse=", ")))
-	
+
 	#m_df <- msigdbr(species = species)
-	
-	.data %>% 
+
+	.data %>%
 		#filter(!!.entrez %in% unique(m_df$entrez_gene)) %>%
-		filter(!!.do_test) %>% 
-		distinct(!!.entrez) %>% 
+		filter(!!.do_test) %>%
+		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
 		entrez_rank_to_gsea(species, gene_set = gene_set)
-	
-	
+
+
 }
 
 #' test_gene_overrepresentation
 #' @inheritParams test_gene_overrepresentation
-#' 
+#'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("test_gene_overrepresentation",
 					"spec_tbl_df",
@@ -3319,10 +2772,10 @@ setMethod("test_gene_overrepresentation",
 
 #' test_gene_overrepresentation
 #' @inheritParams test_gene_overrepresentation
-#' 
+#'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("test_gene_overrepresentation",
 					"tbl_df",
@@ -3330,10 +2783,10 @@ setMethod("test_gene_overrepresentation",
 
 #' test_gene_overrepresentation
 #' @inheritParams test_gene_overrepresentation
-#' 
+#'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("test_gene_overrepresentation",
 					"tidybulk",
@@ -3404,10 +2857,10 @@ setGeneric("pivot_sample", function(.data,
 
 #' pivot_sample
 #' @inheritParams pivot_sample
-#' 
+#'
 #' @docType methods
 #' @rdname pivot_sample-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("pivot_sample",
 					"spec_tbl_df",
@@ -3415,10 +2868,10 @@ setMethod("pivot_sample",
 
 #' pivot_sample
 #' @inheritParams pivot_sample
-#' 
+#'
 #' @docType methods
 #' @rdname pivot_sample-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("pivot_sample",
 					"tbl_df",
@@ -3426,10 +2879,10 @@ setMethod("pivot_sample",
 
 #' pivot_sample
 #' @inheritParams pivot_sample
-#' 
+#'
 #' @docType methods
 #' @rdname pivot_sample-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("pivot_sample",
 					"tidybulk",
@@ -3499,10 +2952,10 @@ setGeneric("pivot_transcript", function(.data,
 
 #' pivot_transcript
 #' @inheritParams pivot_transcript
-#' 
+#'
 #' @docType methods
 #' @rdname pivot_transcript-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("pivot_transcript",
 					"spec_tbl_df",
@@ -3510,10 +2963,10 @@ setMethod("pivot_transcript",
 
 #' pivot_transcript
 #' @inheritParams pivot_transcript
-#' 
+#'
 #' @docType methods
 #' @rdname pivot_transcript-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("pivot_transcript",
 					"tbl_df",
@@ -3521,14 +2974,115 @@ setMethod("pivot_transcript",
 
 #' pivot_transcript
 #' @inheritParams pivot_transcript
-#' 
+#'
 #' @docType methods
 #' @rdname pivot_transcript-methods
-#' 
+#'
 #' @return A `tbl` object
 setMethod("pivot_transcript",
 					"tidybulk",
 					.pivot_transcript)
+
+
+#' Fill transcript abundance if missing from sample-transcript pairs
+#'
+#' \lifecycle{maturing}
+#'
+#' @description fill_missing_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with new observations
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name fill_missing_abundance
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT>  | <...> |
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript column
+#' @param .abundance The name of the transcript abundance column
+#' @param fill_with A numerical abundance with which fill the missing data points
+#'
+#' @details This function fills the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
+#'
+#' @return A `tbl` non-sparse abundance
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#' fill_missing_abundance(tidybulk::counts_mini, sample, transcript, count, fill_with = 0)
+#'
+#'
+#' @docType methods
+#' @rdname fill_missing_abundance-methods
+#'
+#' @export
+#'
+#'
+setGeneric("fill_missing_abundance", function(.data,
+																		.sample= NULL,
+																		.transcript= NULL,
+																		.abundance= NULL,
+																		fill_with)
+	standardGeneric("fill_missing_abundance"))
+
+# Set internal
+.fill_missing_abundance = 	function(.data,
+													.sample = NULL,
+													.transcript= NULL,
+													.abundance= NULL,
+													fill_with)
+{
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
+
+
+	# Check the abundance is set
+	if(length(fill_with)==0) stop("nanny says: the argument fill_with must not be empty.")
+
+	# Validate data frame
+	validation(.data, !!.sample, !!.transcript, !!.abundance)
+
+	fill_NA_using_value(
+		.data,
+		.sample = !!.sample,
+		.transcript = !!.transcript,
+		.abundance = !!.abundance,
+		fill_with = fill_with)
+}
+
+#' fill_missing_abundance
+#' @inheritParams fill_missing_abundance
+#'
+#' @docType methods
+#' @rdname fill_missing_abundance-methods
+#' 
+#' @return A `tbl` with filled abundance
+setMethod("fill_missing_abundance", "spec_tbl_df", .fill_missing_abundance)
+
+#' fill_missing_abundance
+#' @inheritParams fill_missing_abundance
+#'
+#' @docType methods
+#' @rdname fill_missing_abundance-methods
+#' 
+#' @return A `tbl` with filled abundance
+setMethod("fill_missing_abundance", "tbl_df", .fill_missing_abundance)
+
+#' fill_missing_abundance
+#' @inheritParams fill_missing_abundance
+#'
+#' @docType methods
+#' @rdname fill_missing_abundance-methods
+#' 
+#' @return A `tbl` with filled abundance
+setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
 
 
 
@@ -3536,12 +3090,12 @@ setMethod("pivot_transcript",
 #'
 #' \lifecycle{maturing}
 #'
-#' @description impute_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
+#' @description impute_missing_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #'
-#' @name impute_abundance
+#' @name impute_missing_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
@@ -3560,7 +3114,7 @@ setMethod("pivot_transcript",
 #'
 #'
 #' res =
-#' 	impute_abundance(
+#' 	impute_missing_abundance(
 #' 		tidybulk::counts_mini,
 #' 	~ condition,
 #' 	.sample = sample,
@@ -3570,20 +3124,20 @@ setMethod("pivot_transcript",
 #'
 #'
 #' @docType methods
-#' @rdname impute_abundance-methods
+#' @rdname impute_missing_abundance-methods
 #'
 #' @export
 #'
 #'
-setGeneric("impute_abundance", function(.data,
+setGeneric("impute_missing_abundance", function(.data,
 																				.formula,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL)
-	standardGeneric("impute_abundance"))
+	standardGeneric("impute_missing_abundance"))
 
 # Set internal
-.impute_abundance = 	function(.data,
+.impute_missing_abundance = 	function(.data,
 															.formula,
 															.sample = NULL,
 															.transcript = NULL,
@@ -3601,7 +3155,7 @@ setGeneric("impute_abundance", function(.data,
 	# Get scaled abundance if present, otherwise get abundance
 	.abundance_scaled = NULL
 	if(
-		.data %>% get_tt_columns() %>% is.null %>% `!` &&
+		.data %>% get_tt_columns() %>% is.null %>% not() &&
 		".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
 		quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames) &&
 		quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) != quo_name(.abundance)
@@ -3625,89 +3179,37 @@ setGeneric("impute_abundance", function(.data,
 
 }
 
-#' impute_abundance
-#' @inheritParams impute_abundance
-#' 
-#' @docType methods
-#' @rdname impute_abundance-methods
-#' 
-#' @return A `tbl` with imputed abundance
-setMethod("impute_abundance", "spec_tbl_df", .impute_abundance)
-
-#' impute_abundance
-#' @inheritParams impute_abundance
-#' 
-#' @docType methods
-#' @rdname impute_abundance-methods
-#' 
-#' @return A `tbl` with imputed abundance
-setMethod("impute_abundance", "tbl_df", .impute_abundance)
-
-#' impute_abundance
-#' @inheritParams impute_abundance
-#' 
-#' @docType methods
-#' @rdname impute_abundance-methods
-#' 
-#' @return A `tbl` with imputed abundance
-setMethod("impute_abundance", "tidybulk", .impute_abundance)
-
-.impute_abundance_se = function(.data,
-																.formula,
-																.sample = NULL,
-																.transcript = NULL,
-																.abundance = NULL) {
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-
-	.data %>%
-
-		# Convert to tidybulk
-		tidybulk() %>%
-
-		# Apply scale method
-		impute_abundance(
-			.formula = .formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance
-		) %>%
-
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-
-}
-
-#' impute_abundance
-#' @inheritParams impute_abundance
-#' 
-#' @docType methods
-#' @rdname impute_abundance-methods
-#' 
-#' @return A `SummarizedExperiment` object
+#' impute_missing_abundance
+#' @inheritParams impute_missing_abundance
 #'
-setMethod("impute_abundance",
-					"SummarizedExperiment",
-					.impute_abundance_se)
-
-#' impute_abundance
-#' @inheritParams impute_abundance
-#' 
 #' @docType methods
-#' @rdname impute_abundance-methods
-#' 
-#' @return A `SummarizedExperiment` object
+#' @rdname impute_missing_abundance-methods
 #'
-setMethod("impute_abundance",
-					"RangedSummarizedExperiment",
-					.impute_abundance_se)
+#' @return A `tbl` with imputed abundance
+setMethod("impute_missing_abundance", "spec_tbl_df", .impute_missing_abundance)
+
+#' impute_missing_abundance
+#' @inheritParams impute_missing_abundance
+#'
+#' @docType methods
+#' @rdname impute_missing_abundance-methods
+#'
+#' @return A `tbl` with imputed abundance
+setMethod("impute_missing_abundance", "tbl_df", .impute_missing_abundance)
+
+#' impute_missing_abundance
+#' @inheritParams impute_missing_abundance
+#'
+#' @docType methods
+#' @rdname impute_missing_abundance-methods
+#'
+#' @return A `tbl` with imputed abundance
+setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 
 
 
 
-#' Add differential tissue composition information to a tbl 
+#' Add differential tissue composition information to a tbl
 #'
 #' \lifecycle{maturing}
 #'
@@ -3727,8 +3229,35 @@ setMethod("impute_abundance",
 #' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #' @param ... Further parameters passed to the method deconvolve_cellularity
-#' 
-#' @details At the moment this function uses edgeR only, but other inference algorithms will be added in the near future.
+#'
+#' @details This routine applies a deconvolution method (e.g., Cibersort; DOI: 10.1038/nmeth.3337)
+#' and passes the proportions inferred into a generalised linear model (DOI:dx.doi.org/10.1007/s11749-010-0189-z)
+#' or a cox regression model (ISBN: 978-1-4757-3294-8)
+#'
+#' Underlying method for the generalised linear model:
+#' data %>%
+#' deconvolve_cellularity(
+#' 	!!.sample, !!.transcript, !!.abundance,
+#' 	method=method,
+#' 	reference = reference,
+#' 	action="get",
+#' 	...
+#' )  %>%
+#' 	[..] %>%
+#' 	betareg::betareg(.my_formula, .)
+#'
+#' Underlying method for the cox regression:
+#' data %>%
+#' deconvolve_cellularity(
+#' 	!!.sample, !!.transcript, !!.abundance,
+#' 	method=method,
+#' 	reference = reference,
+#' 	action="get",
+#' 	...
+#' )  %>%
+#' 	[..] %>%
+#' 	mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
+#' 	survival::coxph(.my_formula, .)
 #'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 #'
@@ -3783,7 +3312,7 @@ setGeneric("test_differential_cellularity", function(.data,
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
-	
+
 	# Validate data frame
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 
@@ -3803,10 +3332,10 @@ setGeneric("test_differential_cellularity", function(.data,
 
 #' test_differential_cellularity
 #' @inheritParams test_differential_cellularity
-#' 
+#'
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_cellularity",
 					"spec_tbl_df",
@@ -3814,10 +3343,10 @@ setMethod("test_differential_cellularity",
 
 #' test_differential_cellularity
 #' @inheritParams test_differential_cellularity
-#' 
+#'
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_cellularity",
 					"tbl_df",
@@ -3825,10 +3354,10 @@ setMethod("test_differential_cellularity",
 
 #' test_differential_cellularity
 #' @inheritParams test_differential_cellularity
-#' 
+#'
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
-#' 
+#'
 #' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_cellularity",
 					"tidybulk",
@@ -3836,66 +3365,61 @@ setMethod("test_differential_cellularity",
 
 
 
-.test_differential_cellularity_se = function(.data,
-																						 .formula,
-																						 .sample = NULL,
-																						 .transcript = NULL,
-																						 .abundance = NULL,
-																						 method = "cibersort",
-																						 reference = X_cibersort,
-																						 significance_threshold = 0.05,
-																						 ...)
+#' Produces the bibliography list of your workflow
+#'
+#' \lifecycle{maturing}
+#'
+#' @description get_bibliography() takes as input a `tidybulk`
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name get_bibliography
+#'
+#' @param .data A `tidybulk` tibble
+#'
+#' @details This methods returns the bibliography list of your workflow from the internals of a tidybulk tibble (attr(., "internals"))
+#'
+#'
+#' @examples
+#'
+#' # Define tidybulk tibble
+#' df = tidybulk(tidybulk::counts_mini, sample, transcript, count)
+#'
+#' get_bibliography(df)
+#'
+#'
+#'
+#' @docType methods
+#' @rdname get_bibliography-methods
+#' @export
+#'
+setGeneric("get_bibliography", function(.data)
+	standardGeneric("get_bibliography"))
+
+# Set internal
+.get_bibliography = 		function(.data)
 {
-	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	
-	.data %>%
-		
-		# Convert to tidybulk
-		tidybulk() %>%
-		
-		# Apply scale method
-		test_differential_cellularity_(
-			.data,
-			.formula = .formula,
-			.sample = .sample,
-			.transcript = .transcript,
-			.abundance = .abundance,
-			method = method,
-			reference = reference,
-			significance_threshold = significance_threshold,
-			...
-		)
-	
+
+	my_methods =
+		.data %>%
+		attr("internals") %>%
+		.[["methods_used"]]
+
+	my_bibliography() %>%
+		`[` (my_methods) %>%
+		unlist %>%
+		writeLines()
+
 }
 
-#' test_differential_cellularity
-#' @inheritParams test_differential_cellularity
-#' 
-#' @docType methods
-#' @rdname test_differential_cellularity-methods
-#' 
-#' @return A `SummarizedExperiment` object
+#' get_bibliography
+#' @inheritParams get_bibliography
 #'
-setMethod(
-	"test_differential_cellularity",
-	"SummarizedExperiment",
-	.test_differential_cellularity_se
-)
-
-#' test_differential_cellularity
-#' @inheritParams test_differential_cellularity
-#' 
 #' @docType methods
-#' @rdname test_differential_cellularity-methods
-#' 
-#' @return A `SummarizedExperiment` object
+#' @rdname get_bibliography-methods
 #'
-setMethod(
-	"test_differential_cellularity",
-	"RangedSummarizedExperiment",
-	.test_differential_cellularity_se
-)
-
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("get_bibliography",
+					"tidybulk",
+					.get_bibliography)

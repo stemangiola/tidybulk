@@ -62,6 +62,8 @@ arrange <- function(.data, ..., .by_group = FALSE) {
 #' @export
 #'
 ############# START ADDED tidybulk ###################################
+
+#' @export
 #' @inheritParams arrange
 arrange.default <- function(.data, ..., .by_group = FALSE) {
 
@@ -730,6 +732,22 @@ mutate.tidybulk <- function(.data, ...)
 		add_class("tidybulk")
 
 
+}
+#' @export
+mutate.nested_tidybulk <- function(.data, ...)
+{
+	.data %>%
+		drop_class(c("nested_tidybulk", "tt")) %>%
+		dplyr::mutate(...) %>%
+		
+		# Attach attributes
+		reattach_internals(.data) %>%
+		
+		# Add class
+		add_class("tt") %>%
+		add_class("nested_tidybulk")
+	
+	
 }
 ############# END ADDED tidybulk #####################################
 
