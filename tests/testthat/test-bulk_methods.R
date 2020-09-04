@@ -555,7 +555,7 @@ test_that("New method choice",{
 			method = "WRONG_METHOD",
 			action="only"
 		),
-		"the onyl methods supported"
+		"the only methods supported"
 	)
 })
 
