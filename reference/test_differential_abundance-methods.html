@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add differential transcription information to a tbl using edgeR or DeSEQ2 from raw counts. — test_differential_abundance • tidybulk</title>
+<title>Perform differential transcription testing using edgeR, limma-voom or DESeq2 — test_differential_abundance • tidybulk</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Add differential transcription information to a tbl using edgeR or DeSEQ2 from raw counts. — test_differential_abundance" />
+<meta property="og:title" content="Perform differential transcription testing using edgeR, limma-voom or DESeq2 — test_differential_abundance" />
 <meta property="og:description" content="test_differential_abundance() takes as input a `tbl` formatted as | &amp;lt;SAMPLE&amp;gt; | &amp;lt;TRANSCRIPT&amp;gt; | &amp;lt;COUNT&amp;gt; | &amp;lt;...&amp;gt; | and returns a `tbl` with additional columns for the statistics from the hypothesis test." />
 
 
@@ -115,7 +115,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add differential transcription information to a tbl using edgeR or DeSEQ2 from raw counts.</h1>
+    <h1>Perform differential transcription testing using edgeR, limma-voom or DESeq2</h1>
     
     <div class="hidden name"><code>test_differential_abundance-methods.Rd</code></div>
     </div>
@@ -274,8 +274,8 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
-<p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
+    <p>A `tbl` with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).</p>
+<p>A `tbl` with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).</p>
 <p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
 <p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
 <p>A `SummarizedExperiment` object</p>
@@ -283,8 +283,8 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
-<p>At the moment this function uses either edgeR (DOI: 10.18129/B9.bioc.edgeR) or DeSEQ2 (DOI: 10.1186/s13059-014-0550-8)
-Both methods use raw counts, irrespectively if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates including unwanted source of variation in the formula.</p>
+<p>This function provides the option to use edgeR <a href='https://doi.org/10.1093/bioinformatics/btp616'>https://doi.org/10.1093/bioinformatics/btp616</a>, limma-voom <a href='https://doi.org/10.1186/gb-2014-15-2-r29'>https://doi.org/10.1186/gb-2014-15-2-r29</a>, or  DESeq2 <a href='https://doi.org/10.1186/s13059-014-0550-8'>https://doi.org/10.1186/s13059-014-0550-8</a> to perform the testing.
+All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.</p>
 <p>Underlying method for edgeR framework:
 	.data <!-- %&gt;% --></p>
 <p># Filter
@@ -304,7 +304,7 @@ keep_abundant(
 <p># Fit
 		edgeR::glmQLFit(design) <!-- %&gt;% // or glmFit according to choice -->
 		edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice</p>
-<p>Underlying method for DeSEQ2 framework:
+<p>Underlying method for DESeq2 framework:
 keep_abundant(
 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 		minimum_counts = minimum_counts,
@@ -336,7 +336,7 @@ DESeq2::results()</p>
 #&gt; </span><span style='color: #555555;'>10</span><span> SRR17… COL8A2     b_cell          1 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
 #&gt; </span><span style='color: #555555;'># … with 2,625 more rows, and 4 more variables: F </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, PValue </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
 #&gt; </span><span style='color: #555555;'>#   FDR </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, significant </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span></div><div class='input'>
-  <span class='co'># The function `test_differential_abundance` operated with contrasts too</span>
+  <span class='co'># The function `test_differential_abundance` operates with contrasts too</span>
 
  <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span>
  <span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>) <span class='op'>%&gt;%</span>

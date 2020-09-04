@@ -75,7 +75,7 @@
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2020-08-31</h4>
+            <h4 class="date">2020-09-04</h4>
       
       
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -292,8 +292,7 @@
 <h2 class="hasAnchor">
 <a href="#create-tidybulk-tibble--it-memorises-key-column-names" class="anchor"></a>Create <code>tidybulk</code> tibble. It memorises key column names</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw">tt</span> <span class="op">=</span> <span class="kw">counts_mini</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/tidybulk.html">tidybulk</a></span>(<span class="kw">sample</span>, <span class="kw">transcript</span>, <span class="kw">count</span>)
-</pre></div>
+<span class="kw">tt</span> <span class="op">=</span> <span class="kw">counts_mini</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/tidybulk.html">tidybulk</a></span>(<span class="kw">sample</span>, <span class="kw">transcript</span>, <span class="kw">count</span>)</pre></div>
 <p><strong>All tidybulk methods are directly compatible with SummarizedExperiment as well.</strong></p>
 </div>
 <div id="aggregate-transcripts" class="section level2">
@@ -304,8 +303,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="kw">tt.aggr</span> <span class="op">=</span>  <span class="kw">tt</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/aggregate_duplicates.html">aggregate_duplicates</a></span>(     aggregation_function = <span class="kw">sum</span> )
 
-<span class="kw">tt.aggr</span>
-</pre></div>
+<span class="kw">tt.aggr</span></pre></div>
 <pre><code>## # A tibble: 2,635 x 7
 ##    sample     transcript `Cell type` count time  condition `merged transcripts`
 ##    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
@@ -324,8 +322,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit">
 <span class="kw">se.aggr</span> <span class="op">=</span>  <span class="kw">se_mini</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/aggregate_duplicates.html">aggregate_duplicates</a></span>(    aggregation_function = <span class="kw">sum</span> )
 
-<span class="kw">se.aggr</span>
-</pre></div>
+<span class="kw">se.aggr</span></pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 527 5 
 ## metadata(0):
@@ -343,8 +340,7 @@
 <div class="sourceCode" id="cb6"><pre class="downlit">
 <span class="kw">tt.norm</span> <span class="op">=</span>  <span class="kw">tt.aggr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>(factor_of_interest = <span class="kw">condition</span>) <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span>(method=<span class="st">"TMM"</span>)
 
-<span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">`count`</span>, <span class="kw">count_scaled</span>, <span class="kw">.abundant</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span>())
-</pre></div>
+<span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">`count`</span>, <span class="kw">count_scaled</span>, <span class="kw">.abundant</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span>())</pre></div>
 <pre><code>## # A tibble: 2,635 x 11
 ##    count count_scaled .abundant sample transcript `Cell type` time  condition
 ##    &lt;dbl&gt;        &lt;dbl&gt; &lt;lgl&gt;     &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;    
@@ -366,15 +362,13 @@
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">count_scaled</span> <span class="op">+</span> <span class="fl">1</span>, group=<span class="kw">sample</span>, color=<span class="kw">`Cell type`</span>)) <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span>() <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span>() <span class="op">+</span>
-    <span class="kw">my_theme</span>
-</pre></div>
+    <span class="kw">my_theme</span></pre></div>
 <p><img src="introduction_files/figure-html/plot_normalise-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit">
 <span class="kw">se.norm</span> <span class="op">=</span>  <span class="kw">se.aggr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>(factor_of_interest = <span class="kw">condition</span>) <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span>(method=<span class="st">"TMM"</span>)
 
-<span class="kw">se.norm</span>
-</pre></div>
+<span class="kw">se.norm</span></pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 527 5 
 ## metadata(0):
@@ -390,8 +384,7 @@
 </h2>
 <p>We may want to identify and filter variable transcripts.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="kw">tt.norm.variable</span> <span class="op">=</span> <span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/keep_variable.html">keep_variable</a></span>()
-</pre></div>
+<span class="kw">tt.norm.variable</span> <span class="op">=</span> <span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/keep_variable.html">keep_variable</a></span>()</pre></div>
 </div>
 <div id="reduce-dimensions" class="section level2">
 <h2 class="hasAnchor">
@@ -402,8 +395,7 @@
 <div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="kw">tt.norm.MDS</span> <span class="op">=</span>  <span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span>(.abundance = <span class="kw">count_scaled</span>, method=<span class="st">"MDS"</span>, .dims = <span class="fl">3</span>)
 
-<span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">sample</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"Dim"</span>), <span class="kw">`Cell type`</span>, <span class="kw">time</span> ) <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/distinct.html">distinct</a></span>()
-</pre></div>
+<span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">sample</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"Dim"</span>), <span class="kw">`Cell type`</span>, <span class="kw">time</span> ) <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/distinct.html">distinct</a></span>()</pre></div>
 <pre><code>## # A tibble: 5 x 6
 ##   sample       Dim1   Dim2     Dim3 `Cell type`       time 
 ##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;             &lt;chr&gt;
@@ -417,14 +409,12 @@
 <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"Dim"</span>), <span class="kw">sample</span>, <span class="kw">`Cell type`</span>) <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/distinct.html">distinct</a></span>() <span class="op">%&gt;%</span>
-  <span class="kw">GGally</span>::<span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span>(columns = <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(colour=<span class="kw">`Cell type`</span>))
-</pre></div>
+  <span class="kw">GGally</span>::<span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span>(columns = <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(colour=<span class="kw">`Cell type`</span>))</pre></div>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit">
 <span class="kw">se.norm.MDS</span> <span class="op">=</span>  <span class="kw">se.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span>(.abundance = <span class="kw">count_scaled</span>, method=<span class="st">"MDS"</span>, .dims = <span class="fl">3</span>)
 
-<span class="kw">se.norm.MDS</span>
-</pre></div>
+<span class="kw">se.norm.MDS</span></pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 527 5 
 ## metadata(0):
@@ -437,8 +427,7 @@
 <div class="sourceCode" id="cb17"><pre class="downlit">
 <span class="kw">tt.norm.PCA</span> <span class="op">=</span> <span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span>(.abundance = <span class="kw">count_scaled</span>, method=<span class="st">"PCA"</span> ,  .dims = <span class="fl">3</span>)
 
-<span class="kw">tt.norm.PCA</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">sample</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"PC"</span>), <span class="kw">`Cell type`</span>, <span class="kw">time</span> ) <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/distinct.html">distinct</a></span>()
-</pre></div>
+<span class="kw">tt.norm.PCA</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">sample</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"PC"</span>), <span class="kw">`Cell type`</span>, <span class="kw">time</span> ) <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/distinct.html">distinct</a></span>()</pre></div>
 <pre><code>## # A tibble: 5 x 6
 ##   sample        PC1    PC2     PC3 `Cell type`       time 
 ##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;             &lt;chr&gt;
@@ -452,14 +441,12 @@
 <span class="kw">tt.norm.PCA</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"PC"</span>), <span class="kw">sample</span>, <span class="kw">`Cell type`</span>) <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/distinct.html">distinct</a></span>() <span class="op">%&gt;%</span>
-  <span class="kw">GGally</span>::<span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span>(columns = <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(colour=<span class="kw">`Cell type`</span>))
-</pre></div>
+  <span class="kw">GGally</span>::<span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span>(columns = <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(colour=<span class="kw">`Cell type`</span>))</pre></div>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit">
 <span class="kw">se.norm.PCA</span> <span class="op">=</span> <span class="kw">se.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span>(.abundance = <span class="kw">count_scaled</span>, method=<span class="st">"PCA"</span> ,  .dims = <span class="fl">3</span>)
 
-<span class="kw">se.norm.PCA</span>
-</pre></div>
+<span class="kw">se.norm.PCA</span></pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 527 5 
 ## metadata(0):
@@ -479,8 +466,7 @@
         top = <span class="fl">500</span>,
         perplexity=<span class="fl">10</span>,
         pca_scale =<span class="fl">TRUE</span>
-    )
-</pre></div>
+    )</pre></div>
 <pre><code>## Performing PCA
 ## Read the 251 x 50 data matrix successfully!
 ## OpenMP is working. 1 threads.
@@ -489,51 +475,49 @@
 ## Building tree...
 ## Done in 0.01 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 65.718819 (50 iterations in 0.03 seconds)
-## Iteration 100: error is 68.062617 (50 iterations in 0.03 seconds)
-## Iteration 150: error is 68.697882 (50 iterations in 0.04 seconds)
-## Iteration 200: error is 68.052288 (50 iterations in 0.04 seconds)
-## Iteration 250: error is 68.729648 (50 iterations in 0.04 seconds)
-## Iteration 300: error is 1.481141 (50 iterations in 0.03 seconds)
-## Iteration 350: error is 1.178765 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.129179 (50 iterations in 0.03 seconds)
-## Iteration 450: error is 1.113301 (50 iterations in 0.02 seconds)
-## Iteration 500: error is 1.102419 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.099234 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.091994 (50 iterations in 0.02 seconds)
-## Iteration 650: error is 1.084464 (50 iterations in 0.03 seconds)
-## Iteration 700: error is 1.077908 (50 iterations in 0.03 seconds)
-## Iteration 750: error is 1.076599 (50 iterations in 0.02 seconds)
-## Iteration 800: error is 1.076276 (50 iterations in 0.02 seconds)
-## Iteration 850: error is 1.074836 (50 iterations in 0.02 seconds)
-## Iteration 900: error is 1.072923 (50 iterations in 0.02 seconds)
-## Iteration 950: error is 1.072354 (50 iterations in 0.02 seconds)
-## Iteration 1000: error is 1.071303 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.55 seconds.</code></pre>
+## Iteration 50: error is 68.654071 (50 iterations in 0.03 seconds)
+## Iteration 100: error is 68.661031 (50 iterations in 0.04 seconds)
+## Iteration 150: error is 69.794991 (50 iterations in 0.03 seconds)
+## Iteration 200: error is 69.776910 (50 iterations in 0.04 seconds)
+## Iteration 250: error is 69.428099 (50 iterations in 0.03 seconds)
+## Iteration 300: error is 1.648081 (50 iterations in 0.03 seconds)
+## Iteration 350: error is 1.275913 (50 iterations in 0.02 seconds)
+## Iteration 400: error is 1.225668 (50 iterations in 0.02 seconds)
+## Iteration 450: error is 1.198048 (50 iterations in 0.02 seconds)
+## Iteration 500: error is 1.174119 (50 iterations in 0.02 seconds)
+## Iteration 550: error is 1.154446 (50 iterations in 0.02 seconds)
+## Iteration 600: error is 1.144059 (50 iterations in 0.02 seconds)
+## Iteration 650: error is 1.138105 (50 iterations in 0.02 seconds)
+## Iteration 700: error is 1.117455 (50 iterations in 0.02 seconds)
+## Iteration 750: error is 1.110191 (50 iterations in 0.02 seconds)
+## Iteration 800: error is 1.108732 (50 iterations in 0.02 seconds)
+## Iteration 850: error is 1.106222 (50 iterations in 0.02 seconds)
+## Iteration 900: error is 1.105601 (50 iterations in 0.02 seconds)
+## Iteration 950: error is 1.103742 (50 iterations in 0.02 seconds)
+## Iteration 1000: error is 1.102296 (50 iterations in 0.02 seconds)
+## Fitting performed in 0.53 seconds.</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"tSNE"</span>, ignore.case = <span class="fl">FALSE</span>), <span class="kw">sample</span>, <span class="kw">Call</span>) <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/distinct.html">distinct</a></span>()
-</pre></div>
+    <span class="fu"><a href="../reference/distinct.html">distinct</a></span>()</pre></div>
 <pre><code>## # A tibble: 251 x 4
 ##      tSNE1   tSNE2 sample                       Call 
 ##      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
-##  1   1.37  -11.2   TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  2   1.80   10.1   TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  3  -4.84  -13.5   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  4  -2.99   -2.76  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  5   0.947  -6.74  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  6  -3.14  -11.5   TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  7 -11.4    36.4   TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  8  -6.71   -1.54  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  9  -9.18   -0.722 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-## 10  -7.31  -22.8   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##  1   6.07    6.28  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  2  -8.00   -3.41  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  3   0.254  10.2   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  4  -4.46    7.96  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  5   7.26    2.54  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  6 -15.5     2.34  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  7  -6.76  -30.5   TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  8   4.50   -7.87  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  9 -11.4     9.10  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+## 10  20.5    -0.889 TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x = <span class="kw">`tSNE1`</span>, y = <span class="kw">`tSNE2`</span>, color=<span class="kw">Call</span>)) <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() <span class="op">+</span> <span class="kw">my_theme</span>
-</pre></div>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x = <span class="kw">`tSNE1`</span>, y = <span class="kw">`tSNE2`</span>, color=<span class="kw">Call</span>)) <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() <span class="op">+</span> <span class="kw">my_theme</span></pre></div>
 <p><img src="introduction_files/figure-html/tsne-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit">
@@ -546,8 +530,7 @@
         top = <span class="fl">500</span>,
         perplexity=<span class="fl">10</span>,
         pca_scale =<span class="fl">TRUE</span>
-    )
-</pre></div>
+    )</pre></div>
 <pre><code>## Performing PCA
 ## Read the 251 x 50 data matrix successfully!
 ## OpenMP is working. 1 threads.
@@ -556,30 +539,29 @@
 ## Building tree...
 ## Done in 0.01 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 67.215392 (50 iterations in 0.03 seconds)
-## Iteration 100: error is 69.361968 (50 iterations in 0.04 seconds)
-## Iteration 150: error is 69.838365 (50 iterations in 0.03 seconds)
-## Iteration 200: error is 68.078014 (50 iterations in 0.03 seconds)
-## Iteration 250: error is 68.488206 (50 iterations in 0.03 seconds)
-## Iteration 300: error is 1.553507 (50 iterations in 0.03 seconds)
-## Iteration 350: error is 1.221977 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.185869 (50 iterations in 0.02 seconds)
-## Iteration 450: error is 1.144855 (50 iterations in 0.02 seconds)
-## Iteration 500: error is 1.129491 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.124083 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.121508 (50 iterations in 0.02 seconds)
-## Iteration 650: error is 1.119243 (50 iterations in 0.02 seconds)
-## Iteration 700: error is 1.115316 (50 iterations in 0.02 seconds)
-## Iteration 750: error is 1.114528 (50 iterations in 0.02 seconds)
-## Iteration 800: error is 1.114040 (50 iterations in 0.02 seconds)
-## Iteration 850: error is 1.111450 (50 iterations in 0.02 seconds)
-## Iteration 900: error is 1.111170 (50 iterations in 0.02 seconds)
-## Iteration 950: error is 1.110578 (50 iterations in 0.02 seconds)
-## Iteration 1000: error is 1.109980 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.53 seconds.</code></pre>
+## Iteration 50: error is 68.498341 (50 iterations in 0.03 seconds)
+## Iteration 100: error is 67.953798 (50 iterations in 0.04 seconds)
+## Iteration 150: error is 69.882888 (50 iterations in 0.03 seconds)
+## Iteration 200: error is 67.836115 (50 iterations in 0.04 seconds)
+## Iteration 250: error is 68.051434 (50 iterations in 0.04 seconds)
+## Iteration 300: error is 1.606101 (50 iterations in 0.03 seconds)
+## Iteration 350: error is 1.375294 (50 iterations in 0.02 seconds)
+## Iteration 400: error is 1.282139 (50 iterations in 0.02 seconds)
+## Iteration 450: error is 1.190460 (50 iterations in 0.02 seconds)
+## Iteration 500: error is 1.158558 (50 iterations in 0.02 seconds)
+## Iteration 550: error is 1.135802 (50 iterations in 0.02 seconds)
+## Iteration 600: error is 1.125190 (50 iterations in 0.02 seconds)
+## Iteration 650: error is 1.119763 (50 iterations in 0.04 seconds)
+## Iteration 700: error is 1.117173 (50 iterations in 0.02 seconds)
+## Iteration 750: error is 1.111496 (50 iterations in 0.02 seconds)
+## Iteration 800: error is 1.108084 (50 iterations in 0.02 seconds)
+## Iteration 850: error is 1.104539 (50 iterations in 0.02 seconds)
+## Iteration 900: error is 1.100598 (50 iterations in 0.02 seconds)
+## Iteration 950: error is 1.099568 (50 iterations in 0.02 seconds)
+## Iteration 1000: error is 1.098663 (50 iterations in 0.02 seconds)
+## Fitting performed in 0.56 seconds.</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit">
-<span class="kw">se.norm.tSNE</span>
-</pre></div>
+<span class="kw">se.norm.tSNE</span></pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 500 251 
 ## metadata(0):
@@ -600,16 +582,14 @@
 <div class="sourceCode" id="cb31"><pre class="downlit">
 <span class="kw">tt.norm.MDS.rotated</span> <span class="op">=</span>
   <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/rotate_dimensions.html">rotate_dimensions</a></span>(<span class="kw">`Dim1`</span>, <span class="kw">`Dim2`</span>, rotation_degrees = <span class="fl">45</span>, .element = <span class="kw">sample</span>)
-</pre></div>
+    <span class="fu"><a href="../reference/rotate_dimensions.html">rotate_dimensions</a></span>(<span class="kw">`Dim1`</span>, <span class="kw">`Dim2`</span>, rotation_degrees = <span class="fl">45</span>, .element = <span class="kw">sample</span>)</pre></div>
 <p><strong>Original</strong> On the x and y axes axis we have the first two reduced dimensions, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit">
 <span class="kw">tt.norm.MDS.rotated</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x=<span class="kw">`Dim1`</span>, y=<span class="kw">`Dim2`</span>, color=<span class="kw">`Cell type`</span> )) <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() <span class="op">+</span>
-  <span class="kw">my_theme</span>
-</pre></div>
+  <span class="kw">my_theme</span></pre></div>
 <p><img src="introduction_files/figure-html/plot_rotate_1-1.png" width="700"></p>
 <p><strong>Rotated</strong> On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit">
@@ -617,14 +597,12 @@
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x=<span class="kw">`Dim1 rotated 45`</span>, y=<span class="kw">`Dim2 rotated 45`</span>, color=<span class="kw">`Cell type`</span> )) <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() <span class="op">+</span>
-  <span class="kw">my_theme</span>
-</pre></div>
+  <span class="kw">my_theme</span></pre></div>
 <p><img src="introduction_files/figure-html/plot_rotate_2-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb34"><pre class="downlit">
 <span class="kw">se.norm.MDS</span> <span class="op">%&gt;%</span>
-<span class="fu"><a href="../reference/rotate_dimensions.html">rotate_dimensions</a></span>(<span class="kw">`Dim1`</span>, <span class="kw">`Dim2`</span>, rotation_degrees = <span class="fl">45</span>, .element = <span class="kw">sample</span>)
-</pre></div>
+<span class="fu"><a href="../reference/rotate_dimensions.html">rotate_dimensions</a></span>(<span class="kw">`Dim1`</span>, <span class="kw">`Dim2`</span>, rotation_degrees = <span class="fl">45</span>, .element = <span class="kw">sample</span>)</pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 527 5 
 ## metadata(0):
@@ -640,8 +618,7 @@
 </h2>
 <p>We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). <code>test_differential_abundance</code> takes a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g., log fold change, p-value and false discovery rate).</p>
 <div class="sourceCode" id="cb36"><pre class="downlit">
-<span class="kw">tt</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>(factor_of_interest = <span class="kw">condition</span>) <span class="op">%&gt;%</span>    <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span>(  <span class="op">~</span> <span class="kw">condition</span>,  action=<span class="st">"only"</span>)
-</pre></div>
+<span class="kw">tt</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>(factor_of_interest = <span class="kw">condition</span>) <span class="op">%&gt;%</span>    <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span>(  <span class="op">~</span> <span class="kw">condition</span>,  action=<span class="st">"only"</span>)</pre></div>
 <pre><code>## # A tibble: 393 x 7
 ##    transcript  logFC logCPM     F   PValue    FDR significant
 ##    &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;lgl&gt;      
@@ -658,8 +635,7 @@
 ## # … with 383 more rows</code></pre>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb38"><pre class="downlit">
-<span class="kw">se_mini</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span>(  <span class="op">~</span> <span class="kw">condition</span>)
-</pre></div>
+<span class="kw">se_mini</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span>(  <span class="op">~</span> <span class="kw">condition</span>)</pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 527 5 
 ## metadata(0):
@@ -683,8 +659,7 @@
         action = <span class="st">"only"</span>
       )
 
-<span class="kw">tt.norm.adj</span>
-</pre></div>
+<span class="kw">tt.norm.adj</span></pre></div>
 <pre><code>## # A tibble: 1,965 x 3
 ##    transcript sample     count_scaled_adjusted
 ##    &lt;chr&gt;      &lt;chr&gt;                      &lt;int&gt;
@@ -705,8 +680,7 @@
   <span class="fu"><a href="../reference/adjust_abundance.html">adjust_abundance</a></span>(
     <span class="op">~</span> <span class="kw">factor_of_interest</span> <span class="op">+</span> <span class="kw">batch</span>,
     .abundance = <span class="kw">count_scaled</span>
-  )
-</pre></div>
+  )</pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 19544 48 
 ## metadata(0):
@@ -727,8 +701,7 @@
     <span class="kw">tt</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span>(action=<span class="st">"get"</span>, cores=<span class="fl">1</span>)
 
-<span class="kw">tt.cibersort</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">sample</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"cibersort:"</span>)) 
-</pre></div>
+<span class="kw">tt.cibersort</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw">sample</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"cibersort:"</span>)) </pre></div>
 <pre><code>## # A tibble: 5 x 23
 ##   sample `cibersort: B cells naive` `cibersort: B cells memory`
 ##   &lt;chr&gt;                       &lt;dbl&gt;                       &lt;dbl&gt;
@@ -758,13 +731,11 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html">geom_boxplot</a></span>() <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(<span class="op">~</span><span class="kw">`Cell type`</span>) <span class="op">+</span>
   <span class="kw">my_theme</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(axis.text.x = <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span>(angle = <span class="fl">90</span>, hjust = <span class="fl">1</span>, vjust = <span class="fl">0.5</span>), aspect.ratio=<span class="fl">1</span><span class="op">/</span><span class="fl">5</span>)
-</pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(axis.text.x = <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span>(angle = <span class="fl">90</span>, hjust = <span class="fl">1</span>, vjust = <span class="fl">0.5</span>), aspect.ratio=<span class="fl">1</span><span class="op">/</span><span class="fl">5</span>)</pre></div>
 <p><img src="introduction_files/figure-html/plot_cibersort-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb47"><pre class="downlit">
-<span class="kw">se.cibersort</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span>(cores=<span class="fl">1</span>)
-</pre></div>
+<span class="kw">se.cibersort</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span>(cores=<span class="fl">1</span>)</pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 19544 48 
 ## metadata(0):
@@ -785,8 +756,7 @@
 <span class="kw">tt.norm.cluster</span> <span class="op">=</span> <span class="kw">tt.norm</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span>(.abundance = <span class="kw">count_scaled</span>, method=<span class="st">"kmeans"</span>,  centers = <span class="fl">2</span> )
 
-<span class="kw">tt.norm.cluster</span>
-</pre></div>
+<span class="kw">tt.norm.cluster</span></pre></div>
 <pre><code>## # A tibble: 2,635 x 12
 ##    sample transcript `Cell type` count time  condition `merged transcripts`
 ##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
@@ -813,14 +783,12 @@
   ) <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x=<span class="kw">`Dim1`</span>, y=<span class="kw">`Dim2`</span>, color=<span class="kw">`cluster kmeans`</span>)) <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() <span class="op">+</span>
-  <span class="kw">my_theme</span>
-</pre></div>
+  <span class="kw">my_theme</span></pre></div>
 <p><img src="introduction_files/figure-html/plot_cluster-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb52"><pre class="downlit">
 <span class="kw">se.norm</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span>(.abundance = <span class="kw">count_scaled</span>, method=<span class="st">"kmeans"</span>,  centers = <span class="fl">2</span> )
-</pre></div>
+  <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span>(.abundance = <span class="kw">count_scaled</span>, method=<span class="st">"kmeans"</span>,  centers = <span class="fl">2</span> )</pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 527 5 
 ## metadata(0):
@@ -831,8 +799,7 @@
 ## colData names(7): Cell.type time ... multiplier cluster.kmeans</code></pre>
 <p><strong>SNN</strong></p>
 <div class="sourceCode" id="cb54"><pre class="downlit">
-<span class="kw">tt.norm.SNN</span> <span class="op">=</span>   <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>    <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span>(.abundance= <span class="kw">count_scaled</span>, method = <span class="st">"SNN"</span>)
-</pre></div>
+<span class="kw">tt.norm.SNN</span> <span class="op">=</span>   <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>    <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span>(.abundance= <span class="kw">count_scaled</span>, method = <span class="st">"SNN"</span>)</pre></div>
 <pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 ## 
 ## Number of nodes: 251
@@ -844,29 +811,27 @@
 ## Elapsed time: 0 seconds</code></pre>
 <div class="sourceCode" id="cb56"><pre class="downlit">
 <span class="kw">tt.norm.SNN</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>()
-</pre></div>
+    <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>()</pre></div>
 <pre><code>## # A tibble: 251 x 5
 ##    sample                       Call    tSNE1   tSNE2 `cluster SNN`
 ##    &lt;chr&gt;                        &lt;fct&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;        
-##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA    1.37  -11.2   1            
-##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA    1.80   10.1   2            
-##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA   -4.84  -13.5   1            
-##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA   -2.99   -2.76  0            
-##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB    0.947  -6.74  0            
-##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA   -3.14  -11.5   1            
-##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal -11.4    36.4   3            
-##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA   -6.71   -1.54  2            
-##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB   -9.18   -0.722 2            
-## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA   -7.31  -22.8   1            
+##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA    6.07    6.28  1            
+##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA   -8.00   -3.41  2            
+##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA    0.254  10.2   1            
+##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA   -4.46    7.96  0            
+##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB    7.26    2.54  0            
+##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA  -15.5     2.34  1            
+##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal  -6.76  -30.5   3            
+##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA    4.50   -7.87  2            
+##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB  -11.4     9.10  2            
+## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA   20.5    -0.889 1            
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb58"><pre class="downlit">
 <span class="kw">tt.norm.SNN</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"tSNE"</span>, ignore.case = <span class="fl">FALSE</span>), <span class="kw">`cluster SNN`</span>, <span class="kw">sample</span>, <span class="kw">Call</span>) <span class="op">%&gt;%</span>
     <span class="fu">gather</span>(<span class="kw">source</span>, <span class="kw">Call</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"cluster SNN"</span>, <span class="st">"Call"</span>)) <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/distinct.html">distinct</a></span>() <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x = <span class="kw">`tSNE1`</span>, y = <span class="kw">`tSNE2`</span>, color=<span class="kw">Call</span>)) <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span>(<span class="op">~</span><span class="kw">source</span>) <span class="op">+</span> <span class="kw">my_theme</span>
-</pre></div>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x = <span class="kw">`tSNE1`</span>, y = <span class="kw">`tSNE2`</span>, color=<span class="kw">Call</span>)) <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span>(<span class="op">~</span><span class="kw">source</span>) <span class="op">+</span> <span class="kw">my_theme</span></pre></div>
 <p><img src="introduction_files/figure-html/SNN-1.png" width="700"></p>
 <div class="sourceCode" id="cb59"><pre class="downlit">
 <span class="co"># Do differential transcription between clusters</span>
@@ -875,8 +840,7 @@
     <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span>(
     <span class="op">~</span> <span class="kw">factor_of_interest</span>,
     action=<span class="st">"only"</span>
-   )
-</pre></div>
+   )</pre></div>
 <pre><code>## # A tibble: 488 x 7
 ##    ens             logFC logCPM     F   PValue      FDR significant
 ##    &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;lgl&gt;      
@@ -893,8 +857,7 @@
 ## # … with 478 more rows</code></pre>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb61"><pre class="downlit">
-<span class="kw">se.norm.tSNE</span> <span class="op">%&gt;%</span>    <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span>(.abundance= <span class="kw">count_scaled</span>, method = <span class="st">"SNN"</span>)
-</pre></div>
+<span class="kw">se.norm.tSNE</span> <span class="op">%&gt;%</span>    <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span>(.abundance= <span class="kw">count_scaled</span>, method = <span class="st">"SNN"</span>)</pre></div>
 <pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 ## 
 ## Number of nodes: 251
@@ -927,21 +890,18 @@
 </ul>
 <p><strong>Approach 1</strong></p>
 <div class="sourceCode" id="cb64"><pre class="downlit">
-<span class="kw">tt.norm.non_redundant</span> <span class="op">=</span> <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>  <span class="fu"><a href="../reference/remove_redundancy.html">remove_redundancy</a></span>( method = <span class="st">"correlation"</span> )
-</pre></div>
+<span class="kw">tt.norm.non_redundant</span> <span class="op">=</span> <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>  <span class="fu"><a href="../reference/remove_redundancy.html">remove_redundancy</a></span>( method = <span class="st">"correlation"</span> )</pre></div>
 <p>We can visualise how the reduced redundancy with the reduced dimentions look like</p>
 <div class="sourceCode" id="cb65"><pre class="downlit">
 <span class="kw">tt.norm.non_redundant</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x=<span class="kw">`Dim1`</span>, y=<span class="kw">`Dim2`</span>, color=<span class="kw">`Cell type`</span>)) <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() <span class="op">+</span>
-  <span class="kw">my_theme</span>
-</pre></div>
+  <span class="kw">my_theme</span></pre></div>
 <p><img src="introduction_files/figure-html/plot_drop-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb66"><pre class="downlit">
-<span class="kw">se.norm.MDS</span> <span class="op">%&gt;%</span>  <span class="fu"><a href="../reference/remove_redundancy.html">remove_redundancy</a></span>( method = <span class="st">"correlation"</span> )
-</pre></div>
+<span class="kw">se.norm.MDS</span> <span class="op">%&gt;%</span>  <span class="fu"><a href="../reference/remove_redundancy.html">remove_redundancy</a></span>( method = <span class="st">"correlation"</span> )</pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 527 4 
 ## metadata(0):
@@ -960,16 +920,14 @@
     .feature = <span class="kw">transcript</span>,
     Dim_a_column = <span class="kw">`Dim1`</span>,
     Dim_b_column = <span class="kw">`Dim2`</span>
-  )
-</pre></div>
+  )</pre></div>
 <p>We can visualise MDS reduced dimensions of the samples with the closest pair removed.</p>
 <div class="sourceCode" id="cb69"><pre class="downlit">
 <span class="kw">tt.norm.non_redundant</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x=<span class="kw">`Dim1`</span>, y=<span class="kw">`Dim2`</span>, color=<span class="kw">`Cell type`</span>)) <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() <span class="op">+</span>
-  <span class="kw">my_theme</span>
-</pre></div>
+  <span class="kw">my_theme</span></pre></div>
 <p><img src="introduction_files/figure-html/plot_drop2-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb70"><pre class="downlit">
@@ -980,8 +938,7 @@
     .feature = <span class="kw">transcript</span>,
     Dim_a_column = <span class="kw">`Dim1`</span>,
     Dim_b_column = <span class="kw">`Dim2`</span>
-)
-</pre></div>
+)</pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 527 3 
 ## metadata(0):
@@ -1008,16 +965,14 @@
     requireBothEndsMapped = <span class="fl">TRUE</span>,
     checkFragLength = <span class="fl">FALSE</span>,
     useMetaFeatures = <span class="fl">TRUE</span>
-)
-</pre></div>
+)</pre></div>
 </div>
 <div id="from-ensembl-ids-to-gene-symbol-ids" class="section level2">
 <h2 class="hasAnchor">
 <a href="#from-ensembl-ids-to-gene-symbol-ids" class="anchor"></a>From ensembl IDs to gene symbol IDs</h2>
 <p>We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs.</p>
 <div class="sourceCode" id="cb73"><pre class="downlit">
-<span class="kw">counts_ensembl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/ensembl_to_symbol.html">ensembl_to_symbol</a></span>(<span class="kw">ens</span>)
-</pre></div>
+<span class="kw">counts_ensembl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/ensembl_to_symbol.html">ensembl_to_symbol</a></span>(<span class="kw">ens</span>)</pre></div>
 <pre><code>## # A tibble: 119 x 8
 ##    ens   iso   `read count` sample cases_0_project_disease_type
 ##    &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;                       
@@ -1039,8 +994,7 @@
 <a href="#add-versus-get-versus-only-modes" class="anchor"></a>ADD versus GET versus ONLY modes</h2>
 <p>Every function takes a tidytranscriptomics structured data as input, and (i) with action=“add” outputs the new information joint to the original input data frame (default), (ii) with action=“get” the new information with the sample or transcript relative informatin depending on what the analysis is about, or (iii) with action=“only” just the new information. For example, from this data set</p>
 <div class="sourceCode" id="cb75"><pre class="downlit">
-  <span class="kw">tt.norm</span>
-</pre></div>
+  <span class="kw">tt.norm</span></pre></div>
 <pre><code>## # A tibble: 2,635 x 11
 ##    sample transcript `Cell type` count time  condition `merged transcripts`
 ##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
@@ -1066,8 +1020,7 @@
         .feature = <span class="kw">transcript</span>,
         .dims = <span class="fl">3</span>,
         action=<span class="st">"add"</span>
-    )
-</pre></div>
+    )</pre></div>
 <pre><code>## # A tibble: 2,635 x 14
 ##    sample transcript `Cell type` count time  condition `merged transcripts`
 ##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
@@ -1093,8 +1046,7 @@
         .feature = <span class="kw">transcript</span>,
         .dims = <span class="fl">3</span>,
         action=<span class="st">"get"</span>
-    )
-</pre></div>
+    )</pre></div>
 <pre><code>## # A tibble: 5 x 10
 ##   sample `Cell type` time  condition `merged transcripts`   TMM multiplier
 ##   &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
@@ -1114,8 +1066,7 @@
         .feature = <span class="kw">transcript</span>,
         .dims = <span class="fl">3</span>,
         action=<span class="st">"only"</span>
-    )
-</pre></div>
+    )</pre></div>
 <pre><code>## # A tibble: 5 x 4
 ##   sample       Dim1   Dim2     Dim3
 ##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
@@ -1129,8 +1080,7 @@
 <h2 class="hasAnchor">
 <a href="#appendix" class="anchor"></a>Appendix</h2>
 <div class="sourceCode" id="cb83"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()</pre></div>
 <pre><code>## R version 4.0.2 Patched (2020-08-27 r79088)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 20.04.1 LTS
@@ -1151,12 +1101,12 @@
 ## 
 ## other attached packages:
 ##  [1] tidybulk_1.2.0   purrr_0.3.4      rlang_0.4.7      ggplot2_3.3.2   
-##  [5] tidyr_1.1.1      magrittr_1.5     dplyr_1.0.2      tibble_3.0.3    
+##  [5] tidyr_1.1.2      magrittr_1.5     dplyr_1.0.2      tibble_3.0.3    
 ##  [9] knitr_1.29       BiocStyle_2.17.0
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] backports_1.1.9             tidytext_0.2.5             
-##   [3] systemfonts_0.2.3           plyr_1.8.6                 
+##   [3] systemfonts_0.3.0           plyr_1.8.6                 
 ##   [5] igraph_1.2.5                lazyeval_0.2.2             
 ##   [7] splines_4.0.2               BiocParallel_1.23.2        
 ##   [9] listenv_0.8.0               SnowballC_0.7.0            
@@ -1164,7 +1114,7 @@
 ##  [13] digest_0.6.25               htmltools_0.5.0            
 ##  [15] fansi_0.4.1                 memoise_1.1.0              
 ##  [17] tensor_1.5                  cluster_2.1.0              
-##  [19] ROCR_1.0-11                 limma_3.45.10              
+##  [19] ROCR_1.0-11                 limma_3.45.12              
 ##  [21] globals_0.12.5              readr_1.3.1                
 ##  [23] annotate_1.67.1             matrixStats_0.56.0         
 ##  [25] pkgdown_1.5.1.9000          colorspace_1.4-1           
@@ -1174,62 +1124,63 @@
 ##  [33] jsonlite_1.7.0              spatstat.data_1.4-3        
 ##  [35] spatstat_1.64-1             genefilter_1.71.0          
 ##  [37] survival_3.2-3              zoo_1.8-8                  
-##  [39] ape_5.4-1                   glue_1.4.1                 
+##  [39] ape_5.4-1                   glue_1.4.2                 
 ##  [41] polyclip_1.10-0             gtable_0.3.0               
 ##  [43] zlibbioc_1.35.0             XVector_0.29.3             
 ##  [45] leiden_0.3.3                DelayedArray_0.15.7        
 ##  [47] future.apply_1.6.0          BiocGenerics_0.35.4        
 ##  [49] abind_1.4-5                 scales_1.1.1               
-##  [51] DBI_1.1.0                   edgeR_3.31.4               
-##  [53] miniUI_0.1.1.1              Rcpp_1.0.5                 
-##  [55] widyr_0.1.3                 viridisLite_0.3.0          
-##  [57] xtable_1.8-4                reticulate_1.16            
-##  [59] bit_4.0.4                   rsvd_1.0.3                 
-##  [61] preprocessCore_1.51.0       stats4_4.0.2               
-##  [63] htmlwidgets_1.5.1           httr_1.4.2                 
-##  [65] RColorBrewer_1.1-2          ellipsis_0.3.1             
-##  [67] Seurat_3.2.0                ica_1.0-2                  
-##  [69] pkgconfig_2.0.3             XML_3.99-0.5               
-##  [71] farver_2.0.3                uwot_0.1.8                 
-##  [73] deldir_0.1-28               locfit_1.5-9.4             
-##  [75] utf8_1.1.4                  reshape2_1.4.4             
-##  [77] tidyselect_1.1.0            labeling_0.3               
-##  [79] later_1.1.0.1               AnnotationDbi_1.51.3       
-##  [81] munsell_0.5.0               tools_4.0.2                
-##  [83] cli_2.0.2                   generics_0.0.2             
-##  [85] RSQLite_2.2.0               broom_0.7.0                
-##  [87] ggridges_0.5.2              evaluate_0.14              
-##  [89] stringr_1.4.0               fastmap_1.0.1              
-##  [91] goftest_1.2-2               yaml_2.2.1                 
-##  [93] ragg_0.3.1                  bit64_4.0.2                
-##  [95] fs_1.5.0                    fitdistrplus_1.1-1         
-##  [97] RANN_2.6.1                  pbapply_1.4-3              
-##  [99] future_1.18.0               nlme_3.1-149               
-## [101] mime_0.9                    tokenizers_0.2.1           
-## [103] compiler_4.0.2              plotly_4.9.2.1             
-## [105] png_0.1-7                   e1071_1.7-3                
-## [107] spatstat.utils_1.17-0       stringi_1.4.6              
-## [109] desc_1.2.0                  lattice_0.20-41            
-## [111] Matrix_1.2-18               vctrs_0.3.2                
-## [113] pillar_1.4.6                lifecycle_0.2.0            
-## [115] BiocManager_1.30.10         lmtest_0.9-37              
-## [117] RcppAnnoy_0.0.16            data.table_1.13.0          
-## [119] cowplot_1.0.0               bitops_1.0-6               
-## [121] irlba_2.3.3                 httpuv_1.5.4               
-## [123] patchwork_1.0.1             GenomicRanges_1.41.6       
-## [125] R6_2.4.1                    bookdown_0.20              
-## [127] promises_1.1.1              gridExtra_2.3              
-## [129] KernSmooth_2.23-17          janeaustenr_0.1.5          
-## [131] IRanges_2.23.10             codetools_0.2-16           
-## [133] MASS_7.3-52                 assertthat_0.2.1           
-## [135] SummarizedExperiment_1.19.6 rprojroot_1.3-2            
-## [137] withr_2.2.0                 sctransform_0.2.1          
-## [139] S4Vectors_0.27.12           GenomeInfoDbData_1.2.3     
-## [141] mgcv_1.8-32                 parallel_4.0.2             
-## [143] hms_0.5.3                   rpart_4.1-15               
-## [145] grid_4.0.2                  class_7.3-17               
-## [147] rmarkdown_2.3               Rtsne_0.15                 
-## [149] Biobase_2.49.0              shiny_1.5.0</code></pre>
+##  [51] DBI_1.1.0                   cpp11_0.2.1                
+##  [53] edgeR_3.31.4                miniUI_0.1.1.1             
+##  [55] Rcpp_1.0.5                  widyr_0.1.3                
+##  [57] viridisLite_0.3.0           xtable_1.8-4               
+##  [59] reticulate_1.16             bit_4.0.4                  
+##  [61] rsvd_1.0.3                  preprocessCore_1.51.0      
+##  [63] stats4_4.0.2                htmlwidgets_1.5.1          
+##  [65] httr_1.4.2                  RColorBrewer_1.1-2         
+##  [67] ellipsis_0.3.1              Seurat_3.2.0               
+##  [69] ica_1.0-2                   pkgconfig_2.0.3            
+##  [71] XML_3.99-0.5                farver_2.0.3               
+##  [73] uwot_0.1.8                  deldir_0.1-28              
+##  [75] locfit_1.5-9.4              utf8_1.1.4                 
+##  [77] reshape2_1.4.4              tidyselect_1.1.0           
+##  [79] labeling_0.3                later_1.1.0.1              
+##  [81] AnnotationDbi_1.51.3        munsell_0.5.0              
+##  [83] tools_4.0.2                 cli_2.0.2                  
+##  [85] generics_0.0.2              RSQLite_2.2.0              
+##  [87] broom_0.7.0                 ggridges_0.5.2             
+##  [89] evaluate_0.14               stringr_1.4.0              
+##  [91] fastmap_1.0.1               goftest_1.2-2              
+##  [93] yaml_2.2.1                  ragg_0.3.1                 
+##  [95] bit64_4.0.5                 fs_1.5.0                   
+##  [97] fitdistrplus_1.1-1          RANN_2.6.1                 
+##  [99] pbapply_1.4-3               future_1.18.0              
+## [101] nlme_3.1-149                mime_0.9                   
+## [103] tokenizers_0.2.1            compiler_4.0.2             
+## [105] plotly_4.9.2.1              png_0.1-7                  
+## [107] e1071_1.7-3                 spatstat.utils_1.17-0      
+## [109] stringi_1.4.6               desc_1.2.0                 
+## [111] lattice_0.20-41             Matrix_1.2-18              
+## [113] vctrs_0.3.4                 pillar_1.4.6               
+## [115] lifecycle_0.2.0             BiocManager_1.30.10        
+## [117] lmtest_0.9-37               RcppAnnoy_0.0.16           
+## [119] data.table_1.13.0           cowplot_1.0.0              
+## [121] bitops_1.0-6                irlba_2.3.3                
+## [123] httpuv_1.5.4                patchwork_1.0.1            
+## [125] GenomicRanges_1.41.6        R6_2.4.1                   
+## [127] bookdown_0.20               promises_1.1.1             
+## [129] gridExtra_2.3               KernSmooth_2.23-17         
+## [131] janeaustenr_0.1.5           IRanges_2.23.10            
+## [133] codetools_0.2-16            MASS_7.3-52                
+## [135] assertthat_0.2.1            SummarizedExperiment_1.19.6
+## [137] rprojroot_1.3-2             withr_2.2.0                
+## [139] sctransform_0.2.1           S4Vectors_0.27.12          
+## [141] GenomeInfoDbData_1.2.3      mgcv_1.8-32                
+## [143] parallel_4.0.2              hms_0.5.3                  
+## [145] rpart_4.1-15                grid_4.0.2                 
+## [147] class_7.3-17                rmarkdown_2.3              
+## [149] Rtsne_0.15                  Biobase_2.49.0             
+## [151] shiny_1.5.0</code></pre>
 </div>
 </div>
   </div>
