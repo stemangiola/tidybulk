@@ -2418,7 +2418,7 @@ get_cell_type_proportions = function(.data,
 			},
 			
 			~ stop(
-				"tidybulk syas: please choose between cibersort and llsr methods"
+				"tidybulk says: please choose between cibersort, llsr and epic methods"
 			)
 		)	 %>%
 
