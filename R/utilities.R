@@ -1220,3 +1220,8 @@ not = function(is){	!is }
 
 # Raise to the power
 pow = function(a,b){	a^b }
+
+outersect <- function(x, y) {
+	sort(c(setdiff(x, y),
+				 setdiff(y, x)))
+}
