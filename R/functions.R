@@ -2739,6 +2739,7 @@ as_matrix <- function(tbl,
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
 #' @importFrom utils install.packages
+#' @importFrom tidyr complete
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
@@ -2771,63 +2772,47 @@ fill_NA_using_formula = function(.data,
 		select_if(function(x) is.character(x) | is.logical(x) | is.factor(x)) %>%
 		colnames
 
+	# Sample-wise columns
+	sample_col = .data %>% get_specific_annotation_columns(!!.sample) %>% outersect(col_formula)
+	
 	# Create NAs for missing sample/transcript pair
-	df_to_impute =
-		.data %>%
-		select(!!.sample, !!.transcript, !!.abundance, col_formula) %>%
-		distinct %>%
-		spread(!!.transcript, !!.abundance) %>%
-		gather(!!.transcript, !!.abundance, -!!.sample, -col_formula)
 
-	# Select just transcripts/covariates that have missing
-	combo_to_impute = df_to_impute %>% anti_join(.data, by=c(quo_name(.sample), quo_name(.transcript))) %>% select(!!.transcript, col_formula) %>% distinct()
+	.data %>%
+	nest(sample_data = sample_col) %>%
 
-	# Impute using median
-	df_to_impute %>%
-		inner_join(combo_to_impute, by=c(quo_name(.transcript), col_formula)) %>%
+	# Add missing pairs
+	complete(nesting(sample, sample_data), !!.transcript) %>%
+	
+	# Group by covariate
+	nest(cov_data = -c(col_formula, !!.transcript)) %>%
+	mutate(cov_data = map(cov_data, ~
+											.x %>%
+											mutate(
+												!!.abundance := ifelse(
+													!!.abundance %>% is.na,
+													median(!!.abundance, na.rm = TRUE),!!.abundance
+												)
+											) %>%
 
-		# Calculate median for NAs
-		nest(data = -c(col_formula, !!.transcript)) %>%
-		mutate(data = map(data, ~
-												.x %>%
-												mutate(
-													!!.abundance := ifelse(
-														!!.abundance %>% is.na,
-														median(!!.abundance, na.rm = TRUE),!!.abundance
+											# Impute scaled if exist
+											ifelse_pipe(
+												quo_is_symbol(.abundance_scaled),
+												~ .x %>% mutate(
+													!!.abundance_scaled := ifelse(
+														!!.abundance_scaled %>% is.na,
+														median(!!.abundance_scaled, na.rm = TRUE),!!.abundance_scaled
 													)
-												) %>%
+												)
+											) %>%
 
-												# Impute scaled if exist
-												ifelse_pipe(
-													quo_is_symbol(.abundance_scaled),
-													~ .x %>% mutate(
-														!!.abundance_scaled := ifelse(
-															!!.abundance_scaled %>% is.na,
-															median(!!.abundance_scaled, na.rm = TRUE),!!.abundance_scaled
-														)
-													)
-												) %>%
+											# Throu warning if group of size 1
+											ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
+	)) %>%
+	unnest(cov_data) %>%
+	unnest(sample_data) %>%
 
-												# Throu warning if group of size 1
-												ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
-		)) %>%
-		unnest(data) %>%
-
-		# Select only imputed data
-		select(-col_formula) %>%
-
-		# In next command avoid error if no data to impute
-		ifelse_pipe(
-			nrow(.) > 0,
-			~ .x %>% left_join(.data %>% pivot_sample(!!.sample), by=quo_name(.sample))
-		) %>%
-
-		# Add oiginal dataset
-		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_name(.transcript), col_formula))) %>%
-		select(.data %>% colnames) %>%
-
-		# Reattach internals
-		reattach_internals(.data)
+	# Reattach internals
+	reattach_internals(.data)
 
 }
 
