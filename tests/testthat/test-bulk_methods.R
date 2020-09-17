@@ -999,6 +999,17 @@ test_that("Only reduced dimensions MDS - no object",{
 
 	expect_equal(	class(attr(res, "internals")$MDS)[1], 	"MDS"  )
 
+	# Duplicate genes/samples
+	expect_error(
+		reduce_dimensions(
+			input_df %>% identify_abundant(a, b, c) %>% bind_rows( (.) %>% dplyr::slice(1) %>% mutate(c = c+1) ),
+			method = "MDS",
+			.abundance = c,
+			.element = a,
+			.feature = b, action="only"
+		),
+		"include duplicated sample/gene pairs"
+	)
 })
 
 test_that("Get reduced dimensions MDS - no object",{
@@ -1080,6 +1091,18 @@ test_that("Only reduced dimensions PCA - no object",{
 	)
 
 	expect_equal(	class(attr(res, "internals")$PCA), 	"prcomp"  )
+	
+	# Duplicate genes/samples
+	expect_error(
+		reduce_dimensions(
+			input_df %>% identify_abundant(a, b, c) %>% bind_rows( (.) %>% dplyr::slice(1) %>% mutate(c = c+1) ),
+			method = "PCA",
+			.abundance = c,
+			.element = a,
+			.feature = b, action="only"
+		),
+		"include duplicated sample/gene pairs"
+	)
 })
 
 test_that("Get reduced dimensions PCA - no object",{
@@ -1164,6 +1187,17 @@ test_that("Get reduced dimensions tSNE - no object",{
 		48
 	)
 
+	# Duplicate genes/samples
+	expect_error(
+		reduce_dimensions(
+			input_df %>% identify_abundant(a, b, c) %>% bind_rows( (.) %>% dplyr::slice(1) %>% mutate(c = c+1) ),
+			method = "tSNE",
+			.abundance = c,
+			.element = a,
+			.feature = b, action="get"
+		),
+		"include duplicated sample/gene pairs"
+	)
 
 })
 
