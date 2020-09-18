@@ -1225,3 +1225,10 @@ outersect <- function(x, y) {
 	sort(c(setdiff(x, y),
 				 setdiff(y, x)))
 }
+
+do_validate = function(){
+	
+	if(!"tidybulk_do_validate" %in% names(options())) T
+	else getOption("tidybulk_do_validate")
+	
+}

@@ -165,12 +165,6 @@ get_scaled_counts_bulk <- function(.data,
 	df <-
 		.data %>%
 
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
-
 		# Rename
 		dplyr::select(!!.sample,!!.transcript,!!.abundance) %>%
 
@@ -325,12 +319,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
-
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Prepare the data frame
 		select(!!.transcript,
@@ -547,12 +535,6 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_voom <- .data %>%
 
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
-
 		# Prepare the data frame
 		select(!!.transcript,
 					 !!.sample,
@@ -758,12 +740,6 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 	deseq2_object =
 		.data %>%
-
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Prepare the data frame
 		select(!!.transcript,
@@ -1054,12 +1030,6 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
 
-		# # Stop if any counts is NA
-		# error_if_counts_is_na(!!.abundance) %>%
-		#
-		# # Stop if there are duplicated transcripts
-		# error_if_duplicated_genes(!!.sample,!!.entrez,!!.abundance) %>%
-
 		# Prepare the data frame
 		select(!!.entrez, !!.sample, !!.abundance,
 					 one_of(parse_formula(.formula))) %>%
@@ -1228,9 +1198,6 @@ get_clusters_kmeans_bulk <-
 
 		.data %>%
 
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.abundance) %>%
-
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
@@ -1307,9 +1274,6 @@ get_clusters_SNN_bulk <-
 		my_df =
 			.data %>%
 
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.abundance) %>%
-
 			# Prepare data frame
 			distinct(!!.element,!!.feature,!!.abundance) %>%
 
@@ -1384,9 +1348,6 @@ get_reduced_dimensions_MDS_bulk <-
 
 		mds_object =
 			.data %>%
-
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.abundance) %>%
 
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
@@ -1475,9 +1436,6 @@ get_reduced_dimensions_PCA_bulk <-
 
 		prcomp_obj =
 			.data %>%
-
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.abundance) %>%
 
 			# Filter most variable genes
 			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
@@ -1643,9 +1601,6 @@ get_reduced_dimensions_TSNE_bulk <-
 
 		df_tsne =
 			.data %>%
-
-			# Check if duplicates
-			error_if_duplicated_genes(!!.element,!!.feature,!!.abundance)  %>%
 
 			# Filter NA symbol
 			filter(!!.feature %>% is.na %>% not()) %>%
@@ -1854,9 +1809,6 @@ aggregate_duplicated_transcripts_bulk =
 		# aggregates read .data over samples, concatenates other character columns, and averages other numeric columns
 		.data %>%
 
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.abundance) %>%
-
 			# transform logials and factors
 			mutate_if(is.factor, as.character) %>%
 			mutate_if(is.logical, as.character) %>%
@@ -1963,12 +1915,6 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	# Get the redundant data frame
 	.data.correlated =
 		.data %>%
-
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.element,!!.feature,!!.abundance) %>%
 
 		# Prepare the data frame
 		select(!!.feature,!!.element,!!.abundance) %>%
@@ -2329,9 +2275,6 @@ get_cell_type_proportions = function(.data,
 
 	.data %>%
 
-		# Check if some transcripts are duplicated
-		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
-
 		# Prepare data frame
 		distinct(!!.sample,!!.transcript,!!.abundance) %>%
 		spread(!!.sample,!!.abundance) %>%
@@ -2426,9 +2369,6 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 	# New column name
 	value_adjusted = as.symbol(sprintf("%s%s",  quo_name(.abundance), adjusted_string))
-
-	# Stop is any counts are NAs
-	.data %>% error_if_counts_is_na(!!.abundance)
 
 	df_for_combat <-
 		.data %>%
