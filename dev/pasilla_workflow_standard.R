@@ -91,7 +91,7 @@ combat.corrected
 }
 test_abundance = function(){
     # DE (comparison 1)
-design = model.matrix( ~ coldata$condition + coldata$type, data = coldata$condition)
+design = model.matrix( ~ coldata$condition + coldata$type, data = coldata)
 dge = estimateGLMCommonDisp(dge, design)
 dge = estimateGLMTagwiseDisp(dge, design)
 fit = glmFit(dge, design)
@@ -199,3 +199,4 @@ plot_heatmap()
 time_df = time_df %>% bind_rows(tibble(step = "Plot heatmap", time = list(toc()), lines = 6, assignments = 5))
 
 time_df %>% mutate(step = factor(step, levels = unique(step))) %>% saveRDS("dev/stats_pasilla_standard.rds")
+
