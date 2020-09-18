@@ -1821,7 +1821,7 @@ setMethod("ensembl_to_symbol", "tbl_df", .ensembl_to_symbol)
 setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 
 
-#' Perform differential transcription testing using edgeR, limma-voom or DESeq2
+#' Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom or DESeq2
 #'
 #' \lifecycle{maturing}
 #'
@@ -1951,6 +1951,9 @@ setGeneric("test_differential_abundance", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	# Clearly state what counts are used
+	message("tidybulk says: All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.")
+	
 	# Validate data frame
 	if(do_validate()) {
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
