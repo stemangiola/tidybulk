@@ -8,7 +8,7 @@ output:
     toc_float: true
 vignette: >
   %\VignetteEngine{knitr::knitr}
-  %\VignetteIndexEntry{Overview of the tidybulk package}
+  %\VignetteIndexEntry{Manuscript code - transcriptional signature identification}
   %\usepackage[UTF-8]{inputenc}
 ---
 
