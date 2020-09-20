@@ -55,10 +55,10 @@ check_if_duplicated_genes <- function(.data,
 
 	is_unique = paste(pull(.data, !!.sample), pull(.data, !!.transcript) ) %>% duplicated() %>% which() %>% length() %>% equals(0)
 
-	if (!is_unique) {
-		message("tidybulk says: Those are the duplicated genes")
-		duplicates %>% capture.output() %>% paste0(collapse = "\n") %>% message()
-	}
+	# if (!is_unique) {
+	# 	message("tidybulk says: There are the duplicated gene/sample pairs")
+	# 	duplicates %>% capture.output() %>% paste0(collapse = "\n") %>% message()
+	# }
 
 	is_unique
 }

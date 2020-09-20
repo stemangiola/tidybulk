@@ -1008,7 +1008,7 @@ test_that("Only reduced dimensions MDS - no object",{
 			.element = a,
 			.feature = b, action="only"
 		),
-		"include duplicated sample/gene pairs"
+		"Your dataset include duplicated "
 	)
 })
 
