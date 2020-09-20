@@ -1616,7 +1616,7 @@ get_reduced_dimensions_TSNE_bulk <-
 
 			# Check if log transform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p)) %>%
 
 			# Filter most variable genes
 			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
@@ -1809,7 +1809,7 @@ aggregate_duplicated_transcripts_bulk =
 		# aggregates read .data over samples, concatenates other character columns, and averages other numeric columns
 		.data %>%
 
-			# transform logials and factors
+			# transform logicals and factors
 			mutate_if(is.factor, as.character) %>%
 			mutate_if(is.logical, as.character) %>%
 
@@ -2715,14 +2715,33 @@ fill_NA_using_formula = function(.data,
 	# Sample-wise columns
 	sample_col = .data %>% get_specific_annotation_columns(!!.sample) %>% outersect(col_formula)
 	
+
 	# Create NAs for missing sample/transcript pair
 
-	.data %>%
-	nest(sample_data = sample_col) %>%
+ .data_completed = 
+		.data %>%
 
-	# Add missing pairs
-	complete(nesting(sample, sample_data), !!.transcript) %>%
-	
+		# Add missing pairs
+ 		nest(ct_data = -c(col_formula)) %>%
+ 		mutate(ct_data = map(ct_data, ~ .x %>% complete(!!as.symbol(quo_name(.sample)), !!.transcript) )) %>%
+ 		unnest(ct_data)
+		
+ .data_OK = 
+ 	.data %>%
+ 	anti_join(.data_completed %>% filter(count %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula))
+ 
+ .data_FIXED = 
+ .data %>%
+ 	inner_join(.data_completed %>% filter(count %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula)) %>%
+
+ 	# attach NAs
+ 	bind_rows(
+	.data_completed %>% 
+		filter(count %>% is.na) %>%
+		select(!!.sample, !!.transcript) %>%
+		left_join(.data %>% pivot_sample())
+	) %>%
+ 	
 	# Group by covariate
 	nest(cov_data = -c(col_formula, !!.transcript)) %>%
 	mutate(cov_data = map(cov_data, ~
@@ -2745,14 +2764,16 @@ fill_NA_using_formula = function(.data,
 												)
 											) %>%
 
-											# Throu warning if group of size 1
+											# Through warning if group of size 1
 											ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
 	)) %>%
-	unnest(cov_data) %>%
-	unnest(sample_data) %>%
+	unnest(cov_data) 
+ 
+	.data_OK %>%
+		bind_rows(.data_FIXED) %>%
 
-	# Reattach internals
-	reattach_internals(.data)
+		# Reattach internals
+		reattach_internals(.data)
 
 }
 
