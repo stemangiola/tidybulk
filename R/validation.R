@@ -53,13 +53,7 @@ check_if_duplicated_genes <- function(.data,
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 
-	duplicates <-
-		distinct(.data,!!.sample, !!.transcript, !!.abundance) %>%
-		count(!!.sample, !!.transcript) %>%
-		filter(n > 1) %>%
-		arrange(n %>% desc())
-
-	is_unique = duplicates %>% nrow() %>% equals(0)
+	is_unique = paste(pull(.data, !!.sample), pull(.data, !!.transcript) ) %>% duplicated() %>% which() %>% length() %>% equals(0)
 
 	if (!is_unique) {
 		message("tidybulk says: Those are the duplicated genes")
