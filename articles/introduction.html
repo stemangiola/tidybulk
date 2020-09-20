@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.7</span>
       </span>
     </div>
 
@@ -495,27 +495,27 @@
 ## Building tree...
 ## Done in 0.01 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 68.011486 (50 iterations in 0.03 seconds)
-## Iteration 100: error is 66.136017 (50 iterations in 0.03 seconds)
-## Iteration 150: error is 69.270077 (50 iterations in 0.04 seconds)
-## Iteration 200: error is 69.891642 (50 iterations in 0.04 seconds)
-## Iteration 250: error is 70.396080 (50 iterations in 0.04 seconds)
-## Iteration 300: error is 1.639033 (50 iterations in 0.03 seconds)
-## Iteration 350: error is 1.336833 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.257623 (50 iterations in 0.03 seconds)
-## Iteration 450: error is 1.213769 (50 iterations in 0.03 seconds)
-## Iteration 500: error is 1.193996 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.173269 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.163474 (50 iterations in 0.03 seconds)
-## Iteration 650: error is 1.159308 (50 iterations in 0.03 seconds)
-## Iteration 700: error is 1.154772 (50 iterations in 0.03 seconds)
-## Iteration 750: error is 1.149799 (50 iterations in 0.03 seconds)
-## Iteration 800: error is 1.142298 (50 iterations in 0.03 seconds)
-## Iteration 850: error is 1.119713 (50 iterations in 0.03 seconds)
-## Iteration 900: error is 1.109607 (50 iterations in 0.03 seconds)
-## Iteration 950: error is 1.100391 (50 iterations in 0.03 seconds)
-## Iteration 1000: error is 1.096881 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.59 seconds.</code></pre>
+## Iteration 50: error is 68.311871 (50 iterations in 0.03 seconds)
+## Iteration 100: error is 67.754242 (50 iterations in 0.04 seconds)
+## Iteration 150: error is 68.106711 (50 iterations in 0.04 seconds)
+## Iteration 200: error is 69.037529 (50 iterations in 0.03 seconds)
+## Iteration 250: error is 67.113653 (50 iterations in 0.04 seconds)
+## Iteration 300: error is 1.464318 (50 iterations in 0.03 seconds)
+## Iteration 350: error is 1.220119 (50 iterations in 0.02 seconds)
+## Iteration 400: error is 1.178755 (50 iterations in 0.02 seconds)
+## Iteration 450: error is 1.151451 (50 iterations in 0.02 seconds)
+## Iteration 500: error is 1.141343 (50 iterations in 0.03 seconds)
+## Iteration 550: error is 1.135931 (50 iterations in 0.02 seconds)
+## Iteration 600: error is 1.129621 (50 iterations in 0.02 seconds)
+## Iteration 650: error is 1.125219 (50 iterations in 0.02 seconds)
+## Iteration 700: error is 1.120601 (50 iterations in 0.02 seconds)
+## Iteration 750: error is 1.118306 (50 iterations in 0.02 seconds)
+## Iteration 800: error is 1.118160 (50 iterations in 0.02 seconds)
+## Iteration 850: error is 1.118737 (50 iterations in 0.02 seconds)
+## Iteration 900: error is 1.116949 (50 iterations in 0.02 seconds)
+## Iteration 950: error is 1.114931 (50 iterations in 0.02 seconds)
+## Iteration 1000: error is 1.115222 (50 iterations in 0.02 seconds)
+## Fitting performed in 0.53 seconds.</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"tSNE"</span>, ignore.case = <span class="fl">FALSE</span>), <span class="kw">sample</span>, <span class="kw">Call</span>) <span class="op">%&gt;%</span>
@@ -524,16 +524,16 @@
 <pre><code>## # A tibble: 251 x 4
 ##      tSNE1   tSNE2 sample                       Call 
 ##      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
-##  1 -11.9     0.425 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  2   3.28    6.65  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  3 -13.5     5.76  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  4   0.536  -9.71  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  5  -0.375 -13.0   TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  6 -13.8     4.32  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  7  35.0     3.33  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  8   9.79  -10.7   TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  9   8.69   -9.78  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-## 10 -23.8     3.48  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##  1  -2.77    9.56  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  2   8.81    2.06  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  3  -0.676   4.35  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  4  -1.91   -0.800 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  5  -2.96    4.52  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  6   2.61   -1.70  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  7  18.4   -20.6   TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  8  -1.42   -4.94  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  9  -2.11   -6.10  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+## 10 -14.8     2.19  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
@@ -562,27 +562,27 @@
 ## Building tree...
 ## Done in 0.02 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 67.748138 (50 iterations in 0.03 seconds)
-## Iteration 100: error is 68.930647 (50 iterations in 0.04 seconds)
-## Iteration 150: error is 66.870226 (50 iterations in 0.04 seconds)
-## Iteration 200: error is 71.887890 (50 iterations in 0.04 seconds)
-## Iteration 250: error is 68.959314 (50 iterations in 0.03 seconds)
-## Iteration 300: error is 1.589588 (50 iterations in 0.03 seconds)
-## Iteration 350: error is 1.358024 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.255175 (50 iterations in 0.03 seconds)
-## Iteration 450: error is 1.226201 (50 iterations in 0.02 seconds)
-## Iteration 500: error is 1.213784 (50 iterations in 0.02 seconds)
-## Iteration 550: error is 1.209890 (50 iterations in 0.02 seconds)
-## Iteration 600: error is 1.208337 (50 iterations in 0.02 seconds)
-## Iteration 650: error is 1.205377 (50 iterations in 0.02 seconds)
-## Iteration 700: error is 1.201564 (50 iterations in 0.02 seconds)
-## Iteration 750: error is 1.197563 (50 iterations in 0.02 seconds)
-## Iteration 800: error is 1.196171 (50 iterations in 0.02 seconds)
-## Iteration 850: error is 1.192999 (50 iterations in 0.02 seconds)
-## Iteration 900: error is 1.191874 (50 iterations in 0.02 seconds)
-## Iteration 950: error is 1.191305 (50 iterations in 0.02 seconds)
-## Iteration 1000: error is 1.190954 (50 iterations in 0.02 seconds)
-## Fitting performed in 0.56 seconds.</code></pre>
+## Iteration 50: error is 67.263085 (50 iterations in 0.04 seconds)
+## Iteration 100: error is 66.820071 (50 iterations in 0.05 seconds)
+## Iteration 150: error is 68.061970 (50 iterations in 0.04 seconds)
+## Iteration 200: error is 68.403695 (50 iterations in 0.04 seconds)
+## Iteration 250: error is 67.489246 (50 iterations in 0.04 seconds)
+## Iteration 300: error is 1.678321 (50 iterations in 0.04 seconds)
+## Iteration 350: error is 1.306959 (50 iterations in 0.03 seconds)
+## Iteration 400: error is 1.219575 (50 iterations in 0.02 seconds)
+## Iteration 450: error is 1.190162 (50 iterations in 0.03 seconds)
+## Iteration 500: error is 1.173567 (50 iterations in 0.03 seconds)
+## Iteration 550: error is 1.166912 (50 iterations in 0.03 seconds)
+## Iteration 600: error is 1.160321 (50 iterations in 0.03 seconds)
+## Iteration 650: error is 1.157723 (50 iterations in 0.03 seconds)
+## Iteration 700: error is 1.155700 (50 iterations in 0.03 seconds)
+## Iteration 750: error is 1.150889 (50 iterations in 0.03 seconds)
+## Iteration 800: error is 1.149260 (50 iterations in 0.03 seconds)
+## Iteration 850: error is 1.147553 (50 iterations in 0.03 seconds)
+## Iteration 900: error is 1.147196 (50 iterations in 0.03 seconds)
+## Iteration 950: error is 1.142786 (50 iterations in 0.03 seconds)
+## Iteration 1000: error is 1.130750 (50 iterations in 0.03 seconds)
+## Fitting performed in 0.61 seconds.</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit">
 <span class="kw">se.norm.tSNE</span>
 </pre></div>
@@ -696,7 +696,7 @@
 ##    &lt;chr&gt;      &lt;chr&gt;                      &lt;int&gt;
 ##  1 ABCB4      SRR1740034                  1706
 ##  2 ABCB9      SRR1740034                    71
-##  3 ACAP1      SRR1740034                  8678
+##  3 ACAP1      SRR1740034                  8677
 ##  4 ACP5       SRR1740034                  2362
 ##  5 ADAM28     SRR1740034                  7696
 ##  6 ADAMDEC1   SRR1740034                    42
@@ -855,16 +855,16 @@
 <pre><code>## # A tibble: 251 x 5
 ##    sample                       Call    tSNE1   tSNE2 `cluster SNN`
 ##    &lt;chr&gt;                        &lt;fct&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;        
-##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA  -11.9     0.425 1            
-##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA    3.28    6.65  2            
-##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA  -13.5     5.76  1            
-##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA    0.536  -9.71  0            
-##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB   -0.375 -13.0   0            
-##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA  -13.8     4.32  1            
-##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal  35.0     3.33  3            
-##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA    9.79  -10.7   2            
-##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB    8.69   -9.78  2            
-## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA  -23.8     3.48  1            
+##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA   -2.77    9.56  1            
+##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA    8.81    2.06  2            
+##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA   -0.676   4.35  1            
+##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA   -1.91   -0.800 0            
+##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB   -2.96    4.52  0            
+##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA    2.61   -1.70  1            
+##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal  18.4   -20.6   3            
+##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA   -1.42   -4.94  2            
+##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB   -2.11   -6.10  2            
+## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA  -14.8     2.19  1            
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb58"><pre class="downlit">
 <span class="kw">tt.norm.SNN</span> <span class="op">%&gt;%</span>
@@ -1156,7 +1156,7 @@
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] tidybulk_1.2.0   purrr_0.3.4      rlang_0.4.7      ggplot2_3.3.2   
+##  [1] tidybulk_1.1.7   purrr_0.3.4      rlang_0.4.7      ggplot2_3.3.2   
 ##  [5] tidyr_1.1.2      magrittr_1.5     dplyr_1.0.2      tibble_3.0.3    
 ##  [9] knitr_1.29       BiocStyle_2.17.0
 ## 
