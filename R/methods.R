@@ -1714,7 +1714,7 @@ describe_transcript = function(.data,
 
 #' Add transcript symbol column from ensembl id for human and mouse data
 #'
-#' \lifecycle{maturing}
+#' \lifecycle{questioning}
 #'
 #' @description ensembl_to_symbol() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 #'
