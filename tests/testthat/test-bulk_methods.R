@@ -1699,7 +1699,7 @@ test_that("impute missing - no object",{
 			.abundance = c
 		)
 
-	expect_equal(	pull(filter(res, b=="TNFRSF4" & a == "SRR1740034"), c),	203.5	)
+	expect_equal(	dplyr::pull(filter(res, b=="TNFRSF4" & a == "SRR1740034"), c),	203.5	)
 
 	expect_equal(	ncol(res),	ncol(input_df)	)
 
@@ -1708,11 +1708,11 @@ test_that("impute missing - no object",{
 })
 
 test_that("gene over representation",{
-	
+
 	df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
 	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 	df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
-	
+
 	res =
 		test_gene_overrepresentation(
 			df_entrez,
@@ -1721,11 +1721,11 @@ test_that("gene over representation",{
 			.do_test = do_test,
 			species="Homo sapiens"
 		)
-	
-	expect_equal(	ncol(res),	10	)
-	
 
-	
+	expect_equal(	ncol(res),	10	)
+
+
+
 })
 
 

@@ -22,7 +22,7 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
-ToDataFrameTypeColFull = function(tree, fill = T, ...) {
+ToDataFrameTypeColFull = function(tree, fill = TRUE, ...) {
 	t = tree %>% data.tree::Clone()
 	
 	1:(t %$% Get("level") %>% max) %>%
@@ -178,7 +178,7 @@ markers =
 				 		list(cell_type1, cell_type2, contrast),
 				 		~ 	counts_non_red_filtered %>%
 				 			filter(cell_type %in% c(..1, ..2)) %>%
-				 			test_differential_abundance(~ 0 + cell_type, .contrasts = ..3, fill_missing_values = TRUE, action="get", omit_contrast_in_colnames = T) %>%
+				 			test_differential_abundance(~ 0 + cell_type, .contrasts = ..3, fill_missing_values = TRUE, action="get", omit_contrast_in_colnames = TRUE) %>%
 				 			filter(logFC > 0) %>%
 				 			arrange(FDR) %>%
 				 			mutate(i = 1:n())

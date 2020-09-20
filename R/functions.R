@@ -2728,18 +2728,18 @@ fill_NA_using_formula = function(.data,
 		
  .data_OK = 
  	.data %>%
- 	anti_join(.data_completed %>% filter(count %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula))
+ 	anti_join(.data_completed %>% filter(!!.abundance %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula))
  
  .data_FIXED = 
  .data %>%
- 	inner_join(.data_completed %>% filter(count %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula)) %>%
+ 	inner_join(.data_completed %>% filter(!!.abundance %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula)) %>%
 
  	# attach NAs
  	bind_rows(
 	.data_completed %>% 
-		filter(count %>% is.na) %>%
+		filter(!!.abundance %>% is.na) %>%
 		select(!!.sample, !!.transcript) %>%
-		left_join(.data %>% pivot_sample())
+		left_join(.data %>% pivot_sample(!!.sample))
 	) %>%
  	
 	# Group by covariate

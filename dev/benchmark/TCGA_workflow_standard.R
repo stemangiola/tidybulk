@@ -16,7 +16,7 @@ coldata = tt %>% pivot_sample() %>%
   
   # Add fake batch
   nest(data = -patient) %>%
-  mutate(batch = sample(0:1, size = n(), replace = T)) %>%
+  mutate(batch = sample(0:1, size = n(), replace = TRUE)) %>%
   unnest(data) 
 
 time_df = tibble(step = "", time = list(), lines = NA, assignments = NA)

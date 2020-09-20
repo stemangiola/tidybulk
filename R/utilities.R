@@ -1228,7 +1228,7 @@ outersect <- function(x, y) {
 
 do_validate = function(){
 	
-	if(!"tidybulk_do_validate" %in% names(options())) T
+	if(!"tidybulk_do_validate" %in% names(options())) TRUE
 	else getOption("tidybulk_do_validate")
 	
 }

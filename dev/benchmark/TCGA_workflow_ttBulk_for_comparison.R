@@ -40,7 +40,7 @@ plot_adjusted_MDS = function(){
 		
 		# Add fake batch
 		nest(data = -patient) %>%
-		mutate(batch = sample(0:1, size = n(), replace = T)) %>%
+		mutate(batch = sample(0:1, size = n(), replace = TRUE)) %>%
 		unnest(data) %>%
 		
 		adjust_abundance( ~  PFI.2 + batch) %>%
