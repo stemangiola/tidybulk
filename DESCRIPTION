@@ -58,7 +58,8 @@ Suggests:
     broom,
     survival,
     boot,
-    betareg
+    betareg,
+    tidyHeatmap
 VignetteBuilder: 
     knitr
 RdMacros:

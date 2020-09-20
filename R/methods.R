@@ -60,7 +60,7 @@ setGeneric("tidybulk", function(.data,
 	.abundance_scaled = enquo(.abundance_scaled)
 
 	# Validate data frame
-	validation(.data,
+	if(do_validate()) validation(.data,
 						 !!.sample,
 						 !!.transcript,
 						 !!.abundance,
@@ -223,8 +223,10 @@ setGeneric("scale_abundance", function(.data,
 	value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
 	
 	# Validate data frame
-	validation(.data, !!.sample, !!.transcript, !!.abundance)
-	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	if(do_validate()) {
+		validation(.data, !!.sample, !!.transcript, !!.abundance)
+		warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	}
 		
 	.data_norm =
 		.data %>%
@@ -404,8 +406,10 @@ setGeneric("cluster_elements", function(.data,
 	.abundance = col_names$.abundance
 
 	# Validate data frame
+	if(do_validate()) {
 	validation(.data, !!.element, !!.feature, !!.abundance)
 	error_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
+	}
 
 	
 	.data_procesed = 
@@ -615,9 +619,12 @@ setGeneric("reduce_dimensions", function(.data,
 	.abundance = col_names$.abundance
 
 	# Validate data frame
+	if(do_validate()) {
 	validation(.data, !!.element, !!.feature, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
-
+	if(!check_if_transcript_is_na(.data, !!.feature)) stop("tidybulk says: you have empty transcript names")
+	}
+	
 	.data_processed = 
 		
 		.data %>%
@@ -1040,8 +1047,10 @@ setGeneric("remove_redundancy", function(.data,
 
 	if (method == "correlation") {
 		# Validate data frame
+		if(do_validate()) {
 		validation(.data, !!.element, !!.feature, !!.abundance)
 		warning_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
+		}
 		
 		remove_redundancy_elements_through_correlation(
 			.data,
@@ -1187,8 +1196,10 @@ setGeneric("adjust_abundance", function(.data,
 		when(!quo_is_symbol(.) ~ get_abundance_norm_if_exists(.data, .)$.abundance, ~ (.))
 
 	# Validate data frame
+	if(do_validate()) {
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	}
 	
 	.data_processed =
 		
@@ -1355,7 +1366,7 @@ setGeneric("aggregate_duplicates", function(.data,
 	.abundance = enquo(.abundance)
 
 	# Validate data frame
-	validation(.data,
+	if(do_validate()) validation(.data,
 						 !!.sample,
 						 !!.transcript,
 						 !!.abundance,
@@ -1475,8 +1486,10 @@ setGeneric("deconvolve_cellularity", function(.data,
 		stop("tidybulk says: reference must be a data.frame")
 
 	# Validate data frame
+	if(do_validate()) {
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	}
 	
 	.data_processed =
 		get_cell_type_proportions(
@@ -1808,7 +1821,7 @@ setMethod("ensembl_to_symbol", "tbl_df", .ensembl_to_symbol)
 setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 
 
-#' Perform differential transcription testing using edgeR, limma-voom or DESeq2
+#' Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom or DESeq2
 #'
 #' \lifecycle{maturing}
 #'
@@ -1938,9 +1951,14 @@ setGeneric("test_differential_abundance", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	# Clearly state what counts are used
+	message("tidybulk says: All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.")
+	
 	# Validate data frame
+	if(do_validate()) {
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	}
 	
 	.data_processed = 
 		.data %>%
@@ -2155,8 +2173,10 @@ setGeneric("keep_variable", function(.data,
 	.abundance = enquo(.abundance)
 
 	# Validate data frame
+	if(do_validate()) {
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	}
 	
 	keep_variable_transcripts(
 		.data,
@@ -2276,8 +2296,10 @@ setGeneric("identify_abundant", function(.data,
 	factor_of_interest = enquo(factor_of_interest)
 	
 	# Validate data frame
+	if(do_validate()) {
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	}
 	
 	.data %>%
 		
@@ -2415,8 +2437,10 @@ setGeneric("keep_abundant", function(.data,
 	factor_of_interest = enquo(factor_of_interest)
 
 	# Validate data frame
+	if(do_validate()) {
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	}
 
 	.data %>%
 
@@ -2579,8 +2603,10 @@ setGeneric("test_gene_enrichment", function(.data,
 	.entrez = enquo(.entrez)
 
 	# Validate data frame
+	if(do_validate()) {
 	validation(.data, !!.sample, !!.entrez, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	}
 	
 	.data %>%
 		
@@ -3047,7 +3073,7 @@ setGeneric("fill_missing_abundance", function(.data,
 	if(length(fill_with)==0) stop("nanny says: the argument fill_with must not be empty.")
 
 	# Validate data frame
-	validation(.data, !!.sample, !!.transcript, !!.abundance)
+	if(do_validate()) validation(.data, !!.sample, !!.transcript, !!.abundance)
 
 	fill_NA_using_value(
 		.data,
@@ -3163,7 +3189,7 @@ setGeneric("impute_missing_abundance", function(.data,
 		.abundance_scaled = get_tt_columns(.data)$.abundance_scaled
 
 	# Validate data frame
-	validation(.data, !!.sample, !!.transcript, !!.abundance)
+	if(do_validate())  validation(.data, !!.sample, !!.transcript, !!.abundance)
 
 	.data_processed =
 		fill_NA_using_formula(
@@ -3314,7 +3340,7 @@ setGeneric("test_differential_cellularity", function(.data,
 	.abundance = col_names$.abundance
 
 	# Validate data frame
-	validation(.data, !!.sample, !!.transcript, !!.abundance)
+	if(do_validate()) validation(.data, !!.sample, !!.transcript, !!.abundance)
 
 	test_differential_cellularity_(
 		.data,

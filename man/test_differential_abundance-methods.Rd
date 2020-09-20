@@ -8,7 +8,7 @@
 \alias{test_differential_abundance,tidybulk-method}
 \alias{test_differential_abundance,SummarizedExperiment-method}
 \alias{test_differential_abundance,RangedSummarizedExperiment-method}
-\title{Perform differential transcription testing using edgeR, limma-voom or DESeq2}
+\title{Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom or DESeq2}
 \usage{
 test_differential_abundance(
   .data,

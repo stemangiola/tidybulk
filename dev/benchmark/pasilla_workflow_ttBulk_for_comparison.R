@@ -1,9 +1,14 @@
+# Rscript dev/TCGA_workflow_ttBulk_for_comparison.R; Rscript dev/TCGA_workflow_standard.R ; Rscript dev/pasilla_workflow_standard.R ; Rscript dev/pasilla_workflow_ttBulk_for_comparison.R
+
 library(tidyverse)
 library(tidybulk)
-library("pasilla")
+library(pasilla)
 library(tictoc)
-library(edgeR)
-library(limma)
+
+options(tidybulk_do_validate = FALSE) 
+
+# library(edgeR)
+# library(limma)
 
 pasCts = system.file("extdata",
 										 "pasilla_gene_counts.tsv",
@@ -25,18 +30,11 @@ tt =
 	pivot_longer(names_to = "sample",
 							 values_to = "count",
 							 cols = -transcript) %>%
-	left_join(coldata %>%
-							as_tibble(rownames = "sample") %>%
-							mutate(sample = gsub("fb", "", sample))) %>%
-	# # attach symbol
-	# left_join(tibble(
-	# 	transcript = (.) %>% distinct(transcript) %>% pull(1),
-	# 	symbol = flybaseR::id.converter((.) %>% distinct(transcript) %>% pull(1),
-	# 																	symbols = TRUE,
-	# 																	convert.into = "genes"
-	# 	)
-	# )) %>%
-	# tidybulk
+	left_join(
+		coldata %>%
+		as_tibble(rownames = "sample") %>%
+		mutate(sample = gsub("fb", "", sample))
+	) %>%
 	mutate_if(is.character, as.factor) %>%
 	tidybulk(sample, transcript, count)
 
@@ -45,7 +43,7 @@ time_df = tibble(step = "", time = list(), lines = NA, assignments = NA)
 # START WORKFLOW
 plot_densities = function(){
 	# Normalise
-tt_scaled = tt %>% scale_abundance()
+tt_scaled = tt %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance()
 # Plot densities
  p = tt_scaled %>%
 	pivot_longer(	values_to = "count",	names_to = "Normalisation",	cols = c(count, `count_scaled`)	) %>%
@@ -86,12 +84,12 @@ plot_adjusted_MDS = function(){
 }
 test_abundance = function(){
 	# DE analyses
- tt %>% test_differential_abundance( ~ condition + type)
+ tt_scaled %>% test_differential_abundance( ~ condition + type)
 }
 plot_MA = function(){
 	# MA plot
 p = tt_test %>%
-	filter(!lowly_abundant) %>%
+	keep_abundant() %>%
 	mutate(de = FDR < 0.05 & abs(logFC) >= 2) %>%
 	distinct(transcript, logCPM, logFC, de) %>%
 	mutate(transcript = ifelse(de &	abs(logFC) > 3, as.character(transcript), NA)) %>%
@@ -105,15 +103,13 @@ plot_DE_comparative = function(){
 	inner_join((.) %>% distinct(transcript, PValue) %>% arrange(PValue) %>% head(6)) %>%
 	pivot_longer(names_to = "Stage",	 values_to = "count",	 cols = starts_with("count")) %>%
 	ggplot(aes(x = Stage, y = count + 1, fill = condition)) +
-	#ggpol::geom_boxjitter(jitter.width = 0.1,  jitter.size = 0.2) +
 	facet_wrap( ~ transcript) +
 	scale_y_log10()
 }
 plot_heatmap = function(){
-	# Heatmap
  p = tt_test %>%
 	filter(FDR < 0.05 & abs(logFC) > 2) %>%
-	tidyHeatmap::heatmap(	.horizontal = sample,		.vertical = transcript,		.abundance = `count`,annotation = c(condition, type),	log_transform = TRUE	)
+	tidyHeatmap::heatmap(	 sample,		 transcript,		 count, transform = log1p 	) 
 }
 
 
@@ -148,4 +144,6 @@ time_df = time_df %>% bind_rows(tibble(step = "Plot heatmap", time = list(toc())
 
 
 time_df  %>% mutate(step = factor(step, levels = unique(step))) %>%  saveRDS("dev/stats_pasilla_ttBulk.rds")
+
+
 
