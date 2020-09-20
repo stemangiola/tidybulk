@@ -1220,3 +1220,15 @@ not = function(is){	!is }
 
 # Raise to the power
 pow = function(a,b){	a^b }
+
+outersect <- function(x, y) {
+	sort(c(setdiff(x, y),
+				 setdiff(y, x)))
+}
+
+do_validate = function(){
+	
+	if(!"tidybulk_do_validate" %in% names(options())) TRUE
+	else getOption("tidybulk_do_validate")
+	
+}

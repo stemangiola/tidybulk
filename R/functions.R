@@ -165,12 +165,6 @@ get_scaled_counts_bulk <- function(.data,
 	df <-
 		.data %>%
 
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
-
 		# Rename
 		dplyr::select(!!.sample,!!.transcript,!!.abundance) %>%
 
@@ -325,12 +319,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
-
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Prepare the data frame
 		select(!!.transcript,
@@ -547,12 +535,6 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_voom <- .data %>%
 
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
-
 		# Prepare the data frame
 		select(!!.transcript,
 					 !!.sample,
@@ -758,12 +740,6 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 	deseq2_object =
 		.data %>%
-
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Prepare the data frame
 		select(!!.transcript,
@@ -1054,12 +1030,6 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
 
-		# # Stop if any counts is NA
-		# error_if_counts_is_na(!!.abundance) %>%
-		#
-		# # Stop if there are duplicated transcripts
-		# error_if_duplicated_genes(!!.sample,!!.entrez,!!.abundance) %>%
-
 		# Prepare the data frame
 		select(!!.entrez, !!.sample, !!.abundance,
 					 one_of(parse_formula(.formula))) %>%
@@ -1228,9 +1198,6 @@ get_clusters_kmeans_bulk <-
 
 		.data %>%
 
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.abundance) %>%
-
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
@@ -1307,9 +1274,6 @@ get_clusters_SNN_bulk <-
 		my_df =
 			.data %>%
 
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.abundance) %>%
-
 			# Prepare data frame
 			distinct(!!.element,!!.feature,!!.abundance) %>%
 
@@ -1384,9 +1348,6 @@ get_reduced_dimensions_MDS_bulk <-
 
 		mds_object =
 			.data %>%
-
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.abundance) %>%
 
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
@@ -1475,9 +1436,6 @@ get_reduced_dimensions_PCA_bulk <-
 
 		prcomp_obj =
 			.data %>%
-
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.abundance) %>%
 
 			# Filter most variable genes
 			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
@@ -1644,9 +1602,6 @@ get_reduced_dimensions_TSNE_bulk <-
 		df_tsne =
 			.data %>%
 
-			# Check if duplicates
-			error_if_duplicated_genes(!!.element,!!.feature,!!.abundance)  %>%
-
 			# Filter NA symbol
 			filter(!!.feature %>% is.na %>% not()) %>%
 
@@ -1661,7 +1616,7 @@ get_reduced_dimensions_TSNE_bulk <-
 
 			# Check if log transform is needed
 			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p)) %>%
 
 			# Filter most variable genes
 			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
@@ -1854,10 +1809,7 @@ aggregate_duplicated_transcripts_bulk =
 		# aggregates read .data over samples, concatenates other character columns, and averages other numeric columns
 		.data %>%
 
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.abundance) %>%
-
-			# transform logials and factors
+			# transform logicals and factors
 			mutate_if(is.factor, as.character) %>%
 			mutate_if(is.logical, as.character) %>%
 
@@ -1963,12 +1915,6 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	# Get the redundant data frame
 	.data.correlated =
 		.data %>%
-
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.abundance) %>%
-
-		# Stop if there are duplicated transcripts
-		error_if_duplicated_genes(!!.element,!!.feature,!!.abundance) %>%
 
 		# Prepare the data frame
 		select(!!.feature,!!.element,!!.abundance) %>%
@@ -2329,9 +2275,6 @@ get_cell_type_proportions = function(.data,
 
 	.data %>%
 
-		# Check if some transcripts are duplicated
-		error_if_duplicated_genes(!!.sample,!!.transcript,!!.abundance) %>%
-
 		# Prepare data frame
 		distinct(!!.sample,!!.transcript,!!.abundance) %>%
 		spread(!!.sample,!!.abundance) %>%
@@ -2426,9 +2369,6 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 	# New column name
 	value_adjusted = as.symbol(sprintf("%s%s",  quo_name(.abundance), adjusted_string))
-
-	# Stop is any counts are NAs
-	.data %>% error_if_counts_is_na(!!.abundance)
 
 	df_for_combat <-
 		.data %>%
@@ -2739,6 +2679,7 @@ as_matrix <- function(tbl,
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
 #' @importFrom utils install.packages
+#' @importFrom tidyr complete
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
@@ -2771,60 +2712,65 @@ fill_NA_using_formula = function(.data,
 		select_if(function(x) is.character(x) | is.logical(x) | is.factor(x)) %>%
 		colnames
 
+	# Sample-wise columns
+	sample_col = .data %>% get_specific_annotation_columns(!!.sample) %>% outersect(col_formula)
+	
+
 	# Create NAs for missing sample/transcript pair
-	df_to_impute =
+
+ .data_completed = 
 		.data %>%
-		select(!!.sample, !!.transcript, !!.abundance, col_formula) %>%
-		distinct %>%
-		spread(!!.transcript, !!.abundance) %>%
-		gather(!!.transcript, !!.abundance, -!!.sample, -col_formula)
 
-	# Select just transcripts/covariates that have missing
-	combo_to_impute = df_to_impute %>% anti_join(.data, by=c(quo_name(.sample), quo_name(.transcript))) %>% select(!!.transcript, col_formula) %>% distinct()
+		# Add missing pairs
+ 		nest(ct_data = -c(col_formula)) %>%
+ 		mutate(ct_data = map(ct_data, ~ .x %>% complete(!!as.symbol(quo_name(.sample)), !!.transcript) )) %>%
+ 		unnest(ct_data)
+		
+ .data_OK = 
+ 	.data %>%
+ 	anti_join(.data_completed %>% filter(!!.abundance %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula))
+ 
+ .data_FIXED = 
+ .data %>%
+ 	inner_join(.data_completed %>% filter(!!.abundance %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula)) %>%
 
-	# Impute using median
-	df_to_impute %>%
-		inner_join(combo_to_impute, by=c(quo_name(.transcript), col_formula)) %>%
+ 	# attach NAs
+ 	bind_rows(
+	.data_completed %>% 
+		filter(!!.abundance %>% is.na) %>%
+		select(!!.sample, !!.transcript) %>%
+		left_join(.data %>% pivot_sample(!!.sample))
+	) %>%
+ 	
+	# Group by covariate
+	nest(cov_data = -c(col_formula, !!.transcript)) %>%
+	mutate(cov_data = map(cov_data, ~
+											.x %>%
+											mutate(
+												!!.abundance := ifelse(
+													!!.abundance %>% is.na,
+													median(!!.abundance, na.rm = TRUE),!!.abundance
+												)
+											) %>%
 
-		# Calculate median for NAs
-		nest(data = -c(col_formula, !!.transcript)) %>%
-		mutate(data = map(data, ~
-												.x %>%
-												mutate(
-													!!.abundance := ifelse(
-														!!.abundance %>% is.na,
-														median(!!.abundance, na.rm = TRUE),!!.abundance
+											# Impute scaled if exist
+											ifelse_pipe(
+												quo_is_symbol(.abundance_scaled),
+												~ .x %>% mutate(
+													!!.abundance_scaled := ifelse(
+														!!.abundance_scaled %>% is.na,
+														median(!!.abundance_scaled, na.rm = TRUE),!!.abundance_scaled
 													)
-												) %>%
+												)
+											) %>%
 
-												# Impute scaled if exist
-												ifelse_pipe(
-													quo_is_symbol(.abundance_scaled),
-													~ .x %>% mutate(
-														!!.abundance_scaled := ifelse(
-															!!.abundance_scaled %>% is.na,
-															median(!!.abundance_scaled, na.rm = TRUE),!!.abundance_scaled
-														)
-													)
-												) %>%
-
-												# Throu warning if group of size 1
-												ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
-		)) %>%
-		unnest(data) %>%
-
-		# Select only imputed data
-		select(-col_formula) %>%
-
-		# In next command avoid error if no data to impute
-		ifelse_pipe(
-			nrow(.) > 0,
-			~ .x %>% left_join(.data %>% pivot_sample(!!.sample), by=quo_name(.sample))
-		) %>%
-
-		# Add oiginal dataset
-		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_name(.transcript), col_formula))) %>%
-		select(.data %>% colnames) %>%
+											# Through warning if group of size 1
+											ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
+	)) %>%
+	unnest(cov_data) 
+ 
+	.data_OK %>%
+		bind_rows(.data_FIXED) %>%
 
 		# Reattach internals
 		reattach_internals(.data)
