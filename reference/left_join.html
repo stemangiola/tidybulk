@@ -97,6 +97,12 @@
     <li>
       <a href="../articles/introduction.html">Overview of the tidybulk package</a>
     </li>
+    <li>
+      <a href="../articles/manuscript_differential_transcript_abundance.html">Manuscript code - differential transcript abundance</a>
+    </li>
+    <li>
+      <a href="../articles/manuscript_transcriptional_signatures.html">Manuscript code - transcriptional signature identification</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -164,18 +170,18 @@
 <span class='kw'>annotation</span> <span class='op'>=</span> <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts.html'>counts</a></span> <span class='op'>%&gt;%</span> <span class='fu'><a href='distinct.html'>distinct</a></span>(<span class='kw'>sample</span>) <span class='op'>%&gt;%</span> <span class='fu'><a href='mutate.html'>mutate</a></span>(source = <span class='st'>"AU"</span>)
 <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts.html'>counts</a></span> <span class='op'>%&gt;%</span> <span class='fu'>left_join</span>(<span class='kw'>annotation</span>)
 </div><div class='output co'>#&gt; <span class='message'>Joining, by = "sample"</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 938,112 x 9</span><span>
-#&gt;    sample transcript `Cell type` count time  condition batch factor_of_inter…
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>           
-#&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… DDX11L1    b_cell         17 0 d   TRUE          0 TRUE            
-#&gt; </span><span style='color: #555555;'> 2</span><span> SRR17… WASH7P     b_cell       </span><span style='text-decoration: underline;'>3</span><span>568 0 d   TRUE          0 TRUE            
-#&gt; </span><span style='color: #555555;'> 3</span><span> SRR17… MIR6859-1  b_cell         57 0 d   TRUE          0 TRUE            
-#&gt; </span><span style='color: #555555;'> 4</span><span> SRR17… MIR1302-2  b_cell          1 0 d   TRUE          0 TRUE            
-#&gt; </span><span style='color: #555555;'> 5</span><span> SRR17… FAM138A    b_cell          0 0 d   TRUE          0 TRUE            
-#&gt; </span><span style='color: #555555;'> 6</span><span> SRR17… OR4F5      b_cell          0 0 d   TRUE          0 TRUE            
-#&gt; </span><span style='color: #555555;'> 7</span><span> SRR17… LOC729737  b_cell       </span><span style='text-decoration: underline;'>1</span><span>764 0 d   TRUE          0 TRUE            
-#&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… LOC102725… b_cell         11 0 d   TRUE          0 TRUE            
-#&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… MIR6859-2  b_cell         40 0 d   TRUE          0 TRUE            
-#&gt; </span><span style='color: #555555;'>10</span><span> SRR17… OR4F29     b_cell          0 0 d   TRUE          0 TRUE            
+#&gt;    sample transcript cell_type count time  condition batch factor_of_inter…
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>           
+#&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… DDX11L1    b_cell       17 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 2</span><span> SRR17… WASH7P     b_cell     </span><span style='text-decoration: underline;'>3</span><span>568 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 3</span><span> SRR17… MIR6859-1  b_cell       57 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 4</span><span> SRR17… MIR1302-2  b_cell        1 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 5</span><span> SRR17… FAM138A    b_cell        0 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 6</span><span> SRR17… OR4F5      b_cell        0 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 7</span><span> SRR17… LOC729737  b_cell     </span><span style='text-decoration: underline;'>1</span><span>764 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… LOC102725… b_cell       11 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… MIR6859-2  b_cell       40 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'>10</span><span> SRR17… OR4F29     b_cell        0 0 d   TRUE      0     TRUE            
 #&gt; </span><span style='color: #555555;'># … with 938,102 more rows, and 1 more variable: source </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span></div><div class='input'>
 </div></span></pre>
   </div>
@@ -193,7 +199,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

@@ -58,6 +58,12 @@
 <li>
       <a href="articles/introduction.html">Overview of the tidybulk package</a>
     </li>
+    <li>
+      <a href="articles/manuscript_differential_transcript_abundance.html">Manuscript code - differential transcript abundance</a>
+    </li>
+    <li>
+      <a href="articles/manuscript_transcriptional_signatures.html">Manuscript code - transcriptional signature identification</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -282,17 +288,20 @@
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>From Bioconductor</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw">BiocManager</span>::<span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"tidybulk"</span>)</pre></div>
+<span class="kw">BiocManager</span>::<span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"tidybulk"</span>)
+</pre></div>
 <p>From Github</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">devtools</span>::<span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"stemangiola/tidybulk"</span>)</pre></div>
+<span class="kw">devtools</span>::<span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"stemangiola/tidybulk"</span>)
+</pre></div>
 </div>
 <div id="create-tidybulk-tibble" class="section level2">
 <h2 class="hasAnchor">
 <a href="#create-tidybulk-tibble" class="anchor"></a>Create <code>tidybulk</code> tibble.</h2>
 <p>It memorises key column names</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw">tt</span> <span class="op">=</span> <span class="kw">counts</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/tidybulk.html">tidybulk</a></span>(<span class="kw">sample</span>, <span class="kw">transcript</span>, <span class="kw">count</span>)</pre></div>
+<span class="kw">tt</span> <span class="op">=</span> <span class="kw">counts</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/tidybulk.html">tidybulk</a></span>(<span class="kw">sample</span>, <span class="kw">transcript</span>, <span class="kw">count</span>)
+</pre></div>
 </div>
 <div id="get-the-bibliography-of-your-workflow" class="section level2">
 <h2 class="hasAnchor">
@@ -301,7 +310,8 @@
 <div class="sourceCode" id="cb4"><pre class="downlit">
 <span class="kw">tt</span> <span class="op">%&gt;%</span>
     <span class="co"># call analysis functions</span>
-    <span class="fu"><a href="reference/get_bibliography.html">get_bibliography</a></span>()</pre></div>
+    <span class="fu"><a href="reference/get_bibliography.html">get_bibliography</a></span>()
+</pre></div>
 </div>
 <div id="aggregate-duplicated-transcripts" class="section level2">
 <h2 class="hasAnchor">
@@ -325,7 +335,8 @@
             <span class="kw">matrixStats</span>:::<span class="fu">colSums</span>(<span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="kw">df</span>[,<span class="op">-</span><span class="fl">1</span>]))
 )
 <span class="kw">dge_list.nr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span>(<span class="st">"rbind"</span>, <span class="kw">dge_list.nr</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="kw">dge_list.nr</span>) <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="kw">dge_list</span>)</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="kw">dge_list.nr</span>) <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="kw">dge_list</span>)
+</pre></div>
 </div>
 <div style="clear:both;">
 </div>
@@ -338,7 +349,8 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="kw">tt.norm</span> <span class="op">=</span> <span class="kw">tt.aggr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/identify_abundant.html">identify_abundant</a></span>(factor_of_interest = <span class="kw">condition</span>) <span class="op">%&gt;%</span> <span class="fu"><a href="reference/scale_abundance.html">scale_abundance</a></span>()</pre></div>
+<span class="kw">tt.norm</span> <span class="op">=</span> <span class="kw">tt.aggr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/identify_abundant.html">identify_abundant</a></span>(factor_of_interest = <span class="kw">condition</span>) <span class="op">%&gt;%</span> <span class="fu"><a href="reference/scale_abundance.html">scale_abundance</a></span>()
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -359,7 +371,8 @@
     <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="kw">count_scaled</span> <span class="op">+</span> <span class="fl">1</span>, group=<span class="kw">sample</span>, color=<span class="kw">`Cell type`</span>)) <span class="op">+</span>
     <span class="fu">geom_density</span>() <span class="op">+</span>
     <span class="fu">scale_x_log10</span>() <span class="op">+</span>
-    <span class="kw">my_theme</span></pre></div>
+    <span class="kw">my_theme</span>
+</pre></div>
 <p><img src="reference/figures/plot_normalise-1.png"><!-- --></p>
 </div>
 <div id="filter-variable-transcripts" class="section level2">
@@ -370,7 +383,8 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="kw">tt.norm.variable</span> <span class="op">=</span> <span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/keep_variable.html">keep_variable</a></span>()</pre></div>
+<span class="kw">tt.norm.variable</span> <span class="op">=</span> <span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/keep_variable.html">keep_variable</a></span>()
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -391,7 +405,8 @@
         <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">norm_counts.table</span>)
     ),
     <span class="st">"Cell type"</span>
-]</pre></div>
+]
+</pre></div>
 </div>
 <div style="clear:both;">
 </div>
@@ -407,7 +422,8 @@
 <div class="sourceCode" id="cb11"><pre class="downlit">
 <span class="kw">tt.norm.MDS</span> <span class="op">=</span>
   <span class="kw">tt.norm</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="reference/reduce_dimensions.html">reduce_dimensions</a></span>(method=<span class="st">"MDS"</span>, .dims = <span class="fl">6</span>)</pre></div>
+  <span class="fu"><a href="reference/reduce_dimensions.html">reduce_dimensions</a></span>(method=<span class="st">"MDS"</span>, .dims = <span class="fl">6</span>)
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -424,13 +440,15 @@
 <span class="kw">cmds</span><span class="op">$</span><span class="kw">cell_type</span> <span class="op">=</span> <span class="kw">tidybulk</span>::<span class="kw"><a href="reference/counts.html">counts</a></span>[
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="kw">tidybulk</span>::<span class="kw"><a href="reference/counts.html">counts</a></span><span class="op">$</span><span class="kw">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">cmds</span>)),
     <span class="st">"Cell type"</span>
-]</pre></div>
+]
+</pre></div>
 </div>
 <div style="clear:both;">
 </div>
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit">
-<span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>()  <span class="op">%&gt;%</span> <span class="fu">select</span>(<span class="fu">contains</span>(<span class="st">"Dim"</span>), <span class="fu">everything</span>())</pre></div>
+<span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>()  <span class="op">%&gt;%</span> <span class="fu">select</span>(<span class="fu">contains</span>(<span class="st">"Dim"</span>), <span class="fu">everything</span>())
+</pre></div>
 <div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">## # A tibble: 48 x 15</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a><span class="co">##     Dim1  Dim2   Dim3    Dim4    Dim5   Dim6 sample `Cell type` time  condition</span></span>
 <span id="cb14-3"><a href="#cb14-3"></a><span class="co">##    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;    </span></span>
@@ -450,7 +468,8 @@
 <div class="sourceCode" id="cb15"><pre class="downlit">
 <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
-  <span class="kw">GGally</span>::<span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span>(columns = <span class="fl">10</span><span class="op">:</span><span class="fl">15</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(colour=<span class="kw">`Cell type`</span>))</pre></div>
+  <span class="kw">GGally</span>::<span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span>(columns = <span class="fl">10</span><span class="op">:</span><span class="fl">15</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(colour=<span class="kw">`Cell type`</span>))
+</pre></div>
 <p><img src="reference/figures/plot_mds-1.png"><!-- --></p>
 <p><strong>PCA</strong></p>
 <div class="column-left">
@@ -458,7 +477,8 @@
 <div class="sourceCode" id="cb16"><pre class="downlit">
 <span class="kw">tt.norm.PCA</span> <span class="op">=</span>
   <span class="kw">tt.norm</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="reference/reduce_dimensions.html">reduce_dimensions</a></span>(method=<span class="st">"PCA"</span>, .dims = <span class="fl">6</span>)</pre></div>
+  <span class="fu"><a href="reference/reduce_dimensions.html">reduce_dimensions</a></span>(method=<span class="st">"PCA"</span>, .dims = <span class="fl">6</span>)
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -470,13 +490,15 @@
 <span class="kw">pc</span><span class="op">$</span><span class="kw">cell_type</span> <span class="op">=</span> <span class="kw">counts</span>[
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="kw">counts</span><span class="op">$</span><span class="kw">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">pc</span>)),
     <span class="st">"Cell type"</span>
-]</pre></div>
+]
+</pre></div>
 </div>
 <div style="clear:both;">
 </div>
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit">
-<span class="kw">tt.norm.PCA</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span> <span class="fu">select</span>(<span class="fu">contains</span>(<span class="st">"PC"</span>), <span class="fu">everything</span>())</pre></div>
+<span class="kw">tt.norm.PCA</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span> <span class="fu">select</span>(<span class="fu">contains</span>(<span class="st">"PC"</span>), <span class="fu">everything</span>())
+</pre></div>
 <div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="co">## # A tibble: 48 x 15</span></span>
 <span id="cb19-2"><a href="#cb19-2"></a><span class="co">##      PC1      PC2    PC3     PC4     PC5   PC6 sample `Cell type` time </span></span>
 <span id="cb19-3"><a href="#cb19-3"></a><span class="co">##    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt;</span></span>
@@ -496,7 +518,8 @@
 <div class="sourceCode" id="cb20"><pre class="downlit">
 <span class="kw">tt.norm.PCA</span> <span class="op">%&gt;%</span>
      <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
-  <span class="kw">GGally</span>::<span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span>(columns = <span class="fl">10</span><span class="op">:</span><span class="fl">12</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(colour=<span class="kw">`Cell type`</span>))</pre></div>
+  <span class="kw">GGally</span>::<span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span>(columns = <span class="fl">10</span><span class="op">:</span><span class="fl">12</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(colour=<span class="kw">`Cell type`</span>))
+</pre></div>
 <p><img src="reference/figures/plot_pca-1.png"><!-- --></p>
 <p><strong>tSNE</strong></p>
 <div class="column-left">
@@ -510,7 +533,8 @@
         method = <span class="st">"tSNE"</span>,
         perplexity=<span class="fl">10</span>,
         pca_scale =<span class="fl">TRUE</span>
-    )</pre></div>
+    )
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -525,7 +549,8 @@
 <span class="kw">tsne</span><span class="op">$</span><span class="kw">cell_type</span> <span class="op">=</span> <span class="kw">tidybulk</span>::<span class="kw"><a href="reference/counts.html">counts</a></span>[
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="kw">tidybulk</span>::<span class="kw"><a href="reference/counts.html">counts</a></span><span class="op">$</span><span class="kw">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">tsne</span>)),
     <span class="st">"Cell type"</span>
-]</pre></div>
+]
+</pre></div>
 </div>
 <div style="clear:both;">
 </div>
@@ -533,7 +558,8 @@
 <div class="sourceCode" id="cb23"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
-    <span class="fu">select</span>(<span class="fu">contains</span>(<span class="st">"tSNE"</span>), <span class="fu">everything</span>()) </pre></div>
+    <span class="fu">select</span>(<span class="fu">contains</span>(<span class="st">"tSNE"</span>), <span class="fu">everything</span>()) 
+</pre></div>
 <div class="sourceCode" id="cb24"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="co">## # A tibble: 251 x 4</span></span>
 <span id="cb24-2"><a href="#cb24-2"></a><span class="co">##      tSNE1  tSNE2 sample                       Call </span></span>
 <span id="cb24-3"><a href="#cb24-3"></a><span class="co">##      &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;</span></span>
@@ -551,7 +577,8 @@
 <div class="sourceCode" id="cb25"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
-    <span class="fu">ggplot</span>(<span class="fu">aes</span>(x = <span class="kw">`tSNE1`</span>, y = <span class="kw">`tSNE2`</span>, color=<span class="kw">Call</span>)) <span class="op">+</span> <span class="fu">geom_point</span>() <span class="op">+</span> <span class="kw">my_theme</span></pre></div>
+    <span class="fu">ggplot</span>(<span class="fu">aes</span>(x = <span class="kw">`tSNE1`</span>, y = <span class="kw">`tSNE2`</span>, color=<span class="kw">Call</span>)) <span class="op">+</span> <span class="fu">geom_point</span>() <span class="op">+</span> <span class="kw">my_theme</span>
+</pre></div>
 <p><img src="reference/figures/unnamed-chunk-11-1.png"><!-- --></p>
 </div>
 <div id="rotate-dimensions" class="section level2">
@@ -564,7 +591,8 @@
 <div class="sourceCode" id="cb26"><pre class="downlit">
 <span class="kw">tt.norm.MDS.rotated</span> <span class="op">=</span>
   <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="reference/rotate_dimensions.html">rotate_dimensions</a></span>(<span class="kw">`Dim1`</span>, <span class="kw">`Dim2`</span>, rotation_degrees = <span class="fl">45</span>, action=<span class="st">"get"</span>)</pre></div>
+    <span class="fu"><a href="reference/rotate_dimensions.html">rotate_dimensions</a></span>(<span class="kw">`Dim1`</span>, <span class="kw">`Dim2`</span>, rotation_degrees = <span class="fl">45</span>, action=<span class="st">"get"</span>)
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -580,7 +608,8 @@
 <span class="kw">mds_r</span><span class="op">$</span><span class="kw">cell_type</span> <span class="op">=</span> <span class="kw">counts</span>[
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="kw">counts</span><span class="op">$</span><span class="kw">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">mds_r</span>)),
     <span class="st">"Cell type"</span>
-]</pre></div>
+]
+</pre></div>
 </div>
 <div style="clear:both;">
 </div>
@@ -589,14 +618,16 @@
 <span class="kw">tt.norm.MDS.rotated</span> <span class="op">%&gt;%</span>
     <span class="fu">ggplot</span>(<span class="fu">aes</span>(x=<span class="kw">`Dim1`</span>, y=<span class="kw">`Dim2`</span>, color=<span class="kw">`Cell type`</span> )) <span class="op">+</span>
   <span class="fu">geom_point</span>() <span class="op">+</span>
-  <span class="kw">my_theme</span></pre></div>
+  <span class="kw">my_theme</span>
+</pre></div>
 <p><img src="reference/figures/plot_rotate_1-1.png"><!-- --></p>
 <p><strong>Rotated</strong> On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit">
 <span class="kw">tt.norm.MDS.rotated</span> <span class="op">%&gt;%</span>
     <span class="fu">ggplot</span>(<span class="fu">aes</span>(x=<span class="kw">`Dim1 rotated 45`</span>, y=<span class="kw">`Dim2 rotated 45`</span>, color=<span class="kw">`Cell type`</span> )) <span class="op">+</span>
   <span class="fu">geom_point</span>() <span class="op">+</span>
-  <span class="kw">my_theme</span></pre></div>
+  <span class="kw">my_theme</span>
+</pre></div>
 <p><img src="reference/figures/plot_rotate_2-1.png"><!-- --></p>
 </div>
 <div id="test-differential-abundance" class="section level2">
@@ -610,7 +641,8 @@
 <span class="kw">tt.de</span> <span class="op">=</span>
     <span class="kw">tt</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="reference/test_differential_abundance.html">test_differential_abundance</a></span>( <span class="op">~</span> <span class="kw">condition</span>, action=<span class="st">"get"</span>)
-<span class="kw">tt.de</span></pre></div>
+<span class="kw">tt.de</span>
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -625,7 +657,8 @@
 <span class="kw">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/estimateDisp.html">estimateDisp</a></span>(<span class="kw">dgList</span>,<span class="kw">design</span>)
 <span class="kw">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/glmQLFTest.html">glmQLFit</a></span>(<span class="kw">dgList</span>,<span class="kw">design</span>)
 <span class="kw">qlf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/glmQLFTest.html">glmQLFTest</a></span>(<span class="kw">fit</span>,coef=<span class="fl">2</span>)
-<span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/topTags.html">topTags</a></span>(<span class="kw">qlf</span>, n=<span class="fl">Inf</span>)</pre></div>
+<span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/topTags.html">topTags</a></span>(<span class="kw">qlf</span>, n=<span class="fl">Inf</span>)
+</pre></div>
 </div>
 <div style="clear:both;">
 </div>
@@ -638,7 +671,8 @@
         <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="kw">condition</span>,                  
         .contrasts = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>( <span class="st">"conditionTRUE - conditionFALSE"</span>),
         action=<span class="st">"get"</span>
-    )</pre></div>
+    )
+</pre></div>
 </div>
 <div id="adjust-counts" class="section level2">
 <h2 class="hasAnchor">
@@ -649,7 +683,8 @@
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb33"><pre class="downlit">
 <span class="kw">tt.norm.adj</span> <span class="op">=</span>
-    <span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/adjust_abundance.html">adjust_abundance</a></span>(   <span class="op">~</span> <span class="kw">factor_of_interest</span> <span class="op">+</span> <span class="kw">batch</span>)</pre></div>
+    <span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/adjust_abundance.html">adjust_abundance</a></span>(   <span class="op">~</span> <span class="kw">factor_of_interest</span> <span class="op">+</span> <span class="kw">batch</span>)
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -675,7 +710,8 @@
 <span class="kw">count_m_log.sva</span><span class="op">$</span><span class="kw">cell_type</span> <span class="op">=</span> <span class="kw">counts</span>[
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="kw">counts</span><span class="op">$</span><span class="kw">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">count_m_log.sva</span>)),
     <span class="st">"Cell type"</span>
-]</pre></div>
+]
+</pre></div>
 </div>
 <div style="clear:both;">
 </div>
@@ -690,7 +726,8 @@
 <div class="sourceCode" id="cb35"><pre class="downlit">
 <span class="kw">tt.cibersort</span> <span class="op">=</span>
     <span class="kw">tt</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span>(action=<span class="st">"get"</span>, cores=<span class="fl">1</span>)</pre></div>
+    <span class="fu"><a href="reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span>(action=<span class="st">"get"</span>, cores=<span class="fl">1</span>)
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -717,7 +754,8 @@
   <span class="fu">geom_boxplot</span>() <span class="op">+</span>
   <span class="fu">facet_wrap</span>(<span class="op">~</span><span class="kw">`Cell type`</span>) <span class="op">+</span>
   <span class="kw">my_theme</span> <span class="op">+</span>
-  <span class="fu">theme</span>(axis.text.x = <span class="fu">element_text</span>(angle = <span class="fl">90</span>, hjust = <span class="fl">1</span>, vjust = <span class="fl">0.5</span>), aspect.ratio=<span class="fl">1</span><span class="op">/</span><span class="fl">5</span>)</pre></div>
+  <span class="fu">theme</span>(axis.text.x = <span class="fu">element_text</span>(angle = <span class="fl">90</span>, hjust = <span class="fl">1</span>, vjust = <span class="fl">0.5</span>), aspect.ratio=<span class="fl">1</span><span class="op">/</span><span class="fl">5</span>)
+</pre></div>
 <p><img src="reference/figures/plot_cibersort-1.png"><!-- --></p>
 </div>
 <div id="test-differential-cell-type-abundance" class="section level2">
@@ -726,7 +764,8 @@
 <p>We can also perform a statistical test on the differential cell-type abundance across conditions</p>
 <div class="sourceCode" id="cb38"><pre class="downlit">
     <span class="kw">tt</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="reference/test_differential_cellularity.html">test_differential_cellularity</a></span>( <span class="op">~</span> <span class="kw">condition</span> )</pre></div>
+    <span class="fu"><a href="reference/test_differential_cellularity.html">test_differential_cellularity</a></span>( <span class="op">~</span> <span class="kw">condition</span> )
+</pre></div>
 <div class="sourceCode" id="cb39"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="co">## # A tibble: 22 x 7</span></span>
 <span id="cb39-2"><a href="#cb39-2"></a><span class="co">##    .cell_type cell_type_propo… `estimate_(Inte… estimate_condit…</span></span>
 <span id="cb39-3"><a href="#cb39-3"></a><span class="co">##    &lt;chr&gt;      &lt;list&gt;                      &lt;dbl&gt;            &lt;dbl&gt;</span></span>
@@ -745,7 +784,8 @@
 <p>We can also perform regression analysis with censored data (coxph).</p>
 <div class="sourceCode" id="cb40"><pre class="downlit">
     <span class="kw">tt</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="reference/test_differential_cellularity.html">test_differential_cellularity</a></span>(<span class="kw">survival</span>::<span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span>(<span class="kw">time</span>, <span class="kw">dead</span>) <span class="op">~</span> <span class="kw">.</span>)</pre></div>
+    <span class="fu"><a href="reference/test_differential_cellularity.html">test_differential_cellularity</a></span>(<span class="kw">survival</span>::<span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span>(<span class="kw">time</span>, <span class="kw">dead</span>) <span class="op">~</span> <span class="kw">.</span>)
+</pre></div>
 </div>
 <div id="cluster-samples" class="section level2">
 <h2 class="hasAnchor">
@@ -757,7 +797,8 @@
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb41"><pre class="downlit">
 <span class="kw">tt.norm.cluster</span> <span class="op">=</span> <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="reference/cluster_elements.html">cluster_elements</a></span>(method=<span class="st">"kmeans"</span>, centers = <span class="fl">2</span>, action=<span class="st">"get"</span> )</pre></div>
+  <span class="fu"><a href="reference/cluster_elements.html">cluster_elements</a></span>(method=<span class="st">"kmeans"</span>, centers = <span class="fl">2</span>, action=<span class="st">"get"</span> )
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -770,7 +811,8 @@
 <span class="kw">cluster</span><span class="op">$</span><span class="kw">cell_type</span> <span class="op">=</span> <span class="kw">tidybulk</span>::<span class="kw"><a href="reference/counts.html">counts</a></span>[
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="kw">tidybulk</span>::<span class="kw"><a href="reference/counts.html">counts</a></span><span class="op">$</span><span class="kw">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">cluster</span>)),
     <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Cell type"</span>, <span class="st">"Dim1"</span>, <span class="st">"Dim2"</span>)
-]</pre></div>
+]
+</pre></div>
 </div>
 <div style="clear:both;">
 </div>
@@ -779,7 +821,8 @@
  <span class="kw">tt.norm.cluster</span> <span class="op">%&gt;%</span>
     <span class="fu">ggplot</span>(<span class="fu">aes</span>(x=<span class="kw">`Dim1`</span>, y=<span class="kw">`Dim2`</span>, color=<span class="kw">`cluster kmeans`</span>)) <span class="op">+</span>
   <span class="fu">geom_point</span>() <span class="op">+</span>
-  <span class="kw">my_theme</span></pre></div>
+  <span class="kw">my_theme</span>
+</pre></div>
 <p><img src="reference/figures/plot_cluster-1.png"><!-- --></p>
 <p><strong>SNN</strong></p>
 <div class="column-left">
@@ -787,7 +830,8 @@
 <div class="sourceCode" id="cb44"><pre class="downlit">
 <span class="kw">tt.norm.SNN</span> <span class="op">=</span>
     <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="reference/cluster_elements.html">cluster_elements</a></span>(method = <span class="st">"SNN"</span>)</pre></div>
+    <span class="fu"><a href="reference/cluster_elements.html">cluster_elements</a></span>(method = <span class="st">"SNN"</span>)
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -809,14 +853,16 @@
 <span class="kw">snn</span><span class="op">$</span><span class="kw">cell_type</span> <span class="op">=</span> <span class="kw">tidybulk</span>::<span class="kw"><a href="reference/counts.html">counts</a></span>[
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="kw">tidybulk</span>::<span class="kw"><a href="reference/counts.html">counts</a></span><span class="op">$</span><span class="kw">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">snn</span>)),
     <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Cell type"</span>, <span class="st">"Dim1"</span>, <span class="st">"Dim2"</span>)
-]</pre></div>
+]
+</pre></div>
 </div>
 <div style="clear:both;">
 </div>
 <div class="sourceCode" id="cb46"><pre class="downlit">
 <span class="kw">tt.norm.SNN</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
-    <span class="fu">select</span>(<span class="fu">contains</span>(<span class="st">"tSNE"</span>), <span class="fu">everything</span>()) </pre></div>
+    <span class="fu">select</span>(<span class="fu">contains</span>(<span class="st">"tSNE"</span>), <span class="fu">everything</span>()) 
+</pre></div>
 <div class="sourceCode" id="cb47"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="co">## # A tibble: 251 x 5</span></span>
 <span id="cb47-2"><a href="#cb47-2"></a><span class="co">##      tSNE1  tSNE2 sample                       Call  `cluster SNN`</span></span>
 <span id="cb47-3"><a href="#cb47-3"></a><span class="co">##      &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt; &lt;fct&gt;        </span></span>
@@ -836,7 +882,8 @@
     <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
     <span class="fu">gather</span>(<span class="kw">source</span>, <span class="kw">Call</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"cluster SNN"</span>, <span class="st">"Call"</span>)) <span class="op">%&gt;%</span>
     <span class="fu"><a href="reference/distinct.html">distinct</a></span>() <span class="op">%&gt;%</span>
-    <span class="fu">ggplot</span>(<span class="fu">aes</span>(x = <span class="kw">`tSNE1`</span>, y = <span class="kw">`tSNE2`</span>, color=<span class="kw">Call</span>)) <span class="op">+</span> <span class="fu">geom_point</span>() <span class="op">+</span> <span class="fu">facet_grid</span>(<span class="op">~</span><span class="kw">source</span>) <span class="op">+</span> <span class="kw">my_theme</span></pre></div>
+    <span class="fu">ggplot</span>(<span class="fu">aes</span>(x = <span class="kw">`tSNE1`</span>, y = <span class="kw">`tSNE2`</span>, color=<span class="kw">Call</span>)) <span class="op">+</span> <span class="fu">geom_point</span>() <span class="op">+</span> <span class="fu">facet_grid</span>(<span class="op">~</span><span class="kw">source</span>) <span class="op">+</span> <span class="kw">my_theme</span>
+</pre></div>
 <p><img src="reference/figures/SNN_plot-1.png"><!-- --></p>
 <div class="sourceCode" id="cb49"><pre class="downlit">
 <span class="co"># Do differential transcription between clusters</span>
@@ -845,7 +892,8 @@
     <span class="fu"><a href="reference/test_differential_abundance.html">test_differential_abundance</a></span>(
     <span class="op">~</span> <span class="kw">factor_of_interest</span>,
     action=<span class="st">"get"</span>
-   )</pre></div>
+   )
+</pre></div>
 <div class="sourceCode" id="cb50"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="co">## # A tibble: 500 x 7</span></span>
 <span id="cb50-2"><a href="#cb50-2"></a><span class="co">##    ens               logFC logCPM      F   PValue      FDR significant</span></span>
 <span id="cb50-3"><a href="#cb50-3"></a><span class="co">##    &lt;chr&gt;             &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;lgl&gt;      </span></span>
@@ -875,7 +923,8 @@
 <div class="sourceCode" id="cb51"><pre class="downlit">
 <span class="kw">tt.norm.non_redundant</span> <span class="op">=</span>
     <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="reference/remove_redundancy.html">remove_redundancy</a></span>(    method = <span class="st">"correlation"</span> )</pre></div>
+  <span class="fu"><a href="reference/remove_redundancy.html">remove_redundancy</a></span>(    method = <span class="st">"correlation"</span> )
+</pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -899,7 +948,8 @@
 <span class="co"># Return non redudant data frame</span>
 <span class="kw">counts</span> <span class="op">%&gt;%</span> <span class="fu">anti_join</span>(<span class="kw">.data.correlated</span>) <span class="op">%&gt;%</span>
     <span class="fu">spread</span>(<span class="kw">sample</span>, <span class="kw">rc</span>, <span class="op">-</span> <span class="kw">transcript</span>) <span class="op">%&gt;%</span>
-    <span class="fu"><a href="reference/left_join.html">left_join</a></span>(<span class="kw">annotation</span>)</pre></div>
+    <span class="fu"><a href="reference/left_join.html">left_join</a></span>(<span class="kw">annotation</span>)
+</pre></div>
 </div>
 <div style="clear:both;">
 </div>
@@ -909,7 +959,8 @@
     <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
     <span class="fu">ggplot</span>(<span class="fu">aes</span>(x=<span class="kw">`Dim1`</span>, y=<span class="kw">`Dim2`</span>, color=<span class="kw">`Cell type`</span>)) <span class="op">+</span>
   <span class="fu">geom_point</span>() <span class="op">+</span>
-  <span class="kw">my_theme</span></pre></div>
+  <span class="kw">my_theme</span>
+</pre></div>
 <p><img src="reference/figures/plot_drop-1.png"><!-- --></p>
 <p><strong>Approach 2</strong></p>
 <div class="sourceCode" id="cb54"><pre class="downlit">
@@ -919,14 +970,16 @@
     method = <span class="st">"reduced_dimensions"</span>,
     Dim_a_column = <span class="kw">`Dim1`</span>,
     Dim_b_column = <span class="kw">`Dim2`</span>
-  )</pre></div>
+  )
+</pre></div>
 <p>We can visualise MDS reduced dimensions of the samples with the closest pair removed.</p>
 <div class="sourceCode" id="cb55"><pre class="downlit">
 <span class="kw">tt.norm.non_redundant</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
     <span class="fu">ggplot</span>(<span class="fu">aes</span>(x=<span class="kw">`Dim1`</span>, y=<span class="kw">`Dim2`</span>, color=<span class="kw">`Cell type`</span>)) <span class="op">+</span>
   <span class="fu">geom_point</span>() <span class="op">+</span>
-  <span class="kw">my_theme</span></pre></div>
+  <span class="kw">my_theme</span>
+</pre></div>
 <p><img src="reference/figures/plot_drop2-1.png"><!-- --></p>
 </div>
 <div id="other-useful-wrappers" class="section level2">
@@ -946,14 +999,16 @@
     requireBothEndsMapped = <span class="fl">TRUE</span>,
     checkFragLength = <span class="fl">FALSE</span>,
     useMetaFeatures = <span class="fl">TRUE</span>
-)</pre></div>
+)
+</pre></div>
 </div>
 <div id="from-ensembl-ids-to-gene-symbol-ids" class="section level2">
 <h2 class="hasAnchor">
 <a href="#from-ensembl-ids-to-gene-symbol-ids" class="anchor"></a>From ensembl IDs to gene symbol IDs</h2>
 <p>We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb57"><pre class="downlit">
-<span class="kw">counts_ensembl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/ensembl_to_symbol.html">ensembl_to_symbol</a></span>(<span class="kw">ens</span>)</pre></div>
+<span class="kw">counts_ensembl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/ensembl_to_symbol.html">ensembl_to_symbol</a></span>(<span class="kw">ens</span>)
+</pre></div>
 <div class="sourceCode" id="cb58"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="co">## # A tibble: 119 x 8</span></span>
 <span id="cb58-2"><a href="#cb58-2"></a><span class="co">##    ens   iso   `read count` sample cases_0_project… cases_0_samples… transcript</span></span>
 <span id="cb58-3"><a href="#cb58-3"></a><span class="co">##    &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;     </span></span>
@@ -974,7 +1029,8 @@
 <a href="#from-gene-symbol-to-gene-description-gene-name-in-full" class="anchor"></a>From gene symbol to gene description (gene name in full)</h2>
 <p>We can add gene full name (and in future description) from symbol identifiers. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb59"><pre class="downlit">
-<span class="kw">tt</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/describe_transcript.html">describe_transcript</a></span>() <span class="op">%&gt;%</span> <span class="fu">select</span>(<span class="kw">transcript</span>, <span class="kw">description</span>, <span class="fu">everything</span>())</pre></div>
+<span class="kw">tt</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/describe_transcript.html">describe_transcript</a></span>() <span class="op">%&gt;%</span> <span class="fu">select</span>(<span class="kw">transcript</span>, <span class="kw">description</span>, <span class="fu">everything</span>())
+</pre></div>
 <div class="sourceCode" id="cb60"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="co">## # A tibble: 938,112 x 9</span></span>
 <span id="cb60-2"><a href="#cb60-2"></a><span class="co">##    transcript description sample `Cell type` count time  condition batch</span></span>
 <span id="cb60-3"><a href="#cb60-3"></a><span class="co">##    &lt;chr&gt;      &lt;chr&gt;       &lt;fct&gt;  &lt;fct&gt;       &lt;dbl&gt; &lt;fct&gt; &lt;lgl&gt;     &lt;int&gt;</span></span>
@@ -996,7 +1052,8 @@
 <p>Every function takes a tidytranscriptomics structured data as input, and</p>
 <p>(i) with action=“add” outputs the new information joint to the original input data frame (default), (ii) with action=“get” the new information with the sample or transcript relative informatin depending on what the analysis is about, or (iii) with action=“only” just the new information. For example, from this data set</p>
 <div class="sourceCode" id="cb61"><pre class="downlit">
-  <span class="kw">tt.norm</span></pre></div>
+  <span class="kw">tt.norm</span>
+</pre></div>
 <div class="sourceCode" id="cb62"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="co">## # A tibble: 938,112 x 13</span></span>
 <span id="cb62-2"><a href="#cb62-2"></a><span class="co">##    sample transcript `Cell type` count time  condition batch factor_of_inter…</span></span>
 <span id="cb62-3"><a href="#cb62-3"></a><span class="co">##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;           </span></span>
@@ -1022,7 +1079,8 @@
         .feature = <span class="kw">transcript</span>,
         .dims = <span class="fl">3</span>,
         action=<span class="st">"add"</span>
-    )</pre></div>
+    )
+</pre></div>
 <div class="sourceCode" id="cb64"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a><span class="co">## # A tibble: 938,112 x 16</span></span>
 <span id="cb64-2"><a href="#cb64-2"></a><span class="co">##    sample transcript `Cell type` count time  condition batch factor_of_inter…</span></span>
 <span id="cb64-3"><a href="#cb64-3"></a><span class="co">##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;           </span></span>
@@ -1049,7 +1107,8 @@
         .feature = <span class="kw">transcript</span>,
         .dims = <span class="fl">3</span>,
         action=<span class="st">"get"</span>
-    )</pre></div>
+    )
+</pre></div>
 <div class="sourceCode" id="cb66"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a><span class="co">## # A tibble: 48 x 12</span></span>
 <span id="cb66-2"><a href="#cb66-2"></a><span class="co">##    sample `Cell type` time  condition batch factor_of_inter… `merged transcr…</span></span>
 <span id="cb66-3"><a href="#cb66-3"></a><span class="co">##    &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;                       &lt;dbl&gt;</span></span>
@@ -1075,7 +1134,8 @@
         .feature = <span class="kw">transcript</span>,
         .dims = <span class="fl">3</span>,
         action=<span class="st">"only"</span>
-    )</pre></div>
+    )
+</pre></div>
 <div class="sourceCode" id="cb68"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a><span class="co">## # A tibble: 48 x 4</span></span>
 <span id="cb68-2"><a href="#cb68-2"></a><span class="co">##    sample      Dim1  Dim2   Dim3</span></span>
 <span id="cb68-3"><a href="#cb68-3"></a><span class="co">##    &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
@@ -1133,7 +1193,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
