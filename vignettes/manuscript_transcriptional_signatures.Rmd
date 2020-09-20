@@ -15,7 +15,7 @@ vignette: >
 This decument includes the code used for the manuscript, for the transcriptional signature identification.
 
 
-```{r, echo=FALSE, include=FALSE}
+```{r, echo=FALSE, include=FALSE, eval = FALSE}
 library(knitr)
 #library(kableExtra)
 knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
