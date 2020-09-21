@@ -29,7 +29,6 @@ library(dplyr)
 library(magrittr)
 library(tidyr)
 library(ggplot2)
-# library(widyr)
 library(rlang)
 library(purrr)
 library(tidybulk)
@@ -119,6 +118,15 @@ counts_non_red_common %>%
 
 ```
 
+```{r, echo=F}
+
+# saveRDS(counts_non_red_common, "dev/counts_non_red_common.rds", compress = "xz")
+
+tidybulk::vignette_manuscript_signature_tsne %>%
+  ggplot(aes(x = `tSNE1`, y = `tSNE2`, color = cell_type)) +
+  geom_point(size =2)
+```
+
 
 ```{r, eval = FALSE}
 markers =
@@ -151,17 +159,30 @@ markers =
 markers %>%
 
     # Filter best markers for monocytes
-    filter(ct1=="monocyte" & i==1) %>%
+    filter(cell_type1=="monocyte" & i==1) %>%
 
     # Prettify contrasts for plotting
-    unite(pair, c("ct1", "ct2"), remove = FALSE, sep = "\n") %>%
+    unite(pair, c("cell_type1", "cell_type2"), remove = FALSE, sep = "\n") %>%
 
     # Reshape
-    gather(which, cell_type, ct1, ct2) %>%
+    gather(which, cell_type, cell_type1, cell_type2) %>%
     distinct(pair,  symbol,   which, cell_type) %>%
 
     # Attach counts
-    left_join(counts_non_red, by = c("symbol", "Cell type category")) %>%
+    left_join(counts_non_red) %>%
+
+    # Plot
+    ggplot(aes(y = count_scaled + 1, x = cell_type, fill = cell_type)) +
+    geom_boxplot() +
+    facet_wrap(~pair+ symbol, scales ="free_x", nrow = 2) +
+    scale_y_log10()
+
+
+```
+```{r, echo=F}
+# saveRDS(markers, "dev/vignette_markers.rds", compress = "xz")
+
+tidybulk::vignette_manuscript_signature_boxplot  %>%
 
     # Plot
     ggplot(aes(y = count_scaled + 1, x = cell_type, fill = cell_type)) +
@@ -177,17 +198,26 @@ markers %>%
 
   # Select first 5 markers from each cell-type pair
   filter(i <= 5) %>%
-  unite(pair, c("ct1", "ct2"), remove = FALSE, sep = "\n") %>%
+  unite(pair, c("cell_type1", "cell_type2"), remove = FALSE, sep = "\n") %>%
 
   # Reshape
-  gather(which, cell_type, ct1, ct2) %>%
+  gather(which, cell_type, cell_type1, cell_type2) %>%
   distinct(symbol) %>%
 
   # Attach counts
   left_join(counts_non_red, by = c("symbol"))  %>%
 
   # Plot
-  reduce_dimensions(sample, symbol, count_scaled, method = "tSNE") %>%
+  reduce_dimensions(sample, symbol, count_scaled, method = "tSNE", action="get") %>%
+  pivot_sample(sample) %>%
+  ggplot(aes(x = `tSNE1`, y = `tSNE2`, color = cell_type)) +
+  geom_point(size =2) 
+
+```
+
+```{r, echo=F}
+tidybulk::vignette_manuscript_signature_tsne2   %>%
+
   pivot_sample(sample) %>%
   ggplot(aes(x = `tSNE1`, y = `tSNE2`, color = cell_type)) +
   geom_point(size =2) 
