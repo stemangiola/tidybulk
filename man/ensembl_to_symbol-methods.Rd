@@ -36,7 +36,7 @@ A `tbl` object including additional columns for transcript symbol
 ensembl_to_symbol() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 }
 \details{
-\lifecycle{maturing}
+\lifecycle{questioning}
 
 This is useful since different resources use ensembl IDs while others use gene symbol IDs. At the moment this work for human (genes and transcripts) and mouse (genes) data.
 }
