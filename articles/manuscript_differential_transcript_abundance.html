@@ -38,12 +38,6 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -81,7 +75,7 @@
       <h1 data-toc-skip>Manuscript code - differential transcript abundance</h1>
                         <h4 class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2020-09-20</h4>
+            <h4 class="date">2020-09-21</h4>
       
       
       <div class="hidden name"><code>manuscript_differential_transcript_abundance.Rmd</code></div>
@@ -92,9 +86,38 @@
     
 <p>This decument includes the code used for the manuscript, for the differential transcript abundance.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="kw">pasCts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>,
+                                         <span class="st">"pasilla_gene_counts.tsv"</span>,
+                                         package = <span class="st">"pasilla"</span>,
+                                         mustWork = <span class="fl">TRUE</span>)
+<span class="kw">pasAnno</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(
+    <span class="st">"extdata"</span>,
+    <span class="st">"pasilla_sample_annotation.csv"</span>,
+    package = <span class="st">"pasilla"</span>,
+    mustWork = <span class="fl">TRUE</span>
+)
+<span class="kw">cts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="kw">pasCts</span>, sep = <span class="st">"\t"</span>, row.names = <span class="st">"gene_id"</span>))
+<span class="kw">coldata</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="kw">pasAnno</span>, row.names = <span class="fl">1</span>)
+<span class="kw">coldata</span> <span class="op">=</span> <span class="kw">coldata</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"condition"</span>, <span class="st">"type"</span>)]
+
+<span class="co"># Create tidybulk object</span>
+<span class="kw">counts</span> <span class="op">=</span>
+    <span class="kw">cts</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(rownames = <span class="st">"transcript"</span>) <span class="op">%&gt;%</span>
+    <span class="fu">pivot_longer</span>(names_to = <span class="st">"sample"</span>,
+                             values_to = <span class="st">"count"</span>,
+                             cols = <span class="op">-</span><span class="kw">transcript</span>) <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/left_join.html">left_join</a></span>(
+        <span class="kw">coldata</span> <span class="op">%&gt;%</span>
+        <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(rownames = <span class="st">"sample"</span>) <span class="op">%&gt;%</span>
+        <span class="fu"><a href="../reference/mutate.html">mutate</a></span>(sample = <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"fb"</span>, <span class="st">""</span>, <span class="kw">sample</span>))
+    ) <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_if</a></span>(<span class="kw">is.character</span>, <span class="kw">as.factor</span>)
+</pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="co"># Create a tt object with unique raw and normalised counts</span>
-<span class="kw">tt_scaled</span><span class="op">=</span> 
-    <span class="fu"><a href="../reference/tidybulk.html">tidybulk</a></span>(<span class="kw">tidybulk</span>::<span class="kw"><a href="../reference/counts.html">counts</a></span>, <span class="kw">sample</span>, <span class="kw">transcript</span>, <span class="kw">count</span>) <span class="op">%&gt;%</span>
+<span class="kw">tt_scaled</span> <span class="op">&lt;-</span> 
+    <span class="fu"><a href="../reference/tidybulk.html">tidybulk</a></span>(<span class="kw">counts</span>, <span class="kw">sample</span>, <span class="kw">transcript</span>, <span class="kw">count</span>) <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/aggregate_duplicates.html">aggregate_duplicates</a></span>() <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>() <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span>()
@@ -106,28 +129,28 @@
         values_to = <span class="st">"count"</span>, 
         names_to = <span class="st">"Normalisation"</span>
     ) <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">count</span> <span class="op">+</span> <span class="fl">1</span>, group=<span class="kw">sample</span>, color=<span class="kw">batch</span>)) <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">count</span> <span class="op">+</span> <span class="fl">1</span>, group=<span class="kw">sample</span>, color=<span class="kw">type</span>)) <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span>(<span class="op">~</span><span class="kw">Normalisation</span>) <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span>() <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span>()
 </pre></div>
-<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
+<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="co"># Reduce data dimensionality with arbitrary number of dimensions</span>
-<span class="kw">tt_mds</span> <span class="op">=</span> <span class="kw">tt_scaled</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span>(method=<span class="st">"MDS"</span>, .dims = <span class="fl">3</span>)
+<span class="kw">tt_mds</span> <span class="op">&lt;-</span> <span class="kw">tt_scaled</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span>(method=<span class="st">"MDS"</span>, .dims = <span class="fl">3</span>)
 
 <span class="co"># Plot all-vs-all MDS dimensions </span>
 <span class="kw">tt_mds</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
-    <span class="kw">GGally</span>::<span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span>(columns = <span class="fl">10</span><span class="op">:</span><span class="fl">12</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(colour=<span class="kw">condition</span>))
+    <span class="kw">GGally</span>::<span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span>(columns = <span class="fl">7</span><span class="op">:</span><span class="fl">9</span>, <span class="kw">ggplot2</span>::<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(colour=<span class="kw">condition</span>))
 </pre></div>
-<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
+<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<div class="sourceCode" id="cb4"><pre class="downlit">
 <span class="co"># Adjust for visualisation</span>
-<span class="kw">tt_adj</span> <span class="op">=</span> <span class="kw">tt_mds</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/adjust_abundance.html">adjust_abundance</a></span>(<span class="op">~</span> <span class="kw">condition</span> <span class="op">+</span> <span class="kw">batch</span>)
+<span class="kw">tt_adj</span> <span class="op">&lt;-</span> <span class="kw">tt_mds</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/adjust_abundance.html">adjust_abundance</a></span>(<span class="op">~</span> <span class="kw">condition</span> <span class="op">+</span> <span class="kw">type</span>)
 
 <span class="co"># Visualise the association between reduced dimensions and factors</span>
-<span class="kw">tt_mds_adj_mds</span> <span class="op">=</span> 
+<span class="kw">tt_mds_adj_mds</span> <span class="op">&lt;-</span> 
     <span class="kw">tt_adj</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/filter.html">filter</a></span>( <span class="kw">count_scaled_adjusted</span> <span class="op">%&gt;%</span> <span class="kw">is.na</span> <span class="op">%&gt;%</span> <span class="kw">`!`</span>) <span class="op">%&gt;%</span>
 
@@ -137,7 +160,7 @@
        method=<span class="st">"MDS"</span>, .dim = <span class="fl">3</span>
     ) 
 </pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit">
+<div class="sourceCode" id="cb5"><pre class="downlit">
 <span class="co"># Data manipulation and visualisation </span>
 <span class="kw">tt_mds_adj_mds</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>() <span class="op">%&gt;%</span>
@@ -148,16 +171,16 @@
     <span class="fu"><a href="../reference/mutate.html">mutate</a></span>(Adj = <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(<span class="kw">Adj</span> <span class="op">==</span> <span class="st">"y"</span>, <span class="st">"non"</span>, <span class="st">"adj"</span>) <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"scaled"</span>, <span class="st">"adj"</span>))) <span class="op">%&gt;%</span>
 
     <span class="co"># Second level reshaping</span>
-    <span class="fu">pivot_longer</span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">batch</span>, <span class="kw">condition</span>), names_to = <span class="st">"covar"</span>, values_to = <span class="st">"which"</span>) <span class="op">%&gt;%</span>
+    <span class="fu">pivot_longer</span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">type</span>, <span class="kw">condition</span>), names_to = <span class="st">"covar"</span>, values_to = <span class="st">"which"</span>) <span class="op">%&gt;%</span>
 
     <span class="co"># Visualise the integrative plot</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(y = <span class="kw">.value</span>, x = <span class="kw">covar</span>, fill = <span class="kw">`which`</span>)) <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html">geom_boxplot</a></span>() <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span>(<span class="kw">Adj</span> <span class="op">~</span> <span class="kw">Dim</span>)
 </pre></div>
-<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="kw">tt_test</span> <span class="op">=</span> <span class="kw">tt_adj</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span>(<span class="op">~</span> <span class="kw">condition</span> <span class="op">+</span> <span class="kw">batch</span>)
+<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="kw">tt_test</span> <span class="op">&lt;-</span> <span class="kw">tt_adj</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span>(<span class="op">~</span> <span class="kw">condition</span> <span class="op">+</span> <span class="kw">type</span>)
 
 <span class="co"># MA plot</span>
 <span class="kw">tt_test</span> <span class="op">%&gt;%</span>
@@ -171,12 +194,12 @@
     <span class="co"># Plot</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x = <span class="kw">logCPM</span>, y = <span class="kw">logFC</span>, label=<span class="kw">transcript</span>)) <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(color = <span class="kw">significant</span>, size = <span class="kw">significant</span>, alpha=<span class="kw">significant</span>)) <span class="op">+</span>
-    <span class="kw">ggrepel</span>::<span class="fu"><a href="https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html">geom_text_repel</a></span>() <span class="op">+</span>
+    <span class="fu">geom_text_repel</span>() <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span>(values=<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"black"</span>, <span class="st">"#e11f28"</span>)) <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_size.html">scale_size_discrete</a></span>(range = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">2</span>)) 
 </pre></div>
-<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
-<div class="sourceCode" id="cb6"><pre class="downlit">
+<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit">
 <span class="kw">tt_test</span> <span class="op">%&gt;%</span>
     
     <span class="co"># Select top genes and reshape data</span>
@@ -185,7 +208,10 @@
     <span class="co"># High level reshaping of the data. </span>
     <span class="co"># All three count columns are shaped as two columns: </span>
     <span class="co"># (i) the columns name and (ii) the value of those columns</span>
-    <span class="fu">pivot_longer</span>(<span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span>(<span class="st">"count"</span>), names_to = <span class="st">"Stage"</span>, values_to = <span class="st">"count"</span>) <span class="op">%&gt;%</span>
+    <span class="fu">pivot_longer</span>(
+        <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">count</span>, <span class="kw">count_scaled</span>, <span class="kw">count_scaled_adjusted</span>), 
+        names_to = <span class="st">"Stage"</span>, values_to = <span class="st">"count"</span>
+    ) <span class="op">%&gt;%</span>
 
     <span class="co"># This allows the faceted plotPlot</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x = <span class="kw">Stage</span>, y = <span class="kw">count</span> <span class="op">+</span> <span class="fl">1</span>, fill = <span class="kw">condition</span>)) <span class="op">+</span>
@@ -193,8 +219,8 @@
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(<span class="op">~</span><span class="kw">transcript</span>) <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_log10</a></span>() 
 </pre></div>
-<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit">
+<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="co"># Heatmap</span>
 <span class="kw">tt_test</span> <span class="op">%&gt;%</span>
 
@@ -202,11 +228,11 @@
     <span class="fu"><a href="../reference/filter.html">filter</a></span>(<span class="kw">FDR</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span>(<span class="kw">logFC</span>) <span class="op">&gt;</span> <span class="fl">2</span>) <span class="op">%&gt;%</span>
 
     <span class="co"># Plot</span>
-    <span class="fu"><a href="https://rdrr.io/r/stats/heatmap.html">heatmap</a></span>(<span class="kw">sample</span>, <span class="kw">transcript</span>, <span class="kw">count_scaled_adjusted</span>) <span class="op">%&gt;%</span> 
+    <span class="fu"><a href="https://rdrr.io/r/stats/heatmap.html">heatmap</a></span>( <span class="kw">transcript</span>, <span class="kw">sample</span>, <span class="kw">count_scaled_adjusted</span>) <span class="op">%&gt;%</span> 
     <span class="fu">add_tile</span>(<span class="kw">condition</span>) <span class="op">%&gt;%</span>
-    <span class="fu">add_tile</span>(<span class="kw">batch</span>)
+    <span class="fu">add_tile</span>(<span class="kw">type</span>)
 </pre></div>
-<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

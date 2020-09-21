@@ -79,12 +79,6 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -169,20 +163,20 @@
     <pre class="examples"><div class='input'><span class='kw'>`%&gt;%`</span> <span class='op'>=</span> <span class='kw'>magrittr</span>::<span class='kw'>`%&gt;%`</span>
 <span class='kw'>annotation</span> <span class='op'>=</span> <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts.html'>counts</a></span> <span class='op'>%&gt;%</span> <span class='fu'><a href='distinct.html'>distinct</a></span>(<span class='kw'>sample</span>) <span class='op'>%&gt;%</span> <span class='fu'><a href='mutate.html'>mutate</a></span>(source = <span class='st'>"AU"</span>)
 <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts.html'>counts</a></span> <span class='op'>%&gt;%</span> <span class='fu'>right_join</span>(<span class='kw'>annotation</span>)
-</div><div class='output co'>#&gt; <span class='message'>Joining, by = "sample"</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 938,112 x 9</span><span>
-#&gt;    sample transcript cell_type count time  condition batch factor_of_inter…
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>           
-#&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… DDX11L1    b_cell       17 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 2</span><span> SRR17… WASH7P     b_cell     </span><span style='text-decoration: underline;'>3</span><span>568 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 3</span><span> SRR17… MIR6859-1  b_cell       57 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 4</span><span> SRR17… MIR1302-2  b_cell        1 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 5</span><span> SRR17… FAM138A    b_cell        0 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 6</span><span> SRR17… OR4F5      b_cell        0 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 7</span><span> SRR17… LOC729737  b_cell     </span><span style='text-decoration: underline;'>1</span><span>764 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… LOC102725… b_cell       11 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… MIR6859-2  b_cell       40 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'>10</span><span> SRR17… OR4F29     b_cell        0 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'># … with 938,102 more rows, and 1 more variable: source </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='message'>Joining, by = "sample"</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 408,624 x 9</span><span>
+#&gt;    sample transcript `Cell type` count time  condition batch factor_of_inter…
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>           
+#&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… DDX11L1    b_cell         17 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 2</span><span> SRR17… WASH7P     b_cell       </span><span style='text-decoration: underline;'>3</span><span>568 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 3</span><span> SRR17… MIR6859-1  b_cell         57 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 4</span><span> SRR17… LOC729737  b_cell       </span><span style='text-decoration: underline;'>1</span><span>764 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 5</span><span> SRR17… MIR6859-2  b_cell         40 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 6</span><span> SRR17… LOC100132… b_cell       </span><span style='text-decoration: underline;'>1</span><span>703 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 7</span><span> SRR17… LOC100133… b_cell       </span><span style='text-decoration: underline;'>1</span><span>894 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… LOC100288… b_cell        337 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… FAM87B     b_cell         56 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'>10</span><span> SRR17… LINC00115  b_cell         50 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #555555;'># … with 408,614 more rows, and 1 more variable: source </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span></div><div class='input'>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

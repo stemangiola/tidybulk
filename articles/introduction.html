@@ -38,12 +38,6 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -81,7 +75,7 @@
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2020-09-20</h4>
+            <h4 class="date">2020-09-21</h4>
       
       
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -495,45 +489,45 @@
 ## Building tree...
 ## Done in 0.01 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 68.311871 (50 iterations in 0.03 seconds)
-## Iteration 100: error is 67.754242 (50 iterations in 0.04 seconds)
-## Iteration 150: error is 68.106711 (50 iterations in 0.04 seconds)
-## Iteration 200: error is 69.037529 (50 iterations in 0.03 seconds)
-## Iteration 250: error is 67.113653 (50 iterations in 0.04 seconds)
-## Iteration 300: error is 1.464318 (50 iterations in 0.03 seconds)
-## Iteration 350: error is 1.220119 (50 iterations in 0.02 seconds)
-## Iteration 400: error is 1.178755 (50 iterations in 0.02 seconds)
-## Iteration 450: error is 1.151451 (50 iterations in 0.02 seconds)
-## Iteration 500: error is 1.141343 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.135931 (50 iterations in 0.02 seconds)
-## Iteration 600: error is 1.129621 (50 iterations in 0.02 seconds)
-## Iteration 650: error is 1.125219 (50 iterations in 0.02 seconds)
-## Iteration 700: error is 1.120601 (50 iterations in 0.02 seconds)
-## Iteration 750: error is 1.118306 (50 iterations in 0.02 seconds)
-## Iteration 800: error is 1.118160 (50 iterations in 0.02 seconds)
-## Iteration 850: error is 1.118737 (50 iterations in 0.02 seconds)
-## Iteration 900: error is 1.116949 (50 iterations in 0.02 seconds)
-## Iteration 950: error is 1.114931 (50 iterations in 0.02 seconds)
-## Iteration 1000: error is 1.115222 (50 iterations in 0.02 seconds)
-## Fitting performed in 0.53 seconds.</code></pre>
+## Iteration 50: error is 67.762276 (50 iterations in 0.03 seconds)
+## Iteration 100: error is 69.106221 (50 iterations in 0.03 seconds)
+## Iteration 150: error is 68.166241 (50 iterations in 0.04 seconds)
+## Iteration 200: error is 67.917636 (50 iterations in 0.03 seconds)
+## Iteration 250: error is 66.987958 (50 iterations in 0.03 seconds)
+## Iteration 300: error is 1.688374 (50 iterations in 0.03 seconds)
+## Iteration 350: error is 1.370277 (50 iterations in 0.02 seconds)
+## Iteration 400: error is 1.286057 (50 iterations in 0.02 seconds)
+## Iteration 450: error is 1.264078 (50 iterations in 0.02 seconds)
+## Iteration 500: error is 1.252024 (50 iterations in 0.02 seconds)
+## Iteration 550: error is 1.227529 (50 iterations in 0.02 seconds)
+## Iteration 600: error is 1.222908 (50 iterations in 0.02 seconds)
+## Iteration 650: error is 1.220574 (50 iterations in 0.02 seconds)
+## Iteration 700: error is 1.211548 (50 iterations in 0.02 seconds)
+## Iteration 750: error is 1.202625 (50 iterations in 0.02 seconds)
+## Iteration 800: error is 1.194008 (50 iterations in 0.02 seconds)
+## Iteration 850: error is 1.185899 (50 iterations in 0.02 seconds)
+## Iteration 900: error is 1.178445 (50 iterations in 0.02 seconds)
+## Iteration 950: error is 1.174533 (50 iterations in 0.03 seconds)
+## Iteration 1000: error is 1.171612 (50 iterations in 0.03 seconds)
+## Fitting performed in 0.49 seconds.</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"tSNE"</span>, ignore.case = <span class="fl">FALSE</span>), <span class="kw">sample</span>, <span class="kw">Call</span>) <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/distinct.html">distinct</a></span>()
 </pre></div>
 <pre><code>## # A tibble: 251 x 4
-##      tSNE1   tSNE2 sample                       Call 
-##      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
-##  1  -2.77    9.56  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  2   8.81    2.06  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  3  -0.676   4.35  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  4  -1.91   -0.800 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  5  -2.96    4.52  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  6   2.61   -1.70  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  7  18.4   -20.6   TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  8  -1.42   -4.94  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  9  -2.11   -6.10  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-## 10 -14.8     2.19  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##     tSNE1  tSNE2 sample                       Call 
+##     &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
+##  1   1.61 -12.1  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  2   7.83   5.40 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  3 -11.7   -9.42 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  4  11.7   -6.49 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  5   5.30 -11.0  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  6  -1.02   3.65 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  7   2.16  33.4  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  8  13.2   -2.47 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  9   1.42   2.14 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+## 10 -16.0  -18.0  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
@@ -560,29 +554,29 @@
 ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
 ## Computing input similarities...
 ## Building tree...
-## Done in 0.02 seconds (sparsity = 0.182886)!
+## Done in 0.01 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 67.263085 (50 iterations in 0.04 seconds)
-## Iteration 100: error is 66.820071 (50 iterations in 0.05 seconds)
-## Iteration 150: error is 68.061970 (50 iterations in 0.04 seconds)
-## Iteration 200: error is 68.403695 (50 iterations in 0.04 seconds)
-## Iteration 250: error is 67.489246 (50 iterations in 0.04 seconds)
-## Iteration 300: error is 1.678321 (50 iterations in 0.04 seconds)
-## Iteration 350: error is 1.306959 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.219575 (50 iterations in 0.02 seconds)
-## Iteration 450: error is 1.190162 (50 iterations in 0.03 seconds)
-## Iteration 500: error is 1.173567 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.166912 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.160321 (50 iterations in 0.03 seconds)
-## Iteration 650: error is 1.157723 (50 iterations in 0.03 seconds)
-## Iteration 700: error is 1.155700 (50 iterations in 0.03 seconds)
-## Iteration 750: error is 1.150889 (50 iterations in 0.03 seconds)
-## Iteration 800: error is 1.149260 (50 iterations in 0.03 seconds)
-## Iteration 850: error is 1.147553 (50 iterations in 0.03 seconds)
-## Iteration 900: error is 1.147196 (50 iterations in 0.03 seconds)
-## Iteration 950: error is 1.142786 (50 iterations in 0.03 seconds)
-## Iteration 1000: error is 1.130750 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.61 seconds.</code></pre>
+## Iteration 50: error is 67.032109 (50 iterations in 0.03 seconds)
+## Iteration 100: error is 69.406086 (50 iterations in 0.04 seconds)
+## Iteration 150: error is 69.362852 (50 iterations in 0.03 seconds)
+## Iteration 200: error is 68.839306 (50 iterations in 0.05 seconds)
+## Iteration 250: error is 68.102336 (50 iterations in 0.04 seconds)
+## Iteration 300: error is 1.703604 (50 iterations in 0.02 seconds)
+## Iteration 350: error is 1.299078 (50 iterations in 0.02 seconds)
+## Iteration 400: error is 1.218807 (50 iterations in 0.02 seconds)
+## Iteration 450: error is 1.152598 (50 iterations in 0.02 seconds)
+## Iteration 500: error is 1.107437 (50 iterations in 0.03 seconds)
+## Iteration 550: error is 1.093612 (50 iterations in 0.03 seconds)
+## Iteration 600: error is 1.088398 (50 iterations in 0.03 seconds)
+## Iteration 650: error is 1.078709 (50 iterations in 0.02 seconds)
+## Iteration 700: error is 1.062592 (50 iterations in 0.02 seconds)
+## Iteration 750: error is 1.057096 (50 iterations in 0.02 seconds)
+## Iteration 800: error is 1.056672 (50 iterations in 0.02 seconds)
+## Iteration 850: error is 1.055197 (50 iterations in 0.03 seconds)
+## Iteration 900: error is 1.054465 (50 iterations in 0.03 seconds)
+## Iteration 950: error is 1.052625 (50 iterations in 0.03 seconds)
+## Iteration 1000: error is 1.051954 (50 iterations in 0.02 seconds)
+## Fitting performed in 0.55 seconds.</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit">
 <span class="kw">se.norm.tSNE</span>
 </pre></div>
@@ -714,13 +708,13 @@
   )
 </pre></div>
 <pre><code>## class: SummarizedExperiment 
-## dim: 19544 48 
+## dim: 8513 48 
 ## metadata(0):
 ## assays(3): count count_scaled count_scaled_adjusted
-## rownames(19544): A1BG A1BG-AS1 ... ZZEF1 ZZZ3
+## rownames(8513): A1BG A1BG-AS1 ... ZZEF1 ZZZ3
 ## rowData names(0):
 ## colnames(48): SRR1740034 SRR1740035 ... SRR1740088 SRR1740089
-## colData names(7): cell_type time ... TMM multiplier</code></pre>
+## colData names(7): Cell.type time ... TMM multiplier</code></pre>
 </div>
 <div id="deconvolve-cell-type-composition" class="section level2">
 <h2 class="hasAnchor">
@@ -772,13 +766,13 @@
 <span class="kw">se.cibersort</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span>(cores=<span class="fl">1</span>)
 </pre></div>
 <pre><code>## class: SummarizedExperiment 
-## dim: 19544 48 
+## dim: 8513 48 
 ## metadata(0):
 ## assays(1): count
-## rownames(19544): A1BG A1BG-AS1 ... ZZEF1 ZZZ3
+## rownames(8513): A1BG A1BG-AS1 ... ZZEF1 ZZZ3
 ## rowData names(0):
 ## colnames(48): SRR1740034 SRR1740035 ... SRR1740088 SRR1740089
-## colData names(27): cell_type time ... cibersort..Eosinophils
+## colData names(27): Cell.type time ... cibersort..Eosinophils
 ##   cibersort..Neutrophils</code></pre>
 </div>
 <div id="cluster-samples" class="section level2">
@@ -853,18 +847,18 @@
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>()
 </pre></div>
 <pre><code>## # A tibble: 251 x 5
-##    sample                       Call    tSNE1   tSNE2 `cluster SNN`
-##    &lt;chr&gt;                        &lt;fct&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;        
-##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA   -2.77    9.56  1            
-##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA    8.81    2.06  2            
-##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA   -0.676   4.35  1            
-##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA   -1.91   -0.800 0            
-##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB   -2.96    4.52  0            
-##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA    2.61   -1.70  1            
-##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal  18.4   -20.6   3            
-##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA   -1.42   -4.94  2            
-##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB   -2.11   -6.10  2            
-## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA  -14.8     2.19  1            
+##    sample                       Call   tSNE1  tSNE2 `cluster SNN`
+##    &lt;chr&gt;                        &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;        
+##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA    1.61 -12.1  1            
+##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA    7.83   5.40 2            
+##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA  -11.7   -9.42 1            
+##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA   11.7   -6.49 0            
+##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB    5.30 -11.0  0            
+##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA   -1.02   3.65 1            
+##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal   2.16  33.4  3            
+##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA   13.2   -2.47 2            
+##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB    1.42   2.14 2            
+## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA  -16.0  -18.0  1            
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb58"><pre class="downlit">
 <span class="kw">tt.norm.SNN</span> <span class="op">%&gt;%</span>
@@ -1161,7 +1155,7 @@
 ##  [9] knitr_1.29       BiocStyle_2.17.0
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] backports_1.1.10            tidytext_0.2.5             
+##   [1] backports_1.1.10            tidytext_0.2.6             
 ##   [3] systemfonts_0.3.1           plyr_1.8.6                 
 ##   [5] igraph_1.2.5                lazyeval_0.2.2             
 ##   [7] splines_4.0.2               BiocParallel_1.23.2        
@@ -1229,7 +1223,7 @@
 ## [131] IRanges_2.23.10             codetools_0.2-16           
 ## [133] MASS_7.3-53                 assertthat_0.2.1           
 ## [135] SummarizedExperiment_1.19.6 rprojroot_1.3-2            
-## [137] withr_2.2.0                 sctransform_0.2.1          
+## [137] withr_2.2.0                 sctransform_0.3            
 ## [139] S4Vectors_0.27.13           GenomeInfoDbData_1.2.3     
 ## [141] mgcv_1.8-33                 parallel_4.0.2             
 ## [143] hms_0.5.3                   rpart_4.1-15               
