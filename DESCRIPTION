@@ -59,7 +59,9 @@ Suggests:
     survival,
     boot,
     betareg,
-    tidyHeatmap
+    tidyHeatmap,
+    ggrepel,
+    devtools
 VignetteBuilder: 
     knitr
 RdMacros:
