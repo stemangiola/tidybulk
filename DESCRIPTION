@@ -28,7 +28,8 @@ Imports:
     utils,
     lifecycle,
     scales,
-    SummarizedExperiment
+    SummarizedExperiment,
+    methods
 Suggests:
     BiocStyle,
     testthat,
