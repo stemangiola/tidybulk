@@ -149,7 +149,7 @@ markers =
         test_differential_abundance(~ 0 + cell_type, .contrasts = ..3, fill_missing_values = TRUE, action="get", omit_contrast_in_colnames = T) %>%
         filter(logFC > 0) %>%
         arrange(FDR) %>%
-        mutate(i = 1:n())
+       rowid_to_column(var = "i")
     )) %>%
   unnest(de)
 

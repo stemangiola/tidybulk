@@ -185,7 +185,10 @@ tt_test %>%
     # High level reshaping of the data. 
     # All three count columns are shaped as two columns: 
     # (i) the columns name and (ii) the value of those columns
-    pivot_longer(starts_with("count"), names_to = "Stage", values_to = "count") %>%
+    pivot_longer(
+    	c(count, count_scaled, count_scaled_adjusted), 
+    	names_to = "Stage", values_to = "count"
+    ) %>%
 
     # This allows the faceted plotPlot
     ggplot(aes(x = Stage, y = count + 1, fill = condition)) +
