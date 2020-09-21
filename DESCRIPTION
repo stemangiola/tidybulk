@@ -61,7 +61,8 @@ Suggests:
     boot,
     betareg,
     tidyHeatmap,
-    pasilla
+    pasilla,
+    ggrepel
 VignetteBuilder: 
     knitr
 RdMacros:

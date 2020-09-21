@@ -29,12 +29,12 @@ library(dplyr)
 library(magrittr)
 library(tidyr)
 library(ggplot2)
-# library(widyr)
 library(rlang)
 library(purrr)
-library(tidybulk)
+library(ggrepel)
 library(tidyHeatmap)
 library(pasilla)
+library(tidybulk)
 
 my_theme = 	
 	theme_bw() +
@@ -170,7 +170,7 @@ tt_test %>%
     # Plot
     ggplot(aes(x = logCPM, y = logFC, label=transcript)) +
     geom_point(aes(color = significant, size = significant, alpha=significant)) +
-    ggrepel::geom_text_repel() +
+    geom_text_repel() +
     scale_color_manual(values=c("black", "#e11f28")) +
     scale_size_discrete(range = c(0, 2)) 
 

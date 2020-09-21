@@ -15,7 +15,7 @@ vignette: >
 This decument includes the code used for the manuscript, for the transcriptional signature identification.
 
 
-```{r, echo=FALSE, include=FALSE, eval = FALSE}
+```{r, echo=FALSE, include=FALSE}
 library(knitr)
 #library(kableExtra)
 knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
@@ -32,7 +32,6 @@ library(ggplot2)
 library(rlang)
 library(purrr)
 library(tidybulk)
-library(tidyHeatmap)
 
 my_theme = 	
 	theme_bw() +
@@ -49,8 +48,10 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
-load("../dev/counts_cell_type.rda") 
+```
 
+```{r, eval=FALSE,echo=FALSE, include=FALSE}
+load("../dev/counts_cell_type.rda") 
 options(tidybulk_do_validate = FALSE) 
 ```
 
