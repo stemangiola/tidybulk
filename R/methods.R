@@ -11,6 +11,7 @@ setOldClass("tidybulk")
 #' @importFrom magrittr "%>%"
 #' @import readr
 #' @import SummarizedExperiment
+#' @import methods
 #'
 #' @name tidybulk
 #'
