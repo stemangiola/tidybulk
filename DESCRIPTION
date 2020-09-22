@@ -61,6 +61,7 @@ Suggests:
     boot,
     betareg,
     tidyHeatmap,
+    pasilla,
     ggrepel,
     devtools
 VignetteBuilder: 
