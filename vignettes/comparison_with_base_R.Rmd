@@ -92,7 +92,7 @@ tt = counts_mini %>% tidybulk(sample, transcript, count)
 ## Aggregate duplicated `transcripts`
 
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r aggregate, cache=TRUE, message=FALSE, warning=FALSE, results='hide', class.source='yellow'}
 tt.aggr = tt %>% aggregate_duplicates()
 ```
@@ -118,7 +118,7 @@ colnames(dge_list.nr) <- colnames(dge_list)
 ## Scale `counts`
 
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r normalise, cache=TRUE}
 tt.norm = tt.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance()
 ```
@@ -144,7 +144,7 @@ norm_counts.table <- cpm(dgList)
 We may want to identify and filter variable transcripts.
 
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r filter variable, cache=TRUE}
 tt.norm.variable = tt.norm %>% keep_variable()
 ```
@@ -178,7 +178,7 @@ norm_counts.table$cell_type = tidybulk::counts[
 ## Reduce `dimensions`
 
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r mds, cache=TRUE}
 tt.norm.MDS =
   tt.norm %>%
@@ -206,10 +206,10 @@ cmds$cell_type = tidybulk::counts[
 </div>
 <div style="clear:both;"></div>
 
-### PCA
 
+### PCA
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r pca, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 tt.norm.PCA =
   tt.norm %>%
@@ -232,9 +232,10 @@ pc$cell_type = counts[
 <div style="clear:both;"></div>
 
 
+
 ### tSNE
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r tsne, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 tt.norm.tSNE =
 	breast_tcga_mini %>%
@@ -271,7 +272,7 @@ tsne$cell_type = tidybulk::counts[
 ## Rotate `dimensions`
 
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r rotate, cache=TRUE}
 tt.norm.MDS.rotated =
   tt.norm.MDS %>%
@@ -300,7 +301,7 @@ mds_r$cell_type = counts[
 ## Test `differential abundance`
 
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r de, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 tt.de =
 	tt %>%
@@ -329,7 +330,7 @@ topTags(qlf, n=Inf)
 ## Adjust `counts`
 
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r adjust, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 tt.norm.adj =
 	tt.norm %>% adjust_abundance(	~ condition + time)
@@ -370,7 +371,7 @@ count_m_log.sva$cell_type = counts[
 
 
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r cibersort, cache=TRUE}
 tt.cibersort =
 	tt %>%
@@ -403,7 +404,7 @@ results$cell_type = tidybulk::counts[
 ### k-means
 
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r cluster, cache=TRUE}
 tt.norm.cluster = tt.norm.MDS %>%
   cluster_elements(method="kmeans",	centers = 2, action="get" )
@@ -429,7 +430,7 @@ cluster$cell_type = tidybulk::counts[
 ### SNN
 
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r SNN, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 tt.norm.SNN =
 	tt.norm.tSNE %>%
@@ -465,7 +466,7 @@ snn$cell_type = tidybulk::counts[
 ## Drop `redundant` transcripts
 
 <div class="column-left">
-tidytranscriptomics
+Tidy transcriptomics
 ```{r drop, cache=TRUE}
 tt.norm.non_redundant =
 	tt.norm.MDS %>%
