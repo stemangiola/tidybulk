@@ -92,7 +92,7 @@ tt = counts_mini %>% tidybulk(sample, transcript, count)
 ## Aggregate duplicated `transcripts`
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r aggregate, cache=TRUE, message=FALSE, warning=FALSE, results='hide', class.source='yellow'}
 tt.aggr = tt %>% aggregate_duplicates()
 ```
@@ -118,7 +118,7 @@ colnames(dge_list.nr) <- colnames(dge_list)
 ## Scale `counts`
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r normalise, cache=TRUE}
 tt.norm = tt.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance()
 ```
@@ -144,7 +144,7 @@ norm_counts.table <- cpm(dgList)
 We may want to identify and filter variable transcripts.
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r filter variable, cache=TRUE}
 tt.norm.variable = tt.norm %>% keep_variable()
 ```
@@ -178,7 +178,7 @@ norm_counts.table$cell_type = tidybulk::counts[
 ## Reduce `dimensions`
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r mds, cache=TRUE}
 tt.norm.MDS =
   tt.norm %>%
@@ -206,10 +206,10 @@ cmds$cell_type = tidybulk::counts[
 </div>
 <div style="clear:both;"></div>
 
-**PCA**
+### PCA
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r pca, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 tt.norm.PCA =
   tt.norm %>%
@@ -232,9 +232,9 @@ pc$cell_type = counts[
 <div style="clear:both;"></div>
 
 
-**tSNE**
+### tSNE
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r tsne, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 tt.norm.tSNE =
 	breast_tcga_mini %>%
@@ -271,7 +271,7 @@ tsne$cell_type = tidybulk::counts[
 ## Rotate `dimensions`
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r rotate, cache=TRUE}
 tt.norm.MDS.rotated =
   tt.norm.MDS %>%
@@ -300,7 +300,7 @@ mds_r$cell_type = counts[
 ## Test `differential abundance`
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r de, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 tt.de =
 	tt %>%
@@ -329,7 +329,7 @@ topTags(qlf, n=Inf)
 ## Adjust `counts`
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r adjust, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 tt.norm.adj =
 	tt.norm %>% adjust_abundance(	~ condition + time)
@@ -370,7 +370,7 @@ count_m_log.sva$cell_type = counts[
 
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r cibersort, cache=TRUE}
 tt.cibersort =
 	tt %>%
@@ -400,10 +400,10 @@ results$cell_type = tidybulk::counts[
 
 ## Cluster `samples`
 
-**k-means**
+### k-means
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r cluster, cache=TRUE}
 tt.norm.cluster = tt.norm.MDS %>%
   cluster_elements(method="kmeans",	centers = 2, action="get" )
@@ -426,10 +426,10 @@ cluster$cell_type = tidybulk::counts[
 </div>
 <div style="clear:both;"></div>
 
-**SNN**
+### SNN
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r SNN, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 tt.norm.SNN =
 	tt.norm.tSNE %>%
@@ -465,7 +465,7 @@ snn$cell_type = tidybulk::counts[
 ## Drop `redundant` transcripts
 
 <div class="column-left">
-TidyTranscriptomics
+tidytranscriptomics
 ```{r drop, cache=TRUE}
 tt.norm.non_redundant =
 	tt.norm.MDS %>%
@@ -498,6 +498,82 @@ counts %>% anti_join(.data.correlated) %>%
 
 
 
+```
+</div>
+<div style="clear:both;"></div>
+
+## Draw `heatmap`
+
+<div class="column-left">
+tidytranscriptomics
+```{r heat, eval=FALSE}
+tt.norm.MDS %>%
+
+  # filter lowly abundant
+  keep_abundant() %>%
+
+  # extract 500 most variable genes
+  keep_variable( .abundance = count_scaled, top = 500) %>%
+
+  # create heatmap
+  heatmap(sample, transcript, count_scaled, transform = log1p) %>%
+	add_tile(`Cell type`) 
+```
+</div>
+<div class="column-right">
+Base R
+```{r, eval=FALSE}
+# Example taken from airway dataset from BioC2020 workshop. 
+dgList <- SE2DGEList(airway)
+group <- factor(dgList$samples$`Cell type`)
+keep.exprs <- filterByExpr(dgList, group=group)
+dgList <- dgList[keep.exprs,, keep.lib.sizes=FALSE]
+dgList <- calcNormFactors(dgList)
+logcounts <- cpm(dgList, log=TRUE)
+var_genes <- apply(logcounts, 1, var)
+select_var <- names(sort(var_genes, decreasing=TRUE))[1:500]
+highly_variable_lcpm <- logcounts[select_var,]
+colours <- c("#440154FF", "#21908CFF", "#fefada" )
+col.group <- c("red","grey")[group]
+gplots::heatmap.2(highly_variable_lcpm, col=colours, trace="none", ColSideColors=col.group, scale="row")
+```
+</div>
+<div style="clear:both;"></div>
+
+## Draw `density plot`
+
+<div class="column-left">
+tidytranscriptomics
+```{r density, eval=FALSE}
+# Example taken from airway dataset from BioC2020 workshop. 
+airway %>%
+    tidybulk() %>%
+	  identify_abundant() %>%
+    scale_abundance() %>%
+    pivot_longer(cols = starts_with("counts"), names_to = "source", values_to = "abundance") %>%
+    filter(!lowly_abundant) %>%
+    ggplot(aes(x=abundance + 1, color=sample)) +
+    geom_density() +
+    facet_wrap(~source) +
+    scale_x_log10() 
+```
+</div>
+<div class="column-right">
+Base R
+```{r, eval=FALSE}
+# Example taken from airway dataset from BioC2020 workshop. 
+dgList <- SE2DGEList(airway)
+group <- factor(dgList$samples$dex)
+keep.exprs <- filterByExpr(dgList, group=group)
+dgList <- dgList[keep.exprs,, keep.lib.sizes=FALSE]
+dgList <- calcNormFactors(dgList)
+logcounts <- cpm(dgList, log=TRUE)
+var_genes <- apply(logcounts, 1, var)
+select_var <- names(sort(var_genes, decreasing=TRUE))[1:500]
+highly_variable_lcpm <- logcounts[select_var,]
+colours <- c("#440154FF", "#21908CFF", "#fefada" )
+col.group <- c("red","grey")[group]
+gplots::heatmap.2(highly_variable_lcpm, col=colours, trace="none", ColSideColors=col.group, scale="row")
 ```
 </div>
 <div style="clear:both;"></div>
