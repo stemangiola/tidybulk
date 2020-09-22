@@ -1,7 +1,7 @@
 Type: Package
 Package: tidybulk
 Title: Brings transcriptomics to the tidyverse 
-Version: 1.1.6
+Version: 1.1.7
 Authors@R: c(person("Stefano", "Mangiola", email = "mangiolastefano@gmail.com",
                   role = c("aut", "cre")),
             person("Maria", "Doyle", email = "Maria.Doyle@petermac.org",
@@ -28,7 +28,8 @@ Imports:
     utils,
     lifecycle,
     scales,
-    SummarizedExperiment
+    SummarizedExperiment,
+    methods
 Suggests:
     BiocStyle,
     testthat,
@@ -58,7 +59,11 @@ Suggests:
     broom,
     survival,
     boot,
-    betareg
+    betareg,
+    tidyHeatmap,
+    pasilla,
+    ggrepel,
+    devtools
 VignetteBuilder: 
     knitr
 RdMacros:

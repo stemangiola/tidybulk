@@ -999,6 +999,17 @@ test_that("Only reduced dimensions MDS - no object",{
 
 	expect_equal(	class(attr(res, "internals")$MDS)[1], 	"MDS"  )
 
+	# Duplicate genes/samples
+	expect_error(
+		reduce_dimensions(
+			input_df %>% identify_abundant(a, b, c) %>% bind_rows( (.) %>% dplyr::slice(1) %>% mutate(c = c+1) ),
+			method = "MDS",
+			.abundance = c,
+			.element = a,
+			.feature = b, action="only"
+		),
+		"Your dataset include duplicated "
+	)
 })
 
 test_that("Get reduced dimensions MDS - no object",{
@@ -1080,6 +1091,18 @@ test_that("Only reduced dimensions PCA - no object",{
 	)
 
 	expect_equal(	class(attr(res, "internals")$PCA), 	"prcomp"  )
+	
+	# Duplicate genes/samples
+	expect_error(
+		reduce_dimensions(
+			input_df %>% identify_abundant(a, b, c) %>% bind_rows( (.) %>% dplyr::slice(1) %>% mutate(c = c+1) ),
+			method = "PCA",
+			.abundance = c,
+			.element = a,
+			.feature = b, action="only"
+		),
+		"include duplicated sample/gene pairs"
+	)
 })
 
 test_that("Get reduced dimensions PCA - no object",{
@@ -1164,6 +1187,17 @@ test_that("Get reduced dimensions tSNE - no object",{
 		48
 	)
 
+	# Duplicate genes/samples
+	expect_error(
+		reduce_dimensions(
+			input_df %>% identify_abundant(a, b, c) %>% bind_rows( (.) %>% dplyr::slice(1) %>% mutate(c = c+1) ),
+			method = "tSNE",
+			.abundance = c,
+			.element = a,
+			.feature = b, action="get"
+		),
+		"include duplicated sample/gene pairs"
+	)
 
 })
 
@@ -1665,7 +1699,7 @@ test_that("impute missing - no object",{
 			.abundance = c
 		)
 
-	expect_equal(	pull(filter(res, b=="TNFRSF4" & a == "SRR1740034"), c),	203.5	)
+	expect_equal(	dplyr::pull(filter(res, b=="TNFRSF4" & a == "SRR1740034"), c),	203.5	)
 
 	expect_equal(	ncol(res),	ncol(input_df)	)
 
@@ -1674,11 +1708,11 @@ test_that("impute missing - no object",{
 })
 
 test_that("gene over representation",{
-	
+
 	df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
 	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 	df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
-	
+
 	res =
 		test_gene_overrepresentation(
 			df_entrez,
@@ -1687,11 +1721,11 @@ test_that("gene over representation",{
 			.do_test = do_test,
 			species="Homo sapiens"
 		)
-	
-	expect_equal(	ncol(res),	10	)
-	
 
-	
+	expect_equal(	ncol(res),	10	)
+
+
+
 })
 
 
