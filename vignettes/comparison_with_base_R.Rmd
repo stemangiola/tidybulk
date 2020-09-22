@@ -34,7 +34,6 @@ pre{
   float: left;
   width: 50%;
   text-align: left;
-  clear:both;
 }
 </style>
 
