@@ -2224,7 +2224,7 @@ run_epic = function(mix, reference = NULL) {
 	
 	
 	
-	results <- EPIC(Y, reference = reference)$cellFractions %>% data.frame()
+	results <- EPIC::EPIC(Y, reference = reference)$cellFractions %>% data.frame()
 	#results[results < 0] <- 0
 	#results <- results / apply(results, 1, sum)
 	rownames(results) = colnames(Y)
@@ -2243,6 +2243,7 @@ run_epic = function(mix, reference = NULL) {
 #' @importFrom rlang dots_list
 #' @importFrom magrittr equals
 #' @importFrom utils install.packages
+#' @importFrom devtools install_github
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2356,8 +2357,8 @@ get_cell_type_proportions = function(.data,
 				}
 				
 				(.) %>%
-				run_llsr(reference) %>%
-				as_tibble(rownames = quo_name(.sample))
+					run_epic(reference) %>%
+					as_tibble(rownames = quo_name(.sample))
 			},
 			
 			~ stop(
