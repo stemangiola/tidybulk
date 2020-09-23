@@ -29,7 +29,8 @@ Imports:
     lifecycle,
     scales,
     SummarizedExperiment,
-    methods
+    methods,
+    devtools
 Suggests:
     BiocStyle,
     testthat,
