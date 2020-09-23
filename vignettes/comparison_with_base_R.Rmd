@@ -92,6 +92,7 @@ tt = counts_mini %>% tidybulk(sample, transcript, count)
 ## Aggregate duplicated `transcripts`
 
 <div class="column-left">
+
 Tidy transcriptomics
 ```{r aggregate, cache=TRUE, message=FALSE, warning=FALSE, results='hide', class.source='yellow'}
 tt.aggr = tt %>% aggregate_duplicates()
@@ -230,8 +231,6 @@ pc$cell_type = counts[
 ```
 </div>
 <div style="clear:both;"></div>
-
-
 
 ### tSNE
 <div class="column-left">
@@ -467,6 +466,7 @@ snn$cell_type = tidybulk::counts[
 
 <div class="column-left">
 Tidy transcriptomics
+
 ```{r drop, cache=TRUE}
 tt.norm.non_redundant =
 	tt.norm.MDS %>%
