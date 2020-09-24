@@ -2210,6 +2210,21 @@ run_llsr = function(mix, reference) {
 #'
 #'
 run_epic = function(mix, reference = NULL) {
+	
+	# Check if package is installed, otherwise install
+	if (find.package("devtools", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing class needed for EPIC")
+		install.packages("devtools", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
+	}
+	
+	# Check if package is installed, otherwise install
+	if (find.package("EPIC", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing class needed for EPIC")
+		devtools::install_github("GfellerLab/EPIC")
+	}
+	
+	if("EPIC" %in% .packages() %>% not) stop("tidybulk says: Please attach the apckage EPIC manually (i.e. library(EPIC)). This is because EPIC is only available on GitHub and it is not possible to seemlessy make EPIC part of the dependencies.")
+		
 	# Get common markers
 	markers = intersect(rownames(mix), rownames(reference))
 	
@@ -2342,22 +2357,9 @@ get_cell_type_proportions = function(.data,
 			# Don't need to execute do.call
 			method %>% tolower %>% equals("epic") ~ {
 				
-				
-				# Check if package is installed, otherwise install
-				if (find.package("devtools", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing class needed for EPIC")
-					install.packages("devtools", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
-				}
-				
-				# Check if package is installed, otherwise install
-				if (find.package("EPIC", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing class needed for EPIC")
-					devtools::install_github("GfellerLab/EPIC")
-				}
-				
 				(.) %>%
-				run_llsr(reference) %>%
-				as_tibble(rownames = quo_name(.sample))
+					run_epic(reference) %>%
+					as_tibble(rownames = quo_name(.sample))
 			},
 			
 			~ stop(

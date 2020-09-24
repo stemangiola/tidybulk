@@ -1523,6 +1523,30 @@ test_that("Only cell type proportions - no object",{
 		ncol(res),
 		23
 	)
+	
+	
+	# # EPIC
+	# library(EPIC)
+	# res =
+	# 	deconvolve_cellularity(
+	# 		input_df,
+	# 		.sample = a,
+	# 		.transcript = b,
+	# 		.abundance = c,
+	# 		method = "epic",
+	# 		action="only", cores=1
+	# 	)
+	# 
+	# expect_equal(
+	# 	as.numeric(res[1,2:5]),
+	# 	c(7.750225e-01, 2.199743e-01, 5.808702e-05, 1.944729e-06),
+	# 	tolerance=1e-3
+	# )
+	# 
+	# expect_equal(
+	# 	ncol(res),
+	# 	24
+	# )
 
 })
 
