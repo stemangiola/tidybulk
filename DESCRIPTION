@@ -63,8 +63,7 @@ Suggests:
     tidyHeatmap,
     pasilla,
     ggrepel,
-    devtools,
-    EPIC
+    devtools
 VignetteBuilder: 
     knitr
 RdMacros:
@@ -74,4 +73,3 @@ biocViews: AssayDomain, Infrastructure, RNASeq, DifferentialExpression, GeneExpr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
-Remotes: GfellerLab/EPIC
