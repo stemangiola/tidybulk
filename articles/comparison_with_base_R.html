@@ -78,7 +78,7 @@
       <h1 data-toc-skip>Comparison with base R</h1>
                         <h4 class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2020-09-22</h4>
+            <h4 class="date">2020-09-24</h4>
       
       
       <div class="hidden name"><code>comparison_with_base_R.Rmd</code></div>
@@ -128,7 +128,7 @@ pre{
 <a href="#aggregate-duplicated-transcripts" class="anchor"></a>Aggregate duplicated <code>transcripts</code>
 </h2>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="kw">tt.aggr</span> <span class="op">=</span> <span class="kw">tt</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/aggregate_duplicates.html">aggregate_duplicates</a></span>()
 </pre></div>
@@ -158,7 +158,7 @@ pre{
 <a href="#scale-counts" class="anchor"></a>Scale <code>counts</code>
 </h2>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb4"><pre class="downlit">
 <span class="kw">tt.norm</span> <span class="op">=</span> <span class="kw">tt.aggr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>(factor_of_interest = <span class="kw">condition</span>) <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span>()
 </pre></div>
@@ -184,7 +184,7 @@ pre{
 </h2>
 <p>We may want to identify and filter variable transcripts.</p>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb6"><pre class="downlit">
 <span class="kw">tt.norm.variable</span> <span class="op">=</span> <span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/keep_variable.html">keep_variable</a></span>()
 </pre></div>
@@ -220,7 +220,7 @@ pre{
 <a href="#reduce-dimensions" class="anchor"></a>Reduce <code>dimensions</code>
 </h2>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="kw">tt.norm.MDS</span> <span class="op">=</span>
   <span class="kw">tt.norm</span> <span class="op">%&gt;%</span>
@@ -248,9 +248,11 @@ pre{
 <div style="clear:both;">
 
 </div>
-<p><strong>PCA</strong></p>
+<div id="pca" class="section level3">
+<h3 class="hasAnchor">
+<a href="#pca" class="anchor"></a>PCA</h3>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb10"><pre class="downlit">
 <span class="kw">tt.norm.PCA</span> <span class="op">=</span>
   <span class="kw">tt.norm</span> <span class="op">%&gt;%</span>
@@ -273,9 +275,12 @@ pre{
 <div style="clear:both;">
 
 </div>
-<strong>tSNE</strong>
+</div>
+<div id="tsne" class="section level3">
+<h3 class="hasAnchor">
+<a href="#tsne" class="anchor"></a>tSNE</h3>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">=</span>
     <span class="kw">breast_tcga_mini</span> <span class="op">%&gt;%</span>
@@ -308,12 +313,13 @@ pre{
 
 </div>
 </div>
+</div>
 <div id="rotate-dimensions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#rotate-dimensions" class="anchor"></a>Rotate <code>dimensions</code>
 </h2>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb14"><pre class="downlit">
 <span class="kw">tt.norm.MDS.rotated</span> <span class="op">=</span>
   <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
@@ -346,7 +352,7 @@ pre{
 <a href="#test-differential-abundance" class="anchor"></a>Test <code>differential abundance</code>
 </h2>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb16"><pre class="downlit">
 <span class="kw">tt.de</span> <span class="op">=</span>
     <span class="kw">tt</span> <span class="op">%&gt;%</span>
@@ -379,7 +385,7 @@ pre{
 <a href="#adjust-counts" class="anchor"></a>Adjust <code>counts</code>
 </h2>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb18"><pre class="downlit">
 <span class="kw">tt.norm.adj</span> <span class="op">=</span>
     <span class="kw">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/adjust_abundance.html">adjust_abundance</a></span>(   <span class="op">~</span> <span class="kw">condition</span> <span class="op">+</span> <span class="kw">time</span>)
@@ -421,7 +427,7 @@ pre{
 <a href="#deconvolve-cell-type-composition" class="anchor"></a>Deconvolve <code>Cell type composition</code>
 </h2>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb20"><pre class="downlit">
 <span class="kw">tt.cibersort</span> <span class="op">=</span>
     <span class="kw">tt</span> <span class="op">%&gt;%</span>
@@ -450,9 +456,11 @@ pre{
 <h2 class="hasAnchor">
 <a href="#cluster-samples" class="anchor"></a>Cluster <code>samples</code>
 </h2>
-<p><strong>k-means</strong></p>
+<div id="k-means" class="section level3">
+<h3 class="hasAnchor">
+<a href="#k-means" class="anchor"></a>k-means</h3>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb22"><pre class="downlit">
 <span class="kw">tt.norm.cluster</span> <span class="op">=</span> <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span>(method=<span class="st">"kmeans"</span>, centers = <span class="fl">2</span>, action=<span class="st">"get"</span> )
@@ -475,9 +483,12 @@ pre{
 <div style="clear:both;">
 
 </div>
-<p><strong>SNN</strong></p>
+</div>
+<div id="snn" class="section level3">
+<h3 class="hasAnchor">
+<a href="#snn" class="anchor"></a>SNN</h3>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb24"><pre class="downlit">
 <span class="kw">tt.norm.SNN</span> <span class="op">=</span>
     <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
@@ -511,11 +522,12 @@ pre{
 
 </div>
 </div>
+</div>
 <div id="drop-redundant-transcripts" class="section level2">
 <h2 class="hasAnchor">
 <a href="#drop-redundant-transcripts" class="anchor"></a>Drop <code>redundant</code> transcripts</h2>
 <div class="column-left">
-<p>TidyTranscriptomics</p>
+<p>Tidy transcriptomics</p>
 <div class="sourceCode" id="cb26"><pre class="downlit">
 <span class="kw">tt.norm.non_redundant</span> <span class="op">=</span>
     <span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
@@ -551,10 +563,94 @@ pre{
 
 </div>
 </div>
+<div id="draw-heatmap" class="section level2">
+<h2 class="hasAnchor">
+<a href="#draw-heatmap" class="anchor"></a>Draw <code>heatmap</code>
+</h2>
+<div class="column-left">
+<p>tidytranscriptomics</p>
+<div class="sourceCode" id="cb28"><pre class="downlit">
+<span class="kw">tt.norm.MDS</span> <span class="op">%&gt;%</span>
+
+  <span class="co"># filter lowly abundant</span>
+  <span class="fu"><a href="../reference/keep_abundant.html">keep_abundant</a></span>() <span class="op">%&gt;%</span>
+
+  <span class="co"># extract 500 most variable genes</span>
+  <span class="fu"><a href="../reference/keep_variable.html">keep_variable</a></span>( .abundance = <span class="kw">count_scaled</span>, top = <span class="fl">500</span>) <span class="op">%&gt;%</span>
+
+  <span class="co"># create heatmap</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/heatmap.html">heatmap</a></span>(<span class="kw">sample</span>, <span class="kw">transcript</span>, <span class="kw">count_scaled</span>, transform = <span class="kw">log1p</span>) <span class="op">%&gt;%</span>
+    <span class="fu">add_tile</span>(<span class="kw">`Cell type`</span>) 
+</pre></div>
+</div>
+<div class="column-right">
+<p>Base R</p>
+<div class="sourceCode" id="cb29"><pre class="downlit">
+<span class="co"># Example taken from airway dataset from BioC2020 workshop. </span>
+<span class="kw">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/SE2DGEList.html">SE2DGEList</a></span>(<span class="kw">airway</span>)
+<span class="kw">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="kw">dgList</span><span class="op">$</span><span class="kw">samples</span><span class="op">$</span><span class="kw">`Cell type`</span>)
+<span class="kw">keep.exprs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/filterByExpr.html">filterByExpr</a></span>(<span class="kw">dgList</span>, group=<span class="kw">group</span>)
+<span class="kw">dgList</span> <span class="op">&lt;-</span> <span class="kw">dgList</span>[<span class="kw">keep.exprs</span>,, keep.lib.sizes=<span class="fl">FALSE</span>]
+<span class="kw">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html">calcNormFactors</a></span>(<span class="kw">dgList</span>)
+<span class="kw">logcounts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html">cpm</a></span>(<span class="kw">dgList</span>, log=<span class="fl">TRUE</span>)
+<span class="kw">var_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="kw">logcounts</span>, <span class="fl">1</span>, <span class="kw">var</span>)
+<span class="kw">select_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="kw">var_genes</span>, decreasing=<span class="fl">TRUE</span>))[<span class="fl">1</span><span class="op">:</span><span class="fl">500</span>]
+<span class="kw">highly_variable_lcpm</span> <span class="op">&lt;-</span> <span class="kw">logcounts</span>[<span class="kw">select_var</span>,]
+<span class="kw">colours</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"#440154FF"</span>, <span class="st">"#21908CFF"</span>, <span class="st">"#fefada"</span> )
+<span class="kw">col.group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"red"</span>,<span class="st">"grey"</span>)[<span class="kw">group</span>]
+<span class="kw">gplots</span>::<span class="fu"><a href="https://rdrr.io/pkg/gplots/man/heatmap.2.html">heatmap.2</a></span>(<span class="kw">highly_variable_lcpm</span>, col=<span class="kw">colours</span>, trace=<span class="st">"none"</span>, ColSideColors=<span class="kw">col.group</span>, scale=<span class="st">"row"</span>)
+</pre></div>
+</div>
+<div style="clear:both;">
+
+</div>
+</div>
+<div id="draw-density-plot" class="section level2">
+<h2 class="hasAnchor">
+<a href="#draw-density-plot" class="anchor"></a>Draw <code>density plot</code>
+</h2>
+<div class="column-left">
+<p>tidytranscriptomics</p>
+<div class="sourceCode" id="cb30"><pre class="downlit">
+<span class="co"># Example taken from airway dataset from BioC2020 workshop. </span>
+<span class="kw">airway</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/tidybulk.html">tidybulk</a></span>() <span class="op">%&gt;%</span>
+      <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>() <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span>() <span class="op">%&gt;%</span>
+    <span class="fu">pivot_longer</span>(cols = <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span>(<span class="st">"counts"</span>), names_to = <span class="st">"source"</span>, values_to = <span class="st">"abundance"</span>) <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/filter.html">filter</a></span>(<span class="op">!</span><span class="kw">lowly_abundant</span>) <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x=<span class="kw">abundance</span> <span class="op">+</span> <span class="fl">1</span>, color=<span class="kw">sample</span>)) <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span>() <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(<span class="op">~</span><span class="kw">source</span>) <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span>() 
+</pre></div>
+</div>
+<div class="column-right">
+<p>Base R</p>
+<div class="sourceCode" id="cb31"><pre class="downlit">
+<span class="co"># Example taken from airway dataset from BioC2020 workshop. </span>
+<span class="kw">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/SE2DGEList.html">SE2DGEList</a></span>(<span class="kw">airway</span>)
+<span class="kw">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="kw">dgList</span><span class="op">$</span><span class="kw">samples</span><span class="op">$</span><span class="kw">dex</span>)
+<span class="kw">keep.exprs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/filterByExpr.html">filterByExpr</a></span>(<span class="kw">dgList</span>, group=<span class="kw">group</span>)
+<span class="kw">dgList</span> <span class="op">&lt;-</span> <span class="kw">dgList</span>[<span class="kw">keep.exprs</span>,, keep.lib.sizes=<span class="fl">FALSE</span>]
+<span class="kw">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html">calcNormFactors</a></span>(<span class="kw">dgList</span>)
+<span class="kw">logcounts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html">cpm</a></span>(<span class="kw">dgList</span>, log=<span class="fl">TRUE</span>)
+<span class="kw">var_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="kw">logcounts</span>, <span class="fl">1</span>, <span class="kw">var</span>)
+<span class="kw">select_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="kw">var_genes</span>, decreasing=<span class="fl">TRUE</span>))[<span class="fl">1</span><span class="op">:</span><span class="fl">500</span>]
+<span class="kw">highly_variable_lcpm</span> <span class="op">&lt;-</span> <span class="kw">logcounts</span>[<span class="kw">select_var</span>,]
+<span class="kw">colours</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"#440154FF"</span>, <span class="st">"#21908CFF"</span>, <span class="st">"#fefada"</span> )
+<span class="kw">col.group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"red"</span>,<span class="st">"grey"</span>)[<span class="kw">group</span>]
+<span class="kw">gplots</span>::<span class="fu"><a href="https://rdrr.io/pkg/gplots/man/heatmap.2.html">heatmap.2</a></span>(<span class="kw">highly_variable_lcpm</span>, col=<span class="kw">colours</span>, trace=<span class="st">"none"</span>, ColSideColors=<span class="kw">col.group</span>, scale=<span class="st">"row"</span>)
+</pre></div>
+</div>
+<div style="clear:both;">
+
+</div>
+</div>
 <div id="appendix" class="section level2">
 <h2 class="hasAnchor">
 <a href="#appendix" class="anchor"></a>Appendix</h2>
-<div class="sourceCode" id="cb28"><pre class="downlit">
+<div class="sourceCode" id="cb32"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()
 </pre></div>
 <pre><code>## R version 4.0.2 Patched (2020-09-17 r79226)
@@ -577,7 +673,7 @@ pre{
 ## 
 ## other attached packages:
 ## [1] tidybulk_1.1.7   ggrepel_0.8.2    ggplot2_3.3.2    magrittr_1.5    
-## [5] tibble_3.0.3     tidyr_1.1.2      dplyr_1.0.2      knitr_1.29      
+## [5] tibble_3.0.3     tidyr_1.1.2      dplyr_1.0.2      knitr_1.30      
 ## [9] BiocStyle_2.17.0
 ## 
 ## loaded via a namespace (and not attached):
@@ -629,7 +725,7 @@ pre{
 ##  [91] ragg_0.3.1                  bit64_4.0.5                
 ##  [93] fs_1.5.0                    fitdistrplus_1.1-1         
 ##  [95] purrr_0.3.4                 RANN_2.6.1                 
-##  [97] pbapply_1.4-3               future_1.18.0              
+##  [97] pbapply_1.4-3               future_1.19.1              
 ##  [99] nlme_3.1-149                mime_0.9                   
 ## [101] tokenizers_0.2.1            compiler_4.0.2             
 ## [103] plotly_4.9.2.1              png_0.1-7                  
@@ -648,7 +744,7 @@ pre{
 ## [129] janeaustenr_0.1.5           IRanges_2.23.10            
 ## [131] codetools_0.2-16            MASS_7.3-53                
 ## [133] assertthat_0.2.1            SummarizedExperiment_1.19.6
-## [135] rprojroot_1.3-2             withr_2.2.0                
+## [135] rprojroot_1.3-2             withr_2.3.0                
 ## [137] sctransform_0.3             S4Vectors_0.27.13          
 ## [139] GenomeInfoDbData_1.2.3      mgcv_1.8-33                
 ## [141] parallel_4.0.2              hms_0.5.3                  
