@@ -2003,7 +2003,7 @@ therefore it is essential to add covariates such as batch effects (if applicable
 		when(
 			
 			# edgeR
-			grepl("edger", tolower(method)) ~ get_differential_transcript_abundance_bulk(
+			tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio") ~ get_differential_transcript_abundance_bulk(
 				.,
 				.formula,
 				.sample = !!.sample,
