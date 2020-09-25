@@ -1927,8 +1927,8 @@ setGeneric("test_differential_abundance", function(.data,
 																									 action = "add",
 																									 
 																									 # DEPRECATED
-																									 significance_threshold = 0.05,
-																									 fill_missing_values = FALSE
+																									 significance_threshold = NULL,
+																									 fill_missing_values = NULL
 																									)
 					 standardGeneric("test_differential_abundance"))
 
@@ -1947,8 +1947,8 @@ setGeneric("test_differential_abundance", function(.data,
 																					action = "add",
 																					
 																					# DEPRECATED
-																					significance_threshold = 0.05,
-																					fill_missing_values = FALSE
+																					significance_threshold = NULL,
+																					fill_missing_values = NULL
 																				)
 {
 	# Get column names
@@ -2003,7 +2003,8 @@ therefore it is essential to add covariates such as batch effects (if applicable
 		when(
 			
 			# edgeR
-			tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio") ~ get_differential_transcript_abundance_bulk(
+			tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio") ~ 
+			get_differential_transcript_abundance_bulk(
 				.,
 				.formula,
 				.sample = !!.sample,
@@ -2011,8 +2012,6 @@ therefore it is essential to add covariates such as batch effects (if applicable
 				.abundance = !!.abundance,
 				.contrasts = .contrasts,
 				method = method,
-				significance_threshold = significance_threshold,
-				fill_missing_values = fill_missing_values,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
 				prefix = prefix
@@ -2027,8 +2026,6 @@ therefore it is essential to add covariates such as batch effects (if applicable
 					.transcript = !!.transcript,
 					.abundance = !!.abundance,
 					.contrasts = .contrasts,
-					significance_threshold = significance_threshold,
-					fill_missing_values = fill_missing_values,
 					scaling_method = scaling_method,
 					omit_contrast_in_colnames = omit_contrast_in_colnames,
 					prefix = prefix
@@ -2043,8 +2040,6 @@ therefore it is essential to add covariates such as batch effects (if applicable
 				.abundance = !!.abundance,
 				.contrasts = .contrasts,
 				method = method,
-				significance_threshold = significance_threshold,
-				fill_missing_values = fill_missing_values,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
 				prefix = prefix

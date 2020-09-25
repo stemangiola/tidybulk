@@ -284,10 +284,6 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
-#' @param significance_threshold A real between 0 and 1
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -300,10 +296,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
 																											 method = "edgeR_quasi_likelihood",
-																											 significance_threshold = 0.05,
-																											 minimum_counts = 10,
-																											 minimum_proportion = 0.7,
-																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
 																											 prefix = "") {
@@ -329,15 +321,16 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
-		mutate_if(is.factor, as.character()) %>%
+		mutate_if(is.factor, as.character()) 
+	#%>%
 
-		# Check if data rectangular
-		ifelse2_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
-			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
-			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
-		) 
+		# # Check if data rectangular
+		# ifelse2_pipe(
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
+		# 	~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
+		# 	~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		# ) 
 		
 
 	# # Check if at least two samples for each group
@@ -508,10 +501,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See voom makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param significance_threshold A real between 0 and 1
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -523,10 +512,6 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
-																											 significance_threshold = 0.05,
-																											 minimum_counts = 10,
-																											 minimum_proportion = 0.7,
-																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
 																											 prefix = "") {
@@ -552,15 +537,16 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
-		mutate_if(is.factor, as.character()) %>%
+		mutate_if(is.factor, as.character()) 
+	# %>%
 
-		# Check if data rectangular
-		ifelse2_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
-			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
-			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
-		) 
+		# # Check if data rectangular
+		# ifelse2_pipe(
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
+		# 	~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
+		# 	~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		# ) 
 		
 
 	# Create design matrix
@@ -695,10 +681,6 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
-#' @param significance_threshold A real between 0 and 1
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -711,10 +693,6 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
 																											 method = "edgeR_quasi_likelihood",
-																											 significance_threshold = 0.05,
-																											 minimum_counts = 10,
-																											 minimum_proportion = 0.7,
-																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
 																											 prefix = "") {
@@ -742,8 +720,6 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		BiocManager::install("DESeq2", ask = FALSE)
 	}
 
-
-
 	# # Print the design column names in case I want contrasts
 	# message(
 	# 	sprintf(
@@ -769,13 +745,13 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		# drop factors as it can affect design matrix
 		mutate_if(is.factor, as.character()) %>%
 
-		# Check if data rectangular
-		ifelse2_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
-			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
-			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
-		) %>%
+		# # Check if data rectangular
+		# ifelse2_pipe(
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
+		# 	~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
+		# 	~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		# ) %>%
 
 		# Needed for DESeq2
 		mutate(!!.abundance := as.integer(!!.abundance)) %>%

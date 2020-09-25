@@ -22,8 +22,8 @@ test_differential_abundance(
   omit_contrast_in_colnames = FALSE,
   prefix = "",
   action = "add",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 
 \S4method{test_differential_abundance}{spec_tbl_df}(
@@ -38,8 +38,8 @@ test_differential_abundance(
   omit_contrast_in_colnames = FALSE,
   prefix = "",
   action = "add",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 
 \S4method{test_differential_abundance}{tbl_df}(
@@ -54,8 +54,8 @@ test_differential_abundance(
   omit_contrast_in_colnames = FALSE,
   prefix = "",
   action = "add",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 
 \S4method{test_differential_abundance}{tidybulk}(
@@ -70,8 +70,8 @@ test_differential_abundance(
   omit_contrast_in_colnames = FALSE,
   prefix = "",
   action = "add",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 
 \S4method{test_differential_abundance}{SummarizedExperiment}(
@@ -86,8 +86,8 @@ test_differential_abundance(
   omit_contrast_in_colnames = FALSE,
   prefix = "",
   action = "add",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 
 \S4method{test_differential_abundance}{RangedSummarizedExperiment}(
@@ -102,8 +102,8 @@ test_differential_abundance(
   omit_contrast_in_colnames = FALSE,
   prefix = "",
   action = "add",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 }
 \arguments{
