@@ -521,11 +521,9 @@ test_that("New method choice",{
 
 test_that("DESeq2 differential trancript abundance - no object",{
 	
-	library(DESeq2)
-	
 	res_deseq2 = 
 		test_deseq2_df %>%
-		DESeq() %>%
+		DESeq2::DESeq() %>%
 		results()
 	
 	res_tidybulk = 

@@ -400,8 +400,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		# select method
 		when(
-			method == "edgeR_likelihood_ratio" ~ (.) %>% edgeR::glmFit(design),
-			method == "edgeR_quasi_likelihood" ~ (.) %>% edgeR::glmQLFit(design)
+			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmFit(design),
+			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFit(design)
 		)
 
 
@@ -416,8 +416,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 				# select method
 				when(
-					method == "edgeR_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
-					method == "edgeR_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
+					tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
+					tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
 				)	%>%
 
 				# Convert to tibble
@@ -441,8 +441,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 							# select method
 							when(
-								method == "edgeR_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
-								method == "edgeR_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
+								tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
+								tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
 							)	%>%
 
 							# Convert to tibble
@@ -777,13 +777,14 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 			~ .x %>%
 
 				DESeq2::results() %>%
-				as_tibble(rownames = quo_name(.transcript)) %>%
+				as_tibble(rownames = quo_name(.transcript)) 
+			# %>%
 
 				# # Mark DE genes
 				# mutate(significant = padj < significance_threshold) 	%>%
 
-				# Arrange
-				arrange(padj),
+				# # Arrange
+				# arrange(padj),
 
 			# Multiple comparisons
 			~ {
