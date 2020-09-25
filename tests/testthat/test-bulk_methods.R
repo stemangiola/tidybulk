@@ -199,7 +199,7 @@ test_that("Only differential trancript abundance - no object",{
 
 	expect_equal(
 		ncol(res),
-		7
+		6
 	)
 
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
@@ -227,7 +227,7 @@ test_that("Only differential trancript abundance - no object",{
 
 	expect_equal(
 		ncol(res),
-		7
+		6
 	)
 
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
@@ -252,7 +252,7 @@ test_that("Only differential trancript abundance - no object",{
 
 	expect_equal(
 		ncol(res),
-		7
+		6
 	)
 
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
@@ -270,20 +270,6 @@ test_that("Only differential trancript abundance - no object",{
 		),
 		"Design matrix not of full rank"
 	)
-
-	# # Just one sample per covariate error
-	# expect_message(
-	# 	test_differential_abundance(
-	# 		filter(input_df, a %in% c("SRR1740034", "SRR1740035", "SRR1740043", "SRR1740058")),
-	# 		~ condition,
-	# 		.sample = a,
-	# 		.transcript = b,
-	# 		.abundance = c,
-	# 		method = "edgeR_likelihood_ratio",
-	# 		action="only"
-	# 	),
-	# 	"You have less than two replicated for each factorial combination"
-	# )
 
 	# Change scaling method
 	res =
@@ -321,34 +307,8 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 
 	expect_equal(
 		ncol(res),
-		13
+		11
 	)
-
-	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
-
-})
-
-test_that("Get differential trancript abundance - no object",{
-
-	res =
-		test_differential_abundance(
-			input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
-			~ condition,
-			.sample = a,
-			.transcript = b,
-			.abundance = c,
-			method = "edgeR_likelihood_ratio",
-			action="get"
-		)
-
-	expect_equal(
-		dplyr::pull(dplyr::slice(distinct(res, b, logFC), 1:4) , "logFC"),
-		c(NA,  5.477110, -6.079712 ,       NA),
-		tolerance=1e-6
-	)
-
-	expect_equal(	ncol(res),	8)
-	expect_equal(	nrow(res),	527)
 
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
 
@@ -375,7 +335,7 @@ test_that("Add differential trancript abundance - no object",{
 
 	expect_equal(
 		ncol(res),
-		13
+		12
 	)
 
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
@@ -403,7 +363,7 @@ test_that("Only differential trancript abundance voom - no object",{
 	
 	expect_equal(
 		ncol(res),
-		8
+		7
 	)
 	
 	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
@@ -431,7 +391,7 @@ test_that("Only differential trancript abundance voom - no object",{
 	
 	expect_equal(
 		ncol(res),
-		8
+		7
 	)
 	
 	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
@@ -456,7 +416,7 @@ test_that("Only differential trancript abundance voom - no object",{
 	
 	expect_equal(
 		ncol(res),
-		8
+		7
 	)
 	
 	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
@@ -511,7 +471,7 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 	
 	expect_equal(
 		ncol(res),
-		15
+		13
 	)
 	
 	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
@@ -539,7 +499,7 @@ test_that("New method choice",{
 	
 	expect_equal(
 		ncol(res),
-		7
+		6
 	)
 	
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
@@ -600,7 +560,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		ncol(res),
-		8
+		7
 	)
 	
 	expect_equal(	class(attr(res, "internals")$DESeq2)[1], 	"DESeqDataSet"  )
@@ -628,7 +588,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		ncol(res),
-		8
+		7
 	)
 	
 	expect_equal(	class(attr(res, "internals")$DESeq2)[1], 	"DESeqDataSet"  )
@@ -653,7 +613,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		ncol(res),
-		8
+		7
 	)
 	
 	expect_equal(	class(attr(res, "internals")$DESeq2)[1], 	"DESeqDataSet"  )
@@ -673,6 +633,30 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	)
 	
 })
+
+test_that("test prefix",{
+	
+	library(DESeq2)
+	
+	df = input_df %>% tidybulk(a, b, c, ) %>% identify_abundant(factor_of_interest = condition)
+	
+	res_DeSEQ2 = 
+		df %>%
+		test_differential_abundance(~condition, method="DeSEQ2", action="only", prefix = "prefix_")
+	
+	res_voom = 
+		df %>%
+		test_differential_abundance(~condition, method="limma_voom", action="only", prefix = "prefix_")
+	
+	res_edger = 
+		df %>%
+		test_differential_abundance(~condition, method="edgeR_likelihood_ratio", action="only", prefix = "prefix_")
+	
+	expect_gt(colnames(res_DeSEQ2) %>% grep("prefix_", .) %>% length, 0)
+	expect_gt(colnames(res_voom) %>% grep("prefix_", .) %>% length, 0)
+	expect_gt(colnames(res_edger) %>% grep("prefix_", .) %>% length, 0)
+})
+
 
 test_that("Get entrez from symbol - no object",{
 
