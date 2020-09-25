@@ -284,10 +284,6 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
-#' @param significance_threshold A real between 0 and 1
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -300,12 +296,9 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
 																											 method = "edgeR_quasi_likelihood",
-																											 significance_threshold = 0.05,
-																											 minimum_counts = 10,
-																											 minimum_proportion = 0.7,
-																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM",
-																											 omit_contrast_in_colnames = FALSE) {
+																											 omit_contrast_in_colnames = FALSE,
+																											 prefix = "") {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -328,15 +321,16 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
-		mutate_if(is.factor, as.character()) %>%
+		mutate_if(is.factor, as.character()) 
+	#%>%
 
-		# Check if data rectangular
-		ifelse2_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
-			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
-			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
-		) 
+		# # Check if data rectangular
+		# ifelse2_pipe(
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
+		# 	~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
+		# 	~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		# ) 
 		
 
 	# # Check if at least two samples for each group
@@ -370,7 +364,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
 
-	# Print the design column names in case I want constrasts
+	# Print the design column names in case I want contrasts
 	message(
 		sprintf(
 			"tidybulk says: The design column names are \"%s\"",
@@ -431,8 +425,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				table %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
 
-				# Mark DE genes
-				mutate(significant = FDR < significance_threshold) 	%>%
+				# # Mark DE genes
+				# mutate(significant = FDR < significance_threshold) 	%>%
 
 				# Arrange
 				arrange(FDR),
@@ -455,16 +449,23 @@ get_differential_transcript_abundance_bulk <- function(.data,
 							edgeR::topTags(n = 999999) %$%
 							table %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
-							mutate(constrast = colnames(my_contrasts)[.x]) %>%
-
-							# Mark DE genes
-							mutate(significant = FDR < significance_threshold)
+							mutate(constrast = colnames(my_contrasts)[.x]) 
+							# %>%
+							# 
+							# # Mark DE genes
+							# mutate(significant = FDR < significance_threshold)
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
 											names_from = constrast, names_sep = "___")
 			}
 		)	 %>%
 
+		# Attach prefix
+		setNames(c(
+			colnames(.)[1], 
+			sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
+		)) %>%
+		
 		# Attach attributes
 		reattach_internals(.data) %>%
 		memorise_methods_used(c("edger", "limma")) %>%
@@ -500,10 +501,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See voom makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param significance_threshold A real between 0 and 1
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -515,12 +512,9 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
-																											 significance_threshold = 0.05,
-																											 minimum_counts = 10,
-																											 minimum_proportion = 0.7,
-																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM",
-																											 omit_contrast_in_colnames = FALSE) {
+																											 omit_contrast_in_colnames = FALSE,
+																											 prefix = "") {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -543,15 +537,16 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
-		mutate_if(is.factor, as.character()) %>%
+		mutate_if(is.factor, as.character()) 
+	# %>%
 
-		# Check if data rectangular
-		ifelse2_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
-			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
-			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
-		) 
+		# # Check if data rectangular
+		# ifelse2_pipe(
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
+		# 	~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
+		# 	~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		# ) 
 		
 
 	# Create design matrix
@@ -561,7 +556,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 			data = df_for_voom %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
 
-	# Print the design column names in case I want constrasts
+	# Print the design column names in case I want contrasts
 	message(
 		sprintf(
 			"tidybulk says: The design column names are \"%s\"",
@@ -612,8 +607,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 				limma::topTable(n = 999999) %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
 
-				# Mark DE genes
-				mutate(significant = adj.P.Val < significance_threshold) 	%>%
+				# # Mark DE genes
+				# mutate(significant = adj.P.Val < significance_threshold) 	%>%
 
 				# Arrange
 				arrange(adj.P.Val),
@@ -633,16 +628,24 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 							# Convert to tibble
 							limma::topTable(n = 999999) %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
-							mutate(constrast = colnames(my_contrasts)[.x]) %>%
-
-							# Mark DE genes
-							mutate(significant = adj.P.Val < significance_threshold)
+							mutate(constrast = colnames(my_contrasts)[.x]) 
+							# %>%
+							# 
+							# # Mark DE genes
+							# mutate(significant = adj.P.Val < significance_threshold)
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
 											names_from = constrast, names_sep = "___")
 			}
 		)	 %>%
 
+		
+		# Attach prefix
+		setNames(c(
+			colnames(.)[1], 
+			sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
+		)) %>%
+		
 		# Attach attributes
 		reattach_internals(.data) %>%
 
@@ -678,10 +681,6 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
-#' @param significance_threshold A real between 0 and 1
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -694,12 +693,9 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
 																											 method = "edgeR_quasi_likelihood",
-																											 significance_threshold = 0.05,
-																											 minimum_counts = 10,
-																											 minimum_proportion = 0.7,
-																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM",
-																											 omit_contrast_in_colnames = FALSE) {
+																											 omit_contrast_in_colnames = FALSE,
+																											 prefix = "") {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -723,8 +719,6 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("DESeq2", ask = FALSE)
 	}
-
-
 
 	# # Print the design column names in case I want contrasts
 	# message(
@@ -751,13 +745,13 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		# drop factors as it can affect design matrix
 		mutate_if(is.factor, as.character()) %>%
 
-		# Check if data rectangular
-		ifelse2_pipe(
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
-			(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
-			~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
-			~ .x %>% eliminate_sparse_transcripts(!!.transcript)
-		) %>%
+		# # Check if data rectangular
+		# ifelse2_pipe(
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
+		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
+		# 	~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
+		# 	~ .x %>% eliminate_sparse_transcripts(!!.transcript)
+		# ) %>%
 
 		# Needed for DESeq2
 		mutate(!!.abundance := as.integer(!!.abundance)) %>%
@@ -785,8 +779,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 				DESeq2::results() %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
 
-				# Mark DE genes
-				mutate(significant = padj < significance_threshold) 	%>%
+				# # Mark DE genes
+				# mutate(significant = padj < significance_threshold) 	%>%
 
 				# Arrange
 				arrange(padj),
@@ -804,10 +798,11 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 							# Convert to tibble
 							as_tibble(rownames = quo_name(.transcript)) %>%
-							mutate(constrast = colnames(my_contrasts)[.x]) %>%
-
-							# Mark DE genes
-							mutate(significant = padj < significance_threshold)
+							mutate(constrast = colnames(my_contrasts)[.x]) 
+							# %>%
+							# 
+							# # Mark DE genes
+							# mutate(significant = padj < significance_threshold)
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
 											names_from = constrast, names_sep = "___")
@@ -819,6 +814,12 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		# when(!"lowly_abundant" %in% colnames(.data) ~ (.) %>%	mutate(lowly_abundant = if_else(is.na(log2FoldChange), T, F)) ,
 		# 		 ~ (.))	%>%
 
+		# Attach prefix
+		setNames(c(
+			colnames(.)[1], 
+			sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
+		)) %>%
+		
 		# Attach attributes
 		reattach_internals(.data) %>%
 		memorise_methods_used("deseq2") %>%

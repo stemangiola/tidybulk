@@ -1844,6 +1844,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to compare several methods.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
 #' @details This function provides the option to use edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}, limma-voom \url{https://doi.org/10.1186/gb-2014-15-2-r29}, or  DESeq2 \url{https://doi.org/10.1186/s13059-014-0550-8} to perform the testing.
@@ -1920,12 +1921,15 @@ setGeneric("test_differential_abundance", function(.data,
 																									 .abundance = NULL,
 																									 .contrasts = NULL,
 																									 method = "edgeR_quasi_likelihood",
-																									 significance_threshold = 0.05,
-																									 fill_missing_values = FALSE,
 																									 scaling_method = "TMM",
 																									 omit_contrast_in_colnames = FALSE,
-
-																									 action = "add")
+																									 prefix = "",
+																									 action = "add",
+																									 
+																									 # DEPRECATED
+																									 significance_threshold = NULL,
+																									 fill_missing_values = NULL
+																									)
 					 standardGeneric("test_differential_abundance"))
 
 # Set internal
@@ -1936,12 +1940,16 @@ setGeneric("test_differential_abundance", function(.data,
 																					.abundance = NULL,
 																					.contrasts = NULL,
 																					method = "edgeR_quasi_likelihood",
-																					significance_threshold = 0.05,
-																					fill_missing_values = FALSE,
 																					scaling_method = "TMM",
 																					omit_contrast_in_colnames = FALSE,
+																					prefix = "",
 
-																					action = "add")
+																					action = "add",
+																					
+																					# DEPRECATED
+																					significance_threshold = NULL,
+																					fill_missing_values = NULL
+																				)
 {
 	# Get column names
 	.sample = enquo(.sample)
@@ -1952,8 +1960,26 @@ setGeneric("test_differential_abundance", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	# DEPRECATION OF significance_threshold
+	if (is_present(significance_threshold)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.1.7", "tidybulk::test_differential_abundance(significance_threshold = )", details = "The argument significance_threshold is now deprecated please look at the resulting statistics to do the filtering (e.g., filter(., FDR < 0.05))")
+		
+	}
+	
+	# DEPRECATION OF fill_missing_values
+	if (is_present(fill_missing_values)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.1.7", "tidybulk::test_differential_abundance(fill_missing_values = )", details = "The argument fill_missing_values is now deprecated, you will receive a warning/error instead. Please use externally the methods fill_missing_abundance or impute_missing_abundance instead.")
+		
+	}
+	
 	# Clearly state what counts are used
-	message("tidybulk says: All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.")
+	message("tidybulk says: All methods use raw counts, 
+irrespective of if scale_abundance or adjust_abundance have been calculated, 
+therefore it is essential to add covariates such as batch effects (if applicable) in the formula.")
 	
 	# Validate data frame
 	if(do_validate()) {
@@ -1977,7 +2003,8 @@ setGeneric("test_differential_abundance", function(.data,
 		when(
 			
 			# edgeR
-			grepl("edgeR", method) ~ get_differential_transcript_abundance_bulk(
+			tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio") ~ 
+			get_differential_transcript_abundance_bulk(
 				.,
 				.formula,
 				.sample = !!.sample,
@@ -1985,10 +2012,9 @@ setGeneric("test_differential_abundance", function(.data,
 				.abundance = !!.abundance,
 				.contrasts = .contrasts,
 				method = method,
-				significance_threshold = significance_threshold,
-				fill_missing_values = fill_missing_values,
 				scaling_method = scaling_method,
-				omit_contrast_in_colnames = omit_contrast_in_colnames
+				omit_contrast_in_colnames = omit_contrast_in_colnames,
+				prefix = prefix
 			),
 			
 			# Voom
@@ -2000,10 +2026,9 @@ setGeneric("test_differential_abundance", function(.data,
 					.transcript = !!.transcript,
 					.abundance = !!.abundance,
 					.contrasts = .contrasts,
-					significance_threshold = significance_threshold,
-					fill_missing_values = fill_missing_values,
 					scaling_method = scaling_method,
-					omit_contrast_in_colnames = omit_contrast_in_colnames
+					omit_contrast_in_colnames = omit_contrast_in_colnames,
+					prefix = prefix
 				),
 			
 			# DESeq2
@@ -2015,10 +2040,9 @@ setGeneric("test_differential_abundance", function(.data,
 				.abundance = !!.abundance,
 				.contrasts = .contrasts,
 				method = method,
-				significance_threshold = significance_threshold,
-				fill_missing_values = fill_missing_values,
 				scaling_method = scaling_method,
-				omit_contrast_in_colnames = omit_contrast_in_colnames
+				omit_contrast_in_colnames = omit_contrast_in_colnames,
+				prefix = prefix
 			),
 			
 			# Else error
