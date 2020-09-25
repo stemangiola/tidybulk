@@ -305,7 +305,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 minimum_proportion = 0.7,
 																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM",
-																											 omit_contrast_in_colnames = FALSE) {
+																											 omit_contrast_in_colnames = FALSE,
+																											 prefix = "") {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -370,7 +371,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
 
-	# Print the design column names in case I want constrasts
+	# Print the design column names in case I want contrasts
 	message(
 		sprintf(
 			"tidybulk says: The design column names are \"%s\"",
@@ -431,8 +432,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				table %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
 
-				# Mark DE genes
-				mutate(significant = FDR < significance_threshold) 	%>%
+				# # Mark DE genes
+				# mutate(significant = FDR < significance_threshold) 	%>%
 
 				# Arrange
 				arrange(FDR),
@@ -455,16 +456,23 @@ get_differential_transcript_abundance_bulk <- function(.data,
 							edgeR::topTags(n = 999999) %$%
 							table %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
-							mutate(constrast = colnames(my_contrasts)[.x]) %>%
-
-							# Mark DE genes
-							mutate(significant = FDR < significance_threshold)
+							mutate(constrast = colnames(my_contrasts)[.x]) 
+							# %>%
+							# 
+							# # Mark DE genes
+							# mutate(significant = FDR < significance_threshold)
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
 											names_from = constrast, names_sep = "___")
 			}
 		)	 %>%
 
+		# Attach prefix
+		setNames(c(
+			colnames(.)[1], 
+			sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
+		)) %>%
+		
 		# Attach attributes
 		reattach_internals(.data) %>%
 		memorise_methods_used(c("edger", "limma")) %>%
@@ -520,7 +528,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 																											 minimum_proportion = 0.7,
 																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM",
-																											 omit_contrast_in_colnames = FALSE) {
+																											 omit_contrast_in_colnames = FALSE,
+																											 prefix = "") {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -561,7 +570,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 			data = df_for_voom %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
 
-	# Print the design column names in case I want constrasts
+	# Print the design column names in case I want contrasts
 	message(
 		sprintf(
 			"tidybulk says: The design column names are \"%s\"",
@@ -612,8 +621,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 				limma::topTable(n = 999999) %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
 
-				# Mark DE genes
-				mutate(significant = adj.P.Val < significance_threshold) 	%>%
+				# # Mark DE genes
+				# mutate(significant = adj.P.Val < significance_threshold) 	%>%
 
 				# Arrange
 				arrange(adj.P.Val),
@@ -633,16 +642,24 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 							# Convert to tibble
 							limma::topTable(n = 999999) %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
-							mutate(constrast = colnames(my_contrasts)[.x]) %>%
-
-							# Mark DE genes
-							mutate(significant = adj.P.Val < significance_threshold)
+							mutate(constrast = colnames(my_contrasts)[.x]) 
+							# %>%
+							# 
+							# # Mark DE genes
+							# mutate(significant = adj.P.Val < significance_threshold)
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
 											names_from = constrast, names_sep = "___")
 			}
 		)	 %>%
 
+		
+		# Attach prefix
+		setNames(c(
+			colnames(.)[1], 
+			sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
+		)) %>%
+		
 		# Attach attributes
 		reattach_internals(.data) %>%
 
@@ -699,7 +716,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 																											 minimum_proportion = 0.7,
 																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM",
-																											 omit_contrast_in_colnames = FALSE) {
+																											 omit_contrast_in_colnames = FALSE,
+																											 prefix = "") {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -785,8 +803,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 				DESeq2::results() %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
 
-				# Mark DE genes
-				mutate(significant = padj < significance_threshold) 	%>%
+				# # Mark DE genes
+				# mutate(significant = padj < significance_threshold) 	%>%
 
 				# Arrange
 				arrange(padj),
@@ -804,10 +822,11 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 							# Convert to tibble
 							as_tibble(rownames = quo_name(.transcript)) %>%
-							mutate(constrast = colnames(my_contrasts)[.x]) %>%
-
-							# Mark DE genes
-							mutate(significant = padj < significance_threshold)
+							mutate(constrast = colnames(my_contrasts)[.x]) 
+							# %>%
+							# 
+							# # Mark DE genes
+							# mutate(significant = padj < significance_threshold)
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
 											names_from = constrast, names_sep = "___")
@@ -819,6 +838,12 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		# when(!"lowly_abundant" %in% colnames(.data) ~ (.) %>%	mutate(lowly_abundant = if_else(is.na(log2FoldChange), T, F)) ,
 		# 		 ~ (.))	%>%
 
+		# Attach prefix
+		setNames(c(
+			colnames(.)[1], 
+			sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
+		)) %>%
+		
 		# Attach attributes
 		reattach_internals(.data) %>%
 		memorise_methods_used("deseq2") %>%
