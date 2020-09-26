@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2020-09-24</h4>
+            <h4 class="date">2020-09-26</h4>
       
       
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -490,47 +490,47 @@
 ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
 ## Computing input similarities...
 ## Building tree...
-## Done in 0.01 seconds (sparsity = 0.182886)!
+## Done in 0.02 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 67.336323 (50 iterations in 0.04 seconds)
-## Iteration 100: error is 67.855248 (50 iterations in 0.04 seconds)
-## Iteration 150: error is 67.236881 (50 iterations in 0.04 seconds)
-## Iteration 200: error is 67.696677 (50 iterations in 0.03 seconds)
-## Iteration 250: error is 66.446320 (50 iterations in 0.04 seconds)
-## Iteration 300: error is 1.453187 (50 iterations in 0.03 seconds)
-## Iteration 350: error is 1.222096 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.181210 (50 iterations in 0.03 seconds)
-## Iteration 450: error is 1.148002 (50 iterations in 0.03 seconds)
-## Iteration 500: error is 1.126622 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.117497 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.113843 (50 iterations in 0.03 seconds)
-## Iteration 650: error is 1.109421 (50 iterations in 0.03 seconds)
-## Iteration 700: error is 1.088250 (50 iterations in 0.03 seconds)
-## Iteration 750: error is 1.080586 (50 iterations in 0.03 seconds)
-## Iteration 800: error is 1.078722 (50 iterations in 0.03 seconds)
-## Iteration 850: error is 1.077107 (50 iterations in 0.03 seconds)
-## Iteration 900: error is 1.075704 (50 iterations in 0.03 seconds)
-## Iteration 950: error is 1.075222 (50 iterations in 0.03 seconds)
-## Iteration 1000: error is 1.075693 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.61 seconds.</code></pre>
+## Iteration 50: error is 66.172820 (50 iterations in 0.08 seconds)
+## Iteration 100: error is 69.303266 (50 iterations in 0.10 seconds)
+## Iteration 150: error is 68.446118 (50 iterations in 0.05 seconds)
+## Iteration 200: error is 68.105172 (50 iterations in 0.05 seconds)
+## Iteration 250: error is 70.439933 (50 iterations in 0.05 seconds)
+## Iteration 300: error is 1.452118 (50 iterations in 0.04 seconds)
+## Iteration 350: error is 1.262672 (50 iterations in 0.03 seconds)
+## Iteration 400: error is 1.213577 (50 iterations in 0.03 seconds)
+## Iteration 450: error is 1.191292 (50 iterations in 0.03 seconds)
+## Iteration 500: error is 1.180743 (50 iterations in 0.03 seconds)
+## Iteration 550: error is 1.168352 (50 iterations in 0.03 seconds)
+## Iteration 600: error is 1.146979 (50 iterations in 0.03 seconds)
+## Iteration 650: error is 1.139716 (50 iterations in 0.03 seconds)
+## Iteration 700: error is 1.136762 (50 iterations in 0.03 seconds)
+## Iteration 750: error is 1.134885 (50 iterations in 0.03 seconds)
+## Iteration 800: error is 1.134737 (50 iterations in 0.03 seconds)
+## Iteration 850: error is 1.134676 (50 iterations in 0.03 seconds)
+## Iteration 900: error is 1.134040 (50 iterations in 0.03 seconds)
+## Iteration 950: error is 1.133048 (50 iterations in 0.03 seconds)
+## Iteration 1000: error is 1.132329 (50 iterations in 0.03 seconds)
+## Fitting performed in 0.78 seconds.</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span>(<span class="st">"tSNE"</span>, ignore.case = <span class="fl">FALSE</span>), <span class="kw">sample</span>, <span class="kw">Call</span>) <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/distinct.html">distinct</a></span>()
 </pre></div>
 <pre><code>## # A tibble: 251 x 4
-##    tSNE1   tSNE2 sample                       Call 
-##    &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
-##  1  8.19   7.23  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  2 -9.05  -2.24  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  3 -4.57  12.0   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  4  6.14  -0.601 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  5  8.08   2.45  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  6 -5.92   9.50  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  7 -4.15 -32.1   TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  8  6.30  -4.58  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  9  7.53  -5.62  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-## 10 -5.20  23.2   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##     tSNE1  tSNE2 sample                       Call 
+##     &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
+##  1   1.00   8.11 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  2  -1.64  -6.35 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  3   1.71  15.5  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  4   3.16  -2.79 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  5   3.26   5.67 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  6   8.94   5.74 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  7   8.84 -30.6  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  8   2.16  -4.69 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  9 -12.2   -2.52 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+## 10   6.16  21.7  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit">
 <span class="kw">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
@@ -557,29 +557,29 @@
 ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
 ## Computing input similarities...
 ## Building tree...
-## Done in 0.01 seconds (sparsity = 0.182886)!
+## Done in 0.02 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 67.507620 (50 iterations in 0.03 seconds)
-## Iteration 100: error is 67.426831 (50 iterations in 0.04 seconds)
-## Iteration 150: error is 68.205169 (50 iterations in 0.04 seconds)
-## Iteration 200: error is 68.658771 (50 iterations in 0.04 seconds)
-## Iteration 250: error is 69.498220 (50 iterations in 0.05 seconds)
-## Iteration 300: error is 1.533854 (50 iterations in 0.05 seconds)
-## Iteration 350: error is 1.257651 (50 iterations in 0.04 seconds)
-## Iteration 400: error is 1.216517 (50 iterations in 0.03 seconds)
-## Iteration 450: error is 1.203683 (50 iterations in 0.03 seconds)
-## Iteration 500: error is 1.195934 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.188450 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.184104 (50 iterations in 0.03 seconds)
-## Iteration 650: error is 1.177393 (50 iterations in 0.03 seconds)
-## Iteration 700: error is 1.170016 (50 iterations in 0.03 seconds)
-## Iteration 750: error is 1.161280 (50 iterations in 0.03 seconds)
-## Iteration 800: error is 1.156528 (50 iterations in 0.03 seconds)
-## Iteration 850: error is 1.148116 (50 iterations in 0.03 seconds)
-## Iteration 900: error is 1.134254 (50 iterations in 0.03 seconds)
-## Iteration 950: error is 1.132705 (50 iterations in 0.03 seconds)
-## Iteration 1000: error is 1.131891 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.63 seconds.</code></pre>
+## Iteration 50: error is 66.995025 (50 iterations in 0.08 seconds)
+## Iteration 100: error is 70.018829 (50 iterations in 0.08 seconds)
+## Iteration 150: error is 68.116503 (50 iterations in 0.06 seconds)
+## Iteration 200: error is 67.466036 (50 iterations in 0.04 seconds)
+## Iteration 250: error is 66.998093 (50 iterations in 0.04 seconds)
+## Iteration 300: error is 1.544602 (50 iterations in 0.04 seconds)
+## Iteration 350: error is 1.241143 (50 iterations in 0.04 seconds)
+## Iteration 400: error is 1.194769 (50 iterations in 0.03 seconds)
+## Iteration 450: error is 1.175262 (50 iterations in 0.03 seconds)
+## Iteration 500: error is 1.143995 (50 iterations in 0.03 seconds)
+## Iteration 550: error is 1.138668 (50 iterations in 0.03 seconds)
+## Iteration 600: error is 1.135504 (50 iterations in 0.04 seconds)
+## Iteration 650: error is 1.133477 (50 iterations in 0.03 seconds)
+## Iteration 700: error is 1.130866 (50 iterations in 0.03 seconds)
+## Iteration 750: error is 1.129118 (50 iterations in 0.03 seconds)
+## Iteration 800: error is 1.128002 (50 iterations in 0.03 seconds)
+## Iteration 850: error is 1.127543 (50 iterations in 0.03 seconds)
+## Iteration 900: error is 1.126630 (50 iterations in 0.03 seconds)
+## Iteration 950: error is 1.125301 (50 iterations in 0.03 seconds)
+## Iteration 1000: error is 1.123924 (50 iterations in 0.03 seconds)
+## Fitting performed in 0.77 seconds.</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit">
 <span class="kw">se.norm.tSNE</span>
 </pre></div>
@@ -645,19 +645,19 @@
 <div class="sourceCode" id="cb36"><pre class="downlit">
 <span class="kw">tt</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span>(factor_of_interest = <span class="kw">condition</span>) <span class="op">%&gt;%</span>    <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span>(  <span class="op">~</span> <span class="kw">condition</span>,  action=<span class="st">"only"</span>)
 </pre></div>
-<pre><code>## # A tibble: 393 x 7
-##    transcript  logFC logCPM     F   PValue    FDR significant
-##    &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;lgl&gt;      
-##  1 CLEC7A     -11.6   12.7  109.  0.000142 0.0170 TRUE       
-##  2 HK3        -12.2   13.5   90.1 0.000225 0.0170 TRUE       
-##  3 APOBEC3A    -8.93  11.1   77.7 0.000319 0.0170 TRUE       
-##  4 IGSF6       -7.78  10.5   71.8 0.000385 0.0170 TRUE       
-##  5 RASSF4      -8.38  12.4   69.0 0.000422 0.0170 TRUE       
-##  6 IL2RA        8.37   9.18  65.5 0.000477 0.0170 TRUE       
-##  7 TLR8        -9.94  11.6   64.3 0.000497 0.0170 TRUE       
-##  8 C5AR1       -9.97  12.2   56.7 0.000667 0.0170 TRUE       
-##  9 FCN1       -12.6   15.4   56.6 0.000670 0.0170 TRUE       
-## 10 CCR7         8.35  11.9   56.0 0.000687 0.0170 TRUE       
+<pre><code>## # A tibble: 393 x 6
+##    transcript  logFC logCPM     F   PValue    FDR
+##    &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+##  1 CLEC7A     -11.6   12.7  109.  0.000142 0.0170
+##  2 HK3        -12.2   13.5   90.1 0.000225 0.0170
+##  3 APOBEC3A    -8.93  11.1   77.7 0.000319 0.0170
+##  4 IGSF6       -7.78  10.5   71.8 0.000385 0.0170
+##  5 RASSF4      -8.38  12.4   69.0 0.000422 0.0170
+##  6 IL2RA        8.37   9.18  65.5 0.000477 0.0170
+##  7 TLR8        -9.94  11.6   64.3 0.000497 0.0170
+##  8 C5AR1       -9.97  12.2   56.7 0.000667 0.0170
+##  9 FCN1       -12.6   15.4   56.6 0.000670 0.0170
+## 10 CCR7         8.35  11.9   56.0 0.000687 0.0170
 ## # … with 383 more rows</code></pre>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb38"><pre class="downlit">
@@ -668,7 +668,7 @@
 ## metadata(0):
 ## assays(1): count
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
-## rowData names(6): logFC logCPM ... FDR significant
+## rowData names(5): logFC logCPM F PValue FDR
 ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
 ## colData names(3): Cell.type time condition</code></pre>
 </div>
@@ -850,18 +850,18 @@
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span>()
 </pre></div>
 <pre><code>## # A tibble: 251 x 5
-##    sample                       Call  tSNE1   tSNE2 `cluster SNN`
-##    &lt;chr&gt;                        &lt;fct&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;        
-##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA   8.19   7.23  1            
-##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA  -9.05  -2.24  2            
-##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA  -4.57  12.0   1            
-##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA   6.14  -0.601 0            
-##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB   8.08   2.45  0            
-##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA  -5.92   9.50  1            
-##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal -4.15 -32.1   3            
-##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA   6.30  -4.58  2            
-##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB   7.53  -5.62  2            
-## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA  -5.20  23.2   1            
+##    sample                       Call   tSNE1  tSNE2 `cluster SNN`
+##    &lt;chr&gt;                        &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;        
+##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA    1.00   8.11 1            
+##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA   -1.64  -6.35 2            
+##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA    1.71  15.5  1            
+##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA    3.16  -2.79 0            
+##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB    3.26   5.67 0            
+##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA    8.94   5.74 1            
+##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal   8.84 -30.6  3            
+##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA    2.16  -4.69 2            
+##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB  -12.2   -2.52 2            
+## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA    6.16  21.7  1            
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb58"><pre class="downlit">
 <span class="kw">tt.norm.SNN</span> <span class="op">%&gt;%</span>
@@ -880,19 +880,19 @@
     action=<span class="st">"only"</span>
    )
 </pre></div>
-<pre><code>## # A tibble: 488 x 7
-##    ens             logFC logCPM     F   PValue      FDR significant
-##    &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;lgl&gt;      
-##  1 ENSG00000111716  2.96   9.64  395. 1.22e-53 5.96e-51 TRUE       
-##  2 ENSG00000065978  1.59  10.2   381. 2.11e-52 5.14e-50 TRUE       
-##  3 ENSG00000186832  6.25   8.04  354. 4.93e-50 8.02e-48 TRUE       
-##  4 ENSG00000140545  2.69   9.53  343. 5.61e-49 6.85e-47 TRUE       
-##  5 ENSG00000181617  7.98   9.13  307. 1.39e-45 1.36e-43 TRUE       
-##  6 ENSG00000137673  3.89   8.26  273. 4.00e-42 3.25e-40 TRUE       
-##  7 ENSG00000143947  1.02  10.7   255. 3.95e-40 2.76e-38 TRUE       
-##  8 ENSG00000124107  4.66   8.61  240. 1.55e-38 9.47e-37 TRUE       
-##  9 ENSG00000092621  2.92   8.40  233. 9.35e-38 5.07e-36 TRUE       
-## 10 ENSG00000083444  1.37   9.40  232. 1.25e-37 6.08e-36 TRUE       
+<pre><code>## # A tibble: 488 x 6
+##    ens             logFC logCPM     F   PValue      FDR
+##    &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+##  1 ENSG00000111716  2.96   9.64  395. 1.22e-53 5.96e-51
+##  2 ENSG00000065978  1.59  10.2   381. 2.11e-52 5.14e-50
+##  3 ENSG00000186832  6.25   8.04  354. 4.93e-50 8.02e-48
+##  4 ENSG00000140545  2.69   9.53  343. 5.61e-49 6.85e-47
+##  5 ENSG00000181617  7.98   9.13  307. 1.39e-45 1.36e-43
+##  6 ENSG00000137673  3.89   8.26  273. 4.00e-42 3.25e-40
+##  7 ENSG00000143947  1.02  10.7   255. 3.95e-40 2.76e-38
+##  8 ENSG00000124107  4.66   8.61  240. 1.55e-38 9.47e-37
+##  9 ENSG00000092621  2.92   8.40  233. 9.35e-38 5.07e-36
+## 10 ENSG00000083444  1.37   9.40  232. 1.25e-37 6.08e-36
 ## # … with 478 more rows</code></pre>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
 <div class="sourceCode" id="cb61"><pre class="downlit">
@@ -1134,12 +1134,12 @@
 <div class="sourceCode" id="cb83"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()
 </pre></div>
-<pre><code>## R version 4.0.2 Patched (2020-09-17 r79226)
+<pre><code>## R version 4.0.2 Patched (2020-09-24 r79253)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 20.04.1 LTS
 ## 
 ## Matrix products: default
-## BLAS/LAPACK: /usr/lib/x86_64-linux-gnu/openblas-openmp/libopenblasp-r0.3.8.so
+## BLAS/LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.8.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -1153,9 +1153,9 @@
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] tidybulk_1.1.7   purrr_0.3.4      rlang_0.4.7      ggplot2_3.3.2   
+##  [1] tidybulk_1.1.8   purrr_0.3.4      rlang_0.4.7      ggplot2_3.3.2   
 ##  [5] tidyr_1.1.2      magrittr_1.5     dplyr_1.0.2      tibble_3.0.3    
-##  [9] knitr_1.30       BiocStyle_2.17.0
+##  [9] knitr_1.30       BiocStyle_2.17.1
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] backports_1.1.10            tidytext_0.2.6             

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
       </span>
     </div>
 
@@ -135,11 +135,12 @@
   .abundance = <span class='kw'>NULL</span>,
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  significance_threshold = <span class='fl'>0.05</span>,
-  fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  action = <span class='st'>"add"</span>
+  prefix = <span class='st'>""</span>,
+  action = <span class='st'>"add"</span>,
+  significance_threshold = <span class='kw'>NULL</span>,
+  fill_missing_values = <span class='kw'>NULL</span>
 )
 
 <span class='co'># S4 method for spec_tbl_df</span>
@@ -151,11 +152,12 @@
   .abundance = <span class='kw'>NULL</span>,
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  significance_threshold = <span class='fl'>0.05</span>,
-  fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  action = <span class='st'>"add"</span>
+  prefix = <span class='st'>""</span>,
+  action = <span class='st'>"add"</span>,
+  significance_threshold = <span class='kw'>NULL</span>,
+  fill_missing_values = <span class='kw'>NULL</span>
 )
 
 <span class='co'># S4 method for tbl_df</span>
@@ -167,11 +169,12 @@
   .abundance = <span class='kw'>NULL</span>,
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  significance_threshold = <span class='fl'>0.05</span>,
-  fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  action = <span class='st'>"add"</span>
+  prefix = <span class='st'>""</span>,
+  action = <span class='st'>"add"</span>,
+  significance_threshold = <span class='kw'>NULL</span>,
+  fill_missing_values = <span class='kw'>NULL</span>
 )
 
 <span class='co'># S4 method for tidybulk</span>
@@ -183,11 +186,12 @@
   .abundance = <span class='kw'>NULL</span>,
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  significance_threshold = <span class='fl'>0.05</span>,
-  fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  action = <span class='st'>"add"</span>
+  prefix = <span class='st'>""</span>,
+  action = <span class='st'>"add"</span>,
+  significance_threshold = <span class='kw'>NULL</span>,
+  fill_missing_values = <span class='kw'>NULL</span>
 )
 
 <span class='co'># S4 method for SummarizedExperiment</span>
@@ -199,11 +203,12 @@
   .abundance = <span class='kw'>NULL</span>,
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  significance_threshold = <span class='fl'>0.05</span>,
-  fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  action = <span class='st'>"add"</span>
+  prefix = <span class='st'>""</span>,
+  action = <span class='st'>"add"</span>,
+  significance_threshold = <span class='kw'>NULL</span>,
+  fill_missing_values = <span class='kw'>NULL</span>
 )
 
 <span class='co'># S4 method for RangedSummarizedExperiment</span>
@@ -215,11 +220,12 @@
   .abundance = <span class='kw'>NULL</span>,
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  significance_threshold = <span class='fl'>0.05</span>,
-  fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  action = <span class='st'>"add"</span>
+  prefix = <span class='st'>""</span>,
+  action = <span class='st'>"add"</span>,
+  significance_threshold = <span class='kw'>NULL</span>,
+  fill_missing_values = <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -254,14 +260,6 @@
       <td><p>A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom"</p></td>
     </tr>
     <tr>
-      <th>significance_threshold</th>
-      <td><p>A real between 0 and 1 (usually 0.05).</p></td>
-    </tr>
-    <tr>
-      <th>fill_missing_values</th>
-      <td><p>A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.</p></td>
-    </tr>
-    <tr>
       <th>scaling_method</th>
       <td><p>A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")</p></td>
     </tr>
@@ -270,8 +268,20 @@
       <td><p>If just one contrast is specified you can choose to omit the contrast label in the colnames.</p></td>
     </tr>
     <tr>
+      <th>prefix</th>
+      <td><p>A character string. The prefix you would like to add to the result columns. It is useful if you want to compare several methods.</p></td>
+    </tr>
+    <tr>
       <th>action</th>
       <td><p>A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).</p></td>
+    </tr>
+    <tr>
+      <th>significance_threshold</th>
+      <td><p>A real between 0 and 1 (usually 0.05).</p></td>
+    </tr>
+    <tr>
+      <th>fill_missing_values</th>
+      <td><p>A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.</p></td>
     </tr>
     </table>
 
@@ -324,7 +334,9 @@ DESeq2::results()</p>
  <span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>) <span class='op'>%&gt;%</span> 
  <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span>() <span class='op'>%&gt;%</span> 
   <span class='fu'>test_differential_abundance</span>( <span class='op'>~</span> <span class='kw'>condition</span> )
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "(Intercept), conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 2,635 x 13</span><span>
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: All methods use raw counts, </span>
+#&gt; <span class='message'>irrespective of if scale_abundance or adjust_abundance have been calculated, </span>
+#&gt; <span class='message'>therefore it is essential to add covariates such as batch effects (if applicable) in the formula.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "(Intercept), conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 2,635 x 12</span><span>
 #&gt;    sample transcript `Cell type` count time  condition .abundant  logFC logCPM
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
 #&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… TNFRSF4    b_cell          6 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
@@ -337,8 +349,8 @@ DESeq2::results()</p>
 #&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE      TRUE       0.858   13.2
 #&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… LCK        b_cell        436 0 d   TRUE      TRUE       6.88    12.2
 #&gt; </span><span style='color: #555555;'>10</span><span> SRR17… COL8A2     b_cell          1 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
-#&gt; </span><span style='color: #555555;'># … with 2,625 more rows, and 4 more variables: F </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, PValue </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
-#&gt; </span><span style='color: #555555;'>#   FDR </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, significant </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span></div><div class='input'>
+#&gt; </span><span style='color: #555555;'># … with 2,625 more rows, and 3 more variables: F </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, PValue </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
+#&gt; </span><span style='color: #555555;'>#   FDR </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span></div><div class='input'>
   <span class='co'># The function `test_differential_abundance` operates with contrasts too</span>
 
  <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span>
@@ -348,7 +360,9 @@ DESeq2::results()</p>
       <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>+</span> <span class='kw'>condition</span>,
       .contrasts = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>( <span class='st'>"conditionTRUE - conditionFALSE"</span>)
  )
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "conditionFALSE, conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 2,635 x 13</span><span>
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: All methods use raw counts, </span>
+#&gt; <span class='message'>irrespective of if scale_abundance or adjust_abundance have been calculated, </span>
+#&gt; <span class='message'>therefore it is essential to add covariates such as batch effects (if applicable) in the formula.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "conditionFALSE, conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 2,635 x 12</span><span>
 #&gt;    sample transcript `Cell type` count time  condition .abundant
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>    
 #&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… TNFRSF4    b_cell          6 0 d   TRUE      FALSE    
@@ -361,11 +375,10 @@ DESeq2::results()</p>
 #&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE      TRUE     
 #&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… LCK        b_cell        436 0 d   TRUE      TRUE     
 #&gt; </span><span style='color: #555555;'>10</span><span> SRR17… COL8A2     b_cell          1 0 d   TRUE      FALSE    
-#&gt; </span><span style='color: #555555;'># … with 2,625 more rows, and 6 more variables: `logFC___conditionTRUE -</span><span>
+#&gt; </span><span style='color: #555555;'># … with 2,625 more rows, and 5 more variables: `logFC___conditionTRUE -</span><span>
 #&gt; </span><span style='color: #555555;'>#   conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `logCPM___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
 #&gt; </span><span style='color: #555555;'>#   `F___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `PValue___conditionTRUE -</span><span>
-#&gt; </span><span style='color: #555555;'>#   conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `FDR___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
-#&gt; </span><span style='color: #555555;'>#   `significant___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span></div><div class='input'>
+#&gt; </span><span style='color: #555555;'>#   conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `FDR___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span></div><div class='input'>
 
 </div></span></pre>
   </div>

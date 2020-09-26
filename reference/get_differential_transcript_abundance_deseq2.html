@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
       </span>
     </div>
 
@@ -135,12 +135,9 @@
   .abundance = <span class='kw'>NULL</span>,
   .contrasts = <span class='kw'>NULL</span>,
   method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  significance_threshold = <span class='fl'>0.05</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>,
-  fill_missing_values = <span class='fl'>FALSE</span>,
   scaling_method = <span class='st'>"TMM"</span>,
-  omit_contrast_in_colnames = <span class='fl'>FALSE</span>
+  omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
+  prefix = <span class='st'>""</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -173,22 +170,6 @@
     <tr>
       <th>method</th>
       <td><p>A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)</p></td>
-    </tr>
-    <tr>
-      <th>significance_threshold</th>
-      <td><p>A real between 0 and 1</p></td>
-    </tr>
-    <tr>
-      <th>minimum_counts</th>
-      <td><p>A positive integer. Minimum counts required for at least some samples.</p></td>
-    </tr>
-    <tr>
-      <th>minimum_proportion</th>
-      <td><p>A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.</p></td>
-    </tr>
-    <tr>
-      <th>fill_missing_values</th>
-      <td><p>A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.</p></td>
     </tr>
     <tr>
       <th>scaling_method</th>
