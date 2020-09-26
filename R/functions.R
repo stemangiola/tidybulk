@@ -321,7 +321,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
-		mutate_if(is.factor, as.character()) 
+		droplevels() 
 	#%>%
 
 		# # Check if data rectangular
@@ -537,7 +537,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
-		mutate_if(is.factor, as.character()) 
+		droplevels() 
 	# %>%
 
 		# # Check if data rectangular
@@ -769,8 +769,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 				(.) %>%
 				DESeq2::results(contrast = c(
 					parse_formula(.formula)[1],
-					deseq2_object@colData[,parse_formula(.formula)[1]] %>% levels %>% .[1],
-					deseq2_object@colData[,parse_formula(.formula)[1]] %>% levels %>% .[2]
+					deseq2_object@colData[,parse_formula(.formula)[1]] %>% levels %>% .[2],
+					deseq2_object@colData[,parse_formula(.formula)[1]] %>% levels %>% .[1]
 				)) %>%
 				as_tibble(rownames = quo_name(.transcript)), 
 
