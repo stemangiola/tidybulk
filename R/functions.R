@@ -321,7 +321,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
-		mutate_if(is.factor, as.character()) 
+		droplevels() 
 	#%>%
 
 		# # Check if data rectangular
@@ -537,7 +537,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
-		mutate_if(is.factor, as.character()) 
+		droplevels() 
 	# %>%
 
 		# # Check if data rectangular
@@ -743,15 +743,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
-		mutate_if(is.factor, as.character()) %>%
-
-		# # Check if data rectangular
-		# ifelse2_pipe(
-		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
-		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
-		# 	~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
-		# 	~ .x %>% eliminate_sparse_transcripts(!!.transcript)
-		# ) %>%
+		droplevels() %>%
 
 		# Needed for DESeq2
 		mutate(!!.abundance := as.integer(!!.abundance)) %>%
@@ -770,25 +762,27 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 	deseq2_object %>%
 
 		# If I have multiple .contrasts merge the results
-		ifelse_pipe(
-			my_contrasts %>% is.null | omit_contrast_in_colnames,
-
+		when(
+			
 			# Simple comparison
-			~ .x %>%
-
+			(my_contrasts %>% is.null | omit_contrast_in_colnames) & (deseq2_object@colData[,parse_formula(.formula)[1]] %>% class %in% c("numeric", "integer", "double")) 	~ 
+				(.) %>%
 				DESeq2::results() %>%
-				as_tibble(rownames = quo_name(.transcript)) 
-			# %>%
+				as_tibble(rownames = quo_name(.transcript)), 
+			
+			# Simple comparison
+			my_contrasts %>% is.null | omit_contrast_in_colnames	~ 
+				(.) %>%
+				DESeq2::results(contrast = c(
+					parse_formula(.formula)[1],
+					deseq2_object@colData[,parse_formula(.formula)[1]] %>% levels %>% .[2],
+					deseq2_object@colData[,parse_formula(.formula)[1]] %>% levels %>% .[1]
+				)) %>%
+				as_tibble(rownames = quo_name(.transcript)), 
 
-				# # Mark DE genes
-				# mutate(significant = padj < significance_threshold) 	%>%
-
-				# # Arrange
-				# arrange(padj),
-
-			# Multiple comparisons
+			# Multiple comparisons NOT USED AT THE MOMENT
 			~ {
-				deseq2_obj = .x
+				deseq2_obj = (.)
 
 				1:ncol(my_contrasts) %>%
 					map_dfr(
@@ -800,20 +794,12 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 							# Convert to tibble
 							as_tibble(rownames = quo_name(.transcript)) %>%
 							mutate(constrast = colnames(my_contrasts)[.x]) 
-							# %>%
-							# 
-							# # Mark DE genes
-							# mutate(significant = padj < significance_threshold)
+
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
 											names_from = constrast, names_sep = "___")
 			}
 		)	 %>%
-
-		# # Add filtering info
-		# right_join(.data %>% distinct(!!.transcript)) %>%
-		# when(!"lowly_abundant" %in% colnames(.data) ~ (.) %>%	mutate(lowly_abundant = if_else(is.na(log2FoldChange), T, F)) ,
-		# 		 ~ (.))	%>%
 
 		# Attach prefix
 		setNames(c(
@@ -827,6 +813,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 		# Add raw object
 		attach_to_internals(deseq2_object, "DESeq2") %>%
+		
 		# Communicate the attribute added
 		{
 			message(
