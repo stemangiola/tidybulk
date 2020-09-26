@@ -1961,7 +1961,7 @@ setGeneric("test_differential_abundance", function(.data,
 	.abundance = col_names$.abundance
 
 	# DEPRECATION OF significance_threshold
-	if (is_present(significance_threshold)) {
+	if (is_present(significance_threshold) & !is.null(significance_threshold)) {
 		
 		# Signal the deprecation to the user
 		deprecate_warn("1.1.7", "tidybulk::test_differential_abundance(significance_threshold = )", details = "The argument significance_threshold is now deprecated please look at the resulting statistics to do the filtering (e.g., filter(., FDR < 0.05))")
@@ -1969,7 +1969,7 @@ setGeneric("test_differential_abundance", function(.data,
 	}
 	
 	# DEPRECATION OF fill_missing_values
-	if (is_present(fill_missing_values)) {
+	if (is_present(fill_missing_values) & !is.null(significance_threshold)) {
 		
 		# Signal the deprecation to the user
 		deprecate_warn("1.1.7", "tidybulk::test_differential_abundance(fill_missing_values = )", details = "The argument fill_missing_values is now deprecated, you will receive a warning/error instead. Please use externally the methods fill_missing_abundance or impute_missing_abundance instead.")
