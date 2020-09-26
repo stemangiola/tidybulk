@@ -282,7 +282,7 @@ setMethod("reduce_dimensions",
 																 dimension_2_column_rotated = NULL,
 																 action =
 																 	"add") {
-	# Get column names
+	# Get column namest
 	.element = enquo(.element)
 	
 	# Parse other colnames
@@ -617,11 +617,15 @@ setMethod(
 																					 .abundance = NULL,
 																					 .contrasts = NULL,
 																					 method = "edgeR_quasi_likelihood",
-																					 significance_threshold = 0.05,
-																					 fill_missing_values = FALSE,
 																					 scaling_method = "TMM",
 																					 omit_contrast_in_colnames = FALSE,
-																					 action = "add")
+																					 prefix = "",
+																					 
+																					 action = "add",
+																					 
+																					 # DEPRECATED
+																					 significance_threshold = NULL,
+																					 fill_missing_values = NULL)
 {
 	# Make col names
 	.sample = enquo(.sample)
@@ -641,8 +645,6 @@ setMethod(
 			.abundance = !!.abundance,
 			.contrasts = .contrasts,
 			method = method,
-			significance_threshold = significance_threshold,
-			fill_missing_values = fill_missing_values,
 			scaling_method = scaling_method,
 			omit_contrast_in_colnames = omit_contrast_in_colnames,
 			action = action
