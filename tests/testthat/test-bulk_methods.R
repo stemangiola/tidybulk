@@ -524,7 +524,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	res_deseq2 = 
 		test_deseq2_df %>%
 		DESeq2::DESeq() %>%
-		results()
+		DESeq2::results()
 	
 	res_tidybulk = 
 		test_deseq2_df %>%
@@ -552,7 +552,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
-		c(-12.322037, -11.670005 , -9.048954 ,-12.603183),
+		c(3.449740, 2.459516, 2.433466, 1.951263),
 		tolerance=1e-6
 	)
 	
@@ -580,7 +580,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
-		c(-3.656244 ,-3.241215, -3.037658,  4.173217),
+		c(-1.1906895, -0.4422231,  0.9656122, -0.3328515),
 		tolerance=1e-6
 	)
 	
@@ -605,7 +605,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
-		c(-10.432623,  -6.747017,  -7.598174 ,  6.598429),
+		c(1.1110210, 3.0077779, 0.9024256, 4.7259792),
 		tolerance=1e-6
 	)
 	

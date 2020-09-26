@@ -765,6 +765,12 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		when(
 			
 			# Simple comparison
+			(my_contrasts %>% is.null | omit_contrast_in_colnames) & (deseq2_object@colData[,parse_formula(.formula)[1]] %>% class %in% c("numeric", "integer", "double")) 	~ 
+				(.) %>%
+				DESeq2::results() %>%
+				as_tibble(rownames = quo_name(.transcript)), 
+			
+			# Simple comparison
 			my_contrasts %>% is.null | omit_contrast_in_colnames	~ 
 				(.) %>%
 				DESeq2::results(contrast = c(
