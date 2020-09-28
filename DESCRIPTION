@@ -28,6 +28,7 @@ Imports:
     utils,
     lifecycle,
     scales,
+    functional,
     SummarizedExperiment,
     methods
 Suggests:
