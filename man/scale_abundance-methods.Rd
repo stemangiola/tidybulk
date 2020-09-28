@@ -61,7 +61,8 @@ scale_abundance(
   .abundance = NULL,
   method = "TMM",
   reference_sample = NULL,
-  action = "add"
+  action = "add",
+  reference_selection_function = NULL
 )
 
 \S4method{scale_abundance}{RangedSummarizedExperiment}(
@@ -71,7 +72,8 @@ scale_abundance(
   .abundance = NULL,
   method = "TMM",
   reference_sample = NULL,
-  action = "add"
+  action = "add",
+  reference_selection_function = NULL
 )
 }
 \arguments{
