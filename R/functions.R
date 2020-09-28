@@ -137,7 +137,7 @@ create_tt_from_bam_sam_bulk <-
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param reference_selection_function A function between median, mean and max
+#' @param reference_sample A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference. 
 #'
 #' @return A tibble including additional columns
 #'
@@ -147,7 +147,7 @@ get_scaled_counts_bulk <- function(.data,
 																	 .transcript = NULL,
 																	 .abundance = NULL,
 																	 method = "TMM",
-																	 reference_selection_function = median) {
+																	 reference_sample = NULL) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -172,17 +172,24 @@ get_scaled_counts_bulk <- function(.data,
 		dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript))
 
 
-	# Get norm factor object
+	# Get reference
 	reference <-
-		df %>%
-		group_by(!!.sample) %>%
-		summarise(sum = sum(!!.abundance)) %>%
-		mutate(med = reference_selection_function(sum)) %>%
-		mutate(diff = abs(sum - med)) %>%
-		arrange(diff) %>%
-		head(n = 1) %>%
-		pull(!!.sample) %>%
-		as.character()
+		reference_sample %>%
+		when(
+			!is.null(.) ~ (.),
+			
+			# If not specified take most abundance sample
+			df %>%
+				group_by(!!.sample) %>%
+				summarise(sum = sum(!!.abundance)) %>%
+				mutate(med = max(sum)) %>%
+				mutate(diff = abs(sum - med)) %>%
+				arrange(diff) %>%
+				head(n = 1) %>%
+				pull(!!.sample) %>%
+				as.character()
+		)
+		
 
 	nf_obj <-
 		add_scaled_counts_bulk.calcNormFactor(

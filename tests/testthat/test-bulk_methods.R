@@ -53,7 +53,7 @@ test_that("Only scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.1364132 ,1.0303535 ,2.2409094, 0.8191984,1.8383722),
+		c(1.2994008, 1.1781297, 2.6996428, 0.9702628, 1.8290148),
 		tolerance=1e-6
 	)
 
@@ -80,7 +80,7 @@ test_that("Only scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.1097162, 1.0433503 ,1.3430420, 0.8464847, 1.0928654),
+		c(1.3078113, 1.1929933, 1.9014731, 0.9678922, 1.4771970),
 		tolerance=1e-6
 	)
 
@@ -118,7 +118,7 @@ test_that("Getting scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.1364132, 1.0303535, 2.2409094 ,0.8191984, 1.8383722),
+		c(1.2994008, 1.1781297, 2.6996428, 0.9702628, 1.8290148),
 		tolerance=1e-6
 	)
 
@@ -143,7 +143,7 @@ test_that("Adding scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.1364132, 1.0303535, 2.2409094, 0.8191984, 1.8383722),
+		c(1.2994008, 1.1781297, 2.6996428, 0.9702628, 1.8290148),
 		tolerance=1e-6
 	)
 
