@@ -1010,6 +1010,41 @@ log10_reverse_trans <- function() {
 	trans_new("log10_reverse", trans, inv, log_breaks(base = 10))
 }
 
+#' logit scale
+#'
+#' \lifecycle{maturing}
+#'
+#' @description it perform logit scaling with right axis formatting. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
+#'
+#' @importFrom scales label_scientific
+#' @import functional
+#'
+#' @return A scales object
+#'
+#' @examples
+#'
+#' library(ggplot2)
+#' library(tibble)
+#'
+#' tibble(pvalue = c(0.001, 0.05, 0.1), fold_change = 1:3) %>%
+#'  ggplot(aes(fold_change , pvalue)) +
+#'  geom_point() +
+#'  scale_y_continuous(trans = "log10_reverse")
+#'
+#' @export
+logit_trans <- function(){
+	trans <- qlogis
+	inv <- plogis
+	
+	trans_new("logit",
+						transform = trans,
+						inverse = inv,
+						breaks = Compose(trans, extended_breaks(), inv),
+						format = scales::label_scientific(digits = 2)
+	)
+}
+
+
 #' Convert array of quosure (e.g. c(col_a, col_b)) into character vector
 #'
 #' @keywords internal
