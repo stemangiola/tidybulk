@@ -162,9 +162,11 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param reference_selection_function A function that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.
+#' @param reference_sample A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference. 
 #' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
 #'
+#' @param reference_selection_function DEPRECATED. please use reference_sample.
+#' 
 #' @details Scales transcript abundance compensating for sequencing depth
 #' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #' Lowly transcribed transcripts/genes (defined with minimum_counts and minimum_proportion parameters)
@@ -198,8 +200,11 @@ setGeneric("scale_abundance", function(.data,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
 																			 method = "TMM",
-																			 reference_selection_function = median,
-																			 action = "add")
+																			 reference_sample = NULL,
+																			 action = "add",
+																			 
+																			 # DEPRECATED
+																			 reference_selection_function = NULL)
 	standardGeneric("scale_abundance"))
 
 # Set internal
@@ -208,8 +213,11 @@ setGeneric("scale_abundance", function(.data,
 														 .transcript = NULL,
 														 .abundance = NULL,
 														 method = "TMM",
-														 reference_selection_function = median,
-														 action = "add")
+														 reference_sample = NULL,
+														 action = "add",
+														 
+														 # DEPRECATED
+														 reference_selection_function = NULL)
 {
 	# Get column names
 	.sample = enquo(.sample)
@@ -222,13 +230,25 @@ setGeneric("scale_abundance", function(.data,
 
 	# Set column name for value scaled
 	value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
-	
+
+	# DEPRECATION OF reference function
+	if (is_present(reference_selection_function) & !is.null(reference_selection_function)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.1.8", "tidybulk::scale_abundance(reference_selection_function = )", details = "The argument reference_selection_function is now deprecated please use reference_sample. By default the reference selection function is max()")
+		
+	}
+
 	# Validate data frame
 	if(do_validate()) {
 		validation(.data, !!.sample, !!.transcript, !!.abundance)
 		warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 	}
 		
+	# Check that reference sample exists
+	if(!is.null(reference_sample) && !reference_sample %in% (.data %>% pull(!!.sample)))
+		stop("tidybulk says: your reference sample is not among the samples in your data frame")
+	
 	.data_norm =
 		.data %>%
 		
@@ -246,7 +266,7 @@ setGeneric("scale_abundance", function(.data,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
 			method = method,
-			reference_selection_function = reference_selection_function
+			reference_sample = reference_sample
 		) %>%
 		
 		# Attach column internals
@@ -1964,7 +1984,7 @@ setGeneric("test_differential_abundance", function(.data,
 	if (is_present(significance_threshold) & !is.null(significance_threshold)) {
 		
 		# Signal the deprecation to the user
-		deprecate_warn("1.1.7", "tidybulk::test_differential_abundance(significance_threshold = )", details = "The argument significance_threshold is now deprecated please look at the resulting statistics to do the filtering (e.g., filter(., FDR < 0.05))")
+		deprecate_warn("1.1.7", "tidybulk::test_differential_abundance(significance_threshold = )", details = "The argument significance_threshold is now deprecated, tigether with the column significance.")
 		
 	}
 	

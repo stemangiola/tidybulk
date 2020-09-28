@@ -16,8 +16,9 @@ scale_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "TMM",
-  reference_selection_function = median,
-  action = "add"
+  reference_sample = NULL,
+  action = "add",
+  reference_selection_function = NULL
 )
 
 \S4method{scale_abundance}{spec_tbl_df}(
@@ -26,8 +27,9 @@ scale_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "TMM",
-  reference_selection_function = median,
-  action = "add"
+  reference_sample = NULL,
+  action = "add",
+  reference_selection_function = NULL
 )
 
 \S4method{scale_abundance}{tbl_df}(
@@ -36,8 +38,9 @@ scale_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "TMM",
-  reference_selection_function = median,
-  action = "add"
+  reference_sample = NULL,
+  action = "add",
+  reference_selection_function = NULL
 )
 
 \S4method{scale_abundance}{tidybulk}(
@@ -46,8 +49,9 @@ scale_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "TMM",
-  reference_selection_function = median,
-  action = "add"
+  reference_sample = NULL,
+  action = "add",
+  reference_selection_function = NULL
 )
 
 \S4method{scale_abundance}{SummarizedExperiment}(
@@ -56,7 +60,7 @@ scale_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "TMM",
-  reference_selection_function = median,
+  reference_sample = NULL,
   action = "add"
 )
 
@@ -66,7 +70,7 @@ scale_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "TMM",
-  reference_selection_function = median,
+  reference_sample = NULL,
   action = "add"
 )
 }
@@ -81,9 +85,11 @@ scale_abundance(
 
 \item{method}{A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
-\item{reference_selection_function}{A function that is used to selecting the reference sample for scaling. It could be max (default), which choose the sample with maximum library size; or median, which chooses the sample with median library size.}
+\item{reference_sample}{A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.}
 
 \item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
+
+\item{reference_selection_function}{DEPRECATED. please use reference_sample.}
 }
 \value{
 A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`

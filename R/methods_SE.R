@@ -88,8 +88,11 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 															 .transcript = NULL,
 															 .abundance = NULL,
 															 method = "TMM",
-															 reference_selection_function = median,
-															 action = "add") {
+															 reference_sample = NULL,
+															 action = "add",
+															 
+															 # DEPRECATED
+															 reference_selection_function = NULL) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -106,8 +109,9 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 			!!.transcript,
 			!!.abundance,
 			method = method,
-			reference_selection_function = reference_selection_function,
-			action = action
+			reference_sample = reference_sample,
+			action = action,
+			reference_selection_function = reference_selection_function
 		) %>%
 		
 		# Convert to SummaizedExperiment

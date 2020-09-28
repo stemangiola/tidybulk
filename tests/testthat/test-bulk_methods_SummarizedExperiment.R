@@ -30,7 +30,7 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 
 	expect_equal(
 		res[1:4,]$`counts_scaled`,
-		c(1341.524911 , 868.525246,  908.281684 ,   2.038792),
+		c(1796.091258, 1162.818960, 1216.046589,    2.729622),
 		tolerance=1e-3
 	)
 
