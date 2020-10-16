@@ -117,7 +117,7 @@ test_differential_abundance(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
+\item{.contrasts}{This parameter takes the shape of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vectors of length three. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
 \item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom"}
 

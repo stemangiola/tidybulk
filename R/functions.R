@@ -703,6 +703,16 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
 																											 prefix = "") {
+	
+	# Check if contrasts are of the same form
+	if(.contrasts %>% class %>% equals("list") %>% not())
+		stop(
+			"tidybulk says: for the moment, the .contrasts argument for", "\n",
+			"DESeq2 gets directly passed to DESeq2 method.", "\n",
+			"Contrasts must be a list that contains contrasts of", "\n",
+			"the form c(\"condition\",\"C\",\"B\")"
+		)
+	
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -735,8 +745,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 	# 	)
 	# )
 
-	my_contrasts =
-		NULL
+	my_contrasts = .contrasts
 
 
 	deseq2_object =
@@ -771,14 +780,16 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		# If I have multiple .contrasts merge the results
 		when(
 			
-			# Simple comparison
-			(my_contrasts %>% is.null | omit_contrast_in_colnames) & (deseq2_object@colData[,parse_formula(.formula)[1]] %>% class %in% c("numeric", "integer", "double")) 	~ 
+			# Simple comparison continuous
+			(my_contrasts %>% is.null ) & 
+				(deseq2_object@colData[,parse_formula(.formula)[1]] %>% 
+				 	class %in% c("numeric", "integer", "double")) 	~ 
 				(.) %>%
 				DESeq2::results() %>%
 				as_tibble(rownames = quo_name(.transcript)), 
 			
-			# Simple comparison
-			my_contrasts %>% is.null | omit_contrast_in_colnames	~ 
+			# Simple comparison discrete
+			my_contrasts %>% is.null 	~ 
 				(.) %>%
 				DESeq2::results(contrast = c(
 					parse_formula(.formula)[1],
@@ -787,20 +798,26 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 				)) %>%
 				as_tibble(rownames = quo_name(.transcript)), 
 
+			# Simple comparison discrete
+			my_contrasts %>% is.null %>% not() & omit_contrast_in_colnames	~ 
+				(.) %>%
+				DESeq2::results(contrast = my_contrasts[[1]])%>%
+				as_tibble(rownames = quo_name(.transcript)), 
+			
 			# Multiple comparisons NOT USED AT THE MOMENT
 			~ {
 				deseq2_obj = (.)
 
-				1:ncol(my_contrasts) %>%
+				1:length(my_contrasts) %>%
 					map_dfr(
 						~ 	deseq2_obj %>%
 
 							# select method
-							DESeq2::results()	%>%
+							DESeq2::results(contrast = my_contrasts[[.x]])	%>%
 
 							# Convert to tibble
 							as_tibble(rownames = quo_name(.transcript)) %>%
-							mutate(constrast = colnames(my_contrasts)[.x]) 
+							mutate(constrast = sprintf("%s %s-%s", my_contrasts[[.x]][1], my_contrasts[[.x]][2], my_contrasts[[.x]][3]) ) 
 
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
