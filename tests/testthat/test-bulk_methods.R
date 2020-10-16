@@ -630,6 +630,52 @@ test_that("DESeq2 differential trancript abundance - no object",{
 		"design has a single variable"
 	)
 	
+	# # Contrasts
+	# input_df %>%
+	# 	identify_abundant(a, b, c, factor_of_interest = condition) %>%
+	# 	test_differential_abundance(
+	# 		~ 0 + condition,
+	# 		.sample = a,
+	# 		.transcript = b,
+	# 		.abundance = c,
+	# 		method = "deseq2", 
+	# 		.contrasts = "this_is - wrong",
+	# 		action="only"
+	# 	) %>%
+	# expect_error("for the moment, the .contrasts argument")
+	
+	deseq2_contrasts = 
+		input_df %>%
+		identify_abundant(a, b, c, factor_of_interest = condition) %>%
+		test_differential_abundance(
+			~ 0 + condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "deseq2", 
+			.contrasts = list(c("condition", "TRUE", "FALSE")),
+			action="only"
+		) 
+	
+	edger_contrasts = 
+		input_df %>%
+		identify_abundant(a, b, c, factor_of_interest = condition) %>%
+		test_differential_abundance(
+			~ 0 + condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			.contrasts = "conditionTRUE - conditionFALSE",
+			action="only"
+		) 
+	
+	library(dplyr)
+	expect_gt(
+		(deseq2_contrasts %>% filter(b=="ABCB4") %>% pull(3)) *
+			(edger_contrasts %>% filter(b=="ABCB4") %>% pull(2)),
+		0
+	)
+	
 })
 
 test_that("test prefix",{
