@@ -705,7 +705,10 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 																											 prefix = "") {
 	
 	# Check if contrasts are of the same form
-	if(.contrasts %>% class %>% equals("list") %>% not())
+	if(
+		.contrasts %>% is.null %>% not() &
+		.contrasts %>% class %>% equals("list") %>% not()
+	)
 		stop(
 			"tidybulk says: for the moment, the .contrasts argument for", "\n",
 			"DESeq2 gets directly passed to DESeq2 method.", "\n",
