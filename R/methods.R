@@ -1997,9 +1997,11 @@ setGeneric("test_differential_abundance", function(.data,
 	}
 	
 	# Clearly state what counts are used
-	message("tidybulk says: All methods use raw counts, 
-irrespective of if scale_abundance or adjust_abundance have been calculated, 
-therefore it is essential to add covariates such as batch effects (if applicable) in the formula.")
+	message("=====================================
+tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance 
+or adjust_abundance have been calculated. Therefore, it is essential to add covariates 
+such as batch effects (if applicable) in the formula.
+=====================================")
 	
 	# Validate data frame
 	if(do_validate()) {
