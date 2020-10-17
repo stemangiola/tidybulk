@@ -709,7 +709,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		.contrasts %>% is.null %>% not() &
 		.contrasts %>% class %>% equals("list") %>% not()
 	)
-		stop("tidybulk says: for DESeq2 the list of constrasts should be given of the form list(c(\"condition\",\"C\",\"B\"))")
+		stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
 	
 	# Get column names
 	.sample = enquo(.sample)
