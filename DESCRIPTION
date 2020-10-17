@@ -63,7 +63,8 @@ Suggests:
     tidyHeatmap,
     pasilla,
     ggrepel,
-    devtools
+    devtools,
+    functional
 VignetteBuilder: 
     knitr
 RdMacros:
