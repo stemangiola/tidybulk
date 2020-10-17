@@ -10,7 +10,7 @@ get_scaled_counts_bulk(
   .transcript = NULL,
   .abundance = NULL,
   method = "TMM",
-  reference_selection_function = median
+  reference_sample = NULL
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ get_scaled_counts_bulk(
 
 \item{method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
-\item{reference_selection_function}{A function between median, mean and max}
+\item{reference_sample}{A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.}
 }
 \value{
 A tibble including additional columns

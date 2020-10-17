@@ -137,7 +137,7 @@ create_tt_from_bam_sam_bulk <-
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param reference_selection_function A function between median, mean and max
+#' @param reference_sample A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference. 
 #'
 #' @return A tibble including additional columns
 #'
@@ -147,7 +147,7 @@ get_scaled_counts_bulk <- function(.data,
 																	 .transcript = NULL,
 																	 .abundance = NULL,
 																	 method = "TMM",
-																	 reference_selection_function = median) {
+																	 reference_sample = NULL) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -172,17 +172,24 @@ get_scaled_counts_bulk <- function(.data,
 		dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript))
 
 
-	# Get norm factor object
+	# Get reference
 	reference <-
-		df %>%
-		group_by(!!.sample) %>%
-		summarise(sum = sum(!!.abundance)) %>%
-		mutate(med = reference_selection_function(sum)) %>%
-		mutate(diff = abs(sum - med)) %>%
-		arrange(diff) %>%
-		head(n = 1) %>%
-		pull(!!.sample) %>%
-		as.character()
+		reference_sample %>%
+		when(
+			!is.null(.) ~ (.),
+			
+			# If not specified take most abundance sample
+			df %>%
+				group_by(!!.sample) %>%
+				summarise(sum = sum(!!.abundance)) %>%
+				mutate(med = max(sum)) %>%
+				mutate(diff = abs(sum - med)) %>%
+				arrange(diff) %>%
+				head(n = 1) %>%
+				pull(!!.sample) %>%
+				as.character()
+		)
+		
 
 	nf_obj <-
 		add_scaled_counts_bulk.calcNormFactor(
@@ -696,6 +703,14 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
 																											 prefix = "") {
+	
+	# Check if contrasts are of the same form
+	if(
+		.contrasts %>% is.null %>% not() &
+		.contrasts %>% class %>% equals("list") %>% not()
+	)
+		stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
+	
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -728,8 +743,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 	# 	)
 	# )
 
-	my_contrasts =
-		NULL
+	my_contrasts = .contrasts
 
 
 	deseq2_object =
@@ -764,14 +778,16 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		# If I have multiple .contrasts merge the results
 		when(
 			
-			# Simple comparison
-			(my_contrasts %>% is.null | omit_contrast_in_colnames) & (deseq2_object@colData[,parse_formula(.formula)[1]] %>% class %in% c("numeric", "integer", "double")) 	~ 
+			# Simple comparison continuous
+			(my_contrasts %>% is.null ) & 
+				(deseq2_object@colData[,parse_formula(.formula)[1]] %>% 
+				 	class %in% c("numeric", "integer", "double")) 	~ 
 				(.) %>%
 				DESeq2::results() %>%
 				as_tibble(rownames = quo_name(.transcript)), 
 			
-			# Simple comparison
-			my_contrasts %>% is.null | omit_contrast_in_colnames	~ 
+			# Simple comparison discrete
+			my_contrasts %>% is.null 	~ 
 				(.) %>%
 				DESeq2::results(contrast = c(
 					parse_formula(.formula)[1],
@@ -780,20 +796,26 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 				)) %>%
 				as_tibble(rownames = quo_name(.transcript)), 
 
+			# Simple comparison discrete
+			my_contrasts %>% is.null %>% not() & omit_contrast_in_colnames	~ 
+				(.) %>%
+				DESeq2::results(contrast = my_contrasts[[1]])%>%
+				as_tibble(rownames = quo_name(.transcript)), 
+			
 			# Multiple comparisons NOT USED AT THE MOMENT
 			~ {
 				deseq2_obj = (.)
 
-				1:ncol(my_contrasts) %>%
+				1:length(my_contrasts) %>%
 					map_dfr(
 						~ 	deseq2_obj %>%
 
 							# select method
-							DESeq2::results()	%>%
+							DESeq2::results(contrast = my_contrasts[[.x]])	%>%
 
 							# Convert to tibble
 							as_tibble(rownames = quo_name(.transcript)) %>%
-							mutate(constrast = colnames(my_contrasts)[.x]) 
+							mutate(constrast = sprintf("%s %s-%s", my_contrasts[[.x]][1], my_contrasts[[.x]][2], my_contrasts[[.x]][3]) ) 
 
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),

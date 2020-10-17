@@ -53,7 +53,7 @@ test_that("Only scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.1364132 ,1.0303535 ,2.2409094, 0.8191984,1.8383722),
+		c(1.2994008, 1.1781297, 2.6996428, 0.9702628, 1.8290148),
 		tolerance=1e-6
 	)
 
@@ -80,7 +80,7 @@ test_that("Only scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.1097162, 1.0433503 ,1.3430420, 0.8464847, 1.0928654),
+		c(1.3078113, 1.1929933, 1.9014731, 0.9678922, 1.4771970),
 		tolerance=1e-6
 	)
 
@@ -118,7 +118,7 @@ test_that("Getting scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.1364132, 1.0303535, 2.2409094 ,0.8191984, 1.8383722),
+		c(1.2994008, 1.1781297, 2.6996428, 0.9702628, 1.8290148),
 		tolerance=1e-6
 	)
 
@@ -143,7 +143,7 @@ test_that("Adding scaled counts - no object",{
 
 	expect_equal(
 		unique(res$multiplier),
-		c(1.1364132, 1.0303535, 2.2409094, 0.8191984, 1.8383722),
+		c(1.2994008, 1.1781297, 2.6996428, 0.9702628, 1.8290148),
 		tolerance=1e-6
 	)
 
@@ -628,6 +628,52 @@ test_that("DESeq2 differential trancript abundance - no object",{
 			action="only"
 		),
 		"design has a single variable"
+	)
+	
+	# # Contrasts
+	# input_df %>%
+	# 	identify_abundant(a, b, c, factor_of_interest = condition) %>%
+	# 	test_differential_abundance(
+	# 		~ 0 + condition,
+	# 		.sample = a,
+	# 		.transcript = b,
+	# 		.abundance = c,
+	# 		method = "deseq2", 
+	# 		.contrasts = "this_is - wrong",
+	# 		action="only"
+	# 	) %>%
+	# expect_error("for the moment, the .contrasts argument")
+	
+	deseq2_contrasts = 
+		input_df %>%
+		identify_abundant(a, b, c, factor_of_interest = condition) %>%
+		test_differential_abundance(
+			~ 0 + condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "deseq2", 
+			.contrasts = list(c("condition", "TRUE", "FALSE")),
+			action="only"
+		) 
+	
+	edger_contrasts = 
+		input_df %>%
+		identify_abundant(a, b, c, factor_of_interest = condition) %>%
+		test_differential_abundance(
+			~ 0 + condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			.contrasts = "conditionTRUE - conditionFALSE",
+			action="only"
+		) 
+	
+	library(dplyr)
+	expect_gt(
+		(deseq2_contrasts %>% filter(b=="ABCB4") %>% pull(3)) *
+			(edger_contrasts %>% filter(b=="ABCB4") %>% pull(2)),
+		0
 	)
 	
 })
