@@ -29,6 +29,16 @@ my_bibliography = function() {
   year={2010},
   publisher={Oxford University Press}
 	}",
+	voom = "@article{law2014voom,
+  title={voom: Precision weights unlock linear model analysis tools for RNA-seq read counts},
+  author={Law, Charity W and Chen, Yunshun and Shi, Wei and Smyth, Gordon K},
+  journal={Genome biology},
+  volume={15},
+  number={2},
+  pages={R29},
+  year={2014},
+  publisher={Springer}
+    }",
 	tmm = "@article{robinson2010scaling,
   title={A scaling normalization method for differential expression analysis of RNA-seq data},
   author={Robinson, Mark D and Oshlack, Alicia},
@@ -76,7 +86,7 @@ my_bibliography = function() {
   year={2009},
   publisher={Department of Statistics and Mathematics x, WU Vienna University}
 	}",
-	stats = "  @Manual{,
+	stats = "@Manual{,
     title = {R: A Language and Environment for Statistical Computing},
     author = {{R Core Team}},
     organization = {R Foundation for Statistical Computing},
