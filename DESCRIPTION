@@ -28,7 +28,6 @@ Imports:
     utils,
     lifecycle,
     scales,
-    functional,
     SummarizedExperiment,
     methods
 Suggests:
@@ -64,7 +63,8 @@ Suggests:
     tidyHeatmap,
     pasilla,
     ggrepel,
-    devtools
+    devtools,
+    functional
 VignetteBuilder: 
     knitr
 RdMacros:

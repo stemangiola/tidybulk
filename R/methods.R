@@ -2815,10 +2815,8 @@ setGeneric("test_gene_overrepresentation", function(.data,
 	}
 
 	# Check is correct species name
-	if(species %in% msigdbr::msigdbr_show_species() %>% not())
-		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_show_species(), collapse=", ")))
-
-	#m_df <- msigdbr(species = species)
+	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
 
 	.data %>%
 		#filter(!!.entrez %in% unique(m_df$entrez_gene)) %>%
