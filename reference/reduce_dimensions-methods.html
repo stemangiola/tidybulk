@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.9</span>
       </span>
     </div>
 
@@ -127,100 +127,100 @@
     <p>reduce_dimensions() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; | and calculates the reduced dimensional space of the transcript abundance.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>reduce_dimensions</span>(
-  <span class='kw'>.data</span>,
-  .element = <span class='kw'>NULL</span>,
-  .feature = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  <span class='kw'>method</span>,
-  .dims = <span class='fl'>2</span>,
-  top = <span class='fl'>500</span>,
-  of_samples = <span class='fl'>TRUE</span>,
-  log_transform = <span class='fl'>TRUE</span>,
-  scale = <span class='fl'>TRUE</span>,
-  action = <span class='st'>"add"</span>,
-  <span class='kw'>...</span>
-)
+    <pre class="usage"><span class='fu'>reduce_dimensions</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .element <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>method</span>,
+  .dims <span class='op'>=</span> <span class='fl'>2</span>,
+  top <span class='op'>=</span> <span class='fl'>500</span>,
+  of_samples <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  log_transform <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for spec_tbl_df</span>
-<span class='fu'>reduce_dimensions</span>(
-  <span class='kw'>.data</span>,
-  .element = <span class='kw'>NULL</span>,
-  .feature = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  <span class='kw'>method</span>,
-  .dims = <span class='fl'>2</span>,
-  top = <span class='fl'>500</span>,
-  of_samples = <span class='fl'>TRUE</span>,
-  log_transform = <span class='fl'>TRUE</span>,
-  scale = <span class='fl'>TRUE</span>,
-  action = <span class='st'>"add"</span>,
-  <span class='kw'>...</span>
-)
+<span class='fu'>reduce_dimensions</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .element <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>method</span>,
+  .dims <span class='op'>=</span> <span class='fl'>2</span>,
+  top <span class='op'>=</span> <span class='fl'>500</span>,
+  of_samples <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  log_transform <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for tbl_df</span>
-<span class='fu'>reduce_dimensions</span>(
-  <span class='kw'>.data</span>,
-  .element = <span class='kw'>NULL</span>,
-  .feature = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  <span class='kw'>method</span>,
-  .dims = <span class='fl'>2</span>,
-  top = <span class='fl'>500</span>,
-  of_samples = <span class='fl'>TRUE</span>,
-  log_transform = <span class='fl'>TRUE</span>,
-  scale = <span class='fl'>TRUE</span>,
-  action = <span class='st'>"add"</span>,
-  <span class='kw'>...</span>
-)
+<span class='fu'>reduce_dimensions</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .element <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>method</span>,
+  .dims <span class='op'>=</span> <span class='fl'>2</span>,
+  top <span class='op'>=</span> <span class='fl'>500</span>,
+  of_samples <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  log_transform <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for tidybulk</span>
-<span class='fu'>reduce_dimensions</span>(
-  <span class='kw'>.data</span>,
-  .element = <span class='kw'>NULL</span>,
-  .feature = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  <span class='kw'>method</span>,
-  .dims = <span class='fl'>2</span>,
-  top = <span class='fl'>500</span>,
-  of_samples = <span class='fl'>TRUE</span>,
-  log_transform = <span class='fl'>TRUE</span>,
-  scale = <span class='fl'>TRUE</span>,
-  action = <span class='st'>"add"</span>,
-  <span class='kw'>...</span>
-)
+<span class='fu'>reduce_dimensions</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .element <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>method</span>,
+  .dims <span class='op'>=</span> <span class='fl'>2</span>,
+  top <span class='op'>=</span> <span class='fl'>500</span>,
+  of_samples <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  log_transform <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for SummarizedExperiment</span>
-<span class='fu'>reduce_dimensions</span>(
-  <span class='kw'>.data</span>,
-  .element = <span class='kw'>NULL</span>,
-  .feature = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  <span class='kw'>method</span>,
-  .dims = <span class='fl'>2</span>,
-  top = <span class='fl'>500</span>,
-  of_samples = <span class='fl'>TRUE</span>,
-  log_transform = <span class='fl'>TRUE</span>,
-  scale = <span class='fl'>TRUE</span>,
-  action = <span class='st'>"add"</span>,
-  <span class='kw'>...</span>
-)
+<span class='fu'>reduce_dimensions</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .element <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>method</span>,
+  .dims <span class='op'>=</span> <span class='fl'>2</span>,
+  top <span class='op'>=</span> <span class='fl'>500</span>,
+  of_samples <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  log_transform <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for RangedSummarizedExperiment</span>
-<span class='fu'>reduce_dimensions</span>(
-  <span class='kw'>.data</span>,
-  .element = <span class='kw'>NULL</span>,
-  .feature = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  <span class='kw'>method</span>,
-  .dims = <span class='fl'>2</span>,
-  top = <span class='fl'>500</span>,
-  of_samples = <span class='fl'>TRUE</span>,
-  log_transform = <span class='fl'>TRUE</span>,
-  scale = <span class='fl'>TRUE</span>,
-  action = <span class='st'>"add"</span>,
-  <span class='kw'>...</span>
-)</pre>
+<span class='fu'>reduce_dimensions</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .element <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>method</span>,
+  .dims <span class='op'>=</span> <span class='fl'>2</span>,
+  top <span class='op'>=</span> <span class='fl'>500</span>,
+  of_samples <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  log_transform <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -300,18 +300,18 @@ Rtsne::Rtsne(data, ...)</p>
     <pre class="examples"><div class='input'>
 
 
-<span class='kw'>counts.MDS</span> <span class='op'>=</span>  
- <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>) <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span>() <span class='op'>%&gt;%</span> 
- <span class='fu'>reduce_dimensions</span>( method=<span class='st'>"MDS"</span>, .dims = <span class='fl'>3</span>)
+<span class='va'>counts.MDS</span> <span class='op'>=</span>  
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+ <span class='fu'>reduce_dimensions</span><span class='op'>(</span> method<span class='op'>=</span><span class='st'>"MDS"</span>, .dims <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results do `attr(..., "internals")$MDS`</span></div><div class='input'>
 
-<span class='kw'>counts.PCA</span> <span class='op'>=</span>  
- <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>) <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span>() <span class='op'>%&gt;%</span> 
- <span class='fu'>reduce_dimensions</span>(method=<span class='st'>"PCA"</span>, .dims = <span class='fl'>3</span>)
+<span class='va'>counts.PCA</span> <span class='op'>=</span>  
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+ <span class='fu'>reduce_dimensions</span><span class='op'>(</span>method<span class='op'>=</span><span class='st'>"PCA"</span>, .dims <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>Getting the 182 most variable genes</span></div><div class='output co'>#&gt; <span class='message'>Fraction of variance explained by the selected principal components</span></div><div class='output co'>#&gt; <span class='message'><span style='color: #555555;'># A tibble: 3 x 2</span><span></span>
 #&gt; <span class='message'>  `Fraction of variance`    PC</span>
 #&gt; <span class='message'>                   </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span></span>

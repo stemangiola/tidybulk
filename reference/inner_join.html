@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.9</span>
       </span>
     </div>
 
@@ -127,7 +127,7 @@
     <p>Inner join datasets</p>
     </div>
 
-    <pre class="usage"><span class='fu'>inner_join</span>(<span class='kw'>x</span>, <span class='kw'>y</span>, by = <span class='kw'>NULL</span>, copy = <span class='fl'>FALSE</span>, suffix = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>".x"</span>, <span class='st'>".y"</span>), <span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>inner_join</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, by <span class='op'>=</span> <span class='cn'>NULL</span>, copy <span class='op'>=</span> <span class='cn'>FALSE</span>, suffix <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>".x"</span>, <span class='st'>".y"</span><span class='op'>)</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -163,9 +163,9 @@
     <p>A tt object</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>`%&gt;%`</span> <span class='op'>=</span> <span class='kw'>magrittr</span>::<span class='kw'>`%&gt;%`</span>
-<span class='kw'>annotation</span> <span class='op'>=</span> <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts.html'>counts</a></span> <span class='op'>%&gt;%</span> <span class='fu'><a href='distinct.html'>distinct</a></span>(<span class='kw'>sample</span>) <span class='op'>%&gt;%</span> <span class='fu'><a href='mutate.html'>mutate</a></span>(source = <span class='st'>"AU"</span>)
-<span class='kw'>tidybulk</span>::<span class='kw'><a href='counts.html'>counts</a></span> <span class='op'>%&gt;%</span> <span class='fu'>inner_join</span>(<span class='kw'>annotation</span>)
+    <pre class="examples"><div class='input'><span class='va'>`%&gt;%`</span> <span class='op'>=</span> <span class='fu'>magrittr</span><span class='fu'>::</span><span class='va'>`%&gt;%`</span>
+<span class='va'>annotation</span> <span class='op'>=</span> <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts.html'>counts</a></span> <span class='op'>%&gt;%</span> <span class='fu'><a href='distinct.html'>distinct</a></span><span class='op'>(</span><span class='va'>sample</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='mutate.html'>mutate</a></span><span class='op'>(</span>source <span class='op'>=</span> <span class='st'>"AU"</span><span class='op'>)</span>
+<span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts.html'>counts</a></span> <span class='op'>%&gt;%</span> <span class='fu'>inner_join</span><span class='op'>(</span><span class='va'>annotation</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Joining, by = "sample"</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 408,624 x 9</span><span>
 #&gt;    sample transcript `Cell type` count time  condition batch factor_of_inter…
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>           

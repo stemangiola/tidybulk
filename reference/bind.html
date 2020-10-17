@@ -74,7 +74,7 @@ data frames into one." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.9</span>
       </span>
     </div>
 
@@ -168,12 +168,12 @@ data frames into one.</p>
 appears in any of the inputs.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>`%&gt;%`</span> <span class='op'>=</span> <span class='kw'>magrittr</span>::<span class='kw'>`%&gt;%`</span>
-<span class='kw'>one</span> <span class='op'>&lt;-</span> <span class='kw'>mtcars</span>[<span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>, ]
-<span class='kw'>two</span> <span class='op'>&lt;-</span> <span class='kw'>mtcars</span>[<span class='fl'>11</span><span class='op'>:</span><span class='fl'>14</span>, ]
+    <pre class="examples"><div class='input'><span class='va'>`%&gt;%`</span> <span class='op'>=</span> <span class='fu'>magrittr</span><span class='fu'>::</span><span class='va'>`%&gt;%`</span>
+<span class='va'>one</span> <span class='op'>&lt;-</span> <span class='va'>mtcars</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>, <span class='op'>]</span>
+<span class='va'>two</span> <span class='op'>&lt;-</span> <span class='va'>mtcars</span><span class='op'>[</span><span class='fl'>11</span><span class='op'>:</span><span class='fl'>14</span>, <span class='op'>]</span>
 
 <span class='co'># You can supply data frames as arguments:</span>
-<span class='fu'><a href='arrange.html'>bind_rows</a></span>(<span class='kw'>one</span>, <span class='kw'>two</span>)
+<span class='fu'><a href='arrange.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>one</span>, <span class='va'>two</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;                 mpg cyl  disp  hp drat    wt  qsec vs am gear carb
 #&gt; Mazda RX4      21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
 #&gt; Mazda RX4 Wag  21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4

@@ -73,7 +73,7 @@ nest" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.9</span>
       </span>
     </div>
 
@@ -129,45 +129,45 @@ nest" />
 <p>nest</p>
     </div>
 
-    <pre class="usage"><span class='fu'>unnest</span>(
-  <span class='kw'>.data</span>,
-  <span class='kw'>cols</span>,
-  <span class='kw'>...</span>,
-  keep_empty = <span class='fl'>FALSE</span>,
-  ptype = <span class='kw'>NULL</span>,
-  names_sep = <span class='kw'>NULL</span>,
-  names_repair = <span class='st'>"check_unique"</span>
-)
+    <pre class="usage"><span class='fu'>unnest</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>cols</span>,
+  <span class='va'>...</span>,
+  keep_empty <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  ptype <span class='op'>=</span> <span class='cn'>NULL</span>,
+  names_sep <span class='op'>=</span> <span class='cn'>NULL</span>,
+  names_repair <span class='op'>=</span> <span class='st'>"check_unique"</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for default</span>
-<span class='fu'>unnest</span>(
-  <span class='kw'>.data</span>,
-  <span class='kw'>cols</span>,
-  <span class='kw'>...</span>,
-  keep_empty = <span class='fl'>FALSE</span>,
-  ptype = <span class='kw'>NULL</span>,
-  names_sep = <span class='kw'>NULL</span>,
-  names_repair = <span class='st'>"check_unique"</span>
-)
+<span class='fu'>unnest</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>cols</span>,
+  <span class='va'>...</span>,
+  keep_empty <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  ptype <span class='op'>=</span> <span class='cn'>NULL</span>,
+  names_sep <span class='op'>=</span> <span class='cn'>NULL</span>,
+  names_repair <span class='op'>=</span> <span class='st'>"check_unique"</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for nested_tidybulk</span>
-<span class='fu'>unnest</span>(
-  <span class='kw'>.data</span>,
-  <span class='kw'>cols</span>,
-  <span class='kw'>...</span>,
-  keep_empty = <span class='fl'>FALSE</span>,
-  ptype = <span class='kw'>NULL</span>,
-  names_sep = <span class='kw'>NULL</span>,
-  names_repair = <span class='st'>"check_unique"</span>
-)
+<span class='fu'>unnest</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>cols</span>,
+  <span class='va'>...</span>,
+  keep_empty <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  ptype <span class='op'>=</span> <span class='cn'>NULL</span>,
+  names_sep <span class='op'>=</span> <span class='cn'>NULL</span>,
+  names_repair <span class='op'>=</span> <span class='st'>"check_unique"</span>
+<span class='op'>)</span>
 
-<span class='fu'>nest</span>(<span class='kw'>.data</span>, <span class='kw'>...</span>)
+<span class='fu'>nest</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for default</span>
-<span class='fu'>nest</span>(<span class='kw'>.data</span>, <span class='kw'>...</span>)
+<span class='fu'>nest</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for tidybulk</span>
-<span class='fu'>nest</span>(<span class='kw'>.data</span>, <span class='kw'>...</span>)</pre>
+<span class='fu'>nest</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -219,7 +219,7 @@ standard tidyverse recycling rules).</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='https://dplyr.tidyverse.org'>dplyr</a></span>)
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'></span>
 #&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:tidybulk’:</span>
 #&gt; <span class='message'></span>
@@ -230,8 +230,8 @@ standard tidyverse recycling rules).</p></td>
 #&gt; <span class='message'>    filter, lag</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
 #&gt; <span class='message'></span>
 #&gt; <span class='message'>    intersect, setdiff, setequal, union</span></div><div class='input'>
-<span class='fu'>nest</span>(<span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>, <span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>), data = <span class='op'>-</span><span class='kw'>transcript</span>) <span class='op'>%&gt;%</span>
-<span class='fu'>unnest</span>(<span class='kw'>data</span>)
+<span class='fu'>nest</span><span class='op'>(</span><span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span>, <span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='op'>-</span><span class='va'>transcript</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+<span class='fu'>unnest</span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 2,635 x 6</span><span>
 #&gt;    transcript sample     `Cell type`       count time  condition
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>             </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>    
@@ -247,7 +247,7 @@ standard tidyverse recycling rules).</p></td>
 #&gt; </span><span style='color: #555555;'>10</span><span> PLCH2      SRR1740067 dendritic_myeloid    21 1 d   FALSE    
 #&gt; </span><span style='color: #555555;'># … with 2,625 more rows</span><span></div><div class='input'>
 
-<span class='fu'>nest</span>(<span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>, <span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>), data = <span class='op'>-</span><span class='kw'>transcript</span>)
+<span class='fu'>nest</span><span class='op'>(</span><span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span>, <span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='op'>-</span><span class='va'>transcript</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 527 x 2</span><span>
 #&gt;    transcript data            
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;list&gt;</span><span>          

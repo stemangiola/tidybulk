@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.9</span>
       </span>
     </div>
 
@@ -127,70 +127,70 @@
     <p>identify_abundant() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; | and returns a `tbl` with additional columns for the statistics from the hypothesis test.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>identify_abundant</span>(
-  <span class='kw'>.data</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  factor_of_interest = <span class='kw'>NULL</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>
-)
+    <pre class="usage"><span class='fu'>identify_abundant</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  factor_of_interest <span class='op'>=</span> <span class='cn'>NULL</span>,
+  minimum_counts <span class='op'>=</span> <span class='fl'>10</span>,
+  minimum_proportion <span class='op'>=</span> <span class='fl'>0.7</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for spec_tbl_df</span>
-<span class='fu'>identify_abundant</span>(
-  <span class='kw'>.data</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  factor_of_interest = <span class='kw'>NULL</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>
-)
+<span class='fu'>identify_abundant</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  factor_of_interest <span class='op'>=</span> <span class='cn'>NULL</span>,
+  minimum_counts <span class='op'>=</span> <span class='fl'>10</span>,
+  minimum_proportion <span class='op'>=</span> <span class='fl'>0.7</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for tbl_df</span>
-<span class='fu'>identify_abundant</span>(
-  <span class='kw'>.data</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  factor_of_interest = <span class='kw'>NULL</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>
-)
+<span class='fu'>identify_abundant</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  factor_of_interest <span class='op'>=</span> <span class='cn'>NULL</span>,
+  minimum_counts <span class='op'>=</span> <span class='fl'>10</span>,
+  minimum_proportion <span class='op'>=</span> <span class='fl'>0.7</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for tidybulk</span>
-<span class='fu'>identify_abundant</span>(
-  <span class='kw'>.data</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  factor_of_interest = <span class='kw'>NULL</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>
-)
+<span class='fu'>identify_abundant</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  factor_of_interest <span class='op'>=</span> <span class='cn'>NULL</span>,
+  minimum_counts <span class='op'>=</span> <span class='fl'>10</span>,
+  minimum_proportion <span class='op'>=</span> <span class='fl'>0.7</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for SummarizedExperiment</span>
-<span class='fu'>identify_abundant</span>(
-  <span class='kw'>.data</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  factor_of_interest = <span class='kw'>NULL</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>
-)
+<span class='fu'>identify_abundant</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  factor_of_interest <span class='op'>=</span> <span class='cn'>NULL</span>,
+  minimum_counts <span class='op'>=</span> <span class='fl'>10</span>,
+  minimum_proportion <span class='op'>=</span> <span class='fl'>0.7</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for RangedSummarizedExperiment</span>
-<span class='fu'>identify_abundant</span>(
-  <span class='kw'>.data</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  factor_of_interest = <span class='kw'>NULL</span>,
-  minimum_counts = <span class='fl'>10</span>,
-  minimum_proportion = <span class='fl'>0.7</span>
-)</pre>
+<span class='fu'>identify_abundant</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  factor_of_interest <span class='op'>=</span> <span class='cn'>NULL</span>,
+  minimum_counts <span class='op'>=</span> <span class='fl'>10</span>,
+  minimum_proportion <span class='op'>=</span> <span class='fl'>0.7</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -249,12 +249,12 @@
     <pre class="examples"><div class='input'>
 
 
-  <span class='fu'>identify_abundant</span>(
-  <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span>,
-      <span class='kw'>sample</span>,
-      <span class='kw'>transcript</span>,
-      <span class='kw'>`count`</span>
-  )
+  <span class='fu'>identify_abundant</span><span class='op'>(</span>
+  <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span>,
+      <span class='va'>sample</span>,
+      <span class='va'>transcript</span>,
+      <span class='va'>`count`</span>
+  <span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 2,635 x 7</span><span>
 #&gt;    sample     transcript `Cell type` count time  condition .abundant
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>    

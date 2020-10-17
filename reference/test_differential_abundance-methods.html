@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.9</span>
       </span>
     </div>
 
@@ -127,106 +127,106 @@
     <p>test_differential_abundance() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; | and returns a `tbl` with additional columns for the statistics from the hypothesis test.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>test_differential_abundance</span>(
-  <span class='kw'>.data</span>,
-  <span class='kw'>.formula</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  .contrasts = <span class='kw'>NULL</span>,
-  method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  scaling_method = <span class='st'>"TMM"</span>,
-  omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  prefix = <span class='st'>""</span>,
-  action = <span class='st'>"add"</span>,
-  significance_threshold = <span class='kw'>NULL</span>,
-  fill_missing_values = <span class='kw'>NULL</span>
-)
+    <pre class="usage"><span class='fu'>test_differential_abundance</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>.formula</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
+  method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
+  omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  significance_threshold <span class='op'>=</span> <span class='cn'>NULL</span>,
+  fill_missing_values <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for spec_tbl_df</span>
-<span class='fu'>test_differential_abundance</span>(
-  <span class='kw'>.data</span>,
-  <span class='kw'>.formula</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  .contrasts = <span class='kw'>NULL</span>,
-  method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  scaling_method = <span class='st'>"TMM"</span>,
-  omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  prefix = <span class='st'>""</span>,
-  action = <span class='st'>"add"</span>,
-  significance_threshold = <span class='kw'>NULL</span>,
-  fill_missing_values = <span class='kw'>NULL</span>
-)
+<span class='fu'>test_differential_abundance</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>.formula</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
+  method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
+  omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  significance_threshold <span class='op'>=</span> <span class='cn'>NULL</span>,
+  fill_missing_values <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for tbl_df</span>
-<span class='fu'>test_differential_abundance</span>(
-  <span class='kw'>.data</span>,
-  <span class='kw'>.formula</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  .contrasts = <span class='kw'>NULL</span>,
-  method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  scaling_method = <span class='st'>"TMM"</span>,
-  omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  prefix = <span class='st'>""</span>,
-  action = <span class='st'>"add"</span>,
-  significance_threshold = <span class='kw'>NULL</span>,
-  fill_missing_values = <span class='kw'>NULL</span>
-)
+<span class='fu'>test_differential_abundance</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>.formula</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
+  method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
+  omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  significance_threshold <span class='op'>=</span> <span class='cn'>NULL</span>,
+  fill_missing_values <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for tidybulk</span>
-<span class='fu'>test_differential_abundance</span>(
-  <span class='kw'>.data</span>,
-  <span class='kw'>.formula</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  .contrasts = <span class='kw'>NULL</span>,
-  method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  scaling_method = <span class='st'>"TMM"</span>,
-  omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  prefix = <span class='st'>""</span>,
-  action = <span class='st'>"add"</span>,
-  significance_threshold = <span class='kw'>NULL</span>,
-  fill_missing_values = <span class='kw'>NULL</span>
-)
+<span class='fu'>test_differential_abundance</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>.formula</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
+  method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
+  omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  significance_threshold <span class='op'>=</span> <span class='cn'>NULL</span>,
+  fill_missing_values <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for SummarizedExperiment</span>
-<span class='fu'>test_differential_abundance</span>(
-  <span class='kw'>.data</span>,
-  <span class='kw'>.formula</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  .contrasts = <span class='kw'>NULL</span>,
-  method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  scaling_method = <span class='st'>"TMM"</span>,
-  omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  prefix = <span class='st'>""</span>,
-  action = <span class='st'>"add"</span>,
-  significance_threshold = <span class='kw'>NULL</span>,
-  fill_missing_values = <span class='kw'>NULL</span>
-)
+<span class='fu'>test_differential_abundance</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>.formula</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
+  method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
+  omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  significance_threshold <span class='op'>=</span> <span class='cn'>NULL</span>,
+  fill_missing_values <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for RangedSummarizedExperiment</span>
-<span class='fu'>test_differential_abundance</span>(
-  <span class='kw'>.data</span>,
-  <span class='kw'>.formula</span>,
-  .sample = <span class='kw'>NULL</span>,
-  .transcript = <span class='kw'>NULL</span>,
-  .abundance = <span class='kw'>NULL</span>,
-  .contrasts = <span class='kw'>NULL</span>,
-  method = <span class='st'>"edgeR_quasi_likelihood"</span>,
-  scaling_method = <span class='st'>"TMM"</span>,
-  omit_contrast_in_colnames = <span class='fl'>FALSE</span>,
-  prefix = <span class='st'>""</span>,
-  action = <span class='st'>"add"</span>,
-  significance_threshold = <span class='kw'>NULL</span>,
-  fill_missing_values = <span class='kw'>NULL</span>
-)</pre>
+<span class='fu'>test_differential_abundance</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>.formula</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
+  .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
+  method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
+  omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
+  action <span class='op'>=</span> <span class='st'>"add"</span>,
+  significance_threshold <span class='op'>=</span> <span class='cn'>NULL</span>,
+  fill_missing_values <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -253,7 +253,7 @@
     </tr>
     <tr>
       <th>.contrasts</th>
-      <td><p>A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)</p></td>
+      <td><p>This parameter takes the shape of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vectors of length three. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)</p></td>
     </tr>
     <tr>
       <th>method</th>
@@ -330,13 +330,15 @@ DESeq2::results()</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
- <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>) <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span>() <span class='op'>%&gt;%</span> 
-  <span class='fu'>test_differential_abundance</span>( <span class='op'>~</span> <span class='kw'>condition</span> )
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: All methods use raw counts, </span>
-#&gt; <span class='message'>irrespective of if scale_abundance or adjust_abundance have been calculated, </span>
-#&gt; <span class='message'>therefore it is essential to add covariates such as batch effects (if applicable) in the formula.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "(Intercept), conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 2,635 x 12</span><span>
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'>test_differential_abundance</span><span class='op'>(</span> <span class='op'>~</span> <span class='va'>condition</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>=====================================</span>
+#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance </span>
+#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates </span>
+#&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
+#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "(Intercept), conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 2,635 x 12</span><span>
 #&gt;    sample transcript `Cell type` count time  condition .abundant  logFC logCPM
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
 #&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… TNFRSF4    b_cell          6 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
@@ -353,16 +355,18 @@ DESeq2::results()</p>
 #&gt; </span><span style='color: #555555;'>#   FDR </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span></div><div class='input'>
   <span class='co'># The function `test_differential_abundance` operates with contrasts too</span>
 
- <span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span>
- <span class='fu'><a href='tidybulk.html'>tidybulk</a></span>(<span class='kw'>sample</span>, <span class='kw'>transcript</span>, <span class='kw'>count</span>) <span class='op'>%&gt;%</span>
- <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span>() <span class='op'>%&gt;%</span>
- <span class='fu'>test_differential_abundance</span>(
-      <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>+</span> <span class='kw'>condition</span>,
-      .contrasts = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>( <span class='st'>"conditionTRUE - conditionFALSE"</span>)
- )
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: All methods use raw counts, </span>
-#&gt; <span class='message'>irrespective of if scale_abundance or adjust_abundance have been calculated, </span>
-#&gt; <span class='message'>therefore it is essential to add covariates such as batch effects (if applicable) in the formula.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "conditionFALSE, conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 2,635 x 12</span><span>
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'>test_differential_abundance</span><span class='op'>(</span>
+      <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>+</span> <span class='va'>condition</span>,
+      .contrasts <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span> <span class='st'>"conditionTRUE - conditionFALSE"</span><span class='op'>)</span>
+ <span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>=====================================</span>
+#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance </span>
+#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates </span>
+#&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
+#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "conditionFALSE, conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 2,635 x 12</span><span>
 #&gt;    sample transcript `Cell type` count time  condition .abundant
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>    
 #&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… TNFRSF4    b_cell          6 0 d   TRUE      FALSE    

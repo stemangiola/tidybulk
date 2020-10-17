@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.9</span>
       </span>
     </div>
 
@@ -127,16 +127,16 @@
     <p>ensembl_to_symbol() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;ENSEMBL_ID&gt; | &lt;COUNT&gt; | &lt;...&gt; | and returns a `tbl` with the additional transcript symbol column</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ensembl_to_symbol</span>(<span class='kw'>.data</span>, <span class='kw'>.ensembl</span>, action = <span class='st'>"add"</span>)
+    <pre class="usage"><span class='fu'>ensembl_to_symbol</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>.ensembl</span>, action <span class='op'>=</span> <span class='st'>"add"</span><span class='op'>)</span>
 
 <span class='co'># S4 method for spec_tbl_df</span>
-<span class='fu'>ensembl_to_symbol</span>(<span class='kw'>.data</span>, <span class='kw'>.ensembl</span>, action = <span class='st'>"add"</span>)
+<span class='fu'>ensembl_to_symbol</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>.ensembl</span>, action <span class='op'>=</span> <span class='st'>"add"</span><span class='op'>)</span>
 
 <span class='co'># S4 method for tbl_df</span>
-<span class='fu'>ensembl_to_symbol</span>(<span class='kw'>.data</span>, <span class='kw'>.ensembl</span>, action = <span class='st'>"add"</span>)
+<span class='fu'>ensembl_to_symbol</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>.ensembl</span>, action <span class='op'>=</span> <span class='st'>"add"</span><span class='op'>)</span>
 
 <span class='co'># S4 method for tidybulk</span>
-<span class='fu'>ensembl_to_symbol</span>(<span class='kw'>.data</span>, <span class='kw'>.ensembl</span>, action = <span class='st'>"add"</span>)</pre>
+<span class='fu'>ensembl_to_symbol</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>.ensembl</span>, action <span class='op'>=</span> <span class='st'>"add"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,7 +169,7 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 
-  <span class='fu'>ensembl_to_symbol</span>(<span class='kw'>tidybulk</span>::<span class='kw'><a href='counts_ensembl.html'>counts_ensembl</a></span>, <span class='kw'>ens</span>)
+  <span class='fu'>ensembl_to_symbol</span><span class='op'>(</span><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_ensembl.html'>counts_ensembl</a></span>, <span class='va'>ens</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 119 x 8</span><span>
 #&gt;    ens   iso   `read count` sample cases_0_project… cases_0_samples… transcript
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>            </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>            </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>     

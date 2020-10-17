@@ -77,7 +77,7 @@ once per data frame, not once per group." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.9</span>
       </span>
     </div>
 
@@ -137,16 +137,16 @@ in order to group by them, and functions of variables are evaluated
 once per data frame, not once per group.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>arrange</span>(<span class='kw'>.data</span>, <span class='kw'>...</span>, .by_group = <span class='fl'>FALSE</span>)
+    <pre class="usage"><span class='fu'>arrange</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>...</span>, .by_group <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
 <span class='co'># S3 method for default</span>
-<span class='fu'>arrange</span>(<span class='kw'>.data</span>, <span class='kw'>...</span>, .by_group = <span class='fl'>FALSE</span>)
+<span class='fu'>arrange</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>...</span>, .by_group <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
-<span class='fu'>bind_rows</span>(<span class='kw'>...</span>, .id = <span class='kw'>NULL</span>)
+<span class='fu'>bind_rows</span><span class='op'>(</span><span class='va'>...</span>, .id <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>bind_cols</span>(<span class='kw'>...</span>, .id = <span class='kw'>NULL</span>)
+<span class='fu'>bind_cols</span><span class='op'>(</span><span class='va'>...</span>, .id <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>ungroup</span>(<span class='kw'>x</span>, <span class='kw'>...</span>)</pre>
+<span class='fu'>ungroup</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -218,8 +218,8 @@ individual methods for extra arguments and differences in behaviour.</p>
 <code><a href='summarise.html'>summarise</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>`%&gt;%`</span> <span class='op'>=</span> <span class='kw'>magrittr</span>::<span class='kw'>`%&gt;%`</span>
-<span class='fu'>arrange</span>(<span class='kw'>mtcars</span>, <span class='kw'>cyl</span>, <span class='kw'>disp</span>)
+    <pre class="examples"><div class='input'><span class='va'>`%&gt;%`</span> <span class='op'>=</span> <span class='fu'>magrittr</span><span class='fu'>::</span><span class='va'>`%&gt;%`</span>
+<span class='fu'>arrange</span><span class='op'>(</span><span class='va'>mtcars</span>, <span class='va'>cyl</span>, <span class='va'>disp</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;                      mpg cyl  disp  hp drat    wt  qsec vs am gear carb
 #&gt; Toyota Corolla      33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
 #&gt; Honda Civic         30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2

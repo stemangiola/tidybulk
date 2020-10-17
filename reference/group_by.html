@@ -74,7 +74,7 @@ where operations are performed &quot;by group&quot;. `ungroup()` removes groupin
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.9</span>
       </span>
     </div>
 
@@ -131,7 +131,7 @@ where operations are performed &quot;by group&quot;. `ungroup()` removes groupin
 where operations are performed "by group". `ungroup()` removes grouping.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>group_by</span>(<span class='kw'>.data</span>, <span class='kw'>...</span>, .add = <span class='fl'>FALSE</span>, .drop = <span class='fu'>group_by_drop_default</span>(<span class='kw'>.data</span>))</pre>
+    <pre class="usage"><span class='fu'>group_by</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>...</span>, .add <span class='op'>=</span> <span class='cn'>FALSE</span>, .drop <span class='op'>=</span> <span class='fu'>group_by_drop_default</span><span class='op'>(</span><span class='va'>.data</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -178,8 +178,8 @@ individual methods for extra arguments and differences in behaviour.</p>
 <p>Methods available in currently loaded packages:</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>`%&gt;%`</span> <span class='op'>=</span> <span class='kw'>magrittr</span>::<span class='kw'>`%&gt;%`</span>
-<span class='kw'>by_cyl</span> <span class='op'>&lt;-</span> <span class='kw'>mtcars</span> <span class='op'>%&gt;%</span> <span class='fu'>group_by</span>(<span class='kw'>cyl</span>)
+    <pre class="examples"><div class='input'><span class='va'>`%&gt;%`</span> <span class='op'>=</span> <span class='fu'>magrittr</span><span class='fu'>::</span><span class='va'>`%&gt;%`</span>
+<span class='va'>by_cyl</span> <span class='op'>&lt;-</span> <span class='va'>mtcars</span> <span class='op'>%&gt;%</span> <span class='fu'>group_by</span><span class='op'>(</span><span class='va'>cyl</span><span class='op'>)</span>
 
 </div></pre>
   </div>
