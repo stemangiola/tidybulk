@@ -931,7 +931,9 @@ test_differential_cellularity_ <- function(.data,
 
 		# Test survival
 		tidyr::nest(cell_type_proportions = -.cell_type) %>%
-		mutate(surv_test = map(cell_type_proportions, ~ {
+		mutate(surv_test = map(
+			cell_type_proportions,
+			~ {
 			if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
 
 			# See if regression if censored or not
@@ -971,10 +973,7 @@ test_differential_cellularity_ <- function(.data,
 					}
 				)
 		}
-
-
 		)) %>%
-
 
 		unnest(surv_test, keep_empty = TRUE) %>%
 
