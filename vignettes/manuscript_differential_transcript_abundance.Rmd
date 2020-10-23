@@ -190,7 +190,7 @@ tt_test %>%
     	names_to = "Stage", values_to = "count"
     ) %>%
 
-    # This allows the faceted plotPlot
+    # This allows the faceted plot
     ggplot(aes(x = Stage, y = count + 1, fill = condition)) +
 		geom_boxplot() +
     facet_wrap(~transcript) +

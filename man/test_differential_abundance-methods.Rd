@@ -18,11 +18,12 @@ test_differential_abundance(
   .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  action = "add"
+  prefix = "",
+  action = "add",
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 
 \S4method{test_differential_abundance}{spec_tbl_df}(
@@ -33,11 +34,12 @@ test_differential_abundance(
   .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  action = "add"
+  prefix = "",
+  action = "add",
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 
 \S4method{test_differential_abundance}{tbl_df}(
@@ -48,11 +50,12 @@ test_differential_abundance(
   .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  action = "add"
+  prefix = "",
+  action = "add",
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 
 \S4method{test_differential_abundance}{tidybulk}(
@@ -63,11 +66,12 @@ test_differential_abundance(
   .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  action = "add"
+  prefix = "",
+  action = "add",
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 
 \S4method{test_differential_abundance}{SummarizedExperiment}(
@@ -78,11 +82,12 @@ test_differential_abundance(
   .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  action = "add"
+  prefix = "",
+  action = "add",
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 
 \S4method{test_differential_abundance}{RangedSummarizedExperiment}(
@@ -93,11 +98,12 @@ test_differential_abundance(
   .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
-  significance_threshold = 0.05,
-  fill_missing_values = FALSE,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  action = "add"
+  prefix = "",
+  action = "add",
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 }
 \arguments{
@@ -113,17 +119,19 @@ test_differential_abundance(
 
 \item{.contrasts}{This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
-\item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom, "limma_voomWithQualityWeights"}
-
-\item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
-
-\item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
+\item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom", "limma_voomWithQualityWeights"}
 
 \item{scaling_method}{A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
 \item{omit_contrast_in_colnames}{If just one contrast is specified you can choose to omit the contrast label in the colnames.}
 
+\item{prefix}{A character string. The prefix you would like to add to the result columns. It is useful if you want to compare several methods.}
+
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+
+\item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
+
+\item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
 }
 \value{
 A `tbl` with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).

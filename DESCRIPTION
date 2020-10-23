@@ -1,7 +1,7 @@
 Type: Package
 Package: tidybulk
 Title: Brings transcriptomics to the tidyverse 
-Version: 1.1.7
+Version: 1.1.8
 Authors@R: c(person("Stefano", "Mangiola", email = "mangiolastefano@gmail.com",
                   role = c("aut", "cre")),
             person("Maria", "Doyle", email = "Maria.Doyle@petermac.org",
@@ -63,7 +63,8 @@ Suggests:
     tidyHeatmap,
     pasilla,
     ggrepel,
-    devtools
+    devtools,
+    functional
 VignetteBuilder: 
     knitr
 RdMacros:

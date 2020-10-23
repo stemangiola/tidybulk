@@ -12,7 +12,7 @@ vignette: >
   %\usepackage[UTF-8]{inputenc}
 ---
 
-This decument includes the code used for the manuscript, for the transcriptional signature identification.
+This document includes the code used for the manuscript, for the transcriptional signature identification.
 
 
 ```{r, echo=FALSE, include=FALSE}

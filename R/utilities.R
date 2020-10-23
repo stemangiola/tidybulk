@@ -515,7 +515,7 @@ get_transcript = function(.data, .transcript){
 
   my_stop = function() {
     stop("
-        tidybulk says: The fucntion does not know what your transcript, transcript and counts columns are.\n
+        tidybulk says: The function does not know what your transcript, transcript and counts columns are.\n
         You have to either enter those as symbols (e.g., `transcript`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -628,7 +628,7 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
     # Else through error
     else
       stop("
-        tidybulk says: The fucntion does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
+        tidybulk says: The function does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -654,7 +654,7 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
 
   my_stop = function() {
     stop("
-        tidybulk says: The fucntion does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
+        tidybulk says: The function does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -719,7 +719,7 @@ get_elements = function(.data, .element, of_samples = TRUE){
     # Else through error
     else
       stop("
-        tidybulk says: The fucntion does not know what your elements (e.g., sample) are.\n
+        tidybulk says: The function does not know what your elements (e.g., sample) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -765,7 +765,7 @@ get_abundance_norm_if_exists = function(.data, .abundance){
     # Else through error
     else
       stop("
-        tidybulk says: The fucntion does not know what your elements (e.g., sample) are.\n
+        tidybulk says: The function does not know what your elements (e.g., sample) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
         or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
       ")
@@ -1009,6 +1009,48 @@ log10_reverse_trans <- function() {
 
 	trans_new("log10_reverse", trans, inv, log_breaks(base = 10))
 }
+
+#' logit scale
+#'
+#' \lifecycle{maturing}
+#'
+#' @description it perform logit scaling with right axis formatting. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
+#'
+#' @importFrom scales label_scientific
+#' @importFrom scales extended_breaks
+#'
+#' @return A scales object
+#'
+#' @examples
+#'
+#' library(ggplot2)
+#' library(tibble)
+#'
+#' tibble(pvalue = c(0.001, 0.05, 0.1), fold_change = 1:3) %>%
+#'  ggplot(aes(fold_change , pvalue)) +
+#'  geom_point() +
+#'  scale_y_continuous(trans = "log10_reverse")
+#'
+#' @export
+logit_trans <- function(){
+	
+	
+	if (find.package("functional", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing functional needed for analyses")
+		install.packages("functional", repos = "https://cloud.r-project.org")
+	}
+	
+	trans <- qlogis
+	inv <- plogis
+	
+	trans_new("logit",
+						transform = trans,
+						inverse = inv,
+						breaks = functional::Compose(trans, extended_breaks(), inv),
+						format = label_scientific(digits = 2)
+	)
+}
+
 
 #' Convert array of quosure (e.g. c(col_a, col_b)) into character vector
 #'

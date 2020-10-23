@@ -12,7 +12,8 @@ get_differential_transcript_abundance_bulk_voom(
   .abundance = NULL,
   .contrasts = NULL,
   scaling_method = "TMM",
-  omit_contrast_in_colnames = FALSE
+  omit_contrast_in_colnames = FALSE,
+  prefix = ""
 )
 }
 \arguments{
