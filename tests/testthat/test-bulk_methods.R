@@ -478,6 +478,31 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 	
 })
 
+test_that("Voom with sample weights method",{
+	
+	res =
+		test_differential_abundance(
+			input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "limma_voom_sample_weights",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-10.357682, -11.624146, -12.121186, -9.287714),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		7
+	)
+})
+
 test_that("New method choice",{
 	
 	res =
@@ -692,12 +717,17 @@ test_that("test prefix",{
 		df %>%
 		test_differential_abundance(~condition, method="limma_voom", action="only", prefix = "prefix_")
 	
+	res_voom_sample_weights = 
+	    df %>%
+	    test_differential_abundance(~condition, method="limma_voom_sample_weights", action="only", prefix = "prefix_")
+	
 	res_edger = 
 		df %>%
 		test_differential_abundance(~condition, method="edgeR_likelihood_ratio", action="only", prefix = "prefix_")
 	
 	expect_gt(colnames(res_DeSEQ2) %>% grep("prefix_", .) %>% length, 0)
 	expect_gt(colnames(res_voom) %>% grep("prefix_", .) %>% length, 0)
+	expect_gt(colnames(res_voom_sample_weights) %>% grep("prefix_", .) %>% length, 0)
 	expect_gt(colnames(res_edger) %>% grep("prefix_", .) %>% length, 0)
 })
 

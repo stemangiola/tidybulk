@@ -2047,6 +2047,7 @@ such as batch effects (if applicable) in the formula.
 					.transcript = !!.transcript,
 					.abundance = !!.abundance,
 					.contrasts = .contrasts,
+					method = method,
 					scaling_method = scaling_method,
 					omit_contrast_in_colnames = omit_contrast_in_colnames,
 					prefix = prefix
