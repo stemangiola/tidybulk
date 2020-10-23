@@ -1822,7 +1822,7 @@ setMethod("ensembl_to_symbol", "tbl_df", .ensembl_to_symbol)
 setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 
 
-#' Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom, limma-voomWithQualityWeights or DESeq2
+#' Perform differential transcription testing using edgeR quasi-likelihood (QLT), edgeR likelihood-ratio (LR), limma-voom, limma-voom-with-quality-weights or DESeq2
 #'
 #' \lifecycle{maturing}
 #'
