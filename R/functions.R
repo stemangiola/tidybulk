@@ -645,6 +645,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		
 	    # Attach attributes
 		reattach_internals(.data) %>%
+	    memorise_methods_used("voom") %>%
 
 		# Add raw object
 		attach_to_internals(voom_object, "voom") %>%
