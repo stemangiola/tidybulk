@@ -2743,7 +2743,7 @@ as_matrix <- function(tbl,
 #' @importFrom tidyr complete
 #'
 #' @param .data A tibble
-#' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
+#' @param .formula a formula with no response variable, of the kind ~ factor_of_interest + batch
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
