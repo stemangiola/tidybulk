@@ -8,7 +8,7 @@
 \alias{test_differential_abundance,tidybulk-method}
 \alias{test_differential_abundance,SummarizedExperiment-method}
 \alias{test_differential_abundance,RangedSummarizedExperiment-method}
-\title{Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom or DESeq2}
+\title{Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom, limma-voomWithQualityWeights or DESeq2}
 \usage{
 test_differential_abundance(
   .data,
@@ -113,7 +113,7 @@ test_differential_abundance(
 
 \item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
-\item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom"}
+\item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom, "limma_voomWithQualityWeights"}
 
 \item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
 

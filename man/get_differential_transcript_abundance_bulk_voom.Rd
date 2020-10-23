@@ -43,6 +43,8 @@ get_differential_transcript_abundance_bulk_voom(
 \item{scaling_method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
 \item{omit_contrast_in_colnames}{If just one contrast is specified you can choose to omit the contrast label in the colnames.}
+
+\item{method}{A string character. Either "limma_voom", "limma_voomWithQualityWeights"}
 }
 \value{
 A tibble with voom results

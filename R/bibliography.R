@@ -47,6 +47,16 @@ my_bibliography = function() {
   year={2005},
   publisher={Springer}
 	}",
+	voomWithQualityWeights = "@article{liu2015weight,
+  title={Why weight? Modelling sample and observational level variability improves power in RNA-seq analyses},
+  author={Liu, Ruijie and Holik, Aliaksei Z and Su, Shian and Jansz, Natasha and Chen, Kelan and Leong, Huei San and Blewitt, Marnie E and Asselin-Labat, Marie-Liesse and Smyth, Gordon K and Ritchie, Matthew E},
+  journal={Nucleic acids research},
+  volume={43},
+  number={15},
+  pages={e97--e97},
+  year={2015},
+  publisher={Oxford University Press}
+    }",
 	deseq2 = "@article{love2014moderated,
   title={Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2},
   author={Love, Michael I and Huber, Wolfgang and Anders, Simon},

@@ -500,6 +500,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See voom makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "limma_voom", "limma_voomWithQualityWeights"
 #' @param significance_threshold A real between 0 and 1
 #' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
 #' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
@@ -591,9 +592,14 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 
 		edgeR::DGEList() %>%
 		edgeR::calcNormFactors(method = scaling_method) %>%
-
-		limma::voom(design, plot=FALSE) %>%
-		limma::lmFit(design)
+	    
+	    # select method
+		when(
+			method == "limma_voom" ~ (.) %>% limma::voom(design, plot=FALSE),
+			method == "limma_voomWithQualityWeights" ~ (.) %>% limma::voomWithQualityWeights(design, plot=FALSE)
+		) %>%
+		
+	    limma::lmFit(design)
 
 	voom_object %>%
 
@@ -645,6 +651,12 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 
 		# Attach attributes
 		reattach_internals(.data) %>%
+	    
+	    # select method
+	    when(
+			method == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
+			method == "limma_voomWithQualityWeights" ~ (.) %>% memorise_methods_used("voomWithQualityWeights")
+		) %>%
 
 		# Add raw object
 		attach_to_internals(voom_object, "voom") %>%

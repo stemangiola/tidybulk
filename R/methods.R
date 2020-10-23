@@ -1822,7 +1822,7 @@ setMethod("ensembl_to_symbol", "tbl_df", .ensembl_to_symbol)
 setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 
 
-#' Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom or DESeq2
+#' Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom, limma-voomWithQualityWeights or DESeq2
 #'
 #' \lifecycle{maturing}
 #'
@@ -1839,7 +1839,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom"
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom, "limma_voomWithQualityWeights"
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
@@ -1992,8 +1992,7 @@ setGeneric("test_differential_abundance", function(.data,
 			),
 			
 			# Voom
-			tolower(method)=="limma_voom" ~ 	
-				get_differential_transcript_abundance_bulk_voom(
+			grepl("voom", method) ~ get_differential_transcript_abundance_bulk_voom(
 					.,
 					.formula,
 					.sample = !!.sample,
@@ -2022,7 +2021,7 @@ setGeneric("test_differential_abundance", function(.data,
 			),
 			
 			# Else error
-			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"DESeq2\"")
+			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voomWithQualityWeights\", \"DESeq2\"")
 		)
 
 
