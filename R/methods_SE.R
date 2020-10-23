@@ -88,8 +88,11 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 															 .transcript = NULL,
 															 .abundance = NULL,
 															 method = "TMM",
-															 reference_selection_function = median,
-															 action = "add") {
+															 reference_sample = NULL,
+															 action = "add",
+															 
+															 # DEPRECATED
+															 reference_selection_function = NULL) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -106,8 +109,9 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 			!!.transcript,
 			!!.abundance,
 			method = method,
-			reference_selection_function = reference_selection_function,
-			action = action
+			reference_sample = reference_sample,
+			action = action,
+			reference_selection_function = reference_selection_function
 		) %>%
 		
 		# Convert to SummaizedExperiment
@@ -282,7 +286,7 @@ setMethod("reduce_dimensions",
 																 dimension_2_column_rotated = NULL,
 																 action =
 																 	"add") {
-	# Get column names
+	# Get column namest
 	.element = enquo(.element)
 	
 	# Parse other colnames
@@ -617,11 +621,15 @@ setMethod(
 																					 .abundance = NULL,
 																					 .contrasts = NULL,
 																					 method = "edgeR_quasi_likelihood",
-																					 significance_threshold = 0.05,
-																					 fill_missing_values = FALSE,
 																					 scaling_method = "TMM",
 																					 omit_contrast_in_colnames = FALSE,
-																					 action = "add")
+																					 prefix = "",
+																					 
+																					 action = "add",
+																					 
+																					 # DEPRECATED
+																					 significance_threshold = NULL,
+																					 fill_missing_values = NULL)
 {
 	# Make col names
 	.sample = enquo(.sample)
@@ -641,8 +649,6 @@ setMethod(
 			.abundance = !!.abundance,
 			.contrasts = .contrasts,
 			method = method,
-			significance_threshold = significance_threshold,
-			fill_missing_values = fill_missing_values,
 			scaling_method = scaling_method,
 			omit_contrast_in_colnames = omit_contrast_in_colnames,
 			action = action
