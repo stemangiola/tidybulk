@@ -8,7 +8,7 @@
 \alias{test_differential_abundance,tidybulk-method}
 \alias{test_differential_abundance,SummarizedExperiment-method}
 \alias{test_differential_abundance,RangedSummarizedExperiment-method}
-\title{Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom, limma-voomWithQualityWeights or DESeq2}
+\title{Perform differential transcription testing using edgeR quasi-likelihood (QLT), edgeR likelihood-ratio (LR), limma-voom, limma-voom-with-quality-weights or DESeq2}
 \usage{
 test_differential_abundance(
   .data,
@@ -111,7 +111,7 @@ test_differential_abundance(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
+\item{.contrasts}{This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
 \item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom, "limma_voomWithQualityWeights"}
 

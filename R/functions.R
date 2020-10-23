@@ -501,10 +501,6 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See voom makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "limma_voom", "limma_voomWithQualityWeights"
-#' @param significance_threshold A real between 0 and 1
-#' @param minimum_counts A positive integer. Minimum counts required for at least some samples.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
-#' @param fill_missing_values A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -516,10 +512,6 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
-																											 significance_threshold = 0.05,
-																											 minimum_counts = 10,
-																											 minimum_proportion = 0.7,
-																											 fill_missing_values = FALSE,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE) {
 	# Get column names
