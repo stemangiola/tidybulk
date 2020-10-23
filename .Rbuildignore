@@ -13,3 +13,4 @@ README.Rmd
 .travis.yml
 ^.github$
 .RData
+^_pkgdown.yml
