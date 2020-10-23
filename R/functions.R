@@ -467,7 +467,12 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		# Attach attributes
 		reattach_internals(.data) %>%
-		memorise_methods_used(c("edger", "limma")) %>%
+	    
+	    # select method
+				when(
+					method == "edgeR_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
+					method == "edgeR_quasi_likelihood" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_quasi_likelihood"))
+				)	%>%
 
 		# Add raw object
 		attach_to_internals(edgeR_object, "edgeR") %>%
