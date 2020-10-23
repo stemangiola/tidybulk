@@ -11,6 +11,7 @@ get_differential_transcript_abundance_bulk_voom(
   .transcript = NULL,
   .abundance = NULL,
   .contrasts = NULL,
+  method = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = ""
@@ -29,11 +30,11 @@ get_differential_transcript_abundance_bulk_voom(
 
 \item{.contrasts}{A character vector. See voom makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
+\item{method}{A string character. Either "limma_voom", "limma_voom_sample_weights"}
+
 \item{scaling_method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
 \item{omit_contrast_in_colnames}{If just one contrast is specified you can choose to omit the contrast label in the colnames.}
-
-\item{method}{A string character. Either "limma_voom", "limma_voomWithQualityWeights"}
 }
 \value{
 A tibble with voom results

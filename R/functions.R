@@ -508,7 +508,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See voom makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A string character. Either "limma_voom", "limma_voomWithQualityWeights"
+#' @param method A string character. Either "limma_voom", "limma_voom_sample_weights"
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -599,7 +599,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 	    # select method
 		when(
 			method == "limma_voom" ~ (.) %>% limma::voom(design, plot=FALSE),
-			method == "limma_voomWithQualityWeights" ~ (.) %>% limma::voomWithQualityWeights(design, plot=FALSE)
+			method == "limma_voom_sample_weights" ~ (.) %>% limma::voomWithQualityWeights(design, plot=FALSE)
 		) %>%
 		
 	    limma::lmFit(design)
@@ -666,7 +666,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 	    # select method
 	    when(
 			method == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
-			method == "limma_voomWithQualityWeights" ~ (.) %>% memorise_methods_used("voomWithQualityWeights")
+			method == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights")
 		) %>%
 
 		# Add raw object

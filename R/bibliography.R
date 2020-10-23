@@ -47,7 +47,7 @@ my_bibliography = function() {
   year={2005},
   publisher={Springer}
 	}",
-	voomWithQualityWeights = "@article{liu2015weight,
+	voom_sample_weights = "@article{liu2015weight,
   title={Why weight? Modelling sample and observational level variability improves power in RNA-seq analyses},
   author={Liu, Ruijie and Holik, Aliaksei Z and Su, Shian and Jansz, Natasha and Chen, Kelan and Leong, Huei San and Blewitt, Marnie E and Asselin-Labat, Marie-Liesse and Smyth, Gordon K and Ritchie, Matthew E},
   journal={Nucleic acids research},
