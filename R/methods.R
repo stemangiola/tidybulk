@@ -2025,7 +2025,7 @@ such as batch effects (if applicable) in the formula.
 		when(
 			
 			# edgeR
-			tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio") ~ 
+			tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ 
 			get_differential_transcript_abundance_bulk(
 				.,
 				.formula,

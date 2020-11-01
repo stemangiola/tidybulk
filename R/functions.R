@@ -403,12 +403,12 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		edgeR::DGEList(counts = .) %>%
 		edgeR::calcNormFactors(method = scaling_method) %>%
-		edgeR::estimateDisp(design) %>%
 
 		# select method
 		when(
-			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmFit(design),
-			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFit(design)
+			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmFit(design),
+			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmQLFit(design),
+			tolower(method) == "edger_robust_likelihood_ratio" ~ (.) %>% edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
 		)
 
 
@@ -423,7 +423,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 				# select method
 				when(
-					tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
+					tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
 					tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
 				)	%>%
 
@@ -448,7 +448,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 							# select method
 							when(
-								tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
+								tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
 								tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
 							)	%>%
 
