@@ -109,7 +109,7 @@ test_differential_abundance(
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{.formula}{A formula with no response variable, representing the desired linear model}
+\item{.formula}{A formula representing the desired linear model. If there is more than one factor, they should be in the order factor of interest + additional factors.}
 
 \item{.sample}{The name of the sample column}
 
