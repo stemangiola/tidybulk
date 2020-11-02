@@ -3473,7 +3473,10 @@ setGeneric("get_bibliography", function(.data)
 {
 
 	# If there is not attributes parameter
-	if(!"methods_used" %in% (.data %>% attributes() %>% names()))
+	if(
+		!"internals" %in% (.data %>% attributes() %>% names()) &&
+		!"methods_used" %in% (.data %>% attr("internals") %>% names())
+	)
 		stop("tidybulk says: the attributes (attributes(...)) including the method tracking for for this object appear to be absent.")
 		
 	my_methods =
