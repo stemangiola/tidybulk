@@ -3,10 +3,19 @@
 \docType{methods}
 \name{get_bibliography}
 \alias{get_bibliography}
+\alias{get_bibliography,tbl-method}
+\alias{get_bibliography,tbl_df-method}
+\alias{get_bibliography,spec_tbl_df-method}
 \alias{get_bibliography,tidybulk-method}
 \title{Produces the bibliography list of your workflow}
 \usage{
 get_bibliography(.data)
+
+\S4method{get_bibliography}{tbl}(.data)
+
+\S4method{get_bibliography}{tbl_df}(.data)
+
+\S4method{get_bibliography}{spec_tbl_df}(.data)
 
 \S4method{get_bibliography}{tidybulk}(.data)
 }
@@ -14,6 +23,12 @@ get_bibliography(.data)
 \item{.data}{A `tidybulk` tibble}
 }
 \value{
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
 A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 }
 \description{
