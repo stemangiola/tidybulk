@@ -1530,7 +1530,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data_processed)
 	}
 
 	else if (action == "get"){
@@ -1550,7 +1550,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data_processed)
 	}
 
 	else if (action == "only") .data_processed

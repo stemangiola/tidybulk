@@ -2387,7 +2387,7 @@ get_cell_type_proportions = function(.data,
 
 		# Attach attributes
 		reattach_internals(.data) %>%
-		memorise_methods_used("cibersort")
+		memorise_methods_used(tolower(method))
 
 
 }
