@@ -36,7 +36,7 @@ name: R-CMD-check-bioc
 env:
   has_testthat: 'false'
   run_covr: 'false'
-  run_pkgdown: 'false'
+  run_pkgdown: 'true'
   has_RUnit: 'false'
   cache-version: 'cache-v1'
 
