@@ -403,12 +403,12 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		edgeR::DGEList(counts = .) %>%
 		edgeR::calcNormFactors(method = scaling_method) %>%
-		edgeR::estimateDisp(design) %>%
 
 		# select method
 		when(
-			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmFit(design),
-			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFit(design)
+			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmFit(design),
+			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmQLFit(design),
+			tolower(method) == "edger_robust_likelihood_ratio" ~ (.) %>% edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
 		)
 
 
@@ -423,7 +423,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 				# select method
 				when(
-					tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
+					tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
 					tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
 				)	%>%
 
@@ -448,7 +448,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 							# select method
 							when(
-								tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
+								tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
 								tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
 							)	%>%
 
@@ -475,7 +475,12 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		
 		# Attach attributes
 		reattach_internals(.data) %>%
-		memorise_methods_used(c("edger", "limma")) %>%
+	    
+	    # select method
+				when(
+					method == "edgeR_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
+					method == "edgeR_quasi_likelihood" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_quasi_likelihood"))
+				)	%>%
 
 		# Add raw object
 		attach_to_internals(edgeR_object, "edgeR") %>%
@@ -645,7 +650,6 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 											names_from = constrast, names_sep = "___")
 			}
 		)	 %>%
-
 		
 		# Attach prefix
 		setNames(c(
@@ -655,6 +659,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		
 		# Attach attributes
 		reattach_internals(.data) %>%
+	  memorise_methods_used("voom") %>%
 
 		# Add raw object
 		attach_to_internals(voom_object, "voom") %>%
@@ -2356,20 +2361,20 @@ get_cell_type_proportions = function(.data,
 				do.call(my_CIBERSORT, list(Y = ., X = reference) %>% c(dots_args)) %$%
 				proportions %>%
 				as_tibble(rownames = quo_name(.sample)) %>%
-				select(-`P-value`,-Correlation,-RMSE)
+				select(-`P-value`,-Correlation,-RMSE) 
 			},
 			
 			# Don't need to execute do.call
 			method %>% tolower %>% equals("llsr") ~ (.) %>%
 				run_llsr(reference) %>%
-				as_tibble(rownames = quo_name(.sample)),
+				as_tibble(rownames = quo_name(.sample)) ,
 
 			# Don't need to execute do.call
 			method %>% tolower %>% equals("epic") ~ {
 				
 				(.) %>%
 					run_epic(reference) %>%
-					as_tibble(rownames = quo_name(.sample))
+					as_tibble(rownames = quo_name(.sample)) 
 			},
 			
 			~ stop(
@@ -2381,9 +2386,8 @@ get_cell_type_proportions = function(.data,
 		setNames(c(
 			quo_name(.sample),
 			(.) %>% select(-1) %>% colnames() %>% sprintf("%s: %s", method, .)
+
 		)) %>%
-		#%>%
-		#gather(`Cell type`, proportion,-!!.sample) %>%
 
 		# Attach attributes
 		reattach_internals(.data) %>%
@@ -2753,7 +2757,7 @@ as_matrix <- function(tbl,
 #' @importFrom tidyr complete
 #'
 #' @param .data A tibble
-#' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
+#' @param .formula a formula with no response variable, of the kind ~ factor_of_interest + batch
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
