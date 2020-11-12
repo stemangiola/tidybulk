@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@
       <h1 data-toc-skip>Comparison with base R</h1>
                         <h4 class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2020-10-17</h4>
+            <h4 class="date">2020-11-12</h4>
       
       
       <div class="hidden name"><code>comparison_with_base_R.Rmd</code></div>
@@ -119,8 +119,8 @@ pre{
 <div id="create-tidybulk-tibble-" class="section level2">
 <h2 class="hasAnchor">
 <a href="#create-tidybulk-tibble-" class="anchor"></a>Create <code>tidybulk</code> tibble.</h2>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="va">tt</span> <span class="op">=</span> <span class="va">counts_mini</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/tidybulk.html">tidybulk</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">transcript</span>, <span class="va">count</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt</span> <span class="op">=</span> <span class="va">counts_mini</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/tidybulk.html">tidybulk</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">transcript</span>, <span class="va">count</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="aggregate-duplicated-transcripts" class="section level2">
 <h2 class="hasAnchor">
@@ -128,13 +128,13 @@ pre{
 </h2>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="va">tt.aggr</span> <span class="op">=</span> <span class="va">tt</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/aggregate_duplicates.html">aggregate_duplicates</a></span><span class="op">(</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.aggr</span> <span class="op">=</span> <span class="va">tt</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/aggregate_duplicates.html">aggregate_duplicates</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="va">temp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">temp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
     symbol <span class="op">=</span> <span class="va">dge_list</span><span class="op">$</span><span class="va">genes</span><span class="op">$</span><span class="va">symbol</span>,
     <span class="va">dge_list</span><span class="op">$</span><span class="va">counts</span>
 <span class="op">)</span>
@@ -144,7 +144,7 @@ pre{
             <span class="fu">matrixStats</span><span class="fu">:::</span><span class="fu">colSums</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
 <span class="op">)</span>
 <span class="va">dge_list.nr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="st">"rbind"</span>, <span class="va">dge_list.nr</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">dge_list.nr</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">dge_list</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">dge_list.nr</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">dge_list</span><span class="op">)</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -156,8 +156,8 @@ pre{
 </h2>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="va">tt.norm</span> <span class="op">=</span> <span class="va">tt.aggr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">condition</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span><span class="op">(</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.norm</span> <span class="op">=</span> <span class="va">tt.aggr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">condition</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
@@ -181,13 +181,13 @@ pre{
 <p>We may want to identify and filter variable transcripts.</p>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="va">tt.norm.variable</span> <span class="op">=</span> <span class="va">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/keep_variable.html">keep_variable</a></span><span class="op">(</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.norm.variable</span> <span class="op">=</span> <span class="va">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/keep_variable.html">keep_variable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/edgeR">edgeR</a></span><span class="op">)</span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/edgeR">edgeR</a></span><span class="op">)</span>
 
 <span class="va">x</span> <span class="op">=</span> <span class="va">norm_counts.table</span>
 
@@ -203,7 +203,7 @@ pre{
         <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">norm_counts.table</span><span class="op">)</span>
     <span class="op">)</span>,
     <span class="st">"Cell type"</span>
-<span class="op">]</span></pre></div>
+<span class="op">]</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -215,15 +215,15 @@ pre{
 </h2>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="va">tt.norm.MDS</span> <span class="op">=</span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.norm.MDS</span> <span class="op">=</span>
   <span class="va">tt.norm</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></pre></div>
+  <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/limma">limma</a></span><span class="op">)</span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/limma">limma</a></span><span class="op">)</span>
 
 <span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
 <span class="va">cmds</span> <span class="op">=</span> <span class="fu">limma</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/limma/man/plotMDS.html">plotMDS</a></span><span class="op">(</span>ndim <span class="op">=</span> <span class="va">.dims</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
@@ -235,7 +235,7 @@ pre{
 <span class="va">cmds</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="../reference/counts.html">counts</a></span><span class="op">[</span>
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="../reference/counts.html">counts</a></span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">cmds</span><span class="op">)</span><span class="op">)</span>,
     <span class="st">"Cell type"</span>
-<span class="op">]</span></pre></div>
+<span class="op">]</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -245,22 +245,22 @@ pre{
 <a href="#pca" class="anchor"></a>PCA</h3>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb10"><pre class="downlit">
-<span class="va">tt.norm.PCA</span> <span class="op">=</span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.norm.PCA</span> <span class="op">=</span>
   <span class="va">tt.norm</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"PCA"</span>, .dims <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></pre></div>
+  <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"PCA"</span>, .dims <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
 <span class="va">pc</span> <span class="op">=</span> <span class="va">count_m_log</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html">prcomp</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">variance</span> <span class="op">=</span> <span class="va">pc</span><span class="op">$</span><span class="va">sdev</span><span class="op">^</span><span class="fl">2</span>
 <span class="va">variance</span> <span class="op">=</span> <span class="op">(</span><span class="va">variance</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">variance</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>
 <span class="va">pc</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">pc</span><span class="op">)</span><span class="op">)</span>,
     <span class="st">"Cell type"</span>
-<span class="op">]</span></pre></div>
+<span class="op">]</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -271,8 +271,8 @@ pre{
 <a href="#tsne" class="anchor"></a>tSNE</h3>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb12"><pre class="downlit">
-<span class="va">tt.norm.tSNE</span> <span class="op">=</span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.norm.tSNE</span> <span class="op">=</span>
     <span class="va">breast_tcga_mini</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/tidybulk.html">tidybulk</a></span><span class="op">(</span>       <span class="va">sample</span>, <span class="va">ens</span>, <span class="va">count_scaled</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -280,12 +280,12 @@ pre{
         method <span class="op">=</span> <span class="st">"tSNE"</span>,
         perplexity<span class="op">=</span><span class="fl">10</span>,
         pca_scale <span class="op">=</span><span class="cn">TRUE</span>
-    <span class="op">)</span></pre></div>
+    <span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb13"><pre class="downlit">
-<span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
 
 <span class="va">tsne</span> <span class="op">=</span> <span class="fu">Rtsne</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Rtsne/man/Rtsne.html">Rtsne</a></span><span class="op">(</span>
     <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">count_m_log</span><span class="op">)</span>,
@@ -295,7 +295,7 @@ pre{
 <span class="va">tsne</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="../reference/counts.html">counts</a></span><span class="op">[</span>
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="../reference/counts.html">counts</a></span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">tsne</span><span class="op">)</span><span class="op">)</span>,
     <span class="st">"Cell type"</span>
-<span class="op">]</span></pre></div>
+<span class="op">]</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -308,15 +308,15 @@ pre{
 </h2>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb14"><pre class="downlit">
-<span class="va">tt.norm.MDS.rotated</span> <span class="op">=</span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.norm.MDS.rotated</span> <span class="op">=</span>
   <span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/rotate_dimensions.html">rotate_dimensions</a></span><span class="op">(</span><span class="va">`Dim1`</span>, <span class="va">`Dim2`</span>, rotation_degrees <span class="op">=</span> <span class="fl">45</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span></pre></div>
+    <span class="fu"><a href="../reference/rotate_dimensions.html">rotate_dimensions</a></span><span class="op">(</span><span class="va">`Dim1`</span>, <span class="va">`Dim2`</span>, rotation_degrees <span class="op">=</span> <span class="fl">45</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb15"><pre class="downlit">
-<span class="va">rotation</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">m</span>, <span class="va">d</span><span class="op">)</span> <span class="op">{</span>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">rotation</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">m</span>, <span class="va">d</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">r</span> <span class="op">=</span> <span class="va">d</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">/</span> <span class="fl">180</span>
     <span class="op">(</span><span class="op">(</span><span class="fu"><a href="../reference/arrange.html">bind_rows</a></span><span class="op">(</span>
         <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>`1` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">cos</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>, `2` <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span>,
@@ -327,7 +327,7 @@ pre{
 <span class="va">mds_r</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">mds_r</span><span class="op">)</span><span class="op">)</span>,
     <span class="st">"Cell type"</span>
-<span class="op">]</span></pre></div>
+<span class="op">]</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -339,16 +339,16 @@ pre{
 </h2>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb16"><pre class="downlit">
-<span class="va">tt.de</span> <span class="op">=</span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.de</span> <span class="op">=</span>
     <span class="va">tt</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">condition</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span>
-<span class="va">tt.de</span></pre></div>
+<span class="va">tt.de</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb17"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/edgeR">edgeR</a></span><span class="op">)</span>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/edgeR">edgeR</a></span><span class="op">)</span>
 
 <span class="va">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html">DGEList</a></span><span class="op">(</span>counts<span class="op">=</span><span class="va">counts_m</span>,group<span class="op">=</span><span class="va">group</span><span class="op">)</span>
 <span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/filterByExpr.html">filterByExpr</a></span><span class="op">(</span><span class="va">dgList</span><span class="op">)</span>
@@ -358,7 +358,7 @@ pre{
 <span class="va">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/estimateDisp.html">estimateDisp</a></span><span class="op">(</span><span class="va">dgList</span>,<span class="va">design</span><span class="op">)</span>
 <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/glmQLFTest.html">glmQLFit</a></span><span class="op">(</span><span class="va">dgList</span>,<span class="va">design</span><span class="op">)</span>
 <span class="va">qlf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/glmQLFTest.html">glmQLFTest</a></span><span class="op">(</span><span class="va">fit</span>,coef<span class="op">=</span><span class="fl">2</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/topTags.html">topTags</a></span><span class="op">(</span><span class="va">qlf</span>, n<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/topTags.html">topTags</a></span><span class="op">(</span><span class="va">qlf</span>, n<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -370,14 +370,14 @@ pre{
 </h2>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb18"><pre class="downlit">
-<span class="va">tt.norm.adj</span> <span class="op">=</span>
-    <span class="va">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/adjust_abundance.html">adjust_abundance</a></span><span class="op">(</span>   <span class="op">~</span> <span class="va">condition</span> <span class="op">+</span> <span class="va">time</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.norm.adj</span> <span class="op">=</span>
+    <span class="va">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/adjust_abundance.html">adjust_abundance</a></span><span class="op">(</span>   <span class="op">~</span> <span class="va">condition</span> <span class="op">+</span> <span class="va">time</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb19"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">sva</span><span class="op">)</span>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">sva</span><span class="op">)</span>
 
 <span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
 
@@ -398,7 +398,7 @@ pre{
 <span class="va">count_m_log.sva</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">count_m_log.sva</span><span class="op">)</span><span class="op">)</span>,
     <span class="st">"Cell type"</span>
-<span class="op">]</span></pre></div>
+<span class="op">]</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -410,10 +410,10 @@ pre{
 </h2>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb20"><pre class="downlit">
-<span class="va">tt.cibersort</span> <span class="op">=</span>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.cibersort</span> <span class="op">=</span>
     <span class="va">tt</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span><span class="op">(</span>action<span class="op">=</span><span class="st">"get"</span>, cores<span class="op">=</span><span class="fl">1</span><span class="op">)</span></pre></div>
+    <span class="fu"><a href="../reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span><span class="op">(</span>action<span class="op">=</span><span class="st">"get"</span>, cores<span class="op">=</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
@@ -442,14 +442,14 @@ pre{
 <a href="#k-means" class="anchor"></a>k-means</h3>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb22"><pre class="downlit">
-<span class="va">tt.norm.cluster</span> <span class="op">=</span> <span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"kmeans"</span>, centers <span class="op">=</span> <span class="fl">2</span>, action<span class="op">=</span><span class="st">"get"</span> <span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.norm.cluster</span> <span class="op">=</span> <span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"kmeans"</span>, centers <span class="op">=</span> <span class="fl">2</span>, action<span class="op">=</span><span class="st">"get"</span> <span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb23"><pre class="downlit">
-<span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
 
 <span class="va">k</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/kmeans.html">kmeans</a></span><span class="op">(</span><span class="va">count_m_log</span>, iter.max <span class="op">=</span> <span class="fl">1000</span>, <span class="va">...</span><span class="op">)</span>
 <span class="va">cluster</span> <span class="op">=</span> <span class="va">k</span><span class="op">$</span><span class="va">cluster</span>
@@ -457,7 +457,7 @@ pre{
 <span class="va">cluster</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="../reference/counts.html">counts</a></span><span class="op">[</span>
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="../reference/counts.html">counts</a></span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">cluster</span><span class="op">)</span><span class="op">)</span>,
     <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Cell type"</span>, <span class="st">"Dim1"</span>, <span class="st">"Dim2"</span><span class="op">)</span>
-<span class="op">]</span></pre></div>
+<span class="op">]</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -468,15 +468,15 @@ pre{
 <a href="#snn" class="anchor"></a>SNN</h3>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb24"><pre class="downlit">
-<span class="va">tt.norm.SNN</span> <span class="op">=</span>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.norm.SNN</span> <span class="op">=</span>
     <span class="va">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"SNN"</span><span class="op">)</span></pre></div>
+    <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"SNN"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb25"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat">Seurat</a></span><span class="op">)</span>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat">Seurat</a></span><span class="op">)</span>
 
 <span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/CreateSeuratObject.html">CreateSeuratObject</a></span><span class="op">(</span><span class="va">count_m</span><span class="op">)</span>
 <span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/ScaleData.html">ScaleData</a></span><span class="op">(</span>
@@ -493,7 +493,7 @@ pre{
 <span class="va">snn</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="../reference/counts.html">counts</a></span><span class="op">[</span>
     <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="../reference/counts.html">counts</a></span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">snn</span><span class="op">)</span><span class="op">)</span>,
     <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Cell type"</span>, <span class="st">"Dim1"</span>, <span class="st">"Dim2"</span><span class="op">)</span>
-<span class="op">]</span></pre></div>
+<span class="op">]</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -505,15 +505,15 @@ pre{
 <a href="#drop-redundant-transcripts" class="anchor"></a>Drop <code>redundant</code> transcripts</h2>
 <div class="column-left">
 <p>Tidy transcriptomics</p>
-<div class="sourceCode" id="cb26"><pre class="downlit">
-<span class="va">tt.norm.non_redundant</span> <span class="op">=</span>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.norm.non_redundant</span> <span class="op">=</span>
     <span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/remove_redundancy.html">remove_redundancy</a></span><span class="op">(</span>    method <span class="op">=</span> <span class="st">"correlation"</span> <span class="op">)</span></pre></div>
+  <span class="fu"><a href="../reference/remove_redundancy.html">remove_redundancy</a></span><span class="op">(</span>    method <span class="op">=</span> <span class="st">"correlation"</span> <span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb27"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/dgrtwo/widyr">widyr</a></span><span class="op">)</span>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/dgrtwo/widyr">widyr</a></span><span class="op">)</span>
 
 <span class="va">.data.correlated</span> <span class="op">=</span>
     <span class="fu"><a href="https://rdrr.io/pkg/widyr/man/pairwise_cor.html">pairwise_cor</a></span><span class="op">(</span>
@@ -532,7 +532,7 @@ pre{
 <span class="co"># Return non redundant data frame</span>
 <span class="va">counts</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter-joins.html">anti_join</a></span><span class="op">(</span><span class="va">.data.correlated</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu">spread</span><span class="op">(</span><span class="va">sample</span>, <span class="va">rc</span>, <span class="op">-</span> <span class="va">transcript</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/left_join.html">left_join</a></span><span class="op">(</span><span class="va">annotation</span><span class="op">)</span></pre></div>
+    <span class="fu"><a href="../reference/left_join.html">left_join</a></span><span class="op">(</span><span class="va">annotation</span><span class="op">)</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -544,8 +544,8 @@ pre{
 </h2>
 <div class="column-left">
 <p>tidytranscriptomics</p>
-<div class="sourceCode" id="cb28"><pre class="downlit">
-<span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span>
 
   <span class="co"># filter lowly abundant</span>
   <span class="fu"><a href="../reference/keep_abundant.html">keep_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -555,12 +555,12 @@ pre{
 
   <span class="co"># create heatmap</span>
   <span class="fu"><a href="https://rdrr.io/r/stats/heatmap.html">heatmap</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">transcript</span>, <span class="va">count_scaled</span>, transform <span class="op">=</span> <span class="va">log1p</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu">add_tile</span><span class="op">(</span><span class="va">`Cell type`</span><span class="op">)</span> </pre></div>
+    <span class="fu">add_tile</span><span class="op">(</span><span class="va">`Cell type`</span><span class="op">)</span> </code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb29"><pre class="downlit">
-<span class="co"># Example taken from airway dataset from BioC2020 workshop. </span>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Example taken from airway dataset from BioC2020 workshop. </span>
 <span class="va">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/SE2DGEList.html">SE2DGEList</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span>
 <span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">dgList</span><span class="op">$</span><span class="va">samples</span><span class="op">$</span><span class="va">`Cell type`</span><span class="op">)</span>
 <span class="va">keep.exprs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/filterByExpr.html">filterByExpr</a></span><span class="op">(</span><span class="va">dgList</span>, group<span class="op">=</span><span class="va">group</span><span class="op">)</span>
@@ -572,7 +572,7 @@ pre{
 <span class="va">highly_variable_lcpm</span> <span class="op">&lt;-</span> <span class="va">logcounts</span><span class="op">[</span><span class="va">select_var</span>,<span class="op">]</span>
 <span class="va">colours</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#440154FF"</span>, <span class="st">"#21908CFF"</span>, <span class="st">"#fefada"</span> <span class="op">)</span>
 <span class="va">col.group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"red"</span>,<span class="st">"grey"</span><span class="op">)</span><span class="op">[</span><span class="va">group</span><span class="op">]</span>
-<span class="fu">gplots</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gplots/man/heatmap.2.html">heatmap.2</a></span><span class="op">(</span><span class="va">highly_variable_lcpm</span>, col<span class="op">=</span><span class="va">colours</span>, trace<span class="op">=</span><span class="st">"none"</span>, ColSideColors<span class="op">=</span><span class="va">col.group</span>, scale<span class="op">=</span><span class="st">"row"</span><span class="op">)</span></pre></div>
+<span class="fu">gplots</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gplots/man/heatmap.2.html">heatmap.2</a></span><span class="op">(</span><span class="va">highly_variable_lcpm</span>, col<span class="op">=</span><span class="va">colours</span>, trace<span class="op">=</span><span class="st">"none"</span>, ColSideColors<span class="op">=</span><span class="va">col.group</span>, scale<span class="op">=</span><span class="st">"row"</span><span class="op">)</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -584,8 +584,8 @@ pre{
 </h2>
 <div class="column-left">
 <p>tidytranscriptomics</p>
-<div class="sourceCode" id="cb30"><pre class="downlit">
-<span class="co"># Example taken from airway dataset from BioC2020 workshop. </span>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Example taken from airway dataset from BioC2020 workshop. </span>
 <span class="va">airway</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/tidybulk.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
       <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -595,12 +595,12 @@ pre{
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">abundance</span> <span class="op">+</span> <span class="fl">1</span>, color<span class="op">=</span><span class="va">sample</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">source</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span><span class="op">(</span><span class="op">)</span> </pre></div>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span><span class="op">(</span><span class="op">)</span> </code></pre></div>
 </div>
 <div class="column-right">
 <p>Base R</p>
-<div class="sourceCode" id="cb31"><pre class="downlit">
-<span class="co"># Example taken from airway dataset from BioC2020 workshop. </span>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Example taken from airway dataset from BioC2020 workshop. </span>
 <span class="va">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/SE2DGEList.html">SE2DGEList</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span>
 <span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">dgList</span><span class="op">$</span><span class="va">samples</span><span class="op">$</span><span class="va">dex</span><span class="op">)</span>
 <span class="va">keep.exprs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/filterByExpr.html">filterByExpr</a></span><span class="op">(</span><span class="va">dgList</span>, group<span class="op">=</span><span class="va">group</span><span class="op">)</span>
@@ -612,7 +612,7 @@ pre{
 <span class="va">highly_variable_lcpm</span> <span class="op">&lt;-</span> <span class="va">logcounts</span><span class="op">[</span><span class="va">select_var</span>,<span class="op">]</span>
 <span class="va">colours</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#440154FF"</span>, <span class="st">"#21908CFF"</span>, <span class="st">"#fefada"</span> <span class="op">)</span>
 <span class="va">col.group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"red"</span>,<span class="st">"grey"</span><span class="op">)</span><span class="op">[</span><span class="va">group</span><span class="op">]</span>
-<span class="fu">gplots</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gplots/man/heatmap.2.html">heatmap.2</a></span><span class="op">(</span><span class="va">highly_variable_lcpm</span>, col<span class="op">=</span><span class="va">colours</span>, trace<span class="op">=</span><span class="st">"none"</span>, ColSideColors<span class="op">=</span><span class="va">col.group</span>, scale<span class="op">=</span><span class="st">"row"</span><span class="op">)</span></pre></div>
+<span class="fu">gplots</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gplots/man/heatmap.2.html">heatmap.2</a></span><span class="op">(</span><span class="va">highly_variable_lcpm</span>, col<span class="op">=</span><span class="va">colours</span>, trace<span class="op">=</span><span class="st">"none"</span>, ColSideColors<span class="op">=</span><span class="va">col.group</span>, scale<span class="op">=</span><span class="st">"row"</span><span class="op">)</span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -621,9 +621,9 @@ pre{
 <div id="appendix" class="section level2">
 <h2 class="hasAnchor">
 <a href="#appendix" class="anchor"></a>Appendix</h2>
-<div class="sourceCode" id="cb32"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></pre></div>
-<pre><code>## R version 4.0.3 Patched (2020-10-13 r79342)
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code>## R Under development (unstable) (2020-11-05 r79401)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 20.04.1 LTS
 ## 
@@ -642,86 +642,86 @@ pre{
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] tidybulk_1.1.9   ggrepel_0.8.2    ggplot2_3.3.2    magrittr_1.5    
+## [1] tidybulk_1.2.0   ggrepel_0.8.2    ggplot2_3.3.2    magrittr_1.5    
 ## [5] tibble_3.0.4     tidyr_1.1.2      dplyr_1.0.2      knitr_1.30      
-## [9] BiocStyle_2.17.1
+## [9] BiocStyle_2.19.0
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] backports_1.1.10            tidytext_0.2.6             
+##   [1] backports_1.2.0             tidytext_0.2.6             
 ##   [3] systemfonts_0.3.2           plyr_1.8.6                 
 ##   [5] igraph_1.2.6                lazyeval_0.2.2             
-##   [7] splines_4.0.3               BiocParallel_1.23.2        
+##   [7] splines_4.1.0               BiocParallel_1.25.1        
 ##   [9] listenv_0.8.0               SnowballC_0.7.0            
-##  [11] GenomeInfoDb_1.25.11        sva_3.37.0                 
-##  [13] digest_0.6.25               htmltools_0.5.0            
+##  [11] GenomeInfoDb_1.27.0         sva_3.39.0                 
+##  [13] digest_0.6.27               htmltools_0.5.0            
 ##  [15] fansi_0.4.1                 memoise_1.1.0              
 ##  [17] tensor_1.5                  cluster_2.1.0              
-##  [19] ROCR_1.0-11                 limma_3.45.14              
+##  [19] ROCR_1.0-11                 limma_3.47.0               
 ##  [21] globals_0.13.1              readr_1.4.0                
-##  [23] annotate_1.67.2             matrixStats_0.57.0         
-##  [25] pkgdown_1.6.1.9000          colorspace_1.4-1           
-##  [27] blob_1.2.1                  rappdirs_0.3.1             
-##  [29] textshaping_0.1.2           xfun_0.18                  
-##  [31] crayon_1.3.4                RCurl_1.98-1.2             
-##  [33] jsonlite_1.7.1              spatstat.data_1.4-3        
-##  [35] spatstat_1.64-1             genefilter_1.71.0          
-##  [37] survival_3.2-7              zoo_1.8-8                  
-##  [39] glue_1.4.2                  polyclip_1.10-0            
-##  [41] gtable_0.3.0                zlibbioc_1.35.0            
-##  [43] XVector_0.29.3              leiden_0.3.3               
-##  [45] DelayedArray_0.15.16        future.apply_1.6.0         
-##  [47] BiocGenerics_0.35.4         abind_1.4-5                
-##  [49] scales_1.1.1                DBI_1.1.0                  
-##  [51] edgeR_3.31.5                miniUI_0.1.1.1             
-##  [53] Rcpp_1.0.5                  widyr_0.1.3                
-##  [55] viridisLite_0.3.0           xtable_1.8-4               
-##  [57] reticulate_1.16             bit_4.0.4                  
-##  [59] rsvd_1.0.3                  preprocessCore_1.51.0      
-##  [61] stats4_4.0.3                htmlwidgets_1.5.2          
-##  [63] httr_1.4.2                  RColorBrewer_1.1-2         
-##  [65] ellipsis_0.3.1              Seurat_3.2.2               
-##  [67] ica_1.0-2                   pkgconfig_2.0.3            
-##  [69] XML_3.99-0.5                uwot_0.1.8                 
-##  [71] deldir_0.1-29               locfit_1.5-9.4             
-##  [73] utf8_1.1.4                  reshape2_1.4.4             
-##  [75] tidyselect_1.1.0            rlang_0.4.8                
-##  [77] later_1.1.0.1               AnnotationDbi_1.51.3       
-##  [79] munsell_0.5.0               tools_4.0.3                
-##  [81] cli_2.1.0                   generics_0.0.2             
-##  [83] RSQLite_2.2.1               broom_0.7.1                
-##  [85] ggridges_0.5.2              evaluate_0.14              
-##  [87] stringr_1.4.0               fastmap_1.0.1              
-##  [89] goftest_1.2-2               yaml_2.2.1                 
-##  [91] ragg_0.4.0                  bit64_4.0.5                
-##  [93] fs_1.5.0                    fitdistrplus_1.1-1         
-##  [95] purrr_0.3.4                 RANN_2.6.1                 
-##  [97] pbapply_1.4-3               future_1.19.1              
-##  [99] nlme_3.1-149                mime_0.9                   
-## [101] tokenizers_0.2.1            compiler_4.0.3             
-## [103] plotly_4.9.2.1              png_0.1-7                  
-## [105] e1071_1.7-3                 spatstat.utils_1.17-0      
-## [107] stringi_1.5.3               desc_1.2.0                 
-## [109] lattice_0.20-41             Matrix_1.2-18              
-## [111] vctrs_0.3.4                 pillar_1.4.6               
-## [113] lifecycle_0.2.0             BiocManager_1.30.10        
-## [115] lmtest_0.9-38               RcppAnnoy_0.0.16           
-## [117] data.table_1.13.0           cowplot_1.1.0              
-## [119] bitops_1.0-6                irlba_2.3.3                
-## [121] httpuv_1.5.4                patchwork_1.0.1            
-## [123] GenomicRanges_1.41.6        R6_2.4.1                   
-## [125] bookdown_0.20               promises_1.1.1             
-## [127] gridExtra_2.3               KernSmooth_2.23-17         
-## [129] janeaustenr_0.1.5           IRanges_2.23.10            
-## [131] codetools_0.2-16            MASS_7.3-53                
-## [133] assertthat_0.2.1            SummarizedExperiment_1.19.9
+##  [23] annotate_1.69.0             matrixStats_0.57.0         
+##  [25] pkgdown_1.6.1.9000          colorspace_2.0-0           
+##  [27] blob_1.2.1                  textshaping_0.1.2          
+##  [29] xfun_0.19                   crayon_1.3.4               
+##  [31] RCurl_1.98-1.2              jsonlite_1.7.1             
+##  [33] spatstat.data_1.4-3         spatstat_1.64-1            
+##  [35] genefilter_1.73.0           survival_3.2-7             
+##  [37] zoo_1.8-8                   glue_1.4.2                 
+##  [39] polyclip_1.10-0             gtable_0.3.0               
+##  [41] zlibbioc_1.37.0             XVector_0.31.0             
+##  [43] leiden_0.3.5                DelayedArray_0.17.0        
+##  [45] future.apply_1.6.0          BiocGenerics_0.37.0        
+##  [47] abind_1.4-5                 scales_1.1.1               
+##  [49] DBI_1.1.0                   edgeR_3.33.0               
+##  [51] miniUI_0.1.1.1              Rcpp_1.0.5                 
+##  [53] widyr_0.1.3                 viridisLite_0.3.0          
+##  [55] xtable_1.8-4                reticulate_1.18            
+##  [57] bit_4.0.4                   rsvd_1.0.3                 
+##  [59] preprocessCore_1.53.0       stats4_4.1.0               
+##  [61] htmlwidgets_1.5.2           httr_1.4.2                 
+##  [63] RColorBrewer_1.1-2          ellipsis_0.3.1             
+##  [65] Seurat_3.2.2                ica_1.0-2                  
+##  [67] pkgconfig_2.0.3             XML_3.99-0.5               
+##  [69] uwot_0.1.8                  deldir_0.2-3               
+##  [71] locfit_1.5-9.4              utf8_1.1.4                 
+##  [73] reshape2_1.4.4              tidyselect_1.1.0           
+##  [75] rlang_0.4.8                 later_1.1.0.1              
+##  [77] AnnotationDbi_1.53.0        munsell_0.5.0              
+##  [79] tools_4.1.0                 cli_2.1.0                  
+##  [81] generics_0.1.0              RSQLite_2.2.1              
+##  [83] broom_0.7.2                 ggridges_0.5.2             
+##  [85] evaluate_0.14               stringr_1.4.0              
+##  [87] fastmap_1.0.1               goftest_1.2-2              
+##  [89] yaml_2.2.1                  ragg_0.4.0                 
+##  [91] bit64_4.0.5                 fs_1.5.0                   
+##  [93] fitdistrplus_1.1-1          purrr_0.3.4                
+##  [95] RANN_2.6.1                  pbapply_1.4-3              
+##  [97] future_1.20.1               nlme_3.1-150               
+##  [99] mime_0.9                    tokenizers_0.2.1           
+## [101] compiler_4.1.0              plotly_4.9.2.1             
+## [103] png_0.1-7                   e1071_1.7-4                
+## [105] spatstat.utils_1.17-0       stringi_1.5.3              
+## [107] desc_1.2.0                  lattice_0.20-41            
+## [109] Matrix_1.2-18               vctrs_0.3.4                
+## [111] pillar_1.4.6                lifecycle_0.2.0            
+## [113] BiocManager_1.30.10         lmtest_0.9-38              
+## [115] RcppAnnoy_0.0.16            data.table_1.13.2          
+## [117] cowplot_1.1.0               bitops_1.0-6               
+## [119] irlba_2.3.3                 httpuv_1.5.4               
+## [121] patchwork_1.1.0             GenomicRanges_1.43.0       
+## [123] R6_2.5.0                    bookdown_0.21              
+## [125] promises_1.1.1              gridExtra_2.3              
+## [127] KernSmooth_2.23-18          janeaustenr_0.1.5          
+## [129] IRanges_2.25.2              parallelly_1.21.0          
+## [131] codetools_0.2-18            MASS_7.3-53                
+## [133] assertthat_0.2.1            SummarizedExperiment_1.21.0
 ## [135] rprojroot_1.3-2             withr_2.3.0                
-## [137] sctransform_0.3.1           S4Vectors_0.27.14          
+## [137] sctransform_0.3.1           S4Vectors_0.29.3           
 ## [139] GenomeInfoDbData_1.2.4      mgcv_1.8-33                
-## [141] parallel_4.0.3              hms_0.5.3                  
-## [143] rpart_4.1-15                grid_4.0.3                 
-## [145] class_7.3-17                rmarkdown_2.4              
-## [147] MatrixGenerics_1.1.7        Rtsne_0.15                 
-## [149] Biobase_2.49.1              shiny_1.5.0</code></pre>
+## [141] parallel_4.1.0              hms_0.5.3                  
+## [143] rpart_4.1-15                grid_4.1.0                 
+## [145] class_7.3-17                rmarkdown_2.5              
+## [147] MatrixGenerics_1.3.0        Rtsne_0.15                 
+## [149] Biobase_2.51.0              shiny_1.5.0</code></pre>
 </div>
   </div>
 
