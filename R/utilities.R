@@ -1018,6 +1018,7 @@ log10_reverse_trans <- function() {
 #'
 #' @importFrom scales label_scientific
 #' @importFrom scales extended_breaks
+#' @importFrom stats qlogis plogis
 #'
 #' @return A scales object
 #'
