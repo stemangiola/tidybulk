@@ -11,6 +11,6 @@ README.Rmd
 ^.git$
 .coveralls.yml
 .travis.yml
-^.github$
 .RData
+^\.github$
 ^_pkgdown.yml
