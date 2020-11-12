@@ -1086,7 +1086,7 @@ setGeneric("remove_redundancy", function(.data,
 	}
 	else if (method == "reduced_dimensions") {
 		# Validate data frame
-		# MISSING because feature not needed. I should build a custom funtion.
+		# MISSING because feature not needed. I should build a custom function.
 
 		remove_redundancy_elements_though_reduced_dimensions(
 			.data,
@@ -1144,7 +1144,7 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' @name adjust_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
-#' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
+#' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
@@ -1530,7 +1530,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data_processed)
 	}
 
 	else if (action == "get"){
@@ -1550,7 +1550,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data_processed)
 	}
 
 	else if (action == "only") .data_processed
@@ -1854,7 +1854,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @name test_differential_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
-#' @param .formula A formula with no response variable, representing the desired linear model
+#' @param .formula A formula representing the desired linear model. If there is more than one factor, they should be in the order factor of interest + additional factors.
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
@@ -2025,7 +2025,7 @@ such as batch effects (if applicable) in the formula.
 		when(
 			
 			# edgeR
-			tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio") ~ 
+			tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ 
 			get_differential_transcript_abundance_bulk(
 				.,
 				.formula,
@@ -3169,7 +3169,7 @@ setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
 #' @name impute_missing_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
-#' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
+#' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
@@ -3472,6 +3472,13 @@ setGeneric("get_bibliography", function(.data)
 .get_bibliography = 		function(.data)
 {
 
+	# If there is not attributes parameter
+	if(
+		!"internals" %in% (.data %>% attributes() %>% names()) &&
+		!"methods_used" %in% (.data %>% attr("internals") %>% names())
+	)
+		stop("tidybulk says: the attributes (attributes(...)) including the method tracking for for this object appear to be absent.")
+		
 	my_methods =
 		.data %>%
 		attr("internals") %>%
@@ -3483,6 +3490,39 @@ setGeneric("get_bibliography", function(.data)
 		writeLines()
 
 }
+
+#' get_bibliography
+#' @inheritParams get_bibliography
+#'
+#' @docType methods
+#' @rdname get_bibliography-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("get_bibliography",
+					"tbl",
+					.get_bibliography)
+
+#' get_bibliography
+#' @inheritParams get_bibliography
+#'
+#' @docType methods
+#' @rdname get_bibliography-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("get_bibliography",
+					"tbl_df",
+					.get_bibliography)
+
+#' get_bibliography
+#' @inheritParams get_bibliography
+#'
+#' @docType methods
+#' @rdname get_bibliography-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("get_bibliography",
+					"spec_tbl_df",
+					.get_bibliography)
 
 #' get_bibliography
 #' @inheritParams get_bibliography

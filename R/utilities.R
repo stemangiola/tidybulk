@@ -2,7 +2,7 @@ my_stop = function() {
   stop("
         You should call tidybulk library *after* tidyverse libraries.
         tidybulk says: The function does not know what your sample, transcript and counts columns are.
-        You have to either enter those as arguments, or use the funtion tidybulk() to pass your column names that will be remembered.
+        You have to either enter those as arguments, or use the function tidybulk() to pass your column names that will be remembered.
       ")
 }
 
@@ -517,7 +517,7 @@ get_transcript = function(.data, .transcript){
     stop("
         tidybulk says: The function does not know what your transcript, transcript and counts columns are.\n
         You have to either enter those as symbols (e.g., `transcript`), \n
-        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
+        or use the function create_tt_from_tibble() to pass your column names that will be remembered.
       ")
   }
 
@@ -630,7 +630,7 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
       stop("
         tidybulk says: The function does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
-        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
+        or use the function create_tt_from_tibble() to pass your column names that will be remembered.
       ")
   }
 }
@@ -656,7 +656,7 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
     stop("
         tidybulk says: The function does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
-        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
+        or use the function create_tt_from_tibble() to pass your column names that will be remembered.
       ")
   }
 
@@ -721,7 +721,7 @@ get_elements = function(.data, .element, of_samples = TRUE){
       stop("
         tidybulk says: The function does not know what your elements (e.g., sample) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
-        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
+        or use the function create_tt_from_tibble() to pass your column names that will be remembered.
       ")
   }
 }
@@ -767,7 +767,7 @@ get_abundance_norm_if_exists = function(.data, .abundance){
       stop("
         tidybulk says: The function does not know what your elements (e.g., sample) are.\n
         You have to either enter those as symbols (e.g., `sample`), \n
-        or use the funtion create_tt_from_tibble() to pass your column names that will be remembered.
+        or use the function create_tt_from_tibble() to pass your column names that will be remembered.
       ")
   }
 }
@@ -1018,6 +1018,7 @@ log10_reverse_trans <- function() {
 #'
 #' @importFrom scales label_scientific
 #' @importFrom scales extended_breaks
+#' @importFrom stats qlogis plogis
 #'
 #' @return A scales object
 #'
