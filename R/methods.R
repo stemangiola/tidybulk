@@ -1530,7 +1530,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data_processed)
 	}
 
 	else if (action == "get"){
@@ -1550,7 +1550,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
 
 			# Attach attributes
-			reattach_internals(.data)
+			reattach_internals(.data_processed)
 	}
 
 	else if (action == "only") .data_processed
@@ -3472,6 +3472,13 @@ setGeneric("get_bibliography", function(.data)
 .get_bibliography = 		function(.data)
 {
 
+	# If there is not attributes parameter
+	if(
+		!"internals" %in% (.data %>% attributes() %>% names()) &&
+		!"methods_used" %in% (.data %>% attr("internals") %>% names())
+	)
+		stop("tidybulk says: the attributes (attributes(...)) including the method tracking for for this object appear to be absent.")
+		
 	my_methods =
 		.data %>%
 		attr("internals") %>%
@@ -3483,6 +3490,39 @@ setGeneric("get_bibliography", function(.data)
 		writeLines()
 
 }
+
+#' get_bibliography
+#' @inheritParams get_bibliography
+#'
+#' @docType methods
+#' @rdname get_bibliography-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("get_bibliography",
+					"tbl",
+					.get_bibliography)
+
+#' get_bibliography
+#' @inheritParams get_bibliography
+#'
+#' @docType methods
+#' @rdname get_bibliography-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("get_bibliography",
+					"tbl_df",
+					.get_bibliography)
+
+#' get_bibliography
+#' @inheritParams get_bibliography
+#'
+#' @docType methods
+#' @rdname get_bibliography-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("get_bibliography",
+					"spec_tbl_df",
+					.get_bibliography)
 
 #' get_bibliography
 #' @inheritParams get_bibliography
