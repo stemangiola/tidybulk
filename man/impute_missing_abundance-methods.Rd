@@ -61,7 +61,7 @@ impute_missing_abundance(
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{.formula}{A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)}
+\item{.formula}{A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)}
 
 \item{.sample}{The name of the sample column}
 

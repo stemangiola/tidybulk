@@ -1086,7 +1086,7 @@ setGeneric("remove_redundancy", function(.data,
 	}
 	else if (method == "reduced_dimensions") {
 		# Validate data frame
-		# MISSING because feature not needed. I should build a custom funtion.
+		# MISSING because feature not needed. I should build a custom function.
 
 		remove_redundancy_elements_though_reduced_dimensions(
 			.data,
@@ -1144,7 +1144,7 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' @name adjust_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
-#' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
+#' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
@@ -1854,7 +1854,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @name test_differential_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
-#' @param .formula A formula with no response variable, representing the desired linear model
+#' @param .formula A formula representing the desired linear model. If there is more than one factor, they should be in the order factor of interest + additional factors.
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
@@ -3169,7 +3169,7 @@ setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
 #' @name impute_missing_abundance
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
-#' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
+#' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
