@@ -11,6 +11,7 @@ get_cell_type_proportions(
   .abundance = NULL,
   reference = X_cibersort,
   method = "cibersort",
+  prefix = "",
   ...
 )
 }
