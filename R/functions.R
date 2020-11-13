@@ -897,90 +897,107 @@ test_differential_cellularity_ <- function(.data,
 		install.packages("broom", repos = "https://cloud.r-project.org")
 	}
 
-	# Parse formula
-	.my_formula =
-		.formula %>%
-		when(
-
-			# If I have the dot, needed definitely for censored
-			format(.) %>% grepl("\\.", .) %>% any ~ format(.formula) %>% str_replace("([-\\+\\*~ ])(\\.)", "\\1.proportion_0_corrected"),
-
-			# If normal formula
-			~ sprintf(".proportion_0_corrected%s", format(.))
-		) %>%
-
-		as.formula
+	
  
-	.data %>%
+	deconvoluted = 
+		.data %>%
 
 		# Deconvolution
 		deconvolve_cellularity(
 			!!.sample, !!.transcript, !!.abundance,
 			method=method,
+			prefix = sprintf("%s:", method),
 			reference = reference,
 			action="get",
 			...
-		)  %>%
+		)  
+	
+	# Parse formula
+	covariates = 
+		deconvoluted %>% 
+		select(starts_with(method)) %>% 
+		colnames() %>% 
+		gsub(sprintf("%s:", method), "", .) %>%  
+		str_replace_all("[ \\(\\)]", "___")
+	
+	.my_formula =
+		.formula %>%
+		when(
+			
+			# If I have the dot, needed definitely for censored
+			format(.) %>% grepl("\\.", .) %>% any ~ 
+				format(.formula) %>% 
+				str_replace(
+					"([-\\+\\*~ ])(\\.)", 
+					sprintf("\\1%s", paste(covariates, collapse=" + "))
+				),
+			
+			# If normal formula
+			~ sprintf(".proportion_0_corrected%s", format(.))
+		) %>%
+		
+		as.formula
+	
+	min_detected_proportion = 
+		deconvoluted %>%
+		select(starts_with(method)) %>%
+		gather(cell_type, prop) %>%
+		filter(prop > 0) %>%
+		pull(prop) %>%
+		min()
+	
+	results_regression = 
+		deconvoluted %>%
+		
+		# Replace 0s - before
+		mutate(across(starts_with(method), function(.x) if_else(.x==0, min_detected_proportion, .x))) %>%
+		mutate(across(starts_with(method), boot::logit)) %>%
+		
+		# Rename columns - after
+		setNames(
+			str_remove(colnames(.), sprintf("%s:", method)) %>%
+				str_replace_all("[ \\(\\)]", "___")
+		) %>%
+	
+		# Beta or Cox
+		when(
+			grepl("Surv", .my_formula) %>% any ~ {
+				# Check if package is installed, otherwise install
+				if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing betareg needed for analyses")
+					install.packages("survival", repos = "https://cloud.r-project.org")
+				}
 
-		# Test
+				if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing boot needed for analyses")
+					install.packages("boot", repos = "https://cloud.r-project.org")
+				}
+
+				(.) %>%
+					survival::coxph(.my_formula, .)	%>%
+					broom::tidy() 
+			} ,
+			~ {
+				(.) %>%
+					lm(.my_formula, .) %>%
+					broom::tidy() %>%
+					filter(term != "(Intercept)") 
+			}
+		) 
+	
+	# Join results
+	deconvoluted %>% 
 		pivot_longer(
 			names_prefix = sprintf("%s: ", method),
 			cols = starts_with(method),
-			names_to = ".cell_type",
+			names_to = ".cell_type", 
 			values_to = ".proportion"
 		) %>%
-
-		# Replace 0s
-		mutate(min_proportion = min(.proportion[.proportion!=0])) %>%
-		mutate(.proportion_0_corrected = if_else(.proportion==0, min_proportion, .proportion)) %>%
-
-		# Test survival
 		tidyr::nest(cell_type_proportions = -.cell_type) %>%
-		mutate(surv_test = map(
-			cell_type_proportions,
-			~ {
-			if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
-
-			# See if regression if censored or not
-			.x %>%
-				when(
-					grepl("Surv", .my_formula) %>% any ~ {
-						# Check if package is installed, otherwise install
-						if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-							message("Installing betareg needed for analyses")
-							install.packages("survival", repos = "https://cloud.r-project.org")
-						}
-
-						if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
-							message("Installing boot needed for analyses")
-							install.packages("boot", repos = "https://cloud.r-project.org")
-						}
-
-						(.) %>%
-							mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
-							survival::coxph(.my_formula, .)	%>%
-							broom::tidy() %>%
-							select(-term)
-					} ,
-					~ {
-						# Check if package is installed, otherwise install
-						if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
-							message("Installing betareg needed for analyses")
-							install.packages("betareg", repos = "https://cloud.r-project.org")
-						}
-						(.) %>%
-							betareg::betareg(.my_formula, .) %>%
-							broom::tidy() %>%
-							filter(component != "precision") %>%
-							pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
-							select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
-							select(-component)
-					}
-				)
-		}
-		)) %>%
-
-		unnest(surv_test, keep_empty = TRUE) %>%
+		bind_cols(
+			results_regression %>% 
+				select(-term)
+		) %>%
 
 		# Attach attributes
 		reattach_internals(.data) %>%
@@ -988,12 +1005,8 @@ test_differential_cellularity_ <- function(.data,
 		# Add methods used
 		when(
 			grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
-			~ (.) %>% memorise_methods_used("betareg")
+			~ (.) 
 		)
-
-
-
-
 
 }
 
