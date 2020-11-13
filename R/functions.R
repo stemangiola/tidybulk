@@ -2280,6 +2280,7 @@ run_epic = function(mix, reference = NULL) {
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param method A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.
+#' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
@@ -2291,6 +2292,7 @@ get_cell_type_proportions = function(.data,
 																		 .abundance = NULL,
 																		 reference = X_cibersort,
 																		 method = "cibersort",
+																		 prefix = "",
 																		 ...) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -2385,7 +2387,7 @@ get_cell_type_proportions = function(.data,
 		# Parse results and return
 		setNames(c(
 			quo_name(.sample),
-			(.) %>% select(-1) %>% colnames() %>% sprintf("%s: %s", method, .)
+			(.) %>% select(-1) %>% colnames() %>% sprintf("%s%s", prefix, .)
 
 		)) %>%
 
