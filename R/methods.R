@@ -3296,11 +3296,11 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #' @name test_differential_cellularity
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
-#' @param .formula A formula with no response variable, representing the desired linear model. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ x\"
+#' @param .formula A formula representing the desired linear model. The formula can be of two forms: multivariable (recommended) or univariable Respectively: \"factor_of_interest ~ .\" or \". ~ factor_of_interest\". The dot represents cell-type proportions, and it is mandatory. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ .\"
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param method A string character. Either \"cibersort\" or \"llsr\"
+#' @param method A string character. Either \"cibersort\", \"epic\" or \"llsr\". The regression method will be chosen based on being multivariable: lm or cox-regression (both on logit-transformed proportions); or univariable: beta or cox-regression (on logit-transformed proportions). See .formula for multi- or univariable choice.
 #' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #' @param ... Further parameters passed to the method deconvolve_cellularity
@@ -3390,7 +3390,11 @@ setGeneric("test_differential_cellularity", function(.data,
 
 	# Validate data frame
 	if(do_validate()) validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	
+	# Validate formula
+	if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
+		stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
+	
 	test_differential_cellularity_(
 		.data,
 		.formula = .formula,

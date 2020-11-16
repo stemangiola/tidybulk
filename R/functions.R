@@ -861,7 +861,11 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
+#' @importFrom purrr map_lgl
 #' @importFrom stringr str_replace
+#' @importFrom stringr str_split
+#' @importFrom stringr str_replace_all
+#' @importFrom stringr str_remove
 #'
 #'
 #' @param .data A tibble
@@ -897,8 +901,6 @@ test_differential_cellularity_ <- function(.data,
 		install.packages("broom", repos = "https://cloud.r-project.org")
 	}
 
-	
- 
 	deconvoluted = 
 		.data %>%
 
@@ -910,33 +912,7 @@ test_differential_cellularity_ <- function(.data,
 			reference = reference,
 			action="get",
 			...
-		)  
-	
-	# Parse formula
-	covariates = 
-		deconvoluted %>% 
-		select(starts_with(method)) %>% 
-		colnames() %>% 
-		gsub(sprintf("%s:", method), "", .) %>%  
-		str_replace_all("[ \\(\\)]", "___")
-	
-	.my_formula =
-		.formula %>%
-		when(
-			
-			# If I have the dot, needed definitely for censored
-			format(.) %>% grepl("\\.", .) %>% any ~ 
-				format(.formula) %>% 
-				str_replace(
-					"([-\\+\\*~ ])(\\.)", 
-					sprintf("\\1%s", paste(covariates, collapse=" + "))
-				),
-			
-			# If normal formula
-			~ sprintf(".proportion_0_corrected%s", format(.))
-		) %>%
-		
-		as.formula
+		) 
 	
 	min_detected_proportion = 
 		deconvoluted %>%
@@ -946,67 +922,94 @@ test_differential_cellularity_ <- function(.data,
 		pull(prop) %>%
 		min()
 	
-	results_regression = 
-		deconvoluted %>%
-		
-		# Replace 0s - before
-		mutate(across(starts_with(method), function(.x) if_else(.x==0, min_detected_proportion, .x))) %>%
-		mutate(across(starts_with(method), boot::logit)) %>%
-		
-		# Rename columns - after
-		setNames(
-			str_remove(colnames(.), sprintf("%s:", method)) %>%
-				str_replace_all("[ \\(\\)]", "___")
-		) %>%
 	
-		# Beta or Cox
+	# Check if test is univaiable or multivariable
+	.formula %>%
 		when(
-			grepl("Surv", .my_formula) %>% any ~ {
-				# Check if package is installed, otherwise install
-				if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing betareg needed for analyses")
-					install.packages("survival", repos = "https://cloud.r-project.org")
-				}
-
-				if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing boot needed for analyses")
-					install.packages("boot", repos = "https://cloud.r-project.org")
-				}
-
-				(.) %>%
-					survival::coxph(.my_formula, .)	%>%
-					broom::tidy() 
-			} ,
+			
+			# Univariable
+			format(.) %>%
+				str_split("~") %>%
+				.[[1]] %>%
+				map_lgl( ~ grepl("\\. | \\.", .x)) %>%
+				which	== 1 ~ {
+					# Parse formula
+					.my_formula =
+						.formula %>%
+						when(
+							# If I have the dot, needed definitely for censored
+							format(.) %>% grepl("\\.", .) %>% any ~ format(.) %>% str_replace("([-\\+\\*~ ]?)(\\.)", "\\1.proportion_0_corrected"),
+							
+							# If normal formula
+							~ sprintf(".proportion_0_corrected%s", format(.))
+						) %>%
+						
+						as.formula
+					
+					# Test
+					univariable_differential_tissue_composition(deconvoluted,
+																											method,
+																											.my_formula,
+																											min_detected_proportion,
+																											.data) %>%
+						
+						# Attach attributes
+						reattach_internals(.data) %>%
+						
+						# Add methods used
+						when(
+							grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+							~ (.) %>% memorise_methods_used("betareg")
+						)
+				},
+			
+			# Multivariable
 			~ {
-				(.) %>%
-					lm(.my_formula, .) %>%
-					broom::tidy() %>%
-					filter(term != "(Intercept)") 
-			}
-		) 
-	
-	# Join results
-	deconvoluted %>% 
-		pivot_longer(
-			names_prefix = sprintf("%s: ", method),
-			cols = starts_with(method),
-			names_to = ".cell_type", 
-			values_to = ".proportion"
-		) %>%
-		tidyr::nest(cell_type_proportions = -.cell_type) %>%
-		bind_cols(
-			results_regression %>% 
-				select(-term)
-		) %>%
-
-		# Attach attributes
-		reattach_internals(.data) %>%
+				# Parse formula
+				covariates =
+					deconvoluted %>%
+					select(starts_with(method)) %>%
+					colnames() %>%
+					gsub(sprintf("%s:", method), "", .) %>%
+					str_replace_all("[ \\(\\)]", "___")
+				
+				# Parse formula
+				.my_formula =
+					.formula %>%
+					when(
+						# If I have the dot, needed definitely for censored
+						format(.) %>% grepl("\\.", .) %>% any ~
+							format(.formula) %>%
+							str_replace("([-\\+\\*~ ])(\\.)",
+													sprintf(
+														"\\1%s", paste(covariates, collapse = " + ")
+													)),
+						
+						# If normal formula
+						~ sprintf(".proportion_0_corrected%s", format(.))
+					) %>%
+					
+					as.formula
+				
+				# Test
+				multivariable_differential_tissue_composition(deconvoluted,
+																											method,
+																											.my_formula,
+																											min_detected_proportion,
+																											.data) %>%
+					
+					# Attach attributes
+					reattach_internals(.data) %>%
+					
+					# Add methods used
+					when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+							 ~ (.))
+				
+			}) %>%
 		
-		# Add methods used
-		when(
-			grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
-			~ (.) 
-		)
+		# Eliminate prefix
+		mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+	
 
 }
 

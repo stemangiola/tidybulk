@@ -85,7 +85,7 @@ test_differential_cellularity(
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
 
-\item{.formula}{A formula with no response variable, representing the desired linear model. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ x\"}
+\item{.formula}{A formula representing the desired linear model. The formula can be of two forms: multivariable (recommended) or univariable Respectively: \"factor_of_interest ~ .\" or \". ~ factor_of_interest\". The dot represents cell-type proportions, and it is mandatory. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ .\"}
 
 \item{.sample}{The name of the sample column}
 
@@ -93,7 +93,7 @@ test_differential_cellularity(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{method}{A string character. Either \"cibersort\" or \"llsr\"}
+\item{method}{A string character. Either \"cibersort\", \"epic\" or \"llsr\". The regression method will be chosen based on being multivariable: lm or cox-regression (both on logit-transformed proportions); or univariable: beta or cox-regression (on logit-transformed proportions). See .formula for multi- or univariable choice.}
 
 \item{reference}{A data frame. The transcript/cell_type data frame of integer transcript abundance}
 
