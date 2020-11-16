@@ -93,7 +93,7 @@ deconvolve_cellularity(
 
 \item{reference}{A data frame. The transcript/cell_type data frame of integer transcript abundance}
 
-\item{method}{A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.}
+\item{method}{A character string. The method to be used. At the moment Cibersort (default), epic and llsr (linear least squares regression) are available.}
 
 \item{prefix}{A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.}
 

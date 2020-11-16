@@ -2394,6 +2394,22 @@ get_cell_type_proportions = function(.data,
 					run_epic(reference) %>%
 					as_tibble(rownames = quo_name(.sample)) 
 			},
+		
+			# Other (hidden for the moment) methods using third party wrapper https://icbi-lab.github.io/immunedeconv	
+			method %>% tolower %in% c("mcp_counter", "quantiseq", "xcell") ~ {
+				
+				# Check if package is installed, otherwise install
+				if (find.package("immunedeconv", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing immunedeconv")
+					devtools::install_github("icbi-lab/immunedeconv", upgrade = FALSE)
+				}
+				
+				
+				(.) %>%
+					deconvolute(method %>% tolower, tumor = FALSE) %>%
+					gather(!!.sample, .proportion, -cell_type) %>%
+					spread(cell_type,  .proportion)
+			},
 			
 			~ stop(
 				"tidybulk says: please choose between cibersort, llsr and epic methods"
