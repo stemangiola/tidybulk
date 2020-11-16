@@ -518,6 +518,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See voom makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "limma_voom", "limma_voom_sample_weights"
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -529,6 +530,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
+                                                       method = NULL,     
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
 																											 prefix = "") {
@@ -602,15 +604,20 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		as_matrix(rownames = !!.transcript) %>%
 
 		edgeR::DGEList() %>%
-		
+  
 		# Scale data if method is not "none"
 		when(
 			scaling_method != "none" ~ (.) %>% edgeR::calcNormFactors(method = scaling_method),
 			~ (.)
 		) %>%
+  
+	    # select method
+		when(
+			method == "limma_voom" ~ (.) %>% limma::voom(design, plot=FALSE),
+			method == "limma_voom_sample_weights" ~ (.) %>% limma::voomWithQualityWeights(design, plot=FALSE)
+		) %>%
 		
-		limma::voom(design, plot=FALSE) %>%
-		limma::lmFit(design)
+	    limma::lmFit(design)
 
 	voom_object %>%
 
@@ -669,7 +676,12 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		
 		# Attach attributes
 		reattach_internals(.data) %>%
-	  memorise_methods_used("voom") %>%
+	    
+	    # select method
+	    when(
+			method == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
+			method == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights")
+		) %>%
 
 		# Add raw object
 		attach_to_internals(voom_object, "voom") %>%
