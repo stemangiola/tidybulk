@@ -402,7 +402,12 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		as_matrix(rownames = !!.transcript) %>%
 
 		edgeR::DGEList(counts = .) %>%
-		edgeR::calcNormFactors(method = scaling_method) %>%
+		
+		# Scale data if method is not "none"
+		when(
+			scaling_method != "none" ~ (.) %>% edgeR::calcNormFactors(method = scaling_method),
+			~ (.)
+		) %>%
 
 		# select method
 		when(
@@ -599,8 +604,13 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		as_matrix(rownames = !!.transcript) %>%
 
 		edgeR::DGEList() %>%
-		edgeR::calcNormFactors(method = scaling_method) %>%
-	    
+  
+		# Scale data if method is not "none"
+		when(
+			scaling_method != "none" ~ (.) %>% edgeR::calcNormFactors(method = scaling_method),
+			~ (.)
+		) %>%
+  
 	    # select method
 		when(
 			method == "limma_voom" ~ (.) %>% limma::voom(design, plot=FALSE),
