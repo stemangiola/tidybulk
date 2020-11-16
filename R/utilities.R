@@ -1278,7 +1278,6 @@ do_validate = function(){
 
 #' @importFrom stringr str_remove
 #' @importFrom stringr str_replace_all
-#' @importFrom broom tidy
 #' 
 multivariable_differential_tissue_composition = function(
 	deconvoluted, 
