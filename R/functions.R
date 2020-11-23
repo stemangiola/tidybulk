@@ -885,7 +885,7 @@ test_differential_cellularity_ <- function(.data,
 																					 .transcript = NULL,
 																					 .abundance = NULL,
 																					 method = "cibersort",
-																					 reference = X_cibersort,
+																					 reference = NULL,
 																					 significance_threshold = 0.05,
 																					 ...
 ) {
@@ -950,8 +950,7 @@ test_differential_cellularity_ <- function(.data,
 					univariable_differential_tissue_composition(deconvoluted,
 																											method,
 																											.my_formula,
-																											min_detected_proportion,
-																											.data) %>%
+																											min_detected_proportion) %>%
 						
 						# Attach attributes
 						reattach_internals(.data) %>%
@@ -995,8 +994,7 @@ test_differential_cellularity_ <- function(.data,
 				multivariable_differential_tissue_composition(deconvoluted,
 																											method,
 																											.my_formula,
-																											min_detected_proportion,
-																											.data) %>%
+																											min_detected_proportion) %>%
 					
 					# Attach attributes
 					reattach_internals(.data) %>%
@@ -2213,7 +2211,7 @@ get_symbol_from_ensembl <-
 #' @return A data frame
 #'
 #'
-run_llsr = function(mix, reference) {
+run_llsr = function(mix, reference = X_cibersort) {
 	# Get common markers
 	markers = intersect(rownames(mix), rownames(reference))
 
@@ -2257,17 +2255,18 @@ run_epic = function(mix, reference = NULL) {
 	if("EPIC" %in% .packages() %>% not) stop("tidybulk says: Please attach the apckage EPIC manually (i.e. library(EPIC)). This is because EPIC is only available on GitHub and it is not possible to seemlessy make EPIC part of the dependencies.")
 		
 	# Get common markers
-	markers = intersect(rownames(mix), rownames(reference))
-	
-	X <- (reference[markers, , drop = FALSE])
-	Y <- (mix[markers, , drop = FALSE])
-	
-	if(!is.null(reference))
-		reference = list(
-			refProfiles = X,
-			sigGenes = rownames(X)
-		)
-	
+	if( reference %>% class %>% equals("data.frame")){
+		markers = intersect(rownames(mix), rownames(reference))
+		
+		X <- (reference[markers, , drop = FALSE])
+		Y <- (mix[markers, , drop = FALSE])
+		
+		if(!is.null(reference))
+			reference = list(
+				refProfiles = X,
+				sigGenes = rownames(X)
+			)
+	} else { Y <- mix }
 	
 	
 	results <- EPIC(Y, reference = reference)$cellFractions %>% data.frame()
@@ -2306,7 +2305,7 @@ get_cell_type_proportions = function(.data,
 																		 .sample = NULL,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
-																		 reference = X_cibersort,
+																		 reference = NULL,
 																		 method = "cibersort",
 																		 prefix = "",
 																		 ...) {
@@ -2315,25 +2314,6 @@ get_cell_type_proportions = function(.data,
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
  
-
-
-	# Load library which is optional for the whole package
-	#library(preprocessCore)
-
-	# Check if there are enough genes for the signature
-	if ((.data %>%
-			 pull(!!.transcript) %in% (reference %>% rownames)) %>%
-			which %>%
-			length %>%
-			st(50))
-		stop(
-			"tidybulk says: You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
-		)
-
-	# Check if rownames exist
-	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% not() %>% any)
-		stop("tidybulk says: your reference has non-numeric/integer columns.")
-
 	# Get the dots arguments
 	dots_args = rlang::dots_list(...)
 
@@ -2376,6 +2356,12 @@ get_cell_type_proportions = function(.data,
 					
 				}
 				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
+				
+				# Validate reference
+				validate_signature(.data, reference, !!.transcript)
+				
 				do.call(my_CIBERSORT, list(Y = ., X = reference) %>% c(dots_args)) %$%
 				proportions %>%
 				as_tibble(rownames = quo_name(.sample)) %>%
@@ -2383,12 +2369,24 @@ get_cell_type_proportions = function(.data,
 			},
 			
 			# Don't need to execute do.call
-			method %>% tolower %>% equals("llsr") ~ (.) %>%
+			method %>% tolower %>% equals("llsr") ~ {
+				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
+				
+				# Validate reference
+				validate_signature(.data, reference, !!.transcript)
+				
+				(.) %>%
 				run_llsr(reference) %>%
-				as_tibble(rownames = quo_name(.sample)) ,
+				as_tibble(rownames = quo_name(.sample)) 
+			},
 
 			# Don't need to execute do.call
 			method %>% tolower %>% equals("epic") ~ {
+				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ "BRef", ~ .)
 				
 				(.) %>%
 					run_epic(reference) %>%
@@ -2404,9 +2402,11 @@ get_cell_type_proportions = function(.data,
 					devtools::install_github("icbi-lab/immunedeconv", upgrade = FALSE)
 				}
 				
-				
+				if(method == "xcell" & !"immunedeconv" %in% (.packages()))
+					stop("tidybulk says: for xcell deconvolution you should have the package immunedeconv attached. Please execute library(immunedeconv)")
+					
 				(.) %>%
-					deconvolute(method %>% tolower, tumor = FALSE) %>%
+					immunedeconv::deconvolute(method %>% tolower, tumor = FALSE) %>%
 					gather(!!.sample, .proportion, -cell_type) %>%
 					spread(cell_type,  .proportion)
 			},

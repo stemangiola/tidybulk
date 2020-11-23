@@ -9,7 +9,7 @@ get_cell_type_proportions(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  reference = X_cibersort,
+  reference = NULL,
   method = "cibersort",
   prefix = "",
   ...

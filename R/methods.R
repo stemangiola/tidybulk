@@ -1448,7 +1448,7 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference will be used for each algorithm. For llsr will be LM22.
 #' @param method A character string. The method to be used. At the moment Cibersort (default), epic and llsr (linear least squares regression) are available.
 #' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
@@ -1479,7 +1479,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 																							.sample = NULL,
 																							.transcript = NULL,
 																							.abundance = NULL,
-																							reference = X_cibersort,
+																							reference = NULL,
 																							method = "cibersort",
 																							prefix = "",
 																							action = "add",
@@ -1491,7 +1491,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 																		 .sample = NULL,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
-																		 reference = X_cibersort,
+																		 reference = NULL,
 																		 method = "cibersort",
 																		 prefix = "",
 																		 action = "add",
@@ -1505,9 +1505,9 @@ setGeneric("deconvolve_cellularity", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
-	# Check that reference is matrix
-	if(reference %>% class %>% equals("data.frame") %>% not())
-		stop("tidybulk says: reference must be a data.frame")
+	# # Check that reference is matrix
+	# if(!is.null(reference) & reference %>% class %>% equals("data.frame") %>% not())
+	# 	stop("tidybulk says: reference must be NULL or a data.frame")
 
 	# Validate data frame
 	if(do_validate()) {
@@ -3344,7 +3344,7 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #'
 #' 	test_differential_cellularity(
 #' 	 tidybulk::counts_mini,
-#' 	    ~ condition,
+#' 	    . ~ condition,
 #' 	    sample,
 #' 	    transcript,
 #' 	    count,

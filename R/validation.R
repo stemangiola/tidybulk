@@ -301,3 +301,22 @@ validation.tidybulk = function(.data,
 	)
 
 }
+
+validate_signature = function(.data, reference, .transcript){
+	
+	.transcript = enquo(.transcript)
+	
+	if ((.data %>%
+			 pull(!!.transcript) %in% (reference %>% rownames)) %>%
+			which %>%
+			length %>%
+			st(50))
+		stop(
+			"tidybulk says: You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
+		)
+	
+	# Check if rownames exist
+	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% not() %>% any)
+		stop("tidybulk says: your reference has non-numeric/integer columns.")
+	
+}

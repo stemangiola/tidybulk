@@ -154,7 +154,7 @@ deconvolve_cellularity(
 
 	test_differential_cellularity(
 	 tidybulk::counts_mini,
-	    ~ condition,
+	    . ~ condition,
 	    sample,
 	    transcript,
 	    count,

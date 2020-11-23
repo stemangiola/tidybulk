@@ -1283,8 +1283,7 @@ multivariable_differential_tissue_composition = function(
 	deconvoluted, 
 	method, 
 	.my_formula,
-	min_detected_proportion,
-	.data
+	min_detected_proportion
 ){
 	results_regression = 
 		deconvoluted %>%
@@ -1344,8 +1343,7 @@ univariable_differential_tissue_composition = function(
 	deconvoluted, 
 	method, 
 	.my_formula,
-	min_detected_proportion,
-	.data
+	min_detected_proportion
 ){
 		deconvoluted %>%
 		
