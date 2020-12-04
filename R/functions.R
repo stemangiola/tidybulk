@@ -482,10 +482,10 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		reattach_internals(.data) %>%
 	    
 	    # select method
-				when(
-					method == "edgeR_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
-					method == "edgeR_quasi_likelihood" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_quasi_likelihood"))
-				)	%>%
+			when(
+				tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
+				tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_quasi_likelihood"))
+			)	%>%
 
 		# Add raw object
 		attach_to_internals(edgeR_object, "edgeR") %>%
@@ -613,8 +613,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
   
 	    # select method
 		when(
-			method == "limma_voom" ~ (.) %>% limma::voom(design, plot=FALSE),
-			method == "limma_voom_sample_weights" ~ (.) %>% limma::voomWithQualityWeights(design, plot=FALSE)
+			tolower(method) == "limma_voom" ~ (.) %>% limma::voom(design, plot=FALSE),
+			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% limma::voomWithQualityWeights(design, plot=FALSE)
 		) %>%
 		
 	    limma::lmFit(design)
@@ -679,8 +679,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 	    
 	    # select method
 	    when(
-			method == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
-			method == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights")
+			tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
+			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights")
 		) %>%
 
 		# Add raw object
