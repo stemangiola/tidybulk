@@ -203,6 +203,32 @@ test_that("Only differential trancript abundance - no object",{
 	)
 
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
+	
+	# Robust version
+	res =
+		test_differential_abundance(
+			input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "edger_robust_likelihood_ratio",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-12.58107, -12.19281, -11.58286, -11.19910),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		6
+	)
+	
+	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
+	
 
 	# Continuous covariate
 	sam = distinct(input_df, a)

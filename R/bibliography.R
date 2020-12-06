@@ -48,6 +48,16 @@ my_bibliography = function() {
   year={2012},
   publisher={Oxford University Press}
     }",
+	edger_robust_likelihood_ratio = "@article{zhou2014robustly,
+  title={Robustly detecting differential expression in RNA sequencing data using observation weights},
+  author={Zhou, Xiaobei and Lindsay, Helen and Robinson, Mark D},
+  journal={Nucleic acids research},
+  volume={42},
+  number={11},
+  pages={e91--e91},
+  year={2014},
+  publisher={Oxford University Press}
+	}",
 	voom = "@article{law2014voom,
   title={voom: Precision weights unlock linear model analysis tools for RNA-seq read counts},
   author={Law, Charity W and Chen, Yunshun and Shi, Wei and Smyth, Gordon K},

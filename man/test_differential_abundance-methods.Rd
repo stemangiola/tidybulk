@@ -193,6 +193,8 @@ DESeq2::results()
 }
 \examples{
 
+ # edgeR
+ 
  tidybulk::counts_mini \%>\% 
  tidybulk(sample, transcript, count) \%>\% 
  identify_abundant() \%>\% 
@@ -208,5 +210,22 @@ DESeq2::results()
 	    .contrasts = c( "conditionTRUE - conditionFALSE")
  )
 
+ # DESeq2 - equivalent for limma-voom
+ 
+ tidybulk::counts_mini \%>\% 
+ tidybulk(sample, transcript, count) \%>\% 
+ identify_abundant() \%>\% 
+	test_differential_abundance( ~ condition, method="deseq2" )
+
+	# The function `test_differential_abundance` operates with contrasts too
+
+ tidybulk::counts_mini \%>\%
+ tidybulk(sample, transcript, count) \%>\%
+ identify_abundant() \%>\%
+ test_differential_abundance(
+	    ~ 0 + condition,
+	    .contrasts = list(c("condition", "TRUE", "FALSE")),
+	    method="deseq2" 
+ )
 
 }
