@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2020-11-12</h4>
+            <h4 class="date">2020-12-09</h4>
       
       
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -485,27 +485,27 @@
 ## Building tree...
 ## Done in 0.02 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 65.351183 (50 iterations in 0.07 seconds)
-## Iteration 100: error is 67.701268 (50 iterations in 0.09 seconds)
-## Iteration 150: error is 68.044843 (50 iterations in 0.06 seconds)
-## Iteration 200: error is 68.218939 (50 iterations in 0.04 seconds)
-## Iteration 250: error is 70.187961 (50 iterations in 0.04 seconds)
-## Iteration 300: error is 1.570049 (50 iterations in 0.03 seconds)
-## Iteration 350: error is 1.243687 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.171777 (50 iterations in 0.03 seconds)
-## Iteration 450: error is 1.137428 (50 iterations in 0.03 seconds)
-## Iteration 500: error is 1.118809 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.103624 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.098383 (50 iterations in 0.03 seconds)
-## Iteration 650: error is 1.095050 (50 iterations in 0.03 seconds)
-## Iteration 700: error is 1.090953 (50 iterations in 0.03 seconds)
-## Iteration 750: error is 1.081976 (50 iterations in 0.03 seconds)
-## Iteration 800: error is 1.080956 (50 iterations in 0.03 seconds)
-## Iteration 850: error is 1.078416 (50 iterations in 0.03 seconds)
-## Iteration 900: error is 1.077271 (50 iterations in 0.03 seconds)
-## Iteration 950: error is 1.069197 (50 iterations in 0.03 seconds)
-## Iteration 1000: error is 1.068695 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.73 seconds.</code></pre>
+## Iteration 50: error is 70.895651 (50 iterations in 0.07 seconds)
+## Iteration 100: error is 70.552085 (50 iterations in 0.07 seconds)
+## Iteration 150: error is 69.594335 (50 iterations in 0.06 seconds)
+## Iteration 200: error is 68.937853 (50 iterations in 0.04 seconds)
+## Iteration 250: error is 67.992845 (50 iterations in 0.04 seconds)
+## Iteration 300: error is 1.576825 (50 iterations in 0.04 seconds)
+## Iteration 350: error is 1.241355 (50 iterations in 0.03 seconds)
+## Iteration 400: error is 1.128527 (50 iterations in 0.03 seconds)
+## Iteration 450: error is 1.097570 (50 iterations in 0.03 seconds)
+## Iteration 500: error is 1.083273 (50 iterations in 0.03 seconds)
+## Iteration 550: error is 1.078953 (50 iterations in 0.03 seconds)
+## Iteration 600: error is 1.075927 (50 iterations in 0.03 seconds)
+## Iteration 650: error is 1.073616 (50 iterations in 0.03 seconds)
+## Iteration 700: error is 1.071677 (50 iterations in 0.03 seconds)
+## Iteration 750: error is 1.070427 (50 iterations in 0.03 seconds)
+## Iteration 800: error is 1.070061 (50 iterations in 0.03 seconds)
+## Iteration 850: error is 1.069712 (50 iterations in 0.03 seconds)
+## Iteration 900: error is 1.068485 (50 iterations in 0.03 seconds)
+## Iteration 950: error is 1.068273 (50 iterations in 0.03 seconds)
+## Iteration 1000: error is 1.066664 (50 iterations in 0.03 seconds)
+## Fitting performed in 0.74 seconds.</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span>, ignore.case <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="va">sample</span>, <span class="va">Call</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -513,16 +513,16 @@
 <pre><code>## # A tibble: 251 x 4
 ##     tSNE1  tSNE2 sample                       Call 
 ##     &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
-##  1   9.67  -5.15 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  2  -8.03  -1.19 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  3  12.7  -11.6  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  4   4.24   3.06 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  5   6.42  -7.72 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  6  -6.88  11.9  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  7 -35.1    6.97 TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  8   2.05  12.2  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  9   3.32  11.6  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-## 10  18.7  -16.8  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##  1  11.4    5.18 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  2  -5.63  -8.94 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  3  13.3   -8.89 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  4   1.60   7.64 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  5   4.40   7.45 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  6  -7.14  -3.48 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  7 -37.2   -1.37 TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  8  -4.68  11.8  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  9  -3.47  12.7  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+## 10  20.9  -13.7  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
@@ -547,29 +547,29 @@
 ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
 ## Computing input similarities...
 ## Building tree...
-## Done in 0.03 seconds (sparsity = 0.182886)!
+## Done in 0.02 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 67.893625 (50 iterations in 0.07 seconds)
-## Iteration 100: error is 67.493070 (50 iterations in 0.08 seconds)
-## Iteration 150: error is 67.482226 (50 iterations in 0.06 seconds)
-## Iteration 200: error is 67.922004 (50 iterations in 0.04 seconds)
-## Iteration 250: error is 68.301082 (50 iterations in 0.04 seconds)
-## Iteration 300: error is 1.890680 (50 iterations in 0.03 seconds)
-## Iteration 350: error is 1.451107 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.272109 (50 iterations in 0.03 seconds)
-## Iteration 450: error is 1.198237 (50 iterations in 0.03 seconds)
-## Iteration 500: error is 1.184161 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.173957 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.169626 (50 iterations in 0.03 seconds)
-## Iteration 650: error is 1.168228 (50 iterations in 0.03 seconds)
-## Iteration 700: error is 1.154861 (50 iterations in 0.03 seconds)
-## Iteration 750: error is 1.140185 (50 iterations in 0.03 seconds)
-## Iteration 800: error is 1.131533 (50 iterations in 0.03 seconds)
-## Iteration 850: error is 1.125256 (50 iterations in 0.03 seconds)
-## Iteration 900: error is 1.117523 (50 iterations in 0.03 seconds)
-## Iteration 950: error is 1.114280 (50 iterations in 0.03 seconds)
-## Iteration 1000: error is 1.114073 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.73 seconds.</code></pre>
+## Iteration 50: error is 68.648906 (50 iterations in 0.08 seconds)
+## Iteration 100: error is 68.752062 (50 iterations in 0.10 seconds)
+## Iteration 150: error is 68.730195 (50 iterations in 0.07 seconds)
+## Iteration 200: error is 68.892617 (50 iterations in 0.06 seconds)
+## Iteration 250: error is 68.932820 (50 iterations in 0.05 seconds)
+## Iteration 300: error is 1.607976 (50 iterations in 0.04 seconds)
+## Iteration 350: error is 1.278248 (50 iterations in 0.03 seconds)
+## Iteration 400: error is 1.218013 (50 iterations in 0.03 seconds)
+## Iteration 450: error is 1.165342 (50 iterations in 0.03 seconds)
+## Iteration 500: error is 1.116955 (50 iterations in 0.03 seconds)
+## Iteration 550: error is 1.108664 (50 iterations in 0.03 seconds)
+## Iteration 600: error is 1.104511 (50 iterations in 0.03 seconds)
+## Iteration 650: error is 1.100910 (50 iterations in 0.03 seconds)
+## Iteration 700: error is 1.097567 (50 iterations in 0.03 seconds)
+## Iteration 750: error is 1.095415 (50 iterations in 0.03 seconds)
+## Iteration 800: error is 1.087161 (50 iterations in 0.03 seconds)
+## Iteration 850: error is 1.085464 (50 iterations in 0.03 seconds)
+## Iteration 900: error is 1.084537 (50 iterations in 0.03 seconds)
+## Iteration 950: error is 1.084354 (50 iterations in 0.03 seconds)
+## Iteration 1000: error is 1.084572 (50 iterations in 0.03 seconds)
+## Fitting performed in 0.78 seconds.</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">se.norm.tSNE</span></code></pre></div>
 <pre><code>## class: SummarizedExperiment 
@@ -825,16 +825,16 @@
 <pre><code>## # A tibble: 251 x 5
 ##    sample                       Call   tSNE1  tSNE2 `cluster SNN`
 ##    &lt;chr&gt;                        &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;        
-##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA    9.67  -5.15 1            
-##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA   -8.03  -1.19 2            
-##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA   12.7  -11.6  1            
-##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA    4.24   3.06 0            
-##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB    6.42  -7.72 0            
-##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA   -6.88  11.9  1            
-##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal -35.1    6.97 3            
-##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA    2.05  12.2  2            
-##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB    3.32  11.6  2            
-## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA   18.7  -16.8  1            
+##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA   11.4    5.18 1            
+##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA   -5.63  -8.94 2            
+##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA   13.3   -8.89 1            
+##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA    1.60   7.64 0            
+##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB    4.40   7.45 0            
+##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA   -7.14  -3.48 1            
+##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal -37.2   -1.37 3            
+##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA   -4.68  11.8  2            
+##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB   -3.47  12.7  2            
+## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA   20.9  -13.7  1            
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.SNN</span> <span class="op">%&gt;%</span>
@@ -1110,9 +1110,9 @@
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] tidybulk_1.2.0   purrr_0.3.4      rlang_0.4.8      ggplot2_3.3.2   
-##  [5] tidyr_1.1.2      magrittr_1.5     dplyr_1.0.2      tibble_3.0.4    
-##  [9] knitr_1.30       BiocStyle_2.18.0
+##  [1] tidybulk_1.2.1   purrr_0.3.4      rlang_0.4.9      ggplot2_3.3.2   
+##  [5] tidyr_1.1.2      magrittr_2.0.1   dplyr_1.0.2      tibble_3.0.4    
+##  [9] knitr_1.30       BiocStyle_2.18.1
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] backports_1.2.0             tidytext_0.2.6             
@@ -1120,59 +1120,59 @@
 ##   [5] igraph_1.2.6                lazyeval_0.2.2             
 ##   [7] splines_4.0.3               BiocParallel_1.24.1        
 ##   [9] listenv_0.8.0               SnowballC_0.7.0            
-##  [11] GenomeInfoDb_1.26.0         sva_3.38.0                 
+##  [11] GenomeInfoDb_1.26.1         sva_3.38.0                 
 ##  [13] digest_0.6.27               htmltools_0.5.0            
 ##  [15] fansi_0.4.1                 memoise_1.1.0              
 ##  [17] tensor_1.5                  cluster_2.1.0              
 ##  [19] ROCR_1.0-11                 limma_3.46.0               
-##  [21] globals_0.13.1              readr_1.4.0                
+##  [21] globals_0.14.0              readr_1.4.0                
 ##  [23] annotate_1.68.0             matrixStats_0.57.0         
-##  [25] pkgdown_1.6.1               colorspace_1.4-1           
+##  [25] pkgdown_1.6.1               colorspace_2.0-0           
 ##  [27] blob_1.2.1                  ggrepel_0.8.2              
-##  [29] textshaping_0.1.2           xfun_0.19                  
+##  [29] textshaping_0.2.1           xfun_0.19                  
 ##  [31] crayon_1.3.4                RCurl_1.98-1.2             
-##  [33] jsonlite_1.7.1              spatstat.data_1.4-3        
+##  [33] jsonlite_1.7.1              spatstat.data_1.5-2        
 ##  [35] spatstat_1.64-1             genefilter_1.72.0          
 ##  [37] survival_3.2-7              zoo_1.8-8                  
 ##  [39] glue_1.4.2                  polyclip_1.10-0            
 ##  [41] gtable_0.3.0                zlibbioc_1.36.0            
-##  [43] XVector_0.30.0              leiden_0.3.5               
+##  [43] XVector_0.30.0              leiden_0.3.6               
 ##  [45] DelayedArray_0.16.0         future.apply_1.6.0         
 ##  [47] BiocGenerics_0.36.0         abind_1.4-5                
 ##  [49] scales_1.1.1                DBI_1.1.0                  
 ##  [51] edgeR_3.32.0                miniUI_0.1.1.1             
 ##  [53] Rcpp_1.0.5                  widyr_0.1.3                
 ##  [55] viridisLite_0.3.0           xtable_1.8-4               
-##  [57] reticulate_1.18             rsvd_1.0.3                 
-##  [59] bit_4.0.4                   preprocessCore_1.52.0      
+##  [57] reticulate_1.18             bit_4.0.4                  
+##  [59] rsvd_1.0.3                  preprocessCore_1.52.0      
 ##  [61] stats4_4.0.3                htmlwidgets_1.5.2          
 ##  [63] httr_1.4.2                  RColorBrewer_1.1-2         
 ##  [65] ellipsis_0.3.1              Seurat_3.2.2               
 ##  [67] ica_1.0-2                   pkgconfig_2.0.3            
 ##  [69] XML_3.99-0.5                farver_2.0.3               
-##  [71] uwot_0.1.8                  deldir_0.2-3               
+##  [71] uwot_0.1.9                  deldir_0.2-3               
 ##  [73] locfit_1.5-9.4              utf8_1.1.4                 
 ##  [75] reshape2_1.4.4              tidyselect_1.1.0           
 ##  [77] labeling_0.4.2              later_1.1.0.1              
 ##  [79] AnnotationDbi_1.52.0        munsell_0.5.0              
-##  [81] tools_4.0.3                 cli_2.1.0                  
+##  [81] tools_4.0.3                 cli_2.2.0                  
 ##  [83] generics_0.1.0              RSQLite_2.2.1              
 ##  [85] broom_0.7.2                 ggridges_0.5.2             
 ##  [87] evaluate_0.14               stringr_1.4.0              
 ##  [89] fastmap_1.0.1               goftest_1.2-2              
 ##  [91] yaml_2.2.1                  ragg_0.4.0                 
 ##  [93] bit64_4.0.5                 fs_1.5.0                   
-##  [95] fitdistrplus_1.1-1          RANN_2.6.1                 
+##  [95] fitdistrplus_1.1-3          RANN_2.6.1                 
 ##  [97] pbapply_1.4-3               future_1.20.1              
 ##  [99] nlme_3.1-150                mime_0.9                   
 ## [101] tokenizers_0.2.1            compiler_4.0.3             
-## [103] png_0.1-7                   plotly_4.9.2.1             
+## [103] plotly_4.9.2.1              png_0.1-7                  
 ## [105] e1071_1.7-4                 spatstat.utils_1.17-0      
 ## [107] stringi_1.5.3               desc_1.2.0                 
 ## [109] lattice_0.20-41             Matrix_1.2-18              
-## [111] vctrs_0.3.4                 pillar_1.4.6               
+## [111] vctrs_0.3.5                 pillar_1.4.7               
 ## [113] lifecycle_0.2.0             BiocManager_1.30.10        
-## [115] lmtest_0.9-38               RcppAnnoy_0.0.16           
+## [115] lmtest_0.9-38               RcppAnnoy_0.0.17           
 ## [117] data.table_1.13.2           cowplot_1.1.0              
 ## [119] bitops_1.0-6                irlba_2.3.3                
 ## [121] httpuv_1.5.4                patchwork_1.1.0            
@@ -1182,7 +1182,7 @@
 ## [129] janeaustenr_0.1.5           IRanges_2.24.0             
 ## [131] parallelly_1.21.0           codetools_0.2-18           
 ## [133] MASS_7.3-53                 assertthat_0.2.1           
-## [135] SummarizedExperiment_1.20.0 rprojroot_1.3-2            
+## [135] SummarizedExperiment_1.20.0 rprojroot_2.0.2            
 ## [137] withr_2.3.0                 sctransform_0.3.1          
 ## [139] S4Vectors_0.28.0            GenomeInfoDbData_1.2.4     
 ## [141] mgcv_1.8-33                 parallel_4.0.3             

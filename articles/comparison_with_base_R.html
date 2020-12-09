@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@
       <h1 data-toc-skip>Comparison with base R</h1>
                         <h4 class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2020-11-12</h4>
+            <h4 class="date">2020-12-09</h4>
       
       
       <div class="hidden name"><code>comparison_with_base_R.Rmd</code></div>
@@ -649,9 +649,9 @@ pre{
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] tidybulk_1.2.0   ggrepel_0.8.2    ggplot2_3.3.2    magrittr_1.5    
+## [1] tidybulk_1.2.1   ggrepel_0.8.2    ggplot2_3.3.2    magrittr_2.0.1  
 ## [5] tibble_3.0.4     tidyr_1.1.2      dplyr_1.0.2      knitr_1.30      
-## [9] BiocStyle_2.18.0
+## [9] BiocStyle_2.18.1
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] backports_1.2.0             tidytext_0.2.6             
@@ -659,23 +659,23 @@ pre{
 ##   [5] igraph_1.2.6                lazyeval_0.2.2             
 ##   [7] splines_4.0.3               BiocParallel_1.24.1        
 ##   [9] listenv_0.8.0               SnowballC_0.7.0            
-##  [11] GenomeInfoDb_1.26.0         sva_3.38.0                 
+##  [11] GenomeInfoDb_1.26.1         sva_3.38.0                 
 ##  [13] digest_0.6.27               htmltools_0.5.0            
 ##  [15] fansi_0.4.1                 memoise_1.1.0              
 ##  [17] tensor_1.5                  cluster_2.1.0              
 ##  [19] ROCR_1.0-11                 limma_3.46.0               
-##  [21] globals_0.13.1              readr_1.4.0                
+##  [21] globals_0.14.0              readr_1.4.0                
 ##  [23] annotate_1.68.0             matrixStats_0.57.0         
-##  [25] pkgdown_1.6.1               colorspace_1.4-1           
-##  [27] blob_1.2.1                  textshaping_0.1.2          
+##  [25] pkgdown_1.6.1               colorspace_2.0-0           
+##  [27] blob_1.2.1                  textshaping_0.2.1          
 ##  [29] xfun_0.19                   crayon_1.3.4               
 ##  [31] RCurl_1.98-1.2              jsonlite_1.7.1             
-##  [33] spatstat.data_1.4-3         spatstat_1.64-1            
+##  [33] spatstat.data_1.5-2         spatstat_1.64-1            
 ##  [35] genefilter_1.72.0           survival_3.2-7             
 ##  [37] zoo_1.8-8                   glue_1.4.2                 
 ##  [39] polyclip_1.10-0             gtable_0.3.0               
 ##  [41] zlibbioc_1.36.0             XVector_0.30.0             
-##  [43] leiden_0.3.5                DelayedArray_0.16.0        
+##  [43] leiden_0.3.6                DelayedArray_0.16.0        
 ##  [45] future.apply_1.6.0          BiocGenerics_0.36.0        
 ##  [47] abind_1.4-5                 scales_1.1.1               
 ##  [49] DBI_1.1.0                   edgeR_3.32.0               
@@ -688,19 +688,19 @@ pre{
 ##  [63] RColorBrewer_1.1-2          ellipsis_0.3.1             
 ##  [65] Seurat_3.2.2                ica_1.0-2                  
 ##  [67] pkgconfig_2.0.3             XML_3.99-0.5               
-##  [69] uwot_0.1.8                  deldir_0.2-3               
+##  [69] uwot_0.1.9                  deldir_0.2-3               
 ##  [71] locfit_1.5-9.4              utf8_1.1.4                 
-##  [73] reshape2_1.4.4              tidyselect_1.1.0           
-##  [75] rlang_0.4.8                 later_1.1.0.1              
+##  [73] tidyselect_1.1.0            rlang_0.4.9                
+##  [75] reshape2_1.4.4              later_1.1.0.1              
 ##  [77] AnnotationDbi_1.52.0        munsell_0.5.0              
-##  [79] tools_4.0.3                 cli_2.1.0                  
+##  [79] tools_4.0.3                 cli_2.2.0                  
 ##  [81] generics_0.1.0              RSQLite_2.2.1              
 ##  [83] broom_0.7.2                 ggridges_0.5.2             
 ##  [85] evaluate_0.14               stringr_1.4.0              
 ##  [87] fastmap_1.0.1               goftest_1.2-2              
 ##  [89] yaml_2.2.1                  ragg_0.4.0                 
 ##  [91] bit64_4.0.5                 fs_1.5.0                   
-##  [93] fitdistrplus_1.1-1          purrr_0.3.4                
+##  [93] fitdistrplus_1.1-3          purrr_0.3.4                
 ##  [95] RANN_2.6.1                  pbapply_1.4-3              
 ##  [97] future_1.20.1               nlme_3.1-150               
 ##  [99] mime_0.9                    tokenizers_0.2.1           
@@ -708,20 +708,20 @@ pre{
 ## [103] png_0.1-7                   e1071_1.7-4                
 ## [105] spatstat.utils_1.17-0       stringi_1.5.3              
 ## [107] desc_1.2.0                  lattice_0.20-41            
-## [109] Matrix_1.2-18               vctrs_0.3.4                
-## [111] pillar_1.4.6                lifecycle_0.2.0            
+## [109] Matrix_1.2-18               vctrs_0.3.5                
+## [111] pillar_1.4.7                lifecycle_0.2.0            
 ## [113] BiocManager_1.30.10         lmtest_0.9-38              
-## [115] RcppAnnoy_0.0.16            data.table_1.13.2          
+## [115] RcppAnnoy_0.0.17            data.table_1.13.2          
 ## [117] cowplot_1.1.0               bitops_1.0-6               
 ## [119] irlba_2.3.3                 httpuv_1.5.4               
 ## [121] patchwork_1.1.0             GenomicRanges_1.42.0       
 ## [123] R6_2.5.0                    bookdown_0.21              
-## [125] promises_1.1.1              gridExtra_2.3              
-## [127] KernSmooth_2.23-18          janeaustenr_0.1.5          
+## [125] promises_1.1.1              KernSmooth_2.23-18         
+## [127] gridExtra_2.3               janeaustenr_0.1.5          
 ## [129] IRanges_2.24.0              parallelly_1.21.0          
 ## [131] codetools_0.2-18            MASS_7.3-53                
 ## [133] assertthat_0.2.1            SummarizedExperiment_1.20.0
-## [135] rprojroot_1.3-2             withr_2.3.0                
+## [135] rprojroot_2.0.2             withr_2.3.0                
 ## [137] sctransform_0.3.1           S4Vectors_0.28.0           
 ## [139] GenomeInfoDbData_1.2.4      mgcv_1.8-33                
 ## [141] parallel_4.0.3              hms_0.5.3                  
