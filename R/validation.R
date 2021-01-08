@@ -53,14 +53,8 @@ check_if_duplicated_genes <- function(.data,
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 
-	is_unique = paste(pull(.data, !!.sample), pull(.data, !!.transcript) ) %>% duplicated() %>% which() %>% length() %>% equals(0)
+	paste(pull(.data, !!.sample), pull(.data, !!.transcript) ) %>% duplicated() %>% which() %>% length() %>% equals(0)
 
-	# if (!is_unique) {
-	# 	message("tidybulk says: There are the duplicated gene/sample pairs")
-	# 	duplicates %>% capture.output() %>% paste0(collapse = "\n") %>% message()
-	# }
-
-	is_unique
 }
 
 #' Check whether there are NA counts
@@ -224,14 +218,21 @@ validation_default = function(.data,
 	# Check if duplicated genes
 	if (!skip_dupli_check) {
 		is_unique = check_if_duplicated_genes(.data,!!.sample,!!.transcript,!!.abundance)
-		if (type == "hard" &
-				!is_unique)
+		if (type == "hard" & !is_unique){
+			
+			dup = paste(pull(.data, !!.sample), pull(.data, !!.transcript) ) 
+			
 			stop(
-				"tidybulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding (e.g., aggregate_duplicates())."
+				"tidybulk says: Your dataset include duplicated sample/gene pairs. ",
+				dup[dup %>% duplicated()] %>% paste(collapse=", "),
+				"Please, remove redundancies before proceeding (e.g., aggregate_duplicates())."
 			)
+		}
 		if (type == "soft" & !is_unique) {
 			warning(
-				"tidybulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding (e.g., aggregate_duplicates()). The tidybulk object has been converted to a `tbl`"
+				"tidybulk says: Your dataset include duplicated sample/gene pairs. ",
+				dup[dup %>% duplicated()] %>% paste(collapse=", "),
+				" Please, remove redundancies before proceeding (e.g., aggregate_duplicates()). The tidybulk object has been converted to a `tbl`"
 			)
 			return(.data %>% tidybulk_to_tbl)
 		}
