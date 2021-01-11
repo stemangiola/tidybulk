@@ -2821,7 +2821,7 @@ fill_NA_using_formula = function(.data,
 
 		# Add missing pairs
  		nest(ct_data = -c(col_formula)) %>%
- 		mutate(ct_data = map(ct_data, ~ .x %>% complete(!!as.symbol(quo_name(.sample)), !!.transcript) )) %>%
+ 		mutate(ct_data = map(ct_data, ~ .x %>% droplevels() %>% complete(!!as.symbol(quo_name(.sample)), !!.transcript) )) %>%
  		unnest(ct_data)
 		
  .data_OK = 
