@@ -11,7 +11,7 @@ test_differential_cellularity_(
   .transcript = NULL,
   .abundance = NULL,
   method = "cibersort",
-  reference = X_cibersort,
+  reference = NULL,
   significance_threshold = 0.05,
   ...
 )

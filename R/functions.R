@@ -884,7 +884,11 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
+#' @importFrom purrr map_lgl
 #' @importFrom stringr str_replace
+#' @importFrom stringr str_split
+#' @importFrom stringr str_replace_all
+#' @importFrom stringr str_remove
 #'
 #'
 #' @param .data A tibble
@@ -904,7 +908,7 @@ test_differential_cellularity_ <- function(.data,
 																					 .transcript = NULL,
 																					 .abundance = NULL,
 																					 method = "cibersort",
-																					 reference = X_cibersort,
+																					 reference = NULL,
 																					 significance_threshold = 0.05,
 																					 ...
 ) {
@@ -920,103 +924,113 @@ test_differential_cellularity_ <- function(.data,
 		install.packages("broom", repos = "https://cloud.r-project.org")
 	}
 
-	# Parse formula
-	.my_formula =
-		.formula %>%
-		when(
-
-			# If I have the dot, needed definitely for censored
-			format(.) %>% grepl("\\.", .) %>% any ~ format(.formula) %>% str_replace("([-\\+\\*~ ])(\\.)", "\\1.proportion_0_corrected"),
-
-			# If normal formula
-			~ sprintf(".proportion_0_corrected%s", format(.))
-		) %>%
-
-		as.formula
- 
-	.data %>%
+	deconvoluted = 
+		.data %>%
 
 		# Deconvolution
 		deconvolve_cellularity(
 			!!.sample, !!.transcript, !!.abundance,
 			method=method,
+			prefix = sprintf("%s:", method),
 			reference = reference,
 			action="get",
 			...
-		)  %>%
-
-		# Test
-		pivot_longer(
-			names_prefix = sprintf("%s: ", method),
-			cols = starts_with(method),
-			names_to = ".cell_type",
-			values_to = ".proportion"
-		) %>%
-
-		# Replace 0s
-		mutate(min_proportion = min(.proportion[.proportion!=0])) %>%
-		mutate(.proportion_0_corrected = if_else(.proportion==0, min_proportion, .proportion)) %>%
-
-		# Test survival
-		tidyr::nest(cell_type_proportions = -.cell_type) %>%
-		mutate(surv_test = map(
-			cell_type_proportions,
-			~ {
-			if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
-
-			# See if regression if censored or not
-			.x %>%
-				when(
-					grepl("Surv", .my_formula) %>% any ~ {
-						# Check if package is installed, otherwise install
-						if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-							message("Installing betareg needed for analyses")
-							install.packages("survival", repos = "https://cloud.r-project.org")
-						}
-
-						if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
-							message("Installing boot needed for analyses")
-							install.packages("boot", repos = "https://cloud.r-project.org")
-						}
-
-						(.) %>%
-							mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
-							survival::coxph(.my_formula, .)	%>%
-							broom::tidy() %>%
-							select(-term)
-					} ,
-					~ {
-						# Check if package is installed, otherwise install
-						if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
-							message("Installing betareg needed for analyses")
-							install.packages("betareg", repos = "https://cloud.r-project.org")
-						}
-						(.) %>%
-							betareg::betareg(.my_formula, .) %>%
-							broom::tidy() %>%
-							filter(component != "precision") %>%
-							pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
-							select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
-							select(-component)
-					}
-				)
-		}
-		)) %>%
-
-		unnest(surv_test, keep_empty = TRUE) %>%
-
-		# Attach attributes
-		reattach_internals(.data) %>%
-		
-		# Add methods used
+		) 
+	
+	min_detected_proportion = 
+		deconvoluted %>%
+		select(starts_with(method)) %>%
+		gather(cell_type, prop) %>%
+		filter(prop > 0) %>%
+		pull(prop) %>%
+		min()
+	
+	
+	# Check if test is univaiable or multivariable
+	.formula %>%
 		when(
-			grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
-			~ (.) %>% memorise_methods_used("betareg")
-		)
-
-
-
-
+			
+			# Univariable
+			format(.) %>%
+				str_split("~") %>%
+				.[[1]] %>%
+				map_lgl( ~ grepl("\\. | \\.", .x)) %>%
+				which	== 1 ~ {
+					# Parse formula
+					.my_formula =
+						.formula %>%
+						when(
+							# If I have the dot, needed definitely for censored
+							format(.) %>% grepl("\\.", .) %>% any ~ format(.) %>% str_replace("([-\\+\\*~ ]?)(\\.)", "\\1.proportion_0_corrected"),
+							
+							# If normal formula
+							~ sprintf(".proportion_0_corrected%s", format(.))
+						) %>%
+						
+						as.formula
+					
+					# Test
+					univariable_differential_tissue_composition(deconvoluted,
+																											method,
+																											.my_formula,
+																											min_detected_proportion) %>%
+						
+						# Attach attributes
+						reattach_internals(.data) %>%
+						
+						# Add methods used
+						when(
+							grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+							~ (.) %>% memorise_methods_used("betareg")
+						)
+				},
+			
+			# Multivariable
+			~ {
+				# Parse formula
+				covariates =
+					deconvoluted %>%
+					select(starts_with(method)) %>%
+					colnames() %>%
+					gsub(sprintf("%s:", method), "", .) %>%
+					str_replace_all("[ \\(\\)]", "___")
+				
+				# Parse formula
+				.my_formula =
+					.formula %>%
+					when(
+						# If I have the dot, needed definitely for censored
+						format(.) %>% grepl("\\.", .) %>% any ~
+							format(.formula) %>%
+							str_replace("([-\\+\\*~ ])(\\.)",
+													sprintf(
+														"\\1%s", paste(covariates, collapse = " + ")
+													)),
+						
+						# If normal formula
+						~ sprintf(".proportion_0_corrected%s", format(.))
+					) %>%
+					
+					as.formula
+				
+				# Test
+				multivariable_differential_tissue_composition(deconvoluted,
+																											method,
+																											.my_formula,
+																											min_detected_proportion) %>%
+					
+					# Attach attributes
+					reattach_internals(.data) %>%
+					
+					# Add methods used
+					when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+							 ~ (.))
+				
+			}) %>%
+		
+		# Eliminate prefix
+		mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+	
 
 }
 
@@ -2220,7 +2234,7 @@ get_symbol_from_ensembl <-
 #' @return A data frame
 #'
 #'
-run_llsr = function(mix, reference) {
+run_llsr = function(mix, reference = X_cibersort) {
 	# Get common markers
 	markers = intersect(rownames(mix), rownames(reference))
 
@@ -2264,17 +2278,18 @@ run_epic = function(mix, reference = NULL) {
 	if("EPIC" %in% .packages() %>% not) stop("tidybulk says: Please attach the apckage EPIC manually (i.e. library(EPIC)). This is because EPIC is only available on GitHub and it is not possible to seemlessy make EPIC part of the dependencies.")
 		
 	# Get common markers
-	markers = intersect(rownames(mix), rownames(reference))
-	
-	X <- (reference[markers, , drop = FALSE])
-	Y <- (mix[markers, , drop = FALSE])
-	
-	if(!is.null(reference))
-		reference = list(
-			refProfiles = X,
-			sigGenes = rownames(X)
-		)
-	
+	if( reference %>% class %>% equals("data.frame")){
+		markers = intersect(rownames(mix), rownames(reference))
+		
+		X <- (reference[markers, , drop = FALSE])
+		Y <- (mix[markers, , drop = FALSE])
+		
+		if(!is.null(reference))
+			reference = list(
+				refProfiles = X,
+				sigGenes = rownames(X)
+			)
+	} else { Y <- mix }
 	
 	
 	results <- EPIC(Y, reference = reference)$cellFractions %>% data.frame()
@@ -2303,6 +2318,7 @@ run_epic = function(mix, reference = NULL) {
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param method A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.
+#' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
@@ -2312,33 +2328,15 @@ get_cell_type_proportions = function(.data,
 																		 .sample = NULL,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
-																		 reference = X_cibersort,
+																		 reference = NULL,
 																		 method = "cibersort",
+																		 prefix = "",
 																		 ...) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
  
-
-
-	# Load library which is optional for the whole package
-	#library(preprocessCore)
-
-	# Check if there are enough genes for the signature
-	if ((.data %>%
-			 pull(!!.transcript) %in% (reference %>% rownames)) %>%
-			which %>%
-			length %>%
-			st(50))
-		stop(
-			"tidybulk says: You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
-		)
-
-	# Check if rownames exist
-	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% not() %>% any)
-		stop("tidybulk says: your reference has non-numeric/integer columns.")
-
 	# Get the dots arguments
 	dots_args = rlang::dots_list(...)
 
@@ -2381,6 +2379,12 @@ get_cell_type_proportions = function(.data,
 					
 				}
 				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
+				
+				# Validate reference
+				validate_signature(.data, reference, !!.transcript)
+				
 				do.call(my_CIBERSORT, list(Y = ., X = reference) %>% c(dots_args)) %$%
 				proportions %>%
 				as_tibble(rownames = quo_name(.sample)) %>%
@@ -2388,16 +2392,46 @@ get_cell_type_proportions = function(.data,
 			},
 			
 			# Don't need to execute do.call
-			method %>% tolower %>% equals("llsr") ~ (.) %>%
+			method %>% tolower %>% equals("llsr") ~ {
+				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
+				
+				# Validate reference
+				validate_signature(.data, reference, !!.transcript)
+				
+				(.) %>%
 				run_llsr(reference) %>%
-				as_tibble(rownames = quo_name(.sample)) ,
+				as_tibble(rownames = quo_name(.sample)) 
+			},
 
 			# Don't need to execute do.call
 			method %>% tolower %>% equals("epic") ~ {
 				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ "BRef", ~ .)
+				
 				(.) %>%
 					run_epic(reference) %>%
 					as_tibble(rownames = quo_name(.sample)) 
+			},
+		
+			# Other (hidden for the moment) methods using third party wrapper https://icbi-lab.github.io/immunedeconv	
+			method %>% tolower %in% c("mcp_counter", "quantiseq", "xcell") ~ {
+				
+				# Check if package is installed, otherwise install
+				if (find.package("immunedeconv", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing immunedeconv")
+					devtools::install_github("icbi-lab/immunedeconv", upgrade = FALSE)
+				}
+				
+				if(method == "xcell" & !"immunedeconv" %in% (.packages()))
+					stop("tidybulk says: for xcell deconvolution you should have the package immunedeconv attached. Please execute library(immunedeconv)")
+					
+				(.) %>%
+					immunedeconv::deconvolute(method %>% tolower, tumor = FALSE) %>%
+					gather(!!.sample, .proportion, -cell_type) %>%
+					spread(cell_type,  .proportion)
 			},
 			
 			~ stop(
@@ -2408,7 +2442,7 @@ get_cell_type_proportions = function(.data,
 		# Parse results and return
 		setNames(c(
 			quo_name(.sample),
-			(.) %>% select(-1) %>% colnames() %>% sprintf("%s: %s", method, .)
+			(.) %>% select(-1) %>% colnames() %>% sprintf("%s%s", prefix, .)
 
 		)) %>%
 

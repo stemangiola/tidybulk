@@ -4,7 +4,7 @@
 \alias{run_llsr}
 \title{Perform linear equation system analysis through llsr}
 \usage{
-run_llsr(mix, reference)
+run_llsr(mix, reference = X_cibersort)
 }
 \arguments{
 \item{mix}{A data frame}

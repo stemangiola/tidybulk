@@ -1448,8 +1448,9 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
-#' @param method A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference will be used for each algorithm. For llsr will be LM22.
+#' @param method A character string. The method to be used. At the moment Cibersort (default), epic and llsr (linear least squares regression) are available.
+#' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function Cibersort
 #'
@@ -1478,8 +1479,9 @@ setGeneric("deconvolve_cellularity", function(.data,
 																							.sample = NULL,
 																							.transcript = NULL,
 																							.abundance = NULL,
-																							reference = X_cibersort,
+																							reference = NULL,
 																							method = "cibersort",
+																							prefix = "",
 																							action = "add",
 																							...)
 	standardGeneric("deconvolve_cellularity"))
@@ -1489,8 +1491,9 @@ setGeneric("deconvolve_cellularity", function(.data,
 																		 .sample = NULL,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
-																		 reference = X_cibersort,
+																		 reference = NULL,
 																		 method = "cibersort",
+																		 prefix = "",
 																		 action = "add",
 																		 ...)  {
 	# Get column names
@@ -1502,9 +1505,9 @@ setGeneric("deconvolve_cellularity", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
-	# Check that reference is matrix
-	if(reference %>% class %>% equals("data.frame") %>% not())
-		stop("tidybulk says: reference must be a data.frame")
+	# # Check that reference is matrix
+	# if(!is.null(reference) & reference %>% class %>% equals("data.frame") %>% not())
+	# 	stop("tidybulk says: reference must be NULL or a data.frame")
 
 	# Validate data frame
 	if(do_validate()) {
@@ -1520,6 +1523,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 		.abundance = !!.abundance,
 		reference = reference,
 		method = method,
+		prefix = prefix,
 		...
 	)
 
@@ -3311,11 +3315,11 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #' @name test_differential_cellularity
 #'
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
-#' @param .formula A formula with no response variable, representing the desired linear model. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ x\"
+#' @param .formula A formula representing the desired linear model. The formula can be of two forms: multivariable (recommended) or univariable Respectively: \"factor_of_interest ~ .\" or \". ~ factor_of_interest\". The dot represents cell-type proportions, and it is mandatory. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ .\"
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param method A string character. Either \"cibersort\" or \"llsr\"
+#' @param method A string character. Either \"cibersort\", \"epic\" or \"llsr\". The regression method will be chosen based on being multivariable: lm or cox-regression (both on logit-transformed proportions); or univariable: beta or cox-regression (on logit-transformed proportions). See .formula for multi- or univariable choice.
 #' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param significance_threshold A real between 0 and 1 (usually 0.05).
 #' @param ... Further parameters passed to the method deconvolve_cellularity
@@ -3359,7 +3363,7 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #'
 #' 	test_differential_cellularity(
 #' 	 tidybulk::counts_mini,
-#' 	    ~ condition,
+#' 	    . ~ condition,
 #' 	    sample,
 #' 	    transcript,
 #' 	    count,
@@ -3405,7 +3409,11 @@ setGeneric("test_differential_cellularity", function(.data,
 
 	# Validate data frame
 	if(do_validate()) validation(.data, !!.sample, !!.transcript, !!.abundance)
-
+	
+	# Validate formula
+	if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
+		stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
+	
 	test_differential_cellularity_(
 		.data,
 		.formula = .formula,

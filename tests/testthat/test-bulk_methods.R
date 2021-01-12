@@ -1689,22 +1689,54 @@ test_that("Add cell type proportions - no object",{
 
 test_that("differential composition",{
 	
-	res =
-		test_differential_cellularity(
+	# Cibersort
+	test_differential_cellularity(
 			input_df,
-			~ condition,
+			. ~ condition,
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
 			cores = 1
-		)
+		) %>% 
+		pull(`estimate_(Intercept)`) %>%
+		.[[1]] %>%
+		as.integer %>%
+		expect_equal(	-2, 	tollerance =1e-3)
 	
-	expect_equal(
-		as.integer(res$`estimate_(Intercept)`[1]),
-		-2, 
-		tollerance =1e-3
-	)
+	# llsr
+	test_differential_cellularity(
+		input_df,
+		. ~ condition,
+		.sample = a,
+		.transcript = b,
+		.abundance = c, 
+		method="llsr",
+		cores = 1
+	) %>% 
+		pull(`estimate_(Intercept)`) %>%
+		.[[1]] %>%
+		as.integer %>%
+		expect_equal(	-2, 	tollerance =1e-3)
 
+	# Survival analyses
+	input_df %>%
+	select(a, b, c) %>%
+	nest(data = -a) %>%
+	mutate(
+		days = c(1, 10, 500, 1000, 2000),
+		dead = c(1, 1, 1, 0, 1)
+	) %>%
+	unnest(data) %>%
+	test_differential_cellularity(
+		survival::Surv(days, dead) ~ .,
+		.sample = a,
+		.transcript = b,
+		.abundance = c,
+		cores = 1
+	) %>%
+	pull(estimate) %>%
+	.[[1]] %>%
+	expect_equal(96.5, tolerance  =1e-1)
 	
 })
 
