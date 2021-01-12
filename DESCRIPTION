@@ -64,7 +64,8 @@ Suggests:
     pasilla,
     ggrepel,
     devtools,
-    functional
+    functional,
+    immunedeconv
 VignetteBuilder: 
     knitr
 RdMacros:
