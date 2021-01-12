@@ -1680,7 +1680,7 @@ test_that("differential composition",{
 	) %>%
 	pull(estimate) %>%
 	.[[1]] %>%
-	expect_equal(96.54699, tolerance  =1e-3)
+	expect_equal(96.5, tolerance  =1e-1)
 	
 })
 
