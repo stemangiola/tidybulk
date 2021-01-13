@@ -3360,7 +3360,7 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #'
 #' @examples
 #'
-#'
+#'  # Regular regression
 #' 	test_differential_cellularity(
 #' 	 tidybulk::counts_mini,
 #' 	    . ~ condition,
@@ -3369,8 +3369,31 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #' 	    count,
 #' 	    cores = 1
 #' 	)
+#' 	
+#' 	# Cox regression - multiple
+#' 	library(dplyr)
+#' 	library(tidyr)
+#' 	
+#'	tidybulk::counts_mini %>%
+#'		
+#'		# Add survival data
+#'		nest(data = -sample) %>%
+#'		mutate(
+#'			days = c(1, 10, 500, 1000, 2000),
+#'			dead = c(1, 1, 1, 0, 1)
+#'		) %>%
+#'		unnest(data) %>%
+#'		
+#'		# Test
+#'		test_differential_cellularity(
+#'		    survival::Surv(days, dead) ~ .,
+#'		    sample,
+#'		    transcript,
+#'		    count,
+#'		    cores = 1
+#'		)
 #'
-#'
+#' 
 #'
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
@@ -3460,6 +3483,162 @@ setMethod("test_differential_cellularity",
 setMethod("test_differential_cellularity",
 					"tidybulk",
 					.test_differential_cellularity)
+
+#' Test of stratification of biological replicates based on tissue composition, one cell-type at the time, using Kaplan-meier curves.
+#'
+#' \lifecycle{maturing}
+#'
+#' @description test_stratification_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name test_stratification_cellularity
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .formula A formula representing the desired linear model. The formula can be of two forms: multivariable (recommended) or univariable Respectively: \"factor_of_interest ~ .\" or \". ~ factor_of_interest\". The dot represents cell-type proportions, and it is mandatory. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ .\"
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A string character. Either \"cibersort\", \"epic\" or \"llsr\". The regression method will be chosen based on being multivariable: lm or cox-regression (both on logit-transformed proportions); or univariable: beta or cox-regression (on logit-transformed proportions). See .formula for multi- or univariable choice.
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
+#' @param ... Further parameters passed to the method deconvolve_cellularity
+#'
+#' @details This routine applies a deconvolution method (e.g., Cibersort; DOI: 10.1038/nmeth.3337)
+#' and passes the proportions inferred into a generalised linear model (DOI:dx.doi.org/10.1007/s11749-010-0189-z)
+#' or a cox regression model (ISBN: 978-1-4757-3294-8)
+#'
+#'
+#' Underlying method for the test:
+#' data %>%
+#' deconvolve_cellularity(
+#' 	!!.sample, !!.transcript, !!.abundance,
+#' 	method=method,
+#' 	reference = reference,
+#' 	action="get",
+#' 	...
+#' )  %>%
+#' 	[..] %>%
+#' 	mutate(.high_cellularity = .proportion > median(.proportion)) %>%
+#' 	survival::survdiff(data = data, .my_formula) 
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#'
+#'
+#'
+#'
+#' @examples
+#' 
+#' library(dplyr)
+#' library(tidyr)
+#'
+#'  tidybulk::counts_mini %>%
+#'	
+#'	# Add survival data
+#'	nest(data = -sample) %>%
+#'	mutate(
+#'		days = c(1, 10, 500, 1000, 2000),
+#'		dead = c(1, 1, 1, 0, 1)
+#'	) %>%
+#'	unnest(data) %>%
+#'	test_stratification_cellularity(
+#'		survival::Surv(days, dead) ~ .,
+#'		sample,
+#'		transcript,
+#'		count,
+#'		cores = 1
+#'	)
+#'
+#'
+#'
+#' @docType methods
+#' @rdname test_stratification_cellularity-methods
+#' @export
+#'
+setGeneric("test_stratification_cellularity", function(.data,
+																											 .formula,
+																											 .sample = NULL,
+																											 .transcript = NULL,
+																											 .abundance = NULL,
+																											 method = "cibersort",
+																											 reference = X_cibersort,
+																											 significance_threshold = 0.05,
+																											 ...)
+	standardGeneric("test_stratification_cellularity"))
+
+# Set internal
+.test_stratification_cellularity = 		function(.data,
+																							.formula,
+																							.sample = NULL,
+																							.transcript = NULL,
+																							.abundance = NULL,
+																							method = "cibersort",
+																							reference = X_cibersort,
+																							significance_threshold = 0.05,
+																							...)
+{
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
+	
+	# Validate data frame
+	if(do_validate()) validation(.data, !!.sample, !!.transcript, !!.abundance)
+	
+	# Validate formula
+	if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
+		stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
+	
+	test_stratification_cellularity_(
+		.data,
+		.formula = .formula,
+		.sample = !!.sample,
+		.transcript = !!.transcript,
+		.abundance = !!.abundance,
+		method = method,
+		reference = reference,
+		significance_threshold = significance_threshold,
+		...
+	)
+	
+}
+
+#' test_stratification_cellularity
+#' @inheritParams test_stratification_cellularity
+#'
+#' @docType methods
+#' @rdname test_stratification_cellularity-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_stratification_cellularity",
+					"spec_tbl_df",
+					.test_stratification_cellularity)
+
+#' test_stratification_cellularity
+#' @inheritParams test_stratification_cellularity
+#'
+#' @docType methods
+#' @rdname test_stratification_cellularity-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_stratification_cellularity",
+					"tbl_df",
+					.test_stratification_cellularity)
+
+#' test_stratification_cellularity
+#' @inheritParams test_stratification_cellularity
+#'
+#' @docType methods
+#' @rdname test_stratification_cellularity-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_stratification_cellularity",
+					"tidybulk",
+					.test_stratification_cellularity)
 
 
 

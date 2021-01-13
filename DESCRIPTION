@@ -65,7 +65,8 @@ Suggests:
     ggrepel,
     devtools,
     functional,
-    immunedeconv
+    immunedeconv,
+    survminer
 VignetteBuilder: 
     knitr
 RdMacros:
