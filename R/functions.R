@@ -1081,11 +1081,6 @@ test_stratification_cellularity_ <- function(.data,
 	.abundance = enquo(.abundance)
 	
 	
-	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing broom needed for analyses")
-		install.packages("broom", repos = "https://cloud.r-project.org")
-	}
-	
 	deconvoluted = 
 		.data %>%
 		
@@ -1107,15 +1102,8 @@ test_stratification_cellularity_ <- function(.data,
 		{
 			# Parse formula
 			.my_formula =
-				.formula %>%
-				when(
-					# If I have the dot, needed definitely for censored
-					format(.) %>% grepl("\\.", .) %>% any ~ format(.) %>% str_replace("([-\\+\\*~ ]?)(\\.)", "\\1.high_cellularity"),
-					
-					# If normal formula
-					~ sprintf(".high_cellularity%s", format(.))
-				) %>%
-				
+				format(.formula) %>% 
+				str_replace("([~ ])(\\.)", "\\1.high_cellularity") %>%
 				as.formula
 			
 			# Test
@@ -1127,10 +1115,7 @@ test_stratification_cellularity_ <- function(.data,
 				reattach_internals(.data) %>%
 				
 				# Add methods used
-				when(
-					grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
-					~ (.) %>% memorise_methods_used("betareg")
-				)
+				memorise_methods_used(c("survival", "boot", "survminer"))
 		} %>%
 		
 		# Eliminate prefix
