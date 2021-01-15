@@ -2871,7 +2871,8 @@ fill_NA_using_formula = function(.data,
 	.data_completed %>% 
 		filter(!!.abundance %>% is.na) %>%
 		select(!!.sample, !!.transcript) %>%
-		left_join(.data %>% pivot_sample(!!.sample))
+		left_join(.data %>% pivot_sample(!!.sample)) %>%
+		left_join(.data %>% pivot_transcript(!!.transcript))
 	) %>%
  	
 	# Group by covariate
