@@ -220,17 +220,13 @@ get_scaled_counts_bulk <- function(.data,
 
 		# I have correct the strange behaviour of edgeR of reference
 		# sample not being 1
-		ifelse_pipe(
-			"reference" %in% ((.) %>% pull(!!.sample)),
-			~ .x %>%
-				mutate(
-					multiplier =
-						multiplier /
-						(.) %>%
-						filter(!!.sample == "reference") %>%
-						pull(multiplier)
-				)
-		) %>%
+		{
+			mult_ref = (.) %>%  filter(!!.sample == reference) %>% pull(multiplier)
+			(.) %>%  mutate(
+				multiplier =
+					multiplier /mult_ref
+			)
+		} %>%
 		
 		dplyr::select(-tot,-tot_filt) %>%
 		dplyr::rename(TMM = nf) %>%
@@ -240,32 +236,6 @@ get_scaled_counts_bulk <- function(.data,
 		
 		# Add methods
 		memorise_methods_used(c("edger", "tmm"))
-		
-	# Return
-	
-	# df_norm =
-	# 	df %>%
-	# 
-	# 	# drop factor of interest
-	# 	select(!!.sample, !!.transcript, !!.abundance) %>%
-	# 
-	# 	# Manipulate
-	# 	dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
-	# 	dplyr::left_join(nf, by = quo_name(.sample)) %>%
-	# 
-	# 	# Calculate scaled values
-	# 	dplyr::mutate(!!value_scaled := !!.abundance * multiplier) %>%
-	# 
-	# 	# Format df for join
-	# 	dplyr::select(!!.sample, !!.transcript, !!value_scaled,	everything()) %>%
-	# 	# dplyr::mutate(lowly_abundant = !!.transcript %in% nf_obj$gene_to_exclude) %>%
-	# 	dplyr::select(-!!.abundance,-tot,-tot_filt) %>%
-	# 	dplyr::rename(TMM = nf) %>%
-	# 	arrange(!!.sample,!!.transcript)
-	# #dplyr::select(-!!.sample,-!!.transcript)
-
-	# # Attach attributes
-	# df_norm 
 
 }
 

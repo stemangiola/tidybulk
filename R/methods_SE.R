@@ -84,38 +84,105 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 
 
 .scale_abundance_se = function(.data,
-															 .sample = NULL,
-															 .transcript = NULL,
-															 .abundance = NULL,
 															 method = "TMM",
-															 reference_sample = NULL,
-															 action = "add",
-															 
-															 # DEPRECATED
-															 reference_selection_function = NULL) {
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+															 reference_sample = NULL) {
+	
+	
+	# Check if package is installed, otherwise install
+	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing edgeR needed for analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("edgeR", ask = FALSE)
+	}
+	
+	# Check that reference sample exists
+	if(!is.null(reference_sample) && !reference_sample %in% (.data %>% colnames))
+		stop("tidybulk says: your reference sample is not among the samples in your data frame")
+	
+	
+
+	.data_filtered = 
+		.data %>%
+		
+		# Filter abundant if performed
+		when(
+			".abundant" %in% (rowData(.data) %>% colnames()) ~ .data[rowData(.data)[,".abundant"],],
+			~ {
+				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				(.)
+			}
+		)
+	
+	my_assay = assays(.data_filtered) %>% as.list() %>% .[1]
+	my_counts_filtered = my_assay[[1]]
+	library_size_filtered = my_counts_filtered %>% colSums()
+
+	# Set column name for value scaled
+	value_scaled = my_assay %>% names() %>% paste0(scaled_string)  
+	
+	# Get reference
+	reference <-
+		reference_sample %>%
+		when(
+			!is.null(.) ~ (.),
+			
+			# If not specified take most abundance sample
+			library_size_filtered %>% 
+				sort() %>% 
+				tail(1) %>% 
+				names()
+		)
+	
+	# Calculate TMM
+	nf <-
+		edgeR::calcNormFactors(
+			my_counts_filtered,
+			refColumn = reference,
+			method = method
+		)
+	
+	# Calculate multiplier
+	multiplier = 
+		1 %>% 
+		divide_by(library_size_filtered * nf) %>%
+		
+		# NOT HELPING - Put everything to the reference sample scale
+		multiply_by(library_size_filtered[reference]) %>%
+		
+		# Make reference == 1
+		divide_by(.[reference])
+		
+	# Add to sample info
+	colData(.data)$TMM = nf
+	colData(.data)$multiplier = multiplier
+	
+	my_counts_scaled = 
+		list(
+			assays(.data) %>% 
+				as.list() %>%
+				.[[1]] %>%
+				multiply_by(
+					rep(multiplier, rep(nrow(.),length(multiplier)))
+				)
+			) %>%
+		setNames(value_scaled)
+	
+	# Add the assay
+	assays(.data) =  assays(.data) %>% c(my_counts_scaled)
 	
 	.data %>%
 		
-		# Convert to tidybulk
-		tidybulk() %>%
+		# Add methods
+		memorise_methods_used(c("edger", "tmm")) %>%
 		
-		# Apply scale method
-		scale_abundance(
-			!!.sample,
-			!!.transcript,
-			!!.abundance,
-			method = method,
-			reference_sample = reference_sample,
-			action = action,
-			reference_selection_function = reference_selection_function
-		) %>%
+		# Attach column internals
+		add_tt_columns(value_scaled) 
+	
+
 		
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
+		
+	
 	
 }
 

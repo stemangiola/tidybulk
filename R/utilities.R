@@ -1184,26 +1184,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
  
-	# factor_of_interest = enquo(factor_of_interest)
-
 	error_if_log_transformed(.data,!!.abundance)
-
-	# # Get list of low transcribed genes
-	# gene_to_exclude <-
-	# 	add_scaled_counts_bulk.get_low_expressed(
-	# 		.data %>%
-	# 			filter(!!.sample != "reference"),!!.sample,!!.transcript,!!.abundance,
-	# 		factor_of_interest = !!factor_of_interest,
-	# 		minimum_counts = minimum_counts,
-	# 		minimum_proportion = minimum_proportion
-	# 	)
-
-	# # Check if transcript after filtering is 0
-	# if (length(gene_to_exclude) == .data %>%
-	# 		dplyr::distinct(!!.transcript) %>%
-	# 		nrow()) {
-	# 	stop("The gene expression matrix has been filtered completely for lowly expressed genes")
-	# }
 
 	# Get data frame for the highly transcribed transcripts
 	df.filt <-
