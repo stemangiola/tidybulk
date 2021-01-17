@@ -68,9 +68,6 @@ remove_redundancy(
 
 \S4method{remove_redundancy}{SummarizedExperiment}(
   .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
   method,
   of_samples = TRUE,
   correlation_threshold = 0.9,
@@ -82,9 +79,6 @@ remove_redundancy(
 
 \S4method{remove_redundancy}{RangedSummarizedExperiment}(
   .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
   method,
   of_samples = TRUE,
   correlation_threshold = 0.9,

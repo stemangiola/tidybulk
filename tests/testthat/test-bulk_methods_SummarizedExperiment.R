@@ -62,11 +62,11 @@ test_that("tidybulk SummarizedExperiment clustering",{
 
 	expect_equal(
 		tail(names(SummarizedExperiment::colData(res)), 1),
-		"cluster.kmeans"
+		"cluster_kmeans"
 	)
 
 	expect_equal(
-		levels(SummarizedExperiment::colData(res)$cluster.kmeans),
+		levels(SummarizedExperiment::colData(res)$cluster_kmeans),
 		c("1", "2")
 	)
 
@@ -74,7 +74,7 @@ test_that("tidybulk SummarizedExperiment clustering",{
 
 test_that("tidybulk SummarizedExperiment clustering",{
 
-	res = reduce_dimensions(se %>% identify_abundant(), method="PCA")
+	res = se %>% identify_abundant() %>% reduce_dimensions(method="PCA")
 
 	expect_equal(
 		tail(names(SummarizedExperiment::colData(res)), 1),

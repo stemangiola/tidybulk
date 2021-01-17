@@ -266,13 +266,15 @@ add_tt_columns = function(.data,
                           .sample,
                           .transcript,
                           .abundance,
-                          .abundance_scaled = NULL){
+                          .abundance_scaled = NULL,
+													.abundance_adjusted = NULL){
 
   # Make col names
   .sample = enquo(.sample)
   .transcript = enquo(.transcript)
   .abundance = enquo(.abundance)
   .abundance_scaled = enquo(.abundance_scaled)
+  .abundance_adjusted = enquo(.abundance_adjusted)
 
   # Add tt_columns
   .data %>% attach_to_internals(
@@ -286,7 +288,12 @@ add_tt_columns = function(.data,
     ifelse_pipe(
       .abundance_scaled %>% quo_is_symbol,
       ~ .x %>% c(		list(.abundance_scaled = .abundance_scaled))
-    ),
+    ) %>%
+    	
+  	ifelse_pipe(
+  		.abundance_adjusted %>% quo_is_symbol,
+  		~ .x %>% c(		list(.abundance_adjusted = .abundance_adjusted))
+  	),
     "tt_columns"
   )
 
@@ -1386,4 +1393,14 @@ univariable_differential_tissue_composition = function(
 		)) %>%
 		
 		unnest(surv_test, keep_empty = TRUE) 
+}
+
+
+# Function that rotates a 2D space of a arbitrary angle
+rotation = function(m, d) {
+	r = d * pi / 180
+	((dplyr::bind_rows(
+		c(`1` = cos(r), `2` = -sin(r)),
+		c(`1` = sin(r), `2` = cos(r))
+	) %>% as_matrix) %*% m)
 }
