@@ -3080,7 +3080,7 @@ setMethod("pivot_transcript",
 
 #' Fill transcript abundance if missing from sample-transcript pairs
 #'
-#' \lifecycle{maturing}
+#' \lifecycle{questioning}
 #'
 #' @description fill_missing_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with new observations
 #'
@@ -3127,6 +3127,9 @@ setGeneric("fill_missing_abundance", function(.data,
 													.abundance= NULL,
 													fill_with)
 {
+	
+	
+	
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)

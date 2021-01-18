@@ -297,7 +297,7 @@ setMethod("cluster_elements",
 		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 		
 		# Filter most variable genes
-		keep_variable_transcripts_SE(top) %>%
+		keep_variable_transcripts_SE(top = top, log_transform = log_transform) %>%
 		
 		# Check if log transform is needed
 		when(log_transform ~ log1p(.), ~ (.) ) 
@@ -498,7 +498,7 @@ setMethod("rotate_dimensions",
 					.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 					
 					# Filter most variable genes
-					keep_variable_transcripts_SE(top) %>%
+					keep_variable_transcripts_SE(top = top, log_transform = log_transform) %>%
 					
 					# Check if log transform is needed
 					when(log_transform ~ log1p(.), ~ (.) ) 
@@ -743,36 +743,129 @@ setMethod("aggregate_duplicates",
 
 
 .deconvolve_cellularity_se = function(.data,
-																			.sample = NULL,
-																			.transcript = NULL,
-																			.abundance = NULL,
 																			reference = X_cibersort,
 																			method = "cibersort",
-																			action = "add",
+																			prefix = "",
 																			...) {
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+
+	my_assay =
+		.data %>%
+		
+		assays() %>%
+		as.list() %>%
+		.[[get_assay_scaled_if_exists_SE(.data)]] 
+	
+	# Get the dots arguments
+	dots_args = rlang::dots_list(...)
+	
+	my_proportions = 
+		my_assay %>%
+		
+		# Run Cibersort or llsr through custom function, depending on method choice
+		when(
+			
+			# Execute do.call because I have to deal with ...
+			method %>% tolower %>% equals("cibersort") 	~ {
+				
+				# Check if package is installed, otherwise install
+				if (find.package("class", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing class needed for Cibersort")
+					install.packages("class", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
+				}
+				
+				# Check if package is installed, otherwise install
+				if (find.package("e1071", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing e1071 needed for Cibersort")
+					install.packages("e1071", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
+				}
+				
+				# Check if package is installed, otherwise install
+				if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing preprocessCore needed for Cibersort")
+					if (!requireNamespace("BiocManager", quietly = TRUE))
+						install.packages("BiocManager", repos = "https://cloud.r-project.org")
+					BiocManager::install("preprocessCore", ask = FALSE)
+					
+				}
+				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
+				
+				# Validate reference
+				validate_signature_SE(.data, reference, !!.transcript)
+				
+				do.call(my_CIBERSORT, list(Y = ., X = reference) %>% c(dots_args)) %$%
+					proportions %>%
+					as_tibble(rownames = quo_name(.sample)) %>%
+					select(-`P-value`,-Correlation,-RMSE) 
+			},
+			
+			# Don't need to execute do.call
+			method %>% tolower %>% equals("llsr") ~ {
+				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
+				
+				# Validate reference
+				validate_signature_SE(.data, reference, !!.transcript)
+				
+				(.) %>%
+					run_llsr(reference) %>%
+					as_tibble(rownames = quo_name(.sample)) 
+			},
+			
+			# Don't need to execute do.call
+			method %>% tolower %>% equals("epic") ~ {
+				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ "BRef", ~ .)
+				
+				(.) %>%
+					run_epic(reference) %>%
+					as_tibble(rownames = quo_name(.sample)) 
+			},
+			
+			# Other (hidden for the moment) methods using third party wrapper https://icbi-lab.github.io/immunedeconv	
+			method %>% tolower %in% c("mcp_counter", "quantiseq", "xcell") ~ {
+				
+				# Check if package is installed, otherwise install
+				if (find.package("immunedeconv", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing immunedeconv")
+					devtools::install_github("icbi-lab/immunedeconv", upgrade = FALSE)
+				}
+				
+				if(method == "xcell" & !"immunedeconv" %in% (.packages()))
+					stop("tidybulk says: for xcell deconvolution you should have the package immunedeconv attached. Please execute library(immunedeconv)")
+				
+				(.) %>%
+					immunedeconv::deconvolute(method %>% tolower, tumor = FALSE) %>%
+					gather(!!.sample, .proportion, -cell_type) %>%
+					spread(cell_type,  .proportion)
+			},
+			
+			~ stop(
+				"tidybulk says: please choose between cibersort, llsr and epic methods"
+			)
+		)	 %>%
+		
+		# Parse results and return
+		setNames(c(
+			"sample",
+			(.) %>% select(-1) %>% colnames() %>% sprintf("%s%s", prefix, .)
+			
+		)) 
+	
+	# Att proportions
+	colData(.data) = colData(.data) %>% cbind(
+		my_proportions %>% 
+			as_matrix(rownames = "sample") %>%
+			.[rownames(colData(.data)),]
+		)
 	
 	.data %>%
 		
-		# Convert to tidybulk
-		tidybulk() %>%
-		
-		# Apply scale method
-		deconvolve_cellularity(
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			reference = reference,
-			method = method,
-			action = action,
-			...
-		) %>%
-		
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
+		# Attach attributes
+		memorise_methods_used(tolower(method))
 	
 }
 
@@ -806,46 +899,103 @@ setMethod(
 
 .test_differential_abundance_se = function(.data,
 																					 .formula,
-																					 .sample = NULL,
-																					 .transcript = NULL,
-																					 .abundance = NULL,
 																					 .contrasts = NULL,
 																					 method = "edgeR_quasi_likelihood",
 																					 scaling_method = "TMM",
 																					 omit_contrast_in_colnames = FALSE,
-																					 prefix = "",
-																					 
-																					 action = "add",
-																					 
-																					 # DEPRECATED
-																					 significance_threshold = NULL,
-																					 fill_missing_values = NULL)
+																					 prefix = "")
 {
-	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+
+	# Clearly state what counts are used
+	message("=====================================
+tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance 
+or adjust_abundance have been calculated. Therefore, it is essential to add covariates 
+such as batch effects (if applicable) in the formula.
+=====================================")
+	
+	
+	my_differential_abundance = 
+		.data %>%
+		
+		# Filter abundant if performed
+		filter_if_abundant_were_identified() %>%
+		
+		# Choose method
+		when(
+			
+			# edgeR
+			tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ 
+				get_differential_transcript_abundance_bulk_SE(
+					.,
+					.formula,
+					.contrasts = .contrasts,
+					colData(.data),
+					method = method,
+					scaling_method = scaling_method,
+					omit_contrast_in_colnames = omit_contrast_in_colnames,
+					prefix = prefix
+				),
+			
+			# Voom
+			grepl("voom", method) ~ get_differential_transcript_abundance_bulk_voom_SE(
+				.,
+				.formula,
+				.contrasts = .contrasts,
+				colData(.data),
+				method = method,
+				scaling_method = scaling_method,
+				omit_contrast_in_colnames = omit_contrast_in_colnames,
+				prefix = prefix
+			),
+			
+			# DESeq2
+			tolower(method)=="deseq2" ~ get_differential_transcript_abundance_deseq2_SE(
+				.,
+				.formula,
+				.contrasts = .contrasts,
+				method = method,
+				scaling_method = scaling_method,
+				omit_contrast_in_colnames = omit_contrast_in_colnames,
+				prefix = prefix
+			),
+			
+			# Else error
+			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\"")
+		)
+
+	# Add results
+	rowData(.data) = rowData(.data) %>% cbind(
+		my_differential_abundance$result %>%
+			as_matrix(rownames = "transcript") %>%
+			.[match(rownames(rowData(.data)), rownames(.)),]
+	)
+	
 	
 	.data %>%
 		
-		# Convert to tidybulk
-		tidybulk() %>%
 		
-		# Apply scale method
-		test_differential_abundance(
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			.contrasts = .contrasts,
-			method = method,
-			scaling_method = scaling_method,
-			omit_contrast_in_colnames = omit_contrast_in_colnames,
-			action = action
+		# Add bibliography
+		when(
+			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
+			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_quasi_likelihood")),
+			tolower(method) ==  "edger_robust_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edger_robust_likelihood_ratio")),
+			tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
+			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights"),
+			tolower(method) == "deseq2" ~ (.) %>% memorise_methods_used("DESeq2"),
+			~ stop("tidybulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)")
 		) %>%
 		
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
+		attach_to_internals(my_differential_abundance$result_raw, method) %>%
+		
+		# Communicate the attribute added
+		{
+			message(
+				sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s`", method)
+			)
+			(.)
+		}
+	
+
 	
 }
 
@@ -880,33 +1030,29 @@ setMethod(
 
 
 .keep_variable_se = function(.data,
-														 .sample = NULL,
-														 .transcript = NULL,
-														 .abundance = NULL,
 														 top = 500,
 														 log_transform = TRUE)
 {
-	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+
 	
-	.data %>%
+	variable_transcripts = 
+		.data %>% 
 		
-		# Convert to tidybulk
-		tidybulk() %>%
+		# Filter abundant if performed
+		filter_if_abundant_were_identified() %>%
 		
-		# Apply scale method
-		keep_variable(
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			top = top,
-			log_transform = log_transform
-		) %>%
+		assays() %>% 
+		as.list() %>% 
+		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 		
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
+		# Filter most variable genes
+		keep_variable_transcripts_SE(top = top, log_transform = log_transform) %>%
+		
+		# Take gene names
+		rowname()
+	
+	.data[variable_transcripts]
+	
 	
 }
 
@@ -935,36 +1081,80 @@ setMethod("keep_variable",
 					.keep_variable_se)
 
 .identify_abundant_se = function(.data,
-														 .sample = NULL,
-														 .transcript = NULL,
-														 .abundance = NULL,
 														 factor_of_interest = NULL,
 														 minimum_counts = 10,
 														 minimum_proportion = 0.7)
 {
-	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+	
+
+	
 	factor_of_interest = enquo(factor_of_interest)
 	
+	if (minimum_counts < 0)
+		stop("The parameter minimum_counts must be > 0")
+	if (minimum_proportion < 0 |	minimum_proportion > 1)
+		stop("The parameter minimum_proportion must be between 0 and 1")
+
 	.data %>%
 		
-		# Convert to tidybulk
-		tidybulk() %>%
-		
-		# Apply scale method
-		identify_abundant(
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			factor_of_interest = !!factor_of_interest,
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion
-		) %>%
-		
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
+		# Filter
+		when(
+			
+			# If column is present use this instead of doing more work
+			".abundant" %in% colData(.data) %>% not ~  {
+				
+				# Check if factor_of_interest is continuous and exists
+				string_factor_of_interest =
+					
+					factor_of_interest %>%
+					ifelse2_pipe(
+						quo_is_symbol(.) &&
+							select(.data, !!(.)) %>% lapply(class) %>%	as.character() %in% c("numeric", "integer", "double"),
+						quo_is_symbol(.),
+						~ {
+							message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
+							NULL
+						},
+						~ .data %>%
+							distinct(!!.sample, !!factor_of_interest) %>%
+							arrange(!!.sample) %>%
+							pull(!!factor_of_interest),
+						~ NULL
+					)
+				
+				# Get gene to exclude
+				gene_to_exclude =
+					.data %>%
+					
+					# Extract assay
+					assays() %>%
+					as.list() %>%
+					.[[1]] %>%
+					
+					# Call edgeR
+					edgeR::filterByExpr(
+						min.count = minimum_counts,
+						group = string_factor_of_interest,
+						min.prop = minimum_proportion
+					) %>%
+					not() %>%
+					which %>%
+					names 
+				
+				rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) %>% not()
+				
+				# Return
+				.data
+				
+			},
+			~ {
+				message("tidybulk says: the column .abundant already exists in colData. Nothing was done")
+				
+				# Return
+				(.)
+			}
+		)	
+
 	
 }
 
@@ -996,36 +1186,25 @@ setMethod("identify_abundant",
 
 
 .keep_abundant_se = function(.data,
-														 .sample = NULL,
-														 .transcript = NULL,
-														 .abundance = NULL,
 														 factor_of_interest = NULL,
 														 minimum_counts = 10,
 														 minimum_proportion = 0.7)
 {
-	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+	
+	
 	factor_of_interest = enquo(factor_of_interest)
 	
-	.data %>%
-		
-		# Convert to tidybulk
-		tidybulk() %>%
+	.data = 
+		.data %>%
 		
 		# Apply scale method
-		keep_abundant(
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
+		identify_abundant(
 			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion
-		) %>%
-		
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
+		) 
+	
+	.data[rowData(.data)$.abundant,]
 	
 }
 
@@ -1061,6 +1240,11 @@ setMethod("keep_abundant",
 																			.transcript= NULL,
 																			.abundance= NULL,
 																			fill_with) {
+	
+	# DEPRECATED maybe
+	#deprecate_warn("1.3.0", "tidybulk::fill_missing_abundance()")
+	
+	
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -1111,30 +1295,34 @@ setMethod("fill_missing_abundance",
 
 
 .impute_missing_abundance_se = function(.data,
-																				.formula,
-																				.sample = NULL,
-																				.transcript = NULL,
-																				.abundance = NULL) {
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+																				.formula) {
+
+
 	
-	.data %>%
-		
-		# Convert to tidybulk
-		tidybulk() %>%
-		
-		# Apply scale method
-		impute_missing_abundance(
-			.formula = .formula,
+	# Get scaled abundance if present, otherwise get abundance
+	.abundance_scaled = NULL
+	if(
+		.data %>% get_tt_columns() %>% is.null %>% not() &&
+		".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
+		quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames) &&
+		quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) != quo_name(.abundance)
+	)
+		.abundance_scaled = get_tt_columns(.data)$.abundance_scaled
+	
+	# Validate data frame
+	if(do_validate())  validation(.data, !!.sample, !!.transcript, !!.abundance)
+	
+	.data_processed =
+		fill_NA_using_formula(
+			.data,
+			.formula,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
-			.abundance = !!.abundance
-		) %>%
+			.abundance = !!.abundance,
+			.abundance_scaled = !!.abundance_scaled) %>%
 		
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
+		# Reattach internals
+		reattach_internals(.data)
 	
 }
 
@@ -1166,36 +1354,121 @@ setMethod("impute_missing_abundance",
 
 .test_differential_cellularity_se = function(.data,
 																						 .formula,
-																						 .sample = NULL,
-																						 .transcript = NULL,
-																						 .abundance = NULL,
 																						 method = "cibersort",
 																						 reference = X_cibersort,
-																						 significance_threshold = 0.05,
 																						 ...)
 {
-	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing broom needed for analyses")
+		install.packages("broom", repos = "https://cloud.r-project.org")
+	}
 	
-	.data %>%
+	deconvoluted = 
+		.data %>%
 		
-		# Convert to tidybulk
-		tidybulk() %>%
-		
-		# Apply scale method
-		test_differential_cellularity_(
-			.data,
-			.formula = .formula,
-			.sample = .sample,
-			.transcript = .transcript,
-			.abundance = .abundance,
-			method = method,
+		# Deconvolution
+		deconvolve_cellularity(
+			method=method,
+			prefix = sprintf("%s:", method),
 			reference = reference,
-			significance_threshold = significance_threshold,
 			...
-		)
+		) %>%
+		colData()
+	
+	min_detected_proportion = 
+		deconvoluted %>%
+		select(starts_with(method)) %>%
+		gather(cell_type, prop) %>%
+		filter(prop > 0) %>%
+		pull(prop) %>%
+		min()
+	
+	
+	# Check if test is univaiable or multivariable
+	.formula %>%
+		when(
+			
+			# Univariable
+			format(.) %>%
+				str_split("~") %>%
+				.[[1]] %>%
+				map_lgl( ~ grepl("\\. | \\.", .x)) %>%
+				which	== 1 ~ {
+					# Parse formula
+					.my_formula =
+						.formula %>%
+						when(
+							# If I have the dot, needed definitely for censored
+							format(.) %>% grepl("\\.", .) %>% any ~ format(.) %>% str_replace("([-\\+\\*~ ]?)(\\.)", "\\1.proportion_0_corrected"),
+							
+							# If normal formula
+							~ sprintf(".proportion_0_corrected%s", format(.))
+						) %>%
+						
+						as.formula
+					
+					# Test
+					univariable_differential_tissue_composition(deconvoluted,
+																											method,
+																											.my_formula,
+																											min_detected_proportion) %>%
+						
+						# Attach attributes
+						reattach_internals(.data) %>%
+						
+						# Add methods used
+						when(
+							grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+							~ (.) %>% memorise_methods_used("betareg")
+						)
+				},
+			
+			# Multivariable
+			~ {
+				# Parse formula
+				covariates =
+					deconvoluted %>%
+					select(starts_with(method)) %>%
+					colnames() %>%
+					gsub(sprintf("%s:", method), "", .) %>%
+					str_replace_all("[ \\(\\)]", "___")
+				
+				# Parse formula
+				.my_formula =
+					.formula %>%
+					when(
+						# If I have the dot, needed definitely for censored
+						format(.) %>% grepl("\\.", .) %>% any ~
+							format(.formula) %>%
+							str_replace("([-\\+\\*~ ])(\\.)",
+													sprintf(
+														"\\1%s", paste(covariates, collapse = " + ")
+													)),
+						
+						# If normal formula
+						~ sprintf(".proportion_0_corrected%s", format(.))
+					) %>%
+					
+					as.formula
+				
+				# Test
+				multivariable_differential_tissue_composition(deconvoluted,
+																											method,
+																											.my_formula,
+																											min_detected_proportion) %>%
+					
+					# Attach attributes
+					reattach_internals(.data) %>%
+					
+					# Add methods used
+					when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+							 ~ (.))
+				
+			}) %>%
+		
+		# Eliminate prefix
+		mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+	
 	
 }
 
