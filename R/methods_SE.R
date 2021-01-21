@@ -1086,75 +1086,86 @@ setMethod("keep_variable",
 														 minimum_proportion = 0.7)
 {
 	
-
 	
+	# # Make col names
+	# .sample = enquo(.sample)
+	# .transcript = enquo(.transcript)
+	# .abundance = enquo(.abundance)
 	factor_of_interest = enquo(factor_of_interest)
 	
-	if (minimum_counts < 0)
-		stop("The parameter minimum_counts must be > 0")
-	if (minimum_proportion < 0 |	minimum_proportion > 1)
-		stop("The parameter minimum_proportion must be between 0 and 1")
-
-	.data %>%
-		
-		# Filter
-		when(
-			
-			# If column is present use this instead of doing more work
-			".abundant" %in% colData(.data) %>% not ~  {
-				
-				# Check if factor_of_interest is continuous and exists
-				string_factor_of_interest =
-					
-					factor_of_interest %>%
-					ifelse2_pipe(
-						quo_is_symbol(.) &&
-							select(.data, !!(.)) %>% lapply(class) %>%	as.character() %in% c("numeric", "integer", "double"),
-						quo_is_symbol(.),
-						~ {
-							message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
-							NULL
-						},
-						~ .data %>%
-							distinct(!!.sample, !!factor_of_interest) %>%
-							arrange(!!.sample) %>%
-							pull(!!factor_of_interest),
-						~ NULL
-					)
-				
-				# Get gene to exclude
-				gene_to_exclude =
-					.data %>%
-					
-					# Extract assay
-					assays() %>%
-					as.list() %>%
-					.[[1]] %>%
-					
-					# Call edgeR
-					edgeR::filterByExpr(
-						min.count = minimum_counts,
-						group = string_factor_of_interest,
-						min.prop = minimum_proportion
-					) %>%
-					not() %>%
-					which %>%
-					names 
-				
-				rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) %>% not()
-				
-				# Return
-				.data
-				
-			},
-			~ {
-				message("tidybulk says: the column .abundant already exists in colData. Nothing was done")
-				
-				# Return
-				(.)
-			}
-		)	
-
+browser()
+	
+	
+	# if(!is.null(factor_of_interest))
+	# 	factor_of_interest = enquo(factor_of_interest)
+	# 
+	# # Check factor_of_interest
+	# if(
+	# 	!is.null(factor_of_interest) && 
+	# 	quo_name(factor_of_interest) %in% colnames(colData(.data)) %>% not()
+	# )
+	# 	stop(sprintf("tidybulk says: the column %s is not present in colData", quo_name(factor_of_interest)))
+	# 
+	# 
+	# if (minimum_counts < 0)
+	# 	stop("The parameter minimum_counts must be > 0")
+	# if (minimum_proportion < 0 |	minimum_proportion > 1)
+	# 	stop("The parameter minimum_proportion must be between 0 and 1")
+	# 
+	# # If column is present use this instead of doing more work
+	# if(".abundant" %in% colnames(colData(.data))){
+	# 	message("tidybulk says: the column .abundant already exists in colData. Nothing was done")
+	# 	
+	# 	# Return
+	# 	return(.data)
+	# }
+	# 
+	# 			
+	# Check if factor_of_interest is continuous and exists
+	
+	#colData(.data) %>% as_tibble() %>% select(!!factor_of_interest)
+	
+	# string_factor_of_interest =
+	# 
+	# 	factor_of_interest %>%
+	# 	when(
+	# 		!is.null(factor_of_interest) &&
+	# 			quo_is_symbol(factor_of_interest) &&
+	# 			colData(.data)[, quo_name(factor_of_interest)] %>%
+	# 			class %in%
+	# 			c("numeric", "integer", "double") ~ {
+	# 				message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
+	# 				NULL
+	# 			},
+	# 		!is.null(factor_of_interest) &&
+	# 			quo_is_symbol(factor_of_interest) ~
+	# 			colData(.data)[, quo_name(factor_of_interest)],
+	# 		~ NULL
+	# 	)
+	# 
+	# # Get gene to exclude
+	# gene_to_exclude =
+	# 	.data %>%
+	# 	
+	# 	# Extract assay
+	# 	assays() %>%
+	# 	as.list() %>%
+	# 	.[[1]] %>%
+	# 	
+	# 	# Call edgeR
+	# 	edgeR::filterByExpr(
+	# 		min.count = minimum_counts,
+	# 		group = string_factor_of_interest,
+	# 		min.prop = minimum_proportion
+	# 	) %>%
+	# 	not() %>%
+	# 	which %>%
+	# 	names 
+	# 
+	# rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) %>% not()
+	# 
+	# # Return
+	# .data
 	
 }
 

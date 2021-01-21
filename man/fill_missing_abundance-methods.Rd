@@ -86,7 +86,7 @@ A `SummarizedExperiment` object
 fill_missing_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with new observations
 }
 \details{
-\lifecycle{maturing}
+\lifecycle{questioning}
 
 This function fills the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 }
