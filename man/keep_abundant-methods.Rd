@@ -52,9 +52,6 @@ keep_abundant(
 
 \S4method{keep_abundant}{SummarizedExperiment}(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
   factor_of_interest = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7
@@ -62,9 +59,6 @@ keep_abundant(
 
 \S4method{keep_abundant}{RangedSummarizedExperiment}(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
   factor_of_interest = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7
