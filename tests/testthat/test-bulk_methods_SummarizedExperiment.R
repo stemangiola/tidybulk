@@ -250,3 +250,19 @@ test_that("filter variable - no object",{
 	)
 
 })
+
+test_that("impute missing",{
+	
+	res =
+		input_df %>%
+		dplyr::slice(-1) %>%
+		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+		impute_missing_abundance(	~ condition	)
+	
+	expect_equal(	dplyr::pull(filter(res, b=="TNFRSF4" & a == "SRR1740034"), c),	203.5	)
+	
+	expect_equal(	ncol(res),	ncol(input_df)	)
+	
+	expect_equal(	nrow(res),	nrow(input_df)	)
+	
+})
