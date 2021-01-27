@@ -1087,85 +1087,73 @@ setMethod("keep_variable",
 {
 	
 	
-	# # Make col names
-	# .sample = enquo(.sample)
-	# .transcript = enquo(.transcript)
-	# .abundance = enquo(.abundance)
-	factor_of_interest = enquo(factor_of_interest)
+if(!is.null(factor_of_interest) && (factor_of_interest %>% is.character %>% not))
+	stop("tidybulk says: when using SummarizedExperiment as input the column name has to be passed in the form of character. We are working on this issue to allow the use of symbols instead.")
+
+
+	# Check factor_of_interest
+	if(
+		!is.null(factor_of_interest) &&
+		(factor_of_interest %in% colnames(colData(.data)) %>% not())
+	)
+		stop(sprintf("tidybulk says: the column %s is not present in colData", factor_of_interest))
+
+	if (minimum_counts < 0)
+		stop("The parameter minimum_counts must be > 0")
 	
-browser()
-	
-	
-	# if(!is.null(factor_of_interest))
-	# 	factor_of_interest = enquo(factor_of_interest)
-	# 
-	# # Check factor_of_interest
-	# if(
-	# 	!is.null(factor_of_interest) && 
-	# 	quo_name(factor_of_interest) %in% colnames(colData(.data)) %>% not()
-	# )
-	# 	stop(sprintf("tidybulk says: the column %s is not present in colData", quo_name(factor_of_interest)))
-	# 
-	# 
-	# if (minimum_counts < 0)
-	# 	stop("The parameter minimum_counts must be > 0")
-	# if (minimum_proportion < 0 |	minimum_proportion > 1)
-	# 	stop("The parameter minimum_proportion must be between 0 and 1")
-	# 
-	# # If column is present use this instead of doing more work
-	# if(".abundant" %in% colnames(colData(.data))){
-	# 	message("tidybulk says: the column .abundant already exists in colData. Nothing was done")
-	# 	
-	# 	# Return
-	# 	return(.data)
-	# }
-	# 
-	# 			
-	# Check if factor_of_interest is continuous and exists
-	
-	#colData(.data) %>% as_tibble() %>% select(!!factor_of_interest)
-	
-	# string_factor_of_interest =
-	# 
-	# 	factor_of_interest %>%
-	# 	when(
-	# 		!is.null(factor_of_interest) &&
-	# 			quo_is_symbol(factor_of_interest) &&
-	# 			colData(.data)[, quo_name(factor_of_interest)] %>%
-	# 			class %in%
-	# 			c("numeric", "integer", "double") ~ {
-	# 				message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
-	# 				NULL
-	# 			},
-	# 		!is.null(factor_of_interest) &&
-	# 			quo_is_symbol(factor_of_interest) ~
-	# 			colData(.data)[, quo_name(factor_of_interest)],
-	# 		~ NULL
-	# 	)
-	# 
-	# # Get gene to exclude
-	# gene_to_exclude =
-	# 	.data %>%
-	# 	
-	# 	# Extract assay
-	# 	assays() %>%
-	# 	as.list() %>%
-	# 	.[[1]] %>%
-	# 	
-	# 	# Call edgeR
-	# 	edgeR::filterByExpr(
-	# 		min.count = minimum_counts,
-	# 		group = string_factor_of_interest,
-	# 		min.prop = minimum_proportion
-	# 	) %>%
-	# 	not() %>%
-	# 	which %>%
-	# 	names 
-	# 
-	# rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) %>% not()
-	# 
-	# # Return
-	# .data
+	if (minimum_proportion < 0 |	minimum_proportion > 1)
+		stop("The parameter minimum_proportion must be between 0 and 1")
+
+	# If column is present use this instead of doing more work
+	if(".abundant" %in% colnames(colData(.data))){
+		message("tidybulk says: the column .abundant already exists in colData. Nothing was done")
+
+		# Return
+		return(.data)
+	}
+
+
+	string_factor_of_interest =
+
+		factor_of_interest %>%
+		when(
+			!is.null(factor_of_interest) &&
+				#quo_is_symbol(factor_of_interest) &&
+				colData(.data)[, factor_of_interest] %>%
+				class %in%
+				c("numeric", "integer", "double") ~ {
+					message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
+					NULL
+				},
+			!is.null(factor_of_interest) ~
+				#quo_is_symbol(factor_of_interest) ~
+				colData(.data)[, factor_of_interest],
+			~ NULL
+		)
+
+	# Get gene to exclude
+	gene_to_exclude =
+		.data %>%
+
+		# Extract assay
+		assays() %>%
+		as.list() %>%
+		.[[1]] %>%
+
+		# Call edgeR
+		edgeR::filterByExpr(
+			min.count = minimum_counts,
+			group = string_factor_of_interest,
+			min.prop = minimum_proportion
+		) %>%
+		not() %>%
+		which %>%
+		names
+
+	rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) %>% not()
+
+	# Return
+	.data
 	
 }
 
@@ -1203,14 +1191,12 @@ setMethod("identify_abundant",
 {
 	
 	
-	factor_of_interest = enquo(factor_of_interest)
-	
 	.data = 
 		.data %>%
 		
 		# Apply scale method
 		identify_abundant(
-			factor_of_interest = !!factor_of_interest,
+			factor_of_interest = factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion
 		) 
@@ -1244,96 +1230,82 @@ setMethod("keep_abundant",
 					.keep_abundant_se)
 
 
-
-
-.fill_missing_abundance_se = function(.data,
-																			.sample = NULL,
-																			.transcript= NULL,
-																			.abundance= NULL,
-																			fill_with) {
-	
-	# DEPRECATED maybe
-	#deprecate_warn("1.3.0", "tidybulk::fill_missing_abundance()")
-	
-	
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	
-	.data %>%
-		
-		# Convert to tidybulk
-		tidybulk() %>%
-		
-		# Apply scale method
-		fill_missing_abundance(
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			fill_with = fill_with
-		) %>%
-		
-		# Convert to SummaizedExperiment
-		tidybulk_to_SummarizedExperiment()
-	
-}
-
-#' fill_missing_abundance
-#' @inheritParams fill_missing_abundance
-#'
-#' @docType methods
-#' @rdname fill_missing_abundance-methods
-#'
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("fill_missing_abundance",
-					"SummarizedExperiment",
-					.fill_missing_abundance_se)
-
-#' fill_missing_abundance
-#' @inheritParams fill_missing_abundance
-#'
-#' @docType methods
-#' @rdname fill_missing_abundance-methods
-#'
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("fill_missing_abundance",
-					"RangedSummarizedExperiment",
-					.fill_missing_abundance_se)
-
-
-
 .impute_missing_abundance_se = function(.data,
 																				.formula) {
 
 
 	
-	# Get scaled abundance if present, otherwise get abundance
-	.abundance_scaled = NULL
-	if(
-		.data %>% get_tt_columns() %>% is.null %>% not() &&
-		".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
-		quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames) &&
-		quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) != quo_name(.abundance)
-	)
-		.abundance_scaled = get_tt_columns(.data)$.abundance_scaled
 	
-	# Validate data frame
-	if(do_validate())  validation(.data, !!.sample, !!.transcript, !!.abundance)
 	
-	.data_processed =
-		fill_NA_using_formula(
-			.data,
-			.formula,
-			.sample = !!.sample,
-			.transcript = !!.transcript,
-			.abundance = !!.abundance,
-			.abundance_scaled = !!.abundance_scaled) %>%
-		
-		# Reattach internals
-		reattach_internals(.data)
+	col_formula =
+		colData(.data) %>%
+		as_tibble() %>%
+		select(parse_formula(.formula)) %>%
+		distinct() %>%
+		select_if(function(x) is.character(x) | is.logical(x) | is.factor(x)) %>%
+		colnames
+	
+	# Create NAs for missing sample/transcript pair
+	assays(.data) = 
+		assays(.data) %>%
+		as.list() %>%
+		map(~{
+			.my_data = 
+				.x %>%
+				as.matrix() %>%
+				as_tibble(rownames = "transcript") %>%
+				gather(sample, abundance, -transcript) %>%
+				
+				# Attach annotation
+				left_join(
+					colData(.data) %>%
+						as_tibble(rownames="sample") %>%
+						select(sample, col_formula),
+					by="sample"
+				) 
+			
+			# Data used for filtering
+			NA_data = 
+				.my_data %>% 
+				filter(abundance %>% is.na) %>% 
+				select( transcript, col_formula) %>%
+				distinct()
+			
+			.data_OK = 
+				.my_data %>%
+				anti_join(NA_data, by = c("transcript", col_formula))
+			
+			
+			.data_FIXED = 
+				.my_data %>%
+				inner_join(NA_data, by = c("transcript", col_formula)) %>%
+				
+				# Group by covariate
+				nest(cov_data = -c(col_formula, transcript)) %>%
+				mutate(cov_data = map(cov_data, ~
+																.x %>%
+																mutate(abundance = 
+																			 	case_when(
+																			 		is.na(abundance) ~ median(abundance, na.rm=TRUE),	
+																			 		TRUE ~ abundance
+																			 	)
+																) %>%
+																
+																# Through warning if group of size 1
+																when(
+																	nrow(.) %>% st(2) ~ warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."), 
+																	~ (.)
+																)
+				)) %>%
+				unnest(cov_data) 
+			
+			.data_OK %>%
+				bind_rows(.data_FIXED) %>%
+				select(-col_formula) %>%
+				spread(sample, abundance) %>%
+				as_matrix(rownames = transcript)
+			
+		})
 	
 }
 
