@@ -558,7 +558,7 @@ remove_redundancy_elements_though_reduced_dimensions_SE <-
 #' @return A tibble with adjusted counts
 #'
 #'
-get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
+get_adjusted_counts_for_unwanted_variation_bulk_SE <- function(.data,
 																														.formula,
 																														sample_annotation,
 																														...) {
