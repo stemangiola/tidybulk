@@ -722,11 +722,8 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 #'
 #' @return A tibble with voom results
 #'
-<<<<<<< HEAD
-get_adjusted_counts_for_unwanted_variation_bulk_SE <- function(.data,
-=======
+
 get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
->>>>>>> add more methods
 																														.formula,
 																														sample_annotation,
 																														.contrasts = NULL,
