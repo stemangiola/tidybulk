@@ -389,28 +389,30 @@ setMethod("reduce_dimensions",
 																 dimension_1_column_rotated = NULL,
 																 dimension_2_column_rotated = NULL) {
 	# Parse other colnames
-	dimension_1_column = enquo(dimension_1_column)
-	dimension_2_column = enquo(dimension_2_column)
-	dimension_1_column_rotated = enquo(dimension_1_column_rotated)
-	dimension_2_column_rotated = enquo(dimension_2_column_rotated)
+	if(!is.null(dimension_1_column) && (dimension_1_column %>% is.character %>% not))
+		stop("tidybulk says: when using SummarizedExperiment as input the column name has to be passed in the form of character. We are working on this issue to allow the use of symbols instead.")
+	if(!is.null(dimension_1_column_rotated) && (dimension_1_column_rotated %>% is.character %>% not))
+		stop("tidybulk says: when using SummarizedExperiment as input the column name has to be passed in the form of character. We are working on this issue to allow the use of symbols instead.")
+	
 	
 	# Set default col names for rotated dimensions if not set
-	if (quo_is_null(dimension_1_column_rotated))
-		dimension_1_column_rotated = as.symbol(sprintf(
-			"%s rotated %s",
-			quo_name(dimension_1_column),
+	if (is.null(dimension_1_column_rotated))
+		dimension_1_column_rotated = sprintf(
+			"%s_rotated_%s",
+			dimension_1_column,
 			rotation_degrees
-		))
-	if (quo_is_null(dimension_2_column_rotated))
-		dimension_2_column_rotated = as.symbol(sprintf(
-			"%s rotated %s",
-			quo_name(dimension_2_column),
+		)
+	if (is.null(dimension_2_column_rotated))
+		dimension_2_column_rotated = sprintf(
+			"%s_rotated_%s",
+			dimension_2_column,
 			rotation_degrees
-		))
+		)
 	
 	# Sanity check of the angle selected
 	if (rotation_degrees %>% between(-360, 360) %>% not())
 		stop("tidybulk says: rotation_degrees must be between -360 and 360")
+
 	
 	# Return
 	my_rotated_dimensions = 
@@ -423,15 +425,15 @@ setMethod("reduce_dimensions",
 		) %>%
 		
 		# Select dimensions
-		.[,c(quo_name(dimension_1_column), quo_name(dimension_2_column))] %>%
+		.[,c(dimension_1_column, dimension_2_column)] %>%
 		as.matrix() %>%
 		t() %>%
 		rotation(rotation_degrees) %>%
 		t() %>%
 		as.data.frame() %>%
 		setNames(c(
-			quo_name(dimension_1_column_rotated),
-			quo_name(dimension_2_column_rotated)
+			dimension_1_column_rotated,
+			dimension_2_column_rotated
 		))
 
 	
@@ -1052,7 +1054,7 @@ setMethod(
 		keep_variable_transcripts_SE(top = top, log_transform = log_transform) %>%
 		
 		# Take gene names
-		rowname()
+		rownames()
 	
 	.data[variable_transcripts]
 	
@@ -1309,6 +1311,8 @@ setMethod("keep_abundant",
 				as_matrix(rownames = transcript)
 			
 		})
+	
+	.data
 	
 }
 

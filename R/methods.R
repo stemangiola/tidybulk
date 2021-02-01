@@ -845,13 +845,13 @@ setGeneric("rotate_dimensions", function(.data,
 	# Set default col names for rotated dimensions if not set
 	if (quo_is_null(dimension_1_column_rotated))
 		dimension_1_column_rotated = as.symbol(sprintf(
-			"%s rotated %s",
+			"%s_rotated_%s",
 			quo_name(dimension_1_column),
 			rotation_degrees
 		))
 	if (quo_is_null(dimension_2_column_rotated))
 		dimension_2_column_rotated = as.symbol(sprintf(
-			"%s rotated %s",
+			"%s_rotated_%s",
 			quo_name(dimension_2_column),
 			rotation_degrees
 		))

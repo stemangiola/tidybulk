@@ -28,9 +28,15 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 
 	res = tidybulk(tidybulk:::tidybulk_to_SummarizedExperiment(scale_abundance(tidybulk(se) %>% identify_abundant())))
 
+	res2 = tidybulk(se) %>% identify_abundant() %>% scale_abundance()
+	
+	res %>% distinct(sample, multiplier) %>% pull(multiplier)
+	res2 %>% distinct(sample, multiplier) %>% pull(multiplier)
+	
+	
 	expect_equal(
-		res[1:4,]$`counts_scaled`,
-		c(1796.091258, 1162.818960, 1216.046589,    2.729622),
+		res %>% distinct(sample, multiplier) %>% pull(multiplier),
+		res2 %>% distinct(sample, multiplier) %>% pull(multiplier) %>% as.numeric(),
 		tolerance=1e-3
 	)
 
@@ -91,14 +97,14 @@ test_that("Get rotated dimensions - SummarizedExperiment",{
 	res =
 		rotate_dimensions(
 			res.pca,
-			dimension_1_column = PC1,
-			dimension_2_column = PC2,
+			dimension_1_column = "PC1",
+			dimension_2_column = "PC2",
 			rotation_degrees = 45
 		)
 
 	expect_equal(
 		tail(names(SummarizedExperiment::colData(res)), 1),
-		"PC2.rotated.45"
+		"PC2_rotated_45"
 	)
 
 })
@@ -161,7 +167,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
 	res =		test_differential_abundance(
 		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>% 
-			identify_abundant(factor_of_interest = condition),	
+			identify_abundant(factor_of_interest = "condition"),	
 		~ condition	
 	)
 	
@@ -193,7 +199,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 	# Likelihood ratio
 	res2 =		test_differential_abundance(
 		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>%
-			identify_abundant(factor_of_interest = condition),	
+			identify_abundant(factor_of_interest = "condition"),	
 		~ condition, method = "edgeR_likelihood_ratio"	)
 	
 	res2_tibble =		test_differential_abundance(
@@ -259,10 +265,9 @@ test_that("impute missing",{
 		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
 		impute_missing_abundance(	~ condition	)
 	
-	expect_equal(	dplyr::pull(filter(res, b=="TNFRSF4" & a == "SRR1740034"), c),	203.5	)
+	expect_equal(	assays(res) %>% as.list() %>% .[[1]] %>% .["TNFRSF4", "SRR1740034"],	203.5	)
 	
-	expect_equal(	ncol(res),	ncol(input_df)	)
-	
-	expect_equal(	nrow(res),	nrow(input_df)	)
+
+	expect_equal(	nrow(res)*ncol(res),	nrow(input_df)	)
 	
 })

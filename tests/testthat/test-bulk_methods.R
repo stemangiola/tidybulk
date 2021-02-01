@@ -1336,7 +1336,7 @@ test_that("Only rotated dimensions - no object",{
 		)
 
 	expect_equal(
-		res$`PC1 rotated 45`,
+		res$`PC1_rotated_45`,
 		c(-9.450807, -9.739338,  8.853659,  2.741059,  7.595427),
 		tolerance=1e-1
 	)
@@ -1371,7 +1371,7 @@ test_that("Get rotated dimensions - no object",{
 		)
 
 	expect_equal(
-		res$`PC1 rotated 45`[1:4],
+		res$`PC1_rotated_45`[1:4],
 		c(  -9.450807, -9.739338 , 8.853659,  2.741059),
 		tolerance=1e-1
 	)
@@ -1410,7 +1410,7 @@ test_that("Add rotated dimensions - no object",{
 		)
 
 	expect_equal(
-		res$`PC1 rotated 45`[1:4],
+		res$`PC1_rotated_45`[1:4],
 		c( -9.450807 ,-9.450807, -9.450807 ,-9.450807),
 		tolerance=1e-1
 	)
