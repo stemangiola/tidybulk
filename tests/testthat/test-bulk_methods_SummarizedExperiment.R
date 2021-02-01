@@ -271,3 +271,87 @@ test_that("impute missing",{
 	expect_equal(	nrow(res)*ncol(res),	nrow(input_df)	)
 	
 })
+
+test_that("differential composition",{
+	
+	# Cibersort
+	input_df %>%
+		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+		test_differential_cellularity(. ~ condition	, cores = 1	) %>% 
+		pull(`estimate_(Intercept)`) %>%
+		.[[1]] %>%
+		as.integer %>%
+		expect_equal(	-2, 	tollerance =1e-3)
+	
+	# llsr
+	input_df %>%
+		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+	test_differential_cellularity(
+		. ~ condition,
+		method="llsr",
+		cores = 1
+	) %>% 
+		pull(`estimate_(Intercept)`) %>%
+		.[[1]] %>%
+		as.integer %>%
+		expect_equal(	-2, 	tollerance =1e-3)
+	
+	# Survival analyses
+	input_df %>%
+		select(a, b, c) %>%
+		nest(data = -a) %>%
+		mutate(
+			days = c(1, 10, 500, 1000, 2000),
+			dead = c(1, 1, 1, 0, 1)
+		) %>%
+		unnest(data) %>%
+		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+		test_differential_cellularity(
+			survival::Surv(days, dead) ~ .,
+			cores = 1
+		) %>%
+		pull(estimate) %>%
+		.[[1]] %>%
+		expect_equal(96.5, tolerance  =1e-1)
+	
+})
+
+# test_that("Get gene enrichment - no object",{
+# 	
+# 	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
+# 		message("Installing EGSEA needed for differential transcript abundance analyses")
+# 		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos = "https://cloud.r-project.org")
+# 		BiocManager::install("EGSEA")
+# 	}
+# 	
+# 	library(EGSEA)
+# 	
+# 	res =
+# 		aggregate_duplicates(
+# 			dplyr::rename(symbol_to_entrez(
+# 				#dplyr::filter(input_df, grepl("^B", b)),
+# 				input_df,
+# 				.transcript = b, .sample = a), d = entrez
+# 			),
+# 			.transcript = d,
+# 			.sample = a,
+# 			.abundance = c
+# 		) %>% identify_abundant(a, b, c, factor_of_interest = condition) %>%
+# 		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+# 		test_gene_enrichment(
+# 			~ condition,
+# 			.entrez = d,
+# 			species="human"
+# 		)
+# 	
+# 	expect_equal(
+# 		res$pathway[1:4],
+# 		c("GNF2_HCK"    ,  "GSE10325_LUPUS_BCELL_VS_LUPUS_MYELOID_DN"   ,"Amino sugar and nucleotide sugar metabolism", "Phagosome"  )
+# 	)
+# 	
+# 	expect_equal(
+# 		ncol(res),
+# 		20
+# 	)
+# 	
+# })

@@ -1235,6 +1235,432 @@ setMethod("keep_abundant",
 					.keep_abundant_se)
 
 
+
+#' analyse gene enrichment with EGSEA
+#'
+#' \lifecycle{maturing}
+#'
+#' @description test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name test_gene_enrichment
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .formula A formula with no response variable, representing the desired linear model
+#' @param .entrez The ENTREZ ID of the transcripts/genes
+#' @param .contrasts = NULL,
+#' @param method A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.
+#' @param species A character. For example, human or mouse
+#' @param cores An integer. The number of cores available
+#'
+#'
+#' @details This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
+#'
+#'
+#' dge =
+#' 	data %>%
+#' 	keep_abundant(
+#' 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
+#' 		!!.sample, !!.entrez, !!.abundance
+#' 	) %>%
+#'
+#' 	# Make sure transcript names are adjacent
+#' 	[...] %>%
+#' 	as_matrix(rownames = !!.entrez) %>%
+#' 	edgeR::DGEList(counts = .)
+#'
+#' idx =  buildIdx(entrezIDs = rownames(dge), species = species)
+#'
+#' dge %>%
+#'
+#' 	# Calculate weights
+#' 	limma::voom(design, plot = FALSE) %>%
+#'
+#' 	# Execute EGSEA
+#' 	egsea(
+#' 		contrasts = my_contrasts,
+#' 		baseGSEAs = method,
+#' 		sort.by = "med.rank",
+#' 		num.threads = cores,
+#' 		report = FALSE
+#' 	)
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#' \dontrun{
+#'
+#' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+#' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+#'
+#' library("EGSEA")
+#'
+#' 	test_gene_enrichment(
+#'			df_entrez,
+#'			~ condition,
+#'			.sample = sample,
+#'			.entrez = entrez,
+#'			.abundance = count,
+#'       method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+#'			species="human",
+#'			cores = 2
+#'		)
+#'
+#'}
+#'
+#' @docType methods
+#' @rdname test_gene_enrichment-methods
+#' @export
+#'
+#'
+
+
+# Set internal
+.test_gene_enrichment_SE = 		function(.data,
+																	 .formula,
+																	 .entrez = NULL,
+																	 .contrasts = NULL,
+																	 method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																	 species,
+																	 cores = 10)	{
+	
+
+	.entrez = enquo(.entrez)
+
+	# For use within when
+	.my_data = .data
+	
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
+	
+	# Check if at least two samples for each group
+	if (.data %>%
+			colData %>%
+			as_tibble(rownames = "sample") %>%
+			count(!!as.symbol(parse_formula(.formula))) %>%
+			distinct(n) %>%
+			pull(n) %>%
+			min %>%
+			st(2))
+		stop("tidybulk says: You need at least two replicated for each condition for EGSEA to work")
+	
+	
+	# Create design matrix
+	design =	model.matrix(	object = .formula,	data = .data %>% colData() 	)
+	
+	# Print the design column names in case I want contrasts
+	message(
+		sprintf(
+			"tidybulk says: The design column names are \"%s\"",
+			design %>% colnames %>% paste(collapse = ", ")
+		)
+	)
+	
+	my_contrasts =
+		.contrasts %>%
+		when(
+			length(.) > 0 ~ limma::makeContrasts(contrasts = .x, levels = design),
+			~ NULL
+			)
+	
+	# Check if package is installed, otherwise install
+	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
+		stop("
+				 EGSEA not installed. Please install it. EGSEA require manual installation for not overwelming the user in case it is not needed.
+				 BiocManager::install(\"EGSEA\", ask = FALSE)
+				 ")
+	}
+	if (!"EGSEA" %in% (.packages())) {
+		stop("EGSEA package not loaded. Please run library(\"EGSEA\"). With this setup, EGSEA require manual loading, for technical reasons.")
+	}
+	
+	dge =
+		.data %>%
+		assays() %>%
+		as.list() %>%
+		.[[1]] %>%
+		as.matrix %>%
+		
+		# Change rownames to entrez
+		when(
+			quo_is_null(.entrez) %>% `!` ~ {
+				x = (.)
+				rownames(x) = 
+					.my_data %>% 
+					rowData() %>% 
+					as_tibble() %>% 
+					pull(!!.entrez) 
+				x
+			}, 
+			~ (.)
+		) %>%
+		
+		# Filter missing entrez
+		.[rownames(.) %>% is.na %>% not, ] %>%
+		
+		# # Make sure transcript names are adjacent
+		# arrange(!!.entrez) %>%
+		
+		# select(!!.sample, !!.entrez, !!.abundance) %>%
+		# spread(!!.sample,!!.abundance) %>%
+		# as_matrix(rownames = !!.entrez) %>%
+		edgeR::DGEList(counts = .)
+	
+	idx =  buildIdx(entrezIDs = rownames(dge), species = species)
+	
+	# Due to a bug in kegg, this data set is run without report
+	# http://supportupgrade.bioconductor.org/p/122172/#122218
+	message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
+	
+	res_kegg =
+		dge %>%
+		
+		# Calculate weights
+		limma::voom(design, plot = FALSE) %>%
+		
+		# Execute EGSEA
+		egsea(
+			contrasts = my_contrasts,
+			gs.annots = idx %>% .["kegg"],
+			baseGSEAs = method,
+			sort.by = "med.rank",
+			num.threads = cores,
+			report = FALSE
+		)
+	
+	res_formatted_kegg =
+		res_kegg@results %>%
+		map2_dfr(
+			(.) %>% names,
+			~ .x[[1]][[1]] %>%
+				as_tibble(rownames = "pathway") %>%
+				mutate(data_base = .y)
+		) %>%
+		arrange(med.rank) %>%
+		select(data_base, pathway, everything())
+	
+	res =
+		dge %>%
+		
+		# Calculate weights
+		limma::voom(design, plot = FALSE) %>%
+		
+		# Execute EGSEA
+		egsea(
+			contrasts = my_contrasts,
+			gs.annots = idx[which(names(idx)!="kegg")],
+			baseGSEAs = method,
+			sort.by = "med.rank",
+			num.threads = cores,
+		)
+	
+	res_formatted_all =
+		res@results %>%
+		map2_dfr(
+			(.) %>% names,
+			~ .x[[1]][[1]] %>%
+				as_tibble(rownames = "pathway") %>%
+				mutate(data_base = .y)
+		) %>%
+		arrange(med.rank) %>%
+		select(data_base, pathway, everything())
+	
+	
+	bind_rows(res_formatted_all, res_formatted_kegg)
+	
+	
+}
+
+#' test_gene_enrichment
+#' @inheritParams test_gene_enrichment
+#'
+#' @docType methods
+#' @rdname test_gene_enrichment-methods
+#'
+#' @return A `tbl` object
+setMethod("test_gene_enrichment",
+					"spec_tbl_df",
+					.test_gene_enrichment)
+
+#' test_gene_enrichment
+#' @inheritParams test_gene_enrichment
+#'
+#' @docType methods
+#' @rdname test_gene_enrichment-methods
+#'
+#' @return A `tbl` object
+setMethod("test_gene_enrichment",
+					"tbl_df",
+					.test_gene_enrichment)
+
+#' test_gene_enrichment
+#' @inheritParams test_gene_enrichment
+#'
+#' @docType methods
+#' @rdname test_gene_enrichment-methods
+#'
+#' @return A `tbl` object
+setMethod("test_gene_enrichment",
+					"tidybulk",
+					.test_gene_enrichment)
+
+#' analyse gene over-representation with GSEA
+#'
+#' \lifecycle{maturing}
+#'
+#' @description test_gene_overrepresentation() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
+#'
+#' @importFrom rlang enquo
+#' @importFrom rlang quo_is_missing
+#' @importFrom magrittr "%>%"
+#'
+#' @name test_gene_overrepresentation
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#' @param .entrez The ENTREZ ID of the transcripts/genes
+#' @param .do_test A boolean column name symbol. It indicates the transcript to check
+#' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
+#' @param gene_set A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
+#'
+#' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
+#' This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
+#'
+#' Undelying method:
+#'  msigdbr::msigdbr(species = species) %>%#'
+#' 	nest(data = -gs_cat) %>%
+#' 	mutate(test =
+#' 			map(
+#' 				data,
+#' 				~ clusterProfiler::enricher(
+#' 					my_entrez_rank,
+#' 				 	TERM2GENE=.x %>% select(gs_name, entrez_gene),
+#' 					pvalueCutoff = 1
+#' 					) %>%	as_tibble
+#' 			))
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+#' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+#' df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+#'
+#' 	test_gene_overrepresentation(
+#' 		df_entrez,
+#' 		.sample = sample,
+#' 		.entrez = entrez,
+#' 		.do_test = do_test,
+#' 		species="Homo sapiens",
+#'    gene_set=c("C2")
+#' 	)
+#'
+#'
+#' @docType methods
+#' @rdname test_gene_overrepresentation-methods
+#' @export
+#'
+#'
+setGeneric("test_gene_overrepresentation", function(.data,
+																										.sample = NULL,
+																										.entrez,
+																										.do_test,
+																										species,
+																										gene_set = NULL)
+	standardGeneric("test_gene_overrepresentation"))
+
+# Set internal
+.test_gene_overrepresentation = 		function(.data,
+																					 .sample = NULL,
+																					 .entrez,
+																					 .do_test,
+																					 species,
+																					 gene_set = NULL)	{
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
+	
+	# Get column names
+	.sample = enquo(.sample)
+	.sample =  get_sample(.data, .sample)$.sample
+	.do_test = enquo(.do_test)
+	.entrez = enquo(.entrez)
+	
+	# Check if entrez is set
+	if(quo_is_missing(.entrez))
+		stop("tidybulk says: the .entrez parameter appears to no be set")
+	
+	# Check column type
+	if (.data %>% distinct(!!.do_test) %>% sapply(class) %in% c("logical") %>% not() %>% any)
+		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
+	
+	# Check packages msigdbr
+	# Check if package is installed, otherwise install
+	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
+		message("msigdbr not installed. Installing.")
+		BiocManager::install("msigdbr", ask = FALSE)
+	}
+	
+	# Check is correct species name
+	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+	
+	.data %>%
+		#filter(!!.entrez %in% unique(m_df$entrez_gene)) %>%
+		filter(!!.do_test) %>%
+		distinct(!!.entrez) %>%
+		pull(!!.entrez) %>%
+		entrez_rank_to_gsea(species, gene_set = gene_set)
+	
+	
+}
+
+#' test_gene_overrepresentation
+#' @inheritParams test_gene_overrepresentation
+#'
+#' @docType methods
+#' @rdname test_gene_overrepresentation-methods
+#'
+#' @return A `tbl` object
+setMethod("test_gene_overrepresentation",
+					"spec_tbl_df",
+					.test_gene_overrepresentation)
+
+#' test_gene_overrepresentation
+#' @inheritParams test_gene_overrepresentation
+#'
+#' @docType methods
+#' @rdname test_gene_overrepresentation-methods
+#'
+#' @return A `tbl` object
+setMethod("test_gene_overrepresentation",
+					"tbl_df",
+					.test_gene_overrepresentation)
+
+#' test_gene_overrepresentation
+#' @inheritParams test_gene_overrepresentation
+#'
+#' @docType methods
+#' @rdname test_gene_overrepresentation-methods
+#'
+#' @return A `tbl` object
+setMethod("test_gene_overrepresentation",
+					"tidybulk",
+					.test_gene_overrepresentation)
+
+
 .impute_missing_abundance_se = function(.data,
 																				.formula) {
 
@@ -1367,6 +1793,7 @@ setMethod("impute_missing_abundance",
 	
 	min_detected_proportion = 
 		deconvoluted %>%
+		as_tibble(rownames = "sample") %>%
 		select(starts_with(method)) %>%
 		gather(cell_type, prop) %>%
 		filter(prop > 0) %>%
@@ -1398,7 +1825,7 @@ setMethod("impute_missing_abundance",
 						as.formula
 					
 					# Test
-					univariable_differential_tissue_composition(deconvoluted,
+					univariable_differential_tissue_composition_SE(deconvoluted,
 																											method,
 																											.my_formula,
 																											min_detected_proportion) %>%
@@ -1442,7 +1869,7 @@ setMethod("impute_missing_abundance",
 					as.formula
 				
 				# Test
-				multivariable_differential_tissue_composition(deconvoluted,
+				multivariable_differential_tissue_composition_SE(deconvoluted,
 																											method,
 																											.my_formula,
 																											min_detected_proportion) %>%
@@ -1491,5 +1918,25 @@ setMethod(
 )
 
 
+#' get_bibliography
+#' @inheritParams get_bibliography
+#'
+#' @docType methods
+#' @rdname get_bibliography-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("get_bibliography",
+					"SummarizedExperiment",
+					.get_bibliography)
 
+#' get_bibliography
+#' @inheritParams get_bibliography
+#'
+#' @docType methods
+#' @rdname get_bibliography-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("get_bibliography",
+					"RangedSummarizedExperiment",
+					.get_bibliography)
 

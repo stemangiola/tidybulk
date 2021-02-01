@@ -985,3 +985,136 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 	
 
 }
+
+#' @importFrom stringr str_remove
+#' @importFrom stringr str_replace_all
+#' 
+multivariable_differential_tissue_composition_SE = function(
+	deconvoluted, 
+	method, 
+	.my_formula,
+	min_detected_proportion
+){
+	results_regression = 
+		deconvoluted %>%
+		as_tibble(rownames = "sample") %>%
+		
+		# Replace 0s - before
+		mutate(across(starts_with(method), function(.x) if_else(.x==0, min_detected_proportion, .x))) %>%
+		mutate(across(starts_with(method), boot::logit)) %>%
+		
+		# Rename columns - after
+		setNames(
+			str_remove(colnames(.), sprintf("%s:", method)) %>%
+				str_replace_all("[ \\(\\)]", "___")
+		) %>%
+		
+		# Beta or Cox
+		when(
+			grepl("Surv", .my_formula) %>% any ~ {
+				# Check if package is installed, otherwise install
+				if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing betareg needed for analyses")
+					install.packages("survival", repos = "https://cloud.r-project.org")
+				}
+				
+				if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing boot needed for analyses")
+					install.packages("boot", repos = "https://cloud.r-project.org")
+				}
+				
+				(.) %>%
+					survival::coxph(.my_formula, .)	%>%
+					broom::tidy() 
+			} ,
+			~ {
+				(.) %>%
+					lm(.my_formula, .) %>%
+					broom::tidy() %>%
+					filter(term != "(Intercept)") 
+			}
+		) 
+	
+	# Join results
+	deconvoluted %>% 
+		pivot_longer(
+			names_prefix = sprintf("%s: ", method),
+			cols = starts_with(method),
+			names_to = ".cell_type", 
+			values_to = ".proportion"
+		) %>%
+		tidyr::nest(cell_type_proportions = -.cell_type) %>%
+		bind_cols(
+			results_regression %>% 
+				select(-term)
+		) 
+}
+
+univariable_differential_tissue_composition_SE = function(
+	deconvoluted, 
+	method, 
+	.my_formula,
+	min_detected_proportion
+){
+	deconvoluted %>%
+		as_tibble(rownames = "sample") %>%
+		
+		# Test
+		pivot_longer(
+			names_prefix = sprintf("%s: ", method),
+			cols = starts_with(method),
+			names_to = ".cell_type",
+			values_to = ".proportion"
+		) %>%
+		
+		# Replace 0s
+		mutate(.proportion_0_corrected = if_else(.proportion==0, min_detected_proportion, .proportion)) %>%
+		
+		# Test survival
+		tidyr::nest(cell_type_proportions = -.cell_type) %>%
+		mutate(surv_test = map(
+			cell_type_proportions,
+			~ {
+				if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
+				
+				# See if regression if censored or not
+				.x %>%
+					when(
+						grepl("Surv", .my_formula) %>% any ~ {
+							# Check if package is installed, otherwise install
+							if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
+								message("Installing betareg needed for analyses")
+								install.packages("survival", repos = "https://cloud.r-project.org")
+							}
+							
+							if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
+								message("Installing boot needed for analyses")
+								install.packages("boot", repos = "https://cloud.r-project.org")
+							}
+							
+							(.) %>%
+								mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
+								survival::coxph(.my_formula, .)	%>%
+								broom::tidy() %>%
+								select(-term)
+						} ,
+						~ {
+							# Check if package is installed, otherwise install
+							if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
+								message("Installing betareg needed for analyses")
+								install.packages("betareg", repos = "https://cloud.r-project.org")
+							}
+							(.) %>%
+								betareg::betareg(.my_formula, .) %>%
+								broom::tidy() %>%
+								filter(component != "precision") %>%
+								pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
+								select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
+								select(-component)
+						}
+					)
+			}
+		)) %>%
+		
+		unnest(surv_test, keep_empty = TRUE) 
+}

@@ -771,15 +771,15 @@ test_that("Get entrez from symbol - no object",{
 })
 
 # test_that("Get gene enrichment - no object",{
-#
+# 
 # 	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
 # 		message("Installing EGSEA needed for differential transcript abundance analyses")
 # 		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos = "https://cloud.r-project.org")
 # 		BiocManager::install("EGSEA")
 # 	}
-#
+# 
 # 	library(EGSEA)
-#
+# 
 # 	res =
 # 		test_gene_enrichment(
 # 			aggregate_duplicates(
@@ -798,17 +798,17 @@ test_that("Get entrez from symbol - no object",{
 # 			.abundance = c,
 # 			species="human"
 # 		)
-#
+# 
 # 	expect_equal(
 # 		res$pathway[1:4],
 # 		c("GNF2_HCK"    ,  "GSE10325_LUPUS_BCELL_VS_LUPUS_MYELOID_DN"   ,"Amino sugar and nucleotide sugar metabolism", "Phagosome"  )
 # 	)
-#
+# 
 # 	expect_equal(
 # 		ncol(res),
 # 		20
 # 	)
-#
+# 
 # })
 #
 
