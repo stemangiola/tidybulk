@@ -157,7 +157,7 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 
 })
 
-test_that("Add differential trancript abundance - SummarizedExperiment",{
+test_that("differential trancript abundance - SummarizedExperiment",{
 
 	res =		test_differential_abundance(
 		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>% 
