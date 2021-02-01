@@ -722,7 +722,6 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 #'
 #' @return A tibble with voom results
 #'
-
 get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 																														.formula,
 																														sample_annotation,
@@ -853,7 +852,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 			)) 
 	)
 
-	
+
 }
 
 
