@@ -2799,19 +2799,21 @@ setMethod("test_gene_enrichment",
 #'
 #'
 setGeneric("test_gene_overrepresentation", function(.data,
-																										.sample = NULL,
 																										.entrez,
 																										.do_test,
 																										species,
+																										.sample = NULL,
+																										
 																										gene_set = NULL)
 	standardGeneric("test_gene_overrepresentation"))
 
 # Set internal
 .test_gene_overrepresentation = 		function(.data,
-																					 .sample = NULL,
 																					 .entrez,
 																					 .do_test,
 																					 species,
+																					 .sample = NULL,
+																					 
 																					 gene_set = NULL)	{
 
 	# Comply with CRAN NOTES
@@ -2859,7 +2861,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
 #'
-#' @return A `tbl` object
+#' @return A `spec_tbl_df` object
 setMethod("test_gene_overrepresentation",
 					"spec_tbl_df",
 					.test_gene_overrepresentation)
@@ -2870,7 +2872,7 @@ setMethod("test_gene_overrepresentation",
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
 #'
-#' @return A `tbl` object
+#' @return A `tbl_df` object
 setMethod("test_gene_overrepresentation",
 					"tbl_df",
 					.test_gene_overrepresentation)
@@ -2881,7 +2883,7 @@ setMethod("test_gene_overrepresentation",
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
 #'
-#' @return A `tbl` object
+#' @return A `tidybulk` object
 setMethod("test_gene_overrepresentation",
 					"tidybulk",
 					.test_gene_overrepresentation)

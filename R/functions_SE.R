@@ -1037,6 +1037,7 @@ multivariable_differential_tissue_composition_SE = function(
 	
 	# Join results
 	deconvoluted %>% 
+		as_tibble(rownames = "sample") %>%
 		pivot_longer(
 			names_prefix = sprintf("%s: ", method),
 			cols = starts_with(method),

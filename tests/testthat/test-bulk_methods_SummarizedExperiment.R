@@ -298,7 +298,7 @@ test_that("differential composition",{
 	
 	# Survival analyses
 	input_df %>%
-		select(a, b, c) %>%
+		dplyr::select(a, b, c) %>%
 		nest(data = -a) %>%
 		mutate(
 			days = c(1, 10, 500, 1000, 2000),
@@ -355,3 +355,24 @@ test_that("differential composition",{
 # 	)
 # 	
 # })
+
+test_that("gene over representation",{
+	
+	df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+	df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+	
+	res =
+		df_entrez %>%
+		tidybulk:::tidybulk_to_SummarizedExperiment(sample, transcript, count) %>%
+		test_gene_overrepresentation(
+			.entrez = entrez,
+			.do_test = do_test,
+			species="Homo sapiens"
+		)
+	
+	expect_equal(	ncol(res),	10	)
+	
+	
+	
+})

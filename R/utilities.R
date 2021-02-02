@@ -1145,8 +1145,13 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 
 		# Drop if transcript have missing value
 		drop_na() %>%
-		#eliminate_sparse_transcripts(!!.transcript) %>%
 
+		# If I don't have any transcript with all samples give meaningful error
+		when(
+			nrow(.) == 0 ~ stop("tidybulk says: you don't have any transcript that is in all samples. Please consider using impute_missing_abundance."),
+			~ (.)
+		) %>%
+		
 		# Call edgeR
 		as_matrix(rownames = !!.transcript) %>%
 		edgeR::filterByExpr(
