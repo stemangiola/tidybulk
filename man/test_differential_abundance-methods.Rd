@@ -77,33 +77,21 @@ test_differential_abundance(
 \S4method{test_differential_abundance}{SummarizedExperiment}(
   .data,
   .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  prefix = "",
-  action = "add",
-  significance_threshold = NULL,
-  fill_missing_values = NULL
+  prefix = ""
 )
 
 \S4method{test_differential_abundance}{RangedSummarizedExperiment}(
   .data,
   .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  prefix = "",
-  action = "add",
-  significance_threshold = NULL,
-  fill_missing_values = NULL
+  prefix = ""
 )
 }
 \arguments{

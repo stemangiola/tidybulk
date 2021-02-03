@@ -266,13 +266,15 @@ add_tt_columns = function(.data,
                           .sample,
                           .transcript,
                           .abundance,
-                          .abundance_scaled = NULL){
+                          .abundance_scaled = NULL,
+													.abundance_adjusted = NULL){
 
   # Make col names
   .sample = enquo(.sample)
   .transcript = enquo(.transcript)
   .abundance = enquo(.abundance)
   .abundance_scaled = enquo(.abundance_scaled)
+  .abundance_adjusted = enquo(.abundance_adjusted)
 
   # Add tt_columns
   .data %>% attach_to_internals(
@@ -286,7 +288,12 @@ add_tt_columns = function(.data,
     ifelse_pipe(
       .abundance_scaled %>% quo_is_symbol,
       ~ .x %>% c(		list(.abundance_scaled = .abundance_scaled))
-    ),
+    ) %>%
+    	
+  	ifelse_pipe(
+  		.abundance_adjusted %>% quo_is_symbol,
+  		~ .x %>% c(		list(.abundance_adjusted = .abundance_adjusted))
+  	),
     "tt_columns"
   )
 
@@ -1138,8 +1145,13 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 
 		# Drop if transcript have missing value
 		drop_na() %>%
-		#eliminate_sparse_transcripts(!!.transcript) %>%
 
+		# If I don't have any transcript with all samples give meaningful error
+		when(
+			nrow(.) == 0 ~ stop("tidybulk says: you don't have any transcript that is in all samples. Please consider using impute_missing_abundance."),
+			~ (.)
+		) %>%
+		
 		# Call edgeR
 		as_matrix(rownames = !!.transcript) %>%
 		edgeR::filterByExpr(
@@ -1184,26 +1196,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
  
-	# factor_of_interest = enquo(factor_of_interest)
-
 	error_if_log_transformed(.data,!!.abundance)
-
-	# # Get list of low transcribed genes
-	# gene_to_exclude <-
-	# 	add_scaled_counts_bulk.get_low_expressed(
-	# 		.data %>%
-	# 			filter(!!.sample != "reference"),!!.sample,!!.transcript,!!.abundance,
-	# 		factor_of_interest = !!factor_of_interest,
-	# 		minimum_counts = minimum_counts,
-	# 		minimum_proportion = minimum_proportion
-	# 	)
-
-	# # Check if transcript after filtering is 0
-	# if (length(gene_to_exclude) == .data %>%
-	# 		dplyr::distinct(!!.transcript) %>%
-	# 		nrow()) {
-	# 	stop("The gene expression matrix has been filtered completely for lowly expressed genes")
-	# }
 
 	# Get data frame for the highly transcribed transcripts
 	df.filt <-
@@ -1483,4 +1476,13 @@ univariable_differential_tissue_stratification = function(
 		)) %>%
 		
 		unnest(surv_test, keep_empty = TRUE) 
+}
+
+# Function that rotates a 2D space of a arbitrary angle
+rotation = function(m, d) {
+	r = d * pi / 180
+	((dplyr::bind_rows(
+		c(`1` = cos(r), `2` = -sin(r)),
+		c(`1` = sin(r), `2` = cos(r))
+	) %>% as_matrix) %*% m)
 }

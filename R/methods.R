@@ -845,13 +845,13 @@ setGeneric("rotate_dimensions", function(.data,
 	# Set default col names for rotated dimensions if not set
 	if (quo_is_null(dimension_1_column_rotated))
 		dimension_1_column_rotated = as.symbol(sprintf(
-			"%s rotated %s",
+			"%s_rotated_%s",
 			quo_name(dimension_1_column),
 			rotation_degrees
 		))
 	if (quo_is_null(dimension_2_column_rotated))
 		dimension_2_column_rotated = as.symbol(sprintf(
-			"%s rotated %s",
+			"%s_rotated_%s",
 			quo_name(dimension_2_column),
 			rotation_degrees
 		))
@@ -2799,19 +2799,21 @@ setMethod("test_gene_enrichment",
 #'
 #'
 setGeneric("test_gene_overrepresentation", function(.data,
-																										.sample = NULL,
 																										.entrez,
 																										.do_test,
 																										species,
+																										.sample = NULL,
+																										
 																										gene_set = NULL)
 	standardGeneric("test_gene_overrepresentation"))
 
 # Set internal
 .test_gene_overrepresentation = 		function(.data,
-																					 .sample = NULL,
 																					 .entrez,
 																					 .do_test,
 																					 species,
+																					 .sample = NULL,
+																					 
 																					 gene_set = NULL)	{
 
 	# Comply with CRAN NOTES
@@ -2859,7 +2861,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
 #'
-#' @return A `tbl` object
+#' @return A `spec_tbl_df` object
 setMethod("test_gene_overrepresentation",
 					"spec_tbl_df",
 					.test_gene_overrepresentation)
@@ -2870,7 +2872,7 @@ setMethod("test_gene_overrepresentation",
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
 #'
-#' @return A `tbl` object
+#' @return A `tbl_df` object
 setMethod("test_gene_overrepresentation",
 					"tbl_df",
 					.test_gene_overrepresentation)
@@ -2881,7 +2883,7 @@ setMethod("test_gene_overrepresentation",
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
 #'
-#' @return A `tbl` object
+#' @return A `tidybulk` object
 setMethod("test_gene_overrepresentation",
 					"tidybulk",
 					.test_gene_overrepresentation)
@@ -3080,7 +3082,7 @@ setMethod("pivot_transcript",
 
 #' Fill transcript abundance if missing from sample-transcript pairs
 #'
-#' \lifecycle{maturing}
+#' \lifecycle{questioning}
 #'
 #' @description fill_missing_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with new observations
 #'
@@ -3127,6 +3129,9 @@ setGeneric("fill_missing_abundance", function(.data,
 													.abundance= NULL,
 													fill_with)
 {
+	
+	
+	
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)

@@ -54,27 +54,9 @@ scale_abundance(
   reference_selection_function = NULL
 )
 
-\S4method{scale_abundance}{SummarizedExperiment}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "TMM",
-  reference_sample = NULL,
-  action = "add",
-  reference_selection_function = NULL
-)
+\S4method{scale_abundance}{SummarizedExperiment}(.data, method = "TMM", reference_sample = NULL)
 
-\S4method{scale_abundance}{RangedSummarizedExperiment}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "TMM",
-  reference_sample = NULL,
-  action = "add",
-  reference_selection_function = NULL
-)
+\S4method{scale_abundance}{RangedSummarizedExperiment}(.data, method = "TMM", reference_sample = NULL)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
