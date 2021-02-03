@@ -290,6 +290,8 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 		# Comply with CRAN NOTES
 		. = NULL
 		
+		# To avoid dplyr complications
+		
 		
 		# Evaluate ...
 		arguments <- list(...)
@@ -318,14 +320,22 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 			stop("tidybulk says: You don't have enough samples to run tSNE")
 		
 		# Calculate the most variable genes, from plotMDS Limma
-		do.call(Rtsne::Rtsne, c(list(.data), arguments)) %$%
-			Y %>%
-			as_tibble(.name_repair = "minimal") %>%
-			setNames(c("tSNE1", "tSNE2")) %>%
-			
-			# add element name
-			dplyr::mutate(!!.element := .data %>% rownames) %>%
-			select(!!.element, everything()) 
+		tsne_obj = 
+			do.call(Rtsne::Rtsne, c(list(t(.data)), arguments)) 
+		
+		
+		
+		list(
+			raw_result = tsne_obj,
+			result = tsne_obj %$%
+				Y %>%
+				as_tibble(.name_repair = "minimal") %>%
+				setNames(c("tSNE1", "tSNE2")) %>%
+				
+				# add element name
+				dplyr::mutate(sample = !!.data %>% colnames) %>%
+				select(sample, everything()) 
+		)
 		
 	}
 

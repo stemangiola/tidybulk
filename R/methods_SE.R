@@ -476,6 +476,9 @@ setMethod("rotate_dimensions",
 
 
 .remove_redundancy_se = function(.data,
+																 .element = NULL,
+																 .feature = NULL,
+																 .abundance = NULL,
 																 method,
 																 of_samples = TRUE,
 																 correlation_threshold = 0.9,
