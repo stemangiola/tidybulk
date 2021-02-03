@@ -385,29 +385,32 @@ setMethod("reduce_dimensions",
 																 dimension_1_column,
 																 dimension_2_column,
 																 rotation_degrees,
+																 .element = NULL,
+																 
 																 of_samples = TRUE,
 																 dimension_1_column_rotated = NULL,
-																 dimension_2_column_rotated = NULL) {
+																 dimension_2_column_rotated = NULL,
+																 action = "add") {
+
 	# Parse other colnames
-	if(!is.null(dimension_1_column) && (dimension_1_column %>% is.character %>% not))
-		stop("tidybulk says: when using SummarizedExperiment as input the column name has to be passed in the form of character. We are working on this issue to allow the use of symbols instead.")
-	if(!is.null(dimension_1_column_rotated) && (dimension_1_column_rotated %>% is.character %>% not))
-		stop("tidybulk says: when using SummarizedExperiment as input the column name has to be passed in the form of character. We are working on this issue to allow the use of symbols instead.")
-	
+	dimension_1_column = enquo(dimension_1_column)
+	dimension_2_column = enquo(dimension_2_column)
+	dimension_1_column_rotated = enquo(dimension_1_column_rotated)
+	dimension_2_column_rotated = enquo(dimension_2_column_rotated)
 	
 	# Set default col names for rotated dimensions if not set
-	if (is.null(dimension_1_column_rotated))
-		dimension_1_column_rotated = sprintf(
+	if (quo_is_null(dimension_1_column_rotated))
+		dimension_1_column_rotated = as.symbol(sprintf(
 			"%s_rotated_%s",
-			dimension_1_column,
+			quo_name(dimension_1_column),
 			rotation_degrees
-		)
-	if (is.null(dimension_2_column_rotated))
-		dimension_2_column_rotated = sprintf(
+		))
+	if (quo_is_null(dimension_2_column_rotated))
+		dimension_2_column_rotated = as.symbol(sprintf(
 			"%s_rotated_%s",
-			dimension_2_column,
+			quo_name(dimension_2_column),
 			rotation_degrees
-		)
+		))
 	
 	# Sanity check of the angle selected
 	if (rotation_degrees %>% between(-360, 360) %>% not())
@@ -425,15 +428,15 @@ setMethod("reduce_dimensions",
 		) %>%
 		
 		# Select dimensions
-		.[,c(dimension_1_column, dimension_2_column)] %>%
+		.[,c(quo_name(dimension_1_column), quo_name(dimension_2_column))] %>%
 		as.matrix() %>%
 		t() %>%
 		rotation(rotation_degrees) %>%
 		t() %>%
 		as.data.frame() %>%
 		setNames(c(
-			dimension_1_column_rotated,
-			dimension_2_column_rotated
+			quo_name(dimension_1_column_rotated),
+			quo_name(dimension_2_column_rotated)
 		))
 
 	
@@ -1086,22 +1089,25 @@ setMethod("keep_variable",
 					.keep_variable_se)
 
 .identify_abundant_se = function(.data,
+																 .sample = NULL,
+																 .transcript = NULL,
+																 .abundance = NULL,
 														 factor_of_interest = NULL,
 														 minimum_counts = 10,
 														 minimum_proportion = 0.7)
 {
 	
 	
-if(!is.null(factor_of_interest) && (factor_of_interest %>% is.character %>% not))
-	stop("tidybulk says: when using SummarizedExperiment as input the column name has to be passed in the form of character. We are working on this issue to allow the use of symbols instead.")
-
+	factor_of_interest = enquo(factor_of_interest)
+	
 
 	# Check factor_of_interest
 	if(
 		!is.null(factor_of_interest) &&
-		(factor_of_interest %in% colnames(colData(.data)) %>% not())
+		quo_is_symbol(factor_of_interest) &&
+		(quo_name(factor_of_interest) %in% colnames(colData(.data)) %>% not())
 	)
-		stop(sprintf("tidybulk says: the column %s is not present in colData", factor_of_interest))
+		stop(sprintf("tidybulk says: the column %s is not present in colData", quo_name(factor_of_interest)))
 
 	if (minimum_counts < 0)
 		stop("The parameter minimum_counts must be > 0")
@@ -1122,17 +1128,16 @@ if(!is.null(factor_of_interest) && (factor_of_interest %>% is.character %>% not)
 
 		factor_of_interest %>%
 		when(
-			!is.null(factor_of_interest) &&
-				#quo_is_symbol(factor_of_interest) &&
-				colData(.data)[, factor_of_interest] %>%
-				class %in%
-				c("numeric", "integer", "double") ~ {
+				quo_is_symbol(factor_of_interest) &&
+				(
+					colData(.data)[, quo_name(factor_of_interest)] %>%
+					class %in% c("numeric", "integer", "double")) ~ 
+				{
 					message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
 					NULL
 				},
-			!is.null(factor_of_interest) ~
-				#quo_is_symbol(factor_of_interest) ~
-				colData(.data)[, factor_of_interest],
+				quo_is_symbol(factor_of_interest) ~
+				colData(.data)[, quo_name(factor_of_interest)],
 			~ NULL
 		)
 
@@ -1190,18 +1195,22 @@ setMethod("identify_abundant",
 
 
 .keep_abundant_se = function(.data,
+														 .sample = NULL,
+														 .transcript = NULL,
+														 .abundance = NULL,
 														 factor_of_interest = NULL,
 														 minimum_counts = 10,
 														 minimum_proportion = 0.7)
 {
 	
+	factor_of_interest = enquo(factor_of_interest)
 	
 	.data = 
 		.data %>%
 		
 		# Apply scale method
 		identify_abundant(
-			factor_of_interest = factor_of_interest,
+			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion
 		) 
@@ -1236,88 +1245,7 @@ setMethod("keep_abundant",
 
 
 
-#' analyse gene enrichment with EGSEA
-#'
-#' \lifecycle{maturing}
-#'
-#' @description test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
-#'
-#' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
-#'
-#' @name test_gene_enrichment
-#'
-#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
-#' @param .formula A formula with no response variable, representing the desired linear model
-#' @param .entrez The ENTREZ ID of the transcripts/genes
-#' @param .contrasts = NULL,
-#' @param method A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.
-#' @param species A character. For example, human or mouse
-#' @param cores An integer. The number of cores available
-#'
-#'
-#' @details This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
-#'
-#'
-#' dge =
-#' 	data %>%
-#' 	keep_abundant(
-#' 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
-#' 		!!.sample, !!.entrez, !!.abundance
-#' 	) %>%
-#'
-#' 	# Make sure transcript names are adjacent
-#' 	[...] %>%
-#' 	as_matrix(rownames = !!.entrez) %>%
-#' 	edgeR::DGEList(counts = .)
-#'
-#' idx =  buildIdx(entrezIDs = rownames(dge), species = species)
-#'
-#' dge %>%
-#'
-#' 	# Calculate weights
-#' 	limma::voom(design, plot = FALSE) %>%
-#'
-#' 	# Execute EGSEA
-#' 	egsea(
-#' 		contrasts = my_contrasts,
-#' 		baseGSEAs = method,
-#' 		sort.by = "med.rank",
-#' 		num.threads = cores,
-#' 		report = FALSE
-#' 	)
-#'
-#' @return A `tbl` object
-#'
-#'
-#'
-#'
-#' @examples
-#' \dontrun{
-#'
-#' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
-#' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
-#'
-#' library("EGSEA")
-#'
-#' 	test_gene_enrichment(
-#'			df_entrez,
-#'			~ condition,
-#'			.sample = sample,
-#'			.entrez = entrez,
-#'			.abundance = count,
-#'       method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
-#'			species="human",
-#'			cores = 2
-#'		)
-#'
-#'}
-#'
-#' @docType methods
-#' @rdname test_gene_enrichment-methods
-#'
-#'
-# Set internal
+
 .test_gene_enrichment_SE = 		function(.data,
 																	 .formula,
 																	 .entrez = NULL,

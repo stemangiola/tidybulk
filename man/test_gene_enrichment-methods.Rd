@@ -6,7 +6,6 @@
 \alias{test_gene_enrichment,spec_tbl_df-method}
 \alias{test_gene_enrichment,tbl_df-method}
 \alias{test_gene_enrichment,tidybulk-method}
-\alias{.test_gene_enrichment_SE}
 \alias{test_gene_enrichment,SummarizedExperiment-method}
 \alias{test_gene_enrichment,RangedSummarizedExperiment-method}
 \title{analyse gene enrichment with EGSEA}
@@ -53,16 +52,6 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
-  .contrasts = NULL,
-  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  species,
-  cores = 10
-)
-
-.test_gene_enrichment_SE(
-  .data,
-  .formula,
-  .entrez = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   species,
@@ -120,12 +109,8 @@ A `tbl` object
 A `tbl` object
 
 A `tbl` object
-
-A `tbl` object
 }
 \description{
-test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
-
 test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 }
 \details{
@@ -161,61 +146,8 @@ dge %>%
 		num.threads = cores,
 		report = FALSE
 	)
-
-\lifecycle{maturing}
-
-This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
-
-
-dge =
-	data %>%
-	keep_abundant(
-		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
-		!!.sample, !!.entrez, !!.abundance
-	) %>%
-
-	# Make sure transcript names are adjacent
-	[...] %>%
-	as_matrix(rownames = !!.entrez) %>%
-	edgeR::DGEList(counts = .)
-
-idx =  buildIdx(entrezIDs = rownames(dge), species = species)
-
-dge %>%
-
-	# Calculate weights
-	limma::voom(design, plot = FALSE) %>%
-
-	# Execute EGSEA
-	egsea(
-		contrasts = my_contrasts,
-		baseGSEAs = method,
-		sort.by = "med.rank",
-		num.threads = cores,
-		report = FALSE
-	)
 }
 \examples{
-\dontrun{
-
-df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
-df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
-
-library("EGSEA")
-
-	test_gene_enrichment(
-		df_entrez,
-		~ condition,
-		.sample = sample,
-		.entrez = entrez,
-		.abundance = count,
-      method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
-		species="human",
-		cores = 2
-	)
-
-}
-
 \dontrun{
 
 df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)

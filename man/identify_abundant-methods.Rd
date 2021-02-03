@@ -52,6 +52,9 @@ identify_abundant(
 
 \S4method{identify_abundant}{SummarizedExperiment}(
   .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
   factor_of_interest = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7
@@ -59,6 +62,9 @@ identify_abundant(
 
 \S4method{identify_abundant}{RangedSummarizedExperiment}(
   .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
   factor_of_interest = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7

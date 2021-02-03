@@ -97,8 +97,8 @@ test_that("Get rotated dimensions - SummarizedExperiment",{
 	res =
 		rotate_dimensions(
 			res.pca,
-			dimension_1_column = "PC1",
-			dimension_2_column = "PC2",
+			dimension_1_column = PC1,
+			dimension_2_column = PC2,
 			rotation_degrees = 45
 		)
 
@@ -167,7 +167,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
 	res =		test_differential_abundance(
 		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>% 
-			identify_abundant(factor_of_interest = "condition"),	
+			identify_abundant(factor_of_interest = condition),	
 		~ condition	
 	)
 	
@@ -199,7 +199,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 	# Likelihood ratio
 	res2 =		test_differential_abundance(
 		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>%
-			identify_abundant(factor_of_interest = "condition"),	
+			identify_abundant(factor_of_interest = condition),	
 		~ condition, method = "edgeR_likelihood_ratio"	)
 	
 	res2_tibble =		test_differential_abundance(
