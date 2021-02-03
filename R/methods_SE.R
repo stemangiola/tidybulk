@@ -86,6 +86,7 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 #' @importFrom magrittr divide_by
 #' @importFrom SummarizedExperiment assays
 #' @importFrom SummarizedExperiment colData
+#' @importFrom utils tail 
 #' 
 .scale_abundance_se = function(.data,
 															 method = "TMM",
