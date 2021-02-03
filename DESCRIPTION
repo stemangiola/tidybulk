@@ -66,6 +66,8 @@ Suggests:
     devtools,
     functional,
     immunedeconv
+Remotes: 
+    github::icbi-lab/immunedeconv
 VignetteBuilder: 
     knitr
 RdMacros:
