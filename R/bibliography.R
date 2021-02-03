@@ -227,6 +227,13 @@ my_bibliography = function() {
   pages={1739--1740},
   year={2011},
   publisher={Oxford University Press}
-	}")
+	}"),
+	survminer = c( "@Manual{,
+    title = {survminer: Drawing Survival Curves using 'ggplot2'},
+    author = {Alboukadel Kassambara and Marcin Kosinski and Przemyslaw Biecek},
+    year = {2020},
+    note = {R package version 0.4.8},
+    url = {https://CRAN.R-project.org/package=survminer},
+  }")
 )
 }

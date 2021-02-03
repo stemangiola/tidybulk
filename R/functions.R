@@ -1006,6 +1006,96 @@ test_differential_cellularity_ <- function(.data,
 }
 
 
+#' Get differential composition information to a tibble using edgeR.
+#'
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom utils install.packages
+#' @importFrom purrr when
+#' @importFrom purrr map_lgl
+#' @importFrom stringr str_replace
+#' @importFrom stringr str_split
+#' @importFrom stringr str_replace_all
+#' @importFrom stringr str_remove
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
+#' @param significance_threshold A real between 0 and 1
+#'
+#' @return A tibble with edgeR results
+#'
+test_stratification_cellularity_ <- function(.data,
+																						 .formula,
+																						 .sample = NULL,
+																						 .transcript = NULL,
+																						 .abundance = NULL,
+																						 method = "cibersort",
+																						 reference = NULL,
+																						 significance_threshold = 0.05,
+																						 ...
+) {
+	
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	
+	deconvoluted = 
+		.data %>%
+		
+		# Deconvolution
+		deconvolve_cellularity(
+			!!.sample, !!.transcript, !!.abundance,
+			method=method,
+			prefix = sprintf("%s:", method),
+			reference = reference,
+			action="get",
+			...
+		) 
+	
+	
+	
+	
+	# Check if test is univaiable or multivariable
+	.formula %>%
+		{
+			# Parse formula
+			.my_formula =
+				format(.formula) %>% 
+				str_replace("([~ ])(\\.)", "\\1.high_cellularity") %>%
+				as.formula
+			
+			# Test
+			univariable_differential_tissue_stratification(deconvoluted,
+																										 method,
+																										 .my_formula) %>%
+				
+				# Attach attributes
+				reattach_internals(.data) %>%
+				
+				# Add methods used
+				memorise_methods_used(c("survival", "boot", "survminer"))
+		} %>%
+		
+		# Eliminate prefix
+		mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+	
+	
+}
+
+
 
 #' Get gene enrichment analyses using EGSEA
 #'

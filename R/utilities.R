@@ -1400,6 +1400,83 @@ univariable_differential_tissue_composition = function(
 		unnest(surv_test, keep_empty = TRUE) 
 }
 
+univariable_differential_tissue_stratification = function(
+	deconvoluted, 
+	method, 
+	.my_formula
+){
+	
+	# Check if package is installed, otherwise install
+	if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing survival needed for analyses")
+		install.packages("survival", repos = "https://cloud.r-project.org")
+	}
+	
+	# Check if package is installed, otherwise install
+	if (find.package("survminer", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing survminer needed for analyses")
+		install.packages("survminer", repos = "https://cloud.r-project.org")
+	}
+	
+	
+	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing broom needed for analyses")
+		install.packages("broom", repos = "https://cloud.r-project.org")
+	}
+	
+	deconvoluted %>%
+		
+		# Test
+		pivot_longer(
+			names_prefix = sprintf("%s: ", method),
+			cols = starts_with(method),
+			names_to = ".cell_type",
+			values_to = ".proportion"
+		) %>%
+		
+		# Test survival
+		tidyr::nest(cell_type_proportions = -.cell_type) %>%
+		mutate(surv_test = map(
+			cell_type_proportions,
+			~ {
+				
+				data = .x %>%
+					mutate(.high_cellularity = .proportion > median(.proportion)) 
+				
+				if(data %>%
+					 distinct(.high_cellularity) %>%
+					 nrow %>%
+					 equals(1)
+				) return(NULL)
+				
+				# See if regression if censored or not
+				fit = survival::survdiff(data = data, .my_formula) 
+				
+				p = 
+					survminer::surv_fit(data = data, .my_formula) %>%
+					survminer::ggsurvplot(
+						fit=., 
+						data = data, 
+						risk.table = FALSE, 
+						conf.int = T,
+						palette = c("#ed6f68",  "#5366A0" ),
+						legend = "none",
+						pval = T
+					) 
+				
+				fit %>%
+					broom::tidy() %>%
+					select(-N, -obs) %>%
+					spread(.high_cellularity, exp) %>%
+					setNames(c(".low_cellularity_expected", ".high_cellularity_expected")) %>%
+					mutate(pvalue = 1 - pchisq(fit$chisq, length(fit$n) - 1)) %>%
+					mutate(plot = list(p))
+				
+			}
+		)) %>%
+		
+		unnest(surv_test, keep_empty = TRUE) 
+}
 
 # Function that rotates a 2D space of a arbitrary angle
 rotation = function(m, d) {

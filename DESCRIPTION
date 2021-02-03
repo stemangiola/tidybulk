@@ -65,7 +65,8 @@ Suggests:
     ggrepel,
     devtools,
     functional,
-    immunedeconv
+    immunedeconv,
+    survminer
 Remotes: 
     github::icbi-lab/immunedeconv
 VignetteBuilder: 

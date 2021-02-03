@@ -1740,6 +1740,49 @@ test_that("differential composition",{
 	
 })
 
+test_that("test_stratification_cellularity",{
+	
+	# Cibersort
+	input_df %>%
+		select(a, b, c) %>%
+		nest(data = -a) %>%
+		mutate(
+			days = c(1, 10, 500, 1000, 2000),
+			dead = c(1, 1, 1, 0, 1)
+		) %>%
+		unnest(data) %>%
+		test_stratification_cellularity(
+			survival::Surv(days, dead) ~ .,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			cores = 1
+		) %>%
+		pull(.low_cellularity_expected) %>%
+		.[[1]] %>%
+		expect_equal(3.35, tolerance  =1e-1)
+	
+	# llsr
+	input_df %>%
+		select(a, b, c) %>%
+		nest(data = -a) %>%
+		mutate(
+			days = c(1, 10, 500, 1000, 2000),
+			dead = c(1, 1, 1, 0, 1)
+		) %>%
+		unnest(data) %>%
+		test_stratification_cellularity(
+			survival::Surv(days, dead) ~ .,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			cores = 1, method = "llsr"
+		) %>%
+		pull(.low_cellularity_expected) %>%
+		.[[1]] %>%
+		expect_equal(3.35, tolerance  =1e-1)
+})
+
 test_that("filter abundant - no object",{
 
 	res1 =
