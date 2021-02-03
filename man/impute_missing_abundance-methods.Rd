@@ -42,21 +42,9 @@ impute_missing_abundance(
   .abundance = NULL
 )
 
-\S4method{impute_missing_abundance}{SummarizedExperiment}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL
-)
+\S4method{impute_missing_abundance}{SummarizedExperiment}(.data, .formula)
 
-\S4method{impute_missing_abundance}{RangedSummarizedExperiment}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL
-)
+\S4method{impute_missing_abundance}{RangedSummarizedExperiment}(.data, .formula)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
