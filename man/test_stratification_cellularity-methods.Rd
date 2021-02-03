@@ -16,7 +16,6 @@ test_stratification_cellularity(
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
-  significance_threshold = 0.05,
   ...
 )
 
@@ -28,7 +27,6 @@ test_stratification_cellularity(
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
-  significance_threshold = 0.05,
   ...
 )
 
@@ -40,7 +38,6 @@ test_stratification_cellularity(
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
-  significance_threshold = 0.05,
   ...
 )
 
@@ -52,7 +49,6 @@ test_stratification_cellularity(
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
-  significance_threshold = 0.05,
   ...
 )
 }

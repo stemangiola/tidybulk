@@ -3567,7 +3567,6 @@ setGeneric("test_stratification_cellularity", function(.data,
 																											 .abundance = NULL,
 																											 method = "cibersort",
 																											 reference = X_cibersort,
-																											 significance_threshold = 0.05,
 																											 ...)
 	standardGeneric("test_stratification_cellularity"))
 
@@ -3579,7 +3578,6 @@ setGeneric("test_stratification_cellularity", function(.data,
 																							.abundance = NULL,
 																							method = "cibersort",
 																							reference = X_cibersort,
-																							significance_threshold = 0.05,
 																							...)
 {
 	# Get column names
@@ -3606,7 +3604,6 @@ setGeneric("test_stratification_cellularity", function(.data,
 		.abundance = !!.abundance,
 		method = method,
 		reference = reference,
-		significance_threshold = significance_threshold,
 		...
 	)
 	

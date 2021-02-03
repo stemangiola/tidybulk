@@ -1042,7 +1042,6 @@ test_stratification_cellularity_ <- function(.data,
 																						 .abundance = NULL,
 																						 method = "cibersort",
 																						 reference = NULL,
-																						 significance_threshold = 0.05,
 																						 ...
 ) {
 	

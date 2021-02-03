@@ -12,7 +12,6 @@ test_stratification_cellularity_(
   .abundance = NULL,
   method = "cibersort",
   reference = NULL,
-  significance_threshold = 0.05,
   ...
 )
 }
