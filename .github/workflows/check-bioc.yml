@@ -213,6 +213,7 @@ jobs:
 
       - name: Run CMD check
         env:
+          _R_CHECK_FORCE_SUGGESTS_: false
           _R_CHECK_CRAN_INCOMING_: false
         run: |
           rcmdcheck::rcmdcheck(
