@@ -166,6 +166,11 @@ jobs:
           ## https://github.com/r-lib/remotes/issues/296
           ## Ideally, all dependencies should get installed in the first pass.
 
+          ## Problem with openblas preprocesscore
+          ## https://support.bioconductor.org/p/122925/
+          git clone https://github.com/bmbolstad/preprocessCore.git
+          R CMD INSTALL --configure-args="--disable-threading" preprocessCore
+          
           ## Temporary for now due to https://github.com/ropensci/RefManageR/issues/79
           remotes::install_github("ropensci/bibtex")
           remotes::install_github("ropensci/RefManageR")
