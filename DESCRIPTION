@@ -65,10 +65,7 @@ Suggests:
     ggrepel,
     devtools,
     functional,
-    immunedeconv,
     survminer
-Remotes: 
-    github::icbi-lab/immunedeconv
 VignetteBuilder: 
     knitr
 RdMacros:

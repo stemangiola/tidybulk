@@ -846,11 +846,11 @@ setMethod("aggregate_duplicates",
 					devtools::install_github("icbi-lab/immunedeconv", upgrade = FALSE)
 				}
 				
-				if(method == "xcell" & !"immunedeconv" %in% (.packages()))
-					stop("tidybulk says: for xcell deconvolution you should have the package immunedeconv attached. Please execute library(immunedeconv)")
+				if(method %in% c("mcp_counter", "quantiseq", "xcell") & !"immunedeconv" %in% (.packages()))
+					stop("tidybulk says: for xcell, mcp_counter, or quantiseq deconvolution you should have the package immunedeconv attached. Please execute library(immunedeconv)")
 				
 				(.) %>%
-					immunedeconv::deconvolute(method %>% tolower, tumor = FALSE) %>%
+					deconvolute(method %>% tolower, tumor = FALSE) %>%
 					gather(!!.sample, .proportion, -cell_type) %>%
 					spread(cell_type,  .proportion)
 			},
