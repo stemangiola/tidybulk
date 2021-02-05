@@ -493,6 +493,13 @@ setMethod("rotate_dimensions",
 	Dim_a_column = enquo(Dim_a_column)
 	Dim_b_column = enquo(Dim_b_column)
 	
+	# Check if .data has more than one element
+	if(
+		(nrow(.data) <= 1 & of_sample == FALSE) |
+		(ncol(.data) <= 1 & of_sample == TRUE) 
+	)
+		stop("tidybulk says: You must have more than one element (trancripts if of_sample == FALSE) to perform remove_redundancy")
+	
 	redundant_elements = 
 		method %>%
 		when(
