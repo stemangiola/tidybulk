@@ -1068,10 +1068,10 @@ setGeneric("remove_redundancy", function(.data,
 
 	# Check if .data has more than one element
 	if(
-		(.data %>% distinct(!!.feature) %>% nrow() <= 1 & of_sample == FALSE) |
-		(.data %>% distinct(!!.element) %>% nrow() <= 1 & of_sample == TRUE) 
+		(.data %>% distinct(!!.feature) %>% nrow() <= 1 & of_samples == FALSE) |
+		(.data %>% distinct(!!.element) %>% nrow() <= 1 & of_samples == TRUE) 
 	)
-		stop("tidybulk says: You must have more than one element (trancripts if of_sample == FALSE) to perform remove_redundancy")
+		stop("tidybulk says: You must have more than one element (trancripts if of_samples == FALSE) to perform remove_redundancy")
 	
 	
 	if (method == "correlation") {

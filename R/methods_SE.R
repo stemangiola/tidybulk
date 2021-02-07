@@ -495,10 +495,10 @@ setMethod("rotate_dimensions",
 	
 	# Check if .data has more than one element
 	if(
-		(nrow(.data) <= 1 & of_sample == FALSE) |
-		(ncol(.data) <= 1 & of_sample == TRUE) 
+		(nrow(.data) <= 1 & of_samples == FALSE) |
+		(ncol(.data) <= 1 & of_samples == TRUE) 
 	)
-		stop("tidybulk says: You must have more than one element (trancripts if of_sample == FALSE) to perform remove_redundancy")
+		stop("tidybulk says: You must have more than one element (trancripts if of_samples == FALSE) to perform remove_redundancy")
 	
 	redundant_elements = 
 		method %>%
