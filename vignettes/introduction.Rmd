@@ -506,7 +506,7 @@ We may want to remove redundant elements from the original data set (e.g., sampl
 tt.norm.non_redundant = tt.norm.MDS %>%  remove_redundancy(	method = "correlation" )
 ```
 
-We can visualise how the reduced redundancy with the reduced dimentions look like
+We can visualise how the reduced redundancy with the reduced dimensions look like
 
 ```{r plot_drop, cache=TRUE}
 tt.norm.non_redundant %>%
