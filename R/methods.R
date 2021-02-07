@@ -1066,13 +1066,6 @@ setGeneric("remove_redundancy", function(.data,
 	Dim_a_column = enquo(Dim_a_column)
 	Dim_b_column = enquo(Dim_b_column)
 
-	# Check if .data has more than one element
-	if(
-		(.data %>% distinct(!!.feature) %>% nrow() <= 1 & of_samples == FALSE) |
-		(.data %>% distinct(!!.element) %>% nrow() <= 1 & of_samples == TRUE) 
-	)
-		stop("tidybulk says: You must have more than one element (trancripts if of_samples == FALSE) to perform remove_redundancy")
-	
 	
 	if (method == "correlation") {
 		# Validate data frame

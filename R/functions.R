@@ -2018,6 +2018,10 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.feature = col_names$.feature
 	.abundance = col_names$.abundance
 
+	# Check if .data has more than one element
+	if(.data %>% distinct(!!.element) %>% nrow() <= 1 )
+		stop("tidybulk says: You must have more than one element (trancripts if of_samples == FALSE) to perform remove_redundancy")
+	
 	# Check if package is installed, otherwise install
 	if (find.package("widyr", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing widyr needed for correlation analyses")
@@ -2119,6 +2123,10 @@ remove_redundancy_elements_though_reduced_dimensions <-
 		col_names = get_elements(.data, .element)
 		.element = col_names$.element
 
+		# Check if .data has more than one element
+		if(.data %>% distinct(!!.element) %>% nrow() <= 1 )
+			stop("tidybulk says: You must have more than one element (trancripts if of_samples == FALSE) to perform remove_redundancy")
+		
 		Dim_a_column = enquo(Dim_a_column)
 		Dim_b_column = enquo(Dim_b_column)
 
