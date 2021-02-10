@@ -43,6 +43,7 @@ create_tt_from_tibble_bulk = function(.data,
 #' @keywords internal
 #'
 #' @importFrom purrr reduce
+#' @importFrom tidySummarizedExperiment tidy
 #'
 #' @param file_names A character vector
 #' @param genome A character string
@@ -81,19 +82,22 @@ create_tt_from_bam_sam_bulk <-
 			# Anonymous function
 			# input: edgeR::DGEList object
 			# output: edgeR::DGEList object with added transcript symbol
-			{
-				dge <- (.)
-				dge$genes$transcript <-
-					AnnotationDbi::mapIds(
-						org.Hs.eg.db::org.Hs.eg.db,
-						keys = as.character(dge$genes$GeneID),
-						column = "SYMBOL",
-						keytype = "ENTREZID",
-						multiVals = "first"
-					)
-
-				dge
-			} %>%
+			when(
+				"annot.ext" %in% (rlang::dots_list(...) %>% names) %>% not() ~ {
+					dge <- (.)
+					dge$genes$symbol <-
+						AnnotationDbi::mapIds(
+							org.Hs.eg.db::org.Hs.eg.db,
+							keys = as.character(dge$genes$GeneID),
+							column = "SYMBOL",
+							keytype = "ENTREZID",
+							multiVals = "first"
+						)
+					
+					dge
+				},
+				~ (.)
+			) %>%
 
 			# Anonymous function
 			# input: annotated edgeR::DGEList object
@@ -101,23 +105,45 @@ create_tt_from_bam_sam_bulk <-
 			{
 				reduce(
 					list(
-						(.) %$% counts %>% as_tibble(rownames = "GeneID") %>% mutate(GeneID = GeneID %>% as.integer()) %>% gather(sample, count,-GeneID),
-						(.) %$% genes %>% select(GeneID, transcript) %>% as_tibble(),
-						(.) %$% samples %>% as_tibble()
+						
+						# Counts
+						(.) %$% 
+							counts %>% 
+							as_tibble(rownames = "GeneID") %>% 
+							gather(sample, count,-GeneID),
+						
+						# Genes
+						(.) %$%
+							genes %>% 
+							select(
+								suppressWarnings(
+									one_of("GeneID", "symbol")
+								)
+								) %>%
+							as_tibble() %>%
+							mutate(GeneID = GeneID %>% as.character()),
+						
+						# Sample
+						(.) %$% 
+							samples %>% 
+							as_tibble()
 					),
 					dplyr::left_join
 				) %>%
-					rename(entrez = GeneID) %>%
-					mutate(entrez = entrez %>% as.character())
+					rename(transcript = GeneID) 
 			} %>%
 
 			# Add tt_columns attribute
-			add_tt_columns(sample,transcript,count) %>%
-			memorise_methods_used("featurecounts") %>%
-
-			# Add class
-			add_class("tt") %>%
-			add_class("tidybulk")
+			
+			tidybulk_to_SummarizedExperiment(sample, transcript, count) %>%
+			tidy()
+			# 
+			# add_tt_columns(sample,symbol,count) %>%
+			# memorise_methods_used("featurecounts") %>%
+			# 
+			# # Add class
+			# add_class("tt") %>%
+			# add_class("tidybulk")
 	}
 
 #' Get a tibble with scaled counts using TMM
