@@ -1486,3 +1486,29 @@ rotation = function(m, d) {
 		c(`1` = sin(r), `2` = cos(r))
 	) %>% as_matrix) %*% m)
 }
+
+#' @importFrom dplyr select
+#' @importFrom tibble as_tibble
+#' @importFrom tibble tibble
+get_special_datasets <- function(SummarizedExperiment_object) {
+	if (
+		"RangedSummarizedExperiment" %in% .class2(SummarizedExperiment_object) &
+		
+		rowRanges(SummarizedExperiment_object) %>%
+		as.data.frame() %>%
+		nrow() %>%
+		gt(0)
+	) {
+		rowRanges(SummarizedExperiment_object) %>%
+			as.data.frame() %>%
+			
+			# Take off rowData columns as there is a recursive anomaly within gene ranges
+			suppressWarnings(
+				select(-one_of(colnames(rowData(SummarizedExperiment_object))))
+			) %>%
+			tibble::as_tibble(rownames="transcript") %>%
+			list()
+	} else {
+		tibble() %>% list()
+	}
+}

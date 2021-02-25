@@ -356,6 +356,14 @@ test_that("differential composition",{
 # 	
 # })
 
+test_that("pivot",{
+	
+	expect_equal(	ncol(pivot_sample(tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk(input_df, a, b, c))),	4	))
+	
+	expect_equal(	ncol(pivot_transcript(tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk(input_df, a, b, c))),	1	))
+	
+})
+
 test_that("gene over representation",{
 	
 	df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
