@@ -1284,8 +1284,7 @@ setMethod("keep_abundant",
 	
 	# Check if at least two samples for each group
 	if (.data %>%
-			colData %>%
-			as_tibble(rownames = "sample") %>%
+			pivot_sample() %>%
 			count(!!as.symbol(parse_formula(.formula))) %>%
 			distinct(n) %>%
 			pull(n) %>%
@@ -1308,7 +1307,7 @@ setMethod("keep_abundant",
 	my_contrasts =
 		.contrasts %>%
 		when(
-			length(.) > 0 ~ limma::makeContrasts(contrasts = .x, levels = design),
+			length(.) > 0 ~ limma::makeContrasts(contrasts = ., levels = design),
 			~ NULL
 			)
 	
@@ -1336,8 +1335,7 @@ setMethod("keep_abundant",
 				x = (.)
 				rownames(x) = 
 					.my_data %>% 
-					rowData() %>% 
-					as_tibble() %>% 
+					pivot_transcript() %>% 
 					pull(!!.entrez) 
 				x
 			}, 
@@ -1513,6 +1511,100 @@ setMethod("test_gene_overrepresentation",
 setMethod("test_gene_overrepresentation",
 					"RangedSummarizedExperiment",
 					.test_gene_overrepresentation_SE)
+
+
+# Set internal
+.pivot_sample = 		function(.data,
+													 .sample = NULL)	{
+	
+	colData(.data) %>%
+		
+		# If reserved column names are present add .x
+		setNames(
+			colnames(.) %>% 
+				str_replace("^sample$", "sample.x")
+		) %>%
+		
+		# Convert to tibble
+		tibble::as_tibble(rownames="sample")
+	
+
+	
+	
+}
+
+#' pivot_sample
+#' @inheritParams pivot_sample
+#'
+#' @docType methods
+#' @rdname pivot_sample-methods
+#'
+#' @return A `tbl` object
+setMethod("pivot_sample",
+					"SummarizedExperiment",
+					.pivot_sample)
+
+#' pivot_sample
+#' @inheritParams pivot_sample
+#'
+#' @docType methods
+#' @rdname pivot_sample-methods
+#'
+#' @return A `tbl` object
+setMethod("pivot_sample",
+					"RangedSummarizedExperiment",
+					.pivot_sample)
+
+
+
+# Set internal
+.pivot_transcript = 		function(.data,
+															 .transcript = NULL)	{
+
+	range_info <-
+		get_special_datasets(.data) %>%
+		reduce(left_join, by="transcript")
+	
+	gene_info <-
+		rowData(.data) %>%
+		
+		# If reserved column names are present add .x
+		setNames(
+			colnames(.) %>% 
+				str_replace("^transcript$", "transcript.x")
+		) %>%
+		
+		# Convert to tibble
+		tibble::as_tibble(rownames="transcript")
+	
+	gene_info %>%
+		when(
+			nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by="transcript"), 
+			~ (.)
+		) 
+}
+
+#' pivot_transcript
+#' @inheritParams pivot_transcript
+#'
+#' @docType methods
+#' @rdname pivot_transcript-methods
+#'
+#' @return A `tbl` object
+setMethod("pivot_transcript",
+					"SummarizedExperiment",
+					.pivot_transcript)
+
+#' pivot_transcript
+#' @inheritParams pivot_transcript
+#'
+#' @docType methods
+#' @rdname pivot_transcript-methods
+#'
+#' @return A `tbl` object
+setMethod("pivot_transcript",
+					"RangedSummarizedExperiment",
+					.pivot_transcript)
 
 
 .impute_missing_abundance_se = function(.data,
