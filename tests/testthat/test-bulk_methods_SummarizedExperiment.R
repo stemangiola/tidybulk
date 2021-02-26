@@ -223,6 +223,26 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 			dplyr::pull(logFC),
 		tolerance=1e-4
 	)
+	
+	# Treat
+	input_df %>% 
+		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+		identify_abundant(a, b, c, factor_of_interest = condition) %>%
+		test_differential_abundance(
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			scaling_method = "TMM",
+			method = "edgeR_likelihood_ratio",
+			test_above_log_fold_change = 1,
+			action="only"
+		) %>%
+		`@` (elementMetadata) %>%
+		as_tibble() %>%
+		filter(FDR<0.05) %>%
+		nrow %>%
+		expect_equal(169)
 
 })
 

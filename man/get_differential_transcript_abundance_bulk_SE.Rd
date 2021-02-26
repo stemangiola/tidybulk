@@ -10,6 +10,7 @@ get_differential_transcript_abundance_bulk_SE(
   sample_annotation,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
+  test_above_log_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = ""

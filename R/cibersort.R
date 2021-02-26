@@ -65,8 +65,8 @@ CoreAlg <- function(X, y, cores = 3){
 
   #Execute In a parallel way the SVM
   if(cores>1){
-    if(Sys.info()['sysname'] == 'Windows') out <- mclapply(1:svn_itor, res, mc.cores=1) 
-    else out <-  mclapply(1:svn_itor, res, mc.cores=cores) 
+    if(Sys.info()['sysname'] == 'Windows') out <- parallel::mclapply(1:svn_itor, res, mc.cores=1) 
+    else out <-  parallel::mclapply(1:svn_itor, res, mc.cores=cores) 
   }
   else out <-  lapply(1:svn_itor, res)
 

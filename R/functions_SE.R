@@ -576,6 +576,7 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 																											 sample_annotation,
 																											 .contrasts = NULL,
 																											 method = "edgeR_quasi_likelihood",
+																											 test_above_log_fold_change = NULL,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
 																											 prefix = "") {
@@ -653,6 +654,7 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 					
 					# select method
 					when(
+						!is.null(test_above_log_fold_change) ~ (.) %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log_fold_change),
 						tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
 						tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
 					)	%>%
@@ -683,7 +685,7 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 								)	%>%
 								
 								# Convert to tibble
-								edgeR::topTags(n = 999999) %$%
+								edgeR::topTags(n = Inf) %$%
 								table %>%
 								as_tibble(rownames = "transcript") %>%
 								mutate(constrast = colnames(my_contrasts)[.x]) 
@@ -820,7 +822,11 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 					limma::eBayes() %>%
 					
 					# Convert to tibble
-					limma::topTable(n = 999999) %>%
+					# when(
+					# 	!is.null(test_above_log_fold_change) ~ (.) %>% limma::topTreat(n = Inf),
+					# 	~ (.) %>% limma::topTags(n = Inf)
+					# ) %$%
+					limma::topTable(n = Inf) %>%
 					as_tibble(rownames = "transcript") %>%
 					
 					# # Mark DE genes
@@ -842,7 +848,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 								limma::eBayes() %>%
 								
 								# Convert to tibble
-								limma::topTable(n = 999999) %>%
+								limma::topTable(n = Inf) %>%
 								as_tibble(rownames = "transcript") %>%
 								mutate(constrast = colnames(my_contrasts)[.x]) 
 							# %>%
