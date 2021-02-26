@@ -43,7 +43,6 @@ create_tt_from_tibble_bulk = function(.data,
 #' @keywords internal
 #'
 #' @importFrom purrr reduce
-#' @importFrom tidySummarizedExperiment tidy
 #'
 #' @param file_names A character vector
 #' @param genome A character string
@@ -135,8 +134,7 @@ create_tt_from_bam_sam_bulk <-
 
 			# Add tt_columns attribute
 			
-			tidybulk_to_SummarizedExperiment(sample, transcript, count) %>%
-			tidy()
+			tidybulk_to_SummarizedExperiment(sample, transcript, count) 
 			# 
 			# add_tt_columns(sample,symbol,count) %>%
 			# memorise_methods_used("featurecounts") %>%

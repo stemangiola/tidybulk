@@ -29,7 +29,6 @@ Imports:
     lifecycle,
     scales,
     SummarizedExperiment,
-    tidySummarizedExperiment,
     methods
 Suggests:
     BiocStyle,
