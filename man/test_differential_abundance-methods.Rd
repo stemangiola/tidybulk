@@ -18,6 +18,7 @@ test_differential_abundance(
   .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
+  test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = "",
@@ -34,6 +35,7 @@ test_differential_abundance(
   .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
+  test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = "",
@@ -50,6 +52,7 @@ test_differential_abundance(
   .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
+  test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = "",
@@ -66,6 +69,7 @@ test_differential_abundance(
   .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
+  test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = "",
@@ -79,6 +83,7 @@ test_differential_abundance(
   .formula,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
+  test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = ""
@@ -89,6 +94,7 @@ test_differential_abundance(
   .formula,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
+  test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = ""
@@ -109,6 +115,8 @@ test_differential_abundance(
 
 \item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights"}
 
+\item{test_above_log2_fold_change}{A positive real value. At the moment this works just for edgeR methods, and use the `treat` function, which test the that the difference in abundance is bigger than this parameter rather than zero \url{https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat}.}
+
 \item{scaling_method}{A character string. The scaling method passed to the back-end functions: edgeR and limma-voom (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile"). Setting the parameter to \"none\" will skip the compensation for sequencing-depth for the method edgeR or limma-voom.}
 
 \item{omit_contrast_in_colnames}{If just one contrast is specified you can choose to omit the contrast label in the colnames.}
@@ -117,9 +125,9 @@ test_differential_abundance(
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
-\item{significance_threshold}{A real between 0 and 1 (usually 0.05).}
+\item{significance_threshold}{DEPRECATED - A real between 0 and 1 (usually 0.05).}
 
-\item{fill_missing_values}{A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
+\item{fill_missing_values}{DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
 }
 \value{
 A `tbl` with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
@@ -182,10 +190,10 @@ DESeq2::results()
 \examples{
 
  # edgeR
- 
- tidybulk::counts_mini \%>\% 
- tidybulk(sample, transcript, count) \%>\% 
- identify_abundant() \%>\% 
+
+ tidybulk::counts_mini \%>\%
+ tidybulk(sample, transcript, count) \%>\%
+ identify_abundant() \%>\%
 	test_differential_abundance( ~ condition )
 
 	# The function `test_differential_abundance` operates with contrasts too
@@ -199,10 +207,10 @@ DESeq2::results()
  )
 
  # DESeq2 - equivalent for limma-voom
- 
- tidybulk::counts_mini \%>\% 
- tidybulk(sample, transcript, count) \%>\% 
- identify_abundant() \%>\% 
+
+ tidybulk::counts_mini \%>\%
+ tidybulk(sample, transcript, count) \%>\%
+ identify_abundant() \%>\%
 	test_differential_abundance( ~ condition, method="deseq2" )
 
 	# The function `test_differential_abundance` operates with contrasts too
@@ -213,7 +221,7 @@ DESeq2::results()
  test_differential_abundance(
 	    ~ 0 + condition,
 	    .contrasts = list(c("condition", "TRUE", "FALSE")),
-	    method="deseq2" 
+	    method="deseq2"
  )
 
 }

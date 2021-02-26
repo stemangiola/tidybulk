@@ -309,6 +309,24 @@ test_that("Only differential trancript abundance - no object",{
 			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
+	
+	# Treat
+	input_df %>% 
+		identify_abundant(a, b, c, factor_of_interest = condition) %>%
+		test_differential_abundance(
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			scaling_method = "TMM",
+			method = "edgeR_likelihood_ratio",
+			test_above_log2_fold_change = 1,
+			action="get"
+		) %>%
+		filter(FDR<0.05) %>%
+		nrow %>%
+		expect_equal(169)
+	
 })
 
 test_that("Only differential trancript abundance - no object - with contrasts",{

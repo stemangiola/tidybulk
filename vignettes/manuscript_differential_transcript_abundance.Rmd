@@ -201,7 +201,8 @@ tt_test %>%
 ```{r}
 # Heatmap
 tt_test %>%
-
+		as_tibble() %>%
+	
     # Select differentially abundant
     filter(FDR < 0.05 & abs(logFC) > 2) %>%
 

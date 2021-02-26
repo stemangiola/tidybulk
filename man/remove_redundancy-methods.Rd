@@ -139,9 +139,9 @@ remove_redundancy() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT
 \examples{
 
 
- tidybulk::counts_mini \%>\% 
- tidybulk(sample, transcript, count) \%>\% 
- identify_abundant() \%>\% 
+ tidybulk::counts_mini \%>\%
+ tidybulk(sample, transcript, count) \%>\%
+ identify_abundant() \%>\%
    remove_redundancy(
 	   .element = sample,
 	   .feature = transcript,
@@ -149,10 +149,10 @@ remove_redundancy() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT
 	   	method = "correlation"
 	   	)
 
-counts.MDS = 
- tidybulk::counts_mini \%>\% 
- tidybulk(sample, transcript, count) \%>\% 
- identify_abundant() \%>\% 
+counts.MDS =
+ tidybulk::counts_mini \%>\%
+ tidybulk(sample, transcript, count) \%>\%
+ identify_abundant() \%>\%
   reduce_dimensions( method="MDS", .dims = 3)
 
 remove_redundancy(
