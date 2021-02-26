@@ -920,7 +920,7 @@ setMethod(
 																					 .formula,
 																					 .contrasts = NULL,
 																					 method = "edgeR_quasi_likelihood",
-																					 test_above_log_fold_change = NULL,
+																					 test_above_log2_fold_change = NULL,
 																					 scaling_method = "TMM",
 																					 omit_contrast_in_colnames = FALSE,
 																					 prefix = "")
@@ -933,9 +933,9 @@ or adjust_abundance have been calculated. Therefore, it is essential to add cova
 such as batch effects (if applicable) in the formula.
 =====================================")
 	
-	# Test test_above_log_fold_change
-	if(!is.null(test_above_log_fold_change) && test_above_log_fold_change < 0)
-		stop("tidybulk says: test_above_log_fold_change should be a positive real or NULL")
+	# Test test_above_log2_fold_change
+	if(!is.null(test_above_log2_fold_change) && test_above_log2_fold_change < 0)
+		stop("tidybulk says: test_above_log2_fold_change should be a positive real or NULL")
 	
 	
 	my_differential_abundance = 
@@ -955,7 +955,7 @@ such as batch effects (if applicable) in the formula.
 					.contrasts = .contrasts,
 					colData(.data),
 					method = method,
-					test_above_log_fold_change = test_above_log_fold_change,
+					test_above_log2_fold_change = test_above_log2_fold_change,
 					scaling_method = scaling_method,
 					omit_contrast_in_colnames = omit_contrast_in_colnames,
 					prefix = prefix

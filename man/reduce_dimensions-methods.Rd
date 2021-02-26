@@ -161,17 +161,17 @@ Rtsne::Rtsne(data, ...)
 
 
 
-counts.MDS =  
- tidybulk::counts_mini \%>\% 
- tidybulk(sample, transcript, count) \%>\% 
- identify_abundant() \%>\% 
+counts.MDS =
+ tidybulk::counts_mini \%>\%
+ tidybulk(sample, transcript, count) \%>\%
+ identify_abundant() \%>\%
  reduce_dimensions( method="MDS", .dims = 3)
 
 
-counts.PCA =  
- tidybulk::counts_mini \%>\% 
- tidybulk(sample, transcript, count) \%>\% 
- identify_abundant() \%>\% 
+counts.PCA =
+ tidybulk::counts_mini \%>\%
+ tidybulk(sample, transcript, count) \%>\%
+ identify_abundant() \%>\%
  reduce_dimensions(method="PCA", .dims = 3)
 
 

@@ -235,7 +235,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 			.abundance = c,
 			scaling_method = "TMM",
 			method = "edgeR_likelihood_ratio",
-			test_above_log_fold_change = 1,
+			test_above_log2_fold_change = 1,
 			action="only"
 		) %>%
 		`@` (elementMetadata) %>%

@@ -320,7 +320,7 @@ test_that("Only differential trancript abundance - no object",{
 			.abundance = c,
 			scaling_method = "TMM",
 			method = "edgeR_likelihood_ratio",
-			test_above_log_fold_change = 1,
+			test_above_log2_fold_change = 1,
 			action="get"
 		) %>%
 		filter(FDR<0.05) %>%

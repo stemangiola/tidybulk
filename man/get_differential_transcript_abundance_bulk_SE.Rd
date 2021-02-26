@@ -10,7 +10,7 @@ get_differential_transcript_abundance_bulk_SE(
   sample_annotation,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
-  test_above_log_fold_change = NULL,
+  test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = ""
@@ -24,6 +24,8 @@ get_differential_transcript_abundance_bulk_SE(
 \item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
 \item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)}
+
+\item{test_above_log2_fold_change}{A positive real value. At the moment this works just for edgeR methods, and use the `treat` function, which test the that the difference in abundance is bigger than this parameter rather than zero \url{https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat}.}
 
 \item{scaling_method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
