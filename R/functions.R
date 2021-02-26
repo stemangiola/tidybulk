@@ -1284,6 +1284,8 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			num.threads = cores,
 		)
 
+	gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
+	
 	res_formatted_all =
 		res@results %>%
 		map2_dfr(
@@ -1293,7 +1295,10 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 				mutate(data_base = .y)
 		) %>%
 		arrange(med.rank) %>%
-		select(data_base, pathway, everything())
+		
+		# Add webpage
+		mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
+		select(data_base, pathway, web_page, med.rank, everything()) 
 
 
 	bind_rows(res_formatted_all, res_formatted_kegg)

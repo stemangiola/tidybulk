@@ -1264,13 +1264,14 @@ setMethod("keep_abundant",
 
 
 .test_gene_enrichment_SE = 		function(.data,
-																	 .formula,
-																	 .entrez = NULL,
-																	 .contrasts = NULL,
-																	 method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
-																	 species,
-																	 cores = 10)	{
-	
+																			.formula,
+																			.sample = NULL,
+																			.entrez,
+																			.abundance = NULL,
+																			.contrasts = NULL,
+																			method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																			species,
+																			cores = 10)	{
 
 	.entrez = enquo(.entrez)
 
@@ -1401,6 +1402,8 @@ setMethod("keep_abundant",
 			num.threads = cores,
 		)
 	
+	gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
+	
 	res_formatted_all =
 		res@results %>%
 		map2_dfr(
@@ -1410,7 +1413,10 @@ setMethod("keep_abundant",
 				mutate(data_base = .y)
 		) %>%
 		arrange(med.rank) %>%
-		select(data_base, pathway, everything())
+		
+		# Add webpage
+		mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
+		select(data_base, pathway, web_page, med.rank, everything()) 
 	
 	
 	bind_rows(res_formatted_all, res_formatted_kegg)
@@ -1448,7 +1454,7 @@ setMethod("test_gene_enrichment",
 																					 species,
 																					 .sample = NULL,
 																					 gene_set = NULL)	{
-	
+
 	# Comply with CRAN NOTES
 	. = NULL
 	

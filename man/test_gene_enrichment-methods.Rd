@@ -61,7 +61,9 @@ test_gene_enrichment(
 \S4method{test_gene_enrichment}{SummarizedExperiment}(
   .data,
   .formula,
-  .entrez = NULL,
+  .sample = NULL,
+  .entrez,
+  .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   species,
@@ -71,7 +73,9 @@ test_gene_enrichment(
 \S4method{test_gene_enrichment}{RangedSummarizedExperiment}(
   .data,
   .formula,
-  .entrez = NULL,
+  .sample = NULL,
+  .entrez,
+  .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   species,
