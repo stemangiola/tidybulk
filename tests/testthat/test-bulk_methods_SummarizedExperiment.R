@@ -358,9 +358,9 @@ test_that("differential composition",{
 
 test_that("pivot",{
 	
-	expect_equal(	ncol(pivot_sample(tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk(input_df, a, b, c))),	4	))
+	expect_equal(	ncol(pivot_sample(tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk(input_df, a, b, c)))	), 4)
 	
-	expect_equal(	ncol(pivot_transcript(tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk(input_df, a, b, c))),	1	))
+	expect_equal(	ncol(pivot_transcript(tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk(input_df, a, b, c)))	), 1)
 	
 })
 
