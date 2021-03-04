@@ -33,7 +33,8 @@ gate information to your tibble
 
 -->
 
-**IMPORTANT!** From version 1.1.6, the detection of abundant/lowly abundant transcripts has to be done explicitly (**identify_abundant()**; you will be warned otherwise). This because, it is better to make each function do one thing only, without hidden/implicit procedures (as stated in the tidy data manifesto). This improves logical flow, and software modularity.
+#  <img src="inst/new_SE_usage-01.png" width="800px" />
+
 
 ## Functions/utilities available
 
@@ -132,7 +133,7 @@ devtools::install_github("stemangiola/tidybulk")
 It memorises key column names
 
 ```{r}
-tt = counts %>% tidybulk(sample, transcript, count)
+tt = tidybulk::counts %>% tidybulk(sample, transcript, count)
 ```
 
 ## Get the bibliography of your workflow 
@@ -424,7 +425,7 @@ On the x and y axes axis we have the first two reduced dimensions rotated of 45 
 
 ```{r plot_rotate_2, cache=TRUE}
 tt.norm.MDS.rotated %>%
-	ggplot(aes(x=`Dim1 rotated 45`, y=`Dim2 rotated 45`, color=`Cell type` )) +
+	ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`Cell type` )) +
   geom_point() +
   my_theme
 ```
@@ -523,7 +524,7 @@ TidyTranscriptomics
 ```{r cibersort, cache=TRUE}
 tt.cibersort =
 	tt %>%
-	deconvolve_cellularity(action="get", cores=1)
+	deconvolve_cellularity(action="get", cores=1, prefix = "cibersort:") 
 
 ```
 </div>
@@ -567,7 +568,7 @@ We can also perform a statistical test on the differential cell-type abundance a
 ```{r DC, cache=TRUE}
 
 	tt %>%
-	test_differential_cellularity( ~ condition )
+	test_differential_cellularity(. ~ condition )
 
 ```
 

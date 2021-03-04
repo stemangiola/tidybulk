@@ -1,5 +1,14 @@
 my_bibliography = function() {
 	list(
+	tidybulk = " @Article{tidybulk,
+  title = {tidybulk: an R tidy framework for modular transcriptomic data analysis},
+  author = {Stefano Mangiola and Ramyar Molania and Ruining Dong and Maria A. Doyle & Anthony T. Papenfuss},
+  journal = {Genome Biology},
+  year = {2021},
+  volume = {22},
+  number = {42},
+  url = {https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02233-7},
+  }",
 	tidyverse = "@article{wickham2019welcome,
   title={Welcome to the Tidyverse},
   author={Wickham, Hadley and Averick, Mara and Bryan, Jennifer and Chang, Winston and McGowan, Lucy D'Agostino and Francois, Romain and Grolemund, Garrett and Hayes, Alex and Henry, Lionel and Hester, Jim and others},

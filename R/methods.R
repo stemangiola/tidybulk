@@ -3698,13 +3698,15 @@ setGeneric("get_bibliography", function(.data)
 	)
 		stop("tidybulk says: the attributes (attributes(...)) including the method tracking for for this object appear to be absent.")
 
+	default_methods = c("tidybulk", "tidyverse")
+	
 	my_methods =
 		.data %>%
 		attr("internals") %>%
 		.[["methods_used"]]
 
 	my_bibliography() %>%
-		`[` (my_methods) %>%
+		.[c(default_methods, my_methods)] %>%
 		unlist %>%
 		writeLines()
 
