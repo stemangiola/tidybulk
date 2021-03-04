@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -291,7 +291,7 @@
 <p>A `SummarizedExperiment` object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a></p>
 <p>This function reduces the dimensions of the transcript abundances.
 It can use multi-dimensional scaling (MDS; DOI.org/10.1186/gb-2010-11-3-r25),
 principal component analysis (PCA), or tSNE (Jesse Krijthe et al. 2018)</p>
@@ -306,24 +306,24 @@ Rtsne::Rtsne(data, ...)</p>
     <pre class="examples"><div class='input'>
 
 
-<span class='va'>counts.MDS</span> <span class='op'>=</span>  
- <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+<span class='va'>counts.MDS</span> <span class='op'>=</span>
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
  <span class='fu'>reduce_dimensions</span><span class='op'>(</span> method<span class='op'>=</span><span class='st'>"MDS"</span>, .dims <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results do `attr(..., "internals")$MDS`</span></div><div class='input'>
 
-<span class='va'>counts.PCA</span> <span class='op'>=</span>  
- <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+<span class='va'>counts.PCA</span> <span class='op'>=</span>
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
  <span class='fu'>reduce_dimensions</span><span class='op'>(</span>method<span class='op'>=</span><span class='st'>"PCA"</span>, .dims <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>Getting the 182 most variable genes</span></div><div class='output co'>#&gt; <span class='message'>Fraction of variance explained by the selected principal components</span></div><div class='output co'>#&gt; <span class='message'><span style='color: #555555;'># A tibble: 3 x 2</span><span></span>
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>Getting the 182 most variable genes</span></div><div class='output co'>#&gt; <span class='message'>Fraction of variance explained by the selected principal components</span></div><div class='output co'>#&gt; <span class='message'><span style='color: #949494;'># A tibble: 3 x 2</span><span></span>
 #&gt; <span class='message'>  `Fraction of variance`    PC</span>
-#&gt; <span class='message'>                   </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span></span>
-#&gt; <span class='message'></span><span style='color: #555555;'>1</span><span>                 0.598      1</span>
-#&gt; <span class='message'></span><span style='color: #555555;'>2</span><span>                 0.302      2</span>
-#&gt; <span class='message'></span><span style='color: #555555;'>3</span><span>                 0.085</span><span style='text-decoration: underline;'>2</span><span>     3</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results do `attr(..., "internals")$PCA`</span></div><div class='input'>
+#&gt; <span class='message'>                   </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span></span>
+#&gt; <span class='message'></span><span style='color: #BCBCBC;'>1</span><span>                 0.598      1</span>
+#&gt; <span class='message'></span><span style='color: #BCBCBC;'>2</span><span>                 0.302      2</span>
+#&gt; <span class='message'></span><span style='color: #BCBCBC;'>3</span><span>                 0.085</span><span style='text-decoration: underline;'>2</span><span>     3</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results do `attr(..., "internals")$PCA`</span></div><div class='input'>
 
 
 </div></span></pre>

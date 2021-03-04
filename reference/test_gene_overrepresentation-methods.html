@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -135,40 +135,60 @@
 
     <pre class="usage"><span class='fu'>test_gene_overrepresentation</span><span class='op'>(</span>
   <span class='va'>.data</span>,
-  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>.entrez</span>,
   <span class='va'>.do_test</span>,
   <span class='va'>species</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   gene_set <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span>
 
 <span class='co'># S4 method for spec_tbl_df</span>
 <span class='fu'>test_gene_overrepresentation</span><span class='op'>(</span>
   <span class='va'>.data</span>,
-  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>.entrez</span>,
   <span class='va'>.do_test</span>,
   <span class='va'>species</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   gene_set <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span>
 
 <span class='co'># S4 method for tbl_df</span>
 <span class='fu'>test_gene_overrepresentation</span><span class='op'>(</span>
   <span class='va'>.data</span>,
-  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>.entrez</span>,
   <span class='va'>.do_test</span>,
   <span class='va'>species</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   gene_set <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span>
 
 <span class='co'># S4 method for tidybulk</span>
 <span class='fu'>test_gene_overrepresentation</span><span class='op'>(</span>
   <span class='va'>.data</span>,
-  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>.entrez</span>,
   <span class='va'>.do_test</span>,
   <span class='va'>species</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  gene_set <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
+
+<span class='co'># S4 method for SummarizedExperiment</span>
+<span class='fu'>test_gene_overrepresentation</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>.entrez</span>,
+  <span class='va'>.do_test</span>,
+  <span class='va'>species</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  gene_set <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
+
+<span class='co'># S4 method for RangedSummarizedExperiment</span>
+<span class='fu'>test_gene_overrepresentation</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>.entrez</span>,
+  <span class='va'>.do_test</span>,
+  <span class='va'>species</span>,
+  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   gene_set <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
@@ -178,10 +198,6 @@
     <tr>
       <th>.data</th>
       <td><p>A `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; |</p></td>
-    </tr>
-    <tr>
-      <th>.sample</th>
-      <td><p>The name of the sample column</p></td>
     </tr>
     <tr>
       <th>.entrez</th>
@@ -196,6 +212,10 @@
       <td><p>A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")</p></td>
     </tr>
     <tr>
+      <th>.sample</th>
+      <td><p>The name of the sample column</p></td>
+    </tr>
+    <tr>
       <th>gene_set</th>
       <td><p>A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.</p></td>
     </tr>
@@ -204,12 +224,14 @@
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A `tbl` object</p>
-<p>A `tbl` object</p>
-<p>A `tbl` object</p>
-<p>A `tbl` object</p>
+<p>A `spec_tbl_df` object</p>
+<p>A `tbl_df` object</p>
+<p>A `tidybulk` object</p>
+<p>A `SummarizedExperiment` object</p>
+<p>A `RangedSummarizedExperiment` object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a></p>
 <p>This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
 This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.</p>
 <p>Undelying method:
@@ -239,20 +261,20 @@ This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the ba
     species<span class='op'>=</span><span class='st'>"Homo sapiens"</span>,
    gene_set<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"C2"</span><span class='op'>)</span>
   <span class='op'>)</span>
-</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 59 x 10</span><span>
-#&gt;    gs_cat ID    Description GeneRatio BgRatio  pvalue p.adjust  qvalue Count
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>    </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>   </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span> C2     HOFF… HOFFMAN_CL… 1/4       10/215… 0.001</span><span style='text-decoration: underline;'>85</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #555555;'> 2</span><span> C2     PEDR… PEDRIOLI_M… 2/4       412/21… 0.002</span><span style='text-decoration: underline;'>13</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     2
-#&gt; </span><span style='color: #555555;'> 3</span><span> C2     LIM_… LIM_MAMMAR… 1/4       14/215… 0.002</span><span style='text-decoration: underline;'>59</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #555555;'> 4</span><span> C2     GAVI… GAVIN_IL2_… 1/4       19/215… 0.003</span><span style='text-decoration: underline;'>52</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #555555;'> 5</span><span> C2     MYLL… MYLLYKANGA… 1/4       19/215… 0.003</span><span style='text-decoration: underline;'>52</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #555555;'> 6</span><span> C2     REAC… REACTOME_S… 1/4       26/215… 0.004</span><span style='text-decoration: underline;'>81</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #555555;'> 7</span><span> C2     REAC… REACTOME_T… 1/4       29/215… 0.005</span><span style='text-decoration: underline;'>36</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #555555;'> 8</span><span> C2     PEPP… PEPPER_CHR… 1/4       32/215… 0.005</span><span style='text-decoration: underline;'>92</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #555555;'> 9</span><span> C2     VALK… VALK_AML_C… 1/4       34/215… 0.006</span><span style='text-decoration: underline;'>29</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #555555;'>10</span><span> C2     JAER… JAERVINEN_… 1/4       40/215… 0.007</span><span style='text-decoration: underline;'>39</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #555555;'># … with 49 more rows, and 1 more variable: entrez </span><span style='color: #555555;font-style: italic;'>&lt;list&gt;</span><span></div><div class='input'>
+</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 59 x 10</span><span>
+#&gt;    gs_cat ID       Description  GeneRatio BgRatio  pvalue p.adjust  qvalue Count
+#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>   </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> C2     HOFFMAN… HOFFMAN_CLO… 1/4       10/215… 0.001</span><span style='text-decoration: underline;'>85</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> C2     PEDRIOL… PEDRIOLI_MI… 2/4       412/21… 0.002</span><span style='text-decoration: underline;'>13</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     2
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> C2     LIM_MAM… LIM_MAMMARY… 1/4       14/215… 0.002</span><span style='text-decoration: underline;'>59</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> C2     GAVIN_I… GAVIN_IL2_R… 1/4       19/215… 0.003</span><span style='text-decoration: underline;'>52</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> C2     MYLLYKA… MYLLYKANGAS… 1/4       19/215… 0.003</span><span style='text-decoration: underline;'>52</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> C2     REACTOM… REACTOME_SY… 1/4       26/215… 0.004</span><span style='text-decoration: underline;'>81</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> C2     REACTOM… REACTOME_TN… 1/4       29/215… 0.005</span><span style='text-decoration: underline;'>36</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> C2     PEPPER_… PEPPER_CHRO… 1/4       32/215… 0.005</span><span style='text-decoration: underline;'>92</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> C2     VALK_AM… VALK_AML_CL… 1/4       34/215… 0.006</span><span style='text-decoration: underline;'>29</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> C2     JAERVIN… JAERVINEN_A… 1/4       40/215… 0.007</span><span style='text-decoration: underline;'>39</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
+#&gt; </span><span style='color: #949494;'># … with 49 more rows, and 1 more variable: entrez &lt;list&gt;</span><span></div><div class='input'>
 
 </div></span></pre>
   </div>

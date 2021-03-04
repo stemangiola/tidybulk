@@ -41,7 +41,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -110,7 +110,12 @@
 
 [![Build Status](https://travis-ci.org/stemangiola/tidybulk.svg?branch=master)](https://travis-ci.org/stemangiola/tidybulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/tidybulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/tidybulk?branch=master)
 
---><p><strong>IMPORTANT!</strong> From version 1.1.6, the detection of abundant/lowly abundant transcripts has to be done explicitly (<strong>identify_abundant()</strong>; you will be warned otherwise). This because, it is better to make each function do one thing only, without hidden/implicit procedures (as stated in the tidy data manifesto). This improves logical flow, and software modularity.</p>
+-->
+</div>
+<div id="section-1" class="section level1">
+<h1 class="hasAnchor">
+<a href="#section-1" class="anchor"></a><img src="inst/new_SE_usage-01.png" width="800px">
+</h1>
 <div id="functionsutilities-available" class="section level2">
 <h2 class="hasAnchor">
 <a href="#functionsutilities-available" class="anchor"></a>Functions/utilities available</h2>
@@ -301,7 +306,7 @@
 <a href="#create-tidybulk-tibble" class="anchor"></a>Create <code>tidybulk</code> tibble.</h2>
 <p>It memorises key column names</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tt</span> <span class="op">=</span> <span class="va">counts</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/tidybulk.html">tidybulk</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">transcript</span>, <span class="va">count</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">tt</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="reference/counts.html">counts</a></span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/tidybulk.html">tidybulk</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">transcript</span>, <span class="va">count</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="get-the-bibliography-of-your-workflow" class="section level2">
 <h2 class="hasAnchor">
@@ -440,22 +445,22 @@
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span>  <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">## # A tibble: 48 x 15</span></span>
-<span id="cb14-2"><a href="#cb14-2"></a><span class="co">##     Dim1  Dim2   Dim3    Dim4    Dim5   Dim6 sample `Cell type` time  condition</span></span>
-<span id="cb14-3"><a href="#cb14-3"></a><span class="co">##    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;    </span></span>
-<span id="cb14-4"><a href="#cb14-4"></a><span class="co">##  1  2.31  1.87 -2.73   0.108   0.0918 -0.515 SRR17… b_cell      0 d   TRUE     </span></span>
-<span id="cb14-5"><a href="#cb14-5"></a><span class="co">##  2  2.30  1.88 -2.77   0.119   0.116  -0.490 SRR17… b_cell      1 d   TRUE     </span></span>
-<span id="cb14-6"><a href="#cb14-6"></a><span class="co">##  3  2.27  1.83 -2.73   0.169   0.121  -0.481 SRR17… b_cell      3 d   TRUE     </span></span>
-<span id="cb14-7"><a href="#cb14-7"></a><span class="co">##  4  2.29  1.87 -2.78   0.166   0.0763 -0.471 SRR17… b_cell      7 d   TRUE     </span></span>
-<span id="cb14-8"><a href="#cb14-8"></a><span class="co">##  5 -1.50 -1.79 -1.01  -0.171  -1.25   -0.516 SRR17… dendritic_… 0 d   FALSE    </span></span>
-<span id="cb14-9"><a href="#cb14-9"></a><span class="co">##  6 -1.45 -1.87 -0.925 -0.0722 -1.15   -0.534 SRR17… dendritic_… 1 d   FALSE    </span></span>
-<span id="cb14-10"><a href="#cb14-10"></a><span class="co">##  7 -1.46 -1.79 -0.989 -0.230  -1.42   -0.503 SRR17… dendritic_… 3 d   FALSE    </span></span>
-<span id="cb14-11"><a href="#cb14-11"></a><span class="co">##  8 -1.41 -1.88 -0.981 -0.123  -1.23   -0.511 SRR17… dendritic_… 7 d   FALSE    </span></span>
-<span id="cb14-12"><a href="#cb14-12"></a><span class="co">##  9 -2.07 -1.71 -0.936 -0.445   1.16   -0.519 SRR17… monocyte    0 d   FALSE    </span></span>
-<span id="cb14-13"><a href="#cb14-13"></a><span class="co">## 10 -1.88 -1.69 -0.788 -0.561   1.15   -0.512 SRR17… monocyte    1 d   FALSE    </span></span>
-<span id="cb14-14"><a href="#cb14-14"></a><span class="co">## # … with 38 more rows, and 5 more variables: batch &lt;dbl&gt;,</span></span>
-<span id="cb14-15"><a href="#cb14-15"></a><span class="co">## #   factor_of_interest &lt;chr&gt;, `merged transcripts` &lt;dbl&gt;, TMM &lt;dbl&gt;,</span></span>
-<span id="cb14-16"><a href="#cb14-16"></a><span class="co">## #   multiplier &lt;dbl&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">## # A tibble: 48 x 16</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="co">##        Dim1   Dim2    Dim3     Dim4    Dim5  Dim6 sample `Cell type` time </span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="co">##       &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt;</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="co">##  1 -1.52     0.670 -2.08    0.0976   0.125  0.190 SRR17… b_cell      0 d  </span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="co">##  2 -1.52     0.657 -2.11    0.0803   0.0927 0.193 SRR17… b_cell      1 d  </span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="co">##  3 -1.50     0.620 -2.02    0.124    0.0997 0.178 SRR17… b_cell      3 d  </span></span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="co">##  4 -1.51     0.628 -2.08    0.149    0.0934 0.159 SRR17… b_cell      7 d  </span></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="co">##  5  0.00836 -1.87   0.0561 -0.0444  -0.786  0.174 SRR17… dendritic_… 0 d  </span></span>
+<span id="cb14-9"><a href="#cb14-9"></a><span class="co">##  6 -0.0532  -1.85   0.0786 -0.00612 -0.709  0.168 SRR17… dendritic_… 1 d  </span></span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="co">##  7  0.0255  -1.86   0.0147 -0.0580  -0.947  0.139 SRR17… dendritic_… 3 d  </span></span>
+<span id="cb14-11"><a href="#cb14-11"></a><span class="co">##  8 -0.0947  -1.86   0.0661 -0.00969 -0.721  0.145 SRR17… dendritic_… 7 d  </span></span>
+<span id="cb14-12"><a href="#cb14-12"></a><span class="co">##  9  0.257   -2.00   0.187  -0.314    0.746  0.157 SRR17… monocyte    0 d  </span></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="co">## 10  0.265   -1.95   0.185  -0.299    0.732  0.146 SRR17… monocyte    1 d  </span></span>
+<span id="cb14-14"><a href="#cb14-14"></a><span class="co">## # … with 38 more rows, and 7 more variables: condition &lt;chr&gt;, batch &lt;chr&gt;,</span></span>
+<span id="cb14-15"><a href="#cb14-15"></a><span class="co">## #   factor_of_interest &lt;chr&gt;, `merged transcripts` &lt;dbl&gt;, .abundant &lt;lgl&gt;,</span></span>
+<span id="cb14-16"><a href="#cb14-16"></a><span class="co">## #   TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -486,22 +491,22 @@
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.PCA</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"PC"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="co">## # A tibble: 48 x 15</span></span>
-<span id="cb19-2"><a href="#cb19-2"></a><span class="co">##      PC1      PC2    PC3     PC4     PC5   PC6 sample `Cell type` time </span></span>
-<span id="cb19-3"><a href="#cb19-3"></a><span class="co">##    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt;</span></span>
-<span id="cb19-4"><a href="#cb19-4"></a><span class="co">##  1 -17.3 -20.4    -0.745 -0.205   0.0756 -3.05 SRR17… b_cell      0 d  </span></span>
-<span id="cb19-5"><a href="#cb19-5"></a><span class="co">##  2 -17.4 -20.6    -0.580 -0.558  -0.139  -2.91 SRR17… b_cell      1 d  </span></span>
-<span id="cb19-6"><a href="#cb19-6"></a><span class="co">##  3 -17.1 -20.0    -0.345 -1.08   -0.220  -3.02 SRR17… b_cell      3 d  </span></span>
-<span id="cb19-7"><a href="#cb19-7"></a><span class="co">##  4 -17.4 -20.7    -0.484 -0.713  -0.0373 -3.01 SRR17… b_cell      7 d  </span></span>
-<span id="cb19-8"><a href="#cb19-8"></a><span class="co">##  5  12.1  -0.778  10.8    0.537   5.09   -2.17 SRR17… dendritic_… 0 d  </span></span>
-<span id="cb19-9"><a href="#cb19-9"></a><span class="co">##  6  11.8   0.0561 11.0    0.0632  4.77   -2.13 SRR17… dendritic_… 1 d  </span></span>
-<span id="cb19-10"><a href="#cb19-10"></a><span class="co">##  7  11.8  -0.652  10.7    0.808   5.81   -1.94 SRR17… dendritic_… 3 d  </span></span>
-<span id="cb19-11"><a href="#cb19-11"></a><span class="co">##  8  11.5  -0.565  11.1    0.0806  4.86   -2.22 SRR17… dendritic_… 7 d  </span></span>
-<span id="cb19-12"><a href="#cb19-12"></a><span class="co">##  9  16.7  -1.20    8.18   2.38   -4.28   -2.85 SRR17… monocyte    0 d  </span></span>
-<span id="cb19-13"><a href="#cb19-13"></a><span class="co">## 10  15.1  -0.247   8.00   2.68   -4.40   -3.17 SRR17… monocyte    1 d  </span></span>
-<span id="cb19-14"><a href="#cb19-14"></a><span class="co">## # … with 38 more rows, and 6 more variables: condition &lt;chr&gt;, batch &lt;dbl&gt;,</span></span>
-<span id="cb19-15"><a href="#cb19-15"></a><span class="co">## #   factor_of_interest &lt;chr&gt;, `merged transcripts` &lt;dbl&gt;, TMM &lt;dbl&gt;,</span></span>
-<span id="cb19-16"><a href="#cb19-16"></a><span class="co">## #   multiplier &lt;dbl&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="co">## # A tibble: 48 x 16</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="co">##        PC1   PC2    PC3     PC4    PC5   PC6 sample `Cell type` time  condition</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="co">##      &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;    </span></span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="co">##  1 -12.6   -2.52 -14.9  -0.424  -0.592 -1.22 SRR17… b_cell      0 d   TRUE     </span></span>
+<span id="cb19-5"><a href="#cb19-5"></a><span class="co">##  2 -12.6   -2.57 -15.2  -0.140  -0.388 -1.30 SRR17… b_cell      1 d   TRUE     </span></span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="co">##  3 -12.6   -2.41 -14.5  -0.714  -0.344 -1.10 SRR17… b_cell      3 d   TRUE     </span></span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="co">##  4 -12.5   -2.34 -14.9  -0.816  -0.427 -1.00 SRR17… b_cell      7 d   TRUE     </span></span>
+<span id="cb19-8"><a href="#cb19-8"></a><span class="co">##  5   0.189 13.0    1.66 -0.0269  4.64  -1.35 SRR17… dendritic_… 0 d   FALSE    </span></span>
+<span id="cb19-9"><a href="#cb19-9"></a><span class="co">##  6  -0.293 12.9    1.76 -0.0727  4.21  -1.28 SRR17… dendritic_… 1 d   FALSE    </span></span>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="co">##  7   0.407 13.0    1.42 -0.0529  5.37  -1.01 SRR17… dendritic_… 3 d   FALSE    </span></span>
+<span id="cb19-11"><a href="#cb19-11"></a><span class="co">##  8  -0.620 13.0    1.73 -0.201   4.17  -1.07 SRR17… dendritic_… 7 d   FALSE    </span></span>
+<span id="cb19-12"><a href="#cb19-12"></a><span class="co">##  9   2.56  13.5    2.32  2.03   -4.32  -1.22 SRR17… monocyte    0 d   FALSE    </span></span>
+<span id="cb19-13"><a href="#cb19-13"></a><span class="co">## 10   2.65  13.1    2.21  1.80   -4.29  -1.30 SRR17… monocyte    1 d   FALSE    </span></span>
+<span id="cb19-14"><a href="#cb19-14"></a><span class="co">## # … with 38 more rows, and 6 more variables: batch &lt;chr&gt;,</span></span>
+<span id="cb19-15"><a href="#cb19-15"></a><span class="co">## #   factor_of_interest &lt;chr&gt;, `merged transcripts` &lt;dbl&gt;, .abundant &lt;lgl&gt;,</span></span>
+<span id="cb19-16"><a href="#cb19-16"></a><span class="co">## #   TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.PCA</span> <span class="op">%&gt;%</span>
      <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -544,18 +549,18 @@
     <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <div class="sourceCode" id="cb24"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="co">## # A tibble: 251 x 4</span></span>
-<span id="cb24-2"><a href="#cb24-2"></a><span class="co">##      tSNE1  tSNE2 sample                       Call </span></span>
-<span id="cb24-3"><a href="#cb24-3"></a><span class="co">##      &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;</span></span>
-<span id="cb24-4"><a href="#cb24-4"></a><span class="co">##  1   9.36    7.99 TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
-<span id="cb24-5"><a href="#cb24-5"></a><span class="co">##  2  -9.20    2.81 TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
-<span id="cb24-6"><a href="#cb24-6"></a><span class="co">##  3  14.6    16.0  TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
-<span id="cb24-7"><a href="#cb24-7"></a><span class="co">##  4   5.10   -9.53 TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
-<span id="cb24-8"><a href="#cb24-8"></a><span class="co">##  5   6.18    6.32 TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
-<span id="cb24-9"><a href="#cb24-9"></a><span class="co">##  6  -0.550  13.1  TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
-<span id="cb24-10"><a href="#cb24-10"></a><span class="co">##  7 -37.6    -4.31 TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
-<span id="cb24-11"><a href="#cb24-11"></a><span class="co">##  8  -2.72  -17.1  TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
-<span id="cb24-12"><a href="#cb24-12"></a><span class="co">##  9  -2.66  -15.1  TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
-<span id="cb24-13"><a href="#cb24-13"></a><span class="co">## 10  21.8    12.9  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="co">##     tSNE1   tSNE2 sample                       Call </span></span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="co">##     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="co">##  1   8.68  10.7   TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="co">##  2  -4.96   4.18  TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
+<span id="cb24-6"><a href="#cb24-6"></a><span class="co">##  3   5.76   0.187 TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
+<span id="cb24-7"><a href="#cb24-7"></a><span class="co">##  4   8.18  -8.05  TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
+<span id="cb24-8"><a href="#cb24-8"></a><span class="co">##  5   8.26   6.69  TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
+<span id="cb24-9"><a href="#cb24-9"></a><span class="co">##  6  -4.24  -2.30  TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
+<span id="cb24-10"><a href="#cb24-10"></a><span class="co">##  7 -31.2  -10.3   TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
+<span id="cb24-11"><a href="#cb24-11"></a><span class="co">##  8   3.27 -13.2   TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
+<span id="cb24-12"><a href="#cb24-12"></a><span class="co">##  9   2.03 -13.8   TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
+<span id="cb24-13"><a href="#cb24-13"></a><span class="co">## 10  23.3   10.1   TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
 <span id="cb24-14"><a href="#cb24-14"></a><span class="co">## # … with 241 more rows</span></span></code></pre></div>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
@@ -603,7 +608,7 @@
 <p><strong>Rotated</strong> On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.MDS.rotated</span> <span class="op">%&gt;%</span>
-    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1 rotated 45`</span>, y<span class="op">=</span><span class="va">`Dim2 rotated 45`</span>, color<span class="op">=</span><span class="va">`Cell type`</span> <span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1_rotated_45`</span>, y<span class="op">=</span><span class="va">`Dim2_rotated_45`</span>, color<span class="op">=</span><span class="va">`Cell type`</span> <span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="va">my_theme</span></code></pre></div>
 <p><img src="reference/figures/plot_rotate_2-1.png"><!-- --></p>
@@ -699,7 +704,7 @@
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.cibersort</span> <span class="op">=</span>
     <span class="va">tt</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span><span class="op">(</span>action<span class="op">=</span><span class="st">"get"</span>, cores<span class="op">=</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
+    <span class="fu"><a href="reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span><span class="op">(</span>action<span class="op">=</span><span class="st">"get"</span>, cores<span class="op">=</span><span class="fl">1</span>, prefix <span class="op">=</span> <span class="st">"cibersort:"</span><span class="op">)</span> </code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -735,20 +740,20 @@
 <p>We can also perform a statistical test on the differential cell-type abundance across conditions</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R">    <span class="va">tt</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="reference/test_differential_cellularity.html">test_differential_cellularity</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">condition</span> <span class="op">)</span></code></pre></div>
+    <span class="fu"><a href="reference/test_differential_cellularity.html">test_differential_cellularity</a></span><span class="op">(</span><span class="va">.</span> <span class="op">~</span> <span class="va">condition</span> <span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb39"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="co">## # A tibble: 22 x 7</span></span>
 <span id="cb39-2"><a href="#cb39-2"></a><span class="co">##    .cell_type cell_type_propo… `estimate_(Inte… estimate_condit…</span></span>
 <span id="cb39-3"><a href="#cb39-3"></a><span class="co">##    &lt;chr&gt;      &lt;list&gt;                      &lt;dbl&gt;            &lt;dbl&gt;</span></span>
-<span id="cb39-4"><a href="#cb39-4"></a><span class="co">##  1 B cells n… &lt;tibble [48 × 9…            -3.38           3.17  </span></span>
-<span id="cb39-5"><a href="#cb39-5"></a><span class="co">##  2 B cells m… &lt;tibble [48 × 9…            -2.98           2.83  </span></span>
-<span id="cb39-6"><a href="#cb39-6"></a><span class="co">##  3 Plasma ce… &lt;tibble [48 × 9…            -7.09          -0.508 </span></span>
-<span id="cb39-7"><a href="#cb39-7"></a><span class="co">##  4 T cells C… &lt;tibble [48 × 9…            -4.05          -0.445 </span></span>
-<span id="cb39-8"><a href="#cb39-8"></a><span class="co">##  5 T cells C… &lt;tibble [48 × 9…            -1.93           0.0167</span></span>
-<span id="cb39-9"><a href="#cb39-9"></a><span class="co">##  6 T cells C… &lt;tibble [48 × 9…            -3.07          -0.533 </span></span>
-<span id="cb39-10"><a href="#cb39-10"></a><span class="co">##  7 T cells C… &lt;tibble [48 × 9…            -5.97           1.46  </span></span>
-<span id="cb39-11"><a href="#cb39-11"></a><span class="co">##  8 T cells f… &lt;tibble [48 × 9…            -5.17          -0.469 </span></span>
-<span id="cb39-12"><a href="#cb39-12"></a><span class="co">##  9 T cells r… &lt;tibble [48 × 9…            -5.62          -0.602 </span></span>
-<span id="cb39-13"><a href="#cb39-13"></a><span class="co">## 10 T cells g… &lt;tibble [48 × 9…            -5.53           1.02  </span></span>
+<span id="cb39-4"><a href="#cb39-4"></a><span class="co">##  1 B cells n… &lt;tibble [48 × 8…            -2.97            2.33 </span></span>
+<span id="cb39-5"><a href="#cb39-5"></a><span class="co">##  2 B cells m… &lt;tibble [48 × 8…            -4.79            1.86 </span></span>
+<span id="cb39-6"><a href="#cb39-6"></a><span class="co">##  3 Plasma ce… &lt;tibble [48 × 8…            -5.44           -0.503</span></span>
+<span id="cb39-7"><a href="#cb39-7"></a><span class="co">##  4 T cells C… &lt;tibble [48 × 8…            -2.28            0.883</span></span>
+<span id="cb39-8"><a href="#cb39-8"></a><span class="co">##  5 T cells C… &lt;tibble [48 × 8…            -2.79           -0.637</span></span>
+<span id="cb39-9"><a href="#cb39-9"></a><span class="co">##  6 T cells C… &lt;tibble [48 × 8…            -2.60            0.320</span></span>
+<span id="cb39-10"><a href="#cb39-10"></a><span class="co">##  7 T cells C… &lt;tibble [48 × 8…            -3.72            2.14 </span></span>
+<span id="cb39-11"><a href="#cb39-11"></a><span class="co">##  8 T cells f… &lt;tibble [48 × 8…            -5.20           -0.251</span></span>
+<span id="cb39-12"><a href="#cb39-12"></a><span class="co">##  9 T cells r… &lt;tibble [48 × 8…            -4.80            1.75 </span></span>
+<span id="cb39-13"><a href="#cb39-13"></a><span class="co">## 10 T cells g… &lt;tibble [48 × 8…            -5.34           -0.219</span></span>
 <span id="cb39-14"><a href="#cb39-14"></a><span class="co">## # … with 12 more rows, and 3 more variables: std.error_conditionTRUE &lt;dbl&gt;,</span></span>
 <span id="cb39-15"><a href="#cb39-15"></a><span class="co">## #   statistic_conditionTRUE &lt;dbl&gt;, p.value_conditionTRUE &lt;dbl&gt;</span></span></code></pre></div>
 <p>We can also perform regression analysis with censored data (coxph).</p>
@@ -803,16 +808,16 @@
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat">Seurat</a></span><span class="op">)</span>
 
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/CreateSeuratObject.html">CreateSeuratObject</a></span><span class="op">(</span><span class="va">count_m</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/ScaleData.html">ScaleData</a></span><span class="op">(</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/CreateSeuratObject.html">CreateSeuratObject</a></span><span class="op">(</span><span class="va">count_m</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html">ScaleData</a></span><span class="op">(</span>
     <span class="va">snn</span>, display.progress <span class="op">=</span> <span class="cn">TRUE</span>,
     num.cores<span class="op">=</span><span class="fl">4</span>, do.par <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">snn</span>, npcs <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/FindNeighbors.html">FindNeighbors</a></span><span class="op">(</span><span class="va">snn</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/FindClusters.html">FindClusters</a></span><span class="op">(</span><span class="va">snn</span>, method <span class="op">=</span> <span class="st">"igraph"</span>, <span class="va">...</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">snn</span>, npcs <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html">FindNeighbors</a></span><span class="op">(</span><span class="va">snn</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html">FindClusters</a></span><span class="op">(</span><span class="va">snn</span>, method <span class="op">=</span> <span class="st">"igraph"</span>, <span class="va">...</span><span class="op">)</span>
 <span class="va">snn</span> <span class="op">=</span> <span class="va">snn</span><span class="op">[[</span><span class="st">"seurat_clusters"</span><span class="op">]</span><span class="op">]</span>
 
 <span class="va">snn</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="reference/counts.html">counts</a></span><span class="op">[</span>
@@ -827,18 +832,18 @@
     <span class="fu"><a href="reference/pivot_sample.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <div class="sourceCode" id="cb47"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="co">## # A tibble: 251 x 5</span></span>
-<span id="cb47-2"><a href="#cb47-2"></a><span class="co">##      tSNE1  tSNE2 sample                       Call  `cluster SNN`</span></span>
-<span id="cb47-3"><a href="#cb47-3"></a><span class="co">##      &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt; &lt;fct&gt;        </span></span>
-<span id="cb47-4"><a href="#cb47-4"></a><span class="co">##  1   9.36    7.99 TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            </span></span>
-<span id="cb47-5"><a href="#cb47-5"></a><span class="co">##  2  -9.20    2.81 TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            </span></span>
-<span id="cb47-6"><a href="#cb47-6"></a><span class="co">##  3  14.6    16.0  TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            </span></span>
-<span id="cb47-7"><a href="#cb47-7"></a><span class="co">##  4   5.10   -9.53 TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            </span></span>
-<span id="cb47-8"><a href="#cb47-8"></a><span class="co">##  5   6.18    6.32 TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            </span></span>
-<span id="cb47-9"><a href="#cb47-9"></a><span class="co">##  6  -0.550  13.1  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            </span></span>
-<span id="cb47-10"><a href="#cb47-10"></a><span class="co">##  7 -37.6    -4.31 TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            </span></span>
-<span id="cb47-11"><a href="#cb47-11"></a><span class="co">##  8  -2.72  -17.1  TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            </span></span>
-<span id="cb47-12"><a href="#cb47-12"></a><span class="co">##  9  -2.66  -15.1  TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            </span></span>
-<span id="cb47-13"><a href="#cb47-13"></a><span class="co">## 10  21.8    12.9  TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            </span></span>
+<span id="cb47-2"><a href="#cb47-2"></a><span class="co">##     tSNE1   tSNE2 sample                       Call  `cluster SNN`</span></span>
+<span id="cb47-3"><a href="#cb47-3"></a><span class="co">##     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt; &lt;fct&gt;        </span></span>
+<span id="cb47-4"><a href="#cb47-4"></a><span class="co">##  1   8.68  10.7   TCGA-A1-A0SD-01A-11R-A115-07 LumA  1            </span></span>
+<span id="cb47-5"><a href="#cb47-5"></a><span class="co">##  2  -4.96   4.18  TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            </span></span>
+<span id="cb47-6"><a href="#cb47-6"></a><span class="co">##  3   5.76   0.187 TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            </span></span>
+<span id="cb47-7"><a href="#cb47-7"></a><span class="co">##  4   8.18  -8.05  TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            </span></span>
+<span id="cb47-8"><a href="#cb47-8"></a><span class="co">##  5   8.26   6.69  TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            </span></span>
+<span id="cb47-9"><a href="#cb47-9"></a><span class="co">##  6  -4.24  -2.30  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            </span></span>
+<span id="cb47-10"><a href="#cb47-10"></a><span class="co">##  7 -31.2  -10.3   TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            </span></span>
+<span id="cb47-11"><a href="#cb47-11"></a><span class="co">##  8   3.27 -13.2   TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            </span></span>
+<span id="cb47-12"><a href="#cb47-12"></a><span class="co">##  9   2.03 -13.8   TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            </span></span>
+<span id="cb47-13"><a href="#cb47-13"></a><span class="co">## 10  23.3   10.1   TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            </span></span>
 <span id="cb47-14"><a href="#cb47-14"></a><span class="co">## # … with 241 more rows</span></span></code></pre></div>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.SNN</span> <span class="op">%&gt;%</span>
@@ -856,18 +861,18 @@
     action<span class="op">=</span><span class="st">"get"</span>
    <span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb50"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="co">## # A tibble: 500 x 7</span></span>
-<span id="cb50-2"><a href="#cb50-2"></a><span class="co">##    ens               logFC logCPM      F   PValue      FDR significant</span></span>
-<span id="cb50-3"><a href="#cb50-3"></a><span class="co">##    &lt;chr&gt;             &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;lgl&gt;      </span></span>
-<span id="cb50-4"><a href="#cb50-4"></a><span class="co">##  1 ENSG00000002834 -0.981   10.7  42.9   3.13e-10 8.86e-10 TRUE       </span></span>
-<span id="cb50-5"><a href="#cb50-5"></a><span class="co">##  2 ENSG00000003989 -3.54     9.92 81.9   3.99e-17 2.10e-16 TRUE       </span></span>
-<span id="cb50-6"><a href="#cb50-6"></a><span class="co">##  3 ENSG00000004478 -0.154   10.6   1.20  2.74e- 1 2.96e- 1 FALSE      </span></span>
-<span id="cb50-7"><a href="#cb50-7"></a><span class="co">##  4 ENSG00000006125 -0.669   10.7  30.5   8.14e- 8 1.75e- 7 TRUE       </span></span>
-<span id="cb50-8"><a href="#cb50-8"></a><span class="co">##  5 ENSG00000008988  0.826   11.3  78.4   1.49e-16 7.45e-16 TRUE       </span></span>
-<span id="cb50-9"><a href="#cb50-9"></a><span class="co">##  6 ENSG00000009307  0.412   11.3  32.1   3.92e- 8 8.72e- 8 TRUE       </span></span>
-<span id="cb50-10"><a href="#cb50-10"></a><span class="co">##  7 ENSG00000010278  0.0782  10.5   0.569 4.51e- 1 4.73e- 1 FALSE      </span></span>
-<span id="cb50-11"><a href="#cb50-11"></a><span class="co">##  8 ENSG00000011465 -1.13    11.1  34.5   1.33e- 8 3.19e- 8 TRUE       </span></span>
-<span id="cb50-12"><a href="#cb50-12"></a><span class="co">##  9 ENSG00000012223  0.238   11.8   0.256 6.13e- 1 6.31e- 1 FALSE      </span></span>
-<span id="cb50-13"><a href="#cb50-13"></a><span class="co">## 10 ENSG00000012660 -1.68    10.5  92.0   8.66e-19 5.15e-18 TRUE       </span></span>
+<span id="cb50-2"><a href="#cb50-2"></a><span class="co">##    ens             .abundant   logFC logCPM      F   PValue      FDR</span></span>
+<span id="cb50-3"><a href="#cb50-3"></a><span class="co">##    &lt;chr&gt;           &lt;lgl&gt;       &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb50-4"><a href="#cb50-4"></a><span class="co">##  1 ENSG00000002834 TRUE      -1.01    10.7  43.1   2.95e-10 8.32e-10</span></span>
+<span id="cb50-5"><a href="#cb50-5"></a><span class="co">##  2 ENSG00000003989 TRUE      -3.59     9.93 81.5   4.61e-17 2.50e-16</span></span>
+<span id="cb50-6"><a href="#cb50-6"></a><span class="co">##  3 ENSG00000004478 TRUE      -0.129   10.6   0.819 3.66e- 1 3.89e- 1</span></span>
+<span id="cb50-7"><a href="#cb50-7"></a><span class="co">##  4 ENSG00000006125 TRUE      -0.673   10.7  29.9   1.10e- 7 2.29e- 7</span></span>
+<span id="cb50-8"><a href="#cb50-8"></a><span class="co">##  5 ENSG00000008988 TRUE       0.830   11.3  80.4   6.89e-17 3.66e-16</span></span>
+<span id="cb50-9"><a href="#cb50-9"></a><span class="co">##  6 ENSG00000009307 TRUE       0.405   11.3  30.2   9.30e- 8 1.96e- 7</span></span>
+<span id="cb50-10"><a href="#cb50-10"></a><span class="co">##  7 ENSG00000010278 TRUE       0.0907  10.6   0.727 3.95e- 1 4.17e- 1</span></span>
+<span id="cb50-11"><a href="#cb50-11"></a><span class="co">##  8 ENSG00000011465 TRUE      -1.22    11.1  39.6   1.34e- 9 3.47e- 9</span></span>
+<span id="cb50-12"><a href="#cb50-12"></a><span class="co">##  9 ENSG00000012223 TRUE       0.270   11.8   0.327 5.68e- 1 5.84e- 1</span></span>
+<span id="cb50-13"><a href="#cb50-13"></a><span class="co">## 10 ENSG00000012660 TRUE      -1.72    10.5  91.2   1.16e-18 7.06e-18</span></span>
 <span id="cb50-14"><a href="#cb50-14"></a><span class="co">## # … with 490 more rows</span></span></code></pre></div>
 </div>
 <div id="drop-redundant-transcripts" class="section level2">
@@ -984,20 +989,20 @@
 <p>We can add gene full name (and in future description) from symbol identifiers. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt</span> <span class="op">%&gt;%</span> <span class="fu"><a href="reference/describe_transcript.html">describe_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="va">transcript</span>, <span class="va">description</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb60"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="co">## # A tibble: 938,112 x 9</span></span>
+<div class="sourceCode" id="cb60"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="co">## # A tibble: 408,624 x 9</span></span>
 <span id="cb60-2"><a href="#cb60-2"></a><span class="co">##    transcript description sample `Cell type` count time  condition batch</span></span>
-<span id="cb60-3"><a href="#cb60-3"></a><span class="co">##    &lt;chr&gt;      &lt;chr&gt;       &lt;fct&gt;  &lt;fct&gt;       &lt;dbl&gt; &lt;fct&gt; &lt;lgl&gt;     &lt;int&gt;</span></span>
-<span id="cb60-4"><a href="#cb60-4"></a><span class="co">##  1 DDX11L1    DEAD/H-box… SRR17… b_cell         17 0 d   TRUE          0</span></span>
-<span id="cb60-5"><a href="#cb60-5"></a><span class="co">##  2 WASH7P     WASP famil… SRR17… b_cell       3568 0 d   TRUE          0</span></span>
-<span id="cb60-6"><a href="#cb60-6"></a><span class="co">##  3 MIR6859-1  microRNA 6… SRR17… b_cell         57 0 d   TRUE          0</span></span>
-<span id="cb60-7"><a href="#cb60-7"></a><span class="co">##  4 MIR1302-2  microRNA 1… SRR17… b_cell          1 0 d   TRUE          0</span></span>
-<span id="cb60-8"><a href="#cb60-8"></a><span class="co">##  5 FAM138A    family wit… SRR17… b_cell          0 0 d   TRUE          0</span></span>
-<span id="cb60-9"><a href="#cb60-9"></a><span class="co">##  6 OR4F5      olfactory … SRR17… b_cell          0 0 d   TRUE          0</span></span>
-<span id="cb60-10"><a href="#cb60-10"></a><span class="co">##  7 LOC729737  uncharacte… SRR17… b_cell       1764 0 d   TRUE          0</span></span>
-<span id="cb60-11"><a href="#cb60-11"></a><span class="co">##  8 LOC102725… DEAD/H-box… SRR17… b_cell         11 0 d   TRUE          0</span></span>
-<span id="cb60-12"><a href="#cb60-12"></a><span class="co">##  9 MIR6859-2  microRNA 6… SRR17… b_cell         40 0 d   TRUE          0</span></span>
-<span id="cb60-13"><a href="#cb60-13"></a><span class="co">## 10 OR4F29     olfactory … SRR17… b_cell          0 0 d   TRUE          0</span></span>
-<span id="cb60-14"><a href="#cb60-14"></a><span class="co">## # … with 938,102 more rows, and 1 more variable: factor_of_interest &lt;lgl&gt;</span></span></code></pre></div>
+<span id="cb60-3"><a href="#cb60-3"></a><span class="co">##    &lt;chr&gt;      &lt;chr&gt;       &lt;fct&gt;  &lt;fct&gt;       &lt;dbl&gt; &lt;fct&gt; &lt;lgl&gt;     &lt;fct&gt;</span></span>
+<span id="cb60-4"><a href="#cb60-4"></a><span class="co">##  1 DDX11L1    DEAD/H-box… SRR17… b_cell         17 0 d   TRUE      0    </span></span>
+<span id="cb60-5"><a href="#cb60-5"></a><span class="co">##  2 WASH7P     WASP famil… SRR17… b_cell       3568 0 d   TRUE      0    </span></span>
+<span id="cb60-6"><a href="#cb60-6"></a><span class="co">##  3 MIR6859-1  microRNA 6… SRR17… b_cell         57 0 d   TRUE      0    </span></span>
+<span id="cb60-7"><a href="#cb60-7"></a><span class="co">##  4 LOC729737  uncharacte… SRR17… b_cell       1764 0 d   TRUE      0    </span></span>
+<span id="cb60-8"><a href="#cb60-8"></a><span class="co">##  5 MIR6859-2  microRNA 6… SRR17… b_cell         40 0 d   TRUE      0    </span></span>
+<span id="cb60-9"><a href="#cb60-9"></a><span class="co">##  6 LOC100132… uncharacte… SRR17… b_cell       1703 0 d   TRUE      0    </span></span>
+<span id="cb60-10"><a href="#cb60-10"></a><span class="co">##  7 LOC100133… &lt;NA&gt;        SRR17… b_cell       1894 0 d   TRUE      0    </span></span>
+<span id="cb60-11"><a href="#cb60-11"></a><span class="co">##  8 LOC100288… uncharacte… SRR17… b_cell        337 0 d   TRUE      0    </span></span>
+<span id="cb60-12"><a href="#cb60-12"></a><span class="co">##  9 FAM87B     family wit… SRR17… b_cell         56 0 d   TRUE      0    </span></span>
+<span id="cb60-13"><a href="#cb60-13"></a><span class="co">## 10 LINC00115  long inter… SRR17… b_cell         50 0 d   TRUE      0    </span></span>
+<span id="cb60-14"><a href="#cb60-14"></a><span class="co">## # … with 408,614 more rows, and 1 more variable: factor_of_interest &lt;lgl&gt;</span></span></code></pre></div>
 </div>
 <div id="add-versus-get-versus-only-modes" class="section level2">
 <h2 class="hasAnchor">
@@ -1006,20 +1011,20 @@
 <p>(i) with action=“add” outputs the new information joint to the original input data frame (default), (ii) with action=“get” the new information with the sample or transcript relative informatin depending on what the analysis is about, or (iii) with action=“only” just the new information. For example, from this data set</p>
 <div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R">  <span class="va">tt.norm</span></code></pre></div>
-<div class="sourceCode" id="cb62"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="co">## # A tibble: 938,112 x 13</span></span>
+<div class="sourceCode" id="cb62"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="co">## # A tibble: 408,624 x 13</span></span>
 <span id="cb62-2"><a href="#cb62-2"></a><span class="co">##    sample transcript `Cell type` count time  condition batch factor_of_inter…</span></span>
-<span id="cb62-3"><a href="#cb62-3"></a><span class="co">##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;           </span></span>
-<span id="cb62-4"><a href="#cb62-4"></a><span class="co">##  1 SRR17… DDX11L1    b_cell         17 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb62-5"><a href="#cb62-5"></a><span class="co">##  2 SRR17… WASH7P     b_cell       3568 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb62-6"><a href="#cb62-6"></a><span class="co">##  3 SRR17… MIR6859-1  b_cell         57 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb62-7"><a href="#cb62-7"></a><span class="co">##  4 SRR17… MIR1302-2  b_cell          1 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb62-8"><a href="#cb62-8"></a><span class="co">##  5 SRR17… FAM138A    b_cell          0 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb62-9"><a href="#cb62-9"></a><span class="co">##  6 SRR17… OR4F5      b_cell          0 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb62-10"><a href="#cb62-10"></a><span class="co">##  7 SRR17… LOC729737  b_cell       1764 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb62-11"><a href="#cb62-11"></a><span class="co">##  8 SRR17… LOC102725… b_cell         11 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb62-12"><a href="#cb62-12"></a><span class="co">##  9 SRR17… MIR6859-2  b_cell         40 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb62-13"><a href="#cb62-13"></a><span class="co">## 10 SRR17… OR4F29     b_cell          0 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb62-14"><a href="#cb62-14"></a><span class="co">## # … with 938,102 more rows, and 5 more variables: `merged transcripts` &lt;dbl&gt;,</span></span>
+<span id="cb62-3"><a href="#cb62-3"></a><span class="co">##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;           </span></span>
+<span id="cb62-4"><a href="#cb62-4"></a><span class="co">##  1 SRR17… DDX11L1    b_cell         17 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb62-5"><a href="#cb62-5"></a><span class="co">##  2 SRR17… WASH7P     b_cell       3568 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb62-6"><a href="#cb62-6"></a><span class="co">##  3 SRR17… MIR6859-1  b_cell         57 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb62-7"><a href="#cb62-7"></a><span class="co">##  4 SRR17… LOC729737  b_cell       1764 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb62-8"><a href="#cb62-8"></a><span class="co">##  5 SRR17… MIR6859-2  b_cell         40 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb62-9"><a href="#cb62-9"></a><span class="co">##  6 SRR17… LOC100132… b_cell       1703 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb62-10"><a href="#cb62-10"></a><span class="co">##  7 SRR17… LOC100133… b_cell       1894 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb62-11"><a href="#cb62-11"></a><span class="co">##  8 SRR17… LOC100288… b_cell        337 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb62-12"><a href="#cb62-12"></a><span class="co">##  9 SRR17… FAM87B     b_cell         56 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb62-13"><a href="#cb62-13"></a><span class="co">## 10 SRR17… LINC00115  b_cell         50 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb62-14"><a href="#cb62-14"></a><span class="co">## # … with 408,614 more rows, and 5 more variables: `merged transcripts` &lt;dbl&gt;,</span></span>
 <span id="cb62-15"><a href="#cb62-15"></a><span class="co">## #   .abundant &lt;lgl&gt;, TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;, count_scaled &lt;dbl&gt;</span></span></code></pre></div>
 <p><strong>action=“add”</strong> (Default) We can add the MDS dimensions to the original data set</p>
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
@@ -1032,20 +1037,20 @@
         .dims <span class="op">=</span> <span class="fl">3</span>,
         action<span class="op">=</span><span class="st">"add"</span>
     <span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb64"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a><span class="co">## # A tibble: 938,112 x 16</span></span>
+<div class="sourceCode" id="cb64"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a><span class="co">## # A tibble: 408,624 x 16</span></span>
 <span id="cb64-2"><a href="#cb64-2"></a><span class="co">##    sample transcript `Cell type` count time  condition batch factor_of_inter…</span></span>
-<span id="cb64-3"><a href="#cb64-3"></a><span class="co">##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;           </span></span>
-<span id="cb64-4"><a href="#cb64-4"></a><span class="co">##  1 SRR17… DDX11L1    b_cell         17 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb64-5"><a href="#cb64-5"></a><span class="co">##  2 SRR17… WASH7P     b_cell       3568 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb64-6"><a href="#cb64-6"></a><span class="co">##  3 SRR17… MIR6859-1  b_cell         57 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb64-7"><a href="#cb64-7"></a><span class="co">##  4 SRR17… MIR1302-2  b_cell          1 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb64-8"><a href="#cb64-8"></a><span class="co">##  5 SRR17… FAM138A    b_cell          0 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb64-9"><a href="#cb64-9"></a><span class="co">##  6 SRR17… OR4F5      b_cell          0 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb64-10"><a href="#cb64-10"></a><span class="co">##  7 SRR17… LOC729737  b_cell       1764 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb64-11"><a href="#cb64-11"></a><span class="co">##  8 SRR17… LOC102725… b_cell         11 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb64-12"><a href="#cb64-12"></a><span class="co">##  9 SRR17… MIR6859-2  b_cell         40 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb64-13"><a href="#cb64-13"></a><span class="co">## 10 SRR17… OR4F29     b_cell          0 0 d   TRUE          0 TRUE            </span></span>
-<span id="cb64-14"><a href="#cb64-14"></a><span class="co">## # … with 938,102 more rows, and 8 more variables: `merged transcripts` &lt;dbl&gt;,</span></span>
+<span id="cb64-3"><a href="#cb64-3"></a><span class="co">##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;           </span></span>
+<span id="cb64-4"><a href="#cb64-4"></a><span class="co">##  1 SRR17… DDX11L1    b_cell         17 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb64-5"><a href="#cb64-5"></a><span class="co">##  2 SRR17… WASH7P     b_cell       3568 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb64-6"><a href="#cb64-6"></a><span class="co">##  3 SRR17… MIR6859-1  b_cell         57 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb64-7"><a href="#cb64-7"></a><span class="co">##  4 SRR17… LOC729737  b_cell       1764 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb64-8"><a href="#cb64-8"></a><span class="co">##  5 SRR17… MIR6859-2  b_cell         40 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb64-9"><a href="#cb64-9"></a><span class="co">##  6 SRR17… LOC100132… b_cell       1703 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb64-10"><a href="#cb64-10"></a><span class="co">##  7 SRR17… LOC100133… b_cell       1894 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb64-11"><a href="#cb64-11"></a><span class="co">##  8 SRR17… LOC100288… b_cell        337 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb64-12"><a href="#cb64-12"></a><span class="co">##  9 SRR17… FAM87B     b_cell         56 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb64-13"><a href="#cb64-13"></a><span class="co">## 10 SRR17… LINC00115  b_cell         50 0 d   TRUE      0     TRUE            </span></span>
+<span id="cb64-14"><a href="#cb64-14"></a><span class="co">## # … with 408,614 more rows, and 8 more variables: `merged transcripts` &lt;dbl&gt;,</span></span>
 <span id="cb64-15"><a href="#cb64-15"></a><span class="co">## #   .abundant &lt;lgl&gt;, TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;, count_scaled &lt;dbl&gt;,</span></span>
 <span id="cb64-16"><a href="#cb64-16"></a><span class="co">## #   Dim1 &lt;dbl&gt;, Dim2 &lt;dbl&gt;, Dim3 &lt;dbl&gt;</span></span></code></pre></div>
 <p><strong>action=“get”</strong> We can add the MDS dimensions to the original data set selecting just the sample-wise column</p>
@@ -1059,21 +1064,21 @@
         .dims <span class="op">=</span> <span class="fl">3</span>,
         action<span class="op">=</span><span class="st">"get"</span>
     <span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb66"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a><span class="co">## # A tibble: 48 x 12</span></span>
+<div class="sourceCode" id="cb66"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a><span class="co">## # A tibble: 48 x 13</span></span>
 <span id="cb66-2"><a href="#cb66-2"></a><span class="co">##    sample `Cell type` time  condition batch factor_of_inter… `merged transcr…</span></span>
-<span id="cb66-3"><a href="#cb66-3"></a><span class="co">##    &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;                       &lt;dbl&gt;</span></span>
-<span id="cb66-4"><a href="#cb66-4"></a><span class="co">##  1 SRR17… b_cell      0 d   TRUE          0 TRUE                            1</span></span>
-<span id="cb66-5"><a href="#cb66-5"></a><span class="co">##  2 SRR17… b_cell      1 d   TRUE          1 TRUE                            1</span></span>
-<span id="cb66-6"><a href="#cb66-6"></a><span class="co">##  3 SRR17… b_cell      3 d   TRUE          1 TRUE                            1</span></span>
-<span id="cb66-7"><a href="#cb66-7"></a><span class="co">##  4 SRR17… b_cell      7 d   TRUE          1 TRUE                            1</span></span>
-<span id="cb66-8"><a href="#cb66-8"></a><span class="co">##  5 SRR17… dendritic_… 0 d   FALSE         0 FALSE                           1</span></span>
-<span id="cb66-9"><a href="#cb66-9"></a><span class="co">##  6 SRR17… dendritic_… 1 d   FALSE         0 FALSE                           1</span></span>
-<span id="cb66-10"><a href="#cb66-10"></a><span class="co">##  7 SRR17… dendritic_… 3 d   FALSE         1 FALSE                           1</span></span>
-<span id="cb66-11"><a href="#cb66-11"></a><span class="co">##  8 SRR17… dendritic_… 7 d   FALSE         0 FALSE                           1</span></span>
-<span id="cb66-12"><a href="#cb66-12"></a><span class="co">##  9 SRR17… monocyte    0 d   FALSE         1 FALSE                           1</span></span>
-<span id="cb66-13"><a href="#cb66-13"></a><span class="co">## 10 SRR17… monocyte    1 d   FALSE         1 FALSE                           1</span></span>
-<span id="cb66-14"><a href="#cb66-14"></a><span class="co">## # … with 38 more rows, and 5 more variables: TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;,</span></span>
-<span id="cb66-15"><a href="#cb66-15"></a><span class="co">## #   Dim1 &lt;dbl&gt;, Dim2 &lt;dbl&gt;, Dim3 &lt;dbl&gt;</span></span></code></pre></div>
+<span id="cb66-3"><a href="#cb66-3"></a><span class="co">##    &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;                       &lt;dbl&gt;</span></span>
+<span id="cb66-4"><a href="#cb66-4"></a><span class="co">##  1 SRR17… b_cell      0 d   TRUE      0     TRUE                            1</span></span>
+<span id="cb66-5"><a href="#cb66-5"></a><span class="co">##  2 SRR17… b_cell      1 d   TRUE      1     TRUE                            1</span></span>
+<span id="cb66-6"><a href="#cb66-6"></a><span class="co">##  3 SRR17… b_cell      3 d   TRUE      1     TRUE                            1</span></span>
+<span id="cb66-7"><a href="#cb66-7"></a><span class="co">##  4 SRR17… b_cell      7 d   TRUE      1     TRUE                            1</span></span>
+<span id="cb66-8"><a href="#cb66-8"></a><span class="co">##  5 SRR17… dendritic_… 0 d   FALSE     0     FALSE                           1</span></span>
+<span id="cb66-9"><a href="#cb66-9"></a><span class="co">##  6 SRR17… dendritic_… 1 d   FALSE     0     FALSE                           1</span></span>
+<span id="cb66-10"><a href="#cb66-10"></a><span class="co">##  7 SRR17… dendritic_… 3 d   FALSE     1     FALSE                           1</span></span>
+<span id="cb66-11"><a href="#cb66-11"></a><span class="co">##  8 SRR17… dendritic_… 7 d   FALSE     0     FALSE                           1</span></span>
+<span id="cb66-12"><a href="#cb66-12"></a><span class="co">##  9 SRR17… monocyte    0 d   FALSE     1     FALSE                           1</span></span>
+<span id="cb66-13"><a href="#cb66-13"></a><span class="co">## 10 SRR17… monocyte    1 d   FALSE     1     FALSE                           1</span></span>
+<span id="cb66-14"><a href="#cb66-14"></a><span class="co">## # … with 38 more rows, and 6 more variables: .abundant &lt;lgl&gt;, TMM &lt;dbl&gt;,</span></span>
+<span id="cb66-15"><a href="#cb66-15"></a><span class="co">## #   multiplier &lt;dbl&gt;, Dim1 &lt;dbl&gt;, Dim2 &lt;dbl&gt;, Dim3 &lt;dbl&gt;</span></span></code></pre></div>
 <p><strong>action=“only”</strong> We can get just the MDS dimensions relative to each sample</p>
 <div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R">  <span class="va">tt.norm</span> <span class="op">%&gt;%</span>
@@ -1086,18 +1091,18 @@
         action<span class="op">=</span><span class="st">"only"</span>
     <span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb68"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a><span class="co">## # A tibble: 48 x 4</span></span>
-<span id="cb68-2"><a href="#cb68-2"></a><span class="co">##    sample      Dim1  Dim2   Dim3</span></span>
-<span id="cb68-3"><a href="#cb68-3"></a><span class="co">##    &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
-<span id="cb68-4"><a href="#cb68-4"></a><span class="co">##  1 SRR1740034  2.31  1.87 -2.73 </span></span>
-<span id="cb68-5"><a href="#cb68-5"></a><span class="co">##  2 SRR1740035  2.30  1.88 -2.77 </span></span>
-<span id="cb68-6"><a href="#cb68-6"></a><span class="co">##  3 SRR1740036  2.27  1.83 -2.73 </span></span>
-<span id="cb68-7"><a href="#cb68-7"></a><span class="co">##  4 SRR1740037  2.29  1.87 -2.78 </span></span>
-<span id="cb68-8"><a href="#cb68-8"></a><span class="co">##  5 SRR1740038 -1.50 -1.79 -1.01 </span></span>
-<span id="cb68-9"><a href="#cb68-9"></a><span class="co">##  6 SRR1740039 -1.45 -1.87 -0.925</span></span>
-<span id="cb68-10"><a href="#cb68-10"></a><span class="co">##  7 SRR1740040 -1.46 -1.79 -0.989</span></span>
-<span id="cb68-11"><a href="#cb68-11"></a><span class="co">##  8 SRR1740041 -1.41 -1.88 -0.981</span></span>
-<span id="cb68-12"><a href="#cb68-12"></a><span class="co">##  9 SRR1740042 -2.07 -1.71 -0.936</span></span>
-<span id="cb68-13"><a href="#cb68-13"></a><span class="co">## 10 SRR1740043 -1.88 -1.69 -0.788</span></span>
+<span id="cb68-2"><a href="#cb68-2"></a><span class="co">##    sample         Dim1   Dim2    Dim3</span></span>
+<span id="cb68-3"><a href="#cb68-3"></a><span class="co">##    &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span id="cb68-4"><a href="#cb68-4"></a><span class="co">##  1 SRR1740034 -1.52     0.670 -2.08  </span></span>
+<span id="cb68-5"><a href="#cb68-5"></a><span class="co">##  2 SRR1740035 -1.52     0.657 -2.11  </span></span>
+<span id="cb68-6"><a href="#cb68-6"></a><span class="co">##  3 SRR1740036 -1.50     0.620 -2.02  </span></span>
+<span id="cb68-7"><a href="#cb68-7"></a><span class="co">##  4 SRR1740037 -1.51     0.628 -2.08  </span></span>
+<span id="cb68-8"><a href="#cb68-8"></a><span class="co">##  5 SRR1740038  0.00836 -1.87   0.0561</span></span>
+<span id="cb68-9"><a href="#cb68-9"></a><span class="co">##  6 SRR1740039 -0.0532  -1.85   0.0786</span></span>
+<span id="cb68-10"><a href="#cb68-10"></a><span class="co">##  7 SRR1740040  0.0255  -1.86   0.0147</span></span>
+<span id="cb68-11"><a href="#cb68-11"></a><span class="co">##  8 SRR1740041 -0.0947  -1.86   0.0661</span></span>
+<span id="cb68-12"><a href="#cb68-12"></a><span class="co">##  9 SRR1740042  0.257   -2.00   0.187 </span></span>
+<span id="cb68-13"><a href="#cb68-13"></a><span class="co">## 10 SRR1740043  0.265   -1.95   0.185 </span></span>
 <span id="cb68-14"><a href="#cb68-14"></a><span class="co">## # … with 38 more rows</span></span></code></pre></div>
 </div>
 </div>
@@ -1116,6 +1121,12 @@
 <h2>License</h2>
 <ul class="list-unstyled">
 <li><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></li>
+</ul>
+</div>
+<div class="citation">
+<h2>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html">Citing tidybulk</a></li>
 </ul>
 </div>
 <div class="developers">

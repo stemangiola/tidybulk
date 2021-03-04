@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom or DESeq2 — test_differential_abundance • tidybulk</title>
+<title>Perform differential transcription testing using edgeR quasi-likelihood (QLT), edgeR likelihood-ratio (LR), limma-voom, limma-voom-with-quality-weights or DESeq2 — test_differential_abundance • tidybulk</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom or DESeq2 — test_differential_abundance" />
+<meta property="og:title" content="Perform differential transcription testing using edgeR quasi-likelihood (QLT), edgeR likelihood-ratio (LR), limma-voom, limma-voom-with-quality-weights or DESeq2 — test_differential_abundance" />
 <meta property="og:description" content="test_differential_abundance() takes as input a `tbl` formatted as | &amp;lt;SAMPLE&amp;gt; | &amp;lt;TRANSCRIPT&amp;gt; | &amp;lt;COUNT&amp;gt; | &amp;lt;...&amp;gt; | and returns a `tbl` with additional columns for the statistics from the hypothesis test." />
 
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Perform differential transcription testing using edgeR QLT, edgeR LR, limma-voom or DESeq2</h1>
+    <h1>Perform differential transcription testing using edgeR quasi-likelihood (QLT), edgeR likelihood-ratio (LR), limma-voom, limma-voom-with-quality-weights or DESeq2</h1>
     
     <div class="hidden name"><code>test_differential_abundance-methods.Rd</code></div>
     </div>
@@ -141,6 +141,7 @@
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
   .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  test_above_log2_fold_change <span class='op'>=</span> <span class='cn'>NULL</span>,
   scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
   prefix <span class='op'>=</span> <span class='st'>""</span>,
@@ -158,6 +159,7 @@
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
   .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  test_above_log2_fold_change <span class='op'>=</span> <span class='cn'>NULL</span>,
   scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
   prefix <span class='op'>=</span> <span class='st'>""</span>,
@@ -175,6 +177,7 @@
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
   .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  test_above_log2_fold_change <span class='op'>=</span> <span class='cn'>NULL</span>,
   scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
   prefix <span class='op'>=</span> <span class='st'>""</span>,
@@ -192,6 +195,7 @@
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
   .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  test_above_log2_fold_change <span class='op'>=</span> <span class='cn'>NULL</span>,
   scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
   prefix <span class='op'>=</span> <span class='st'>""</span>,
@@ -204,34 +208,24 @@
 <span class='fu'>test_differential_abundance</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.formula</span>,
-  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
-  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
-  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
   .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  test_above_log2_fold_change <span class='op'>=</span> <span class='cn'>NULL</span>,
   scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  prefix <span class='op'>=</span> <span class='st'>""</span>,
-  action <span class='op'>=</span> <span class='st'>"add"</span>,
-  significance_threshold <span class='op'>=</span> <span class='cn'>NULL</span>,
-  fill_missing_values <span class='op'>=</span> <span class='cn'>NULL</span>
+  prefix <span class='op'>=</span> <span class='st'>""</span>
 <span class='op'>)</span>
 
 <span class='co'># S4 method for RangedSummarizedExperiment</span>
 <span class='fu'>test_differential_abundance</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.formula</span>,
-  .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
-  .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
-  .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
   .contrasts <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"edgeR_quasi_likelihood"</span>,
+  test_above_log2_fold_change <span class='op'>=</span> <span class='cn'>NULL</span>,
   scaling_method <span class='op'>=</span> <span class='st'>"TMM"</span>,
   omit_contrast_in_colnames <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  prefix <span class='op'>=</span> <span class='st'>""</span>,
-  action <span class='op'>=</span> <span class='st'>"add"</span>,
-  significance_threshold <span class='op'>=</span> <span class='cn'>NULL</span>,
-  fill_missing_values <span class='op'>=</span> <span class='cn'>NULL</span>
+  prefix <span class='op'>=</span> <span class='st'>""</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -259,15 +253,19 @@
     </tr>
     <tr>
       <th>.contrasts</th>
-      <td><p>This parameter takes the shape of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vectors of length three. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)</p></td>
+      <td><p>This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)</p></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "DESeq2", "limma_voom"</p></td>
+      <td><p>A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights"</p></td>
+    </tr>
+    <tr>
+      <th>test_above_log2_fold_change</th>
+      <td><p>A positive real value. At the moment this works just for edgeR methods, and use the `treat` function, which test the that the difference in abundance is bigger than this parameter rather than zero <a href='https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat'>https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat</a>.</p></td>
     </tr>
     <tr>
       <th>scaling_method</th>
-      <td><p>A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")</p></td>
+      <td><p>A character string. The scaling method passed to the back-end functions: edgeR and limma-voom (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile"). Setting the parameter to \"none\" will skip the compensation for sequencing-depth for the method edgeR or limma-voom.</p></td>
     </tr>
     <tr>
       <th>omit_contrast_in_colnames</th>
@@ -283,11 +281,11 @@
     </tr>
     <tr>
       <th>significance_threshold</th>
-      <td><p>A real between 0 and 1 (usually 0.05).</p></td>
+      <td><p>DEPRECATED - A real between 0 and 1 (usually 0.05).</p></td>
     </tr>
     <tr>
       <th>fill_missing_values</th>
-      <td><p>A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.</p></td>
+      <td><p>DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.</p></td>
     </tr>
     </table>
 
@@ -301,8 +299,8 @@
 <p>A `SummarizedExperiment` object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
-<p>This function provides the option to use edgeR <a href='https://doi.org/10.1093/bioinformatics/btp616'>https://doi.org/10.1093/bioinformatics/btp616</a>, limma-voom <a href='https://doi.org/10.1186/gb-2014-15-2-r29'>https://doi.org/10.1186/gb-2014-15-2-r29</a>, or  DESeq2 <a href='https://doi.org/10.1186/s13059-014-0550-8'>https://doi.org/10.1186/s13059-014-0550-8</a> to perform the testing.
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a></p>
+<p>This function provides the option to use edgeR <a href='https://doi.org/10.1093/bioinformatics/btp616'>https://doi.org/10.1093/bioinformatics/btp616</a>, limma-voom <a href='https://doi.org/10.1186/gb-2014-15-2-r29'>https://doi.org/10.1186/gb-2014-15-2-r29</a>, limma_voom_sample_weights <a href='https://doi.org/10.1093/nar/gkv412'>https://doi.org/10.1093/nar/gkv412</a> or  DESeq2 <a href='https://doi.org/10.1186/s13059-014-0550-8'>https://doi.org/10.1186/s13059-014-0550-8</a> to perform the testing.
 All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.</p>
 <p>Underlying method for edgeR framework:
 	.data <!-- %&gt;% --></p>
@@ -336,29 +334,31 @@ DESeq2::results()</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
- <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
- <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+ <span class='co'># edgeR</span>
+
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'>test_differential_abundance</span><span class='op'>(</span> <span class='op'>~</span> <span class='va'>condition</span> <span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>=====================================</span>
-#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance </span>
-#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates </span>
+#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance</span>
+#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates</span>
 #&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
-#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "(Intercept), conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 2,635 x 12</span><span>
-#&gt;    sample transcript `Cell type` count time  condition .abundant  logFC logCPM
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… TNFRSF4    b_cell          6 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
-#&gt; </span><span style='color: #555555;'> 2</span><span> SRR17… PLCH2      b_cell        926 0 d   TRUE      TRUE       5.14    10.8
-#&gt; </span><span style='color: #555555;'> 3</span><span> SRR17… PADI4      b_cell         21 0 d   TRUE      TRUE      -</span><span style='color: #BB0000;'>6.27</span><span>    11.0
-#&gt; </span><span style='color: #555555;'> 4</span><span> SRR17… PAX7       b_cell          0 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
-#&gt; </span><span style='color: #555555;'> 5</span><span> SRR17… CDA        b_cell          1 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
-#&gt; </span><span style='color: #555555;'> 6</span><span> SRR17… RCAN3      b_cell        905 0 d   TRUE      TRUE       2.67    11.5
-#&gt; </span><span style='color: #555555;'> 7</span><span> SRR17… SMPDL3B    b_cell          3 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
-#&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE      TRUE       0.858   13.2
-#&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… LCK        b_cell        436 0 d   TRUE      TRUE       6.88    12.2
-#&gt; </span><span style='color: #555555;'>10</span><span> SRR17… COL8A2     b_cell          1 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
-#&gt; </span><span style='color: #555555;'># … with 2,625 more rows, and 3 more variables: F </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, PValue </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
-#&gt; </span><span style='color: #555555;'>#   FDR </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span></div><div class='input'>
+#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "(Intercept), conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 2,635 x 12</span><span>
+#&gt;    sample   transcript `Cell type` count time  condition .abundant  logFC logCPM
+#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>  </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> SRR1740… TNFRSF4    b_cell          6 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> SRR1740… PLCH2      b_cell        926 0 d   TRUE      TRUE       5.14    10.8
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> SRR1740… PADI4      b_cell         21 0 d   TRUE      TRUE      -</span><span style='color: #BB0000;'>6.27</span><span>    11.0
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> SRR1740… PAX7       b_cell          0 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> SRR1740… CDA        b_cell          1 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> SRR1740… RCAN3      b_cell        905 0 d   TRUE      TRUE       2.67    11.5
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> SRR1740… SMPDL3B    b_cell          3 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> SRR1740… EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE      TRUE       0.858   13.2
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> SRR1740… LCK        b_cell        436 0 d   TRUE      TRUE       6.88    12.2
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> SRR1740… COL8A2     b_cell          1 0 d   TRUE      FALSE     </span><span style='color: #BB0000;'>NA</span><span>       </span><span style='color: #BB0000;'>NA</span><span>  
+#&gt; </span><span style='color: #949494;'># … with 2,625 more rows, and 3 more variables: F &lt;dbl&gt;, PValue &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   FDR &lt;dbl&gt;</span><span></div><div class='input'>
   <span class='co'># The function `test_differential_abundance` operates with contrasts too</span>
 
  <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span>
@@ -369,27 +369,90 @@ DESeq2::results()</p>
       .contrasts <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span> <span class='st'>"conditionTRUE - conditionFALSE"</span><span class='op'>)</span>
  <span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>=====================================</span>
-#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance </span>
-#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates </span>
+#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance</span>
+#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates</span>
 #&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
-#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "conditionFALSE, conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 2,635 x 12</span><span>
-#&gt;    sample transcript `Cell type` count time  condition .abundant
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>    
-#&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… TNFRSF4    b_cell          6 0 d   TRUE      FALSE    
-#&gt; </span><span style='color: #555555;'> 2</span><span> SRR17… PLCH2      b_cell        926 0 d   TRUE      TRUE     
-#&gt; </span><span style='color: #555555;'> 3</span><span> SRR17… PADI4      b_cell         21 0 d   TRUE      TRUE     
-#&gt; </span><span style='color: #555555;'> 4</span><span> SRR17… PAX7       b_cell          0 0 d   TRUE      FALSE    
-#&gt; </span><span style='color: #555555;'> 5</span><span> SRR17… CDA        b_cell          1 0 d   TRUE      FALSE    
-#&gt; </span><span style='color: #555555;'> 6</span><span> SRR17… RCAN3      b_cell        905 0 d   TRUE      TRUE     
-#&gt; </span><span style='color: #555555;'> 7</span><span> SRR17… SMPDL3B    b_cell          3 0 d   TRUE      FALSE    
-#&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE      TRUE     
-#&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… LCK        b_cell        436 0 d   TRUE      TRUE     
-#&gt; </span><span style='color: #555555;'>10</span><span> SRR17… COL8A2     b_cell          1 0 d   TRUE      FALSE    
-#&gt; </span><span style='color: #555555;'># … with 2,625 more rows, and 5 more variables: `logFC___conditionTRUE -</span><span>
-#&gt; </span><span style='color: #555555;'>#   conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `logCPM___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
-#&gt; </span><span style='color: #555555;'>#   `F___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `PValue___conditionTRUE -</span><span>
-#&gt; </span><span style='color: #555555;'>#   conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `FDR___conditionTRUE - conditionFALSE` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span></div><div class='input'>
+#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "conditionFALSE, conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 2,635 x 12</span><span>
+#&gt;    sample     transcript `Cell type` count time  condition .abundant
+#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>    
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> SRR1740034 TNFRSF4    b_cell          6 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> SRR1740034 PLCH2      b_cell        926 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> SRR1740034 PADI4      b_cell         21 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> SRR1740034 PAX7       b_cell          0 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> SRR1740034 CDA        b_cell          1 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> SRR1740034 RCAN3      b_cell        905 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> SRR1740034 SMPDL3B    b_cell          3 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> SRR1740034 EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> SRR1740034 LCK        b_cell        436 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> SRR1740034 COL8A2     b_cell          1 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #949494;'># … with 2,625 more rows, and 5 more variables:</span><span>
+#&gt; </span><span style='color: #949494;'>#   logFC___conditionTRUE - conditionFALSE &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   logCPM___conditionTRUE - conditionFALSE &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   F___conditionTRUE - conditionFALSE &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   PValue___conditionTRUE - conditionFALSE &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   FDR___conditionTRUE - conditionFALSE &lt;dbl&gt;</span><span></div><div class='input'>
+ <span class='co'># DESeq2 - equivalent for limma-voom</span>
 
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>test_differential_abundance</span><span class='op'>(</span> <span class='op'>~</span> <span class='va'>condition</span>, method<span class='op'>=</span><span class='st'>"deseq2"</span> <span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>=====================================</span>
+#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance</span>
+#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates</span>
+#&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
+#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>Installing acepack needed for analyses</span></div><div class='output co'>#&gt; <span class='message'>Installing package into ‘/__w/_temp/Library’</span>
+#&gt; <span class='message'>(as ‘lib’ is unspecified)</span></div><div class='output co'>#&gt; <span class='message'>estimating size factors</span></div><div class='output co'>#&gt; <span class='message'>estimating dispersions</span></div><div class='output co'>#&gt; <span class='message'>gene-wise dispersion estimates</span></div><div class='output co'>#&gt; <span class='message'>mean-dispersion relationship</span></div><div class='output co'>#&gt; <span class='message'>-- note: fitType='parametric', but the dispersion trend was not well captured by the</span>
+#&gt; <span class='message'>   function: y = a/x + b, and a local regression fit was automatically substituted.</span>
+#&gt; <span class='message'>   specify fitType='local' or 'mean' to avoid this message next time.</span></div><div class='output co'>#&gt; <span class='message'>final dispersion estimates</span></div><div class='output co'>#&gt; <span class='message'>fitting model and testing</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$DESeq2`</span></div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 2,635 x 13</span><span>
+#&gt;    sample     transcript `Cell type` count time  condition .abundant baseMean
+#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>        </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> SRR1740034 TNFRSF4    b_cell          6 0 d   TRUE      FALSE          </span><span style='color: #BB0000;'>NA</span><span> 
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> SRR1740034 PLCH2      b_cell        926 0 d   TRUE      TRUE          725.
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> SRR1740034 PADI4      b_cell         21 0 d   TRUE      TRUE          854.
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> SRR1740034 PAX7       b_cell          0 0 d   TRUE      FALSE          </span><span style='color: #BB0000;'>NA</span><span> 
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> SRR1740034 CDA        b_cell          1 0 d   TRUE      FALSE          </span><span style='color: #BB0000;'>NA</span><span> 
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> SRR1740034 RCAN3      b_cell        905 0 d   TRUE      TRUE         </span><span style='text-decoration: underline;'>1</span><span>125.
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> SRR1740034 SMPDL3B    b_cell          3 0 d   TRUE      FALSE          </span><span style='color: #BB0000;'>NA</span><span> 
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> SRR1740034 EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE      TRUE         </span><span style='text-decoration: underline;'>3</span><span>832.
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> SRR1740034 LCK        b_cell        436 0 d   TRUE      TRUE         </span><span style='text-decoration: underline;'>1</span><span>769.
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> SRR1740034 COL8A2     b_cell          1 0 d   TRUE      FALSE          </span><span style='color: #BB0000;'>NA</span><span> 
+#&gt; </span><span style='color: #949494;'># … with 2,625 more rows, and 5 more variables: log2FoldChange &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   lfcSE &lt;dbl&gt;, stat &lt;dbl&gt;, pvalue &lt;dbl&gt;, padj &lt;dbl&gt;</span><span></div><div class='input'>
+  <span class='co'># The function `test_differential_abundance` operates with contrasts too</span>
+
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'><a href='identify_abundant.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'>test_differential_abundance</span><span class='op'>(</span>
+      <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>+</span> <span class='va'>condition</span>,
+      .contrasts <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"condition"</span>, <span class='st'>"TRUE"</span>, <span class='st'>"FALSE"</span><span class='op'>)</span><span class='op'>)</span>,
+      method<span class='op'>=</span><span class='st'>"deseq2"</span>
+ <span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>=====================================</span>
+#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance</span>
+#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates</span>
+#&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
+#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>estimating size factors</span></div><div class='output co'>#&gt; <span class='message'>estimating dispersions</span></div><div class='output co'>#&gt; <span class='message'>gene-wise dispersion estimates</span></div><div class='output co'>#&gt; <span class='message'>mean-dispersion relationship</span></div><div class='output co'>#&gt; <span class='message'>-- note: fitType='parametric', but the dispersion trend was not well captured by the</span>
+#&gt; <span class='message'>   function: y = a/x + b, and a local regression fit was automatically substituted.</span>
+#&gt; <span class='message'>   specify fitType='local' or 'mean' to avoid this message next time.</span></div><div class='output co'>#&gt; <span class='message'>final dispersion estimates</span></div><div class='output co'>#&gt; <span class='message'>fitting model and testing</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$DESeq2`</span></div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 2,635 x 13</span><span>
+#&gt;    sample     transcript `Cell type` count time  condition .abundant
+#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>    
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> SRR1740034 TNFRSF4    b_cell          6 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> SRR1740034 PLCH2      b_cell        926 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> SRR1740034 PADI4      b_cell         21 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> SRR1740034 PAX7       b_cell          0 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> SRR1740034 CDA        b_cell          1 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> SRR1740034 RCAN3      b_cell        905 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> SRR1740034 SMPDL3B    b_cell          3 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> SRR1740034 EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> SRR1740034 LCK        b_cell        436 0 d   TRUE      TRUE     
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> SRR1740034 COL8A2     b_cell          1 0 d   TRUE      FALSE    
+#&gt; </span><span style='color: #949494;'># … with 2,625 more rows, and 6 more variables:</span><span>
+#&gt; </span><span style='color: #949494;'>#   baseMean___condition TRUE-FALSE &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   log2FoldChange___condition TRUE-FALSE &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   lfcSE___condition TRUE-FALSE &lt;dbl&gt;, stat___condition TRUE-FALSE &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   pvalue___condition TRUE-FALSE &lt;dbl&gt;, padj___condition TRUE-FALSE &lt;dbl&gt;</span><span></div><div class='input'>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

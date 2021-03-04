@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -138,8 +138,9 @@
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
-  reference <span class='op'>=</span> <span class='va'>X_cibersort</span>,
+  reference <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"cibersort"</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
   action <span class='op'>=</span> <span class='st'>"add"</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
@@ -150,8 +151,9 @@
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
-  reference <span class='op'>=</span> <span class='va'>X_cibersort</span>,
+  reference <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"cibersort"</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
   action <span class='op'>=</span> <span class='st'>"add"</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
@@ -162,8 +164,9 @@
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
-  reference <span class='op'>=</span> <span class='va'>X_cibersort</span>,
+  reference <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"cibersort"</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
   action <span class='op'>=</span> <span class='st'>"add"</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
@@ -174,8 +177,9 @@
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
-  reference <span class='op'>=</span> <span class='va'>X_cibersort</span>,
+  reference <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"cibersort"</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
   action <span class='op'>=</span> <span class='st'>"add"</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
@@ -186,8 +190,9 @@
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
-  reference <span class='op'>=</span> <span class='va'>X_cibersort</span>,
+  reference <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"cibersort"</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
   action <span class='op'>=</span> <span class='st'>"add"</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
@@ -198,8 +203,9 @@
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
-  reference <span class='op'>=</span> <span class='va'>X_cibersort</span>,
+  reference <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"cibersort"</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
   action <span class='op'>=</span> <span class='st'>"add"</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
@@ -225,11 +231,15 @@
     </tr>
     <tr>
       <th>reference</th>
-      <td><p>A data frame. The transcript/cell_type data frame of integer transcript abundance</p></td>
+      <td><p>A data frame. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference will be used for each algorithm. For llsr will be LM22.</p></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.</p></td>
+      <td><p>A character string. The method to be used. At the moment Cibersort (default), epic and llsr (linear least squares regression) are available.</p></td>
+    </tr>
+    <tr>
+      <th>prefix</th>
+      <td><p>A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.</p></td>
     </tr>
     <tr>
       <th>action</th>
@@ -251,7 +261,7 @@
 <p>A `SummarizedExperiment` object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a></p>
 <p>This function infers the cell type composition of our samples
 (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).</p>
 <p>Underlying method:
@@ -261,32 +271,29 @@ CIBERSORT(Y = data, X = reference, ...)</p>
     <pre class="examples"><div class='input'>
 <span class='co'># Subsetting for time efficiency</span>
 <span class='fu'>deconvolve_cellularity</span><span class='op'>(</span><span class='fu'><a href='filter.html'>filter</a></span><span class='op'>(</span><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts.html'>counts</a></span>, <span class='va'>sample</span><span class='op'>==</span><span class='st'>"SRR1740034"</span><span class='op'>)</span>, <span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>`count`</span>, cores <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 8,513 x 30</span><span>
-#&gt;    sample transcript `Cell type` count time  condition batch factor_of_inter…
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>           
-#&gt; </span><span style='color: #555555;'> 1</span><span> SRR17… DDX11L1    b_cell         17 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 2</span><span> SRR17… WASH7P     b_cell       </span><span style='text-decoration: underline;'>3</span><span>568 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 3</span><span> SRR17… MIR6859-1  b_cell         57 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 4</span><span> SRR17… LOC729737  b_cell       </span><span style='text-decoration: underline;'>1</span><span>764 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 5</span><span> SRR17… MIR6859-2  b_cell         40 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 6</span><span> SRR17… LOC100132… b_cell       </span><span style='text-decoration: underline;'>1</span><span>703 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 7</span><span> SRR17… LOC100133… b_cell       </span><span style='text-decoration: underline;'>1</span><span>894 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 8</span><span> SRR17… LOC100288… b_cell        337 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'> 9</span><span> SRR17… FAM87B     b_cell         56 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'>10</span><span> SRR17… LINC00115  b_cell         50 0 d   TRUE      0     TRUE            
-#&gt; </span><span style='color: #555555;'># … with 8,503 more rows, and 22 more variables: `cibersort: B cells</span><span>
-#&gt; </span><span style='color: #555555;'>#   naive` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: B cells memory` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: Plasma</span><span>
-#&gt; </span><span style='color: #555555;'>#   cells` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: T cells CD8` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: T cells CD4</span><span>
-#&gt; </span><span style='color: #555555;'>#   naive` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: T cells CD4 memory resting` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: T</span><span>
-#&gt; </span><span style='color: #555555;'>#   cells CD4 memory activated` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: T cells follicular</span><span>
-#&gt; </span><span style='color: #555555;'>#   helper` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: T cells regulatory (Tregs)` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: T</span><span>
-#&gt; </span><span style='color: #555555;'>#   cells gamma delta` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: NK cells resting` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort:</span><span>
-#&gt; </span><span style='color: #555555;'>#   NK cells activated` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: Monocytes` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort:</span><span>
-#&gt; </span><span style='color: #555555;'>#   Macrophages M0` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: Macrophages M1` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort:</span><span>
-#&gt; </span><span style='color: #555555;'>#   Macrophages M2` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: Dendritic cells resting` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>,</span><span>
-#&gt; </span><span style='color: #555555;'>#   `cibersort: Dendritic cells activated` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: Mast cells</span><span>
-#&gt; </span><span style='color: #555555;'>#   resting` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: Mast cells activated` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort:</span><span>
-#&gt; </span><span style='color: #555555;'>#   Eosinophils` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #555555;'>, `cibersort: Neutrophils` </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span></div><div class='input'>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 8,513 x 30</span><span>
+#&gt;    sample   transcript  `Cell type` count time  condition batch factor_of_inter…
+#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>           
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> SRR1740… DDX11L1     b_cell         17 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> SRR1740… WASH7P      b_cell       </span><span style='text-decoration: underline;'>3</span><span>568 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> SRR1740… MIR6859-1   b_cell         57 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> SRR1740… LOC729737   b_cell       </span><span style='text-decoration: underline;'>1</span><span>764 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> SRR1740… MIR6859-2   b_cell         40 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> SRR1740… LOC1001322… b_cell       </span><span style='text-decoration: underline;'>1</span><span>703 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> SRR1740… LOC1001333… b_cell       </span><span style='text-decoration: underline;'>1</span><span>894 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> SRR1740… LOC1002880… b_cell        337 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> SRR1740… FAM87B      b_cell         56 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> SRR1740… LINC00115   b_cell         50 0 d   TRUE      0     TRUE            
+#&gt; </span><span style='color: #949494;'># … with 8,503 more rows, and 22 more variables: B cells naive &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   B cells memory &lt;dbl&gt;, Plasma cells &lt;dbl&gt;, T cells CD8 &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   T cells CD4 naive &lt;dbl&gt;, T cells CD4 memory resting &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   T cells CD4 memory activated &lt;dbl&gt;, T cells follicular helper &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   T cells regulatory (Tregs) &lt;dbl&gt;, T cells gamma delta &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   NK cells resting &lt;dbl&gt;, NK cells activated &lt;dbl&gt;, Monocytes &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   Macrophages M0 &lt;dbl&gt;, Macrophages M1 &lt;dbl&gt;, Macrophages M2 &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   Dendritic cells resting &lt;dbl&gt;, Dendritic cells activated &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   Mast cells resting &lt;dbl&gt;, Mast cells activated &lt;dbl&gt;, Eosinophils &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   Neutrophils &lt;dbl&gt;</span><span></div><div class='input'>
 
 </div></span></pre>
   </div>

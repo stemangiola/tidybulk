@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -78,14 +78,13 @@
 
       
 
-      </header><script src="introduction_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="introduction_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="introduction_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="introduction_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2020-12-09</h4>
+            <h4 class="date">2021-03-04</h4>
       
       
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -352,19 +351,19 @@
 
 <span class="va">tt.norm</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">`count`</span>, <span class="va">count_scaled</span>, <span class="va">.abundant</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## # A tibble: 2,635 x 11
-##    count count_scaled .abundant sample transcript `Cell type` time  condition
-##    &lt;dbl&gt;        &lt;dbl&gt; &lt;lgl&gt;     &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;    
-##  1     6         7.85 FALSE     SRR17… TNFRSF4    b_cell      0 d   TRUE     
-##  2   926      1211.   TRUE      SRR17… PLCH2      b_cell      0 d   TRUE     
-##  3    21        27.5  TRUE      SRR17… PADI4      b_cell      0 d   TRUE     
-##  4     0         0    FALSE     SRR17… PAX7       b_cell      0 d   TRUE     
-##  5     1         1.31 TRUE      SRR17… CDA        b_cell      0 d   TRUE     
-##  6   905      1184.   TRUE      SRR17… RCAN3      b_cell      0 d   TRUE     
-##  7     3         3.92 FALSE     SRR17… SMPDL3B    b_cell      0 d   TRUE     
-##  8  4667      6104.   TRUE      SRR17… EPB41      b_cell      0 d   TRUE     
-##  9   436       570.   TRUE      SRR17… LCK        b_cell      0 d   TRUE     
-## 10     1         1.31 TRUE      SRR17… COL8A2     b_cell      0 d   TRUE     
-## # … with 2,625 more rows, and 3 more variables: `merged transcripts` &lt;dbl&gt;,
+##    count count_scaled .abundant sample    transcript `Cell type` time  condition
+##    &lt;dbl&gt;        &lt;dbl&gt; &lt;lgl&gt;     &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;    
+##  1     6         7.85 FALSE     SRR17400… TNFRSF4    b_cell      0 d   TRUE     
+##  2   926      1211.   TRUE      SRR17400… PLCH2      b_cell      0 d   TRUE     
+##  3    21        27.5  TRUE      SRR17400… PADI4      b_cell      0 d   TRUE     
+##  4     0         0    FALSE     SRR17400… PAX7       b_cell      0 d   TRUE     
+##  5     1         1.31 TRUE      SRR17400… CDA        b_cell      0 d   TRUE     
+##  6   905      1184.   TRUE      SRR17400… RCAN3      b_cell      0 d   TRUE     
+##  7     3         3.92 FALSE     SRR17400… SMPDL3B    b_cell      0 d   TRUE     
+##  8  4667      6104.   TRUE      SRR17400… EPB41      b_cell      0 d   TRUE     
+##  9   436       570.   TRUE      SRR17400… LCK        b_cell      0 d   TRUE     
+## 10     1         1.31 TRUE      SRR17400… COL8A2     b_cell      0 d   TRUE     
+## # … with 2,625 more rows, and 3 more variables: merged transcripts &lt;dbl&gt;,
 ## #   TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;</code></pre>
 <p>We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -409,11 +408,11 @@
 <pre><code>## # A tibble: 5 x 6
 ##   sample       Dim1   Dim2     Dim3 `Cell type`       time 
 ##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;             &lt;chr&gt;
-## 1 SRR1740034 -1.64  -0.844  0.0264  b_cell            0 d  
-## 2 SRR1740035 -1.61  -0.860  0.0438  b_cell            1 d  
-## 3 SRR1740043  2.23  -0.233  0.641   monocyte          1 d  
-## 4 SRR1740058 -0.798  2.20   0.00771 t_cell            0 d  
-## 5 SRR1740067  1.82  -0.268 -0.719   dendritic_myeloid 1 d</code></pre>
+## 1 SRR1740034 -1.64   0.844 -0.0264  b_cell            0 d  
+## 2 SRR1740035 -1.61   0.860 -0.0438  b_cell            1 d  
+## 3 SRR1740043  2.23   0.233 -0.641   monocyte          1 d  
+## 4 SRR1740058 -0.798 -2.20  -0.00771 t_cell            0 d  
+## 5 SRR1740067  1.82   0.268  0.719   dendritic_myeloid 1 d</code></pre>
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span>
@@ -464,7 +463,7 @@
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
 ## rowData names(1): .abundant
 ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
-## colData names(9): Cell.type time ... PC2 PC3</code></pre>
+## colData names(10): Cell.type time ... PC2 PC3</code></pre>
 <p><strong>tSNE</strong></p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.tSNE</span> <span class="op">=</span>
@@ -483,46 +482,46 @@
 ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
 ## Computing input similarities...
 ## Building tree...
-## Done in 0.02 seconds (sparsity = 0.182886)!
+## Done in 0.03 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 70.895651 (50 iterations in 0.07 seconds)
-## Iteration 100: error is 70.552085 (50 iterations in 0.07 seconds)
-## Iteration 150: error is 69.594335 (50 iterations in 0.06 seconds)
-## Iteration 200: error is 68.937853 (50 iterations in 0.04 seconds)
-## Iteration 250: error is 67.992845 (50 iterations in 0.04 seconds)
-## Iteration 300: error is 1.576825 (50 iterations in 0.04 seconds)
-## Iteration 350: error is 1.241355 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.128527 (50 iterations in 0.03 seconds)
-## Iteration 450: error is 1.097570 (50 iterations in 0.03 seconds)
-## Iteration 500: error is 1.083273 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.078953 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.075927 (50 iterations in 0.03 seconds)
-## Iteration 650: error is 1.073616 (50 iterations in 0.03 seconds)
-## Iteration 700: error is 1.071677 (50 iterations in 0.03 seconds)
-## Iteration 750: error is 1.070427 (50 iterations in 0.03 seconds)
-## Iteration 800: error is 1.070061 (50 iterations in 0.03 seconds)
-## Iteration 850: error is 1.069712 (50 iterations in 0.03 seconds)
-## Iteration 900: error is 1.068485 (50 iterations in 0.03 seconds)
-## Iteration 950: error is 1.068273 (50 iterations in 0.03 seconds)
-## Iteration 1000: error is 1.066664 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.74 seconds.</code></pre>
+## Iteration 50: error is 65.333990 (50 iterations in 0.08 seconds)
+## Iteration 100: error is 68.170666 (50 iterations in 0.08 seconds)
+## Iteration 150: error is 67.257143 (50 iterations in 0.08 seconds)
+## Iteration 200: error is 69.743271 (50 iterations in 0.04 seconds)
+## Iteration 250: error is 69.970818 (50 iterations in 0.03 seconds)
+## Iteration 300: error is 1.608946 (50 iterations in 0.03 seconds)
+## Iteration 350: error is 1.255826 (50 iterations in 0.02 seconds)
+## Iteration 400: error is 1.183401 (50 iterations in 0.02 seconds)
+## Iteration 450: error is 1.147819 (50 iterations in 0.02 seconds)
+## Iteration 500: error is 1.131539 (50 iterations in 0.02 seconds)
+## Iteration 550: error is 1.122933 (50 iterations in 0.02 seconds)
+## Iteration 600: error is 1.118383 (50 iterations in 0.02 seconds)
+## Iteration 650: error is 1.112989 (50 iterations in 0.02 seconds)
+## Iteration 700: error is 1.105335 (50 iterations in 0.03 seconds)
+## Iteration 750: error is 1.101565 (50 iterations in 0.02 seconds)
+## Iteration 800: error is 1.093783 (50 iterations in 0.02 seconds)
+## Iteration 850: error is 1.091357 (50 iterations in 0.02 seconds)
+## Iteration 900: error is 1.089440 (50 iterations in 0.02 seconds)
+## Iteration 950: error is 1.085849 (50 iterations in 0.02 seconds)
+## Iteration 1000: error is 1.079699 (50 iterations in 0.02 seconds)
+## Fitting performed in 0.63 seconds.</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span>, ignore.case <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="va">sample</span>, <span class="va">Call</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/distinct.html">distinct</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## # A tibble: 251 x 4
-##     tSNE1  tSNE2 sample                       Call 
-##     &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
-##  1  11.4    5.18 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  2  -5.63  -8.94 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  3  13.3   -8.89 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  4   1.60   7.64 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  5   4.40   7.45 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  6  -7.14  -3.48 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  7 -37.2   -1.37 TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  8  -4.68  11.8  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  9  -3.47  12.7  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-## 10  20.9  -13.7  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##     tSNE1   tSNE2 sample                       Call 
+##     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
+##  1  -7.23  10.0   TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  2   5.83  -0.688 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  3   4.73  12.4   TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  4  -8.56  -0.712 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  5  -9.14   7.23  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  6   9.04   4.80  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  7  10.3  -32.5   TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  8  -9.59  -8.19  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  9 -10.9   -7.49  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+## 10   8.69  20.6   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.tSNE</span> <span class="op">%&gt;%</span>
@@ -547,29 +546,29 @@
 ## Using no_dims = 2, perplexity = 10.000000, and theta = 0.500000
 ## Computing input similarities...
 ## Building tree...
-## Done in 0.02 seconds (sparsity = 0.182886)!
+## Done in 0.03 seconds (sparsity = 0.182886)!
 ## Learning embedding...
-## Iteration 50: error is 68.648906 (50 iterations in 0.08 seconds)
-## Iteration 100: error is 68.752062 (50 iterations in 0.10 seconds)
-## Iteration 150: error is 68.730195 (50 iterations in 0.07 seconds)
-## Iteration 200: error is 68.892617 (50 iterations in 0.06 seconds)
-## Iteration 250: error is 68.932820 (50 iterations in 0.05 seconds)
-## Iteration 300: error is 1.607976 (50 iterations in 0.04 seconds)
-## Iteration 350: error is 1.278248 (50 iterations in 0.03 seconds)
-## Iteration 400: error is 1.218013 (50 iterations in 0.03 seconds)
-## Iteration 450: error is 1.165342 (50 iterations in 0.03 seconds)
-## Iteration 500: error is 1.116955 (50 iterations in 0.03 seconds)
-## Iteration 550: error is 1.108664 (50 iterations in 0.03 seconds)
-## Iteration 600: error is 1.104511 (50 iterations in 0.03 seconds)
-## Iteration 650: error is 1.100910 (50 iterations in 0.03 seconds)
-## Iteration 700: error is 1.097567 (50 iterations in 0.03 seconds)
-## Iteration 750: error is 1.095415 (50 iterations in 0.03 seconds)
-## Iteration 800: error is 1.087161 (50 iterations in 0.03 seconds)
-## Iteration 850: error is 1.085464 (50 iterations in 0.03 seconds)
-## Iteration 900: error is 1.084537 (50 iterations in 0.03 seconds)
-## Iteration 950: error is 1.084354 (50 iterations in 0.03 seconds)
-## Iteration 1000: error is 1.084572 (50 iterations in 0.03 seconds)
-## Fitting performed in 0.78 seconds.</code></pre>
+## Iteration 50: error is 70.154265 (50 iterations in 0.07 seconds)
+## Iteration 100: error is 68.305217 (50 iterations in 0.03 seconds)
+## Iteration 150: error is 68.521977 (50 iterations in 0.03 seconds)
+## Iteration 200: error is 66.869146 (50 iterations in 0.03 seconds)
+## Iteration 250: error is 68.711276 (50 iterations in 0.03 seconds)
+## Iteration 300: error is 1.584978 (50 iterations in 0.02 seconds)
+## Iteration 350: error is 1.238066 (50 iterations in 0.02 seconds)
+## Iteration 400: error is 1.177967 (50 iterations in 0.02 seconds)
+## Iteration 450: error is 1.147286 (50 iterations in 0.02 seconds)
+## Iteration 500: error is 1.138512 (50 iterations in 0.02 seconds)
+## Iteration 550: error is 1.131229 (50 iterations in 0.02 seconds)
+## Iteration 600: error is 1.125059 (50 iterations in 0.02 seconds)
+## Iteration 650: error is 1.120400 (50 iterations in 0.02 seconds)
+## Iteration 700: error is 1.116200 (50 iterations in 0.02 seconds)
+## Iteration 750: error is 1.110202 (50 iterations in 0.02 seconds)
+## Iteration 800: error is 1.109278 (50 iterations in 0.02 seconds)
+## Iteration 850: error is 1.106097 (50 iterations in 0.02 seconds)
+## Iteration 900: error is 1.101057 (50 iterations in 0.02 seconds)
+## Iteration 950: error is 1.099526 (50 iterations in 0.02 seconds)
+## Iteration 1000: error is 1.096284 (50 iterations in 0.02 seconds)
+## Fitting performed in 0.52 seconds.</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">se.norm.tSNE</span></code></pre></div>
 <pre><code>## class: SummarizedExperiment 
@@ -582,7 +581,7 @@
 ## colnames(251): TCGA-A1-A0SD-01A-11R-A115-07
 ##   TCGA-A1-A0SF-01A-11R-A144-07 ... TCGA-GM-A2DM-01A-11R-A180-07
 ##   TCGA-GM-A2DN-01A-11R-A180-07
-## colData names(3): Call tSNE1 tSNE2</code></pre>
+## colData names(4): Call sample tSNE1 tSNE2</code></pre>
 </div>
 <div id="rotate-dimensions" class="section level2">
 <h2 class="hasAnchor">
@@ -605,7 +604,7 @@
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.MDS.rotated</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1 rotated 45`</span>, y<span class="op">=</span><span class="va">`Dim2 rotated 45`</span>, color<span class="op">=</span><span class="va">`Cell type`</span> <span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1_rotated_45`</span>, y<span class="op">=</span><span class="va">`Dim2_rotated_45`</span>, color<span class="op">=</span><span class="va">`Cell type`</span> <span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="va">my_theme</span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_rotate_2-1.png" width="700"></p>
@@ -620,7 +619,7 @@
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
 ## rowData names(1): .abundant
 ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
-## colData names(11): Cell.type time ... Dim1.rotated.45 Dim2.rotated.45</code></pre>
+## colData names(11): Cell.type time ... Dim1_rotated_45 Dim2_rotated_45</code></pre>
 </div>
 <div id="test-differential-abundance" class="section level2">
 <h2 class="hasAnchor">
@@ -712,49 +711,19 @@
     <span class="fu"><a href="../reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span><span class="op">(</span>action<span class="op">=</span><span class="st">"get"</span>, cores<span class="op">=</span><span class="fl">1</span><span class="op">)</span>
 
 <span class="va">tt.cibersort</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">sample</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span><span class="st">"cibersort:"</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
-<pre><code>## # A tibble: 5 x 23
-##   sample `cibersort: B cells naive` `cibersort: B cells memory`
-##   &lt;chr&gt;                       &lt;dbl&gt;                       &lt;dbl&gt;
-## 1 SRR17…                    0.622                         0.238
-## 2 SRR17…                    0.611                         0.257
-## 3 SRR17…                    0                             0    
-## 4 SRR17…                    0.00232                       0    
-## 5 SRR17…                    0                             0    
-## # … with 20 more variables: `cibersort: Plasma cells` &lt;dbl&gt;, `cibersort: T
-## #   cells CD8` &lt;dbl&gt;, `cibersort: T cells CD4 naive` &lt;dbl&gt;, `cibersort: T cells
-## #   CD4 memory resting` &lt;dbl&gt;, `cibersort: T cells CD4 memory activated` &lt;dbl&gt;,
-## #   `cibersort: T cells follicular helper` &lt;dbl&gt;, `cibersort: T cells
-## #   regulatory (Tregs)` &lt;dbl&gt;, `cibersort: T cells gamma delta` &lt;dbl&gt;,
-## #   `cibersort: NK cells resting` &lt;dbl&gt;, `cibersort: NK cells activated` &lt;dbl&gt;,
-## #   `cibersort: Monocytes` &lt;dbl&gt;, `cibersort: Macrophages M0` &lt;dbl&gt;,
-## #   `cibersort: Macrophages M1` &lt;dbl&gt;, `cibersort: Macrophages M2` &lt;dbl&gt;,
-## #   `cibersort: Dendritic cells resting` &lt;dbl&gt;, `cibersort: Dendritic cells
-## #   activated` &lt;dbl&gt;, `cibersort: Mast cells resting` &lt;dbl&gt;, `cibersort: Mast
-## #   cells activated` &lt;dbl&gt;, `cibersort: Eosinophils` &lt;dbl&gt;, `cibersort:
-## #   Neutrophils` &lt;dbl&gt;</code></pre>
-<p>With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is facetted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).</p>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<p>With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is faceted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).</p>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.cibersort</span> <span class="op">%&gt;%</span>
-    <span class="fu">gather</span><span class="op">(</span><span class="va">`Cell type inferred`</span>, <span class="va">`proportion`</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">26</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span><span class="op">(</span><span class="va">`Cell type inferred`</span>, <span class="va">`proportion`</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">26</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">`Cell type`</span>, <span class="va">`Cell type inferred`</span>, <span class="va">proportion</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Cell type inferred`</span>, y<span class="op">=</span><span class="va">proportion</span>, fill<span class="op">=</span><span class="va">`Cell type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html">geom_boxplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">`Cell type`</span><span class="op">)</span> <span class="op">+</span>
   <span class="va">my_theme</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, aspect.ratio<span class="op">=</span><span class="fl">1</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span></code></pre></div>
-<p><img src="introduction_files/figure-html/plot_cibersort-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">se.cibersort</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/deconvolve_cellularity.html">deconvolve_cellularity</a></span><span class="op">(</span>cores<span class="op">=</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
-<pre><code>## class: SummarizedExperiment 
-## dim: 8513 48 
-## metadata(0):
-## assays(1): count
-## rownames(8513): A1BG A1BG-AS1 ... ZZEF1 ZZZ3
-## rowData names(0):
-## colnames(48): SRR1740034 SRR1740035 ... SRR1740088 SRR1740089
-## colData names(27): Cell.type time ... cibersort..Eosinophils
-##   cibersort..Neutrophils</code></pre>
 </div>
 <div id="cluster-samples" class="section level2">
 <h2 class="hasAnchor">
@@ -762,28 +731,28 @@
 </h2>
 <p>We may want to cluster our data (e.g., using k-means sample-wise). <code>cluster_elements</code> takes as arguments a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and returns a tibble with additional columns for the cluster annotation. At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.</p>
 <p><strong>k-means</strong></p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.cluster</span> <span class="op">=</span> <span class="va">tt.norm</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span><span class="op">(</span>.abundance <span class="op">=</span> <span class="va">count_scaled</span>, method<span class="op">=</span><span class="st">"kmeans"</span>,  centers <span class="op">=</span> <span class="fl">2</span> <span class="op">)</span>
 
 <span class="va">tt.norm.cluster</span></code></pre></div>
 <pre><code>## # A tibble: 2,635 x 12
-##    sample transcript `Cell type` count time  condition `merged transcripts`
-##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
-##  1 SRR17… TNFRSF4    b_cell          6 0 d   TRUE                         1
-##  2 SRR17… PLCH2      b_cell        926 0 d   TRUE                         1
-##  3 SRR17… PADI4      b_cell         21 0 d   TRUE                         1
-##  4 SRR17… PAX7       b_cell          0 0 d   TRUE                         1
-##  5 SRR17… CDA        b_cell          1 0 d   TRUE                         1
-##  6 SRR17… RCAN3      b_cell        905 0 d   TRUE                         1
-##  7 SRR17… SMPDL3B    b_cell          3 0 d   TRUE                         1
-##  8 SRR17… EPB41      b_cell       4667 0 d   TRUE                         1
-##  9 SRR17… LCK        b_cell        436 0 d   TRUE                         1
-## 10 SRR17… COL8A2     b_cell          1 0 d   TRUE                         1
+##    sample     transcript `Cell type` count time  condition `merged transcripts`
+##    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
+##  1 SRR1740034 TNFRSF4    b_cell          6 0 d   TRUE                         1
+##  2 SRR1740034 PLCH2      b_cell        926 0 d   TRUE                         1
+##  3 SRR1740034 PADI4      b_cell         21 0 d   TRUE                         1
+##  4 SRR1740034 PAX7       b_cell          0 0 d   TRUE                         1
+##  5 SRR1740034 CDA        b_cell          1 0 d   TRUE                         1
+##  6 SRR1740034 RCAN3      b_cell        905 0 d   TRUE                         1
+##  7 SRR1740034 SMPDL3B    b_cell          3 0 d   TRUE                         1
+##  8 SRR1740034 EPB41      b_cell       4667 0 d   TRUE                         1
+##  9 SRR1740034 LCK        b_cell        436 0 d   TRUE                         1
+## 10 SRR1740034 COL8A2     b_cell          1 0 d   TRUE                         1
 ## # … with 2,625 more rows, and 5 more variables: .abundant &lt;lgl&gt;, TMM &lt;dbl&gt;,
-## #   multiplier &lt;dbl&gt;, count_scaled &lt;dbl&gt;, `cluster kmeans` &lt;fct&gt;</code></pre>
+## #   multiplier &lt;dbl&gt;, count_scaled &lt;dbl&gt;, cluster kmeans &lt;fct&gt;</code></pre>
 <p>We can add cluster annotation to the MDS dimesion reduced data set and plot.</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"> <span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span><span class="op">(</span>
     .abundance <span class="op">=</span> <span class="va">count_scaled</span>,
@@ -796,7 +765,7 @@
   <span class="va">my_theme</span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_cluster-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">se.norm</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span><span class="op">(</span>.abundance <span class="op">=</span> <span class="va">count_scaled</span>, method<span class="op">=</span><span class="st">"kmeans"</span>,  centers <span class="op">=</span> <span class="fl">2</span> <span class="op">)</span></code></pre></div>
 <pre><code>## class: SummarizedExperiment 
@@ -806,44 +775,44 @@
 ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
 ## rowData names(1): .abundant
 ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
-## colData names(7): Cell.type time ... multiplier cluster.kmeans</code></pre>
+## colData names(7): Cell.type time ... multiplier cluster_kmeans</code></pre>
 <p><strong>SNN</strong></p>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.SNN</span> <span class="op">=</span>   <span class="va">tt.norm.tSNE</span> <span class="op">%&gt;%</span>    <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span><span class="op">(</span>.abundance<span class="op">=</span> <span class="va">count_scaled</span>, method <span class="op">=</span> <span class="st">"SNN"</span><span class="op">)</span></code></pre></div>
 <pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 ## 
 ## Number of nodes: 251
-## Number of edges: 8500
+## Number of edges: 8473
 ## 
 ## Running Louvain algorithm...
-## Maximum modularity in 10 random starts: 0.5277
+## Maximum modularity in 10 random starts: 0.5287
 ## Number of communities: 4
 ## Elapsed time: 0 seconds</code></pre>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.SNN</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## # A tibble: 251 x 5
-##    sample                       Call   tSNE1  tSNE2 `cluster SNN`
-##    &lt;chr&gt;                        &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;        
-##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA   11.4    5.18 1            
-##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA   -5.63  -8.94 2            
-##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA   13.3   -8.89 1            
-##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA    1.60   7.64 0            
-##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB    4.40   7.45 0            
-##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA   -7.14  -3.48 1            
-##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal -37.2   -1.37 3            
-##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA   -4.68  11.8  2            
-##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB   -3.47  12.7  2            
-## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA   20.9  -13.7  1            
+##    sample                       Call   tSNE1   tSNE2 `cluster SNN`
+##    &lt;chr&gt;                        &lt;fct&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;        
+##  1 TCGA-A1-A0SD-01A-11R-A115-07 LumA   -7.23  10.0   1            
+##  2 TCGA-A1-A0SF-01A-11R-A144-07 LumA    5.83  -0.688 2            
+##  3 TCGA-A1-A0SG-01A-11R-A144-07 LumA    4.73  12.4   1            
+##  4 TCGA-A1-A0SH-01A-11R-A084-07 LumA   -8.56  -0.712 0            
+##  5 TCGA-A1-A0SI-01A-11R-A144-07 LumB   -9.14   7.23  0            
+##  6 TCGA-A1-A0SJ-01A-11R-A084-07 LumA    9.04   4.80  1            
+##  7 TCGA-A1-A0SK-01A-12R-A084-07 Basal  10.3  -32.5   3            
+##  8 TCGA-A1-A0SM-01A-11R-A084-07 LumA   -9.59  -8.19  2            
+##  9 TCGA-A1-A0SN-01A-11R-A144-07 LumB  -10.9   -7.49  2            
+## 10 TCGA-A1-A0SQ-01A-21R-A144-07 LumA    8.69  20.6   1            
 ## # … with 241 more rows</code></pre>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.SNN</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span>, ignore.case <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="va">`cluster SNN`</span>, <span class="va">sample</span>, <span class="va">Call</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu">gather</span><span class="op">(</span><span class="va">source</span>, <span class="va">Call</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cluster SNN"</span>, <span class="st">"Call"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span><span class="op">(</span><span class="va">source</span>, <span class="va">Call</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cluster SNN"</span>, <span class="st">"Call"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/distinct.html">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color<span class="op">=</span><span class="va">Call</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span><span class="op">(</span><span class="op">~</span><span class="va">source</span><span class="op">)</span> <span class="op">+</span> <span class="va">my_theme</span></code></pre></div>
 <p><img src="introduction_files/figure-html/SNN-1.png" width="700"></p>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Do differential transcription between clusters</span>
 <span class="va">tt.norm.SNN</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/mutate.html">mutate</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">`cluster SNN`</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -866,15 +835,15 @@
 ## 10 ENSG00000083444  1.37   9.40  232. 1.25e-37 6.08e-36
 ## # … with 478 more rows</code></pre>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">se.norm.tSNE</span> <span class="op">%&gt;%</span>    <span class="fu"><a href="../reference/cluster_elements.html">cluster_elements</a></span><span class="op">(</span>.abundance<span class="op">=</span> <span class="va">count_scaled</span>, method <span class="op">=</span> <span class="st">"SNN"</span><span class="op">)</span></code></pre></div>
 <pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 ## 
 ## Number of nodes: 251
-## Number of edges: 8500
+## Number of edges: 10433
 ## 
 ## Running Louvain algorithm...
-## Maximum modularity in 10 random starts: 0.5277
+## Maximum modularity in 10 random starts: 0.4871
 ## Number of communities: 4
 ## Elapsed time: 0 seconds</code></pre>
 <pre><code>## class: SummarizedExperiment 
@@ -887,7 +856,7 @@
 ## colnames(251): TCGA-A1-A0SD-01A-11R-A115-07
 ##   TCGA-A1-A0SF-01A-11R-A144-07 ... TCGA-GM-A2DM-01A-11R-A180-07
 ##   TCGA-GM-A2DN-01A-11R-A180-07
-## colData names(4): Call tSNE1 tSNE2 cluster.SNN</code></pre>
+## colData names(5): Call sample tSNE1 tSNE2 cluster_SNN</code></pre>
 </div>
 <div id="drop-redundant" class="section level2">
 <h2 class="hasAnchor">
@@ -899,10 +868,10 @@
 <li>removal of most proximal element pairs in a reduced dimensional space.</li>
 </ul>
 <p><strong>Approach 1</strong></p>
-<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.non_redundant</span> <span class="op">=</span> <span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span>  <span class="fu"><a href="../reference/remove_redundancy.html">remove_redundancy</a></span><span class="op">(</span> method <span class="op">=</span> <span class="st">"correlation"</span> <span class="op">)</span></code></pre></div>
-<p>We can visualise how the reduced redundancy with the reduced dimentions look like</p>
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<p>We can visualise how the reduced redundancy with the reduced dimensions look like</p>
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.non_redundant</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
@@ -910,7 +879,7 @@
   <span class="va">my_theme</span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_drop-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">se.norm.MDS</span> <span class="op">%&gt;%</span>  <span class="fu"><a href="../reference/remove_redundancy.html">remove_redundancy</a></span><span class="op">(</span> method <span class="op">=</span> <span class="st">"correlation"</span> <span class="op">)</span></code></pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 527 4 
@@ -921,7 +890,7 @@
 ## colnames(4): SRR1740035 SRR1740043 SRR1740058 SRR1740067
 ## colData names(9): Cell.type time ... Dim2 Dim3</code></pre>
 <p><strong>Approach 2</strong></p>
-<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.non_redundant</span> <span class="op">=</span>
     <span class="va">tt.norm.MDS</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/remove_redundancy.html">remove_redundancy</a></span><span class="op">(</span>
@@ -932,7 +901,7 @@
     Dim_b_column <span class="op">=</span> <span class="va">`Dim2`</span>
   <span class="op">)</span></code></pre></div>
 <p>We can visualise MDS reduced dimensions of the samples with the closest pair removed.</p>
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tt.norm.non_redundant</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
@@ -940,14 +909,14 @@
   <span class="va">my_theme</span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_drop2-1.png" width="700"></p>
 <p>All functions are also directly compatible with <code>SummarizedExperiment</code>.</p>
-<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">se.norm.MDS</span> <span class="op">%&gt;%</span>
 <span class="fu"><a href="../reference/remove_redundancy.html">remove_redundancy</a></span><span class="op">(</span>
     method <span class="op">=</span> <span class="st">"reduced_dimensions"</span>,
     .element <span class="op">=</span> <span class="va">sample</span>,
     .feature <span class="op">=</span> <span class="va">transcript</span>,
-    Dim_a_column <span class="op">=</span> <span class="va">`Dim1`</span>,
-    Dim_b_column <span class="op">=</span> <span class="va">`Dim2`</span>
+    Dim_a_column <span class="op">=</span> <span class="va">Dim1</span>,
+    Dim_b_column <span class="op">=</span> <span class="va">Dim2</span>
 <span class="op">)</span></code></pre></div>
 <pre><code>## class: SummarizedExperiment 
 ## dim: 527 3 
@@ -967,7 +936,7 @@
 <h2 class="hasAnchor">
 <a href="#from-bamsam-to-tibble-of-gene-counts" class="anchor"></a>From BAM/SAM to tibble of gene counts</h2>
 <p>We can calculate gene counts (using FeatureCounts; Liao Y et al., 10.1093/nar/gkz114) from a list of BAM/SAM files and format them into a tidy structure (similar to counts).</p>
-<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts</span> <span class="op">=</span> <span class="fu"><a href="../reference/tidybulk_SAM_BAM.html">tidybulk_SAM_BAM</a></span><span class="op">(</span>
     <span class="va">file_names</span>,
     genome <span class="op">=</span> <span class="st">"hg38"</span>,
@@ -981,21 +950,21 @@
 <h2 class="hasAnchor">
 <a href="#from-ensembl-ids-to-gene-symbol-ids" class="anchor"></a>From ensembl IDs to gene symbol IDs</h2>
 <p>We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs.</p>
-<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_ensembl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/ensembl_to_symbol.html">ensembl_to_symbol</a></span><span class="op">(</span><span class="va">ens</span><span class="op">)</span></code></pre></div>
 <pre><code>## # A tibble: 119 x 8
-##    ens   iso   `read count` sample cases_0_project_disease_type
-##    &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;                       
-##  1 ENSG… 13             144 TARGE… Acute Myeloid Leukemia      
-##  2 ENSG… 13              72 TARGE… Acute Myeloid Leukemia      
-##  3 ENSG… 13               0 TARGE… Acute Myeloid Leukemia      
-##  4 ENSG… 13            1099 TARGE… Acute Myeloid Leukemia      
-##  5 ENSG… 13              11 TARGE… Acute Myeloid Leukemia      
-##  6 ENSG… 13               2 TARGE… Acute Myeloid Leukemia      
-##  7 ENSG… 13               3 TARGE… Acute Myeloid Leukemia      
-##  8 ENSG… 13            2678 TARGE… Acute Myeloid Leukemia      
-##  9 ENSG… 13             751 TARGE… Acute Myeloid Leukemia      
-## 10 ENSG… 13               1 TARGE… Acute Myeloid Leukemia      
+##    ens           iso   `read count` sample          cases_0_project_disease_type
+##    &lt;chr&gt;         &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;                       
+##  1 ENSG00000000… 13             144 TARGET-20-PANL… Acute Myeloid Leukemia      
+##  2 ENSG00000000… 13              72 TARGET-20-PASB… Acute Myeloid Leukemia      
+##  3 ENSG00000000… 13               0 TARGET-20-PAPV… Acute Myeloid Leukemia      
+##  4 ENSG00000000… 13            1099 TARGET-20-PARX… Acute Myeloid Leukemia      
+##  5 ENSG00000000… 13              11 TARGET-20-PANG… Acute Myeloid Leukemia      
+##  6 ENSG00000000… 13               2 TARGET-20-PAPV… Acute Myeloid Leukemia      
+##  7 ENSG00000000… 13               3 TARGET-20-PAMY… Acute Myeloid Leukemia      
+##  8 ENSG00000000… 13            2678 TARGET-20-PAMY… Acute Myeloid Leukemia      
+##  9 ENSG00000000… 13             751 TARGET-20-PASF… Acute Myeloid Leukemia      
+## 10 ENSG00000000… 13               1 TARGET-20-PATD… Acute Myeloid Leukemia      
 ## # … with 109 more rows, and 3 more variables:
 ## #   cases_0_samples_0_sample_type &lt;chr&gt;, transcript &lt;chr&gt;, ref_genome &lt;chr&gt;</code></pre>
 </div>
@@ -1003,25 +972,25 @@
 <h2 class="hasAnchor">
 <a href="#add-versus-get-versus-only-modes" class="anchor"></a>ADD versus GET versus ONLY modes</h2>
 <p>Every function takes a tidytranscriptomics structured data as input, and (i) with action=“add” outputs the new information joint to the original input data frame (default), (ii) with action=“get” the new information with the sample or transcript relative informatin depending on what the analysis is about, or (iii) with action=“only” just the new information. For example, from this data set</p>
-<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
 <code class="sourceCode R">  <span class="va">tt.norm</span></code></pre></div>
 <pre><code>## # A tibble: 2,635 x 11
-##    sample transcript `Cell type` count time  condition `merged transcripts`
-##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
-##  1 SRR17… TNFRSF4    b_cell          6 0 d   TRUE                         1
-##  2 SRR17… PLCH2      b_cell        926 0 d   TRUE                         1
-##  3 SRR17… PADI4      b_cell         21 0 d   TRUE                         1
-##  4 SRR17… PAX7       b_cell          0 0 d   TRUE                         1
-##  5 SRR17… CDA        b_cell          1 0 d   TRUE                         1
-##  6 SRR17… RCAN3      b_cell        905 0 d   TRUE                         1
-##  7 SRR17… SMPDL3B    b_cell          3 0 d   TRUE                         1
-##  8 SRR17… EPB41      b_cell       4667 0 d   TRUE                         1
-##  9 SRR17… LCK        b_cell        436 0 d   TRUE                         1
-## 10 SRR17… COL8A2     b_cell          1 0 d   TRUE                         1
+##    sample     transcript `Cell type` count time  condition `merged transcripts`
+##    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
+##  1 SRR1740034 TNFRSF4    b_cell          6 0 d   TRUE                         1
+##  2 SRR1740034 PLCH2      b_cell        926 0 d   TRUE                         1
+##  3 SRR1740034 PADI4      b_cell         21 0 d   TRUE                         1
+##  4 SRR1740034 PAX7       b_cell          0 0 d   TRUE                         1
+##  5 SRR1740034 CDA        b_cell          1 0 d   TRUE                         1
+##  6 SRR1740034 RCAN3      b_cell        905 0 d   TRUE                         1
+##  7 SRR1740034 SMPDL3B    b_cell          3 0 d   TRUE                         1
+##  8 SRR1740034 EPB41      b_cell       4667 0 d   TRUE                         1
+##  9 SRR1740034 LCK        b_cell        436 0 d   TRUE                         1
+## 10 SRR1740034 COL8A2     b_cell          1 0 d   TRUE                         1
 ## # … with 2,625 more rows, and 4 more variables: .abundant &lt;lgl&gt;, TMM &lt;dbl&gt;,
 ## #   multiplier &lt;dbl&gt;, count_scaled &lt;dbl&gt;</code></pre>
 <p><strong>action=“add”</strong> (Default) We can add the MDS dimensions to the original data set</p>
-<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
 <code class="sourceCode R">  <span class="va">tt.norm</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span><span class="op">(</span>
         .abundance <span class="op">=</span> <span class="va">count_scaled</span>,
@@ -1032,22 +1001,22 @@
         action<span class="op">=</span><span class="st">"add"</span>
     <span class="op">)</span></code></pre></div>
 <pre><code>## # A tibble: 2,635 x 14
-##    sample transcript `Cell type` count time  condition `merged transcripts`
-##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
-##  1 SRR17… TNFRSF4    b_cell          6 0 d   TRUE                         1
-##  2 SRR17… PLCH2      b_cell        926 0 d   TRUE                         1
-##  3 SRR17… PADI4      b_cell         21 0 d   TRUE                         1
-##  4 SRR17… PAX7       b_cell          0 0 d   TRUE                         1
-##  5 SRR17… CDA        b_cell          1 0 d   TRUE                         1
-##  6 SRR17… RCAN3      b_cell        905 0 d   TRUE                         1
-##  7 SRR17… SMPDL3B    b_cell          3 0 d   TRUE                         1
-##  8 SRR17… EPB41      b_cell       4667 0 d   TRUE                         1
-##  9 SRR17… LCK        b_cell        436 0 d   TRUE                         1
-## 10 SRR17… COL8A2     b_cell          1 0 d   TRUE                         1
+##    sample     transcript `Cell type` count time  condition `merged transcripts`
+##    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
+##  1 SRR1740034 TNFRSF4    b_cell          6 0 d   TRUE                         1
+##  2 SRR1740034 PLCH2      b_cell        926 0 d   TRUE                         1
+##  3 SRR1740034 PADI4      b_cell         21 0 d   TRUE                         1
+##  4 SRR1740034 PAX7       b_cell          0 0 d   TRUE                         1
+##  5 SRR1740034 CDA        b_cell          1 0 d   TRUE                         1
+##  6 SRR1740034 RCAN3      b_cell        905 0 d   TRUE                         1
+##  7 SRR1740034 SMPDL3B    b_cell          3 0 d   TRUE                         1
+##  8 SRR1740034 EPB41      b_cell       4667 0 d   TRUE                         1
+##  9 SRR1740034 LCK        b_cell        436 0 d   TRUE                         1
+## 10 SRR1740034 COL8A2     b_cell          1 0 d   TRUE                         1
 ## # … with 2,625 more rows, and 7 more variables: .abundant &lt;lgl&gt;, TMM &lt;dbl&gt;,
 ## #   multiplier &lt;dbl&gt;, count_scaled &lt;dbl&gt;, Dim1 &lt;dbl&gt;, Dim2 &lt;dbl&gt;, Dim3 &lt;dbl&gt;</code></pre>
 <p><strong>action=“get”</strong> We can add the MDS dimensions to the original data set selecting just the sample-wise column</p>
-<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
 <code class="sourceCode R">  <span class="va">tt.norm</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span><span class="op">(</span>
         .abundance <span class="op">=</span> <span class="va">count_scaled</span>,
@@ -1058,16 +1027,16 @@
         action<span class="op">=</span><span class="st">"get"</span>
     <span class="op">)</span></code></pre></div>
 <pre><code>## # A tibble: 5 x 10
-##   sample `Cell type` time  condition `merged transcripts`   TMM multiplier
-##   &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
-## 1 SRR17… b_cell      0 d   TRUE                         1 0.858      1.31 
-## 2 SRR17… b_cell      1 d   TRUE                         1 0.838      1.19 
-## 3 SRR17… monocyte    1 d   FALSE                        1 0.814      1.90 
-## 4 SRR17… t_cell      0 d   TRUE                         1 1.28       0.968
-## 5 SRR17… dendritic_… 1 d   FALSE                        1 1.33       1.48 
+##   sample    `Cell type`    time  condition `merged transcripts`   TMM multiplier
+##   &lt;chr&gt;     &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+## 1 SRR17400… b_cell         0 d   TRUE                         1 0.858      1.31 
+## 2 SRR17400… b_cell         1 d   TRUE                         1 0.838      1.19 
+## 3 SRR17400… monocyte       1 d   FALSE                        1 0.814      1.90 
+## 4 SRR17400… t_cell         0 d   TRUE                         1 1.28       0.968
+## 5 SRR17400… dendritic_mye… 1 d   FALSE                        1 1.33       1.48 
 ## # … with 3 more variables: Dim1 &lt;dbl&gt;, Dim2 &lt;dbl&gt;, Dim3 &lt;dbl&gt;</code></pre>
 <p><strong>action=“only”</strong> We can get just the MDS dimensions relative to each sample</p>
-<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
 <code class="sourceCode R">  <span class="va">tt.norm</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span><span class="op">(</span>
         .abundance <span class="op">=</span> <span class="va">count_scaled</span>,
@@ -1080,20 +1049,20 @@
 <pre><code>## # A tibble: 5 x 4
 ##   sample       Dim1   Dim2     Dim3
 ##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
-## 1 SRR1740034 -1.64  -0.844  0.0264 
-## 2 SRR1740035 -1.61  -0.860  0.0438 
-## 3 SRR1740043  2.23  -0.233  0.641  
-## 4 SRR1740058 -0.798  2.20   0.00771
-## 5 SRR1740067  1.82  -0.268 -0.719</code></pre>
+## 1 SRR1740034 -1.64   0.844 -0.0264 
+## 2 SRR1740035 -1.61   0.860 -0.0438 
+## 3 SRR1740043  2.23   0.233 -0.641  
+## 4 SRR1740058 -0.798 -2.20  -0.00771
+## 5 SRR1740067  1.82   0.268  0.719</code></pre>
 </div>
 <div id="appendix" class="section level2">
 <h2 class="hasAnchor">
 <a href="#appendix" class="anchor"></a>Appendix</h2>
-<div class="sourceCode" id="cb83"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 20.04 LTS
+## Running under: Ubuntu 20.04.1 LTS
 ## 
 ## Matrix products: default
 ## BLAS/LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.8.so
@@ -1110,87 +1079,90 @@
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] tidybulk_1.2.1   purrr_0.3.4      rlang_0.4.9      ggplot2_3.3.2   
-##  [5] tidyr_1.1.2      magrittr_2.0.1   dplyr_1.0.2      tibble_3.0.4    
-##  [9] knitr_1.30       BiocStyle_2.18.1
+##  [1] tidybulk_1.2.1   purrr_0.3.4      rlang_0.4.10     ggplot2_3.3.3   
+##  [5] tidyr_1.1.2      magrittr_2.0.1   dplyr_1.0.4      tibble_3.1.0    
+##  [9] knitr_1.31       BiocStyle_2.18.1
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] backports_1.2.0             tidytext_0.2.6             
-##   [3] systemfonts_0.3.2           plyr_1.8.6                 
+##   [1] backports_1.2.1             tidytext_0.3.0             
+##   [3] systemfonts_1.0.1           plyr_1.8.6                 
 ##   [5] igraph_1.2.6                lazyeval_0.2.2             
 ##   [7] splines_4.0.3               BiocParallel_1.24.1        
 ##   [9] listenv_0.8.0               SnowballC_0.7.0            
-##  [11] GenomeInfoDb_1.26.1         sva_3.38.0                 
-##  [13] digest_0.6.27               htmltools_0.5.0            
-##  [15] fansi_0.4.1                 memoise_1.1.0              
-##  [17] tensor_1.5                  cluster_2.1.0              
-##  [19] ROCR_1.0-11                 limma_3.46.0               
-##  [21] globals_0.14.0              readr_1.4.0                
-##  [23] annotate_1.68.0             matrixStats_0.57.0         
-##  [25] pkgdown_1.6.1               colorspace_2.0-0           
-##  [27] blob_1.2.1                  ggrepel_0.8.2              
-##  [29] textshaping_0.2.1           xfun_0.19                  
-##  [31] crayon_1.3.4                RCurl_1.98-1.2             
-##  [33] jsonlite_1.7.1              spatstat.data_1.5-2        
-##  [35] spatstat_1.64-1             genefilter_1.72.0          
-##  [37] survival_3.2-7              zoo_1.8-8                  
-##  [39] glue_1.4.2                  polyclip_1.10-0            
-##  [41] gtable_0.3.0                zlibbioc_1.36.0            
-##  [43] XVector_0.30.0              leiden_0.3.6               
-##  [45] DelayedArray_0.16.0         future.apply_1.6.0         
-##  [47] BiocGenerics_0.36.0         abind_1.4-5                
-##  [49] scales_1.1.1                DBI_1.1.0                  
-##  [51] edgeR_3.32.0                miniUI_0.1.1.1             
-##  [53] Rcpp_1.0.5                  widyr_0.1.3                
-##  [55] viridisLite_0.3.0           xtable_1.8-4               
-##  [57] reticulate_1.18             bit_4.0.4                  
-##  [59] rsvd_1.0.3                  preprocessCore_1.52.0      
-##  [61] stats4_4.0.3                htmlwidgets_1.5.2          
+##  [11] scattermore_0.7             GenomeInfoDb_1.26.2        
+##  [13] sva_3.38.0                  digest_0.6.27              
+##  [15] htmltools_0.5.1.1           fansi_0.4.2                
+##  [17] memoise_2.0.0               tensor_1.5                 
+##  [19] cluster_2.1.1               ROCR_1.0-11                
+##  [21] limma_3.46.0                globals_0.14.0             
+##  [23] readr_1.4.0                 annotate_1.68.0            
+##  [25] matrixStats_0.58.0          pkgdown_1.6.1              
+##  [27] colorspace_2.0-0            blob_1.2.1                 
+##  [29] ggrepel_0.9.1               textshaping_0.3.1          
+##  [31] xfun_0.21                   crayon_1.4.1               
+##  [33] RCurl_1.98-1.2              jsonlite_1.7.2             
+##  [35] spatstat.data_2.0-0         spatstat_1.64-1            
+##  [37] genefilter_1.72.1           survival_3.2-7             
+##  [39] zoo_1.8-8                   glue_1.4.2                 
+##  [41] polyclip_1.10-0             gtable_0.3.0               
+##  [43] zlibbioc_1.36.0             XVector_0.30.0             
+##  [45] leiden_0.3.7                DelayedArray_0.16.2        
+##  [47] future.apply_1.7.0          BiocGenerics_0.36.0        
+##  [49] abind_1.4-5                 scales_1.1.1               
+##  [51] DBI_1.1.1                   edgeR_3.32.1               
+##  [53] miniUI_0.1.1.1              Rcpp_1.0.6                 
+##  [55] widyr_0.1.3                 viridisLite_0.3.0          
+##  [57] xtable_1.8-4                reticulate_1.18            
+##  [59] bit_4.0.4                   preprocessCore_1.52.1      
+##  [61] stats4_4.0.3                htmlwidgets_1.5.3          
 ##  [63] httr_1.4.2                  RColorBrewer_1.1-2         
-##  [65] ellipsis_0.3.1              Seurat_3.2.2               
+##  [65] ellipsis_0.3.1              Seurat_4.0.0               
 ##  [67] ica_1.0-2                   pkgconfig_2.0.3            
-##  [69] XML_3.99-0.5                farver_2.0.3               
-##  [71] uwot_0.1.9                  deldir_0.2-3               
-##  [73] locfit_1.5-9.4              utf8_1.1.4                 
-##  [75] reshape2_1.4.4              tidyselect_1.1.0           
-##  [77] labeling_0.4.2              later_1.1.0.1              
-##  [79] AnnotationDbi_1.52.0        munsell_0.5.0              
-##  [81] tools_4.0.3                 cli_2.2.0                  
-##  [83] generics_0.1.0              RSQLite_2.2.1              
-##  [85] broom_0.7.2                 ggridges_0.5.2             
-##  [87] evaluate_0.14               stringr_1.4.0              
-##  [89] fastmap_1.0.1               goftest_1.2-2              
-##  [91] yaml_2.2.1                  ragg_0.4.0                 
-##  [93] bit64_4.0.5                 fs_1.5.0                   
-##  [95] fitdistrplus_1.1-3          RANN_2.6.1                 
-##  [97] pbapply_1.4-3               future_1.20.1              
-##  [99] nlme_3.1-150                mime_0.9                   
-## [101] tokenizers_0.2.1            compiler_4.0.3             
-## [103] plotly_4.9.2.1              png_0.1-7                  
-## [105] e1071_1.7-4                 spatstat.utils_1.17-0      
-## [107] stringi_1.5.3               desc_1.2.0                 
-## [109] lattice_0.20-41             Matrix_1.2-18              
-## [111] vctrs_0.3.5                 pillar_1.4.7               
-## [113] lifecycle_0.2.0             BiocManager_1.30.10        
-## [115] lmtest_0.9-38               RcppAnnoy_0.0.17           
-## [117] data.table_1.13.2           cowplot_1.1.0              
-## [119] bitops_1.0-6                irlba_2.3.3                
-## [121] httpuv_1.5.4                patchwork_1.1.0            
-## [123] GenomicRanges_1.42.0        R6_2.5.0                   
-## [125] bookdown_0.21               promises_1.1.1             
-## [127] gridExtra_2.3               KernSmooth_2.23-18         
-## [129] janeaustenr_0.1.5           IRanges_2.24.0             
-## [131] parallelly_1.21.0           codetools_0.2-18           
-## [133] MASS_7.3-53                 assertthat_0.2.1           
-## [135] SummarizedExperiment_1.20.0 rprojroot_2.0.2            
-## [137] withr_2.3.0                 sctransform_0.3.1          
-## [139] S4Vectors_0.28.0            GenomeInfoDbData_1.2.4     
-## [141] mgcv_1.8-33                 parallel_4.0.3             
-## [143] hms_0.5.3                   rpart_4.1-15               
-## [145] grid_4.0.3                  class_7.3-17               
-## [147] rmarkdown_2.5               MatrixGenerics_1.2.0       
-## [149] Rtsne_0.15                  Biobase_2.50.0             
-## [151] shiny_1.5.0</code></pre>
+##  [69] XML_3.99-0.5                farver_2.1.0               
+##  [71] uwot_0.1.10                 deldir_0.2-10              
+##  [73] sass_0.3.1                  locfit_1.5-9.4             
+##  [75] utf8_1.1.4                  tidyselect_1.1.0           
+##  [77] labeling_0.4.2              reshape2_1.4.4             
+##  [79] later_1.1.0.1               AnnotationDbi_1.52.0       
+##  [81] munsell_0.5.0               tools_4.0.3                
+##  [83] cachem_1.0.4                cli_2.3.1                  
+##  [85] generics_0.1.0              RSQLite_2.2.3              
+##  [87] broom_0.7.5                 ggridges_0.5.3             
+##  [89] evaluate_0.14               stringr_1.4.0              
+##  [91] fastmap_1.1.0               goftest_1.2-2              
+##  [93] yaml_2.2.1                  ragg_1.1.1                 
+##  [95] bit64_4.0.5                 fs_1.5.0                   
+##  [97] fitdistrplus_1.1-3          RANN_2.6.1                 
+##  [99] pbapply_1.4-3               future_1.21.0              
+## [101] nlme_3.1-152                mime_0.10                  
+## [103] tokenizers_0.2.1            compiler_4.0.3             
+## [105] rstudioapi_0.13             png_0.1-7                  
+## [107] plotly_4.9.3                spatstat.utils_2.0-0       
+## [109] bslib_0.2.4                 stringi_1.5.3              
+## [111] highr_0.8                   ps_1.6.0                   
+## [113] desc_1.2.0                  lattice_0.20-41            
+## [115] Matrix_1.3-2                vctrs_0.3.6                
+## [117] pillar_1.5.0                lifecycle_1.0.0            
+## [119] BiocManager_1.30.10         lmtest_0.9-38              
+## [121] jquerylib_0.1.3             RcppAnnoy_0.0.18           
+## [123] data.table_1.14.0           cowplot_1.1.1              
+## [125] bitops_1.0-6                irlba_2.3.3                
+## [127] patchwork_1.1.1             httpuv_1.5.5               
+## [129] GenomicRanges_1.42.0        R6_2.5.0                   
+## [131] bookdown_0.21               promises_1.2.0.1           
+## [133] KernSmooth_2.23-18          gridExtra_2.3              
+## [135] janeaustenr_0.1.5           IRanges_2.24.1             
+## [137] parallelly_1.23.0           codetools_0.2-18           
+## [139] MASS_7.3-53.1               assertthat_0.2.1           
+## [141] SummarizedExperiment_1.20.0 rprojroot_2.0.2            
+## [143] withr_2.4.1                 SeuratObject_4.0.0         
+## [145] sctransform_0.3.2           S4Vectors_0.28.1           
+## [147] GenomeInfoDbData_1.2.4      mgcv_1.8-34                
+## [149] parallel_4.0.3              hms_1.0.0                  
+## [151] rpart_4.1-15                grid_4.0.3                 
+## [153] rmarkdown_2.7               MatrixGenerics_1.2.1       
+## [155] Rtsne_0.15                  Biobase_2.50.0             
+## [157] shiny_1.6.0</code></pre>
 </div>
 </div>
   </div>

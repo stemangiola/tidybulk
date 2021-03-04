@@ -81,7 +81,7 @@ nest" />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -226,48 +226,39 @@ standard tidyverse recycling rules).</p></td>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:tidybulk’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    arrange, bind_cols, bind_rows, distinct, filter, full_join,</span>
-#&gt; <span class='message'>    group_by, inner_join, left_join, mutate, rename, right_join,</span>
-#&gt; <span class='message'>    rowwise, summarise, ungroup</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    filter, lag</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    intersect, setdiff, setequal, union</span></div><div class='input'>
+
 <span class='fu'>nest</span><span class='op'>(</span><span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span>, <span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='op'>-</span><span class='va'>transcript</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
 <span class='fu'>unnest</span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 2,635 x 6</span><span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 2,635 x 6</span><span>
 #&gt;    transcript sample     `Cell type`       count time  condition
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>             </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>    
-#&gt; </span><span style='color: #555555;'> 1</span><span> TNFRSF4    SRR1740034 b_cell                6 0 d   TRUE     
-#&gt; </span><span style='color: #555555;'> 2</span><span> TNFRSF4    SRR1740035 b_cell                6 1 d   TRUE     
-#&gt; </span><span style='color: #555555;'> 3</span><span> TNFRSF4    SRR1740043 monocyte              1 1 d   FALSE    
-#&gt; </span><span style='color: #555555;'> 4</span><span> TNFRSF4    SRR1740058 t_cell              401 0 d   TRUE     
-#&gt; </span><span style='color: #555555;'> 5</span><span> TNFRSF4    SRR1740067 dendritic_myeloid     4 1 d   FALSE    
-#&gt; </span><span style='color: #555555;'> 6</span><span> PLCH2      SRR1740034 b_cell              926 0 d   TRUE     
-#&gt; </span><span style='color: #555555;'> 7</span><span> PLCH2      SRR1740035 b_cell             </span><span style='text-decoration: underline;'>1</span><span>134 1 d   TRUE     
-#&gt; </span><span style='color: #555555;'> 8</span><span> PLCH2      SRR1740043 monocyte             23 1 d   FALSE    
-#&gt; </span><span style='color: #555555;'> 9</span><span> PLCH2      SRR1740058 t_cell             </span><span style='text-decoration: underline;'>2</span><span>526 0 d   TRUE     
-#&gt; </span><span style='color: #555555;'>10</span><span> PLCH2      SRR1740067 dendritic_myeloid    21 1 d   FALSE    
-#&gt; </span><span style='color: #555555;'># … with 2,625 more rows</span><span></div><div class='input'>
+#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>             </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>    
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> TNFRSF4    SRR1740034 b_cell                6 0 d   TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> TNFRSF4    SRR1740035 b_cell                6 1 d   TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> TNFRSF4    SRR1740043 monocyte              1 1 d   FALSE    
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> TNFRSF4    SRR1740058 t_cell              401 0 d   TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> TNFRSF4    SRR1740067 dendritic_myeloid     4 1 d   FALSE    
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> PLCH2      SRR1740034 b_cell              926 0 d   TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> PLCH2      SRR1740035 b_cell             </span><span style='text-decoration: underline;'>1</span><span>134 1 d   TRUE     
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> PLCH2      SRR1740043 monocyte             23 1 d   FALSE    
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> PLCH2      SRR1740058 t_cell             </span><span style='text-decoration: underline;'>2</span><span>526 0 d   TRUE     
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> PLCH2      SRR1740067 dendritic_myeloid    21 1 d   FALSE    
+#&gt; </span><span style='color: #949494;'># … with 2,625 more rows</span><span></div><div class='input'>
 
 <span class='fu'>nest</span><span class='op'>(</span><span class='fu'><a href='tidybulk.html'>tidybulk</a></span><span class='op'>(</span><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span>, <span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span>, data <span class='op'>=</span> <span class='op'>-</span><span class='va'>transcript</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 527 x 2</span><span>
-#&gt;    transcript data            
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;list&gt;</span><span>          
-#&gt; </span><span style='color: #555555;'> 1</span><span> TNFRSF4    </span><span style='color: #555555;'>&lt;tibble [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 2</span><span> PLCH2      </span><span style='color: #555555;'>&lt;tibble [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 3</span><span> PADI4      </span><span style='color: #555555;'>&lt;tibble [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 4</span><span> PAX7       </span><span style='color: #555555;'>&lt;tibble [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 5</span><span> CDA        </span><span style='color: #555555;'>&lt;tibble [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 6</span><span> RCAN3      </span><span style='color: #555555;'>&lt;tibble [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 7</span><span> SMPDL3B    </span><span style='color: #555555;'>&lt;tibble [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 8</span><span> EPB41      </span><span style='color: #555555;'>&lt;tibble [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 9</span><span> LCK        </span><span style='color: #555555;'>&lt;tibble [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>10</span><span> COL8A2     </span><span style='color: #555555;'>&lt;tibble [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'># … with 517 more rows</span><span></div><div class='input'>
+</div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 527 x 2</span><span>
+#&gt;    transcript data              
+#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;list&gt;</span><span>            
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> TNFRSF4    </span><span style='color: #949494;'>&lt;tidybulk [5 × 5]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> PLCH2      </span><span style='color: #949494;'>&lt;tidybulk [5 × 5]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> PADI4      </span><span style='color: #949494;'>&lt;tidybulk [5 × 5]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> PAX7       </span><span style='color: #949494;'>&lt;tidybulk [5 × 5]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> CDA        </span><span style='color: #949494;'>&lt;tidybulk [5 × 5]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> RCAN3      </span><span style='color: #949494;'>&lt;tidybulk [5 × 5]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> SMPDL3B    </span><span style='color: #949494;'>&lt;tidybulk [5 × 5]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> EPB41      </span><span style='color: #949494;'>&lt;tidybulk [5 × 5]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> LCK        </span><span style='color: #949494;'>&lt;tidybulk [5 × 5]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> COL8A2     </span><span style='color: #949494;'>&lt;tidybulk [5 × 5]&gt;</span><span>
+#&gt; </span><span style='color: #949494;'># … with 517 more rows</span><span></div><div class='input'>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

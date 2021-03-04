@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -138,8 +138,9 @@
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
-  reference <span class='op'>=</span> <span class='va'>X_cibersort</span>,
+  reference <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='st'>"cibersort"</span>,
+  prefix <span class='op'>=</span> <span class='st'>""</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -169,6 +170,10 @@
     <tr>
       <th>method</th>
       <td><p>A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.</p></td>
+    </tr>
+    <tr>
+      <th>prefix</th>
+      <td><p>A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.</p></td>
     </tr>
     <tr>
       <th>...</th>

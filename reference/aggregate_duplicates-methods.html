@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -231,7 +231,7 @@
 <p>A `SummarizedExperiment` object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a></p>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a></p>
 <p>This function aggregates duplicated transcripts (e.g., isoforms, ensembl).
 For example, we often have to convert ensembl symbols to gene/transcript symbol,
  but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble
@@ -253,20 +253,22 @@ For example, we often have to convert ensembl symbols to gene/transcript symbol,
     <span class='va'>`count`</span>,
     aggregation_function <span class='op'>=</span> <span class='va'>sum</span>
     <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: tidybulk says: for aggregation, factors and logical columns were converted to character</span></div><div class='output co'>#&gt; <span class='message'>Converted to characters</span></div><div class='output co'>#&gt; <span class='message'>logical</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 2,635 x 7</span><span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: tidybulk says: for aggregation, factors and logical columns were converted to character</span></div><div class='output co'>#&gt; <span class='message'>Converted to characters</span></div><div class='output co'>#&gt; <span class='message'>logical</span></div><div class='output co'>#&gt; <span class='message'>Registered S3 method overwritten by 'cli':</span>
+#&gt; <span class='message'>  method     from    </span>
+#&gt; <span class='message'>  print.boxx spatstat</span></div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 2,635 x 7</span><span>
 #&gt;    sample     transcript `Cell type` count time  condition `merged transcripts`
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                    </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span> SRR1740034 TNFRSF4    b_cell          6 0 d   TRUE                         1
-#&gt; </span><span style='color: #555555;'> 2</span><span> SRR1740034 PLCH2      b_cell        926 0 d   TRUE                         1
-#&gt; </span><span style='color: #555555;'> 3</span><span> SRR1740034 PADI4      b_cell         21 0 d   TRUE                         1
-#&gt; </span><span style='color: #555555;'> 4</span><span> SRR1740034 PAX7       b_cell          0 0 d   TRUE                         1
-#&gt; </span><span style='color: #555555;'> 5</span><span> SRR1740034 CDA        b_cell          1 0 d   TRUE                         1
-#&gt; </span><span style='color: #555555;'> 6</span><span> SRR1740034 RCAN3      b_cell        905 0 d   TRUE                         1
-#&gt; </span><span style='color: #555555;'> 7</span><span> SRR1740034 SMPDL3B    b_cell          3 0 d   TRUE                         1
-#&gt; </span><span style='color: #555555;'> 8</span><span> SRR1740034 EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE                         1
-#&gt; </span><span style='color: #555555;'> 9</span><span> SRR1740034 LCK        b_cell        436 0 d   TRUE                         1
-#&gt; </span><span style='color: #555555;'>10</span><span> SRR1740034 COL8A2     b_cell          1 0 d   TRUE                         1
-#&gt; </span><span style='color: #555555;'># … with 2,625 more rows</span><span></div><div class='input'>
+#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                    </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> SRR1740034 TNFRSF4    b_cell          6 0 d   TRUE                         1
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> SRR1740034 PLCH2      b_cell        926 0 d   TRUE                         1
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> SRR1740034 PADI4      b_cell         21 0 d   TRUE                         1
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> SRR1740034 PAX7       b_cell          0 0 d   TRUE                         1
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> SRR1740034 CDA        b_cell          1 0 d   TRUE                         1
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> SRR1740034 RCAN3      b_cell        905 0 d   TRUE                         1
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> SRR1740034 SMPDL3B    b_cell          3 0 d   TRUE                         1
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> SRR1740034 EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE                         1
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> SRR1740034 LCK        b_cell        436 0 d   TRUE                         1
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> SRR1740034 COL8A2     b_cell          1 0 d   TRUE                         1
+#&gt; </span><span style='color: #949494;'># … with 2,625 more rows</span><span></div><div class='input'>
 
 </div></span></pre>
   </div>

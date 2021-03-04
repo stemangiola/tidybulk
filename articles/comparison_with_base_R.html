@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -78,14 +78,13 @@
 
       
 
-      </header><script src="comparison_with_base_R_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="comparison_with_base_R_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="comparison_with_base_R_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="comparison_with_base_R_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Comparison with base R</h1>
                         <h4 class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2020-12-09</h4>
+            <h4 class="date">2021-03-04</h4>
       
       
       <div class="hidden name"><code>comparison_with_base_R.Rmd</code></div>
@@ -485,16 +484,16 @@ pre{
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat">Seurat</a></span><span class="op">)</span>
 
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/CreateSeuratObject.html">CreateSeuratObject</a></span><span class="op">(</span><span class="va">count_m</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/ScaleData.html">ScaleData</a></span><span class="op">(</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/CreateSeuratObject.html">CreateSeuratObject</a></span><span class="op">(</span><span class="va">count_m</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html">ScaleData</a></span><span class="op">(</span>
     <span class="va">snn</span>, display.progress <span class="op">=</span> <span class="cn">TRUE</span>,
     num.cores<span class="op">=</span><span class="fl">4</span>, do.par <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">snn</span>, npcs <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/FindNeighbors.html">FindNeighbors</a></span><span class="op">(</span><span class="va">snn</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/FindClusters.html">FindClusters</a></span><span class="op">(</span><span class="va">snn</span>, method <span class="op">=</span> <span class="st">"igraph"</span>, <span class="va">...</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">snn</span>, npcs <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html">FindNeighbors</a></span><span class="op">(</span><span class="va">snn</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html">FindClusters</a></span><span class="op">(</span><span class="va">snn</span>, method <span class="op">=</span> <span class="st">"igraph"</span>, <span class="va">...</span><span class="op">)</span>
 <span class="va">snn</span> <span class="op">=</span> <span class="va">snn</span><span class="op">[[</span><span class="st">"seurat_clusters"</span><span class="op">]</span><span class="op">]</span>
 
 <span class="va">snn</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="../reference/counts.html">counts</a></span><span class="op">[</span>
@@ -538,7 +537,7 @@ pre{
 
 <span class="co"># Return non redundant data frame</span>
 <span class="va">counts</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter-joins.html">anti_join</a></span><span class="op">(</span><span class="va">.data.correlated</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu">spread</span><span class="op">(</span><span class="va">sample</span>, <span class="va">rc</span>, <span class="op">-</span> <span class="va">transcript</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/spread.html">spread</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">rc</span>, <span class="op">-</span> <span class="va">transcript</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/left_join.html">left_join</a></span><span class="op">(</span><span class="va">annotation</span><span class="op">)</span></code></pre></div>
 </div>
 <div style="clear:both;">
@@ -597,7 +596,7 @@ pre{
     <span class="fu"><a href="../reference/tidybulk.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
       <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu">pivot_longer</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"counts"</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"source"</span>, values_to <span class="op">=</span> <span class="st">"abundance"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"counts"</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"source"</span>, values_to <span class="op">=</span> <span class="st">"abundance"</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="../reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">lowly_abundant</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">abundance</span> <span class="op">+</span> <span class="fl">1</span>, color<span class="op">=</span><span class="va">sample</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
@@ -632,7 +631,7 @@ pre{
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 20.04 LTS
+## Running under: Ubuntu 20.04.1 LTS
 ## 
 ## Matrix products: default
 ## BLAS/LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.8.so
@@ -649,86 +648,89 @@ pre{
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] tidybulk_1.2.1   ggrepel_0.8.2    ggplot2_3.3.2    magrittr_2.0.1  
-## [5] tibble_3.0.4     tidyr_1.1.2      dplyr_1.0.2      knitr_1.30      
+## [1] tidybulk_1.2.1   ggrepel_0.9.1    ggplot2_3.3.3    magrittr_2.0.1  
+## [5] tibble_3.1.0     tidyr_1.1.2      dplyr_1.0.4      knitr_1.31      
 ## [9] BiocStyle_2.18.1
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] backports_1.2.0             tidytext_0.2.6             
-##   [3] systemfonts_0.3.2           plyr_1.8.6                 
+##   [1] backports_1.2.1             tidytext_0.3.0             
+##   [3] systemfonts_1.0.1           plyr_1.8.6                 
 ##   [5] igraph_1.2.6                lazyeval_0.2.2             
 ##   [7] splines_4.0.3               BiocParallel_1.24.1        
 ##   [9] listenv_0.8.0               SnowballC_0.7.0            
-##  [11] GenomeInfoDb_1.26.1         sva_3.38.0                 
-##  [13] digest_0.6.27               htmltools_0.5.0            
-##  [15] fansi_0.4.1                 memoise_1.1.0              
-##  [17] tensor_1.5                  cluster_2.1.0              
-##  [19] ROCR_1.0-11                 limma_3.46.0               
-##  [21] globals_0.14.0              readr_1.4.0                
-##  [23] annotate_1.68.0             matrixStats_0.57.0         
-##  [25] pkgdown_1.6.1               colorspace_2.0-0           
-##  [27] blob_1.2.1                  textshaping_0.2.1          
-##  [29] xfun_0.19                   crayon_1.3.4               
-##  [31] RCurl_1.98-1.2              jsonlite_1.7.1             
-##  [33] spatstat.data_1.5-2         spatstat_1.64-1            
-##  [35] genefilter_1.72.0           survival_3.2-7             
-##  [37] zoo_1.8-8                   glue_1.4.2                 
-##  [39] polyclip_1.10-0             gtable_0.3.0               
-##  [41] zlibbioc_1.36.0             XVector_0.30.0             
-##  [43] leiden_0.3.6                DelayedArray_0.16.0        
-##  [45] future.apply_1.6.0          BiocGenerics_0.36.0        
-##  [47] abind_1.4-5                 scales_1.1.1               
-##  [49] DBI_1.1.0                   edgeR_3.32.0               
-##  [51] miniUI_0.1.1.1              Rcpp_1.0.5                 
-##  [53] widyr_0.1.3                 viridisLite_0.3.0          
-##  [55] xtable_1.8-4                reticulate_1.18            
-##  [57] bit_4.0.4                   rsvd_1.0.3                 
-##  [59] preprocessCore_1.52.0       stats4_4.0.3               
-##  [61] htmlwidgets_1.5.2           httr_1.4.2                 
+##  [11] scattermore_0.7             GenomeInfoDb_1.26.2        
+##  [13] sva_3.38.0                  digest_0.6.27              
+##  [15] htmltools_0.5.1.1           fansi_0.4.2                
+##  [17] memoise_2.0.0               tensor_1.5                 
+##  [19] cluster_2.1.1               ROCR_1.0-11                
+##  [21] limma_3.46.0                globals_0.14.0             
+##  [23] readr_1.4.0                 annotate_1.68.0            
+##  [25] matrixStats_0.58.0          pkgdown_1.6.1              
+##  [27] colorspace_2.0-0            blob_1.2.1                 
+##  [29] textshaping_0.3.1           xfun_0.21                  
+##  [31] crayon_1.4.1                RCurl_1.98-1.2             
+##  [33] jsonlite_1.7.2              spatstat.data_2.0-0        
+##  [35] spatstat_1.64-1             genefilter_1.72.1          
+##  [37] survival_3.2-7              zoo_1.8-8                  
+##  [39] glue_1.4.2                  polyclip_1.10-0            
+##  [41] gtable_0.3.0                zlibbioc_1.36.0            
+##  [43] XVector_0.30.0              leiden_0.3.7               
+##  [45] DelayedArray_0.16.2         future.apply_1.7.0         
+##  [47] BiocGenerics_0.36.0         abind_1.4-5                
+##  [49] scales_1.1.1                DBI_1.1.1                  
+##  [51] edgeR_3.32.1                miniUI_0.1.1.1             
+##  [53] Rcpp_1.0.6                  widyr_0.1.3                
+##  [55] viridisLite_0.3.0           xtable_1.8-4               
+##  [57] reticulate_1.18             bit_4.0.4                  
+##  [59] preprocessCore_1.52.1       stats4_4.0.3               
+##  [61] htmlwidgets_1.5.3           httr_1.4.2                 
 ##  [63] RColorBrewer_1.1-2          ellipsis_0.3.1             
-##  [65] Seurat_3.2.2                ica_1.0-2                  
+##  [65] Seurat_4.0.0                ica_1.0-2                  
 ##  [67] pkgconfig_2.0.3             XML_3.99-0.5               
-##  [69] uwot_0.1.9                  deldir_0.2-3               
-##  [71] locfit_1.5-9.4              utf8_1.1.4                 
-##  [73] tidyselect_1.1.0            rlang_0.4.9                
-##  [75] reshape2_1.4.4              later_1.1.0.1              
-##  [77] AnnotationDbi_1.52.0        munsell_0.5.0              
-##  [79] tools_4.0.3                 cli_2.2.0                  
-##  [81] generics_0.1.0              RSQLite_2.2.1              
-##  [83] broom_0.7.2                 ggridges_0.5.2             
-##  [85] evaluate_0.14               stringr_1.4.0              
-##  [87] fastmap_1.0.1               goftest_1.2-2              
-##  [89] yaml_2.2.1                  ragg_0.4.0                 
-##  [91] bit64_4.0.5                 fs_1.5.0                   
-##  [93] fitdistrplus_1.1-3          purrr_0.3.4                
-##  [95] RANN_2.6.1                  pbapply_1.4-3              
-##  [97] future_1.20.1               nlme_3.1-150               
-##  [99] mime_0.9                    tokenizers_0.2.1           
-## [101] compiler_4.0.3              plotly_4.9.2.1             
-## [103] png_0.1-7                   e1071_1.7-4                
-## [105] spatstat.utils_1.17-0       stringi_1.5.3              
-## [107] desc_1.2.0                  lattice_0.20-41            
-## [109] Matrix_1.2-18               vctrs_0.3.5                
-## [111] pillar_1.4.7                lifecycle_0.2.0            
-## [113] BiocManager_1.30.10         lmtest_0.9-38              
-## [115] RcppAnnoy_0.0.17            data.table_1.13.2          
-## [117] cowplot_1.1.0               bitops_1.0-6               
-## [119] irlba_2.3.3                 httpuv_1.5.4               
-## [121] patchwork_1.1.0             GenomicRanges_1.42.0       
-## [123] R6_2.5.0                    bookdown_0.21              
-## [125] promises_1.1.1              KernSmooth_2.23-18         
-## [127] gridExtra_2.3               janeaustenr_0.1.5          
-## [129] IRanges_2.24.0              parallelly_1.21.0          
-## [131] codetools_0.2-18            MASS_7.3-53                
-## [133] assertthat_0.2.1            SummarizedExperiment_1.20.0
-## [135] rprojroot_2.0.2             withr_2.3.0                
-## [137] sctransform_0.3.1           S4Vectors_0.28.0           
-## [139] GenomeInfoDbData_1.2.4      mgcv_1.8-33                
-## [141] parallel_4.0.3              hms_0.5.3                  
-## [143] rpart_4.1-15                grid_4.0.3                 
-## [145] class_7.3-17                rmarkdown_2.5              
-## [147] MatrixGenerics_1.2.0        Rtsne_0.15                 
-## [149] Biobase_2.50.0              shiny_1.5.0</code></pre>
+##  [69] uwot_0.1.10                 deldir_0.2-10              
+##  [71] sass_0.3.1                  locfit_1.5-9.4             
+##  [73] utf8_1.1.4                  tidyselect_1.1.0           
+##  [75] rlang_0.4.10                reshape2_1.4.4             
+##  [77] later_1.1.0.1               AnnotationDbi_1.52.0       
+##  [79] munsell_0.5.0               tools_4.0.3                
+##  [81] cachem_1.0.4                cli_2.3.1                  
+##  [83] generics_0.1.0              RSQLite_2.2.3              
+##  [85] broom_0.7.5                 ggridges_0.5.3             
+##  [87] evaluate_0.14               stringr_1.4.0              
+##  [89] fastmap_1.1.0               goftest_1.2-2              
+##  [91] yaml_2.2.1                  ragg_1.1.1                 
+##  [93] bit64_4.0.5                 fs_1.5.0                   
+##  [95] fitdistrplus_1.1-3          purrr_0.3.4                
+##  [97] RANN_2.6.1                  pbapply_1.4-3              
+##  [99] future_1.21.0               nlme_3.1-152               
+## [101] mime_0.10                   tokenizers_0.2.1           
+## [103] compiler_4.0.3              rstudioapi_0.13            
+## [105] png_0.1-7                   plotly_4.9.3               
+## [107] spatstat.utils_2.0-0        bslib_0.2.4                
+## [109] stringi_1.5.3               ps_1.6.0                   
+## [111] desc_1.2.0                  lattice_0.20-41            
+## [113] Matrix_1.3-2                vctrs_0.3.6                
+## [115] pillar_1.5.0                lifecycle_1.0.0            
+## [117] BiocManager_1.30.10         lmtest_0.9-38              
+## [119] jquerylib_0.1.3             RcppAnnoy_0.0.18           
+## [121] data.table_1.14.0           cowplot_1.1.1              
+## [123] bitops_1.0-6                irlba_2.3.3                
+## [125] httpuv_1.5.5                patchwork_1.1.1            
+## [127] GenomicRanges_1.42.0        R6_2.5.0                   
+## [129] bookdown_0.21               promises_1.2.0.1           
+## [131] KernSmooth_2.23-18          gridExtra_2.3              
+## [133] janeaustenr_0.1.5           IRanges_2.24.1             
+## [135] parallelly_1.23.0           codetools_0.2-18           
+## [137] MASS_7.3-53.1               assertthat_0.2.1           
+## [139] SummarizedExperiment_1.20.0 rprojroot_2.0.2            
+## [141] withr_2.4.1                 SeuratObject_4.0.0         
+## [143] sctransform_0.3.2           S4Vectors_0.28.1           
+## [145] GenomeInfoDbData_1.2.4      mgcv_1.8-34                
+## [147] parallel_4.0.3              hms_1.0.0                  
+## [149] rpart_4.1-15                grid_4.0.3                 
+## [151] rmarkdown_2.7               MatrixGenerics_1.2.1       
+## [153] Rtsne_0.15                  Biobase_2.50.0             
+## [155] shiny_1.6.0</code></pre>
 </div>
   </div>
 
