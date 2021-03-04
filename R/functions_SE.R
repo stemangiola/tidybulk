@@ -296,7 +296,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 		# Evaluate ...
 		arguments <- list(...)
 		if (!"check_duplicates" %in% names(arguments))
-			arguments = arguments %>% c(check_duplicates = TRUE)
+			arguments = arguments %>% c(check_duplicates = FALSE)
 		if (!"verbose" %in% names(arguments))
 			arguments = arguments %>% c(verbose = TRUE)
 		if (!"dims" %in% names(arguments))
