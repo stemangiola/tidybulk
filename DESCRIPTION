@@ -64,7 +64,8 @@ Suggests:
     pasilla,
     ggrepel,
     devtools,
-    functional
+    functional,
+    survminer
 VignetteBuilder: 
     knitr
 RdMacros:

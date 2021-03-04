@@ -46,23 +46,9 @@ keep_variable(
   log_transform = TRUE
 )
 
-\S4method{keep_variable}{SummarizedExperiment}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  top = 500,
-  log_transform = TRUE
-)
+\S4method{keep_variable}{SummarizedExperiment}(.data, top = 500, log_transform = TRUE)
 
-\S4method{keep_variable}{RangedSummarizedExperiment}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  top = 500,
-  log_transform = TRUE
-)
+\S4method{keep_variable}{RangedSummarizedExperiment}(.data, top = 500, log_transform = TRUE)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}

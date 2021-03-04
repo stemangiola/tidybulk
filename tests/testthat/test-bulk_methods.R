@@ -203,6 +203,32 @@ test_that("Only differential trancript abundance - no object",{
 	)
 
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
+	
+	# Robust version
+	res =
+		test_differential_abundance(
+			input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "edger_robust_likelihood_ratio",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-12.58107, -12.19281, -11.58286, -11.19910),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		6
+	)
+	
+	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
+	
 
 	# Continuous covariate
 	sam = distinct(input_df, a)
@@ -283,6 +309,24 @@ test_that("Only differential trancript abundance - no object",{
 			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
+	
+	# Treat
+	input_df %>% 
+		identify_abundant(a, b, c, factor_of_interest = condition) %>%
+		test_differential_abundance(
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			scaling_method = "TMM",
+			method = "edgeR_likelihood_ratio",
+			test_above_log2_fold_change = 1,
+			action="get"
+		) %>%
+		filter(FDR<0.05) %>%
+		nrow %>%
+		expect_equal(169)
+	
 })
 
 test_that("Only differential trancript abundance - no object - with contrasts",{
@@ -476,6 +520,31 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 	
 	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
 	
+})
+
+test_that("Voom with sample weights method",{
+	
+	res =
+		test_differential_abundance(
+			input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "limma_voom_sample_weights",
+			action="only"
+		)
+	
+	expect_equal(
+		unique(res$logFC)[1:4],
+		c(-10.357682, -11.624146, -12.121186, -9.287714),
+		tolerance=1e-6
+	)
+	
+	expect_equal(
+		ncol(res),
+		7
+	)
 })
 
 test_that("New method choice",{
@@ -692,12 +761,17 @@ test_that("test prefix",{
 		df %>%
 		test_differential_abundance(~condition, method="limma_voom", action="only", prefix = "prefix_")
 	
+	res_voom_sample_weights = 
+	    df %>%
+	    test_differential_abundance(~condition, method="limma_voom_sample_weights", action="only", prefix = "prefix_")
+	
 	res_edger = 
 		df %>%
 		test_differential_abundance(~condition, method="edgeR_likelihood_ratio", action="only", prefix = "prefix_")
 	
 	expect_gt(colnames(res_DeSEQ2) %>% grep("prefix_", .) %>% length, 0)
 	expect_gt(colnames(res_voom) %>% grep("prefix_", .) %>% length, 0)
+	expect_gt(colnames(res_voom_sample_weights) %>% grep("prefix_", .) %>% length, 0)
 	expect_gt(colnames(res_edger) %>% grep("prefix_", .) %>% length, 0)
 })
 
@@ -715,15 +789,15 @@ test_that("Get entrez from symbol - no object",{
 })
 
 # test_that("Get gene enrichment - no object",{
-#
+# 
 # 	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
 # 		message("Installing EGSEA needed for differential transcript abundance analyses")
 # 		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos = "https://cloud.r-project.org")
 # 		BiocManager::install("EGSEA")
 # 	}
-#
+# 
 # 	library(EGSEA)
-#
+# 
 # 	res =
 # 		test_gene_enrichment(
 # 			aggregate_duplicates(
@@ -742,17 +816,17 @@ test_that("Get entrez from symbol - no object",{
 # 			.abundance = c,
 # 			species="human"
 # 		)
-#
+# 
 # 	expect_equal(
 # 		res$pathway[1:4],
 # 		c("GNF2_HCK"    ,  "GSE10325_LUPUS_BCELL_VS_LUPUS_MYELOID_DN"   ,"Amino sugar and nucleotide sugar metabolism", "Phagosome"  )
 # 	)
-#
+# 
 # 	expect_equal(
 # 		ncol(res),
 # 		20
 # 	)
-#
+# 
 # })
 #
 
@@ -1280,7 +1354,7 @@ test_that("Only rotated dimensions - no object",{
 		)
 
 	expect_equal(
-		res$`PC1 rotated 45`,
+		res$`PC1_rotated_45`,
 		c(-9.450807, -9.739338,  8.853659,  2.741059,  7.595427),
 		tolerance=1e-1
 	)
@@ -1315,7 +1389,7 @@ test_that("Get rotated dimensions - no object",{
 		)
 
 	expect_equal(
-		res$`PC1 rotated 45`[1:4],
+		res$`PC1_rotated_45`[1:4],
 		c(  -9.450807, -9.739338 , 8.853659,  2.741059),
 		tolerance=1e-1
 	)
@@ -1354,7 +1428,7 @@ test_that("Add rotated dimensions - no object",{
 		)
 
 	expect_equal(
-		res$`PC1 rotated 45`[1:4],
+		res$`PC1_rotated_45`[1:4],
 		c( -9.450807 ,-9.450807, -9.450807 ,-9.450807),
 		tolerance=1e-1
 	)
@@ -1633,23 +1707,99 @@ test_that("Add cell type proportions - no object",{
 
 test_that("differential composition",{
 	
-	res =
-		test_differential_cellularity(
+	# Cibersort
+	test_differential_cellularity(
 			input_df,
-			~ condition,
+			. ~ condition,
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
 			cores = 1
-		)
+		) %>% 
+		pull(`estimate_(Intercept)`) %>%
+		.[[1]] %>%
+		as.integer %>%
+		expect_equal(	-2, 	tollerance =1e-3)
 	
-	expect_equal(
-		as.integer(res$`estimate_(Intercept)`[1]),
-		-2, 
-		tollerance =1e-3
-	)
+	# llsr
+	test_differential_cellularity(
+		input_df,
+		. ~ condition,
+		.sample = a,
+		.transcript = b,
+		.abundance = c, 
+		method="llsr",
+		cores = 1
+	) %>% 
+		pull(`estimate_(Intercept)`) %>%
+		.[[1]] %>%
+		as.integer %>%
+		expect_equal(	-2, 	tollerance =1e-3)
 
+	# Survival analyses
+	input_df %>%
+	select(a, b, c) %>%
+	nest(data = -a) %>%
+	mutate(
+		days = c(1, 10, 500, 1000, 2000),
+		dead = c(1, 1, 1, 0, 1)
+	) %>%
+	unnest(data) %>%
+	test_differential_cellularity(
+		survival::Surv(days, dead) ~ .,
+		.sample = a,
+		.transcript = b,
+		.abundance = c,
+		cores = 1
+	) %>%
+	pull(estimate) %>%
+	.[[1]] %>%
+		round() %in% c(97, 112) %>% # 112 is the github action UBUNTU that has different value
+	expect_true()
 	
+})
+
+test_that("test_stratification_cellularity",{
+	
+	# Cibersort
+	input_df %>%
+		select(a, b, c) %>%
+		nest(data = -a) %>%
+		mutate(
+			days = c(1, 10, 500, 1000, 2000),
+			dead = c(1, 1, 1, 0, 1)
+		) %>%
+		unnest(data) %>%
+		test_stratification_cellularity(
+			survival::Surv(days, dead) ~ .,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			cores = 1
+		) %>%
+		pull(.low_cellularity_expected) %>%
+		.[[1]] %>%
+		expect_equal(3.35, tolerance  =1e-1)
+	
+	# llsr
+	input_df %>%
+		select(a, b, c) %>%
+		nest(data = -a) %>%
+		mutate(
+			days = c(1, 10, 500, 1000, 2000),
+			dead = c(1, 1, 1, 0, 1)
+		) %>%
+		unnest(data) %>%
+		test_stratification_cellularity(
+			survival::Surv(days, dead) ~ .,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			cores = 1, method = "llsr"
+		) %>%
+		pull(.low_cellularity_expected) %>%
+		.[[1]] %>%
+		expect_equal(3.35, tolerance  =1e-1)
 })
 
 test_that("filter abundant - no object",{

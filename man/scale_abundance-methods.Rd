@@ -54,27 +54,9 @@ scale_abundance(
   reference_selection_function = NULL
 )
 
-\S4method{scale_abundance}{SummarizedExperiment}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "TMM",
-  reference_sample = NULL,
-  action = "add",
-  reference_selection_function = NULL
-)
+\S4method{scale_abundance}{SummarizedExperiment}(.data, method = "TMM", reference_sample = NULL)
 
-\S4method{scale_abundance}{RangedSummarizedExperiment}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "TMM",
-  reference_sample = NULL,
-  action = "add",
-  reference_selection_function = NULL
-)
+\S4method{scale_abundance}{RangedSummarizedExperiment}(.data, method = "TMM", reference_sample = NULL)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
@@ -124,9 +106,9 @@ edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))
 \examples{
 
 
- tidybulk::counts_mini \%>\% 
-   tidybulk(sample, transcript, count) \%>\% 
-   identify_abundant() \%>\% 
+ tidybulk::counts_mini \%>\%
+   tidybulk(sample, transcript, count) \%>\%
+   identify_abundant() \%>\%
    scale_abundance()
 
 

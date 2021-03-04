@@ -28,9 +28,15 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 
 	res = tidybulk(tidybulk:::tidybulk_to_SummarizedExperiment(scale_abundance(tidybulk(se) %>% identify_abundant())))
 
+	res2 = tidybulk(se) %>% identify_abundant() %>% scale_abundance()
+	
+	res %>% distinct(sample, multiplier) %>% pull(multiplier)
+	res2 %>% distinct(sample, multiplier) %>% pull(multiplier)
+	
+	
 	expect_equal(
-		res[1:4,]$`counts_scaled`,
-		c(1796.091258, 1162.818960, 1216.046589,    2.729622),
+		res %>% distinct(sample, multiplier) %>% pull(multiplier),
+		res2 %>% distinct(sample, multiplier) %>% pull(multiplier) %>% as.numeric(),
 		tolerance=1e-3
 	)
 
@@ -62,11 +68,11 @@ test_that("tidybulk SummarizedExperiment clustering",{
 
 	expect_equal(
 		tail(names(SummarizedExperiment::colData(res)), 1),
-		"cluster.kmeans"
+		"cluster_kmeans"
 	)
 
 	expect_equal(
-		levels(SummarizedExperiment::colData(res)$cluster.kmeans),
+		levels(SummarizedExperiment::colData(res)$cluster_kmeans),
 		c("1", "2")
 	)
 
@@ -74,7 +80,7 @@ test_that("tidybulk SummarizedExperiment clustering",{
 
 test_that("tidybulk SummarizedExperiment clustering",{
 
-	res = reduce_dimensions(se %>% identify_abundant(), method="PCA")
+	res = se %>% identify_abundant() %>% reduce_dimensions(method="PCA")
 
 	expect_equal(
 		tail(names(SummarizedExperiment::colData(res)), 1),
@@ -98,7 +104,7 @@ test_that("Get rotated dimensions - SummarizedExperiment",{
 
 	expect_equal(
 		tail(names(SummarizedExperiment::colData(res)), 1),
-		"PC2.rotated.45"
+		"PC2_rotated_45"
 	)
 
 })
@@ -157,7 +163,7 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 
 })
 
-test_that("Add differential trancript abundance - SummarizedExperiment",{
+test_that("differential trancript abundance - SummarizedExperiment",{
 
 	res =		test_differential_abundance(
 		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>% 
@@ -217,6 +223,26 @@ test_that("Add differential trancript abundance - SummarizedExperiment",{
 			dplyr::pull(logFC),
 		tolerance=1e-4
 	)
+	
+	# Treat
+	input_df %>% 
+		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+		identify_abundant(a, b, c, factor_of_interest = condition) %>%
+		test_differential_abundance(
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			scaling_method = "TMM",
+			method = "edgeR_likelihood_ratio",
+			test_above_log2_fold_change = 1,
+			action="only"
+		) %>%
+		`@` (elementMetadata) %>%
+		as_tibble() %>%
+		filter(FDR<0.05) %>%
+		nrow %>%
+		expect_equal(169)
 
 })
 
@@ -249,4 +275,133 @@ test_that("filter variable - no object",{
 		c("FCN1",  "IGHD",  "IGHM",  "IGKC",  "TCL1A")
 	)
 
+})
+
+test_that("impute missing",{
+	
+	res =
+		input_df %>%
+		dplyr::slice(-1) %>%
+		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+		impute_missing_abundance(	~ condition	)
+	
+	expect_equal(	assays(res) %>% as.list() %>% .[[1]] %>% .["TNFRSF4", "SRR1740034"],	203.5	)
+	
+
+	expect_equal(	nrow(res)*ncol(res),	nrow(input_df)	)
+	
+})
+
+test_that("differential composition",{
+	
+	# Cibersort
+	input_df %>%
+		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+		test_differential_cellularity(. ~ condition	, cores = 1	) %>% 
+		pull(`estimate_(Intercept)`) %>%
+		.[[1]] %>%
+		as.integer %>%
+		expect_equal(	-2, 	tollerance =1e-3)
+	
+	# llsr
+	input_df %>%
+		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+	test_differential_cellularity(
+		. ~ condition,
+		method="llsr",
+		cores = 1
+	) %>% 
+		pull(`estimate_(Intercept)`) %>%
+		.[[1]] %>%
+		as.integer %>%
+		expect_equal(	-2, 	tollerance =1e-3)
+	
+	# Survival analyses
+	input_df %>%
+		dplyr::select(a, b, c) %>%
+		nest(data = -a) %>%
+		mutate(
+			days = c(1, 10, 500, 1000, 2000),
+			dead = c(1, 1, 1, 0, 1)
+		) %>%
+		unnest(data) %>%
+		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+		test_differential_cellularity(
+			survival::Surv(days, dead) ~ .,
+			cores = 1
+		) %>%
+		pull(estimate) %>%
+		.[[1]] %>%
+		round() %in% c(97, 112) %>% # 112 is the github action UBUNTU that has different value
+		expect_true()
+	
+})
+
+# test_that("Get gene enrichment - no object",{
+# 	
+# 	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
+# 		message("Installing EGSEA needed for differential transcript abundance analyses")
+# 		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos = "https://cloud.r-project.org")
+# 		BiocManager::install("EGSEA")
+# 	}
+# 	
+# 	library(EGSEA)
+# 	
+# 	res =
+# 		aggregate_duplicates(
+# 			dplyr::rename(symbol_to_entrez(
+# 				#dplyr::filter(input_df, grepl("^B", b)),
+# 				input_df,
+# 				.transcript = b, .sample = a), d = entrez
+# 			),
+# 			.transcript = d,
+# 			.sample = a,
+# 			.abundance = c
+# 		) %>% identify_abundant(a, b, c, factor_of_interest = condition) %>%
+# 		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+# 		test_gene_enrichment(
+# 			~ condition,
+# 			.entrez = d,
+# 			species="human"
+# 		)
+# 	
+# 	expect_equal(
+# 		res$pathway[1:4],
+# 		c("GNF2_HCK"    ,  "GSE10325_LUPUS_BCELL_VS_LUPUS_MYELOID_DN"   ,"Amino sugar and nucleotide sugar metabolism", "Phagosome"  )
+# 	)
+# 	
+# 	expect_equal(
+# 		ncol(res),
+# 		20
+# 	)
+# 	
+# })
+
+test_that("pivot",{
+	
+	expect_equal(	ncol(pivot_sample(tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk(input_df, a, b, c)))	), 4)
+	
+	expect_equal(	ncol(pivot_transcript(tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk(input_df, a, b, c)))	), 1)
+	
+})
+
+test_that("gene over representation",{
+	
+	df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+	df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+	
+	res =
+		df_entrez %>%
+		tidybulk:::tidybulk_to_SummarizedExperiment(sample, transcript, count) %>%
+		test_gene_overrepresentation(
+			.entrez = entrez,
+			.do_test = do_test,
+			species="Homo sapiens"
+		)
+	
+	expect_equal(	ncol(res),	10	)
+	
+	
+	
 })

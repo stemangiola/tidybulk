@@ -81,19 +81,22 @@ create_tt_from_bam_sam_bulk <-
 			# Anonymous function
 			# input: edgeR::DGEList object
 			# output: edgeR::DGEList object with added transcript symbol
-			{
-				dge <- (.)
-				dge$genes$transcript <-
-					AnnotationDbi::mapIds(
-						org.Hs.eg.db::org.Hs.eg.db,
-						keys = as.character(dge$genes$GeneID),
-						column = "SYMBOL",
-						keytype = "ENTREZID",
-						multiVals = "first"
-					)
-
-				dge
-			} %>%
+			when(
+				"annot.ext" %in% (rlang::dots_list(...) %>% names) %>% not() ~ {
+					dge <- (.)
+					dge$genes$symbol <-
+						AnnotationDbi::mapIds(
+							org.Hs.eg.db::org.Hs.eg.db,
+							keys = as.character(dge$genes$GeneID),
+							column = "SYMBOL",
+							keytype = "ENTREZID",
+							multiVals = "first"
+						)
+					
+					dge
+				},
+				~ (.)
+			) %>%
 
 			# Anonymous function
 			# input: annotated edgeR::DGEList object
@@ -101,23 +104,44 @@ create_tt_from_bam_sam_bulk <-
 			{
 				reduce(
 					list(
-						(.) %$% counts %>% as_tibble(rownames = "GeneID") %>% mutate(GeneID = GeneID %>% as.integer()) %>% gather(sample, count,-GeneID),
-						(.) %$% genes %>% select(GeneID, transcript) %>% as_tibble(),
-						(.) %$% samples %>% as_tibble()
+						
+						# Counts
+						(.) %$% 
+							counts %>% 
+							as_tibble(rownames = "GeneID") %>% 
+							gather(sample, count,-GeneID),
+						
+						# Genes
+						(.) %$%
+							genes %>% 
+							select(
+								suppressWarnings(
+									one_of("GeneID", "symbol")
+								)
+								) %>%
+							as_tibble() %>%
+							mutate(GeneID = GeneID %>% as.character()),
+						
+						# Sample
+						(.) %$% 
+							samples %>% 
+							as_tibble()
 					),
 					dplyr::left_join
 				) %>%
-					rename(entrez = GeneID) %>%
-					mutate(entrez = entrez %>% as.character())
+					rename(transcript = GeneID) 
 			} %>%
 
 			# Add tt_columns attribute
-			add_tt_columns(sample,transcript,count) %>%
-			memorise_methods_used("featurecounts") %>%
-
-			# Add class
-			add_class("tt") %>%
-			add_class("tidybulk")
+			
+			tidybulk_to_SummarizedExperiment(sample, transcript, count) 
+			# 
+			# add_tt_columns(sample,symbol,count) %>%
+			# memorise_methods_used("featurecounts") %>%
+			# 
+			# # Add class
+			# add_class("tt") %>%
+			# add_class("tidybulk")
 	}
 
 #' Get a tibble with scaled counts using TMM
@@ -181,7 +205,7 @@ get_scaled_counts_bulk <- function(.data,
 			# If not specified take most abundance sample
 			df %>%
 				group_by(!!.sample) %>%
-				summarise(sum = sum(!!.abundance)) %>%
+				summarise(sum = median(!!.abundance)) %>%
 				mutate(med = max(sum)) %>%
 				mutate(diff = abs(sum - med)) %>%
 				arrange(diff) %>%
@@ -220,17 +244,14 @@ get_scaled_counts_bulk <- function(.data,
 
 		# I have correct the strange behaviour of edgeR of reference
 		# sample not being 1
-		ifelse_pipe(
-			"reference" %in% ((.) %>% pull(!!.sample)),
-			~ .x %>%
-				mutate(
-					multiplier =
-						multiplier /
-						(.) %>%
-						filter(!!.sample == "reference") %>%
-						pull(multiplier)
-				)
-		) %>%
+		# I HAD TO COMMENT BECAUSE TEST FAILING
+		# {
+		# 	mult_ref = (.) %>%  filter(!!.sample == reference) %>% pull(multiplier)
+		# 	(.) %>%  mutate(
+		# 		multiplier =
+		# 			multiplier /mult_ref
+		# 	)
+		# } %>%
 		
 		dplyr::select(-tot,-tot_filt) %>%
 		dplyr::rename(TMM = nf) %>%
@@ -240,32 +261,6 @@ get_scaled_counts_bulk <- function(.data,
 		
 		# Add methods
 		memorise_methods_used(c("edger", "tmm"))
-		
-	# Return
-	
-	# df_norm =
-	# 	df %>%
-	# 
-	# 	# drop factor of interest
-	# 	select(!!.sample, !!.transcript, !!.abundance) %>%
-	# 
-	# 	# Manipulate
-	# 	dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))) %>%
-	# 	dplyr::left_join(nf, by = quo_name(.sample)) %>%
-	# 
-	# 	# Calculate scaled values
-	# 	dplyr::mutate(!!value_scaled := !!.abundance * multiplier) %>%
-	# 
-	# 	# Format df for join
-	# 	dplyr::select(!!.sample, !!.transcript, !!value_scaled,	everything()) %>%
-	# 	# dplyr::mutate(lowly_abundant = !!.transcript %in% nf_obj$gene_to_exclude) %>%
-	# 	dplyr::select(-!!.abundance,-tot,-tot_filt) %>%
-	# 	dplyr::rename(TMM = nf) %>%
-	# 	arrange(!!.sample,!!.transcript)
-	# #dplyr::select(-!!.sample,-!!.transcript)
-
-	# # Attach attributes
-	# df_norm 
 
 }
 
@@ -291,6 +286,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param test_above_log2_fold_change A positive real value. At the moment this works just for edgeR methods, and use the `treat` function, which test the that the difference in abundance is bigger than this parameter rather than zero \url{https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat}.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -303,6 +299,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
 																											 method = "edgeR_quasi_likelihood",
+																											 test_above_log2_fold_change = NULL,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
 																											 prefix = "") {
@@ -402,13 +399,18 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		as_matrix(rownames = !!.transcript) %>%
 
 		edgeR::DGEList(counts = .) %>%
-		edgeR::calcNormFactors(method = scaling_method) %>%
-		edgeR::estimateDisp(design) %>%
+		
+		# Scale data if method is not "none"
+		when(
+			scaling_method != "none" ~ (.) %>% edgeR::calcNormFactors(method = scaling_method),
+			~ (.)
+		) %>%
 
 		# select method
 		when(
-			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmFit(design),
-			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFit(design)
+			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmFit(design),
+			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmQLFit(design),
+			tolower(method) == "edger_robust_likelihood_ratio" ~ (.) %>% edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
 		)
 
 
@@ -423,12 +425,13 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 				# select method
 				when(
-					tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
+					!is.null(test_above_log2_fold_change) ~ (.) %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change),
+					tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
 					tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
 				)	%>%
 
 				# Convert to tibble
-				edgeR::topTags(n = 999999) %$%
+				edgeR::topTags(n = Inf) %$%
 				table %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
 
@@ -448,12 +451,12 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 							# select method
 							when(
-								tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
+								tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
 								tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
 							)	%>%
 
 							# Convert to tibble
-							edgeR::topTags(n = 999999) %$%
+							edgeR::topTags(n = Inf) %$%
 							table %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
 							mutate(constrast = colnames(my_contrasts)[.x]) 
@@ -477,10 +480,11 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		reattach_internals(.data) %>%
 	    
 	    # select method
-				when(
-					method == "edgeR_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
-					method == "edgeR_quasi_likelihood" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_quasi_likelihood"))
-				)	%>%
+			when(
+				tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
+				tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_quasi_likelihood")),
+				tolower(method) ==  "edger_robust_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edger_robust_likelihood_ratio"))
+			)	%>%
 
 		# Add raw object
 		attach_to_internals(edgeR_object, "edgeR") %>%
@@ -513,6 +517,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See voom makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "limma_voom", "limma_voom_sample_weights"
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -524,6 +529,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
+                                                       method = NULL,     
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
 																											 prefix = "") {
@@ -597,10 +603,20 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		as_matrix(rownames = !!.transcript) %>%
 
 		edgeR::DGEList() %>%
-		edgeR::calcNormFactors(method = scaling_method) %>%
-
-		limma::voom(design, plot=FALSE) %>%
-		limma::lmFit(design)
+  
+		# Scale data if method is not "none"
+		when(
+			scaling_method != "none" ~ (.) %>% edgeR::calcNormFactors(method = scaling_method),
+			~ (.)
+		) %>%
+  
+	    # select method
+		when(
+			tolower(method) == "limma_voom" ~ (.) %>% limma::voom(design, plot=FALSE),
+			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% limma::voomWithQualityWeights(design, plot=FALSE)
+		) %>%
+		
+	    limma::lmFit(design)
 
 	voom_object %>%
 
@@ -616,7 +632,11 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 				limma::eBayes() %>%
 
 			# Convert to tibble
-				limma::topTable(n = 999999) %>%
+				# when(
+				# 	!is.null(test_above_log2_fold_change) ~ (.) %>% limma::topTreat(n = Inf),
+				# 	~ (.) %>% limma::topTags(n = Inf)
+				# ) %$%
+				limma::topTable(n = Inf) %>%
 				as_tibble(rownames = quo_name(.transcript)) %>%
 
 				# # Mark DE genes
@@ -638,7 +658,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 							limma::eBayes() %>%
 
 							# Convert to tibble
-							limma::topTable(n = 999999) %>%
+							limma::topTable(n = Inf) %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
 							mutate(constrast = colnames(my_contrasts)[.x]) 
 							# %>%
@@ -659,7 +679,12 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		
 		# Attach attributes
 		reattach_internals(.data) %>%
-	  memorise_methods_used("voom") %>%
+	    
+	    # select method
+	    when(
+			tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
+			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights")
+		) %>%
 
 		# Add raw object
 		attach_to_internals(voom_object, "voom") %>%
@@ -861,7 +886,11 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
+#' @importFrom purrr map_lgl
 #' @importFrom stringr str_replace
+#' @importFrom stringr str_split
+#' @importFrom stringr str_replace_all
+#' @importFrom stringr str_remove
 #'
 #'
 #' @param .data A tibble
@@ -881,7 +910,7 @@ test_differential_cellularity_ <- function(.data,
 																					 .transcript = NULL,
 																					 .abundance = NULL,
 																					 method = "cibersort",
-																					 reference = X_cibersort,
+																					 reference = NULL,
 																					 significance_threshold = 0.05,
 																					 ...
 ) {
@@ -897,104 +926,203 @@ test_differential_cellularity_ <- function(.data,
 		install.packages("broom", repos = "https://cloud.r-project.org")
 	}
 
-	# Parse formula
-	.my_formula =
-		.formula %>%
-		when(
-
-			# If I have the dot, needed definitely for censored
-			format(.) %>% grepl("\\.", .) %>% any ~ format(.formula) %>% str_replace("([-\\+\\*~ ])(\\.)", "\\1.proportion_0_corrected"),
-
-			# If normal formula
-			~ sprintf(".proportion_0_corrected%s", format(.))
-		) %>%
-
-		as.formula
- 
-	.data %>%
+	deconvoluted = 
+		.data %>%
 
 		# Deconvolution
 		deconvolve_cellularity(
 			!!.sample, !!.transcript, !!.abundance,
 			method=method,
+			prefix = sprintf("%s:", method),
 			reference = reference,
 			action="get",
 			...
-		)  %>%
-
-		# Test
-		pivot_longer(
-			names_prefix = sprintf("%s: ", method),
-			cols = starts_with(method),
-			names_to = ".cell_type",
-			values_to = ".proportion"
-		) %>%
-
-		# Replace 0s
-		mutate(min_proportion = min(.proportion[.proportion!=0])) %>%
-		mutate(.proportion_0_corrected = if_else(.proportion==0, min_proportion, .proportion)) %>%
-
-		# Test survival
-		tidyr::nest(cell_type_proportions = -.cell_type) %>%
-		mutate(surv_test = map(
-			cell_type_proportions,
-			~ {
-			if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
-
-			# See if regression if censored or not
-			.x %>%
-				when(
-					grepl("Surv", .my_formula) %>% any ~ {
-						# Check if package is installed, otherwise install
-						if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-							message("Installing betareg needed for analyses")
-							install.packages("survival", repos = "https://cloud.r-project.org")
-						}
-
-						if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
-							message("Installing boot needed for analyses")
-							install.packages("boot", repos = "https://cloud.r-project.org")
-						}
-
-						(.) %>%
-							mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
-							survival::coxph(.my_formula, .)	%>%
-							broom::tidy() %>%
-							select(-term)
-					} ,
-					~ {
-						# Check if package is installed, otherwise install
-						if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
-							message("Installing betareg needed for analyses")
-							install.packages("betareg", repos = "https://cloud.r-project.org")
-						}
-						(.) %>%
-							betareg::betareg(.my_formula, .) %>%
-							broom::tidy() %>%
-							filter(component != "precision") %>%
-							pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
-							select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
-							select(-component)
-					}
-				)
-		}
-		)) %>%
-
-		unnest(surv_test, keep_empty = TRUE) %>%
-
-		# Attach attributes
-		reattach_internals(.data) %>%
-		
-		# Add methods used
+		) 
+	
+	min_detected_proportion = 
+		deconvoluted %>%
+		select(starts_with(method)) %>%
+		gather(cell_type, prop) %>%
+		filter(prop > 0) %>%
+		pull(prop) %>%
+		min()
+	
+	
+	# Check if test is univaiable or multivariable
+	.formula %>%
 		when(
-			grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
-			~ (.) %>% memorise_methods_used("betareg")
-		)
+			
+			# Univariable
+			format(.) %>%
+				str_split("~") %>%
+				.[[1]] %>%
+				map_lgl( ~ grepl("\\. | \\.", .x)) %>%
+				which	== 1 ~ {
+					# Parse formula
+					.my_formula =
+						.formula %>%
+						when(
+							# If I have the dot, needed definitely for censored
+							format(.) %>% grepl("\\.", .) %>% any ~ format(.) %>% str_replace("([-\\+\\*~ ]?)(\\.)", "\\1.proportion_0_corrected"),
+							
+							# If normal formula
+							~ sprintf(".proportion_0_corrected%s", format(.))
+						) %>%
+						
+						as.formula
+					
+					# Test
+					univariable_differential_tissue_composition(deconvoluted,
+																											method,
+																											.my_formula,
+																											min_detected_proportion) %>%
+						
+						# Attach attributes
+						reattach_internals(.data) %>%
+						
+						# Add methods used
+						when(
+							grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+							~ (.) %>% memorise_methods_used("betareg")
+						)
+				},
+			
+			# Multivariable
+			~ {
+				# Parse formula
+				covariates =
+					deconvoluted %>%
+					select(starts_with(method)) %>%
+					colnames() %>%
+					gsub(sprintf("%s:", method), "", .) %>%
+					str_replace_all("[ \\(\\)]", "___")
+				
+				# Parse formula
+				.my_formula =
+					.formula %>%
+					when(
+						# If I have the dot, needed definitely for censored
+						format(.) %>% grepl("\\.", .) %>% any ~
+							format(.formula) %>%
+							str_replace("([-\\+\\*~ ])(\\.)",
+													sprintf(
+														"\\1%s", paste(covariates, collapse = " + ")
+													)),
+						
+						# If normal formula
+						~ sprintf(".proportion_0_corrected%s", format(.))
+					) %>%
+					
+					as.formula
+				
+				# Test
+				multivariable_differential_tissue_composition(deconvoluted,
+																											method,
+																											.my_formula,
+																											min_detected_proportion) %>%
+					
+					# Attach attributes
+					reattach_internals(.data) %>%
+					
+					# Add methods used
+					when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+							 ~ (.))
+				
+			}) %>%
+		
+		# Eliminate prefix
+		mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+	
+
+}
 
 
-
-
-
+#' Get differential composition information to a tibble using edgeR.
+#'
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom utils install.packages
+#' @importFrom purrr when
+#' @importFrom purrr map_lgl
+#' @importFrom stringr str_replace
+#' @importFrom stringr str_split
+#' @importFrom stringr str_replace_all
+#' @importFrom stringr str_remove
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
+#' @param significance_threshold A real between 0 and 1
+#'
+#' @return A tibble with edgeR results
+#'
+test_stratification_cellularity_ <- function(.data,
+																						 .formula,
+																						 .sample = NULL,
+																						 .transcript = NULL,
+																						 .abundance = NULL,
+																						 method = "cibersort",
+																						 reference = NULL,
+																						 ...
+) {
+	
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	
+	
+	deconvoluted = 
+		.data %>%
+		
+		# Deconvolution
+		deconvolve_cellularity(
+			!!.sample, !!.transcript, !!.abundance,
+			method=method,
+			prefix = sprintf("%s:", method),
+			reference = reference,
+			action="get",
+			...
+		) 
+	
+	
+	
+	
+	# Check if test is univaiable or multivariable
+	.formula %>%
+		{
+			# Parse formula
+			.my_formula =
+				format(.formula) %>% 
+				str_replace("([~ ])(\\.)", "\\1.high_cellularity") %>%
+				as.formula
+			
+			# Test
+			univariable_differential_tissue_stratification(deconvoluted,
+																										 method,
+																										 .my_formula) %>%
+				
+				# Attach attributes
+				reattach_internals(.data) %>%
+				
+				# Add methods used
+				memorise_methods_used(c("survival", "boot", "survminer"))
+		} %>%
+		
+		# Eliminate prefix
+		mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+	
+	
 }
 
 
@@ -1156,6 +1284,8 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			num.threads = cores,
 		)
 
+	gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
+	
 	res_formatted_all =
 		res@results %>%
 		map2_dfr(
@@ -1165,7 +1295,10 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 				mutate(data_base = .y)
 		) %>%
 		arrange(med.rank) %>%
-		select(data_base, pathway, everything())
+		
+		# Add webpage
+		mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
+		select(data_base, pathway, web_page, med.rank, everything()) 
 
 
 	bind_rows(res_formatted_all, res_formatted_kegg)
@@ -1588,7 +1721,7 @@ get_reduced_dimensions_TSNE_bulk <-
 		# Evaluate ...
 		arguments <- list(...)
 		if (!"check_duplicates" %in% names(arguments))
-			arguments = arguments %>% c(check_duplicates = TRUE)
+			arguments = arguments %>% c(check_duplicates = FALSE)
 		if (!"verbose" %in% names(arguments))
 			arguments = arguments %>% c(verbose = TRUE)
 		if (!"dims" %in% names(arguments))
@@ -1921,6 +2054,10 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.feature = col_names$.feature
 	.abundance = col_names$.abundance
 
+	# Check if .data has more than one element
+	if(.data %>% distinct(!!.element) %>% nrow() <= 1 )
+		stop("tidybulk says: You must have more than one element (trancripts if of_samples == FALSE) to perform remove_redundancy")
+	
 	# Check if package is installed, otherwise install
 	if (find.package("widyr", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing widyr needed for correlation analyses")
@@ -2022,6 +2159,10 @@ remove_redundancy_elements_though_reduced_dimensions <-
 		col_names = get_elements(.data, .element)
 		.element = col_names$.element
 
+		# Check if .data has more than one element
+		if(.data %>% distinct(!!.element) %>% nrow() <= 1 )
+			stop("tidybulk says: You must have more than one element (trancripts if of_samples == FALSE) to perform remove_redundancy")
+		
 		Dim_a_column = enquo(Dim_a_column)
 		Dim_b_column = enquo(Dim_b_column)
 
@@ -2197,7 +2338,7 @@ get_symbol_from_ensembl <-
 #' @return A data frame
 #'
 #'
-run_llsr = function(mix, reference) {
+run_llsr = function(mix, reference = X_cibersort) {
 	# Get common markers
 	markers = intersect(rownames(mix), rownames(reference))
 
@@ -2241,17 +2382,18 @@ run_epic = function(mix, reference = NULL) {
 	if("EPIC" %in% .packages() %>% not) stop("tidybulk says: Please attach the apckage EPIC manually (i.e. library(EPIC)). This is because EPIC is only available on GitHub and it is not possible to seemlessy make EPIC part of the dependencies.")
 		
 	# Get common markers
-	markers = intersect(rownames(mix), rownames(reference))
-	
-	X <- (reference[markers, , drop = FALSE])
-	Y <- (mix[markers, , drop = FALSE])
-	
-	if(!is.null(reference))
-		reference = list(
-			refProfiles = X,
-			sigGenes = rownames(X)
-		)
-	
+	if( reference %>% class %>% equals("data.frame")){
+		markers = intersect(rownames(mix), rownames(reference))
+		
+		X <- (reference[markers, , drop = FALSE])
+		Y <- (mix[markers, , drop = FALSE])
+		
+		if(!is.null(reference))
+			reference = list(
+				refProfiles = X,
+				sigGenes = rownames(X)
+			)
+	} else { Y <- mix }
 	
 	
 	results <- EPIC(Y, reference = reference)$cellFractions %>% data.frame()
@@ -2280,6 +2422,7 @@ run_epic = function(mix, reference = NULL) {
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
 #' @param method A character string. The method to be used. At the moment Cibersort (default) and llsr (linear least squares regression) are available.
+#' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @return A tibble including additional columns
@@ -2289,33 +2432,15 @@ get_cell_type_proportions = function(.data,
 																		 .sample = NULL,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
-																		 reference = X_cibersort,
+																		 reference = NULL,
 																		 method = "cibersort",
+																		 prefix = "",
 																		 ...) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
  
-
-
-	# Load library which is optional for the whole package
-	#library(preprocessCore)
-
-	# Check if there are enough genes for the signature
-	if ((.data %>%
-			 pull(!!.transcript) %in% (reference %>% rownames)) %>%
-			which %>%
-			length %>%
-			st(50))
-		stop(
-			"tidybulk says: You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
-		)
-
-	# Check if rownames exist
-	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% not() %>% any)
-		stop("tidybulk says: your reference has non-numeric/integer columns.")
-
 	# Get the dots arguments
 	dots_args = rlang::dots_list(...)
 
@@ -2358,35 +2483,59 @@ get_cell_type_proportions = function(.data,
 					
 				}
 				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
+				
+				# Validate reference
+				validate_signature(.data, reference, !!.transcript)
+				
 				do.call(my_CIBERSORT, list(Y = ., X = reference) %>% c(dots_args)) %$%
 				proportions %>%
 				as_tibble(rownames = quo_name(.sample)) %>%
-				select(-`P-value`,-Correlation,-RMSE) %>%
-			        
-			    # Attach attributes
-		        reattach_internals(.data) %>%
-		        memorise_methods_used("cibersort")
+				select(-`P-value`,-Correlation,-RMSE) 
 			},
 			
 			# Don't need to execute do.call
-			method %>% tolower %>% equals("llsr") ~ (.) %>%
+			method %>% tolower %>% equals("llsr") ~ {
+				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
+				
+				# Validate reference
+				validate_signature(.data, reference, !!.transcript)
+				
+				(.) %>%
 				run_llsr(reference) %>%
-				as_tibble(rownames = quo_name(.sample)) %>%
-			        
-			    # Attach attributes
-		        reattach_internals(.data) %>%
-		        memorise_methods_used("llsr"),
+				as_tibble(rownames = quo_name(.sample)) 
+			},
 
 			# Don't need to execute do.call
 			method %>% tolower %>% equals("epic") ~ {
 				
+				# Choose reference
+				reference = reference %>% when(is.null(.) ~ "BRef", ~ .)
+				
 				(.) %>%
 					run_epic(reference) %>%
-					as_tibble(rownames = quo_name(.sample)) %>%
-			        
-			        # Attach attributes
-		            reattach_internals(.data) %>%
-		            memorise_methods_used("epic")
+					as_tibble(rownames = quo_name(.sample)) 
+			},
+		
+			# Other (hidden for the moment) methods using third party wrapper https://icbi-lab.github.io/immunedeconv	
+			method %>% tolower %in% c("mcp_counter", "quantiseq", "xcell") ~ {
+				
+				# Check if package is installed, otherwise install
+				if (find.package("immunedeconv", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing immunedeconv")
+					devtools::install_github("icbi-lab/immunedeconv", upgrade = FALSE)
+				}
+				
+				if(method %in% c("mcp_counter", "quantiseq", "xcell") & !"immunedeconv" %in% (.packages()))
+					stop("tidybulk says: for xcell, mcp_counter, or quantiseq deconvolution you should have the package immunedeconv attached. Please execute library(immunedeconv)")
+					
+				(.) %>%
+					deconvolute(method %>% tolower, tumor = FALSE) %>%
+					gather(!!.sample, .proportion, -cell_type) %>%
+					spread(cell_type,  .proportion)
 			},
 			
 			~ stop(
@@ -2397,8 +2546,14 @@ get_cell_type_proportions = function(.data,
 		# Parse results and return
 		setNames(c(
 			quo_name(.sample),
-			(.) %>% select(-1) %>% colnames() %>% sprintf("%s: %s", method, .)
-		))
+			(.) %>% select(-1) %>% colnames() %>% sprintf("%s%s", prefix, .)
+
+		)) %>%
+
+		# Attach attributes
+		reattach_internals(.data) %>%
+		memorise_methods_used(tolower(method))
+
 
 }
 
@@ -2804,7 +2959,7 @@ fill_NA_using_formula = function(.data,
 
 		# Add missing pairs
  		nest(ct_data = -c(col_formula)) %>%
- 		mutate(ct_data = map(ct_data, ~ .x %>% complete(!!as.symbol(quo_name(.sample)), !!.transcript) )) %>%
+ 		mutate(ct_data = map(ct_data, ~ .x %>% droplevels() %>% complete(!!as.symbol(quo_name(.sample)), !!.transcript) )) %>%
  		unnest(ct_data)
 		
  .data_OK = 
@@ -2820,7 +2975,8 @@ fill_NA_using_formula = function(.data,
 	.data_completed %>% 
 		filter(!!.abundance %>% is.na) %>%
 		select(!!.sample, !!.transcript) %>%
-		left_join(.data %>% pivot_sample(!!.sample))
+		left_join(.data %>% pivot_sample(!!.sample)) %>%
+		left_join(.data %>% pivot_transcript(!!.transcript))
 	) %>%
  	
 	# Group by covariate

@@ -33,12 +33,7 @@ Please have a look also to
 
 -->
 
-**IMPORTANT\!** From version 1.1.6, the detection of abundant/lowly
-abundant transcripts has to be done explicitly
-(**identify\_abundant()**; you will be warned otherwise). This because,
-it is better to make each function do one thing only, without
-hidden/implicit procedures (as stated in the tidy data manifesto). This
-improves logical flow, and software modularity.
+# <img src="inst/new_SE_usage-01.png" width="800px" />
 
 ## Functions/utilities available
 
@@ -107,7 +102,7 @@ devtools::install_github("stemangiola/tidybulk")
 It memorises key column names
 
 ``` r
-tt = counts %>% tidybulk(sample, transcript, count)
+tt = tidybulk::counts %>% tidybulk(sample, transcript, count)
 ```
 
 ## Get the bibliography of your workflow
@@ -319,22 +314,22 @@ coloured by cell type.
 tt.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
 ```
 
-    ## # A tibble: 48 x 15
-    ##     Dim1  Dim2   Dim3    Dim4    Dim5   Dim6 sample `Cell type` time  condition
-    ##    <dbl> <dbl>  <dbl>   <dbl>   <dbl>  <dbl> <chr>  <chr>       <chr> <chr>    
-    ##  1  2.31  1.87 -2.73   0.108   0.0918 -0.515 SRR17… b_cell      0 d   TRUE     
-    ##  2  2.30  1.88 -2.77   0.119   0.116  -0.490 SRR17… b_cell      1 d   TRUE     
-    ##  3  2.27  1.83 -2.73   0.169   0.121  -0.481 SRR17… b_cell      3 d   TRUE     
-    ##  4  2.29  1.87 -2.78   0.166   0.0763 -0.471 SRR17… b_cell      7 d   TRUE     
-    ##  5 -1.50 -1.79 -1.01  -0.171  -1.25   -0.516 SRR17… dendritic_… 0 d   FALSE    
-    ##  6 -1.45 -1.87 -0.925 -0.0722 -1.15   -0.534 SRR17… dendritic_… 1 d   FALSE    
-    ##  7 -1.46 -1.79 -0.989 -0.230  -1.42   -0.503 SRR17… dendritic_… 3 d   FALSE    
-    ##  8 -1.41 -1.88 -0.981 -0.123  -1.23   -0.511 SRR17… dendritic_… 7 d   FALSE    
-    ##  9 -2.07 -1.71 -0.936 -0.445   1.16   -0.519 SRR17… monocyte    0 d   FALSE    
-    ## 10 -1.88 -1.69 -0.788 -0.561   1.15   -0.512 SRR17… monocyte    1 d   FALSE    
-    ## # … with 38 more rows, and 5 more variables: batch <dbl>,
-    ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, TMM <dbl>,
-    ## #   multiplier <dbl>
+    ## # A tibble: 48 x 16
+    ##        Dim1   Dim2    Dim3     Dim4    Dim5  Dim6 sample `Cell type` time 
+    ##       <dbl>  <dbl>   <dbl>    <dbl>   <dbl> <dbl> <chr>  <chr>       <chr>
+    ##  1 -1.52     0.670 -2.08    0.0976   0.125  0.190 SRR17… b_cell      0 d  
+    ##  2 -1.52     0.657 -2.11    0.0803   0.0927 0.193 SRR17… b_cell      1 d  
+    ##  3 -1.50     0.620 -2.02    0.124    0.0997 0.178 SRR17… b_cell      3 d  
+    ##  4 -1.51     0.628 -2.08    0.149    0.0934 0.159 SRR17… b_cell      7 d  
+    ##  5  0.00836 -1.87   0.0561 -0.0444  -0.786  0.174 SRR17… dendritic_… 0 d  
+    ##  6 -0.0532  -1.85   0.0786 -0.00612 -0.709  0.168 SRR17… dendritic_… 1 d  
+    ##  7  0.0255  -1.86   0.0147 -0.0580  -0.947  0.139 SRR17… dendritic_… 3 d  
+    ##  8 -0.0947  -1.86   0.0661 -0.00969 -0.721  0.145 SRR17… dendritic_… 7 d  
+    ##  9  0.257   -2.00   0.187  -0.314    0.746  0.157 SRR17… monocyte    0 d  
+    ## 10  0.265   -1.95   0.185  -0.299    0.732  0.146 SRR17… monocyte    1 d  
+    ## # … with 38 more rows, and 7 more variables: condition <chr>, batch <chr>,
+    ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, .abundant <lgl>,
+    ## #   TMM <dbl>, multiplier <dbl>
 
 ``` r
 tt.norm.MDS %>%
@@ -386,22 +381,22 @@ coloured by cell type.
 tt.norm.PCA %>% pivot_sample() %>% select(contains("PC"), everything())
 ```
 
-    ## # A tibble: 48 x 15
-    ##      PC1      PC2    PC3     PC4     PC5   PC6 sample `Cell type` time 
-    ##    <dbl>    <dbl>  <dbl>   <dbl>   <dbl> <dbl> <chr>  <chr>       <chr>
-    ##  1 -17.3 -20.4    -0.745 -0.205   0.0756 -3.05 SRR17… b_cell      0 d  
-    ##  2 -17.4 -20.6    -0.580 -0.558  -0.139  -2.91 SRR17… b_cell      1 d  
-    ##  3 -17.1 -20.0    -0.345 -1.08   -0.220  -3.02 SRR17… b_cell      3 d  
-    ##  4 -17.4 -20.7    -0.484 -0.713  -0.0373 -3.01 SRR17… b_cell      7 d  
-    ##  5  12.1  -0.778  10.8    0.537   5.09   -2.17 SRR17… dendritic_… 0 d  
-    ##  6  11.8   0.0561 11.0    0.0632  4.77   -2.13 SRR17… dendritic_… 1 d  
-    ##  7  11.8  -0.652  10.7    0.808   5.81   -1.94 SRR17… dendritic_… 3 d  
-    ##  8  11.5  -0.565  11.1    0.0806  4.86   -2.22 SRR17… dendritic_… 7 d  
-    ##  9  16.7  -1.20    8.18   2.38   -4.28   -2.85 SRR17… monocyte    0 d  
-    ## 10  15.1  -0.247   8.00   2.68   -4.40   -3.17 SRR17… monocyte    1 d  
-    ## # … with 38 more rows, and 6 more variables: condition <chr>, batch <dbl>,
-    ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, TMM <dbl>,
-    ## #   multiplier <dbl>
+    ## # A tibble: 48 x 16
+    ##        PC1   PC2    PC3     PC4    PC5   PC6 sample `Cell type` time  condition
+    ##      <dbl> <dbl>  <dbl>   <dbl>  <dbl> <dbl> <chr>  <chr>       <chr> <chr>    
+    ##  1 -12.6   -2.52 -14.9  -0.424  -0.592 -1.22 SRR17… b_cell      0 d   TRUE     
+    ##  2 -12.6   -2.57 -15.2  -0.140  -0.388 -1.30 SRR17… b_cell      1 d   TRUE     
+    ##  3 -12.6   -2.41 -14.5  -0.714  -0.344 -1.10 SRR17… b_cell      3 d   TRUE     
+    ##  4 -12.5   -2.34 -14.9  -0.816  -0.427 -1.00 SRR17… b_cell      7 d   TRUE     
+    ##  5   0.189 13.0    1.66 -0.0269  4.64  -1.35 SRR17… dendritic_… 0 d   FALSE    
+    ##  6  -0.293 12.9    1.76 -0.0727  4.21  -1.28 SRR17… dendritic_… 1 d   FALSE    
+    ##  7   0.407 13.0    1.42 -0.0529  5.37  -1.01 SRR17… dendritic_… 3 d   FALSE    
+    ##  8  -0.620 13.0    1.73 -0.201   4.17  -1.07 SRR17… dendritic_… 7 d   FALSE    
+    ##  9   2.56  13.5    2.32  2.03   -4.32  -1.22 SRR17… monocyte    0 d   FALSE    
+    ## 10   2.65  13.1    2.21  1.80   -4.29  -1.30 SRR17… monocyte    1 d   FALSE    
+    ## # … with 38 more rows, and 6 more variables: batch <chr>,
+    ## #   factor_of_interest <chr>, `merged transcripts` <dbl>, .abundant <lgl>,
+    ## #   TMM <dbl>, multiplier <dbl>
 
 ``` r
 tt.norm.PCA %>%
@@ -464,18 +459,18 @@ tt.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##      tSNE1  tSNE2 sample                       Call 
-    ##      <dbl>  <dbl> <chr>                        <fct>
-    ##  1   9.36    7.99 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2  -9.20    2.81 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3  14.6    16.0  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4   5.10   -9.53 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5   6.18    6.32 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6  -0.550  13.1  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7 -37.6    -4.31 TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8  -2.72  -17.1  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9  -2.66  -15.1  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  21.8    12.9  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##     tSNE1   tSNE2 sample                       Call 
+    ##     <dbl>   <dbl> <chr>                        <fct>
+    ##  1   8.68  10.7   TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2  -4.96   4.18  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3   5.76   0.187 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4   8.18  -8.05  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5   8.26   6.69  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  -4.24  -2.30  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7 -31.2  -10.3   TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8   3.27 -13.2   TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9   2.03 -13.8   TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10  23.3   10.1   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -550,7 +545,7 @@ dimensions rotated of 45 degrees, data is coloured by cell type.
 
 ``` r
 tt.norm.MDS.rotated %>%
-    ggplot(aes(x=`Dim1 rotated 45`, y=`Dim2 rotated 45`, color=`Cell type` )) +
+    ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`Cell type` )) +
   geom_point() +
   my_theme
 ```
@@ -691,7 +686,7 @@ TidyTranscriptomics
 ``` r
 tt.cibersort =
     tt %>%
-    deconvolve_cellularity(action="get", cores=1)
+    deconvolve_cellularity(action="get", cores=1, prefix = "cibersort:") 
 ```
 
 </div>
@@ -747,22 +742,22 @@ abundance across conditions
 
 ``` r
     tt %>%
-    test_differential_cellularity( ~ condition )
+    test_differential_cellularity(. ~ condition )
 ```
 
     ## # A tibble: 22 x 7
     ##    .cell_type cell_type_propo… `estimate_(Inte… estimate_condit…
     ##    <chr>      <list>                      <dbl>            <dbl>
-    ##  1 B cells n… <tibble [48 × 9…            -3.38           3.17  
-    ##  2 B cells m… <tibble [48 × 9…            -2.98           2.83  
-    ##  3 Plasma ce… <tibble [48 × 9…            -7.09          -0.508 
-    ##  4 T cells C… <tibble [48 × 9…            -4.05          -0.445 
-    ##  5 T cells C… <tibble [48 × 9…            -1.93           0.0167
-    ##  6 T cells C… <tibble [48 × 9…            -3.07          -0.533 
-    ##  7 T cells C… <tibble [48 × 9…            -5.97           1.46  
-    ##  8 T cells f… <tibble [48 × 9…            -5.17          -0.469 
-    ##  9 T cells r… <tibble [48 × 9…            -5.62          -0.602 
-    ## 10 T cells g… <tibble [48 × 9…            -5.53           1.02  
+    ##  1 B cells n… <tibble [48 × 8…            -2.97            2.33 
+    ##  2 B cells m… <tibble [48 × 8…            -4.79            1.86 
+    ##  3 Plasma ce… <tibble [48 × 8…            -5.44           -0.503
+    ##  4 T cells C… <tibble [48 × 8…            -2.28            0.883
+    ##  5 T cells C… <tibble [48 × 8…            -2.79           -0.637
+    ##  6 T cells C… <tibble [48 × 8…            -2.60            0.320
+    ##  7 T cells C… <tibble [48 × 8…            -3.72            2.14 
+    ##  8 T cells f… <tibble [48 × 8…            -5.20           -0.251
+    ##  9 T cells r… <tibble [48 × 8…            -4.80            1.75 
+    ## 10 T cells g… <tibble [48 × 8…            -5.34           -0.219
     ## # … with 12 more rows, and 3 more variables: std.error_conditionTRUE <dbl>,
     ## #   statistic_conditionTRUE <dbl>, p.value_conditionTRUE <dbl>
 
@@ -881,18 +876,18 @@ tt.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 5
-    ##      tSNE1  tSNE2 sample                       Call  `cluster SNN`
-    ##      <dbl>  <dbl> <chr>                        <fct> <fct>        
-    ##  1   9.36    7.99 TCGA-A1-A0SD-01A-11R-A115-07 LumA  0            
-    ##  2  -9.20    2.81 TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
-    ##  3  14.6    16.0  TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
-    ##  4   5.10   -9.53 TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
-    ##  5   6.18    6.32 TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
-    ##  6  -0.550  13.1  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
-    ##  7 -37.6    -4.31 TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
-    ##  8  -2.72  -17.1  TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
-    ##  9  -2.66  -15.1  TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
-    ## 10  21.8    12.9  TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
+    ##     tSNE1   tSNE2 sample                       Call  `cluster SNN`
+    ##     <dbl>   <dbl> <chr>                        <fct> <fct>        
+    ##  1   8.68  10.7   TCGA-A1-A0SD-01A-11R-A115-07 LumA  1            
+    ##  2  -4.96   4.18  TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
+    ##  3   5.76   0.187 TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
+    ##  4   8.18  -8.05  TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
+    ##  5   8.26   6.69  TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
+    ##  6  -4.24  -2.30  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
+    ##  7 -31.2  -10.3   TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
+    ##  8   3.27 -13.2   TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
+    ##  9   2.03 -13.8   TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
+    ## 10  23.3   10.1   TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
     ## # … with 241 more rows
 
 ``` r
@@ -916,18 +911,18 @@ tt.norm.SNN %>%
 ```
 
     ## # A tibble: 500 x 7
-    ##    ens               logFC logCPM      F   PValue      FDR significant
-    ##    <chr>             <dbl>  <dbl>  <dbl>    <dbl>    <dbl> <lgl>      
-    ##  1 ENSG00000002834 -0.981   10.7  42.9   3.13e-10 8.86e-10 TRUE       
-    ##  2 ENSG00000003989 -3.54     9.92 81.9   3.99e-17 2.10e-16 TRUE       
-    ##  3 ENSG00000004478 -0.154   10.6   1.20  2.74e- 1 2.96e- 1 FALSE      
-    ##  4 ENSG00000006125 -0.669   10.7  30.5   8.14e- 8 1.75e- 7 TRUE       
-    ##  5 ENSG00000008988  0.826   11.3  78.4   1.49e-16 7.45e-16 TRUE       
-    ##  6 ENSG00000009307  0.412   11.3  32.1   3.92e- 8 8.72e- 8 TRUE       
-    ##  7 ENSG00000010278  0.0782  10.5   0.569 4.51e- 1 4.73e- 1 FALSE      
-    ##  8 ENSG00000011465 -1.13    11.1  34.5   1.33e- 8 3.19e- 8 TRUE       
-    ##  9 ENSG00000012223  0.238   11.8   0.256 6.13e- 1 6.31e- 1 FALSE      
-    ## 10 ENSG00000012660 -1.68    10.5  92.0   8.66e-19 5.15e-18 TRUE       
+    ##    ens             .abundant   logFC logCPM      F   PValue      FDR
+    ##    <chr>           <lgl>       <dbl>  <dbl>  <dbl>    <dbl>    <dbl>
+    ##  1 ENSG00000002834 TRUE      -1.01    10.7  43.1   2.95e-10 8.32e-10
+    ##  2 ENSG00000003989 TRUE      -3.59     9.93 81.5   4.61e-17 2.50e-16
+    ##  3 ENSG00000004478 TRUE      -0.129   10.6   0.819 3.66e- 1 3.89e- 1
+    ##  4 ENSG00000006125 TRUE      -0.673   10.7  29.9   1.10e- 7 2.29e- 7
+    ##  5 ENSG00000008988 TRUE       0.830   11.3  80.4   6.89e-17 3.66e-16
+    ##  6 ENSG00000009307 TRUE       0.405   11.3  30.2   9.30e- 8 1.96e- 7
+    ##  7 ENSG00000010278 TRUE       0.0907  10.6   0.727 3.95e- 1 4.17e- 1
+    ##  8 ENSG00000011465 TRUE      -1.22    11.1  39.6   1.34e- 9 3.47e- 9
+    ##  9 ENSG00000012223 TRUE       0.270   11.8   0.327 5.68e- 1 5.84e- 1
+    ## 10 ENSG00000012660 TRUE      -1.72    10.5  91.2   1.16e-18 7.06e-18
     ## # … with 490 more rows
 
 ## Drop `redundant` transcripts
@@ -1086,20 +1081,20 @@ identifiers. This currently works for human and mouse.
 tt %>% describe_transcript() %>% select(transcript, description, everything())
 ```
 
-    ## # A tibble: 938,112 x 9
+    ## # A tibble: 408,624 x 9
     ##    transcript description sample `Cell type` count time  condition batch
-    ##    <chr>      <chr>       <fct>  <fct>       <dbl> <fct> <lgl>     <int>
-    ##  1 DDX11L1    DEAD/H-box… SRR17… b_cell         17 0 d   TRUE          0
-    ##  2 WASH7P     WASP famil… SRR17… b_cell       3568 0 d   TRUE          0
-    ##  3 MIR6859-1  microRNA 6… SRR17… b_cell         57 0 d   TRUE          0
-    ##  4 MIR1302-2  microRNA 1… SRR17… b_cell          1 0 d   TRUE          0
-    ##  5 FAM138A    family wit… SRR17… b_cell          0 0 d   TRUE          0
-    ##  6 OR4F5      olfactory … SRR17… b_cell          0 0 d   TRUE          0
-    ##  7 LOC729737  uncharacte… SRR17… b_cell       1764 0 d   TRUE          0
-    ##  8 LOC102725… DEAD/H-box… SRR17… b_cell         11 0 d   TRUE          0
-    ##  9 MIR6859-2  microRNA 6… SRR17… b_cell         40 0 d   TRUE          0
-    ## 10 OR4F29     olfactory … SRR17… b_cell          0 0 d   TRUE          0
-    ## # … with 938,102 more rows, and 1 more variable: factor_of_interest <lgl>
+    ##    <chr>      <chr>       <fct>  <fct>       <dbl> <fct> <lgl>     <fct>
+    ##  1 DDX11L1    DEAD/H-box… SRR17… b_cell         17 0 d   TRUE      0    
+    ##  2 WASH7P     WASP famil… SRR17… b_cell       3568 0 d   TRUE      0    
+    ##  3 MIR6859-1  microRNA 6… SRR17… b_cell         57 0 d   TRUE      0    
+    ##  4 LOC729737  uncharacte… SRR17… b_cell       1764 0 d   TRUE      0    
+    ##  5 MIR6859-2  microRNA 6… SRR17… b_cell         40 0 d   TRUE      0    
+    ##  6 LOC100132… uncharacte… SRR17… b_cell       1703 0 d   TRUE      0    
+    ##  7 LOC100133… <NA>        SRR17… b_cell       1894 0 d   TRUE      0    
+    ##  8 LOC100288… uncharacte… SRR17… b_cell        337 0 d   TRUE      0    
+    ##  9 FAM87B     family wit… SRR17… b_cell         56 0 d   TRUE      0    
+    ## 10 LINC00115  long inter… SRR17… b_cell         50 0 d   TRUE      0    
+    ## # … with 408,614 more rows, and 1 more variable: factor_of_interest <lgl>
 
 ## ADD versus GET versus ONLY modes
 
@@ -1114,20 +1109,20 @@ For example, from this data set
   tt.norm
 ```
 
-    ## # A tibble: 938,112 x 13
+    ## # A tibble: 408,624 x 13
     ##    sample transcript `Cell type` count time  condition batch factor_of_inter…
-    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <dbl> <chr>           
-    ##  1 SRR17… DDX11L1    b_cell         17 0 d   TRUE          0 TRUE            
-    ##  2 SRR17… WASH7P     b_cell       3568 0 d   TRUE          0 TRUE            
-    ##  3 SRR17… MIR6859-1  b_cell         57 0 d   TRUE          0 TRUE            
-    ##  4 SRR17… MIR1302-2  b_cell          1 0 d   TRUE          0 TRUE            
-    ##  5 SRR17… FAM138A    b_cell          0 0 d   TRUE          0 TRUE            
-    ##  6 SRR17… OR4F5      b_cell          0 0 d   TRUE          0 TRUE            
-    ##  7 SRR17… LOC729737  b_cell       1764 0 d   TRUE          0 TRUE            
-    ##  8 SRR17… LOC102725… b_cell         11 0 d   TRUE          0 TRUE            
-    ##  9 SRR17… MIR6859-2  b_cell         40 0 d   TRUE          0 TRUE            
-    ## 10 SRR17… OR4F29     b_cell          0 0 d   TRUE          0 TRUE            
-    ## # … with 938,102 more rows, and 5 more variables: `merged transcripts` <dbl>,
+    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <chr> <chr>           
+    ##  1 SRR17… DDX11L1    b_cell         17 0 d   TRUE      0     TRUE            
+    ##  2 SRR17… WASH7P     b_cell       3568 0 d   TRUE      0     TRUE            
+    ##  3 SRR17… MIR6859-1  b_cell         57 0 d   TRUE      0     TRUE            
+    ##  4 SRR17… LOC729737  b_cell       1764 0 d   TRUE      0     TRUE            
+    ##  5 SRR17… MIR6859-2  b_cell         40 0 d   TRUE      0     TRUE            
+    ##  6 SRR17… LOC100132… b_cell       1703 0 d   TRUE      0     TRUE            
+    ##  7 SRR17… LOC100133… b_cell       1894 0 d   TRUE      0     TRUE            
+    ##  8 SRR17… LOC100288… b_cell        337 0 d   TRUE      0     TRUE            
+    ##  9 SRR17… FAM87B     b_cell         56 0 d   TRUE      0     TRUE            
+    ## 10 SRR17… LINC00115  b_cell         50 0 d   TRUE      0     TRUE            
+    ## # … with 408,614 more rows, and 5 more variables: `merged transcripts` <dbl>,
     ## #   .abundant <lgl>, TMM <dbl>, multiplier <dbl>, count_scaled <dbl>
 
 **action=“add”** (Default) We can add the MDS dimensions to the original
@@ -1145,20 +1140,20 @@ data set
     )
 ```
 
-    ## # A tibble: 938,112 x 16
+    ## # A tibble: 408,624 x 16
     ##    sample transcript `Cell type` count time  condition batch factor_of_inter…
-    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <dbl> <chr>           
-    ##  1 SRR17… DDX11L1    b_cell         17 0 d   TRUE          0 TRUE            
-    ##  2 SRR17… WASH7P     b_cell       3568 0 d   TRUE          0 TRUE            
-    ##  3 SRR17… MIR6859-1  b_cell         57 0 d   TRUE          0 TRUE            
-    ##  4 SRR17… MIR1302-2  b_cell          1 0 d   TRUE          0 TRUE            
-    ##  5 SRR17… FAM138A    b_cell          0 0 d   TRUE          0 TRUE            
-    ##  6 SRR17… OR4F5      b_cell          0 0 d   TRUE          0 TRUE            
-    ##  7 SRR17… LOC729737  b_cell       1764 0 d   TRUE          0 TRUE            
-    ##  8 SRR17… LOC102725… b_cell         11 0 d   TRUE          0 TRUE            
-    ##  9 SRR17… MIR6859-2  b_cell         40 0 d   TRUE          0 TRUE            
-    ## 10 SRR17… OR4F29     b_cell          0 0 d   TRUE          0 TRUE            
-    ## # … with 938,102 more rows, and 8 more variables: `merged transcripts` <dbl>,
+    ##    <chr>  <chr>      <chr>       <dbl> <chr> <chr>     <chr> <chr>           
+    ##  1 SRR17… DDX11L1    b_cell         17 0 d   TRUE      0     TRUE            
+    ##  2 SRR17… WASH7P     b_cell       3568 0 d   TRUE      0     TRUE            
+    ##  3 SRR17… MIR6859-1  b_cell         57 0 d   TRUE      0     TRUE            
+    ##  4 SRR17… LOC729737  b_cell       1764 0 d   TRUE      0     TRUE            
+    ##  5 SRR17… MIR6859-2  b_cell         40 0 d   TRUE      0     TRUE            
+    ##  6 SRR17… LOC100132… b_cell       1703 0 d   TRUE      0     TRUE            
+    ##  7 SRR17… LOC100133… b_cell       1894 0 d   TRUE      0     TRUE            
+    ##  8 SRR17… LOC100288… b_cell        337 0 d   TRUE      0     TRUE            
+    ##  9 SRR17… FAM87B     b_cell         56 0 d   TRUE      0     TRUE            
+    ## 10 SRR17… LINC00115  b_cell         50 0 d   TRUE      0     TRUE            
+    ## # … with 408,614 more rows, and 8 more variables: `merged transcripts` <dbl>,
     ## #   .abundant <lgl>, TMM <dbl>, multiplier <dbl>, count_scaled <dbl>,
     ## #   Dim1 <dbl>, Dim2 <dbl>, Dim3 <dbl>
 
@@ -1177,21 +1172,21 @@ selecting just the sample-wise column
     )
 ```
 
-    ## # A tibble: 48 x 12
+    ## # A tibble: 48 x 13
     ##    sample `Cell type` time  condition batch factor_of_inter… `merged transcr…
-    ##    <chr>  <chr>       <chr> <chr>     <dbl> <chr>                       <dbl>
-    ##  1 SRR17… b_cell      0 d   TRUE          0 TRUE                            1
-    ##  2 SRR17… b_cell      1 d   TRUE          1 TRUE                            1
-    ##  3 SRR17… b_cell      3 d   TRUE          1 TRUE                            1
-    ##  4 SRR17… b_cell      7 d   TRUE          1 TRUE                            1
-    ##  5 SRR17… dendritic_… 0 d   FALSE         0 FALSE                           1
-    ##  6 SRR17… dendritic_… 1 d   FALSE         0 FALSE                           1
-    ##  7 SRR17… dendritic_… 3 d   FALSE         1 FALSE                           1
-    ##  8 SRR17… dendritic_… 7 d   FALSE         0 FALSE                           1
-    ##  9 SRR17… monocyte    0 d   FALSE         1 FALSE                           1
-    ## 10 SRR17… monocyte    1 d   FALSE         1 FALSE                           1
-    ## # … with 38 more rows, and 5 more variables: TMM <dbl>, multiplier <dbl>,
-    ## #   Dim1 <dbl>, Dim2 <dbl>, Dim3 <dbl>
+    ##    <chr>  <chr>       <chr> <chr>     <chr> <chr>                       <dbl>
+    ##  1 SRR17… b_cell      0 d   TRUE      0     TRUE                            1
+    ##  2 SRR17… b_cell      1 d   TRUE      1     TRUE                            1
+    ##  3 SRR17… b_cell      3 d   TRUE      1     TRUE                            1
+    ##  4 SRR17… b_cell      7 d   TRUE      1     TRUE                            1
+    ##  5 SRR17… dendritic_… 0 d   FALSE     0     FALSE                           1
+    ##  6 SRR17… dendritic_… 1 d   FALSE     0     FALSE                           1
+    ##  7 SRR17… dendritic_… 3 d   FALSE     1     FALSE                           1
+    ##  8 SRR17… dendritic_… 7 d   FALSE     0     FALSE                           1
+    ##  9 SRR17… monocyte    0 d   FALSE     1     FALSE                           1
+    ## 10 SRR17… monocyte    1 d   FALSE     1     FALSE                           1
+    ## # … with 38 more rows, and 6 more variables: .abundant <lgl>, TMM <dbl>,
+    ## #   multiplier <dbl>, Dim1 <dbl>, Dim2 <dbl>, Dim3 <dbl>
 
 **action=“only”** We can get just the MDS dimensions relative to each
 sample
@@ -1209,16 +1204,16 @@ sample
 ```
 
     ## # A tibble: 48 x 4
-    ##    sample      Dim1  Dim2   Dim3
-    ##    <chr>      <dbl> <dbl>  <dbl>
-    ##  1 SRR1740034  2.31  1.87 -2.73 
-    ##  2 SRR1740035  2.30  1.88 -2.77 
-    ##  3 SRR1740036  2.27  1.83 -2.73 
-    ##  4 SRR1740037  2.29  1.87 -2.78 
-    ##  5 SRR1740038 -1.50 -1.79 -1.01 
-    ##  6 SRR1740039 -1.45 -1.87 -0.925
-    ##  7 SRR1740040 -1.46 -1.79 -0.989
-    ##  8 SRR1740041 -1.41 -1.88 -0.981
-    ##  9 SRR1740042 -2.07 -1.71 -0.936
-    ## 10 SRR1740043 -1.88 -1.69 -0.788
+    ##    sample         Dim1   Dim2    Dim3
+    ##    <chr>         <dbl>  <dbl>   <dbl>
+    ##  1 SRR1740034 -1.52     0.670 -2.08  
+    ##  2 SRR1740035 -1.52     0.657 -2.11  
+    ##  3 SRR1740036 -1.50     0.620 -2.02  
+    ##  4 SRR1740037 -1.51     0.628 -2.08  
+    ##  5 SRR1740038  0.00836 -1.87   0.0561
+    ##  6 SRR1740039 -0.0532  -1.85   0.0786
+    ##  7 SRR1740040  0.0255  -1.86   0.0147
+    ##  8 SRR1740041 -0.0947  -1.86   0.0661
+    ##  9 SRR1740042  0.257   -2.00   0.187 
+    ## 10 SRR1740043  0.265   -1.95   0.185 
     ## # … with 38 more rows

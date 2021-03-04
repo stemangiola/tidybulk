@@ -330,7 +330,7 @@ On the x and y axes axis we have the first two reduced dimensions rotated of 45 
 ```{r plot_rotate_2, cache=TRUE}
 tt.norm.MDS.rotated %>%
 	pivot_sample() %>%
-	ggplot(aes(x=`Dim1 rotated 45`, y=`Dim2 rotated 45`, color=`Cell type` )) +
+	ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`Cell type` )) +
   geom_point() +
   my_theme
 ```
@@ -399,7 +399,7 @@ se.norm.batch %>%
 We may want to infer the cell type composition of our samples (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337). `deconvolve_cellularity` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with additional columns for the adjusted  cell type proportions.
 
 **columns truncated**
-```{r cibersort, cache=TRUE}
+```{r cibersort, cache=TRUE, eval=FALSE}
 tt.cibersort =
 	tt %>%
 	deconvolve_cellularity(action="get", cores=1)
@@ -407,9 +407,9 @@ tt.cibersort =
 tt.cibersort %>% select(sample, contains("cibersort:")) 
 ```
 
-With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is facetted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).
+With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is faceted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).
 
-```{r plot_cibersort, cache=TRUE}
+```{r plot_cibersort, cache=TRUE, eval=FALSE}
 tt.cibersort %>%
 	gather(`Cell type inferred`, `proportion`, 5:26) %>%
   distinct(sample, `Cell type`, `Cell type inferred`, proportion) %>%
@@ -423,7 +423,7 @@ tt.cibersort %>%
 All functions are also directly compatible with `SummarizedExperiment`.
 
 
-```{r cibersort se, cache=TRUE}
+```{r cibersort se, cache=TRUE, eval=FALSE}
 
 se.cibersort %>% deconvolve_cellularity(cores=1)
 
@@ -506,7 +506,7 @@ We may want to remove redundant elements from the original data set (e.g., sampl
 tt.norm.non_redundant = tt.norm.MDS %>%  remove_redundancy(	method = "correlation" )
 ```
 
-We can visualise how the reduced redundancy with the reduced dimentions look like
+We can visualise how the reduced redundancy with the reduced dimensions look like
 
 ```{r plot_drop, cache=TRUE}
 tt.norm.non_redundant %>%
@@ -555,8 +555,8 @@ remove_redundancy(
 	method = "reduced_dimensions",
 	.element = sample,
 	.feature = transcript,
-	Dim_a_column = `Dim1`,
-	Dim_b_column = `Dim2`
+	Dim_a_column = Dim1,
+	Dim_b_column = Dim2
 )
 ```
 

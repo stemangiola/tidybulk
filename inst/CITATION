@@ -1,0 +1,16 @@
+citHeader("To cite tidybulk in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "tidybulk: an R tidy framework for modular transcriptomic data analysis",
+  author   = "Stefano Mangiola, Ramyar Molania, Ruining Dong, Maria A. Doyle & Anthony T. Papenfuss",
+  journal  = "Genome Biology",
+  year     = "2021",
+  volume   = "22",
+  number   = "42",
+  pages    = "",
+  url      = "https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02233-7",
+  textVersion = paste(
+"Mangiola, S., Molania, R., Dong, R. et al. tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biol 22, 42 (2021). https://doi.org/10.1186/s13059-020-02233-7"
+  )
+)

@@ -371,7 +371,7 @@ count_m_log.sva$cell_type = counts[
 
 <div class="column-left">
 Tidy transcriptomics
-```{r cibersort, cache=TRUE}
+```{r cibersort, cache=TRUE, eval=FALSE}
 tt.cibersort =
 	tt %>%
 	deconvolve_cellularity(action="get", cores=1)

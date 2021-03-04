@@ -266,13 +266,15 @@ add_tt_columns = function(.data,
                           .sample,
                           .transcript,
                           .abundance,
-                          .abundance_scaled = NULL){
+                          .abundance_scaled = NULL,
+													.abundance_adjusted = NULL){
 
   # Make col names
   .sample = enquo(.sample)
   .transcript = enquo(.transcript)
   .abundance = enquo(.abundance)
   .abundance_scaled = enquo(.abundance_scaled)
+  .abundance_adjusted = enquo(.abundance_adjusted)
 
   # Add tt_columns
   .data %>% attach_to_internals(
@@ -286,7 +288,12 @@ add_tt_columns = function(.data,
     ifelse_pipe(
       .abundance_scaled %>% quo_is_symbol,
       ~ .x %>% c(		list(.abundance_scaled = .abundance_scaled))
-    ),
+    ) %>%
+    	
+  	ifelse_pipe(
+  		.abundance_adjusted %>% quo_is_symbol,
+  		~ .x %>% c(		list(.abundance_adjusted = .abundance_adjusted))
+  	),
     "tt_columns"
   )
 
@@ -1138,8 +1145,13 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 
 		# Drop if transcript have missing value
 		drop_na() %>%
-		#eliminate_sparse_transcripts(!!.transcript) %>%
 
+		# If I don't have any transcript with all samples give meaningful error
+		when(
+			nrow(.) == 0 ~ stop("tidybulk says: you don't have any transcript that is in all samples. Please consider using impute_missing_abundance."),
+			~ (.)
+		) %>%
+		
 		# Call edgeR
 		as_matrix(rownames = !!.transcript) %>%
 		edgeR::filterByExpr(
@@ -1184,26 +1196,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
  
-	# factor_of_interest = enquo(factor_of_interest)
-
 	error_if_log_transformed(.data,!!.abundance)
-
-	# # Get list of low transcribed genes
-	# gene_to_exclude <-
-	# 	add_scaled_counts_bulk.get_low_expressed(
-	# 		.data %>%
-	# 			filter(!!.sample != "reference"),!!.sample,!!.transcript,!!.abundance,
-	# 		factor_of_interest = !!factor_of_interest,
-	# 		minimum_counts = minimum_counts,
-	# 		minimum_proportion = minimum_proportion
-	# 	)
-
-	# # Check if transcript after filtering is 0
-	# if (length(gene_to_exclude) == .data %>%
-	# 		dplyr::distinct(!!.transcript) %>%
-	# 		nrow()) {
-	# 	stop("The gene expression matrix has been filtered completely for lowly expressed genes")
-	# }
 
 	# Get data frame for the highly transcribed transcripts
 	df.filt <-
@@ -1274,4 +1267,248 @@ do_validate = function(){
 	if(!"tidybulk_do_validate" %in% names(options())) TRUE
 	else getOption("tidybulk_do_validate")
 	
+}
+
+#' @importFrom stringr str_remove
+#' @importFrom stringr str_replace_all
+#' 
+multivariable_differential_tissue_composition = function(
+	deconvoluted, 
+	method, 
+	.my_formula,
+	min_detected_proportion
+){
+	results_regression = 
+		deconvoluted %>%
+		
+		# Replace 0s - before
+		mutate(across(starts_with(method), function(.x) if_else(.x==0, min_detected_proportion, .x))) %>%
+		mutate(across(starts_with(method), boot::logit)) %>%
+		
+		# Rename columns - after
+		setNames(
+			str_remove(colnames(.), sprintf("%s:", method)) %>%
+				str_replace_all("[ \\(\\)]", "___")
+		) %>%
+		
+		# Beta or Cox
+		when(
+			grepl("Surv", .my_formula) %>% any ~ {
+				# Check if package is installed, otherwise install
+				if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing betareg needed for analyses")
+					install.packages("survival", repos = "https://cloud.r-project.org")
+				}
+				
+				if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing boot needed for analyses")
+					install.packages("boot", repos = "https://cloud.r-project.org")
+				}
+				
+				(.) %>%
+					survival::coxph(.my_formula, .)	%>%
+					broom::tidy() 
+			} ,
+			~ {
+				(.) %>%
+					lm(.my_formula, .) %>%
+					broom::tidy() %>%
+					filter(term != "(Intercept)") 
+			}
+		) 
+	
+	# Join results
+	deconvoluted %>% 
+		pivot_longer(
+			names_prefix = sprintf("%s: ", method),
+			cols = starts_with(method),
+			names_to = ".cell_type", 
+			values_to = ".proportion"
+		) %>%
+		tidyr::nest(cell_type_proportions = -.cell_type) %>%
+		bind_cols(
+			results_regression %>% 
+				select(-term)
+		) 
+}
+
+univariable_differential_tissue_composition = function(
+	deconvoluted, 
+	method, 
+	.my_formula,
+	min_detected_proportion
+){
+		deconvoluted %>%
+		
+		# Test
+		pivot_longer(
+			names_prefix = sprintf("%s: ", method),
+			cols = starts_with(method),
+			names_to = ".cell_type",
+			values_to = ".proportion"
+		) %>%
+		
+		# Replace 0s
+		mutate(.proportion_0_corrected = if_else(.proportion==0, min_detected_proportion, .proportion)) %>%
+		
+		# Test survival
+		tidyr::nest(cell_type_proportions = -.cell_type) %>%
+		mutate(surv_test = map(
+			cell_type_proportions,
+			~ {
+				if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
+				
+				# See if regression if censored or not
+				.x %>%
+					when(
+						grepl("Surv", .my_formula) %>% any ~ {
+							# Check if package is installed, otherwise install
+							if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
+								message("Installing betareg needed for analyses")
+								install.packages("survival", repos = "https://cloud.r-project.org")
+							}
+							
+							if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
+								message("Installing boot needed for analyses")
+								install.packages("boot", repos = "https://cloud.r-project.org")
+							}
+							
+							(.) %>%
+								mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
+								survival::coxph(.my_formula, .)	%>%
+								broom::tidy() %>%
+								select(-term)
+						} ,
+						~ {
+							# Check if package is installed, otherwise install
+							if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
+								message("Installing betareg needed for analyses")
+								install.packages("betareg", repos = "https://cloud.r-project.org")
+							}
+							(.) %>%
+								betareg::betareg(.my_formula, .) %>%
+								broom::tidy() %>%
+								filter(component != "precision") %>%
+								pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
+								select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
+								select(-component)
+						}
+					)
+			}
+		)) %>%
+		
+		unnest(surv_test, keep_empty = TRUE) 
+}
+
+univariable_differential_tissue_stratification = function(
+	deconvoluted, 
+	method, 
+	.my_formula
+){
+	
+	# Check if package is installed, otherwise install
+	if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing survival needed for analyses")
+		install.packages("survival", repos = "https://cloud.r-project.org")
+	}
+	
+	# Check if package is installed, otherwise install
+	if (find.package("survminer", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing survminer needed for analyses")
+		install.packages("survminer", repos = "https://cloud.r-project.org")
+	}
+	
+	
+	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing broom needed for analyses")
+		install.packages("broom", repos = "https://cloud.r-project.org")
+	}
+	
+	deconvoluted %>%
+		
+		# Test
+		pivot_longer(
+			names_prefix = sprintf("%s: ", method),
+			cols = starts_with(method),
+			names_to = ".cell_type",
+			values_to = ".proportion"
+		) %>%
+		
+		# Test survival
+		tidyr::nest(cell_type_proportions = -.cell_type) %>%
+		mutate(surv_test = map(
+			cell_type_proportions,
+			~ {
+				
+				data = .x %>%
+					mutate(.high_cellularity = .proportion > median(.proportion)) 
+				
+				if(data %>%
+					 distinct(.high_cellularity) %>%
+					 nrow %>%
+					 equals(1)
+				) return(NULL)
+				
+				# See if regression if censored or not
+				fit = survival::survdiff(data = data, .my_formula) 
+				
+				p = 
+					survminer::surv_fit(data = data, .my_formula) %>%
+					survminer::ggsurvplot(
+						fit=., 
+						data = data, 
+						risk.table = FALSE, 
+						conf.int = T,
+						palette = c("#ed6f68",  "#5366A0" ),
+						legend = "none",
+						pval = T
+					) 
+				
+				fit %>%
+					broom::tidy() %>%
+					select(-N, -obs) %>%
+					spread(.high_cellularity, exp) %>%
+					setNames(c(".low_cellularity_expected", ".high_cellularity_expected")) %>%
+					mutate(pvalue = 1 - pchisq(fit$chisq, length(fit$n) - 1)) %>%
+					mutate(plot = list(p))
+				
+			}
+		)) %>%
+		
+		unnest(surv_test, keep_empty = TRUE) 
+}
+
+# Function that rotates a 2D space of a arbitrary angle
+rotation = function(m, d) {
+	r = d * pi / 180
+	((dplyr::bind_rows(
+		c(`1` = cos(r), `2` = -sin(r)),
+		c(`1` = sin(r), `2` = cos(r))
+	) %>% as_matrix) %*% m)
+}
+
+#' @importFrom dplyr select
+#' @importFrom tibble as_tibble
+#' @importFrom tibble tibble
+get_special_datasets <- function(SummarizedExperiment_object) {
+	if (
+		"RangedSummarizedExperiment" %in% .class2(SummarizedExperiment_object) &
+		
+		rowRanges(SummarizedExperiment_object) %>%
+		as.data.frame() %>%
+		nrow() %>%
+		gt(0)
+	) {
+		rowRanges(SummarizedExperiment_object) %>%
+			as.data.frame() %>%
+			
+			# Take off rowData columns as there is a recursive anomaly within gene ranges
+			suppressWarnings(
+				select(-one_of(colnames(rowData(SummarizedExperiment_object))))
+			) %>%
+			tibble::as_tibble(rownames="transcript") %>%
+			list()
+	} else {
+		tibble() %>% list()
+	}
 }

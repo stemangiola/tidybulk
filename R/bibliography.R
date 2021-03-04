@@ -1,5 +1,14 @@
 my_bibliography = function() {
 	list(
+	tidybulk = " @Article{tidybulk,
+  title = {tidybulk: an R tidy framework for modular transcriptomic data analysis},
+  author = {Stefano Mangiola and Ramyar Molania and Ruining Dong and Maria A. Doyle & Anthony T. Papenfuss},
+  journal = {Genome Biology},
+  year = {2021},
+  volume = {22},
+  number = {42},
+  url = {https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02233-7},
+  }",
 	tidyverse = "@article{wickham2019welcome,
   title={Welcome to the Tidyverse},
   author={Wickham, Hadley and Averick, Mara and Bryan, Jennifer and Chang, Winston and McGowan, Lucy D'Agostino and Francois, Romain and Grolemund, Garrett and Hayes, Alex and Henry, Lionel and Hester, Jim and others},
@@ -48,6 +57,16 @@ my_bibliography = function() {
   year={2012},
   publisher={Oxford University Press}
     }",
+	edger_robust_likelihood_ratio = "@article{zhou2014robustly,
+  title={Robustly detecting differential expression in RNA sequencing data using observation weights},
+  author={Zhou, Xiaobei and Lindsay, Helen and Robinson, Mark D},
+  journal={Nucleic acids research},
+  volume={42},
+  number={11},
+  pages={e91--e91},
+  year={2014},
+  publisher={Oxford University Press}
+	}",
 	voom = "@article{law2014voom,
   title={voom: Precision weights unlock linear model analysis tools for RNA-seq read counts},
   author={Law, Charity W and Chen, Yunshun and Shi, Wei and Smyth, Gordon K},
@@ -76,6 +95,16 @@ my_bibliography = function() {
   year={2005},
   publisher={Springer}
 	}",
+	voom_sample_weights = "@article{liu2015weight,
+  title={Why weight? Modelling sample and observational level variability improves power in RNA-seq analyses},
+  author={Liu, Ruijie and Holik, Aliaksei Z and Su, Shian and Jansz, Natasha and Chen, Kelan and Leong, Huei San and Blewitt, Marnie E and Asselin-Labat, Marie-Liesse and Smyth, Gordon K and Ritchie, Matthew E},
+  journal={Nucleic acids research},
+  volume={43},
+  number={15},
+  pages={e97--e97},
+  year={2015},
+  publisher={Oxford University Press}
+    }",
 	deseq2 = "@article{love2014moderated,
   title={Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2},
   author={Love, Michael I and Huber, Wolfgang and Anders, Simon},
@@ -207,6 +236,13 @@ my_bibliography = function() {
   pages={1739--1740},
   year={2011},
   publisher={Oxford University Press}
-	}")
+	}"),
+	survminer = c( "@Manual{,
+    title = {survminer: Drawing Survival Curves using 'ggplot2'},
+    author = {Alboukadel Kassambara and Marcin Kosinski and Przemyslaw Biecek},
+    year = {2020},
+    note = {R package version 0.4.8},
+    url = {https://CRAN.R-project.org/package=survminer},
+  }")
 )
 }
