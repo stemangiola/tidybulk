@@ -1893,3 +1893,96 @@ setMethod("get_bibliography",
 					"RangedSummarizedExperiment",
 					.get_bibliography)
 
+#' describe_transcript
+#' @inheritParams describe_transcript
+#'
+#' @docType methods
+#' @rdname describe_transcript-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+#'
+.describe_transcript_SE = function(.data,
+															 .transcript = NULL) {
+	
+	# Check if package is installed, otherwise install
+	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("org.Hs.eg.db", ask = FALSE)
+	}
+	
+	# Check if package is installed, otherwise install
+	if (find.package("org.Mm.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing org.Mm.eg.db needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("org.Mm.eg.db", ask = FALSE)
+	}
+	
+	# Check if package is installed, otherwise install
+	if (find.package("AnnotationDbi", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("AnnotationDbi", ask = FALSE)
+	}
+	
+	description_df =
+		
+		
+		# Human
+		tryCatch(suppressMessages(AnnotationDbi::mapIds(
+			org.Hs.eg.db::org.Hs.eg.db,
+			keys = pull(.data, transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+			column = "GENENAME",
+			keytype = "SYMBOL",
+			multiVals = "first"
+		))  %>%
+			.[!is.na(.)], error = function(x){}) %>%
+		
+		# Mouse
+		c(
+			tryCatch(suppressMessages(AnnotationDbi::mapIds(
+				org.Mm.eg.db::org.Mm.eg.db,
+				keys = pull(.data, transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+				column = "GENENAME",
+				keytype = "SYMBOL",
+				multiVals = "first"
+			)) %>% .[!is.na(.)], error = function(x){})
+			
+		) %>%
+		
+		# Parse
+		unlist() %>%
+		#unique() %>%
+		enframe(name = "transcript", value = "description") %>%
+		
+		# Select just one per transcript
+		distinct() %>%
+		group_by(transcript) %>%
+		slice(1) %>%
+		ungroup()
+	
+	.data %>%
+		left_join(description_df, by = "transcript")
+}
+
+#' describe_transcript
+#' @inheritParams describe_transcript
+#'
+#' @docType methods
+#' @rdname describe_transcript-methods
+#'
+#' @return A `tbl` object including additional columns for transcript symbol
+setMethod("describe_transcript", "SummarizedExperiment", .describe_transcript_SE)
+
+#' describe_transcript
+#' @inheritParams describe_transcript
+#'
+#' @docType methods
+#' @rdname describe_transcript-methods
+#'
+#' @return A `tbl` object including additional columns for transcript symbol
+setMethod("describe_transcript", "RangedSummarizedExperiment", .describe_transcript_SE)

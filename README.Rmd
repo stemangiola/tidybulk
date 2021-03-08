@@ -98,6 +98,7 @@ library(magrittr)
 library(ggplot2)
 library(ggrepel)
 library(tidybulk)
+library(tidySummarizedExperiment)
 
 
 my_theme = 	
@@ -133,16 +134,14 @@ devtools::install_github("stemangiola/tidybulk")
 It memorises key column names
 
 ```{r}
-tt = tidybulk::counts %>% tidybulk(sample, transcript, count)
+tt = counts_SE
 ```
 
 ## Get the bibliography of your workflow 
 First of all, you can cite all articles utilised within your workflow automatically from any tidybulk tibble
 
 ```{r eval=FALSE}
-tt %>%
-	# call analysis functions
-	get_bibliography()
+tt %>%	get_bibliography()
 ```
 
 ## Aggregate duplicated `transcripts`
@@ -208,7 +207,7 @@ We can easily plot the scaled density to check the scaling outcome. On the x axi
 
 ```{r plot_normalise, cache=TRUE}
 tt.norm %>%
-	ggplot(aes(count_scaled + 1, group=sample, color=`Cell type`)) +
+	ggplot(aes(count_scaled + 1, group=sample, color=`Cell.type`)) +
 	geom_density() +
 	scale_x_log10() +
 	my_theme
@@ -242,7 +241,7 @@ norm_counts.table$cell_type = tidybulk::counts[
 		tidybulk::counts$sample,
 		rownames(norm_counts.table)
 	),
-	"Cell type"
+	"Cell.type"
 ]
 ```
 
@@ -279,7 +278,7 @@ cmds = cmds %$%
 
 cmds$cell_type = tidybulk::counts[
 	match(tidybulk::counts$sample, rownames(cmds)),
-	"Cell type"
+	"Cell.type"
 ]
 ```
 </div>
@@ -292,7 +291,7 @@ tt.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
 
 tt.norm.MDS %>%
 	pivot_sample() %>%
-  GGally::ggpairs(columns = 10:15, ggplot2::aes(colour=`Cell type`))
+  GGally::ggpairs(columns = 10:15, ggplot2::aes(colour=`Cell.type`))
 
 
 ```
@@ -316,7 +315,7 @@ variance = pc$sdev^2
 variance = (variance / sum(variance))[1:6]
 pc$cell_type = counts[
 	match(counts$sample, rownames(pc)),
-	"Cell type"
+	"Cell.type"
 ]
 ```
 </div>
@@ -330,7 +329,7 @@ tt.norm.PCA %>% pivot_sample() %>% select(contains("PC"), everything())
 
 tt.norm.PCA %>%
 	 pivot_sample() %>%
-  GGally::ggpairs(columns = 10:12, ggplot2::aes(colour=`Cell type`))
+  GGally::ggpairs(columns = 11:13, ggplot2::aes(colour=`Cell.type`))
 ```
 
 **tSNE**
@@ -362,7 +361,7 @@ tsne = Rtsne::Rtsne(
 )$Y
 tsne$cell_type = tidybulk::counts[
 	match(tidybulk::counts$sample, rownames(tsne)),
-	"Cell type"
+	"Cell.type"
 ]
 ```
 </div>
@@ -404,7 +403,7 @@ rotation = function(m, d) {
 mds_r = pca %>% rotation(rotation_degrees)
 mds_r$cell_type = counts[
 	match(counts$sample, rownames(mds_r)),
-	"Cell type"
+	"Cell.type"
 ]
 ```
 </div>
@@ -415,7 +414,7 @@ On the x and y axes axis we have the first two reduced dimensions, data is colou
 
 ```{r plot_rotate_1, cache=TRUE}
 tt.norm.MDS.rotated %>%
-	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type` )) +
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type` )) +
   geom_point() +
   my_theme
 ```
@@ -425,7 +424,8 @@ On the x and y axes axis we have the first two reduced dimensions rotated of 45 
 
 ```{r plot_rotate_2, cache=TRUE}
 tt.norm.MDS.rotated %>%
-	ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`Cell type` )) +
+	pivot_sample() %>%
+	ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`Cell.type` )) +
   geom_point() +
   my_theme
 ```
@@ -507,7 +507,7 @@ count_m_log.sva =
 count_m_log.sva = ceiling(exp(count_m_log.sva) -1)
 count_m_log.sva$cell_type = counts[
 	match(counts$sample, rownames(count_m_log.sva)),
-	"Cell type"
+	"Cell.type"
 ]
 
 ```
@@ -524,7 +524,7 @@ TidyTranscriptomics
 ```{r cibersort, cache=TRUE}
 tt.cibersort =
 	tt %>%
-	deconvolve_cellularity(action="get", cores=1, prefix = "cibersort:") 
+	deconvolve_cellularity(action="get", cores=1, prefix = "cibersort__") 
 
 ```
 </div>
@@ -541,7 +541,7 @@ results <- CIBERSORT(
 )
 results$cell_type = tidybulk::counts[
 	match(tidybulk::counts$sample, rownames(results)),
-	"Cell type"
+	"Cell.type"
 ]
 
 ```
@@ -552,11 +552,15 @@ With the new annotated data frame, we can plot the distributions of cell types a
 
 ```{r plot_cibersort, cache=TRUE}
 tt.cibersort %>%
-	select(contains("cibersort:"), everything()) %>%
-	gather(`Cell type inferred`, `proportion`, 1:22) %>%
-  ggplot(aes(x=`Cell type inferred`, y=proportion, fill=`Cell type`)) +
+	pivot_longer(
+		names_to= "Cell_type_inferred", 
+		values_to = "proportion", 
+		names_prefix ="cibersort__", 
+		cols=contains("cibersort__")
+	) %>%
+  ggplot(aes(x=`Cell_type_inferred`, y=proportion, fill=`Cell.type`)) +
   geom_boxplot() +
-  facet_wrap(~`Cell type`) +
+  facet_wrap(~`Cell.type`) +
   my_theme +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
 ```
@@ -604,7 +608,7 @@ cluster = k$cluster
 
 cluster$cell_type = tidybulk::counts[
 	match(tidybulk::counts$sample, rownames(cluster)),
-	c("Cell type", "Dim1", "Dim2")
+	c("Cell.type", "Dim1", "Dim2")
 ]
 
 ```
@@ -615,7 +619,7 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
 
 ```{r plot_cluster, cache=TRUE}
  tt.norm.cluster %>%
-	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster kmeans`)) +
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster_kmeans`)) +
   geom_point() +
   my_theme
 ```
@@ -649,7 +653,7 @@ snn = snn[["seurat_clusters"]]
 
 snn$cell_type = tidybulk::counts[
 	match(tidybulk::counts$sample, rownames(snn)),
-	c("Cell type", "Dim1", "Dim2")
+	c("Cell.type", "Dim1", "Dim2")
 ]
 
 ```
@@ -729,7 +733,7 @@ We can visualise how the reduced redundancy with the reduced dimentions look lik
 ```{r plot_drop, cache=TRUE}
 tt.norm.non_redundant %>%
 	pivot_sample() %>%
-	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
   geom_point() +
   my_theme
 
@@ -752,7 +756,7 @@ We can visualise MDS reduced dimensions of the samples with the closest pair rem
 ```{r plot_drop2, cache=TRUE}
 tt.norm.non_redundant %>%
 	pivot_sample() %>%
-	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell type`)) +
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
   geom_point() +
   my_theme
 
@@ -793,56 +797,3 @@ We can add gene full name (and in future description) from symbol identifiers. T
 tt %>% describe_transcript() %>% select(transcript, description, everything())
 ```
 
-
-## ADD versus GET versus ONLY modes
-
-Every function takes a tidytranscriptomics structured data as input, and (i) with action="add" outputs the new information joint to the original input data frame (default), (ii) with action="get" the new information with the sample or transcript relative informatin depending on what the analysis is about, or (iii) with action="only" just the new information. For example, from this data set
-
-```{r, cache=TRUE}
-  tt.norm
-```
-
-**action="add"** (Default)
-We can add the MDS dimensions to the original data set
-
-```{r, cache=TRUE}
-  tt.norm %>%
-    reduce_dimensions(
-    	.abundance = count_scaled,
-    	method="MDS" ,
-    	.element = sample,
-    	.feature = transcript,
-    	.dims = 3,
-    	action="add"
-    )
-```
-
-**action="get"** 
-We can add the MDS dimensions to the original data set selecting just the sample-wise column
-
-```{r, cache=TRUE}
-  tt.norm %>%
-    reduce_dimensions(
-    	.abundance = count_scaled,
-    	method="MDS" ,
-    	.element = sample,
-    	.feature = transcript,
-    	.dims = 3,
-    	action="get"
-    )
-```
-
-**action="only"**
-We can get just the MDS dimensions relative to each sample
-
-```{r, cache=TRUE}
-  tt.norm %>%
-    reduce_dimensions(
-    	.abundance = count_scaled,
-    	method="MDS" ,
-    	.element = sample,
-    	.feature = transcript,
-    	.dims = 3,
-    	action="only"
-    )
-```
