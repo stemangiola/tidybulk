@@ -11,7 +11,7 @@ output: github_document
 knitr::opts_chunk$set( fig.path = "man/figures/")
 ```
 
-**Brings transcriptomics to the tidyverse!** (SEO: tidy differential expression)
+**Brings transcriptomics to the tidyverse!** 
 
 #  <img src="inst/logo.png" height="139px" width="120px" />
   
@@ -19,13 +19,16 @@ website: [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk
 
 Please have a look also to 
 
-- [tidyseurat](https://github.com/stemangiola/tidyseurat) for tidy high-level data
+- [tidySummarizedExperiment](https://github.com/stemangiola/tidySummarizedExperiment) for bulk data tidy representation
+- [tidySingleCellExperiment](https://github.com/stemangiola/tidySingleCellExperiment) for single-cell data tidy representation
+- [tidyseurat](https://github.com/stemangiola/tidyseurat) for single-cell data tidy representation
+- [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for heatmaps produced with tidy principles
 analysis and manipulation 
 - [nanny](https://github.com/stemangiola/nanny) for tidy high-level data
 analysis and manipulation 
 - [tidygate](https://github.com/stemangiola/tidygate) for adding custom
 gate information to your tibble 
-- [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for heatmaps produced with tidy principles
+
 
 <!---
 
@@ -70,20 +73,7 @@ Utilities | Description
 `impute_missing_abundance` | Impute abundance for missing data points using sample groupings 
 `fill_missing_abundance` | Fill abundance for missing data points using an arbitrary value
 
-## Minimal input data frame
-
-sample | transcript | abundance | annotation
------------- | ------------- | ------------- | -------------
-`chr` or `fctr` | `chr` or `fctr` | `integer` | ...
-
-## Output data frame
-
-sample | transcript | abundance | annotation | new information
------------- | ------------- | ------------- | ------------- | -------------
-`chr` or `fctr` | `chr` or `fctr` | `integer` | ... | ...
-
-
-All functions are also directly compatible with `SummarizedExperiment` object.
+All functions are directly compatible with `SummarizedExperiment` object.
 
 
 ```{r, echo=FALSE, include=FALSE, }
@@ -99,7 +89,6 @@ library(ggplot2)
 library(ggrepel)
 library(tidybulk)
 library(tidySummarizedExperiment)
-
 
 my_theme = 	
 	theme_bw() +
@@ -130,18 +119,25 @@ From Github
 devtools::install_github("stemangiola/tidybulk")
 ```
 
-## Create `tidybulk` tibble. 
-It memorises key column names
+# Data
+
+We will use a `SummarizedExperiment` object
 
 ```{r}
-tt = counts_SE
+counts_SE
+```
+
+Loading `tidySummarizedExperiment` will automatically abstract this object as `tibble`, so we can display it and manipulate it with tidy tools. Although it looks different, and more tools (tidyverse) are available to us, this object is in fact a `SummarizedExperiment` object.
+
+```{r}
+class(counts_SE)
 ```
 
 ## Get the bibliography of your workflow 
 First of all, you can cite all articles utilised within your workflow automatically from any tidybulk tibble
 
 ```{r eval=FALSE}
-tt %>%	get_bibliography()
+counts_SE %>%	get_bibliography()
 ```
 
 ## Aggregate duplicated `transcripts`
@@ -151,7 +147,7 @@ tidybulk provide the `aggregate_duplicates` function to aggregate duplicated tra
 <div class="column-left">
 TidyTranscriptomics
 ```{r aggregate, cache=TRUE, message=FALSE, warning=FALSE, results='hide', class.source='yellow'}
-tt.aggr = tt %>% aggregate_duplicates()
+counts_SE.aggr = counts_SE %>% aggregate_duplicates()
 ```
 </div>
 <div class="column-right">
@@ -179,7 +175,7 @@ We may want to compensate for sequencing depth, scaling the transcript abundance
 <div class="column-left">
 TidyTranscriptomics
 ```{r normalise, cache=TRUE}
-tt.norm = tt.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance()
+counts_SE.norm = counts_SE.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance()
 ```
 
 </div>
@@ -199,14 +195,14 @@ norm_counts.table <- cpm(dgList)
 <div style="clear:both;"></div>
 
 ```{r, include=FALSE}
-tt.norm %>% select(`count`, count_scaled, .abundant, everything())
+counts_SE.norm %>% select(`count`, count_scaled, .abundant, everything())
 ```
 
 We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.
 
 
 ```{r plot_normalise, cache=TRUE}
-tt.norm %>%
+counts_SE.norm %>%
 	ggplot(aes(count_scaled + 1, group=sample, color=`Cell.type`)) +
 	geom_density() +
 	scale_x_log10() +
@@ -220,7 +216,7 @@ We may want to identify and filter variable transcripts.
 <div class="column-left">
 TidyTranscriptomics
 ```{r filter variable, cache=TRUE}
-tt.norm.variable = tt.norm %>% keep_variable()
+counts_SE.norm.variable = counts_SE.norm %>% keep_variable()
 ```
 </div>
 <div class="column-right">
@@ -258,8 +254,8 @@ We may want to reduce the dimensions of our data, for example using PCA or MDS a
 <div class="column-left">
 TidyTranscriptomics
 ```{r mds, cache=TRUE}
-tt.norm.MDS =
-  tt.norm %>%
+counts_SE.norm.MDS =
+  counts_SE.norm %>%
   reduce_dimensions(method="MDS", .dims = 6)
 
 ```
@@ -287,9 +283,9 @@ cmds$cell_type = tidybulk::counts[
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.
 
 ```{r plot_mds, cache=TRUE}
-tt.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
+counts_SE.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
 
-tt.norm.MDS %>%
+counts_SE.norm.MDS %>%
 	pivot_sample() %>%
   GGally::ggpairs(columns = 10:15, ggplot2::aes(colour=`Cell.type`))
 
@@ -301,8 +297,8 @@ tt.norm.MDS %>%
 <div class="column-left">
 TidyTranscriptomics
 ```{r pca, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
-tt.norm.PCA =
-  tt.norm %>%
+counts_SE.norm.PCA =
+  counts_SE.norm %>%
   reduce_dimensions(method="PCA", .dims = 6)
 ```
 </div>
@@ -325,9 +321,9 @@ On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured
 
 ```{r plot_pca, cache=TRUE}
 
-tt.norm.PCA %>% pivot_sample() %>% select(contains("PC"), everything())
+counts_SE.norm.PCA %>% pivot_sample() %>% select(contains("PC"), everything())
 
-tt.norm.PCA %>%
+counts_SE.norm.PCA %>%
 	 pivot_sample() %>%
   GGally::ggpairs(columns = 11:13, ggplot2::aes(colour=`Cell.type`))
 ```
@@ -336,9 +332,8 @@ tt.norm.PCA %>%
 <div class="column-left">
 TidyTranscriptomics
 ```{r tsne, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
-tt.norm.tSNE =
-	breast_tcga_mini %>%
-	tidybulk(		sample, ens, count_scaled) %>%
+counts_SE.norm.tSNE =
+	breast_tcga_mini_SE %>%
 	identify_abundant() %>%
 	reduce_dimensions(
 		method = "tSNE",
@@ -370,11 +365,11 @@ tsne$cell_type = tidybulk::counts[
 Plot
 
 ```{r}
-tt.norm.tSNE %>%
+counts_SE.norm.tSNE %>%
 	pivot_sample() %>%
 	select(contains("tSNE"), everything()) 
 
-tt.norm.tSNE %>%
+counts_SE.norm.tSNE %>%
 	pivot_sample() %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
@@ -385,8 +380,8 @@ We may want to rotate the reduced dimensions (or any two numeric columns really)
 <div class="column-left">
 TidyTranscriptomics
 ```{r rotate, cache=TRUE}
-tt.norm.MDS.rotated =
-  tt.norm.MDS %>%
+counts_SE.norm.MDS.rotated =
+  counts_SE.norm.MDS %>%
 	rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, action="get")
 ```
 </div>
@@ -413,7 +408,7 @@ mds_r$cell_type = counts[
 On the x and y axes axis we have the first two reduced dimensions, data is coloured by cell type.
 
 ```{r plot_rotate_1, cache=TRUE}
-tt.norm.MDS.rotated %>%
+counts_SE.norm.MDS.rotated %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type` )) +
   geom_point() +
   my_theme
@@ -423,7 +418,7 @@ tt.norm.MDS.rotated %>%
 On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by cell type.
 
 ```{r plot_rotate_2, cache=TRUE}
-tt.norm.MDS.rotated %>%
+counts_SE.norm.MDS.rotated %>%
 	pivot_sample() %>%
 	ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`Cell.type` )) +
   geom_point() +
@@ -436,10 +431,10 @@ We may want to test for differential transcription between sample-wise factors o
 <div class="column-left">
 TidyTranscriptomics
 ```{r de, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
-tt.de =
-	tt %>%
+counts_SE.de =
+	counts_SE %>%
 	test_differential_abundance( ~ condition, action="get")
-tt.de
+counts_SE.de
 ```
 </div>
 <div class="column-right">
@@ -462,8 +457,8 @@ topTags(qlf, n=Inf)
 
 The functon `test_differential_abundance` operated with contrasts too. The constrasts hve the name of the design matrix (generally <NAME_COLUMN_COVARIATE><VALUES_OF_COVARIATE>)
 ```{r de contrast, cache=TRUE, message=FALSE, warning=FALSE, results='hide', eval=FALSE}
-tt.de =
-	tt %>%
+counts_SE.de =
+	counts_SE %>%
 	identify_abundant(factor_of_interest = condition) %>%
 	test_differential_abundance(
 		~ 0 + condition,                  
@@ -479,8 +474,8 @@ We may want to adjust `counts` for (known) unwanted variation. `adjust_abundance
 <div class="column-left">
 TidyTranscriptomics
 ```{r adjust, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
-tt.norm.adj =
-	tt.norm %>% adjust_abundance(	~ factor_of_interest + batch)
+counts_SE.norm.adj =
+	counts_SE.norm %>% adjust_abundance(	~ factor_of_interest + batch)
 
 ```
 </div>
@@ -522,8 +517,8 @@ We may want to infer the cell type composition of our samples (with the algorith
 <div class="column-left">
 TidyTranscriptomics
 ```{r cibersort, cache=TRUE}
-tt.cibersort =
-	tt %>%
+counts_SE.cibersort =
+	counts_SE %>%
 	deconvolve_cellularity(action="get", cores=1, prefix = "cibersort__") 
 
 ```
@@ -551,7 +546,7 @@ results$cell_type = tidybulk::counts[
 With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is facetted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).
 
 ```{r plot_cibersort, cache=TRUE}
-tt.cibersort %>%
+counts_SE.cibersort %>%
 	pivot_longer(
 		names_to= "Cell_type_inferred", 
 		values_to = "proportion", 
@@ -571,7 +566,7 @@ We can also perform a statistical test on the differential cell-type abundance a
 
 ```{r DC, cache=TRUE}
 
-	tt %>%
+	counts_SE %>%
 	test_differential_cellularity(. ~ condition )
 
 ```
@@ -580,7 +575,7 @@ We can also perform regression analysis with censored data (coxph).
 
 ```{r DC_censored, eval=FALSE}
 
-	tt %>%
+	counts_SE %>%
 	test_differential_cellularity(survival::Surv(time, dead) ~ .)
 
 ```
@@ -594,7 +589,7 @@ We may want to cluster our data (e.g., using k-means sample-wise). `cluster_elem
 <div class="column-left">
 TidyTranscriptomics
 ```{r cluster, cache=TRUE}
-tt.norm.cluster = tt.norm.MDS %>%
+counts_SE.norm.cluster = counts_SE.norm.MDS %>%
   cluster_elements(method="kmeans",	centers = 2, action="get" )
 ```
 </div>
@@ -615,10 +610,10 @@ cluster$cell_type = tidybulk::counts[
 </div>
 <div style="clear:both;"></div>
 
-We can add cluster annotation to the MDS dimesion reduced data set and plot.
+We can add cluster annotation to the MDS dimension reduced data set and plot.
 
 ```{r plot_cluster, cache=TRUE}
- tt.norm.cluster %>%
+ counts_SE.norm.cluster %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster_kmeans`)) +
   geom_point() +
   my_theme
@@ -629,8 +624,8 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
 <div class="column-left">
 TidyTranscriptomics
 ```{r SNN, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
-tt.norm.SNN =
-	tt.norm.tSNE %>%
+counts_SE.norm.SNN =
+	counts_SE.norm.tSNE %>%
 	cluster_elements(method = "SNN")
 ```
 </div>
@@ -661,20 +656,20 @@ snn$cell_type = tidybulk::counts[
 <div style="clear:both;"></div>
 
 ```{r SNN_plot, cache=TRUE}
-tt.norm.SNN %>%
+counts_SE.norm.SNN %>%
 	pivot_sample() %>%
 	select(contains("tSNE"), everything()) 
 
-tt.norm.SNN %>%
+counts_SE.norm.SNN %>%
 	pivot_sample() %>%
-	gather(source, Call, c("cluster SNN", "Call")) %>%
+	gather(source, Call, c("cluster_SNN", "Call")) %>%
 	distinct() %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
 
 
 # Do differential transcription between clusters
-tt.norm.SNN %>%
-	mutate(factor_of_interest = `cluster SNN` == 3) %>%
+counts_SE.norm.SNN %>%
+	mutate(factor_of_interest = `cluster_SNN` == 3) %>%
 	test_differential_abundance(
     ~ factor_of_interest,
     action="get"
@@ -693,8 +688,8 @@ We may want to remove redundant elements from the original data set (e.g., sampl
 <div class="column-left">
 TidyTranscriptomics
 ```{r drop, cache=TRUE}
-tt.norm.non_redundant =
-	tt.norm.MDS %>%
+counts_SE.norm.non_redundant =
+	counts_SE.norm.MDS %>%
   remove_redundancy(	method = "correlation" )
 ```
 </div>
@@ -731,7 +726,7 @@ counts %>% anti_join(.data.correlated) %>%
 We can visualise how the reduced redundancy with the reduced dimentions look like
 
 ```{r plot_drop, cache=TRUE}
-tt.norm.non_redundant %>%
+counts_SE.norm.non_redundant %>%
 	pivot_sample() %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
   geom_point() +
@@ -742,8 +737,8 @@ tt.norm.non_redundant %>%
 **Approach 2**
 
 ```{r drop2, cache=TRUE}
-tt.norm.non_redundant =
-	tt.norm.MDS %>%
+counts_SE.norm.non_redundant =
+	counts_SE.norm.MDS %>%
   remove_redundancy(
   	method = "reduced_dimensions",
   	Dim_a_column = `Dim1`,
@@ -754,7 +749,7 @@ tt.norm.non_redundant =
 We can visualise MDS reduced dimensions of the samples with the closest pair removed.
 
 ```{r plot_drop2, cache=TRUE}
-tt.norm.non_redundant %>%
+counts_SE.norm.non_redundant %>%
 	pivot_sample() %>%
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
   geom_point() +
@@ -794,6 +789,6 @@ counts_ensembl %>% ensembl_to_symbol(ens)
 We can add gene full name (and in future description) from symbol identifiers. This currently works for human and mouse.
 
 ```{r description, cache=TRUE}
-tt %>% describe_transcript() %>% select(transcript, description, everything())
+counts_SE %>% describe_transcript() %>% select(transcript, description, everything())
 ```
 
