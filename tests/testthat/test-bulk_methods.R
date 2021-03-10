@@ -1754,8 +1754,9 @@ test_that("differential composition",{
 	) %>%
 	pull(estimate) %>%
 	.[[1]] %>%
-		round() %in% c(97, 112) %>% # 112 is the github action UBUNTU that has different value
-	expect_true()
+	expect_equal(97)
+	#round() %in% c(97, 112) %>% # 112 is the github action UBUNTU that has different value
+	#expect_true()
 	
 })
 
