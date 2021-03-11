@@ -37,22 +37,23 @@ Please have a look also to
 
 ## Functions/utilities available
 
-| Function                        | Description                                                                  |
-| ------------------------------- | ---------------------------------------------------------------------------- |
-| `identify_abundant`             | identify the abundant genes                                                  |
-| `aggregate_duplicates`          | Aggregate abundance and annotation of duplicated transcripts in a robust way |
-| `scale_abundance`               | Scale (normalise) abundance for RNA sequencing depth                         |
-| `reduce_dimensions`             | Perform dimensionality reduction (PCA, MDS, tSNE)                            |
-| `cluster_elements`              | Labels elements with cluster identity (kmeans, SNN)                          |
-| `remove_redundancy`             | Filter out elements with highly correlated features                          |
-| `adjust_abundance`              | Remove known unwanted variation (Combat)                                     |
-| `test_differential_abundance`   | Differential transcript abundance testing (DE)                               |
-| `deconvolve_cellularity`        | Estimated tissue composition (Cibersort or llsr)                             |
-| `test_differential_cellularity` | Differential cell-type abundance testing                                     |
-| `keep_variable`                 | Filter for top variable features                                             |
-| `keep_abundant`                 | Filter out lowly abundant transcripts                                        |
-| `test_gene_enrichment`          | Gene enrichment analyses (EGSEA)                                             |
-| `test_gene_overrepresentation`  | Gene enrichment on list of transcript names (no rank)                        |
+| Function                          | Description                                                                  |
+| --------------------------------- | ---------------------------------------------------------------------------- |
+| `identify_abundant`               | identify the abundant genes                                                  |
+| `aggregate_duplicates`            | Aggregate abundance and annotation of duplicated transcripts in a robust way |
+| `scale_abundance`                 | Scale (normalise) abundance for RNA sequencing depth                         |
+| `reduce_dimensions`               | Perform dimensionality reduction (PCA, MDS, tSNE)                            |
+| `cluster_elements`                | Labels elements with cluster identity (kmeans, SNN)                          |
+| `remove_redundancy`               | Filter out elements with highly correlated features                          |
+| `adjust_abundance`                | Remove known unwanted variation (Combat)                                     |
+| `test_differential_abundance`     | Differential transcript abundance testing (DE)                               |
+| `deconvolve_cellularity`          | Estimated tissue composition (Cibersort or llsr)                             |
+| `test_differential_cellularity`   | Differential cell-type abundance testing                                     |
+| `test_stratification_cellularity` | Estimate Kaplan-Meier survival differences                                   |
+| `keep_variable`                   | Filter for top variable features                                             |
+| `keep_abundant`                   | Filter out lowly abundant transcripts                                        |
+| `test_gene_enrichment`            | Gene enrichment analyses (EGSEA)                                             |
+| `test_gene_overrepresentation`    | Gene enrichment on list of transcript names (no rank)                        |
 
 | Utilities                  | Description                                                     |
 | -------------------------- | --------------------------------------------------------------- |
@@ -459,18 +460,18 @@ tt.norm.tSNE %>%
 ```
 
     ## # A tibble: 251 x 4
-    ##     tSNE1   tSNE2 sample                       Call 
-    ##     <dbl>   <dbl> <chr>                        <fct>
-    ##  1   8.68  10.7   TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2  -4.96   4.18  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3   5.76   0.187 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4   8.18  -8.05  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5   8.26   6.69  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6  -4.24  -2.30  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7 -31.2  -10.3   TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8   3.27 -13.2   TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9   2.03 -13.8   TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10  23.3   10.1   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##       tSNE1   tSNE2 sample                       Call 
+    ##       <dbl>   <dbl> <chr>                        <fct>
+    ##  1   0.0408 -12.3   TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2   6.63     0.411 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3  -8.32    -1.42  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4  -1.94    -2.79  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5  -1.68    -9.36  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  -4.68     4.84  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7  10.5     27.2   TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8  -0.341    1.80  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9   0.350    2.67  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10 -17.7     -7.03  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
 
 ``` r
@@ -765,8 +766,82 @@ We can also perform regression analysis with censored data (coxph).
 
 ``` r
     tt %>%
-    test_differential_cellularity(survival::Surv(time, dead) ~ .)
+    
+    # Add survival data
+    nest(data = -sample) %>%
+        mutate(
+            days = sample(1:1000, size = n()),
+            dead = sample(c(0,1), size = n(), replace = TRUE)
+        ) %>%
+    unnest(data) %>%
+
+    # Test
+    test_differential_cellularity(
+        survival::Surv(days, dead) ~ .,
+        sample, transcript, count
+    )
 ```
+
+    ## # A tibble: 22 x 6
+    ##    .cell_type            cell_type_proport… estimate std.error statistic p.value
+    ##    <chr>                 <list>                <dbl>     <dbl>     <dbl>   <dbl>
+    ##  1 B cells naive         <tibble [48 × 9]>     2.11      0.936     2.25  0.0242 
+    ##  2 B cells memory        <tibble [48 × 9]>    -0.284     0.574    -0.496 0.620  
+    ##  3 Plasma cells          <tibble [48 × 9]>     0.417     1.41      0.296 0.767  
+    ##  4 T cells CD8           <tibble [48 × 9]>     0.644     0.970     0.664 0.507  
+    ##  5 T cells CD4 naive     <tibble [48 × 9]>     3.73      2.14      1.74  0.0823 
+    ##  6 T cells CD4 memory r… <tibble [48 × 9]>     2.23      1.36      1.63  0.102  
+    ##  7 T cells CD4 memory a… <tibble [48 × 9]>    -2.37      1.32     -1.80  0.0716 
+    ##  8 T cells follicular h… <tibble [48 × 9]>     5.42      1.73      3.14  0.00169
+    ##  9 T cells regulatory (… <tibble [48 × 9]>     0.439     1.68      0.262 0.794  
+    ## 10 T cells gamma delta   <tibble [48 × 9]>    -1.06      1.16     -0.914 0.361  
+    ## # … with 12 more rows
+
+We can also perform test of Kaplan-Meier curves.
+
+``` r
+tt_stratified = 
+    tt %>%
+    
+    # Add survival data
+    nest(data = -sample) %>%
+        mutate(
+            days = sample(1:1000, size = n()),
+            dead = sample(c(0,1), size = n(), replace = TRUE)
+        ) %>%
+    unnest(data) %>%
+
+    # Test
+    test_stratification_cellularity(
+        survival::Surv(days, dead) ~ .,
+        sample, transcript, count
+    )
+
+tt_stratified
+```
+
+    ## # A tibble: 22 x 6
+    ##    .cell_type   cell_type_propor… .low_cellularit… .high_cellulari… pvalue plot 
+    ##    <chr>        <list>                       <dbl>            <dbl>  <dbl> <lis>
+    ##  1 B cells nai… <tibble [48 × 9]>             13.6            13.4  0.820  <ggs…
+    ##  2 B cells mem… <tibble [48 × 9]>             17.3             9.72 0.181  <ggs…
+    ##  3 Plasma cells <tibble [48 × 9]>             14.9            12.1  0.207  <ggs…
+    ##  4 T cells CD8  <tibble [48 × 9]>             12.9            14.1  0.0972 <ggs…
+    ##  5 T cells CD4… <tibble [48 × 9]>             15.3            11.7  0.777  <ggs…
+    ##  6 T cells CD4… <tibble [48 × 9]>             10.6            16.4  0.337  <ggs…
+    ##  7 T cells CD4… <tibble [48 × 9]>             14.9            12.1  0.407  <ggs…
+    ##  8 T cells fol… <tibble [48 × 9]>             18.8             8.17 0.338  <ggs…
+    ##  9 T cells reg… <tibble [48 × 9]>             14.7            12.3  0.0240 <ggs…
+    ## 10 T cells gam… <tibble [48 × 9]>             20.4             6.61 0.769  <ggs…
+    ## # … with 12 more rows
+
+Plot Kaplan-Meier curves
+
+``` r
+tt_stratified$plot[[1]]
+```
+
+![](man/figures/unnamed-chunk-16-1.png)<!-- -->
 
 ## Cluster `samples`
 
@@ -876,18 +951,18 @@ tt.norm.SNN %>%
 ```
 
     ## # A tibble: 251 x 5
-    ##     tSNE1   tSNE2 sample                       Call  `cluster SNN`
-    ##     <dbl>   <dbl> <chr>                        <fct> <fct>        
-    ##  1   8.68  10.7   TCGA-A1-A0SD-01A-11R-A115-07 LumA  1            
-    ##  2  -4.96   4.18  TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
-    ##  3   5.76   0.187 TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
-    ##  4   8.18  -8.05  TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
-    ##  5   8.26   6.69  TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
-    ##  6  -4.24  -2.30  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
-    ##  7 -31.2  -10.3   TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
-    ##  8   3.27 -13.2   TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
-    ##  9   2.03 -13.8   TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
-    ## 10  23.3   10.1   TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
+    ##       tSNE1   tSNE2 sample                       Call  `cluster SNN`
+    ##       <dbl>   <dbl> <chr>                        <fct> <fct>        
+    ##  1   0.0408 -12.3   TCGA-A1-A0SD-01A-11R-A115-07 LumA  1            
+    ##  2   6.63     0.411 TCGA-A1-A0SF-01A-11R-A144-07 LumA  2            
+    ##  3  -8.32    -1.42  TCGA-A1-A0SG-01A-11R-A144-07 LumA  1            
+    ##  4  -1.94    -2.79  TCGA-A1-A0SH-01A-11R-A084-07 LumA  0            
+    ##  5  -1.68    -9.36  TCGA-A1-A0SI-01A-11R-A144-07 LumB  0            
+    ##  6  -4.68     4.84  TCGA-A1-A0SJ-01A-11R-A084-07 LumA  1            
+    ##  7  10.5     27.2   TCGA-A1-A0SK-01A-12R-A084-07 Basal 3            
+    ##  8  -0.341    1.80  TCGA-A1-A0SM-01A-11R-A084-07 LumA  2            
+    ##  9   0.350    2.67  TCGA-A1-A0SN-01A-11R-A144-07 LumB  2            
+    ## 10 -17.7     -7.03  TCGA-A1-A0SQ-01A-21R-A144-07 LumA  1            
     ## # … with 241 more rows
 
 ``` r
