@@ -1870,6 +1870,82 @@ setMethod(
 	.test_differential_cellularity_se
 )
 
+# Set internal
+.test_stratification_cellularity_SE = 		function(.data,
+																							.formula,
+																							.sample = NULL,
+																							.transcript = NULL,
+																							.abundance = NULL,
+																							method = "cibersort",
+																							reference = X_cibersort,
+																							...)
+{
+	
+	# Validate formula
+	if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
+		stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
+
+	deconvoluted = 
+		.data %>%
+		
+		# Deconvolution
+		deconvolve_cellularity(
+			method=method,
+			prefix = sprintf("%s:", method),
+			reference = reference,
+			...
+		) 
+	
+	# Check if test is univaiable or multivariable
+	.formula %>%
+		{
+			# Parse formula
+			.my_formula =
+				format(.formula) %>% 
+				str_replace("([~ ])(\\.)", "\\1.high_cellularity") %>%
+				as.formula
+			
+			# Test
+			univariable_differential_tissue_stratification_SE(deconvoluted,
+																										 method,
+																										 .my_formula) %>%
+				
+				# Attach attributes
+				reattach_internals(.data) %>%
+				
+				# Add methods used
+				memorise_methods_used(c("survival", "boot", "survminer"))
+		} %>%
+		
+		# Eliminate prefix
+		mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+	
+}
+
+#' test_stratification_cellularity
+#' @inheritParams test_stratification_cellularity
+#'
+#' @docType methods
+#' @rdname test_stratification_cellularity-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_stratification_cellularity",
+					"SummarizedExperiment",
+					.test_stratification_cellularity_SE)
+
+#' test_stratification_cellularity
+#' @inheritParams test_stratification_cellularity
+#'
+#' @docType methods
+#' @rdname test_stratification_cellularity-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_stratification_cellularity",
+					"RangedSummarizedExperiment",
+					.test_stratification_cellularity_SE)
+
+
+
 
 #' get_bibliography
 #' @inheritParams get_bibliography

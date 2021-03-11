@@ -52,6 +52,7 @@ Function | Description
 `test_differential_abundance` | Differential transcript abundance testing (DE) 
 `deconvolve_cellularity` | Estimated tissue composition (Cibersort or llsr)
 `test_differential_cellularity` | Differential cell-type abundance testing
+`test_stratification_cellularity` | Estimate Kaplan-Meier survival differences
 `keep_variable` | Filter for top variable features
 `keep_abundant` | Filter out lowly abundant transcripts
 `test_gene_enrichment` | Gene enrichment analyses (EGSEA)
@@ -576,11 +577,55 @@ We can also perform a statistical test on the differential cell-type abundance a
 
 We can also perform regression analysis with censored data (coxph).
 
-```{r DC_censored, eval=FALSE}
+```{r DC_censored}
 
 	tt %>%
-	test_differential_cellularity(survival::Surv(time, dead) ~ .)
+	
+	# Add survival data
+	nest(data = -sample) %>%
+		mutate(
+			days = sample(1:1000, size = n()),
+			dead = sample(c(0,1), size = n(), replace = TRUE)
+		) %>%
+	unnest(data) %>%
 
+	# Test
+	test_differential_cellularity(
+		survival::Surv(days, dead) ~ .,
+		sample, transcript, count
+	)
+
+```
+
+We can also perform test of Kaplan-Meier curves.
+
+```{r DC_censored_stratification}
+
+tt_stratified = 
+	tt %>%
+	
+	# Add survival data
+	nest(data = -sample) %>%
+		mutate(
+			days = sample(1:1000, size = n()),
+			dead = sample(c(0,1), size = n(), replace = TRUE)
+		) %>%
+	unnest(data) %>%
+
+	# Test
+	test_stratification_cellularity(
+		survival::Surv(days, dead) ~ .,
+		sample, transcript, count
+	)
+
+tt_stratified
+
+```
+
+Plot Kaplan-Meier curves
+
+```{r}
+tt_stratified$plot[[1]]
 ```
 
 ## Cluster `samples`
