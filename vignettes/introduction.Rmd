@@ -564,7 +564,7 @@ counts_SE.cibersort %>%
 
 We can also perform a statistical test on the differential cell-type abundance across conditions
 
-```{r DC}
+```{r DC, eval=FALSE}
 
 	counts_SE %>%
 	test_differential_cellularity(. ~ condition )
