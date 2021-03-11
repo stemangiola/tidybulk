@@ -11,7 +11,9 @@ output: github_document
 knitr::opts_chunk$set( fig.path = "man/figures/")
 ```
 
-**Brings transcriptomics to the tidyverse!** (SEO: tidy differential expression)
+**Brings transcriptomics to the tidyverse!**
+
+The code is released under the version 3 of the GNU General Public License.
 
 #  <img src="inst/logo.png" height="139px" width="120px" />
   

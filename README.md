@@ -8,8 +8,8 @@ tidybulk - part of tidyTranscriptomics
 status](https://github.com/stemangiola/tidybulk/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/stemangiola/tidybulk/actions)
 <!-- badges: end -->
 
-**Brings transcriptomics to the tidyverse\!** (SEO: tidy differential
-expression)
+**Brings transcriptomics to the tidyverse\!** 
+The code is released under the version 3 of the GNU General Public License.
 
 # <img src="inst/logo.png" height="139px" width="120px" />
 
