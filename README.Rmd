@@ -50,6 +50,7 @@ Function | Description
 `test_differential_abundance` | Differential transcript abundance testing (DE) 
 `deconvolve_cellularity` | Estimated tissue composition (Cibersort or llsr)
 `test_differential_cellularity` | Differential cell-type abundance testing
+`test_stratification_cellularity` | Estimate Kaplan-Meier survival differences
 `keep_variable` | Filter for top variable features
 `keep_abundant` | Filter out lowly abundant transcripts
 `test_gene_enrichment` | Gene enrichment analyses (EGSEA)
