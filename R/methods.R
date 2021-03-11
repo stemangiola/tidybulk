@@ -1661,9 +1661,17 @@ symbol_to_entrez = function(.data,
 #'
 #' describe_transcript(tidybulk::counts_mini, .transcript = transcript)
 #'
+#' @docType methods
+#' @rdname describe_transcript-methods
 #' @export
 #'
-describe_transcript = function(.data,
+#'
+setGeneric("describe_transcript", function(.data,
+																					 .transcript = NULL)
+	standardGeneric("describe_transcript"))
+
+#'
+.describe_transcript = function(.data,
 														.transcript = NULL) {
 
 	# Get column names
@@ -1736,6 +1744,33 @@ describe_transcript = function(.data,
 		left_join(description_df, by = quo_name(.transcript))
 }
 
+
+#' describe_transcript
+#' @inheritParams describe_transcript
+#'
+#' @docType methods
+#' @rdname describe_transcript-methods
+#'
+#' @return A `tbl` object including additional columns for transcript symbol
+setMethod("describe_transcript", "spec_tbl_df", .describe_transcript)
+
+#' describe_transcript
+#' @inheritParams describe_transcript
+#'
+#' @docType methods
+#' @rdname describe_transcript-methods
+#'
+#' @return A `tbl` object including additional columns for transcript symbol
+setMethod("describe_transcript", "tbl_df", .describe_transcript)
+
+#' describe_transcript
+#' @inheritParams describe_transcript
+#'
+#' @docType methods
+#' @rdname describe_transcript-methods
+#'
+#' @return A `tbl` object including additional columns for transcript symbol
+setMethod("describe_transcript", "tidybulk", .describe_transcript)
 
 
 #' Add transcript symbol column from ensembl id for human and mouse data
@@ -3691,19 +3726,20 @@ setGeneric("get_bibliography", function(.data)
 .get_bibliography = 		function(.data)
 {
 
-	# If there is not attributes parameter
-	if(
-		!"internals" %in% (.data %>% attributes() %>% names()) &&
-		!"methods_used" %in% (.data %>% attr("internals") %>% names())
-	)
-		stop("tidybulk says: the attributes (attributes(...)) including the method tracking for for this object appear to be absent.")
-
+	
 	default_methods = c("tidybulk", "tidyverse")
 	
+	# If there is not attributes parameter
 	my_methods =
-		.data %>%
-		attr("internals") %>%
-		.[["methods_used"]]
+			.data %>%
+			when(
+				!(
+					!"internals" %in% (attributes(.) %>% names()) &&
+						!"methods_used" %in% (attr(., "internals") %>% names())
+				) ~ 	attr(., "internals") %>% .[["methods_used"]],
+				~ ""
+			)
+		
 
 	my_bibliography() %>%
 		.[c(default_methods, my_methods)] %>%
