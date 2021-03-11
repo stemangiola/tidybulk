@@ -65,7 +65,8 @@ Suggests:
     ggrepel,
     devtools,
     functional,
-    survminer
+    survminer,
+    tidySummarizedExperiment
 VignetteBuilder: 
     knitr
 RdMacros:
