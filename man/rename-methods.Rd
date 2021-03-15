@@ -3,13 +3,8 @@
 \name{rename}
 \alias{rename}
 \title{Rename columns}
-\usage{
-rename(.data, ...)
-}
 \arguments{
-\item{.data}{A data frame, data frame extension (e.g. a tibble), or a
-lazy data frame (e.g. from dbplyr or dtplyr). See *Methods*, below, for
-more details.}
+\item{.data}{A tbl. (See dplyr)}
 
 \item{...}{<[`tidy-select`][dplyr_tidy_select]> Use `new_name = old_name`
 to rename selected variables.}
@@ -44,6 +39,7 @@ The following methods are currently available in loaded packages:
 `\%>\%` = magrittr::`\%>\%`
 iris <- as_tibble(iris) # so it prints a little nicer
 rename(iris, petal_length = Petal.Length)
+
 }
 \seealso{
 Other single table verbs: 

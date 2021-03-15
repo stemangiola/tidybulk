@@ -6,7 +6,7 @@ my_stop = function() {
       ")
 }
 
-#' This is a generalisation of ifelse that acceots an object and return an objects
+#' This is a generalisation of ifelse that accepts an object and return an objects
 #'
 #' @keywords internal
 #'

@@ -1,10 +1,4 @@
-#' drplyr-methods
-#' 
-#' @rdname dplyr-methods
-#' 
 #' @return A tibble
-
-
 #' Arrange rows by column values
 #'
 #'
@@ -49,29 +43,19 @@
 #' @param .by_group If TRUE, will sort first by grouping variable. Applies to grouped data frames only.
 #' 
 #' @family single table verbs
+#' 
+#' @rdname arrange-methods
+#' @name arrange
+#' @importFrom dplyr arrange
+#' 
 #' @examples
 #' `%>%` = magrittr::`%>%`
 #' arrange(mtcars, cyl, disp)
-arrange <- function(.data, ..., .by_group = FALSE) {
-	UseMethod("arrange")
-}
-
-#' @param .by_group If `TRUE`, will sort first by grouping variable. Applies to
-#'   grouped data frames only.
-#' @rdname dplyr-methods
-#' @export
-#'
-############# START ADDED tidybulk ###################################
+NULL
 
 #' @export
-#' @inheritParams arrange
-arrange.default <- function(.data, ..., .by_group = FALSE) {
-
-	dplyr::arrange(.data, ..., .by_group = .by_group)
-
-}
-
-#' @export
+#' 
+#' @name arrange
 #' @inheritParams arrange
 arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 
@@ -87,8 +71,6 @@ arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 		add_class("tidybulk")
 
 }
-
-############# END ADDED tidybulk #####################################
 
 #' Efficiently bind multiple data frames by row and column
 #'
@@ -120,6 +102,8 @@ arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 #'   used instead.
 #' @return `bind_rows()` and `bind_cols()` return the same type as
 #'   the first input, either a data frame, `tbl_df`, or `grouped_df`.
+#'   
+#'   
 #' @examples
 #' `%>%` = magrittr::`%>%`
 #' one <- mtcars[1:4, ]
@@ -128,12 +112,11 @@ arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 #' # You can supply data frames as arguments:
 #' bind_rows(one, two)
 #'
+#' @rdname bind-methods
 #' @name bind
 NULL
 
-############# START ADDED tidybulk #####################################
-
-#' @rdname dplyr-methods
+#' @rdname bind-methods
 #' 
 #' @inheritParams bind
 #' 
@@ -173,15 +156,11 @@ bind_rows.tidybulk <- function(..., .id = NULL)
 
 }
 
-############# END ADDED tidybulk #####################################
-
-
-############# START ADDED tidybulk #####################################
 #' @export
 #' 
 #' @inheritParams bind
 #' 
-#' @rdname dplyr-methods
+#' @rdname bind-methods
 bind_cols <- function(..., .id = NULL) {
 	UseMethod("bind_cols")
 }
@@ -210,24 +189,6 @@ bind_cols.tidybulk <- function(..., .id = NULL)
 
 }
 
-############# END ADDED tidybulk #####################################
-############# START ADDED tidybulk #####################################
-
-# #' @importFrom dplyr arrange_all
-# #' @export
-# dplyr::arrange_all
-#
-# #' @importFrom dplyr arrange_at
-# #' @export
-# dplyr::arrange_at
-#
-# #' @importFrom dplyr arrange_if
-# #' @export
-# dplyr::arrange_if
-
-############# END ADDED tidybulk #####################################
-############# START ADDED tidybulk #####################################
-
 #' distinct
 #' @param .data A tbl. (See dplyr)
 #' @param ... Data frames to combine (See dplyr)
@@ -235,22 +196,20 @@ bind_cols.tidybulk <- function(..., .id = NULL)
 #'
 #' @return A tt object
 #'
+#' @rdname distinct-methods
+#' @name distinct
+#' @importFrom dplyr distinct
+#' 
 #' @examples
 #'
 #' distinct(tidybulk::counts_mini)
 #'
 #'
 #' @export
-distinct <- function (.data, ..., .keep_all = FALSE)  {
-	UseMethod("distinct")
-}
+NULL
 
-#' @export
-distinct.default <-  function (.data, ..., .keep_all = FALSE)
-{
-	dplyr::distinct(.data, ..., .keep_all = FALSE)
-}
 
+#' @inheritParams distinct
 #' @export
 distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 {
@@ -266,23 +225,6 @@ distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 		add_class("tidybulk")
 
 }
-############# END ADDED tidybulk #####################################
-
-############# START ADDED tidybulk #####################################
-
-# #' @importFrom dplyr distinct_all
-# #' @export
-# dplyr::distinct_all
-#
-# #' @importFrom dplyr distinct_at
-# #' @export
-# dplyr::distinct_at
-#
-# #' @importFrom dplyr distinct_if
-# #' @export
-# dplyr::distinct_if
-
-############# END ADDED tidybulk #####################################
 
 #' Subset rows using column values
 #'
@@ -314,7 +256,7 @@ distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 #'
 #' average.
 #' @family single table verbs
-#' @inheritParams arrange
+#' @param .data A tbl. (See dplyr)
 #' @param ... <[`tidy-eval`][dplyr_tidy_eval]> Logical predicates defined in
 #'   terms of the variables in `.data`.
 #'   Multiple conditions are combined with `&`. Only rows where the
@@ -335,22 +277,18 @@ distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 #'
 #' The following methods are currently available in loaded packages:
 #' @seealso [filter_all()], [filter_if()] and [filter_at()].
+#' 
+#' @rdname filter-methods
+#' @name filter
+#' @importFrom dplyr filter
+#' 
 #' @export
 #' @examples
 #'
 #' # Learn more in ?dplyr_tidy_eval
-############# START ADDED tidybulk #####################################
-#' @export
-filter <- function (.data, ..., .preserve = FALSE)  {
-	UseMethod("filter")
-}
+NULL
 
-#' @export
-filter.default <-  function (.data, ..., .preserve = FALSE)
-{
-	dplyr::filter(.data, ..., .preserve = .preserve)
-}
-
+#' @inheritParams filter
 #' @export
 filter.tidybulk <- function (.data, ..., .preserve = FALSE)
 {
@@ -366,24 +304,6 @@ filter.tidybulk <- function (.data, ..., .preserve = FALSE)
 		add_class("tidybulk")
 
 }
-############# END ADDED tidybulk #####################################
-
-
-############# START ADDED tidybulk #####################################
-
-# #' @importFrom dplyr filter_all
-# #' @export
-# dplyr::filter_all
-#
-# #' @importFrom dplyr filter_at
-# #' @export
-# dplyr::filter_at
-#
-# #' @importFrom dplyr filter_if
-# #' @export
-# dplyr::filter_if
-
-############# END ADDED tidybulk #####################################
 
 #' Group by one or more variables
 #'
@@ -393,7 +313,7 @@ filter.tidybulk <- function (.data, ..., .preserve = FALSE)
 #' where operations are performed "by group". `ungroup()` removes grouping.
 #'
 #' @family grouping functions
-#' @inheritParams arrange
+#' @param .data A tbl. (See dplyr)
 #' @param ... In `group_by()`, variables or computations to group by.
 #'   In `ungroup()`, variables to remove from the grouping.
 #' @param .add When `FALSE`, the default, `group_by()` will
@@ -415,24 +335,33 @@ filter.tidybulk <- function (.data, ..., .preserve = FALSE)
 #'
 #' Methods available in currently loaded packages:
 #'
+#' @rdname group_by-methods
+#' @name group_by
+#' @importFrom dplyr group_by
+#'
 #' @export
 #' @examples
 #' `%>%` = magrittr::`%>%`
 #' by_cyl <- mtcars %>% group_by(cyl)
 #'
+NULL
 
-############# START ADDED tidybulk #####################################
-#' @export
-group_by <- function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))  {
-	UseMethod("group_by")
-}
-
-#' @export
-group_by.default <-  function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))
-{
-	dplyr::group_by(.data, ...,  .drop = .drop)
-}
-
+#' @inheritParams group_by
+#' @name group_by
+#' 
+#' @param .data A tbl. (See dplyr)
+#' @param ... In `group_by()`, variables or computations to group by.
+#'   In `ungroup()`, variables to remove from the grouping.
+#' @param .add When `FALSE`, the default, `group_by()` will
+#'   override existing groups. To add to the existing groups, use
+#'   `.add = TRUE`.
+#'
+#'   This argument was previously called `add`, but that prevented
+#'   creating a new grouping variable called `add`, and conflicts with
+#'   our naming conventions.
+#' @param .drop When `.drop = TRUE`, empty groups are dropped. See [group_by_drop_default()] for
+#'   what the default value is for this argument.
+#'   
 #' @export
 group_by.tidybulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))
 {
@@ -448,23 +377,14 @@ group_by.tidybulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_d
 		add_class("tidybulk")
 
 }
-############# END ADDED tidybulk #####################################
 
-#' ungroup
-#' @rdname dplyr-methods
-#' @export
+
+#' @rdname group_by-methods
+#' @name ungroup
+#' @importFrom dplyr ungroup
+#' 
 #' @param x A [tbl()]
-ungroup <- function(x, ...) {
-	UseMethod("ungroup")
-}
-############# START ADDED tidybulk #####################################
-
-#' @export
-ungroup.default <-  function (x, ...)
-{
-	dplyr::ungroup(x, ...)
-}
-
+#' 
 #' @export
 ungroup.tidybulk <- function (x, ...)
 {
@@ -480,23 +400,6 @@ ungroup.tidybulk <- function (x, ...)
 		add_class("tidybulk")
 
 }
-############# END ADDED tidybulk #####################################
-
-############# START ADDED tidybulk #####################################
-
-# #' @importFrom dplyr group_by_all
-# #' @export
-# dplyr::group_by_all
-#
-# #' @importFrom dplyr group_by_at
-# #' @export
-# dplyr::group_by_at
-#
-# #' @importFrom dplyr group_by_if
-# #' @export
-# dplyr::group_by_if
-
-############# END ADDED tidybulk #####################################
 
 #' Summarise each group to fewer rows
 #'
@@ -532,7 +435,7 @@ ungroup.tidybulk <- function (x, ...)
 #' creating multiple summaries.
 #'
 #' @export
-#' @inheritParams arrange
+#' @param .data A tbl. (See dplyr)
 #' @param ... <[`tidy-eval`][dplyr_tidy_eval]> Name-value pairs of summary
 #'   functions. The name will be the name of the variable in the result.
 #'
@@ -566,18 +469,14 @@ ungroup.tidybulk <- function (x, ...)
 #' mtcars %>%
 #'   summarise(mean = mean(disp))
 #'
-############# START ADDED tidybulk #####################################
+#'
+#' @rdname summarise-methods
+#' @name summarise
+#' @importFrom dplyr summarise
 #' @export
-summarise <- function (.data, ...)  {
-	UseMethod("summarise")
-}
+NULL
 
-#' @export
-summarise.default <-  function (.data, ...)
-{
-	dplyr::summarise(.data, ...)
-}
-
+#' @inheritParams summarise
 #' @export
 summarise.tidybulk <- function (.data, ...)
 {
@@ -593,33 +492,6 @@ summarise.tidybulk <- function (.data, ...)
 		add_class("tidybulk")
 
 }
-############# END ADDED tidybulk #####################################
-
-############# START ADDED tidybulk #####################################
-
-# #' @importFrom dplyr summarize_all
-# #' @export
-# dplyr::summarize_all
-#
-# #' @importFrom dplyr summarize_at
-# #' @export
-# dplyr::summarize_at
-#
-# #' @importFrom dplyr summarize_if
-# #' @export
-# dplyr::summarize_if
-
-############# END ADDED tidybulk #####################################
-
-# #' @rdname dplyr-methods
-# #' @export
-# summarize_all <- summarise_all
-# #' @rdname dplyr-methods
-# #' @export
-# summarize_if <- summarise_if
-# #' @rdname dplyr-methods
-# #' @export
-# summarize_at <- summarise_at
 
 #' Create, modify, and delete columns
 #'
@@ -650,14 +522,13 @@ summarise.tidybulk <- function (.data, ...)
 #' as soon as an aggregating, lagging, or ranking function is
 #' involved. Compare this ungrouped mutate:
 #'
-
 #' With the grouped equivalent:
 #'
 #' The former normalises `mass` by the global average whereas the
 #' latter normalises by the averages within gender levels.
 #'
 #' @export
-#' @inheritParams arrange
+#' @param .data A tbl. (See dplyr)
 #' @param ... <[`tidy-eval`][dplyr_tidy_eval]> Name-value pairs.
 #'   The name gives the name of the column in the output.
 #'
@@ -705,18 +576,13 @@ summarise.tidybulk <- function (.data, ...)
 #'   cyl4 = cyl2 * 2
 #' )
 #'
-############# START ADDED tidybulk #####################################
+#' @rdname mutate-methods
+#' @name mutate
+#' @importFrom dplyr mutate
 #' @export
-mutate <- function(.data, ...) {
-	UseMethod("mutate")
-}
+NULL
 
-#' @export
-mutate.default <-  function(.data, ...)
-{
-	dplyr::mutate(.data, ...)
-}
-
+#' @inheritParams mutate
 #' @export
 mutate.tidybulk <- function(.data, ...)
 {
@@ -733,6 +599,8 @@ mutate.tidybulk <- function(.data, ...)
 
 
 }
+
+#' @inheritParams mutate
 #' @export
 mutate.nested_tidybulk <- function(.data, ...)
 {
@@ -749,23 +617,6 @@ mutate.nested_tidybulk <- function(.data, ...)
 	
 	
 }
-############# END ADDED tidybulk #####################################
-
-############# START ADDED tidybulk #####################################
-
-# #' @importFrom dplyr mutate_all
-# #' @export
-# dplyr::mutate_all
-#
-# #' @importFrom dplyr mutate_at
-# #' @export
-# dplyr::mutate_at
-#
-# #' @importFrom dplyr mutate_if
-# #' @export
-# dplyr::mutate_if
-
-############# END ADDED tidybulk #####################################
 
 #' Rename columns
 #'
@@ -776,7 +627,7 @@ mutate.nested_tidybulk <- function(.data, ...)
 #' Use the three scoped variants ([rename_all()], [rename_if()], [rename_at()])
 #' to renaming a set of variables with a function.
 #'
-#' @inheritParams arrange
+#' @param .data A tbl. (See dplyr)
 #' @param ... <[`tidy-select`][dplyr_tidy_select]> Use `new_name = old_name`
 #'   to rename selected variables.
 #' @return
@@ -797,18 +648,14 @@ mutate.nested_tidybulk <- function(.data, ...)
 #' `%>%` = magrittr::`%>%`
 #' iris <- as_tibble(iris) # so it prints a little nicer
 #' rename(iris, petal_length = Petal.Length)
-############# START ADDED tidybulk #####################################
+#' 
+#' @rdname rename-methods
+#' @name rename
+#' @importFrom dplyr rename
 #' @export
-rename <- function(.data, ...) {
-	UseMethod("rename")
-}
+NULL
 
-#' @export
-rename.default <-  function(.data, ...)
-{
-	dplyr::rename(.data, ...)
-}
-
+#' @inheritParams rename
 #' @export
 rename.tidybulk <- function(.data, ...)
 {
@@ -825,7 +672,6 @@ rename.tidybulk <- function(.data, ...)
 
 
 }
-############# END ADDED tidybulk #####################################
 
 #' Group input by rows
 #'
@@ -843,7 +689,8 @@ rename.tidybulk <- function(.data, ...)
 #' use \code{[[1]]}. This makes `summarise()` on a rowwise tbl
 #' effectively equivalent to [plyr::ldply()].
 #'
-#' @param .data Input data frame.
+#' @param data Input data frame.
+#' @param ...	Variables to be preserved when calling summarise(). This is typically a set of variables whose combination uniquely identify each row. NB: unlike group_by() you can not create new variables here but instead you can select multiple variables with (e.g.) everything().
 #'
 #' @return A `tbl`
 #'
@@ -854,22 +701,18 @@ rename.tidybulk <- function(.data, ...)
 #' `%>%` = magrittr::`%>%`
 #' df <- expand.grid(x = 1:3, y = 3:1)
 #' df_done <- df %>% rowwise() %>% do(i = seq(.$x, .$y))
-############# START ADDED tidybulk #####################################
+#' 
+#' @rdname rowwise-methods
+#' @name rowwise
+#' @importFrom dplyr rowwise
 #' @export
-rowwise <- function(.data) {
-	UseMethod("rowwise")
-}
+NULL
 
+#' @inheritParams rowwise
 #' @export
-rowwise.default <-  function(.data)
+rowwise.tidybulk <- function(data, ...)
 {
-	dplyr::rowwise(.data)
-}
-
-#' @export
-rowwise.tidybulk <- function(.data)
-{
-	.data %>%
+	data %>%
 		drop_class(c("tidybulk", "tt")) %>%
 		dplyr::rowwise() %>%
 
@@ -882,9 +725,6 @@ rowwise.tidybulk <- function(.data)
 
 
 }
-############# END ADDED tidybulk #####################################
-
-
 
 #' Left join datasets
 #'
@@ -897,24 +737,18 @@ rowwise.tidybulk <- function(.data)
 #'
 #' @return A tt object
 #'
-#' @export
-#'
 #' @examples
 #'`%>%` = magrittr::`%>%`
 #' annotation = tidybulk::counts %>% distinct(sample) %>% mutate(source = "AU")
 #' tidybulk::counts %>% left_join(annotation)
 #'
-left_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
-	UseMethod("left_join")
-}
-
+#' @rdname dplyr-methods
+#' @name left_join
+#' @importFrom dplyr left_join
 #' @export
-left_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-																...)
-{
-	dplyr::left_join(x, y, by = by, copy = copy, suffix = suffix, ...)
-}
+NULL
 
+#' @inheritParams left_join
 #' @export
 left_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 															...)
@@ -948,17 +782,13 @@ left_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", 
 #' annotation = tidybulk::counts %>% distinct(sample) %>% mutate(source = "AU")
 #' tidybulk::counts %>% inner_join(annotation)
 #'
+#' @rdname join-methods
+#' @name inner_join
+#' @importFrom dplyr inner_join
 #' @export
-inner_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
-	UseMethod("inner_join")
-}
+NULL
 
-#' @export
-inner_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),				 ...)
-{
-	dplyr::inner_join(x, y, by = by, copy = copy, suffix = suffix, ...)
-}
-
+#' @inheritParams inner_join
 #' @export
 inner_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)
 {
@@ -991,18 +821,13 @@ inner_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #' annotation = tidybulk::counts %>% distinct(sample) %>% mutate(source = "AU")
 #' tidybulk::counts %>% right_join(annotation)
 #'
+#' @rdname join-methods
+#' @name right_join
+#' @importFrom dplyr right_join
 #' @export
-right_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
-	UseMethod("right_join")
-}
+NULL
 
-#' @export
-right_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-																 ...)
-{
-	dplyr::right_join(x, y, by = by, copy = copy, suffix = suffix, ...)
-}
-
+#' @inheritParams right_join
 #' @export
 right_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 															 ...)
@@ -1037,18 +862,13 @@ right_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #' annotation = tidybulk::counts %>% distinct(sample) %>% mutate(source = "AU")
 #' tidybulk::counts %>% full_join(annotation)
 #'
+#' @rdname join-methods
+#' @name full_join
+#' @importFrom dplyr full_join
 #' @export
-full_join <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)  {
-	UseMethod("full_join")
-}
+NULL
 
-#' @export
-full_join.default <-  function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-																 ...)
-{
-	dplyr::full_join(x, y, by = by, copy = copy, suffix = suffix, ...)
-}
-
+#' @inheritParams full_join
 #' @export
 full_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 															 ...)

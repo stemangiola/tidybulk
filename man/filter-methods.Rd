@@ -3,13 +3,8 @@
 \name{filter}
 \alias{filter}
 \title{Subset rows using column values}
-\usage{
-filter(.data, ..., .preserve = FALSE)
-}
 \arguments{
-\item{.data}{A data frame, data frame extension (e.g. a tibble), or a
-lazy data frame (e.g. from dbplyr or dtplyr). See *Methods*, below, for
-more details.}
+\item{.data}{A tbl. (See dplyr)}
 
 \item{...}{<[`tidy-eval`][dplyr_tidy_eval]> Logical predicates defined in
 terms of the variables in `.data`.
