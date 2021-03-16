@@ -97,6 +97,145 @@ setMethod("tidybulk", "spec_tbl_df", .tidybulk)
 setMethod("tidybulk", "tbl_df", .tidybulk)
 
 
+#' as_SummarizedExperiment
+#' 
+#' @description as_SummarizedExperiment() creates a `SummarizedExperiment` object from a `tbl` or `tidybulk` tbl formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#'
+#'
+#' @importFrom utils data
+#' @importFrom tidyr pivot_longer
+#'
+#' @param .data A tibble
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#'
+#' @return A `SummarizedExperiment` object
+#' 
+#' @docType methods
+#' @rdname as_SummarizedExperiment-methods
+#' @export
+#' 
+setGeneric("as_SummarizedExperiment", function(.data,
+																							 .sample = NULL,
+																							 .transcript = NULL,
+																							 .abundance = NULL)
+	standardGeneric("as_SummarizedExperiment"))
+
+
+.as_SummarizedExperiment = function(.data,
+																						.sample = NULL,
+																						.transcript = NULL,
+																						.abundance = NULL) {
+	
+	# Get column names
+	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+	col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+	.sample = col_names$.sample
+	.transcript = col_names$.transcript
+	.abundance = col_names$.abundance
+	
+	# Check if package is installed, otherwise install
+	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing SummarizedExperiment")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("SummarizedExperiment", ask = FALSE)
+	}
+	if (find.package("S4Vectors", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing S4Vectors")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("S4Vectors", ask = FALSE)
+	}
+	# If present get the scaled abundance
+	.abundance_scaled =
+		.data %>%
+		ifelse_pipe(
+			".abundance_scaled" %in% ((.) %>% get_tt_columns() %>% names) &&
+				# .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% not() &&
+				quo_name((.) %>% get_tt_columns() %$% .abundance_scaled) %in% ((.) %>% colnames),
+			~ .x %>% get_tt_columns() %$% .abundance_scaled,
+			~ NULL
+		)
+	
+	# Get which columns are sample wise and which are feature wise
+	col_direction = get_x_y_annotation_columns(.data,
+																						 !!.sample,
+																						 !!.transcript,
+																						 !!.abundance,
+																						 !!.abundance_scaled)
+	sample_cols = col_direction$horizontal_cols
+	feature_cols = col_direction$vertical_cols
+	counts_cols = col_direction$counts_cols
+	
+	colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% arrange(!!.sample) %>% {
+		S4Vectors::DataFrame((.) %>% select(-!!.sample),
+												 row.names = (.) %>% pull(!!.sample))
+	}
+	
+	rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% arrange(!!.transcript) %>% {
+		S4Vectors::DataFrame((.) %>% select(-!!.transcript),
+												 row.names = (.) %>% pull(!!.transcript))
+	}
+	
+	my_assays =
+		.data %>%
+		select(!!.sample,
+					 !!.transcript,
+					 !!.abundance,
+					 !!.abundance_scaled,
+					 counts_cols) %>%
+		distinct() %>%
+		pivot_longer( cols=-c(!!.transcript,!!.sample), names_to="assay", values_to= ".a") %>%
+		nest(`data` = -`assay`) %>%
+		mutate(`data` = `data` %>%  map(
+			~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))
+		))
+	
+	# Build the object
+	SummarizedExperiment::SummarizedExperiment(
+		assays = my_assays %>% pull(`data`) %>% setNames(my_assays$assay),
+		rowData = rowData,
+		colData = colData
+	)
+	
+}
+
+#' as_SummarizedExperiment
+#' @inheritParams as_SummarizedExperiment
+#'
+#' @docType methods
+#' @rdname as_SummarizedExperiment-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("as_SummarizedExperiment", "spec_tbl_df", .as_SummarizedExperiment)
+
+#' as_SummarizedExperiment
+#' @inheritParams as_SummarizedExperiment
+#'
+#' @docType methods
+#' @rdname as_SummarizedExperiment-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("as_SummarizedExperiment", "tbl_df", .as_SummarizedExperiment)
+
+#' as_SummarizedExperiment
+#'
+#'
+#' @inheritParams as_SummarizedExperiment
+#'
+#' @docType methods
+#' @rdname as_SummarizedExperiment-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("as_SummarizedExperiment", "tidybulk", .as_SummarizedExperiment)
+
 
 #' Creates a `tt` object from a list of file names of BAM/SAM
 #'
