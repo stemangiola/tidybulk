@@ -3,9 +3,6 @@
 \name{distinct}
 \alias{distinct}
 \title{distinct}
-\usage{
-distinct(.data, ..., .keep_all = FALSE)
-}
 \arguments{
 \item{.data}{A tbl. (See dplyr)}
 

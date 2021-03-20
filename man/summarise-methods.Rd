@@ -3,13 +3,8 @@
 \name{summarise}
 \alias{summarise}
 \title{Summarise each group to fewer rows}
-\usage{
-summarise(.data, ...)
-}
 \arguments{
-\item{.data}{A data frame, data frame extension (e.g. a tibble), or a
-lazy data frame (e.g. from dbplyr or dtplyr). See *Methods*, below, for
-more details.}
+\item{.data}{A tbl. (See dplyr)}
 
 \item{...}{<[`tidy-eval`][dplyr_tidy_eval]> Name-value pairs of summary
   functions. The name will be the name of the variable in the result.
@@ -82,6 +77,7 @@ The following methods are currently available in loaded packages:
 # A summary applied to ungrouped tbl returns a single row
 mtcars \%>\%
   summarise(mean = mean(disp))
+
 
 }
 \seealso{
