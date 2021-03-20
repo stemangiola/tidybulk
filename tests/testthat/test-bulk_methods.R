@@ -1948,3 +1948,13 @@ test_that("bibliography",{
 		get_bibliography()
 	
 })
+
+test_that("as_SummarizedExperiment",{
+	input_df %>%
+	as_SummarizedExperiment(
+		.sample = a,
+		.transcript = b,
+		.abundance = c
+	) 
+	
+})
