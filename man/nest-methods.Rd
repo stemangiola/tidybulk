@@ -2,62 +2,15 @@
 % Please edit documentation in R/tidyr_methods.R
 \name{unnest}
 \alias{unnest}
-\alias{unnest.default}
-\alias{unnest.nested_tidybulk}
 \alias{nest}
-\alias{nest.default}
-\alias{nest.tidybulk}
 \title{unnest}
-\usage{
-unnest(
-  .data,
-  cols,
-  ...,
-  keep_empty = FALSE,
-  ptype = NULL,
-  names_sep = NULL,
-  names_repair = "check_unique"
-)
-
-\method{unnest}{default}(
-  .data,
-  cols,
-  ...,
-  keep_empty = FALSE,
-  ptype = NULL,
-  names_sep = NULL,
-  names_repair = "check_unique"
-)
-
-\method{unnest}{nested_tidybulk}(
-  .data,
-  cols,
-  ...,
-  keep_empty = FALSE,
-  ptype = NULL,
-  names_sep = NULL,
-  names_repair = "check_unique"
-)
-
-nest(.data, ...)
-
-\method{nest}{default}(.data, ...)
-
-\method{nest}{tidybulk}(.data, ...)
-}
 \arguments{
-\item{.data}{A tbl. (See tidyr)}
+\item{data}{A tbl. (See tidyr)}
 
 \item{cols}{<[`tidy-select`][tidyr_tidy_select]> Columns to unnest.
 If you `unnest()` multiple columns, parallel entries must be of
 compatible sizes, i.e. they're either equal or length 1 (following the
 standard tidyverse recycling rules).}
-
-\item{...}{Name-variable pairs of the form new_col = c(col1, col2, col3) (See tidyr)}
-
-\item{keep_empty}{See tidyr::unnest}
-
-\item{ptype}{See tidyr::unnest}
 
 \item{names_sep}{If `NULL`, the default, the names will be left
   as is. In `nest()`, inner names will come from the former outer names;
@@ -69,10 +22,26 @@ standard tidyverse recycling rules).}
   the new inner names will have the outer names (+ `names_sep`) automatically
   stripped. This makes `names_sep` roughly symmetric between nesting and unnesting.}
 
+\item{keep_empty}{See tidyr::unnest}
+
 \item{names_repair}{See tidyr::unnest}
+
+\item{ptype}{See tidyr::unnest}
+
+\item{.drop}{See tidyr::unnest}
+
+\item{.id}{tidyr::unnest}
+
+\item{.sep}{tidyr::unnest}
+
+\item{.preserve}{See tidyr::unnest}
+
+\item{.data}{A tbl. (See tidyr)}
+
+\item{...}{Name-variable pairs of the form new_col = c(col1, col2, col3) (See tidyr)}
 }
 \value{
-A tt object
+A tidySummarizedExperiment objector a tibble depending on input
 
 A tt object
 }

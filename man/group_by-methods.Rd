@@ -2,19 +2,12 @@
 % Please edit documentation in R/dplyr_methods.R
 \name{group_by}
 \alias{group_by}
-\alias{ungroup}
-\alias{ungroup.tidybulk}
 \title{Group by one or more variables}
-\usage{
-\method{ungroup}{tidybulk}(x, ...)
-}
 \arguments{
-\item{x}{A [tbl()]}
+\item{.data}{A tbl. (See dplyr)}
 
 \item{...}{In `group_by()`, variables or computations to group by.
 In `ungroup()`, variables to remove from the grouping.}
-
-\item{.data}{A tbl. (See dplyr)}
 
 \item{.add}{When `FALSE`, the default, `group_by()` will
   override existing groups. To add to the existing groups, use

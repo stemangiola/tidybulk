@@ -1,4 +1,3 @@
-#' @return A tibble
 #' Arrange rows by column values
 #'
 #'
@@ -34,7 +33,7 @@
 #' individual methods for extra arguments and differences in behaviour.
 #'
 #' The following methods are currently available in loaded packages:
-#' @export
+#' 
 #' @param .data A data frame, data frame extension (e.g. a tibble), or a
 #'   lazy data frame (e.g. from dbplyr or dtplyr). See *Methods*, below, for
 #'   more details.
@@ -42,6 +41,7 @@
 #'   variables. Use [desc()] to sort a variable in descending order.
 #' @param .by_group If TRUE, will sort first by grouping variable. Applies to grouped data frames only.
 #' 
+#' @return A tibble
 #' @family single table verbs
 #' 
 #' @rdname arrange-methods
@@ -51,12 +51,11 @@
 #' @examples
 #' `%>%` = magrittr::`%>%`
 #' arrange(mtcars, cyl, disp)
+#' 
+#' @export
 NULL
 
 #' @export
-#' 
-#' @name arrange
-#' @inheritParams arrange
 arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 
 	.data %>%
@@ -346,22 +345,6 @@ filter.tidybulk <- function (.data, ..., .preserve = FALSE)
 #'
 NULL
 
-#' @inheritParams group_by
-#' @name group_by
-#' 
-#' @param .data A tbl. (See dplyr)
-#' @param ... In `group_by()`, variables or computations to group by.
-#'   In `ungroup()`, variables to remove from the grouping.
-#' @param .add When `FALSE`, the default, `group_by()` will
-#'   override existing groups. To add to the existing groups, use
-#'   `.add = TRUE`.
-#'
-#'   This argument was previously called `add`, but that prevented
-#'   creating a new grouping variable called `add`, and conflicts with
-#'   our naming conventions.
-#' @param .drop When `.drop = TRUE`, empty groups are dropped. See [group_by_drop_default()] for
-#'   what the default value is for this argument.
-#'   
 #' @export
 group_by.tidybulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))
 {
@@ -379,11 +362,12 @@ group_by.tidybulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_d
 }
 
 
-#' @rdname group_by-methods
+#' @rdname ungroup-methods
 #' @name ungroup
 #' @importFrom dplyr ungroup
 #' 
 #' @param x A [tbl()]
+#' @param ... See dplyr
 #' 
 #' @export
 ungroup.tidybulk <- function (x, ...)
