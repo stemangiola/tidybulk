@@ -43,22 +43,10 @@
 #' unnest(data)
 #'
 #' @rdname tidyr-methods
+#' @name unnest
 #'
 #' @export
-unnest <- function (.data, cols, ..., keep_empty = FALSE, ptype = NULL, 
-										names_sep = NULL, names_repair = "check_unique")  {
-	UseMethod("unnest")
-}
-
-#' @export
-#' @rdname tidyr-methods
-unnest.default <-  function (.data, cols, ..., keep_empty = FALSE, ptype = NULL, 
-														 names_sep = NULL, names_repair = "check_unique")
-{
-	cols <- enquo(cols)
-	tidyr::unnest(.data, !!cols, ..., keep_empty = keep_empty, ptype = ptype, 
-								names_sep = names_sep, names_repair = names_repair)
-}
+NULL
 
 #' @export
 #' @rdname tidyr-methods
@@ -98,17 +86,11 @@ unnest.nested_tidybulk <- function (.data, cols, ..., keep_empty = FALSE, ptype 
 #'
 #' @rdname tidyr-methods
 #'
-#' @export
-nest <- function (.data, ...)  {
-	UseMethod("nest")
-}
-
-#' @export
 #' @rdname tidyr-methods
-nest.default <-  function (.data, ...)
-{
-	tidyr::nest(.data, ...)
-}
+#' @name nest
+#'
+#' @export
+NULL
 
 #' @export
 #' @rdname tidyr-methods
