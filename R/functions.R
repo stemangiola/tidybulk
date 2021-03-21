@@ -2682,14 +2682,6 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		# Reset column names
 		dplyr::rename(!!value_adjusted := !!.abundance)  %>%
 
-		# # Add filtering info
-		# right_join(
-		# 	df_for_combat %>%
-		# 		distinct(!!.transcript,!!.sample,
-		# 						 lowly_abundant),
-		# 	by = c(quo_name(.transcript), quo_name(.sample))
-		# )%>%
-
 		# Attach attributes
 		reattach_internals(.data) %>%
 		memorise_methods_used("sva")
