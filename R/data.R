@@ -63,3 +63,12 @@
 #'
 "vignette_manuscript_signature_tsne2"
 
+#' Needed for vignette breast_tcga_mini_SE
+#'
+#'
+"breast_tcga_mini_SE"
+
+#' Needed for vignette counts_SE
+#'
+#'
+"counts_SE"

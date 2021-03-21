@@ -3,11 +3,10 @@
 \name{rowwise}
 \alias{rowwise}
 \title{Group input by rows}
-\usage{
-rowwise(.data)
-}
 \arguments{
-\item{.data}{Input data frame.}
+\item{data}{Input data frame.}
+
+\item{...}{Variables to be preserved when calling summarise(). This is typically a set of variables whose combination uniquely identify each row. NB: unlike group_by() you can not create new variables here but instead you can select multiple variables with (e.g.) everything().}
 }
 \value{
 A `tbl`
@@ -33,4 +32,5 @@ effectively equivalent to [plyr::ldply()].
 `\%>\%` = magrittr::`\%>\%`
 df <- expand.grid(x = 1:3, y = 3:1)
 df_done <- df \%>\% rowwise() \%>\% do(i = seq(.$x, .$y))
+
 }

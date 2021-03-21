@@ -1870,6 +1870,82 @@ setMethod(
 	.test_differential_cellularity_se
 )
 
+# Set internal
+.test_stratification_cellularity_SE = 		function(.data,
+																							.formula,
+																							.sample = NULL,
+																							.transcript = NULL,
+																							.abundance = NULL,
+																							method = "cibersort",
+																							reference = X_cibersort,
+																							...)
+{
+	
+	# Validate formula
+	if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
+		stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
+
+	deconvoluted = 
+		.data %>%
+		
+		# Deconvolution
+		deconvolve_cellularity(
+			method=method,
+			prefix = sprintf("%s:", method),
+			reference = reference,
+			...
+		) 
+	
+	# Check if test is univaiable or multivariable
+	.formula %>%
+		{
+			# Parse formula
+			.my_formula =
+				format(.formula) %>% 
+				str_replace("([~ ])(\\.)", "\\1.high_cellularity") %>%
+				as.formula
+			
+			# Test
+			univariable_differential_tissue_stratification_SE(deconvoluted,
+																										 method,
+																										 .my_formula) %>%
+				
+				# Attach attributes
+				reattach_internals(.data) %>%
+				
+				# Add methods used
+				memorise_methods_used(c("survival", "boot", "survminer"))
+		} %>%
+		
+		# Eliminate prefix
+		mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+	
+}
+
+#' test_stratification_cellularity
+#' @inheritParams test_stratification_cellularity
+#'
+#' @docType methods
+#' @rdname test_stratification_cellularity-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_stratification_cellularity",
+					"SummarizedExperiment",
+					.test_stratification_cellularity_SE)
+
+#' test_stratification_cellularity
+#' @inheritParams test_stratification_cellularity
+#'
+#' @docType methods
+#' @rdname test_stratification_cellularity-methods
+#'
+#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_stratification_cellularity",
+					"RangedSummarizedExperiment",
+					.test_stratification_cellularity_SE)
+
+
+
 
 #' get_bibliography
 #' @inheritParams get_bibliography
@@ -1893,3 +1969,96 @@ setMethod("get_bibliography",
 					"RangedSummarizedExperiment",
 					.get_bibliography)
 
+#' describe_transcript
+#' @inheritParams describe_transcript
+#'
+#' @docType methods
+#' @rdname describe_transcript-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+#'
+.describe_transcript_SE = function(.data,
+															 .transcript = NULL) {
+	
+	# Check if package is installed, otherwise install
+	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("org.Hs.eg.db", ask = FALSE)
+	}
+	
+	# Check if package is installed, otherwise install
+	if (find.package("org.Mm.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing org.Mm.eg.db needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("org.Mm.eg.db", ask = FALSE)
+	}
+	
+	# Check if package is installed, otherwise install
+	if (find.package("AnnotationDbi", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("AnnotationDbi", ask = FALSE)
+	}
+	
+	description_df =
+		
+		
+		# Human
+		tryCatch(suppressMessages(AnnotationDbi::mapIds(
+			org.Hs.eg.db::org.Hs.eg.db,
+			keys = pull(.data, transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+			column = "GENENAME",
+			keytype = "SYMBOL",
+			multiVals = "first"
+		))  %>%
+			.[!is.na(.)], error = function(x){}) %>%
+		
+		# Mouse
+		c(
+			tryCatch(suppressMessages(AnnotationDbi::mapIds(
+				org.Mm.eg.db::org.Mm.eg.db,
+				keys = pull(.data, transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+				column = "GENENAME",
+				keytype = "SYMBOL",
+				multiVals = "first"
+			)) %>% .[!is.na(.)], error = function(x){})
+			
+		) %>%
+		
+		# Parse
+		unlist() %>%
+		#unique() %>%
+		enframe(name = "transcript", value = "description") %>%
+		
+		# Select just one per transcript
+		distinct() %>%
+		group_by(transcript) %>%
+		slice(1) %>%
+		ungroup()
+	
+	.data %>%
+		left_join(description_df, by = "transcript")
+}
+
+#' describe_transcript
+#' @inheritParams describe_transcript
+#'
+#' @docType methods
+#' @rdname describe_transcript-methods
+#'
+#' @return A `tbl` object including additional columns for transcript symbol
+setMethod("describe_transcript", "SummarizedExperiment", .describe_transcript_SE)
+
+#' describe_transcript
+#' @inheritParams describe_transcript
+#'
+#' @docType methods
+#' @rdname describe_transcript-methods
+#'
+#' @return A `tbl` object including additional columns for transcript symbol
+setMethod("describe_transcript", "RangedSummarizedExperiment", .describe_transcript_SE)

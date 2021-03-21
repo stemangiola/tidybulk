@@ -2,7 +2,14 @@
 % Please edit documentation in R/dplyr_methods.R
 \name{bind}
 \alias{bind}
+\alias{bind_rows}
+\alias{bind_cols}
 \title{Efficiently bind multiple data frames by row and column}
+\usage{
+bind_rows(..., .id = NULL)
+
+bind_cols(..., .id = NULL)
+}
 \arguments{
 \item{...}{Data frames to combine.
 

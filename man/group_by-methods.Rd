@@ -3,13 +3,8 @@
 \name{group_by}
 \alias{group_by}
 \title{Group by one or more variables}
-\usage{
-group_by(.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))
-}
 \arguments{
-\item{.data}{A data frame, data frame extension (e.g. a tibble), or a
-lazy data frame (e.g. from dbplyr or dtplyr). See *Methods*, below, for
-more details.}
+\item{.data}{A tbl. (See dplyr)}
 
 \item{...}{In `group_by()`, variables or computations to group by.
 In `ungroup()`, variables to remove from the grouping.}
