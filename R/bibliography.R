@@ -243,6 +243,13 @@ my_bibliography = function() {
     year = {2020},
     note = {R package version 0.4.8},
     url = {https://CRAN.R-project.org/package=survminer},
+  }"),
+	enrichplot = c("  @Manual{,
+    title = {enrichplot: Visualization of Functional Enrichment Result},
+    author = {Guangchuang Yu},
+    year = {2021},
+    note = {R package version 1.11.2.994},
+    url = {https://yulab-smu.top/biomedical-knowledge-mining-book/},
   }")
 )
 }

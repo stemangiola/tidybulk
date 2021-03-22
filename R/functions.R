@@ -3160,7 +3160,7 @@ fill_NA_using_value = function(.data,
 
 
 #' @importFrom stats p.adjust
-entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
+entrez_over_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 
 	# From the page
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
@@ -3193,7 +3193,11 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 		mutate(test =
 					 	map(
 					 		data,
-					 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
+					 		~ clusterProfiler::enricher(
+					 			my_entrez_rank, 
+					 			TERM2GENE=.x %>% select(gs_name, entrez_gene), 
+					 			pvalueCutoff = 1
+					 		) %>%
 					 			as_tibble
 					 	)) %>%
 		select(-data) %>%
@@ -3212,6 +3216,67 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 }
 
 
+#' @importFrom furrr future_imap
+#' @importFrom stats p.adjust
+entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
+	
+	# From the page
+	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
+	
+	# Check if package is installed, otherwise install
+	if (find.package("fastmatch", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing fastmatch needed for analyses")
+		install.packages("fastmatch", repos = "https://cloud.r-project.org")
+	}
+	
+	if (find.package("clusterProfiler", quiet = TRUE) %>% length %>% equals(0)) {
+		message("clusterProfiler not installed. Installing.")
+		BiocManager::install("clusterProfiler", ask = FALSE)
+	}
+	
+	if (find.package("enrichplot", quiet = TRUE) %>% length %>% equals(0)) {
+		message("enrichplot not installed. Installing.")
+		BiocManager::install("enrichplot", ask = FALSE)
+	}
+	
+	
+	# Get gene sets signatures
+	msigdbr::msigdbr(species = species) %>%
+		
+		# Filter specific gene_set if specified. This was introduced to speed up examples executionS
+		when(
+			!is.null(gene_set) ~ filter(., gs_cat %in% gene_set),
+			~ (.)
+		) %>%
+		
+		# Execute calculation
+		nest(data = -gs_cat) %>%
+		mutate(test =
+					 	map(
+					 		data,
+					 		~ {
+					 			fit = 
+					 				clusterProfiler::GSEA(
+					 				my_entrez_rank, 
+					 				TERM2GENE=.x %>% select(gs_name, entrez_gene),
+					 				pvalueCutoff = 1
+					 			) 
+					 			
+					 			# Add plots
+					 			as_tibble(fit) %>%
+					 				mutate(plot = future_imap(ID, ~ enrichplot::gseaplot2(fit, geneSetID = .y, title = .x)))
+					 		}
+					 	)) %>%
+		select(-data) %>%
+		unnest(test) %>%
+		
+		# Order
+		arrange(`p.adjust`) %>%
+		
+		# Add methods used
+		memorise_methods_used(c("clusterProfiler", "msigdbr", "enrichplot"))
+	
+}
 
 # gsea_de = function(.data,
 # 								 .formula,

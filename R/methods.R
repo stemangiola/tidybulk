@@ -3035,7 +3035,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
-		entrez_rank_to_gsea(species, gene_set = gene_set)
+		entrez_over_to_gsea(species, gene_set = gene_set)
 
 
 }
@@ -3072,6 +3072,153 @@ setMethod("test_gene_overrepresentation",
 setMethod("test_gene_overrepresentation",
 					"tidybulk",
 					.test_gene_overrepresentation)
+
+#' analyse gene over-representation with GSEA
+#'
+#' \lifecycle{maturing}
+#'
+#' @description test_gene_rank() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
+#'
+#' @importFrom rlang enquo
+#' @importFrom rlang quo_is_missing
+#' @importFrom magrittr "%>%"
+#'
+#' @name test_gene_rank
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#' @param .entrez The ENTREZ ID of the transcripts/genes
+#' @param .do_test A boolean column name symbol. It indicates the transcript to check
+#' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
+#' @param gene_set A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
+#'
+#' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
+#' This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
+#'
+#' Undelying method:
+#'  msigdbr::msigdbr(species = species) %>%#'
+#' 	nest(data = -gs_cat) %>%
+#' 	mutate(test =
+#' 			map(
+#' 				data,
+#' 				~ clusterProfiler::enricher(
+#' 					my_entrez_rank,
+#' 				 	TERM2GENE=.x %>% select(gs_name, entrez_gene),
+#' 					pvalueCutoff = 1
+#' 					) %>%	as_tibble
+#' 			))
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+#' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+#' df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+#'
+#' 	test_gene_rank(
+#' 		df_entrez,
+#' 		.sample = sample,
+#' 		.entrez = entrez,
+#' 		.do_test = do_test,
+#' 		species="Homo sapiens",
+#'    gene_set=c("C2")
+#' 	)
+#'
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#' @export
+#'
+#'
+setGeneric("test_gene_rank", function(.data,
+																			.entrez,
+																			.arrange,
+																			species,
+																			.sample = NULL,
+																			
+																			gene_set = NULL)
+	standardGeneric("test_gene_rank"))
+
+# Set internal
+.test_gene_rank = 		function(.data,
+														 .entrez,
+														 .arrange,
+														 species,
+														 .sample = NULL,
+														 
+														 gene_set = NULL)	{
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
+	
+	# Get column names
+	.sample = enquo(.sample)
+	.sample =  get_sample(.data, .sample)$.sample
+	.arrange = enquo(.arrange)
+	.entrez = enquo(.entrez)
+	
+	# Check if entrez is set
+	if(quo_is_missing(.entrez))
+		stop("tidybulk says: the .entrez parameter appears to no be set")
+	
+	# Check packages msigdbr
+	# Check if package is installed, otherwise install
+	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
+		message("msigdbr not installed. Installing.")
+		BiocManager::install("msigdbr", ask = FALSE)
+	}
+	
+	# Check is correct species name
+	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+	
+	.data %>%
+		pivot_transcript() %>%
+		arrange(!!.arrange) %>%
+		distinct(!!.entrez, !!.arrange) %>%
+		deframe() %>%
+		entrez_rank_to_gsea(species, gene_set = gene_set)
+	
+	
+}
+
+#' test_gene_rank
+#' @inheritParams test_gene_rank
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#'
+#' @return A `spec_tbl_df` object
+setMethod("test_gene_rank",
+					"spec_tbl_df",
+					.test_gene_rank)
+
+#' test_gene_rank
+#' @inheritParams test_gene_rank
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#'
+#' @return A `tbl_df` object
+setMethod("test_gene_rank",
+					"tbl_df",
+					.test_gene_rank)
+
+#' test_gene_rank
+#' @inheritParams test_gene_rank
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#'
+#' @return A `tidybulk` object
+setMethod("test_gene_rank",
+					"tidybulk",
+					.test_gene_rank)
 
 
 #' Extract sample-wise information

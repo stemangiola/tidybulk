@@ -1490,7 +1490,7 @@ setMethod("test_gene_enrichment",
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
-		entrez_rank_to_gsea(species, gene_set = gene_set)
+		entrez_over_to_gsea(species, gene_set = gene_set)
 	
 	
 }
@@ -1516,6 +1516,76 @@ setMethod("test_gene_overrepresentation",
 setMethod("test_gene_overrepresentation",
 					"RangedSummarizedExperiment",
 					.test_gene_overrepresentation_SE)
+
+
+# Set internal
+.test_gene_rank_SE = 		function(.data,
+																.entrez,
+																.arrange,
+																species,
+																.sample = NULL,
+																gene_set = NULL)	{
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
+	# Get column names
+	.arrange = enquo(.arrange)
+	.entrez = enquo(.entrez)
+	# 
+	# expr <- rlang::quo_get_expr(.do_test)
+	# env <- quo_get_env(x)
+	# 
+	
+	# Check if entrez is set
+	if(quo_is_missing(.entrez))
+		stop("tidybulk says: the .entrez parameter appears to no be set")
+	
+	# Check packages msigdbr
+	# Check if package is installed, otherwise install
+	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
+		message("msigdbr not installed. Installing.")
+		BiocManager::install("msigdbr", ask = FALSE)
+	}
+	
+	# Check is correct species name
+	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+	
+	.data %>%
+		pivot_transcript() %>%
+		arrange(!!.arrange) %>%
+		distinct(!!.entrez) %>%
+		mutate(idx = n():1) %>%
+		deframe() %>%
+		entrez_rank_to_gsea(species, gene_set = gene_set)
+	
+	
+}
+
+#' test_gene_rank
+#' @inheritParams test_gene_rank
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#'
+#' @return A `SummarizedExperiment` object
+setMethod("test_gene_rank",
+					"SummarizedExperiment",
+					.test_gene_rank_SE)
+
+#' test_gene_rank
+#' @inheritParams test_gene_rank
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#'
+#' @return A `RangedSummarizedExperiment` object
+setMethod("test_gene_rank",
+					"RangedSummarizedExperiment",
+					.test_gene_rank_SE)
+
+
 
 
 # Set internal
