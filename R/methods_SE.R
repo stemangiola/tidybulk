@@ -1486,8 +1486,7 @@ setMethod("test_gene_enrichment",
 		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
 	
 	.data %>%
-		rowData() %>%
-		as_tibble() %>%
+		pivot_transcript() %>%
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
