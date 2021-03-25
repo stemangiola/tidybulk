@@ -8,12 +8,12 @@
 \alias{test_gene_rank,tidybulk-method}
 \alias{test_gene_rank,SummarizedExperiment-method}
 \alias{test_gene_rank,RangedSummarizedExperiment-method}
-\title{analyse gene over-representation with GSEA}
+\title{analyse gene rank with GSEA}
 \usage{
 test_gene_rank(
   .data,
   .entrez,
-  .arrange,
+  .arrange_desc,
   species,
   .sample = NULL,
   gene_set = NULL
@@ -22,7 +22,7 @@ test_gene_rank(
 \S4method{test_gene_rank}{spec_tbl_df}(
   .data,
   .entrez,
-  .arrange,
+  .arrange_desc,
   species,
   .sample = NULL,
   gene_set = NULL
@@ -31,7 +31,7 @@ test_gene_rank(
 \S4method{test_gene_rank}{tbl_df}(
   .data,
   .entrez,
-  .arrange,
+  .arrange_desc,
   species,
   .sample = NULL,
   gene_set = NULL
@@ -40,7 +40,7 @@ test_gene_rank(
 \S4method{test_gene_rank}{tidybulk}(
   .data,
   .entrez,
-  .arrange,
+  .arrange_desc,
   species,
   .sample = NULL,
   gene_set = NULL
@@ -49,7 +49,7 @@ test_gene_rank(
 \S4method{test_gene_rank}{SummarizedExperiment}(
   .data,
   .entrez,
-  .arrange,
+  .arrange_desc,
   species,
   .sample = NULL,
   gene_set = NULL
@@ -58,7 +58,7 @@ test_gene_rank(
 \S4method{test_gene_rank}{RangedSummarizedExperiment}(
   .data,
   .entrez,
-  .arrange,
+  .arrange_desc,
   species,
   .sample = NULL,
   gene_set = NULL
@@ -69,13 +69,13 @@ test_gene_rank(
 
 \item{.entrez}{The ENTREZ ID of the transcripts/genes}
 
+\item{.arrange_desc}{A column name of the column to arrange in decreasing order}
+
 \item{species}{A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")}
 
 \item{.sample}{The name of the sample column}
 
 \item{gene_set}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
-
-\item{.do_test}{A boolean column name symbol. It indicates the transcript to check}
 }
 \value{
 A `tbl` object

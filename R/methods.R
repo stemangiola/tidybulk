@@ -3073,7 +3073,7 @@ setMethod("test_gene_overrepresentation",
 					"tidybulk",
 					.test_gene_overrepresentation)
 
-#' analyse gene over-representation with GSEA
+#' analyse gene rank with GSEA
 #'
 #' \lifecycle{maturing}
 #'
@@ -3088,7 +3088,7 @@ setMethod("test_gene_overrepresentation",
 #' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #' @param .sample The name of the sample column
 #' @param .entrez The ENTREZ ID of the transcripts/genes
-#' @param .do_test A boolean column name symbol. It indicates the transcript to check
+#' @param .arrange_desc A column name of the column to arrange in decreasing order
 #' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
 #' @param gene_set A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
 #'
@@ -3136,7 +3136,7 @@ setMethod("test_gene_overrepresentation",
 #'
 setGeneric("test_gene_rank", function(.data,
 																			.entrez,
-																			.arrange,
+																			.arrange_desc,
 																			species,
 																			.sample = NULL,
 																			
@@ -3146,7 +3146,7 @@ setGeneric("test_gene_rank", function(.data,
 # Set internal
 .test_gene_rank = 		function(.data,
 														 .entrez,
-														 .arrange,
+														 .arrange_desc,
 														 species,
 														 .sample = NULL,
 														 
@@ -3159,7 +3159,7 @@ setGeneric("test_gene_rank", function(.data,
 	# Get column names
 	.sample = enquo(.sample)
 	.sample =  get_sample(.data, .sample)$.sample
-	.arrange = enquo(.arrange)
+	.arrange_desc = enquo(.arrange_desc)
 	.entrez = enquo(.entrez)
 	
 	# Check if entrez is set
@@ -3179,8 +3179,8 @@ setGeneric("test_gene_rank", function(.data,
 	
 	.data %>%
 		pivot_transcript() %>%
-		arrange(!!.arrange) %>%
-		distinct(!!.entrez, !!.arrange) %>%
+		arrange(desc(!!.arrange_desc)) %>%
+		select(!!.entrez, !!.arrange_desc) %>%
 		deframe() %>%
 		entrez_rank_to_gsea(species, gene_set = gene_set)
 	

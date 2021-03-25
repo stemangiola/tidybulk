@@ -1521,7 +1521,7 @@ setMethod("test_gene_overrepresentation",
 # Set internal
 .test_gene_rank_SE = 		function(.data,
 																.entrez,
-																.arrange,
+																.arrange_desc,
 																species,
 																.sample = NULL,
 																gene_set = NULL)	{
@@ -1530,7 +1530,7 @@ setMethod("test_gene_overrepresentation",
 	. = NULL
 	
 	# Get column names
-	.arrange = enquo(.arrange)
+	.arrange_desc = enquo(.arrange_desc)
 	.entrez = enquo(.entrez)
 	# 
 	# expr <- rlang::quo_get_expr(.do_test)
@@ -1554,9 +1554,8 @@ setMethod("test_gene_overrepresentation",
 	
 	.data %>%
 		pivot_transcript() %>%
-		arrange(!!.arrange) %>%
-		distinct(!!.entrez) %>%
-		mutate(idx = n():1) %>%
+		arrange(desc(!!.arrange_desc)) %>%
+		select(!!.entrez, !!.arrange_desc) %>%
 		deframe() %>%
 		entrez_rank_to_gsea(species, gene_set = gene_set)
 	

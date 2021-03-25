@@ -3217,7 +3217,11 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 
 
 #' @importFrom furrr future_imap
+#' @importFrom furrr future_map
+#' @importFrom tibble rowid_to_column
 #' @importFrom stats p.adjust
+#' @importFrom ggplot2 fortify
+#' 
 entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	
 	# From the page
@@ -3251,27 +3255,32 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 		
 		# Execute calculation
 		nest(data = -gs_cat) %>%
-		mutate(test =
-					 	map(
+		mutate(fit =
+					 	future_map(
 					 		data,
-					 		~ {
-					 			fit = 
-					 				clusterProfiler::GSEA(
+					 		~ 	clusterProfiler::GSEA(
 					 				my_entrez_rank, 
 					 				TERM2GENE=.x %>% select(gs_name, entrez_gene),
 					 				pvalueCutoff = 1
-					 			) 
-					 			
-					 			# Add plots
-					 			as_tibble(fit) %>%
-					 				mutate(plot = future_imap(ID, ~ enrichplot::gseaplot2(fit, geneSetID = .y, title = .x)))
-					 		}
+					 		) 
+					  
+					 	)) %>%
+			mutate(test =
+					 	map(
+					 		fit,
+					 		~ .x %>%
+					 			fortify(showCategory=Inf) %>%
+					 			as_tibble() %>%
+					 			rowid_to_column(var = "idx_for_plotting")
+					 			#%>%
+					 			#	mutate(plot = future_imap(ID, ~ enrichplot::gseaplot2(fit, geneSetID = .y, title = .x)))
+					 	
 					 	)) %>%
 		select(-data) %>%
-		unnest(test) %>%
+		#unnest(test) %>%
 		
 		# Order
-		arrange(`p.adjust`) %>%
+		#arrange(`p.adjust`) %>%
 		
 		# Add methods used
 		memorise_methods_used(c("clusterProfiler", "msigdbr", "enrichplot"))
