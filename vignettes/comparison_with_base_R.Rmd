@@ -517,6 +517,7 @@ tt.norm.MDS %>%
   keep_variable( .abundance = count_scaled, top = 500) %>%
 
   # create heatmap
+	as_tibble() %>%
   heatmap(sample, transcript, count_scaled, transform = log1p) %>%
 	add_tile(`Cell type`) 
 ```

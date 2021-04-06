@@ -206,6 +206,7 @@ tt_test %>%
     filter(FDR < 0.05 & abs(logFC) > 2) %>%
 
     # Plot
+		as_tibble() %>%
     heatmap( transcript, sample, count_scaled_adjusted) %>% 
     add_tile(condition) %>%
     add_tile(type)

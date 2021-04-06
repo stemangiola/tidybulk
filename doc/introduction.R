@@ -47,9 +47,6 @@ se.norm.batch =
 	tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk::counts,  sample ,  transcript, count) %>%
 	scale_abundance()
 
-## -----------------------------------------------------------------------------
-tt = counts_mini %>% tidybulk(sample, transcript, count)
-
 ## ----aggregate, cache=TRUE----------------------------------------------------
 tt.aggr =  tt %>% aggregate_duplicates( 	aggregation_function = sum )
 
@@ -76,9 +73,6 @@ tt.norm %>%
 se.norm =  se.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance(method="TMM")
 
 se.norm
-
-## ----filter variable, cache=TRUE----------------------------------------------
-tt.norm.variable = tt.norm %>% keep_variable()
 
 ## ----mds, cache=TRUE----------------------------------------------------------
 tt.norm.MDS =  tt.norm %>% reduce_dimensions(.abundance = count_scaled, method="MDS", .dims = 3)
