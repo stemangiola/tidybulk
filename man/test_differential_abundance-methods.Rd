@@ -23,6 +23,7 @@ test_differential_abundance(
   omit_contrast_in_colnames = FALSE,
   prefix = "",
   action = "add",
+  ...,
   significance_threshold = NULL,
   fill_missing_values = NULL
 )
@@ -40,6 +41,7 @@ test_differential_abundance(
   omit_contrast_in_colnames = FALSE,
   prefix = "",
   action = "add",
+  ...,
   significance_threshold = NULL,
   fill_missing_values = NULL
 )
@@ -57,6 +59,7 @@ test_differential_abundance(
   omit_contrast_in_colnames = FALSE,
   prefix = "",
   action = "add",
+  ...,
   significance_threshold = NULL,
   fill_missing_values = NULL
 )
@@ -74,6 +77,7 @@ test_differential_abundance(
   omit_contrast_in_colnames = FALSE,
   prefix = "",
   action = "add",
+  ...,
   significance_threshold = NULL,
   fill_missing_values = NULL
 )
@@ -81,23 +85,37 @@ test_differential_abundance(
 \S4method{test_differential_abundance}{SummarizedExperiment}(
   .data,
   .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  prefix = ""
+  prefix = "",
+  action = "add",
+  ...,
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 
 \S4method{test_differential_abundance}{RangedSummarizedExperiment}(
   .data,
   .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
   .contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  prefix = ""
+  prefix = "",
+  action = "add",
+  ...,
+  significance_threshold = NULL,
+  fill_missing_values = NULL
 )
 }
 \arguments{
@@ -124,6 +142,8 @@ test_differential_abundance(
 \item{prefix}{A character string. The prefix you would like to add to the result columns. It is useful if you want to compare several methods.}
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+
+\item{...}{Further arguments passed to some of the internal functions. Currently, it is needed just for internal debug.}
 
 \item{significance_threshold}{DEPRECATED - A real between 0 and 1 (usually 0.05).}
 
