@@ -151,20 +151,6 @@ get_reduced_dimensions_MDS_bulk_SE <-
 			components_list %>%
 			map(
 				~ .data %>%
-					
-					distinct(!!.feature,!!.element,!!.abundance) %>%
-					
-					# Check if log transform is needed
-					ifelse_pipe(log_transform,
-											~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
-					
-					# Stop any column is not if not numeric or integer
-					ifelse_pipe(
-						(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
-						~ stop(".abundance must be numerical or integer")
-					) %>%
-					spread(!!.element,!!.abundance) %>%
-					as_matrix(rownames = !!.feature, do_check = FALSE) %>%
 					limma::plotMDS(dim.plot = .x, plot = FALSE, top = top)
 			) 
 		
@@ -177,18 +163,19 @@ get_reduced_dimensions_MDS_bulk_SE <-
 					~ 
 						tibble(rownames(.x$distance.matrix.squared), .x$x, .x$y) %>%
 						rename(
-							!!.element := `rownames(.x$distance.matrix.squared)`,
+							sample := `rownames(.x$distance.matrix.squared)`,
 							!!as.symbol(.y[1]) := `.x$x`,
 							!!as.symbol(.y[2]) := `.x$y`
 						) %>%
-						gather(Component, `Component value`,-!!.element)
+						gather(Component, `Component value`,-sample)
 					
 				)  %>%
 				distinct() %>%
 				spread(Component, `Component value`) %>%
 				setNames(c((.) %>% select(1) %>% colnames(),
 									 paste0("Dim", (.) %>% select(-1) %>% colnames())
-				)) 
+				)) %>%
+				select(-sample)
 		)
 		
 		
@@ -293,7 +280,7 @@ we suggest to partition the dataset for sample clusters.
 				# Parse the PCA results to a tibble
 				x %>%
 				as_tibble(rownames = "sample") %>%
-				select(sample, sprintf("PC%s", components)) 
+				select(sprintf("PC%s", components)) 
 		)
 		
 		
@@ -376,7 +363,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 				
 				# add element name
 				dplyr::mutate(sample = !!.data %>% colnames) %>%
-				select(sample, everything()) 
+				select(-sample) 
 		)
 		
 	}
