@@ -1523,14 +1523,23 @@ get_reduced_dimensions_MDS_bulk <-
 		
 		map2_dfr(
 			mds_object, components_list,
-			~ 
-				tibble(rownames(.x$distance.matrix.squared), .x$x, .x$y) %>%
-				rename(
-					!!.element := `rownames(.x$distance.matrix.squared)`,
-					!!as.symbol(.y[1]) := `.x$x`,
-					!!as.symbol(.y[2]) := `.x$y`
-				) %>%
-				gather(Component, `Component value`,-!!.element)
+			~ 	{
+				# Change of function from Bioconductor 3_13 of plotMDS
+				my_rownames = .x %>% when(
+					"distance.matrix.squared" %in% names(.x) ~ .x$distance.matrix.squared,
+					~ .x$distance.matrix
+				) %>% 
+					rownames()
+				
+				tibble(my_rownames, .x$x, .x$y) %>%
+					rename(
+						!!.element := my_rownames,
+						!!as.symbol(.y[1]) := `.x$x`,
+						!!as.symbol(.y[2]) := `.x$y`
+					) %>%
+					gather(Component, `Component value`,-!!.element)
+				
+				}
 			
 		)  %>%
 			distinct() %>%
