@@ -141,20 +141,62 @@ get_reduced_dimensions_MDS_bulk_SE <-
 		# Get components from dims
 		components = 1:.dims
 		
-		mds_object = limma::plotMDS(.data, ndim = .dims, plot = FALSE, top = top)
+		
+		# Convert components to components list
+		if((length(components) %% 2) != 0 ) components = components %>% append(components[1])
+		components_list = split(components, ceiling(seq_along(components)/2))
+		
+		# Loop over components list and calculate MDS. (I have to make this process more elegant)
+		mds_object =
+			components_list %>%
+			map(
+				~ .data %>%
+					
+					distinct(!!.feature,!!.element,!!.abundance) %>%
+					
+					# Check if log transform is needed
+					ifelse_pipe(log_transform,
+											~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
+					
+					# Stop any column is not if not numeric or integer
+					ifelse_pipe(
+						(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+						~ stop(".abundance must be numerical or integer")
+					) %>%
+					spread(!!.element,!!.abundance) %>%
+					as_matrix(rownames = !!.feature, do_check = FALSE) %>%
+					limma::plotMDS(dim.plot = .x, plot = FALSE, top = top)
+			) 
 		
 		# Return
 		list(
 			raw_result = mds_object,
 			result = 
-				# Parse results
-				mds_object %$%	cmdscale.out %>%
-				as.data.frame %>%
-				setNames(c(sprintf("Dim%s", 1:.dims))) 
+				map2_dfr(
+					mds_object, components_list,
+					~ 
+						tibble(rownames(.x$distance.matrix.squared), .x$x, .x$y) %>%
+						rename(
+							!!.element := `rownames(.x$distance.matrix.squared)`,
+							!!as.symbol(.y[1]) := `.x$x`,
+							!!as.symbol(.y[2]) := `.x$y`
+						) %>%
+						gather(Component, `Component value`,-!!.element)
+					
+				)  %>%
+				distinct() %>%
+				spread(Component, `Component value`) %>%
+				setNames(c((.) %>% select(1) %>% colnames(),
+									 paste0("Dim", (.) %>% select(-1) %>% colnames())
+				)) 
 		)
 		
 		
 	}
+
+
+
+
 
 #' Get principal component information to a tibble using PCA
 #'

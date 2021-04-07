@@ -1109,15 +1109,15 @@ setMethod("keep_variable",
 																 .sample = NULL,
 																 .transcript = NULL,
 																 .abundance = NULL,
-														 factor_of_interest = NULL,
-														 minimum_counts = 10,
-														 minimum_proportion = 0.7)
+																 factor_of_interest = NULL,
+																 minimum_counts = 10,
+																 minimum_proportion = 0.7)
 {
 	
 	
 	factor_of_interest = enquo(factor_of_interest)
 	
-
+	
 	# Check factor_of_interest
 	if(
 		!is.null(factor_of_interest) &&
@@ -1125,48 +1125,56 @@ setMethod("keep_variable",
 		(quo_name(factor_of_interest) %in% colnames(colData(.data)) %>% not())
 	)
 		stop(sprintf("tidybulk says: the column %s is not present in colData", quo_name(factor_of_interest)))
-
+	
 	if (minimum_counts < 0)
 		stop("The parameter minimum_counts must be > 0")
 	
 	if (minimum_proportion < 0 |	minimum_proportion > 1)
 		stop("The parameter minimum_proportion must be between 0 and 1")
-
+	
 	# If column is present use this instead of doing more work
 	if(".abundant" %in% colnames(colData(.data))){
 		message("tidybulk says: the column .abundant already exists in colData. Nothing was done")
-
+		
 		# Return
 		return(.data)
 	}
-
-
+	
+	
 	string_factor_of_interest =
-
+		
 		factor_of_interest %>%
 		when(
-				quo_is_symbol(factor_of_interest) &&
+			quo_is_symbol(factor_of_interest) &&
 				(
 					colData(.data)[, quo_name(factor_of_interest)] %>%
-					class %in% c("numeric", "integer", "double")) ~ 
+						class %in% c("numeric", "integer", "double")) ~ 
 				{
 					message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
 					NULL
 				},
-				quo_is_symbol(factor_of_interest) ~
+			quo_is_symbol(factor_of_interest) ~
 				colData(.data)[, quo_name(factor_of_interest)],
 			~ NULL
 		)
-
+	
+	# Check if package is installed, otherwise install
+	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing edgeR needed for analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("edgeR", ask = FALSE)
+	}
+	
 	# Get gene to exclude
 	gene_to_exclude =
 		.data %>%
-
+		
 		# Extract assay
 		assays() %>%
 		as.list() %>%
 		.[[1]] %>%
-
+		
 		# Call edgeR
 		edgeR::filterByExpr(
 			min.count = minimum_counts,
@@ -1176,13 +1184,14 @@ setMethod("keep_variable",
 		not() %>%
 		which %>%
 		names
-
+	
 	rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) %>% not()
-
+	
 	# Return
 	.data
 	
 }
+
 
 #' identify_abundant
 #' @inheritParams identify_abundant

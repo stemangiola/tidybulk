@@ -1485,44 +1485,65 @@ get_reduced_dimensions_MDS_bulk <-
 					 log_transform = TRUE) {
 		# Comply with CRAN NOTES
 		. = NULL
-
+		
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
 		.abundance = enquo(.abundance)
-
+		
 		# Get components from dims
 		components = 1:.dims
-
+		
+		
+		# Convert components to components list
+		if((length(components) %% 2) != 0 ) components = components %>% append(components[1])
+		components_list = split(components, ceiling(seq_along(components)/2))
+		
+		# Loop over components list and calculate MDS. (I have to make this process more elegant)
 		mds_object =
-			.data %>%
-
-			distinct(!!.feature,!!.element,!!.abundance) %>%
-
-			# Check if log transform is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
-
-			# Stop any column is not if not numeric or integer
-			ifelse_pipe(
-				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% not() %>% any(),
-				~ stop("tidybulk says: .abundance must be numerical or integer")
-			) %>%
-			spread(!!.element,!!.abundance) %>%
-			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
-			limma::plotMDS(ndim = .dims, plot = FALSE, top = top)
-
-		# Parse results
-		mds_object %$%	cmdscale.out %>%
-			as.data.frame %>%
-			as_tibble(rownames = quo_name(.element)) %>%
-			setNames(c(quo_name(.element), sprintf("Dim%s", 1:.dims))) %>%
-
-
+			components_list %>%
+			map(
+				~ .data %>%
+					
+					distinct(!!.feature,!!.element,!!.abundance) %>%
+					
+					# Check if log transform is needed
+					ifelse_pipe(log_transform,
+											~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
+					
+					# Stop any column is not if not numeric or integer
+					ifelse_pipe(
+						(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+						~ stop(".abundance must be numerical or integer")
+					) %>%
+					spread(!!.element,!!.abundance) %>%
+					as_matrix(rownames = !!.feature, do_check = FALSE) %>%
+					limma::plotMDS(dim.plot = .x, plot = FALSE, top = top)
+			) 
+		
+		map2_dfr(
+			mds_object, components_list,
+			~ 
+				tibble(rownames(.x$distance.matrix.squared), .x$x, .x$y) %>%
+				rename(
+					!!.element := `rownames(.x$distance.matrix.squared)`,
+					!!as.symbol(.y[1]) := `.x$x`,
+					!!as.symbol(.y[2]) := `.x$y`
+				) %>%
+				gather(Component, `Component value`,-!!.element)
+			
+		)  %>%
+			distinct() %>%
+			spread(Component, `Component value`) %>%
+			setNames(c((.) %>% select(1) %>% colnames(),
+								 paste0("Dim", (.) %>% select(-1) %>% colnames())
+			)) %>%
+			
+			
 			# Attach attributes
 			reattach_internals(.data) %>%
 			memorise_methods_used("limma") %>%
-
+			
 			# Add raw object
 			attach_to_internals(mds_object, "MDS") %>%
 			# Communicate the attribute added
@@ -1530,7 +1551,6 @@ get_reduced_dimensions_MDS_bulk <-
 				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$MDS`")
 				(.)
 			}
-
 	}
 
 #' Get principal component information to a tibble using PCA
