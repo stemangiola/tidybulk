@@ -1099,7 +1099,7 @@ test_that("Only reduced dimensions MDS - no object",{
 		3
 	)
 
-	expect_equal(	class(attr(res, "internals")$MDS)[1], 	"MDS"  )
+	expect_equal(	class(attr(res, "internals")$MDS[[1]])[1], 	"MDS"  )
 
 	# Duplicate genes/samples
 	expect_error(
@@ -1140,7 +1140,7 @@ test_that("Get reduced dimensions MDS - no object",{
 		nrow(res),
 		5
 	)
-	expect_equal(	class(attr(res, "internals")$MDS)[1], 	"MDS"  )
+	expect_equal(	class(attr(res, "internals")$MDS[[1]])[1], 	"MDS"  )
 })
 
 test_that("Add reduced dimensions MDS - no object",{
@@ -1166,7 +1166,7 @@ test_that("Add reduced dimensions MDS - no object",{
 		9
 	)
 
-	expect_equal(	class(attr(res, "internals")$MDS)[1], 	"MDS"  )
+	expect_equal(	class(attr(res, "internals")$MDS[[1]])[1], 	"MDS"  )
 })
 
 test_that("Only reduced dimensions PCA - no object",{

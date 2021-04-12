@@ -141,20 +141,60 @@ get_reduced_dimensions_MDS_bulk_SE <-
 		# Get components from dims
 		components = 1:.dims
 		
-		mds_object = limma::plotMDS(.data, ndim = .dims, plot = FALSE, top = top)
+		
+		# Convert components to components list
+		if((length(components) %% 2) != 0 ) components = components %>% append(components[1])
+		components_list = split(components, ceiling(seq_along(components)/2))
+		
+		# Loop over components list and calculate MDS. (I have to make this process more elegant)
+		mds_object =
+			components_list %>%
+			map(
+				~ .data %>%
+					limma::plotMDS(dim.plot = .x, plot = FALSE, top = top)
+			) 
 		
 		# Return
 		list(
 			raw_result = mds_object,
 			result = 
-				# Parse results
-				mds_object %$%	cmdscale.out %>%
-				as.data.frame %>%
-				setNames(c(sprintf("Dim%s", 1:.dims))) 
+				map2_dfr(
+					mds_object, components_list,
+					~ {
+						
+						# Change of function from Bioconductor 3_13 of plotMDS
+						my_rownames = .x %>% when(
+							"distance.matrix.squared" %in% names(.x) ~ .x$distance.matrix.squared,
+							~ .x$distance.matrix
+						) %>% 
+							rownames()
+						
+						tibble(my_rownames, .x$x, .x$y) %>%
+							rename(
+								sample := my_rownames,
+								!!as.symbol(.y[1]) := `.x$x`,
+								!!as.symbol(.y[2]) := `.x$y`
+							) %>%
+							gather(Component, `Component value`,-sample)
+						
+					}
+						
+					
+				)  %>%
+				distinct() %>%
+				spread(Component, `Component value`) %>%
+				setNames(c((.) %>% select(1) %>% colnames(),
+									 paste0("Dim", (.) %>% select(-1) %>% colnames())
+				)) %>%
+				select(-sample)
 		)
 		
 		
 	}
+
+
+
+
 
 #' Get principal component information to a tibble using PCA
 #'
@@ -251,7 +291,7 @@ we suggest to partition the dataset for sample clusters.
 				# Parse the PCA results to a tibble
 				x %>%
 				as_tibble(rownames = "sample") %>%
-				select(sample, sprintf("PC%s", components)) 
+				select(sprintf("PC%s", components)) 
 		)
 		
 		
@@ -334,7 +374,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 				
 				# add element name
 				dplyr::mutate(sample = !!.data %>% colnames) %>%
-				select(sample, everything()) 
+				select(-sample) 
 		)
 		
 	}

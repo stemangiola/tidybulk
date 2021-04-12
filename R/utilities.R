@@ -1115,6 +1115,14 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 
 	factor_of_interest = enquo(factor_of_interest)
 
+	# Check if package is installed, otherwise install
+	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing edgeR needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("edgeR", ask = FALSE)
+	}
+	
 	# Check if factor_of_interest is continuous and exists
 	string_factor_of_interest =
 
