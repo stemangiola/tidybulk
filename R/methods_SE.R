@@ -323,6 +323,7 @@ setMethod("cluster_elements",
 			top = top,
 			of_samples = of_samples,
 			log_transform = log_transform,
+			scale=scale,
 			...
 		)
 	
