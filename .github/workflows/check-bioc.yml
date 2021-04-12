@@ -140,10 +140,6 @@ jobs:
           ## To fix x11/cairo error with tidyHeatmap/Complexheatmap here https://github.com/stemangiola/tidybulk/runs/1388237421?check_suite_focus=true#step:14:2134
           ## Suggested here https://stackoverflow.com/questions/63648591/how-to-install-x11-before-testing-with-github-actions-for-macos
           brew install --cask xquartz 
-          
-        run: |
-
-        shell: Rscript {0}
 
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
