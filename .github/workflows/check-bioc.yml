@@ -140,6 +140,10 @@ jobs:
           ## To fix x11/cairo error with tidyHeatmap/Complexheatmap here https://github.com/stemangiola/tidybulk/runs/1388237421?check_suite_focus=true#step:14:2134
           ## Suggested here https://stackoverflow.com/questions/63648591/how-to-install-x11-before-testing-with-github-actions-for-macos
           brew install --cask xquartz 
+          
+        run: |
+
+        shell: Rscript {0}
 
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
@@ -156,6 +160,13 @@ jobs:
       - name: Set BiocVersion
         run: |
           BiocManager::install(version = "${{ matrix.config.bioc }}", ask = FALSE)
+        shell: Rscript {0}
+        
+      ## 12th April 2021 No Seurat binary available for Mac currently so install from source
+      - name: Install Seurat for macOS-latest
+        if: matrix.config.os == 'macOS-latest'
+        run: |
+          BiocManager::install("Seurat", type="source")
         shell: Rscript {0}
 
       - name: Install dependencies pass 1
