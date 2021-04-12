@@ -620,7 +620,8 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 																											 test_above_log2_fold_change = NULL,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
-																											 prefix = "") {
+																											 prefix = "",
+																											 ...) {
 	
 	# Check if omit_contrast_in_colnames is correctly setup
 	if(omit_contrast_in_colnames & length(.contrasts) > 1){

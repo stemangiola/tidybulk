@@ -289,6 +289,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @param test_above_log2_fold_change A positive real value. At the moment this works just for edgeR methods, and use the `treat` function, which test the that the difference in abundance is bigger than this parameter rather than zero \url{https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat}.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param .sample_total_read_count
 #'
 #' @return A tibble with edgeR results
 #'
@@ -302,12 +303,14 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 test_above_log2_fold_change = NULL,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
-																											 prefix = "") {
+																											 prefix = "",
+																											 .sample_total_read_count = NULL) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-
+	.sample_total_read_count = enquo(.sample_total_read_count)
+	
 	# Check if omit_contrast_in_colnames is correctly setup
 	if(omit_contrast_in_colnames & length(.contrasts) > 1){
 		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
@@ -400,6 +403,26 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		edgeR::DGEList(counts = .) %>%
 		
+		# Override lib.size if imposed
+		# This is useful in case you are analysing a small amount of genes, 
+		# for which the overall lib.size cannot be calculated
+		when(
+			!quo_is_null(.sample_total_read_count) ~ {
+				
+				# New library size dataset
+				new_lib_size = .data %>% pivot_sample(!!.sample) %>% select(!!.sample, !!.sample_total_read_count)
+				
+				x = (.)
+				x$samples$lib.size = 
+					new_lib_size %>%
+					slice(match(rownames(x$samples), !!.sample)) %>%
+					pull(!!.sample_total_read_count)
+				
+				x
+			},
+			~ (.)
+		) %>%
+		
 		# Scale data if method is not "none"
 		when(
 			scaling_method != "none" ~ (.) %>% edgeR::calcNormFactors(method = scaling_method),
@@ -413,7 +436,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			tolower(method) == "edger_robust_likelihood_ratio" ~ (.) %>% edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
 		)
 
-
+ 
 	edgeR_object %>%
 
 		# If I have multiple .contrasts merge the results

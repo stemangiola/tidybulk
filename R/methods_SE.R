@@ -924,7 +924,8 @@ setMethod(
 																					 test_above_log2_fold_change = NULL,
 																					 scaling_method = "TMM",
 																					 omit_contrast_in_colnames = FALSE,
-																					 prefix = "")
+																					 prefix = "",
+																					 ...)
 {
 
 	# Clearly state what counts are used
@@ -959,7 +960,8 @@ such as batch effects (if applicable) in the formula.
 					test_above_log2_fold_change = test_above_log2_fold_change,
 					scaling_method = scaling_method,
 					omit_contrast_in_colnames = omit_contrast_in_colnames,
-					prefix = prefix
+					prefix = prefix,
+					...
 				),
 			
 			# Voom

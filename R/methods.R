@@ -2046,7 +2046,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param significance_threshold DEPRECATED - A real between 0 and 1 (usually 0.05).
 #' @param fill_missing_values DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
-#'
+#' @param ... Further arguments passed to some of the internal functions. Currently, it is needed just for internal debug.
 #'
 #'
 #' @details This function provides the option to use edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}, limma-voom \url{https://doi.org/10.1186/gb-2014-15-2-r29}, limma_voom_sample_weights \url{https://doi.org/10.1093/nar/gkv412} or  DESeq2 \url{https://doi.org/10.1186/s13059-014-0550-8} to perform the testing.
@@ -2147,6 +2147,7 @@ setGeneric("test_differential_abundance", function(.data,
 																									 omit_contrast_in_colnames = FALSE,
 																									 prefix = "",
 																									 action = "add",
+																									 ...,
 
 																									 # DEPRECATED
 																									 significance_threshold = NULL,
@@ -2168,6 +2169,7 @@ setGeneric("test_differential_abundance", function(.data,
 																					prefix = "",
 
 																					action = "add",
+																					...,
 
 																					# DEPRECATED
 																					significance_threshold = NULL,
@@ -2244,7 +2246,8 @@ such as batch effects (if applicable) in the formula.
 				test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
-				prefix = prefix
+				prefix = prefix,
+				...
 			),
 
 			# Voom

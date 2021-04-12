@@ -15,7 +15,8 @@ get_differential_transcript_abundance_bulk(
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  prefix = ""
+  prefix = "",
+  .sample_total_read_count = NULL
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ get_differential_transcript_abundance_bulk(
 \item{scaling_method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
 \item{omit_contrast_in_colnames}{If just one contrast is specified you can choose to omit the contrast label in the colnames.}
+
+\item{.sample_total_read_count}{}
 }
 \value{
 A tibble with edgeR results
