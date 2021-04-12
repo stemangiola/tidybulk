@@ -2860,7 +2860,7 @@ setGeneric("test_gene_enrichment", function(.data,
 	# Validate data frame
 	if(do_validate()) {
 	validation(.data, !!.sample, !!.entrez, !!.abundance)
-	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
+	warning_if_data_is_not_rectangular(.data, !!.sample, !!.entrez, !!.abundance)
 	}
 
 	.data %>%
