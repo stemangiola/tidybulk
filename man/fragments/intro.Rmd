@@ -140,9 +140,9 @@ We may want to reduce the dimensions of our data, for example using PCA or MDS a
 <div class="column-left">
 TidyTranscriptomics
 ```{r mds}
-# counts_SE.norm.MDS =
-#   counts_SE.norm %>%
-#   reduce_dimensions(method="MDS", .dims = 6)
+counts_SE.norm.MDS =
+  counts_SE.norm %>%
+  reduce_dimensions(method="MDS", .dims = 6)
 ```
 </div>
 <div class="column-right">
@@ -167,13 +167,12 @@ cmds$cell_type = tidybulk::counts[
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.
 
-# ```{r plot_mds}
-# counts_SE.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
-# 
-# counts_SE.norm.MDS %>%
-# 	pivot_sample() %>%
-#   GGally::ggpairs(columns = 10:15, ggplot2::aes(colour=`Cell.type`))
-# 
+```{r plot_mds}
+counts_SE.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
+ 
+counts_SE.norm.MDS %>%
+  pivot_sample() %>%
+  GGally::ggpairs(columns = 10:15, ggplot2::aes(colour=`Cell.type`))
 
 ```
 
@@ -265,9 +264,9 @@ We may want to rotate the reduced dimensions (or any two numeric columns really)
 <div class="column-left">
 TidyTranscriptomics
 ```{r rotate}
-#counts_SE.norm.MDS.rotated =
-#  counts_SE.norm.MDS %>%
-#	rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, action="get")
+counts_SE.norm.MDS.rotated =
+  counts_SE.norm.MDS %>%
+  rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, action="get")
 ```
 </div>
 <div class="column-right">
@@ -293,21 +292,21 @@ mds_r$cell_type = counts[
 On the x and y axes axis we have the first two reduced dimensions, data is coloured by cell type.
 
 ```{r plot_rotate_1}
-#counts_SE.norm.MDS.rotated %>%
-#  ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type` )) +
-#  geom_point() +
-#  my_theme
+counts_SE.norm.MDS.rotated %>%
+  ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type` )) +
+  geom_point() +
+  my_theme
 ```
 
 **Rotated**
 On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by cell type.
 
 ```{r plot_rotate_2}
-#counts_SE.norm.MDS.rotated %>%
-#	pivot_sample() %>%
-#	ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`Cell.type` )) +
-#  geom_point() +
-#  my_theme
+counts_SE.norm.MDS.rotated %>%
+  pivot_sample() %>%
+  ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`Cell.type` )) +
+  geom_point() +
+  my_theme
 ```
 
 ## Test `differential abundance`
@@ -508,8 +507,8 @@ We may want to cluster our data (e.g., using k-means sample-wise). `cluster_elem
 <div class="column-left">
 TidyTranscriptomics
 ```{r cluster, cache=TRUE}
-#counts_SE.norm.cluster = counts_SE.norm.MDS %>%
-#  cluster_elements(method="kmeans",	centers = 2, action="get" )
+counts_SE.norm.cluster = counts_SE.norm.MDS %>%
+  cluster_elements(method="kmeans",	centers = 2, action="get" )
 ```
 </div>
 <div class="column-right">
@@ -532,10 +531,10 @@ cluster$cell_type = tidybulk::counts[
 We can add cluster annotation to the MDS dimension reduced data set and plot.
 
 ```{r plot_cluster, cache=TRUE}
-# counts_SE.norm.cluster %>%
-#	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster_kmeans`)) +
-#  geom_point() +
-#  my_theme
+counts_SE.norm.cluster %>%
+  ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster_kmeans`)) +
+  geom_point() +
+  my_theme
 ```
 
 **SNN**
@@ -607,9 +606,9 @@ We may want to remove redundant elements from the original data set (e.g., sampl
 <div class="column-left">
 TidyTranscriptomics
 ```{r drop, cache=TRUE}
-#counts_SE.norm.non_redundant =
-#	counts_SE.norm.MDS %>%
-#  remove_redundancy(	method = "correlation" )
+counts_SE.norm.non_redundant =
+  counts_SE.norm.MDS %>%
+  remove_redundancy(	method = "correlation" )
 ```
 </div>
 <div class="column-right">
@@ -645,34 +644,34 @@ counts %>% anti_join(.data.correlated) %>%
 We can visualise how the reduced redundancy with the reduced dimentions look like
 
 ```{r plot_drop, cache=TRUE}
-#counts_SE.norm.non_redundant %>%
-#	pivot_sample() %>%
-#	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
-#  geom_point() +
-#  my_theme
+counts_SE.norm.non_redundant %>%
+  pivot_sample() %>%
+  ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
+  geom_point() +
+  my_theme
 
 ```
 
 **Approach 2**
 
 ```{r drop2, cache=TRUE}
-#counts_SE.norm.non_redundant =
-#	counts_SE.norm.MDS %>%
-#  remove_redundancy(
-#  	method = "reduced_dimensions",
-#  	Dim_a_column = `Dim1`,
-#  	Dim_b_column = `Dim2`
-#  )
+counts_SE.norm.non_redundant =
+  counts_SE.norm.MDS %>%
+  remove_redundancy(
+  method = "reduced_dimensions",
+  Dim_a_column = `Dim1`,
+  Dim_b_column = `Dim2`
+  )
 ```
 
 We can visualise MDS reduced dimensions of the samples with the closest pair removed.
 
 ```{r plot_drop2, cache=TRUE}
-#counts_SE.norm.non_redundant %>%
-#	pivot_sample() %>%
-#	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
-#  geom_point() +
-#  my_theme
+counts_SE.norm.non_redundant %>%
+  pivot_sample() %>%
+  ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
+  geom_point() +
+  my_theme
 
 ```
 
