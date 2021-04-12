@@ -94,6 +94,87 @@ my_theme =
 
 ```
 
+		
+## Installation	
+From Bioconductor	
+```{r eval=FALSE}	
+BiocManager::install("tidybulk")	
+```	
+From Github	
+```{r, eval=FALSE}	
+devtools::install_github("stemangiola/tidybulk")	
+```	
+# Data	
+We will use a `SummarizedExperiment` object	
+```{r}	
+counts_SE	
+```	
+Loading `tidySummarizedExperiment` will automatically abstract this object as `tibble`, so we can display it and manipulate it with tidy tools. Although it looks different, and more tools (tidyverse) are available to us, this object is in fact a `SummarizedExperiment` object.	
+```{r}	
+class(counts_SE)	
+```	
+## Get the bibliography of your workflow 	
+First of all, you can cite all articles utilised within your workflow automatically from any tidybulk tibble	
+```{r eval=FALSE}	
+counts_SE %>%	get_bibliography()	
+```	
+## Aggregate duplicated `transcripts`	
+tidybulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with transcripts with the same name aggregated. All the rest of the columns are appended, and factors and boolean are appended as characters.	
+<div class="column-left">	
+TidyTranscriptomics	
+```{r aggregate, cache=TRUE, message=FALSE, warning=FALSE, results='hide', class.source='yellow'}	
+counts_SE.aggr = counts_SE %>% aggregate_duplicates()	
+```	
+</div>	
+<div class="column-right">	
+Standard procedure (comparative purpose)	
+```{r aggregate long, eval=FALSE}	
+temp = data.frame(	
+	symbol = dge_list$genes$symbol,	
+	dge_list$counts	
+)	
+dge_list.nr <- by(temp,	temp$symbol,	
+	function(df)	
+		if(length(df[1,1])>0)	
+			matrixStats:::colSums(as.matrix(df[,-1]))	
+)	
+dge_list.nr <- do.call("rbind", dge_list.nr)	
+colnames(dge_list.nr) <- colnames(dge_list)	
+```	
+</div>	
+<div style="clear:both;"></div>	
+## Scale `counts`	
+We may want to compensate for sequencing depth, scaling the transcript abundance (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`.	
+<div class="column-left">	
+TidyTranscriptomics	
+```{r normalise, cache=TRUE}	
+counts_SE.norm = counts_SE.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance()	
+```	
+</div>	
+<div class="column-right">	
+Standard procedure (comparative purpose)	
+```{r normalise long, eval=FALSE}	
+library(edgeR)	
+dgList <- DGEList(count_m=x,group=group)	
+keep <- filterByExpr(dgList)	
+dgList <- dgList[keep,,keep.lib.sizes=FALSE]	
+[...]	
+dgList <- calcNormFactors(dgList, method="TMM")	
+norm_counts.table <- cpm(dgList)	
+```	
+</div>	
+<div style="clear:both;"></div>	
+```{r, include=FALSE}	
+counts_SE.norm %>% select(`count`, count_scaled, .abundant, everything())	
+```	
+We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.	
+```{r plot_normalise, cache=TRUE}	
+counts_SE.norm %>%	
+	ggplot(aes(count_scaled + 1, group=sample, color=`Cell.type`)) +	
+	geom_density() +	
+	scale_x_log10() +	
+	my_theme	
+```
 
 ## Filter `variable transcripts`
 
