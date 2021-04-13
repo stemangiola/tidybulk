@@ -1269,13 +1269,18 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	    kegg <- c("Disease", "Metabolism", "Signaling")
 	    msigdb.gsets <- gene_collections[gene_collections %in% msig]
 	    kegg.exclude <- kegg[!(kegg %in% gene_collections)]
+	    
+	    # If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object 
+	    if (length(kegg.exclude) == 3) {
+	        kegg.exclude = "all"
+	    }
 	}
 
 	idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets, 
 	                kegg.exclude = kegg.exclude)
 	
-	# Due to a bug in kegg, this data set is run without report
-    # http://supportupgrade.bioconductor.org/p/122172/#122218
+	# Due to a bug with kegg pathview overlays, this collection is run without report
+    # https://support.bioconductor.org/p/122172/#122218
 	
 	kegg_genesets = idx[which(names(idx)=="kegg")]
 	nonkegg_genesets = idx[which(names(idx)!="kegg")]
@@ -1345,14 +1350,14 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
     
     }
 	
-	# output tiblle
-	if (!is.null(res_formatted_nonkegg) & !is.null(res_formatted_kegg)) {
+	# output tibble
+	if (exists("res_formatted_nonkegg") & exists("res_formatted_kegg")) {
 	    bind_rows(res_formatted_nonkegg, res_formatted_kegg)
-	} else if (!is.null(res_formatted_nonkegg)) {
+	} else if (exists("res_formatted_nonkegg")) {
 	    res_formatted_nonkegg
 	} else {
 	    res_formatted_kegg
-	    }
+	}
 
 }
 
