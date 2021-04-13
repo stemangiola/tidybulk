@@ -465,8 +465,7 @@ test_that("Only reduced dimensions MDS - no object",{
 			method = "MDS",
 			.abundance = c,
 			.element = a,
-			.feature = b,
-			action="only"
+			.feature = b
 		)
 	
 	expect_equal(
@@ -476,21 +475,10 @@ test_that("Only reduced dimensions MDS - no object",{
 	)
 	
 	expect_equal(
-		ncol(res),
-		3
+		ncol(colData(res)),
+		5
 	)
 	
 	expect_equal(	class(attr(res, "internals")$MDS[[1]])[1], 	"MDS"  )
 	
-	# Duplicate genes/samples
-	expect_error(
-		reduce_dimensions(
-			input_df %>% identify_abundant(a, b, c) %>% bind_rows( (.) %>% dplyr::slice(1) %>% mutate(c = c+1) ),
-			method = "MDS",
-			.abundance = c,
-			.element = a,
-			.feature = b, action="only"
-		),
-		"Your dataset include duplicated "
-	)
 })
