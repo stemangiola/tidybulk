@@ -12,10 +12,8 @@ test_gene_enrichment_bulk_EGSEA(
   .abundance = NULL,
   .contrasts = NULL,
   method,
+  gene_collections,
   species,
-  msigdb.gsets,
-  kegg.exclude,
-  min.size,
   cores = 10
 )
 }
@@ -33,6 +31,8 @@ test_gene_enrichment_bulk_EGSEA(
 \item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
 \item{method}{A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.}
+
+\item{gene_collections}{A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following quoted values. MSigDB sets: "h", "c1", "c2", "c3", "c4", "c5", "c6","c7". c1" is human specific. KEGG sets: "Disease", "Metabolism", "Signaling". Default is "all", all MSigDB and KEGG gene set collections are used.}
 
 \item{species}{A character. For example, human or mouse}
 

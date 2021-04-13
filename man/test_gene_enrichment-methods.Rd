@@ -18,10 +18,8 @@ test_gene_enrichment(
   .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_collections = "all",
   species,
-  msigdb.gsets = "all",
-  kegg.exclude = c(),
-  min.size = 1,
   cores = 10
 )
 
@@ -33,10 +31,8 @@ test_gene_enrichment(
   .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_collections = "all",
   species,
-  msigdb.gsets = "all",
-  kegg.exclude = c(),
-  min.size = 1,
   cores = 10
 )
 
@@ -48,10 +44,8 @@ test_gene_enrichment(
   .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_collections = "all",
   species,
-  msigdb.gsets = "all",
-  kegg.exclude = c(),
-  min.size = 1,
   cores = 10
 )
 
@@ -63,10 +57,8 @@ test_gene_enrichment(
   .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_collections = "all",
   species,
-  msigdb.gsets = "all",
-  kegg.exclude = c(),
-  min.size = 1,
   cores = 10
 )
 
@@ -107,17 +99,13 @@ test_gene_enrichment(
 
 \item{.contrasts}{= NULL,}
 
-\item{method}{A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.}
+\item{method}{A character vector. The methods to be included in the testing. Type EGSEA::egsea.base() to see the supported GSE methods.}
+
+\item{gene_collections}{A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following quoted values. MSigDB sets: "h", "c1", "c2", "c3", "c4", "c5", "c6","c7". c1" is human specific. KEGG sets: "Disease", "Metabolism", "Signaling". Default is "all", all MSigDB and KEGG gene set collections are used.}
 
 \item{species}{A character. For example, human or mouse}
 
-\item{msigdb.gsets}{A character vector. Used by EGSEA buildIdx to determine which gene set collections should be used from MSigDB. It can take values from this list: "h", "c1", "c2", "c3", "c4", "c5", "c6","c7". "h" and "c1" are human specific. If "all", all available gene set collections are loaded. If "none", MSigDB collections are excluded. Default is "all".}
-
-\item{kegg.exclude}{A character vector. Used by EGSEA buildIdx to exclude KEGG pathways of specific type(s): Disease, Metabolism, Signaling. If "all", none of the KEGG collections is included. Default is c().}
-
 \item{cores}{An integer. The number of cores available}
-
-\item{min.size.}{An integer. Used by EGSEA buildIdx to specify the minimum number of genes required in a testing gene set. Default is 1.}
 }
 \value{
 A `tbl` object
@@ -133,12 +121,12 @@ A `tbl` object
 A `tbl` object
 }
 \description{
-test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` of gene set information
 }
 \details{
 \lifecycle{maturing}
 
-This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
+This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 
 
 dge =
@@ -154,7 +142,7 @@ dge =
 	edgeR::DGEList(counts = .)
 
 idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets, 
-               kegg.exclude = kegg.exclude, min.size = min.size)
+               kegg.exclude = kegg.exclude)
 
 dge %>%
 
@@ -165,6 +153,7 @@ dge %>%
 	egsea(
 		contrasts = my_contrasts,
 		baseGSEAs = method,
+		gs.annots = idx,
 		sort.by = "med.rank",
 		num.threads = cores,
 		report = FALSE
@@ -184,7 +173,8 @@ library("EGSEA")
 		.sample = sample,
 		.entrez = entrez,
 		.abundance = count,
-      method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+         method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+         gene_collections = "all",
 		species="human",
 		cores = 2
 	)

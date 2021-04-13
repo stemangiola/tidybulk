@@ -2796,7 +2796,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	egsea(
 #' 		contrasts = my_contrasts,
 #' 		baseGSEAs = method,
-#' 		gs.annots = idx
+#' 		gs.annots = idx,
 #' 		sort.by = "med.rank",
 #' 		num.threads = cores,
 #' 		report = FALSE
