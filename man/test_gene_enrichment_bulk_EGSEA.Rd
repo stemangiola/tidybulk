@@ -13,6 +13,9 @@ test_gene_enrichment_bulk_EGSEA(
   .contrasts = NULL,
   method,
   species,
+  msigdb.gsets,
+  kegg.exclude,
+  min.size,
   cores = 10
 )
 }
