@@ -2763,7 +2763,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts = NULL,
-#' @param method A character vector. The methods to be included in the testing. Type EGSEA::egsea.base() to see the supported GSE methods.
+#' @param method A character vector. One or more methods to use in the testing. Type EGSEA::egsea.base() to see the supported GSE methods.
 #' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following quoted values. MSigDB sets: "h", "c1", "c2", "c3", "c4", "c5", "c6","c7". c1" is human specific. KEGG sets: "Disease", "Metabolism", "Signaling". Default is "all", all MSigDB and KEGG gene set collections are used.
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available

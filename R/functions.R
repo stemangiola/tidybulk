@@ -1169,7 +1169,7 @@ test_stratification_cellularity_ <- function(.data,
 #' @param .entrez The ENTREZ code of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.
+#' @param method A character vector. One or more methods to use in the testing. Type EGSEA::egsea.base() to see the supported GSE methods.
 #' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following quoted values. MSigDB sets: "h", "c1", "c2", "c3", "c4", "c5", "c6","c7". c1" is human specific. KEGG sets: "Disease", "Metabolism", "Signaling". Default is "all", all MSigDB and KEGG gene set collections are used.
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
@@ -1260,7 +1260,8 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.entrez) %>%
 		edgeR::DGEList(counts = .)
-
+    
+	# Specify gene sets to include 
 	if ("all" %in% gene_collections) {
 	    msigdb.gsets <- "all"
 	    kegg.exclude <- c()
@@ -1278,6 +1279,14 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets, 
 	                kegg.exclude = kegg.exclude)
+	
+	# Specify column to use to sort results in output table
+	# If only one method is specified there is no med.rank column
+	if (length(method) == 1) {
+	    sort_column = "p.value" 
+	} else {
+	    sort_column = "med.rank"
+	}
 	
 	# Due to a bug with kegg pathview overlays, this collection is run without report
     # https://support.bioconductor.org/p/122172/#122218
@@ -1297,8 +1306,8 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
         		contrasts = my_contrasts,
         		gs.annots = nonkegg_genesets,
         		baseGSEAs = method,
-        		sort.by = "med.rank",
-        		num.threads = cores,
+        		sort.by = sort_column,
+        		num.threads = cores
         	)
         
         gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
@@ -1311,11 +1320,11 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
         			as_tibble(rownames = "pathway") %>%
         			mutate(data_base = .y)
         	) %>%
-        	arrange(med.rank) %>%
+        	arrange(sort_column) %>%
         	
         	# Add webpage
         	mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
-        	select(data_base, pathway, web_page, med.rank, everything()) 
+        	select(data_base, pathway, web_page, sort_column, everything()) 
 	}
 
     if (length(kegg_genesets) != 0) {
@@ -1332,7 +1341,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
     			contrasts = my_contrasts,
     			gs.annots = kegg_genesets,
     			baseGSEAs = method,
-    			sort.by = "med.rank",
+    			sort.by = sort_column,
     			num.threads = cores,
     			report = FALSE
     		)
@@ -1345,7 +1354,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
     				as_tibble(rownames = "pathway") %>%
     				mutate(data_base = .y)
     		) %>%
-    		arrange(med.rank) %>%
+    		arrange(sort_column) %>%
     		select(data_base, pathway, everything())
     
     }
