@@ -125,6 +125,7 @@ get_clusters_SNN_bulk_SE <-
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param scale A boolean
 #'
 #' @return A tibble with additional columns
 #'
@@ -134,7 +135,9 @@ get_reduced_dimensions_MDS_bulk_SE <-
 					 .dims = 2,
 					 top = 500,
 					 of_samples = TRUE,
-					 log_transform = TRUE) {
+					 log_transform = TRUE,
+					 scale = NULL # This is only a dummy argument for making it compatible with PCA
+					) {
 		# Comply with CRAN NOTES
 		. = NULL
 		
@@ -316,6 +319,7 @@ we suggest to partition the dataset for sample clusters.
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param scale A boolean
 #' @param ... Further parameters passed to the function Rtsne
 #'
 #' @return A tibble with additional columns
@@ -326,6 +330,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE,
+					 scale = NULL, # This is only a dummy argument for making it compatible with PCA
 					 ...) {
 		# Comply with CRAN NOTES
 		. = NULL
