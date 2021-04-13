@@ -2066,7 +2066,7 @@ setMethod("get_bibliography",
 	
 	rowData(.data) = rowData(.data) %>% cbind(
 		tibble(transcript = rownames(!!.data)) %>%
-			left_join(description_df) %>%
+			left_join(description_df, by = "transcript") %>%
 			select(description)
 	)
 
