@@ -2765,6 +2765,9 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @param .contrasts = NULL,
 #' @param method A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.
 #' @param species A character. For example, human or mouse
+#' @param msigdb.gsets A character vector. Used by EGSEA buildIdx to determine which gene set collections should be used from MSigDB. It can take values from this list: "h", "c1", "c2", "c3", "c4", "c5", "c6","c7". "h" and "c1" are human specific. If "all", all available gene set collections are loaded. If "none", MSigDB collections are excluded. Default is "all".
+#' @param kegg.exclude A character vector. Used by EGSEA buildIdx to exclude KEGG pathways of specific type(s): Disease, Metabolism, Signaling. If "all", none of the KEGG collections is included. Default is c().
+#' @param min.size. An integer. Used by EGSEA buildIdx to specify the minimum number of genes required in a testing gene set. Default is 1.
 #' @param cores An integer. The number of cores available
 #'
 #'
@@ -2783,7 +2786,8 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	as_matrix(rownames = !!.entrez) %>%
 #' 	edgeR::DGEList(counts = .)
 #'
-#' idx =  buildIdx(entrezIDs = rownames(dge), species = species)
+#' idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets, 
+#'	               kegg.exclude = kegg.exclude, min.size = min.size)
 #'
 #' dge %>%
 #'
@@ -2838,6 +2842,9 @@ setGeneric("test_gene_enrichment", function(.data,
 																							 .contrasts = NULL,
 																								method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																							 species,
+																							 msigdb.gsets = "all", 
+																							 kegg.exclude = c(), 
+																							 min.size = 1,
 																							 cores = 10)
 	standardGeneric("test_gene_enrichment"))
 
@@ -2850,6 +2857,9 @@ setGeneric("test_gene_enrichment", function(.data,
 																			.contrasts = NULL,
 																	    method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																			species,
+																			msigdb.gsets = "all", 
+																			kegg.exclude = c(), 
+																			min.size = 1,
 																			cores = 10)	{
 	# Make col names
 	.sample = enquo(.sample)
@@ -2885,6 +2895,9 @@ setGeneric("test_gene_enrichment", function(.data,
 			.contrasts = .contrasts,
 			method = method,
 			species = species,
+			msigdb.gsets = msigdb.gsets, 
+			kegg.exclude = kegg.exclude, 
+			min.size = min.size,
 			cores = cores
 		)
 

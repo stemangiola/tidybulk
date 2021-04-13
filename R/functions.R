@@ -1181,8 +1181,11 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 																							 .entrez,
 																							 .abundance = NULL,
 																							 .contrasts = NULL,
-																						method,
+																						     method,
 																							 species,
+																						     msigdb.gsets,
+																						     kegg.exclude,
+																						     min.size,
 																							 cores = 10) {
 	# Comply with CRAN NOTES
 	. = NULL
@@ -1240,7 +1243,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	# Check if package is installed, otherwise install
 	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
 		stop("
-				 EGSEA not installed. Please install it. EGSEA require manual installation for not overwelming the user in case it is not needed.
+				 EGSEA not installed. Please install it. EGSEA requires manual installation to not overwhelm the user in case it is not needed.
 				 BiocManager::install(\"EGSEA\", ask = FALSE)
 				 ")
 	}
@@ -1259,72 +1262,88 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		as_matrix(rownames = !!.entrez) %>%
 		edgeR::DGEList(counts = .)
 
-	idx =  buildIdx(entrezIDs = rownames(dge), species = species)
-
-	# Due to a bug in kegg, this data set is run without report
-	# http://supportupgrade.bioconductor.org/p/122172/#122218
-	message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
-
-	res_kegg =
-		dge %>%
-
-		# Calculate weights
-		limma::voom(design, plot = FALSE) %>%
-
-		# Execute EGSEA
-		egsea(
-			contrasts = my_contrasts,
-			gs.annots = idx %>% .["kegg"],
-			baseGSEAs = method,
-			sort.by = "med.rank",
-			num.threads = cores,
-			report = FALSE
-		)
-
-	res_formatted_kegg =
-		res_kegg@results %>%
-		map2_dfr(
-			(.) %>% names,
-			~ .x[[1]][[1]] %>%
-				as_tibble(rownames = "pathway") %>%
-				mutate(data_base = .y)
-		) %>%
-		arrange(med.rank) %>%
-		select(data_base, pathway, everything())
-
-	res =
-		dge %>%
-
-		# Calculate weights
-		limma::voom(design, plot = FALSE) %>%
-
-		# Execute EGSEA
-		egsea(
-			contrasts = my_contrasts,
-			gs.annots = idx[which(names(idx)!="kegg")],
-			baseGSEAs = method,
-			sort.by = "med.rank",
-			num.threads = cores,
-		)
-
-	gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
+	idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets, 
+	                kegg.exclude = kegg.exclude, min.size = min.size)
 	
-	res_formatted_all =
-		res@results %>%
-		map2_dfr(
-			(.) %>% names,
-			~ .x[[1]][[1]] %>%
-				as_tibble(rownames = "pathway") %>%
-				mutate(data_base = .y)
-		) %>%
-		arrange(med.rank) %>%
-		
-		# Add webpage
-		mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
-		select(data_base, pathway, web_page, med.rank, everything()) 
+	# Due to a bug in kegg, this data set is run without report
+    # http://supportupgrade.bioconductor.org/p/122172/#122218
+	
+	kegg_genesets = idx[which(names(idx)=="kegg")]
+	nonkegg_genesets = idx[which(names(idx)!="kegg")]
+	
+	if (length(nonkegg_genesets) != 0) {
+    	res =
+        	dge %>%
+        
+        	# Calculate weights
+        	limma::voom(design, plot = FALSE) %>%
+        
+        	# Execute EGSEA
+        	egsea(
+        		contrasts = my_contrasts,
+        		gs.annots = nonkegg_genesets,
+        		baseGSEAs = method,
+        		sort.by = "med.rank",
+        		num.threads = cores,
+        	)
+        
+        gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
+        
+        res_formatted_nonkegg =
+        	res@results %>%
+        	map2_dfr(
+        		(.) %>% names,
+        		~ .x[[1]][[1]] %>%
+        			as_tibble(rownames = "pathway") %>%
+        			mutate(data_base = .y)
+        	) %>%
+        	arrange(med.rank) %>%
+        	
+        	# Add webpage
+        	mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
+        	select(data_base, pathway, web_page, med.rank, everything()) 
+	}
 
-
-	bind_rows(res_formatted_all, res_formatted_kegg)
+    if (length(kegg_genesets) != 0) {
+    	message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
+	    
+    	res_kegg =
+    		dge %>%
+    
+    		# Calculate weights
+    		limma::voom(design, plot = FALSE) %>%
+    
+    		# Execute EGSEA
+    		egsea(
+    			contrasts = my_contrasts,
+    			gs.annots = kegg_genesets,
+    			baseGSEAs = method,
+    			sort.by = "med.rank",
+    			num.threads = cores,
+    			report = FALSE
+    		)
+    
+    	res_formatted_kegg =
+    		res_kegg@results %>%
+    		map2_dfr(
+    			(.) %>% names,
+    			~ .x[[1]][[1]] %>%
+    				as_tibble(rownames = "pathway") %>%
+    				mutate(data_base = .y)
+    		) %>%
+    		arrange(med.rank) %>%
+    		select(data_base, pathway, everything())
+    
+    }
+	
+	# output tiblle
+	if (!is.null(res_formatted_nonkegg) & !is.null(res_formatted_kegg)) {
+	    bind_rows(res_formatted_nonkegg, res_formatted_kegg)
+	} else if (!is.null(res_formatted_nonkegg)) {
+	    res_formatted_nonkegg
+	} else {
+	    res_formatted_kegg
+	    }
 
 }
 
