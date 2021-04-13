@@ -292,11 +292,11 @@ counts_SE.cibersort %>%
   my_theme +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
 
-## ----DC-----------------------------------------------------------------------
-
-	counts_SE %>%
-	test_differential_cellularity(. ~ condition )
-
+## ----DC, eval=FALSE-----------------------------------------------------------
+#  
+#  	counts_SE %>%
+#  	test_differential_cellularity(. ~ condition )
+#  
 
 ## ----DC_censored, eval=FALSE--------------------------------------------------
 #  
@@ -441,7 +441,9 @@ counts_SE.norm.non_redundant %>%
 counts_ensembl %>% ensembl_to_symbol(ens)
 
 ## ----description--------------------------------------------------------------
-counts_SE %>% describe_transcript() %>% select(transcript, description, everything())
+counts_SE %>% 
+	describe_transcript() %>% 
+	select(feature, description, everything())
 
 ## -----------------------------------------------------------------------------
 sessionInfo()

@@ -1981,6 +1981,10 @@ setMethod("get_bibliography",
 					.get_bibliography)
 
 #' describe_transcript
+#' 
+#' @importFrom SummarizedExperiment rowData
+#' @importFrom tibble enframe
+#' 
 #' @inheritParams describe_transcript
 #'
 #' @docType methods
@@ -2016,13 +2020,21 @@ setMethod("get_bibliography",
 		BiocManager::install("AnnotationDbi", ask = FALSE)
 	}
 	
-	description_df =
+	.transcript = enquo(.transcript)
+
+	# Transcript rownames by default
+	my_transcripts = 
+		.transcript %>%
+		when(
+			quo_is_null(.) ~ rownames(.data),
+			~ rowData(.data)[,quo_name(.transcript)]
+		)
 		
-		
+	description_df = 
 		# Human
 		tryCatch(suppressMessages(AnnotationDbi::mapIds(
 			org.Hs.eg.db::org.Hs.eg.db,
-			keys = pull(.data, transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+			keys = my_transcripts,  #ensembl_symbol_mapping$transcript %>% unique,
 			column = "GENENAME",
 			keytype = "SYMBOL",
 			multiVals = "first"
@@ -2033,7 +2045,7 @@ setMethod("get_bibliography",
 		c(
 			tryCatch(suppressMessages(AnnotationDbi::mapIds(
 				org.Mm.eg.db::org.Mm.eg.db,
-				keys = pull(.data, transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+				keys = my_transcripts,  #ensembl_symbol_mapping$transcript %>% unique,
 				column = "GENENAME",
 				keytype = "SYMBOL",
 				multiVals = "first"
@@ -2052,8 +2064,13 @@ setMethod("get_bibliography",
 		slice(1) %>%
 		ungroup()
 	
-	.data %>%
-		left_join(description_df, by = "transcript")
+	rowData(.data) = rowData(.data) %>% cbind(
+		tibble(transcript = rownames(!!.data)) %>%
+			left_join(description_df) %>%
+			select(description)
+	)
+
+	.data
 }
 
 #' describe_transcript

@@ -62,6 +62,7 @@ library(magrittr)
 library(ggplot2)
 library(ggrepel)
 library(tidybulk)
+library(tidySummarizedExperiment)
 
 
 my_theme = 	
@@ -86,7 +87,7 @@ In this article we show some examples of the differences in coding between tidyb
 ## Create `tidybulk` tibble. 
 
 ```{r}
-tt = counts_mini %>% tidybulk(sample, transcript, count)
+tt = se_mini
 ```
 
 ## Aggregate duplicated `transcripts`
@@ -237,7 +238,7 @@ pc$cell_type = counts[
 Tidy transcriptomics
 ```{r tsne, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 tt.norm.tSNE =
-	breast_tcga_mini %>%
+	breast_tcga_mini_SE %>%
 	tidybulk(		sample, ens, count_scaled) %>%
 	identify_abundant() %>%
 	reduce_dimensions(
