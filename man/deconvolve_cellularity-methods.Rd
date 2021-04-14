@@ -118,7 +118,7 @@ A `SummarizedExperiment` object
 deconvolve_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This function infers the cell type composition of our samples
 (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).

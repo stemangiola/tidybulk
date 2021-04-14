@@ -3,7 +3,7 @@ setOldClass("tidybulk")
 
 #' Creates a `tt` object from a `tbl` or `SummarizedExperiment` object
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description tidybulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
@@ -239,7 +239,7 @@ setMethod("as_SummarizedExperiment", "tidybulk", .as_SummarizedExperiment)
 
 #' Creates a `tt` object from a list of file names of BAM/SAM
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description tidybulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
@@ -286,7 +286,7 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 
 #' Scale the counts of transcripts/genes
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description scale_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #'
@@ -482,7 +482,7 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 
 #' Get clusters of elements (e.g., samples or transcripts)
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description cluster_elements() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and identify clusters in the data.
 #'
@@ -672,7 +672,7 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 
 #' Dimension reduction of the transcript abundance data
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description reduce_dimensions() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
 #'
@@ -896,7 +896,7 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 
 #' Rotate two dimensions (e.g., principal components) of an arbitrary angle
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description rotate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
 #'
@@ -1072,7 +1072,7 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 
 #' Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) abundances are correlated
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description remove_redundancy() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., samples).
 #'
@@ -1274,7 +1274,7 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 
 #' Adjust transcript abundance for unwanted variation
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description adjust_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
 #'
@@ -1453,7 +1453,7 @@ setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 
 #' Aggregates multiple counts from the same samples (e.g., from isoforms), concatenates other character columns, and averages other numeric columns
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description aggregate_duplicates() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.
 #'
@@ -1575,7 +1575,7 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 
 #' Get cell type proportions from samples
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description deconvolve_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
 #'
@@ -2023,7 +2023,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 
 #' Perform differential transcription testing using edgeR quasi-likelihood (QLT), edgeR likelihood-ratio (LR), limma-voom, limma-voom-with-quality-weights or DESeq2
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description test_differential_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -2364,7 +2364,7 @@ setMethod("test_differential_abundance",
 
 #' Keep variable transcripts
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description keep_variable() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -2475,7 +2475,7 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 
 #' find abundant transcripts
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description identify_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -2748,7 +2748,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 
 #' analyse gene enrichment with EGSEA
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 #'
@@ -2927,7 +2927,7 @@ setMethod("test_gene_enrichment",
 
 #' analyse gene over-representation with GSEA
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description test_gene_overrepresentation() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
 #'
@@ -3079,7 +3079,7 @@ setMethod("test_gene_overrepresentation",
 
 #' Extract sample-wise information
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description pivot_sample() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 #'
@@ -3174,7 +3174,7 @@ setMethod("pivot_sample",
 
 #' Extract transcript-wise information
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description pivot_transcript() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 #'
@@ -3375,7 +3375,7 @@ setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
 
 #' impute transcript abundance if missing from sample-transcript pairs
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description impute_missing_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
 #'
@@ -3498,7 +3498,7 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 
 #' Add differential tissue composition information to a tbl
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description test_differential_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -3679,7 +3679,7 @@ setMethod("test_differential_cellularity",
 
 #' Test of stratification of biological replicates based on tissue composition, one cell-type at the time, using Kaplan-meier curves.
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description test_stratification_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 #'
@@ -3834,7 +3834,7 @@ setMethod("test_stratification_cellularity",
 
 #' Produces the bibliography list of your workflow
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description get_bibliography() takes as input a `tidybulk`
 #'

@@ -142,7 +142,7 @@ A `SummarizedExperiment` object
 reduce_dimensions() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This function reduces the dimensions of the transcript abundances.
 It can use multi-dimensional scaling (MDS; DOI.org/10.1186/gb-2010-11-3-r25),

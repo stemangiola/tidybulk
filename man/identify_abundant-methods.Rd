@@ -102,7 +102,7 @@ A `SummarizedExperiment` object
 identify_abundant() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
 

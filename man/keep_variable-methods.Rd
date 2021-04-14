@@ -86,7 +86,7 @@ A `SummarizedExperiment` object
 keep_variable() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 At the moment this function uses edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}
 }

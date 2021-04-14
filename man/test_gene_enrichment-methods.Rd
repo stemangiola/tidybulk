@@ -118,7 +118,7 @@ A `tbl` object
 test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 

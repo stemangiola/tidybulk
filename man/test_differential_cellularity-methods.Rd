@@ -118,7 +118,7 @@ A `SummarizedExperiment` object
 test_differential_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This routine applies a deconvolution method (e.g., Cibersort; DOI: 10.1038/nmeth.3337)
 and passes the proportions inferred into a generalised linear model (DOI:dx.doi.org/10.1007/s11749-010-0189-z)

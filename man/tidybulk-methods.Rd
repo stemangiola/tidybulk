@@ -45,7 +45,7 @@ A `tidybulk` object
 tidybulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This function creates a tidybulk object and is useful if you want
 to avoid to specify .sample, .transcript and .abundance arguments all the times.

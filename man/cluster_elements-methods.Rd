@@ -118,7 +118,7 @@ A `SummarizedExperiment` object
 cluster_elements() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and identify clusters in the data.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 identifies clusters in the data, normally of samples.
 This function returns a tibble with additional columns for the cluster annotation.

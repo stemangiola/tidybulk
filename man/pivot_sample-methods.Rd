@@ -44,7 +44,7 @@ A `tbl` object
 pivot_sample() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This functon extracts only sample-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to tidybulk function.
 }

@@ -45,7 +45,7 @@ A `tbl` with additional columns for the statistics from the hypothesis test (e.g
 get_bibliography() takes as input a `tidybulk`
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This methods returns the bibliography list of your workflow from the internals of a tidybulk tibble (attr(., "internals"))
 }
