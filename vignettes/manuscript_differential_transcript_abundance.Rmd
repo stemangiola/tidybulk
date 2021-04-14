@@ -1,5 +1,5 @@
 ---
-title: "Manuscript code - differential transcript abundance"
+title: "Manuscript code - differential feature abundance"
 author: "Stefano Mangiola"
 date: "`r Sys.Date()`"
 package: tidybulk
@@ -8,11 +8,11 @@ output:
     toc_float: true
 vignette: >
   %\VignetteEngine{knitr::knitr}
-  %\VignetteIndexEntry{Manuscript code - differential transcript abundance}
+  %\VignetteIndexEntry{Manuscript code - differential feature abundance}
   %\usepackage[UTF-8]{inputenc}
 ---
 
-This decument includes the code used for the manuscript, for the differential transcript abundance.
+This decument includes the code used for the manuscript, for the differential feature abundance.
 
 
 ```{r, echo=FALSE, include=FALSE}
@@ -71,10 +71,10 @@ coldata = coldata[, c("condition", "type")]
 # Create tidybulk object
 counts =
 	cts %>%
-	as_tibble(rownames = "transcript") %>%
+	as_tibble(rownames = "feature") %>%
 	pivot_longer(names_to = "sample",
 							 values_to = "count",
-							 cols = -transcript) %>%
+							 cols = -feature) %>%
 	left_join(
 		coldata %>%
 		as_tibble(rownames = "sample") %>%
@@ -86,7 +86,7 @@ counts =
 ```{r}
 # Create a tt object with unique raw and normalised counts
 tt_scaled <- 
-    tidybulk(counts, sample, transcript, count) %>%
+    tidybulk(counts, sample, feature, count) %>%
     aggregate_duplicates() %>%
     identify_abundant() %>%
     scale_abundance()
@@ -165,10 +165,10 @@ tt_test %>%
 	
     # Subset data
     mutate(significant = FDR<0.05 & abs(logFC) >=2) %>%
-    mutate(transcript = ifelse(significant, as.character(transcript), NA)) %>%
+    mutate(feature = ifelse(significant, as.character(feature), NA)) %>%
 
     # Plot
-    ggplot(aes(x = logCPM, y = logFC, label=transcript)) +
+    ggplot(aes(x = logCPM, y = logFC, label=feature)) +
     geom_point(aes(color = significant, size = significant, alpha=significant)) +
     geom_text_repel() +
     scale_color_manual(values=c("black", "#e11f28")) +
@@ -180,7 +180,7 @@ tt_test %>%
 tt_test %>%
     
     # Select top genes and reshape data
-    inner_join( arrange((.), PValue) %>% distinct(transcript) %>% head(6)) %>%
+    inner_join( arrange((.), PValue) %>% distinct(feature) %>% head(6)) %>%
 
     # High level reshaping of the data. 
     # All three count columns are shaped as two columns: 
@@ -193,7 +193,7 @@ tt_test %>%
     # This allows the faceted plot
     ggplot(aes(x = Stage, y = count + 1, fill = condition)) +
 		geom_boxplot() +
-    facet_wrap(~transcript) +
+    facet_wrap(~feature) +
     scale_y_log10() 
 
 ```
@@ -207,7 +207,7 @@ tt_test %>%
     filter(FDR < 0.05 & abs(logFC) > 2) %>%
 
     # Plot
-    heatmap( transcript, sample, count_scaled_adjusted) %>% 
+    heatmap( feature, sample, count_scaled_adjusted) %>% 
     add_tile(condition) %>%
     add_tile(type)
 
