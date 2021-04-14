@@ -175,7 +175,7 @@ test_that("filter variable - no object",{
 	)
 
 	expect_equal(
-		sort(unique(res$b)),
+		as.character(sort(unique(res$b))),
 		c("FCN1",  "IGHD",  "IGHM",  "IGKC",  "TCL1A")
 	)
 
@@ -376,7 +376,7 @@ test_that("Add differential trancript abundance - no object",{
 
 	expect_equal(
 		dplyr::pull(dplyr::slice(distinct(res, b, logFC), 1:4) , "logFC"),
-		c(NA , 5.477110, -6.079712 ,       NA),
+		c(3.597633, 2.473975, 2.470380,       NA),
 		tolerance=1e-6
 	)
 
@@ -786,7 +786,7 @@ test_that("Get entrez from symbol - no object",{
 
 	expect_equal(
 		res$entrez[1:4],
-		c( "7293",  "9651",  "23569" ,"5081" )
+		c( "5244",  "23457", "9744",  "43" )
 	)
 
 })
@@ -909,7 +909,7 @@ test_that("Add adjusted counts - no object",{
 
 	expect_equal(
 		unique(res$`c_adjusted`)[c(1, 2, 3, 5)],
-		c( NA, 1017,   25, 4904),
+		c(NA, 7948, 2193, 2407),
 		tolerance=1e-6
 	)
 
@@ -1268,8 +1268,10 @@ test_that("Get reduced dimensions tSNE - no object",{
 	set.seed(132)
 
 	res =
+		input_df_breast %>% 
+		identify_abundant(a, b, c) %>%
+	
 		reduce_dimensions(
-			setNames(tidybulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) %>% identify_abundant(a, b, c),
 			method="tSNE",
 			.abundance = c,
 			.element = a,
@@ -1285,11 +1287,11 @@ test_that("Get reduced dimensions tSNE - no object",{
 
 	expect_equal(
 		ncol(res),
-		8
+		4
 	)
 	expect_equal(
 		nrow(res),
-		48
+		251
 	)
 
 	# Duplicate genes/samples
@@ -1312,8 +1314,10 @@ test_that("Add reduced dimensions tSNE - no object",{
 	set.seed(132)
 
 	res =
+		input_df_breast %>% 
+		identify_abundant(a, b, c) %>%
+		
 		reduce_dimensions(
-			setNames(tidybulk::counts, c("a", "b", "Cell type", "c",  "time" , "condition", "batch", "factor_of_interest")) %>% identify_abundant(a, b, c),
 			method="tSNE",
 			.abundance = c,
 			.element = a,
@@ -1329,7 +1333,7 @@ test_that("Add reduced dimensions tSNE - no object",{
 
 	expect_equal(
 		ncol(res),
-		11
+		8
 	)
 
 })
@@ -1455,7 +1459,7 @@ test_that("Aggregate duplicated transcript - no object",{
 
 	expect_equal(
 		res$b[1:4],
-		c( "TNFRSF4", "PLCH2" ,  "PADI4" ,  "PAX7"   )
+		c("ABCB4", "ABCB9", "ACAP1", "ACHE"  )
 	)
 
 	expect_equal(
@@ -1540,25 +1544,25 @@ test_that("Add description to symbol",{
 	# Human
 	res =
 		describe_transcript(
-			tidybulk::counts,
-			.transcript = transcript
+			input_df,
+			.transcript = b
 		)
 	
 	
 	expect_equal(
 		ncol(res),
-		9
+		7
 	)
 	
 	res =
 		describe_transcript(
-			tidybulk::counts %>% tidybulk(sample, transcript, count)
+			input_df %>% tidybulk(a, b, c)
 		)
 	
 	
 	expect_equal(
 		ncol(res),
-		9
+		7
 	)
 	
 })
@@ -1909,7 +1913,7 @@ test_that("impute missing - no object",{
 			.abundance = c
 		)
 
-	expect_equal(	dplyr::pull(filter(res, b=="TNFRSF4" & a == "SRR1740034"), c),	203.5	)
+	expect_equal(	dplyr::pull(filter(res, b=="TNFRSF4" & a == "SRR1740034"), c),	6	)
 
 	expect_equal(	ncol(res),	ncol(input_df)	)
 
