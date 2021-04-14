@@ -1,8 +1,11 @@
 context('Bulk methods')
 
-input_df = setNames(tidybulk::counts_mini, c("a", "b", "Cell type", "c",  "time" , "condition"))
+data("se_mini")
+data("breast_tcga_mini_SE")
 
-input_df_breast = setNames(tidybulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
+input_df = se_mini %>% tidybulk() %>% as_tibble() %>% setNames(c("b","a",  "c", "Cell type", "time" , "condition"))
+
+input_df_breast =   breast_tcga_mini_SE %>% tidybulk() %>% as_tibble() %>% setNames(c( "b","a", "c", "c norm", "call"))
 
 test_that("Creating tt object from tibble, number of parameters, methods",{
 
@@ -1916,9 +1919,9 @@ test_that("impute missing - no object",{
 
 test_that("gene over representation",{
 
-	df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+	df_entrez =  se_mini %>% tidybulk() %>% as_tibble() %>% symbol_to_entrez(.transcript = feature, .sample = sample)
 	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
-	df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+	df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 
 	res =
 		test_gene_overrepresentation(
