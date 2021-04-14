@@ -101,7 +101,7 @@ test_gene_enrichment(
 
 \item{method}{A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.}
 
-\item{gene_collections}{A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following quoted values. MSigDB sets: "h", "c1", "c2", "c3", "c4", "c5", "c6","c7". c1" is human specific. KEGG sets: "Disease", "Metabolism", "Signaling". Default is "all", all MSigDB and KEGG gene set collections are used.}
+\item{gene_collections}{A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: "h", "c1", "c2", "c3", "c4", "c5", "c6","c7". c1", "kegg_disease", "kegg_metabolism", "kegg_signaling". c1 is human specific. Default is "all", all MSigDB and KEGG gene set collections are used.}
 
 \item{species}{A character. For example, human or mouse}
 

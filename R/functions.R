@@ -1170,7 +1170,7 @@ test_stratification_cellularity_ <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
-#' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following quoted values. MSigDB sets: "h", "c1", "c2", "c3", "c4", "c5", "c6","c7". c1" is human specific. KEGG sets: "Disease", "Metabolism", "Signaling". Default is "all", all MSigDB and KEGG gene set collections are used.
+#' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: "h", "c1", "c2", "c3", "c4", "c5", "c6","c7". c1", "kegg_disease", "kegg_metabolism", "kegg_signaling". c1 is human specific. Default is "all", all MSigDB and KEGG gene set collections are used.
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
 #'
@@ -1261,13 +1261,17 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		as_matrix(rownames = !!.entrez) %>%
 		edgeR::DGEList(counts = .)
     
-	# Specify gene sets to include 
+	# Specify gene sets to include
+	
+	# Remove kegg_ prefix
+	gene_collections = gene_collections %>% str_replace("kegg_", "")
+	
 	if ("all" %in% gene_collections) {
 	    msigdb.gsets <- "all"
 	    kegg.exclude <- c()
 	} else {
 	    msig <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
-	    kegg <- c("Disease", "Metabolism", "Signaling")
+	    kegg <- c("disease", "metabolism", "signaling")
 	    msigdb.gsets <- gene_collections[gene_collections %in% msig]
 	    kegg.exclude <- kegg[!(kegg %in% gene_collections)]
 	    
