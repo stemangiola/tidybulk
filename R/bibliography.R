@@ -237,6 +237,16 @@ my_bibliography = function() {
   year={2011},
   publisher={Oxford University Press}
 	}"),
+	egsea = "@article{alhamdoosh2017combining,
+  title={Combining multiple tools outperforms individual methods in gene set enrichment analyses},
+  author={Alhamdoosh, Monther and Ng, Milica and Wilson, Nicholas J and Sheridan, Julie M and Huynh, Huy and Wilson, Michael J and Ritchie, Matthew E},
+  journal={Bioinformatics},
+  volume={33},
+  number={3},
+  pages={414--424},
+  year={2017},
+  publisher={Oxford University Press}
+  }",
 	survminer = c( "@Manual{,
     title = {survminer: Drawing Survival Curves using 'ggplot2'},
     author = {Alboukadel Kassambara and Marcin Kosinski and Przemyslaw Biecek},

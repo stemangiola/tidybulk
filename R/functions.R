@@ -1365,13 +1365,15 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	
 	# output tibble
 	if (exists("res_formatted_nonkegg") & exists("res_formatted_kegg")) {
-	    bind_rows(res_formatted_nonkegg, res_formatted_kegg)
+	    out = bind_rows(res_formatted_nonkegg, res_formatted_kegg)
 	} else if (exists("res_formatted_nonkegg")) {
-	    res_formatted_nonkegg
+	    out = res_formatted_nonkegg
 	} else {
-	    res_formatted_kegg
+	    out = res_formatted_kegg
 	}
 
+	# add to bibliography
+	out %>% memorise_methods_used("egsea")
 }
 
 #' Get K-mean clusters to a tibble
