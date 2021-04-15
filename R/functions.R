@@ -289,6 +289,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @param test_above_log2_fold_change A positive real value. At the moment this works just for edgeR methods, and use the `treat` function, which test the that the difference in abundance is bigger than this parameter rather than zero \url{https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat}.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param .sample_total_read_count
 #'
 #' @return A tibble with edgeR results
 #'
@@ -302,12 +303,14 @@ get_differential_transcript_abundance_bulk <- function(.data,
 																											 test_above_log2_fold_change = NULL,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
-																											 prefix = "") {
+																											 prefix = "",
+																											 .sample_total_read_count = NULL) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-
+	.sample_total_read_count = enquo(.sample_total_read_count)
+	
 	# Check if omit_contrast_in_colnames is correctly setup
 	if(omit_contrast_in_colnames & length(.contrasts) > 1){
 		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
@@ -400,6 +403,26 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 		edgeR::DGEList(counts = .) %>%
 		
+		# Override lib.size if imposed
+		# This is useful in case you are analysing a small amount of genes, 
+		# for which the overall lib.size cannot be calculated
+		when(
+			!quo_is_null(.sample_total_read_count) ~ {
+				
+				# New library size dataset
+				new_lib_size = .data %>% pivot_sample(!!.sample) %>% select(!!.sample, !!.sample_total_read_count)
+				
+				x = (.)
+				x$samples$lib.size = 
+					new_lib_size %>%
+					slice(match(rownames(x$samples), !!.sample)) %>%
+					pull(!!.sample_total_read_count)
+				
+				x
+			},
+			~ (.)
+		) %>%
+		
 		# Scale data if method is not "none"
 		when(
 			scaling_method != "none" ~ (.) %>% edgeR::calcNormFactors(method = scaling_method),
@@ -413,7 +436,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			tolower(method) == "edger_robust_likelihood_ratio" ~ (.) %>% edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
 		)
 
-
+ 
 	edgeR_object %>%
 
 		# If I have multiple .contrasts merge the results
@@ -1485,44 +1508,74 @@ get_reduced_dimensions_MDS_bulk <-
 					 log_transform = TRUE) {
 		# Comply with CRAN NOTES
 		. = NULL
-
+		
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
 		.abundance = enquo(.abundance)
-
+		
 		# Get components from dims
 		components = 1:.dims
-
+		
+		
+		# Convert components to components list
+		if((length(components) %% 2) != 0 ) components = components %>% append(components[1])
+		components_list = split(components, ceiling(seq_along(components)/2))
+		
+		# Loop over components list and calculate MDS. (I have to make this process more elegant)
 		mds_object =
-			.data %>%
-
-			distinct(!!.feature,!!.element,!!.abundance) %>%
-
-			# Check if log transform is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
-
-			# Stop any column is not if not numeric or integer
-			ifelse_pipe(
-				(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% not() %>% any(),
-				~ stop("tidybulk says: .abundance must be numerical or integer")
-			) %>%
-			spread(!!.element,!!.abundance) %>%
-			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
-			limma::plotMDS(ndim = .dims, plot = FALSE, top = top)
-
-		# Parse results
-		mds_object %$%	cmdscale.out %>%
-			as.data.frame %>%
-			as_tibble(rownames = quo_name(.element)) %>%
-			setNames(c(quo_name(.element), sprintf("Dim%s", 1:.dims))) %>%
-
-
+			components_list %>%
+			map(
+				~ .data %>%
+					
+					distinct(!!.feature,!!.element,!!.abundance) %>%
+					
+					# Check if log transform is needed
+					ifelse_pipe(log_transform,
+											~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
+					
+					# Stop any column is not if not numeric or integer
+					ifelse_pipe(
+						(.) %>% select(!!.abundance) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+						~ stop(".abundance must be numerical or integer")
+					) %>%
+					spread(!!.element,!!.abundance) %>%
+					as_matrix(rownames = !!.feature, do_check = FALSE) %>%
+					limma::plotMDS(dim.plot = .x, plot = FALSE, top = top)
+			) 
+		
+		map2_dfr(
+			mds_object, components_list,
+			~ 	{
+				# Change of function from Bioconductor 3_13 of plotMDS
+				my_rownames = .x %>% when(
+					"distance.matrix.squared" %in% names(.x) ~ .x$distance.matrix.squared,
+					~ .x$distance.matrix
+				) %>% 
+					rownames()
+				
+				tibble(my_rownames, .x$x, .x$y) %>%
+					rename(
+						!!.element := my_rownames,
+						!!as.symbol(.y[1]) := `.x$x`,
+						!!as.symbol(.y[2]) := `.x$y`
+					) %>%
+					gather(Component, `Component value`,-!!.element)
+				
+				}
+			
+		)  %>%
+			distinct() %>%
+			spread(Component, `Component value`) %>%
+			setNames(c((.) %>% select(1) %>% colnames(),
+								 paste0("Dim", (.) %>% select(-1) %>% colnames())
+			)) %>%
+			
+			
 			# Attach attributes
 			reattach_internals(.data) %>%
 			memorise_methods_used("limma") %>%
-
+			
 			# Add raw object
 			attach_to_internals(mds_object, "MDS") %>%
 			# Communicate the attribute added
@@ -1530,7 +1583,6 @@ get_reduced_dimensions_MDS_bulk <-
 				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$MDS`")
 				(.)
 			}
-
 	}
 
 #' Get principal component information to a tibble using PCA
@@ -2379,7 +2431,7 @@ run_epic = function(mix, reference = NULL) {
 		devtools::install_github("GfellerLab/EPIC")
 	}
 	
-	if("EPIC" %in% .packages() %>% not) stop("tidybulk says: Please attach the apckage EPIC manually (i.e. library(EPIC)). This is because EPIC is only available on GitHub and it is not possible to seemlessy make EPIC part of the dependencies.")
+	if("EPIC" %in% .packages() %>% not) stop("tidybulk says: Please install and then load the package EPIC manually (i.e. library(EPIC)). This is because EPIC is not in Bioconductor or CRAN so it is not possible to seamlessly make EPIC part of the dependencies.")
 		
 	# Get common markers
 	if( reference %>% class %>% equals("data.frame")){
@@ -2523,7 +2575,7 @@ get_cell_type_proportions = function(.data,
 			# Other (hidden for the moment) methods using third party wrapper https://icbi-lab.github.io/immunedeconv	
 			method %>% tolower %in% c("mcp_counter", "quantiseq", "xcell") ~ {
 				
-				# Check if package is installed, otherwise install
+				# # Check if package is installed, otherwise install
 				if (find.package("immunedeconv", quiet = TRUE) %>% length %>% equals(0)) {
 					message("Installing immunedeconv")
 					devtools::install_github("icbi-lab/immunedeconv", upgrade = FALSE)
@@ -2681,14 +2733,6 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 		# Reset column names
 		dplyr::rename(!!value_adjusted := !!.abundance)  %>%
-
-		# # Add filtering info
-		# right_join(
-		# 	df_for_combat %>%
-		# 		distinct(!!.transcript,!!.sample,
-		# 						 lowly_abundant),
-		# 	by = c(quo_name(.transcript), quo_name(.sample))
-		# )%>%
 
 		# Attach attributes
 		reattach_internals(.data) %>%
@@ -2865,7 +2909,9 @@ tidybulk_to_SummarizedExperiment = function(.data,
 #'
 #' @examples
 #'
-#' as_matrix(head(dplyr::select(tidybulk::counts_mini, transcript, count)), rownames=transcript)
+#' library(dplyr)
+#' 
+#' tidybulk::se_mini %>% tidybulk() %>% select(feature, count) %>% head %>% as_matrix(rownames=feature)
 #'
 #' @export
 as_matrix <- function(tbl,

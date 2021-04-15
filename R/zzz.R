@@ -5,8 +5,10 @@
 	msg = paste0("========================================
 ", pkgname, " version ", version, "
 If you use TIDYBULK in published research, please cite:
+
 Mangiola et al. tidybulk: an R tidy framework for modular 
 transcriptomic data analysis. Genome Biology 2021.
+
 This message can be suppressed by:
   suppressPackageStartupMessages(library(tidybulk))
 ========================================

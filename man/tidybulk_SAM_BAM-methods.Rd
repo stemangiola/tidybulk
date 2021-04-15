@@ -26,7 +26,7 @@ A `tidybulk` object
 tidybulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This function is based on FeatureCounts package (DOI: 10.1093/bioinformatics/btt656). This function creates a tidybulk object and is useful if you want
 to avoid to specify .sample, .transcript and .abundance arguments all the times.

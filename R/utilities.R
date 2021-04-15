@@ -990,7 +990,7 @@ get_specific_annotation_columns = function(.data, .col){
 
 #' log10_reverse_trans
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description it perform log scaling and reverse the axis. Useful to plot negative log probabilities. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
 #'
@@ -1019,7 +1019,7 @@ log10_reverse_trans <- function() {
 
 #' logit scale
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description it perform logit scaling with right axis formatting. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
 #'
@@ -1115,6 +1115,14 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 
 	factor_of_interest = enquo(factor_of_interest)
 
+	# Check if package is installed, otherwise install
+	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing edgeR needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("edgeR", ask = FALSE)
+	}
+	
 	# Check if factor_of_interest is continuous and exists
 	string_factor_of_interest =
 

@@ -118,7 +118,7 @@ A `tbl` object
 test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 
@@ -154,7 +154,7 @@ dge %>%
 \examples{
 \dontrun{
 
-df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+df_entrez = tidybulk::se_mini \%>\% tidybulk() \%>\% as_tibble() \%>\% symbol_to_entrez( .transcript = feature, .sample = sample)
 df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 
 library("EGSEA")
