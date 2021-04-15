@@ -110,7 +110,7 @@ A `tbl` with additional columns for the statistics from the hypothesis test (e.g
 test_stratification_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This routine applies a deconvolution method (e.g., Cibersort; DOI: 10.1038/nmeth.3337)
 and passes the proportions inferred into a generalised linear model (DOI:dx.doi.org/10.1007/s11749-010-0189-z)
@@ -135,7 +135,8 @@ deconvolve_cellularity(
 library(dplyr)
 library(tidyr)
 
- tidybulk::counts_mini \%>\%
+tidybulk::se_mini \%>\%
+   tidybulk() \%>\%
 
 # Add survival data
 nest(data = -sample) \%>\%
@@ -146,9 +147,6 @@ mutate(
 unnest(data) \%>\%
 test_stratification_cellularity(
 	survival::Surv(days, dead) ~ .,
-	sample,
-	transcript,
-	count,
 	cores = 1
 )
 

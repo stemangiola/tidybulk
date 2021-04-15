@@ -18,7 +18,7 @@ distinct
 }
 \examples{
 
-distinct(tidybulk::counts_mini)
+tidybulk::se_mini \%>\% tidybulk() \%>\% distinct()
 
 
 }

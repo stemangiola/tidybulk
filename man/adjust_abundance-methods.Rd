@@ -110,7 +110,7 @@ A `SummarizedExperiment` object
 adjust_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This function adjusts the abundance for (known) unwanted variation.
 At the moment just an unwanted covariate is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
@@ -122,9 +122,9 @@ Underlying method:
 
 
 
-cm = tidybulk::counts_mini
+cm = tidybulk::se_mini
 cm$batch = 0
-cm$batch[cm$sample \%in\% c("SRR1740035", "SRR1740043")] = 1
+cm$batch[colnames(cm) \%in\% c("SRR1740035", "SRR1740043")] = 1
 
 res =
  cm \%>\%

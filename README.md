@@ -75,7 +75,7 @@ Please have a look also to
 | `impute_missing_abundance` | Impute abundance for missing data points using sample groupings |
 | `fill_missing_abundance`   | Fill abundance for missing data points using an arbitrary value |
 
-All functions are directly compatible with `SummarizedExperiment`
+All functions are directly compatibble with `SummarizedExperiment`
 object.
 
 ## Installation

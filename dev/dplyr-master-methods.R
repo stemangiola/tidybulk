@@ -268,7 +268,7 @@ dplyr::arrange_if
 #'
 #' @examples
 #'
-#' distinct(tidybulk::counts_mini)
+#' tidybulk::se_mini %>% tidybulk() %>% distinct()
 #'
 #'
 #' @export
