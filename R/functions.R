@@ -1263,18 +1263,35 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
     
 	# Specify gene sets to include
 	
-	# Remove kegg_ prefix
-	gene_collections = gene_collections %>% str_replace("kegg_", "")
-	
+	# Include all msigdb and kegg if "all"
 	if ("all" %in% gene_collections) {
 	    msigdb.gsets <- "all"
 	    kegg.exclude <- c()
+	    collections = c("kegg", "msigdb")
 	} else {
-	    msig <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
-	    kegg <- c("disease", "metabolism", "signaling")
-	    msigdb.gsets <- gene_collections[gene_collections %in% msig]
-	    kegg.exclude <- kegg[!(kegg %in% gene_collections)]
+	    # Record which collections used (kegg, msigdb) for bibliography
+	    collections = c()
 	    
+	    # Identify any msigdb sets to be included
+	    msig <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
+	    msigdb.gsets <- gene_collections[gene_collections %in% msig]
+	    
+	    # Record if msigdb used for bibliography
+	    if (length(msigdb.gsets) >= 1) {
+	        collections = c(collections, "msigdb")
+	    }
+	    
+	    # Specify kegg sets
+	    
+	    # Record if kegg used for bibliography
+	    if ("kegg" %in% gene_collections) {
+	        gene_collections = gene_collections %>% str_replace("kegg_", "")
+	        collections = c(collections, "kegg")
+	    }
+	    
+	     # Identify any kegg sets to be included
+	    kegg <- c("disease", "metabolism", "signaling")
+	    kegg.exclude <- kegg[!(kegg %in% gene_collections)]
 	    # If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object 
 	    if (length(kegg.exclude) == 3) {
 	        kegg.exclude = "all"
@@ -1373,7 +1390,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	}
 
 	# add to bibliography
-	out %>% memorise_methods_used("egsea")
+	out %>% memorise_methods_used(c("egsea", collections, method))
 }
 
 #' Get K-mean clusters to a tibble
@@ -3309,7 +3326,7 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 		select(-geneID) %>% 
 		
 		# Add methods used
-		memorise_methods_used(c("clusterProfiler", "msigdbr"))
+		memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"))
 
 }
 
