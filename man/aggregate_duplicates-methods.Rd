@@ -112,10 +112,7 @@ For example, we often have to convert ensembl symbols to gene/transcript symbol,
 \examples{
 
     aggregate_duplicates(
-    tidybulk::counts_mini,
-    sample,
-    transcript,
-    `count`,
+    tidybulk::se_mini,
     aggregation_function = sum
     )
 

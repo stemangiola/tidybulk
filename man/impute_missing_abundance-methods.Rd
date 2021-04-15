@@ -83,11 +83,8 @@ This function imputes the abundance of missing sample-transcript pair using the 
 
 res =
 	impute_missing_abundance(
-		tidybulk::counts_mini,
-	~ condition,
-	.sample = sample,
-	.transcript = transcript,
-	.abundance = count
+		tidybulk::se_mini,
+	~ condition
 )
 
 

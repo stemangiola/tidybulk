@@ -95,10 +95,7 @@ At the moment this function uses edgeR \url{https://doi.org/10.1093/bioinformati
 
 
 	keep_variable(
-	tidybulk::counts_mini,
-	    sample,
-	    transcript,
-	    `count`,
+	tidybulk::se_mini,
 	    top = 500
 	)
 

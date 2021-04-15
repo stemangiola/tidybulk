@@ -136,7 +136,7 @@ get_reduced_dimensions_MDS_bulk_SE <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE,
-					 scale = NULL # This is only a dummy argument for making it compatible with PCA
+					 scale = NULL # This is only a dummy argument for making it compatibble with PCA
 					) {
 		# Comply with CRAN NOTES
 		. = NULL
@@ -330,7 +330,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 					 top = 500,
 					 of_samples = TRUE,
 					 log_transform = TRUE,
-					 scale = NULL, # This is only a dummy argument for making it compatible with PCA
+					 scale = NULL, # This is only a dummy argument for making it compatibble with PCA
 					 ...) {
 		# Comply with CRAN NOTES
 		. = NULL
@@ -1007,8 +1007,8 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 					(.) %>%
 					DESeq2::results(contrast = c(
 						parse_formula(.formula)[1],
-						deseq2_object@colData[,parse_formula(.formula)[1]] %>% levels %>% .[2],
-						deseq2_object@colData[,parse_formula(.formula)[1]] %>% levels %>% .[1]
+						deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels %>% .[2],
+						deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels %>% .[1]
 					)) %>%
 					as_tibble(rownames = "transcript"), 
 				

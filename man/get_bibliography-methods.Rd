@@ -52,7 +52,7 @@ This methods returns the bibliography list of your workflow from the internals o
 \examples{
 
 # Define tidybulk tibble
-df = tidybulk(tidybulk::counts_mini, sample, transcript, count)
+df = tidybulk(tidybulk::se_mini)
 
 get_bibliography(df)
 

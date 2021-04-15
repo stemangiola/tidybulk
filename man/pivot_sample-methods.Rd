@@ -51,10 +51,7 @@ This functon extracts only sample-related information for downstream analysis (e
 \examples{
 
 
-	pivot_sample(
-		tidybulk::counts_mini,
-		.sample = sample
-	)
+	pivot_sample(tidybulk::se_mini )
 
 
 }

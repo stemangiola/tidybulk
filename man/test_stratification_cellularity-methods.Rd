@@ -135,7 +135,8 @@ deconvolve_cellularity(
 library(dplyr)
 library(tidyr)
 
- tidybulk::counts_mini \%>\%
+tidybulk::se_mini \%>\%
+   tidybulk() \%>\%
 
 # Add survival data
 nest(data = -sample) \%>\%
@@ -146,9 +147,6 @@ mutate(
 unnest(data) \%>\%
 test_stratification_cellularity(
 	survival::Surv(days, dead) ~ .,
-	sample,
-	transcript,
-	count,
 	cores = 1
 )
 

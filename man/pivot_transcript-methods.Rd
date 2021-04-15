@@ -51,10 +51,7 @@ This functon extracts only transcript-related information for downstream analysi
 \examples{
 
 
-	pivot_transcript(
-		tidybulk::counts_mini,
-		.transcript = transcript
-	)
+	pivot_transcript(tidybulk::se_mini 	)
 
 
 }

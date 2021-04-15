@@ -139,6 +139,6 @@ Seurat::FindClusters(method = "igraph", ...)
 \examples{
 
 
-    cluster_elements(tidybulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
+    cluster_elements(tidybulk::se_mini,	centers = 2, method="kmeans")
 
 }

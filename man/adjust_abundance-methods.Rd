@@ -122,9 +122,9 @@ Underlying method:
 
 
 
-cm = tidybulk::counts_mini
+cm = tidybulk::se_mini
 cm$batch = 0
-cm$batch[cm$sample \%in\% c("SRR1740035", "SRR1740043")] = 1
+cm$batch[colnames(cm) \%in\% c("SRR1740035", "SRR1740043")] = 1
 
 res =
  cm \%>\%

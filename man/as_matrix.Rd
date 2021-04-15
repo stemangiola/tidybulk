@@ -21,6 +21,8 @@ Get matrix from tibble
 }
 \examples{
 
-as_matrix(head(dplyr::select(tidybulk::counts_mini, transcript, count)), rownames=transcript)
+library(dplyr)
+
+tidybulk::se_mini \%>\% tidybulk() \%>\% select(feature, count) \%>\% head \%>\% as_matrix(rownames=feature)
 
 }

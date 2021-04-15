@@ -128,8 +128,10 @@ CIBERSORT(Y = data, X = reference, ...)
 }
 \examples{
 
+library(dplyr)
+
 # Subsetting for time efficiency
-deconvolve_cellularity(filter(tidybulk::counts, sample=="SRR1740034"), sample, transcript, `count`, cores = 1)
+tidybulk::se_mini \%>\% tidybulk() \%>\% filter(sample=="SRR1740034") \%>\% deconvolve_cellularity(sample, feature, count, cores = 1)
 
 
 }

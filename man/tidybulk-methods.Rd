@@ -57,7 +57,7 @@ arguments are stored as metadata. They can be extracted as attr(<object>, "inter
 
 
 
-my_tt =  tidybulk(tidybulk::counts_mini, sample, transcript, count)
+my_tt =  tidybulk(tidybulk::se_mini)
 
 
 }

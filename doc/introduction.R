@@ -27,6 +27,8 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
+tibble_counts = tidybulk::counts_SE %>% tidybulk() %>% as_tibble()
+
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  BiocManager::install("tidybulk")
@@ -73,9 +75,9 @@ counts_SE.norm.variable = counts_SE.norm %>% keep_variable()
 #  
 #  norm_counts.table = norm_counts.table[rownames(x)]
 #  
-#  norm_counts.table$cell_type = tidybulk::counts[
+#  norm_counts.table$cell_type = tibble_counts[
 #  	match(
-#  		tidybulk::counts$sample,
+#  		tibble_counts$sample,
 #  		rownames(norm_counts.table)
 #  	),
 #  	"Cell.type"
@@ -97,8 +99,8 @@ counts_SE.norm.MDS =
 #  	cmdscale.out %>%
 #  	setNames(sprintf("Dim%s", 1:6))
 #  
-#  cmds$cell_type = tidybulk::counts[
-#  	match(tidybulk::counts$sample, rownames(cmds)),
+#  cmds$cell_type = tibble_counts[
+#  	match(tibble_counts$sample, rownames(cmds)),
 #  	"Cell.type"
 #  ]
 
@@ -152,8 +154,8 @@ counts_SE.norm.tSNE =
 #  	perplexity=10,
 #  		pca_scale =TRUE
 #  )$Y
-#  tsne$cell_type = tidybulk::counts[
-#  	match(tidybulk::counts$sample, rownames(tsne)),
+#  tsne$cell_type = tibble_counts[
+#  	match(tibble_counts$sample, rownames(tsne)),
 #  	"Cell.type"
 #  ]
 
@@ -272,8 +274,8 @@ counts_SE.cibersort =
 #  	"mixture_file.txt",
 #  	perm=100, QN=TRUE
 #  )
-#  results$cell_type = tidybulk::counts[
-#  	match(tidybulk::counts$sample, rownames(results)),
+#  results$cell_type = tibble_counts[
+#  	match(tibble_counts$sample, rownames(results)),
 #  	"Cell.type"
 #  ]
 #  
@@ -314,8 +316,8 @@ counts_SE.norm.cluster = counts_SE.norm.MDS %>%
 #  k = kmeans(count_m_log, iter.max = 1000, ...)
 #  cluster = k$cluster
 #  
-#  cluster$cell_type = tidybulk::counts[
-#  	match(tidybulk::counts$sample, rownames(cluster)),
+#  cluster$cell_type = tibble_counts[
+#  	match(tibble_counts$sample, rownames(cluster)),
 #  	c("Cell.type", "Dim1", "Dim2")
 #  ]
 #  
@@ -346,8 +348,8 @@ counts_SE.norm.SNN =
 #  snn = FindClusters(snn, method = "igraph", ...)
 #  snn = snn[["seurat_clusters"]]
 #  
-#  snn$cell_type = tidybulk::counts[
-#  	match(tidybulk::counts$sample, rownames(snn)),
+#  snn$cell_type = tibble_counts[
+#  	match(tibble_counts$sample, rownames(snn)),
 #  	c("Cell.type", "Dim1", "Dim2")
 #  ]
 #  

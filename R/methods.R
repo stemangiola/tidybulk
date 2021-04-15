@@ -34,7 +34,7 @@ setOldClass("tidybulk")
 #'
 #'
 #'
-#' my_tt =  tidybulk(tidybulk::counts_mini, sample, transcript, count)
+#' my_tt =  tidybulk(tidybulk::se_mini)
 #'
 #'
 #' @docType methods
@@ -323,8 +323,7 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @examples
 #'
 #'
-#'  tidybulk::counts_mini %>%
-#'    tidybulk(sample, transcript, count) %>%
+#'  tidybulk::se_mini %>%
 #'    identify_abundant() %>%
 #'    scale_abundance()
 #'
@@ -525,7 +524,7 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 #' @examples
 #'
 #'
-#'     cluster_elements(tidybulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
+#'     cluster_elements(tidybulk::se_mini,	centers = 2, method="kmeans")
 #'
 #' @docType methods
 #' @rdname cluster_elements-methods
@@ -717,15 +716,13 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 #'
 #'
 #' counts.MDS =
-#'  tidybulk::counts_mini %>%
-#'  tidybulk(sample, transcript, count) %>%
+#'  tidybulk::se_mini %>%
 #'  identify_abundant() %>%
 #'  reduce_dimensions( method="MDS", .dims = 3)
 #'
 #'
 #' counts.PCA =
-#'  tidybulk::counts_mini %>%
-#'  tidybulk(sample, transcript, count) %>%
+#'  tidybulk::se_mini %>%
 #'  identify_abundant() %>%
 #'  reduce_dimensions(method="PCA", .dims = 3)
 #'
@@ -936,8 +933,7 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 #' @examples
 #'
 #' counts.MDS =
-#'  tidybulk::counts_mini %>%
-#'  tidybulk(sample, transcript, count) %>%
+#'  tidybulk::se_mini %>%
 #'  identify_abundant() %>%
 #'  reduce_dimensions( method="MDS", .dims = 3)
 #'
@@ -1132,8 +1128,7 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 #' @examples
 #'
 #'
-#'  tidybulk::counts_mini %>%
-#'  tidybulk(sample, transcript, count) %>%
+#'  tidybulk::se_mini %>%
 #'  identify_abundant() %>%
 #'    remove_redundancy(
 #' 	   .element = sample,
@@ -1143,8 +1138,7 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 #' 	   	)
 #'
 #' counts.MDS =
-#'  tidybulk::counts_mini %>%
-#'  tidybulk(sample, transcript, count) %>%
+#'  tidybulk::se_mini %>%
 #'  identify_abundant() %>%
 #'   reduce_dimensions( method="MDS", .dims = 3)
 #'
@@ -1308,9 +1302,9 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #'
 #'
 #'
-#' cm = tidybulk::counts_mini
+#' cm = tidybulk::se_mini
 #' cm$batch = 0
-#' cm$batch[cm$sample %in% c("SRR1740035", "SRR1740043")] = 1
+#' cm$batch[colnames(cm) %in% c("SRR1740035", "SRR1740043")] = 1
 #'
 #' res =
 #'  cm %>%
@@ -1491,10 +1485,7 @@ setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 #' @examples
 #'
 #'     aggregate_duplicates(
-#'     tidybulk::counts_mini,
-#'     sample,
-#'     transcript,
-#'     `count`,
+#'     tidybulk::se_mini,
 #'     aggregation_function = sum
 #'     )
 #'
@@ -1607,8 +1598,10 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 #'
 #' @examples
 #'
+#' library(dplyr)
+#' 
 #' # Subsetting for time efficiency
-#' deconvolve_cellularity(filter(tidybulk::counts, sample=="SRR1740034"), sample, transcript, `count`, cores = 1)
+#' tidybulk::se_mini %>% tidybulk() %>% filter(sample=="SRR1740034") %>% deconvolve_cellularity(sample, feature, count, cores = 1)
 #'
 #'
 #' @docType methods
@@ -1748,7 +1741,7 @@ setMethod("deconvolve_cellularity",
 #'
 #' @examples
 #'
-#' symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+#' tidybulk::se_mini %>% tidybulk() %>% as_tibble() %>% symbol_to_entrez(.transcript = feature, .sample = sample)
 #'
 #' @export
 #'
@@ -1798,7 +1791,7 @@ symbol_to_entrez = function(.data,
 #'
 #' @examples
 #'
-#' describe_transcript(tidybulk::counts_mini, .transcript = transcript)
+#' describe_transcript(tidybulk::se_mini)
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods
@@ -1937,8 +1930,10 @@ setMethod("describe_transcript", "tidybulk", .describe_transcript)
 #'
 #' @examples
 #'
-#'
-#' 	ensembl_to_symbol(tidybulk::counts_ensembl, ens)
+#' library(dplyr)
+#' 
+#' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% ensembl_to_symbol(feature)
+#'  	
 #'
 #'
 #' @docType methods
@@ -2098,15 +2093,13 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #'  # edgeR
 #'
-#'  tidybulk::counts_mini %>%
-#'  tidybulk(sample, transcript, count) %>%
+#'  tidybulk::se_mini %>%
 #'  identify_abundant() %>%
 #' 	test_differential_abundance( ~ condition )
 #'
 #' 	# The function `test_differential_abundance` operates with contrasts too
 #'
-#'  tidybulk::counts_mini %>%
-#'  tidybulk(sample, transcript, count) %>%
+#'  tidybulk::se_mini %>%
 #'  identify_abundant() %>%
 #'  test_differential_abundance(
 #' 	    ~ 0 + condition,
@@ -2115,15 +2108,16 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #'  # DESeq2 - equivalent for limma-voom
 #'
-#'  tidybulk::counts_mini %>%
-#'  tidybulk(sample, transcript, count) %>%
+#' my_se_mini = tidybulk::se_mini
+#' my_se_mini$condition  = factor(my_se_mini$condition)
+#' 
+#' my_se_mini  %>%
 #'  identify_abundant() %>%
 #' 	test_differential_abundance( ~ condition, method="deseq2" )
 #'
 #' 	# The function `test_differential_abundance` operates with contrasts too
 #'
-#'  tidybulk::counts_mini %>%
-#'  tidybulk(sample, transcript, count) %>%
+#'  my_se_mini %>%
 #'  identify_abundant() %>%
 #'  test_differential_abundance(
 #' 	    ~ 0 + condition,
@@ -2397,10 +2391,7 @@ setMethod("test_differential_abundance",
 #'
 #'
 #' 	keep_variable(
-#' 	tidybulk::counts_mini,
-#' 	    sample,
-#' 	    transcript,
-#' 	    `count`,
+#' 	tidybulk::se_mini,
 #' 	    top = 500
 #' 	)
 #'
@@ -2513,10 +2504,7 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 #'
 #'
 #' 	identify_abundant(
-#' 	tidybulk::counts_mini,
-#' 	    sample,
-#' 	    transcript,
-#' 	    `count`
+#' 	tidybulk::se_mini
 #' 	)
 #'
 #'
@@ -2654,10 +2642,7 @@ setMethod("identify_abundant", "tidybulk", .identify_abundant)
 #'
 #'
 #' 	keep_abundant(
-#' 	tidybulk::counts_mini,
-#' 	    sample,
-#' 	    transcript,
-#' 	    `count`
+#' 	tidybulk::se_mini
 #' 	)
 #'
 #'
@@ -2807,7 +2792,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @examples
 #' \dontrun{
 #'
-#' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+#' df_entrez = tidybulk::se_mini %>% tidybulk() %>% as_tibble() %>% symbol_to_entrez( .transcript = feature, .sample = sample)
 #' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 #'
 #' library("EGSEA")
@@ -2967,9 +2952,9 @@ setMethod("test_gene_enrichment",
 #'
 #' @examples
 #'
-#' df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+#' df_entrez = tidybulk::se_mini %>% tidybulk() %>% as_tibble() %>% symbol_to_entrez( .transcript = feature, .sample = sample)
 #' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
-#' df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+#' df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #'
 #' 	test_gene_overrepresentation(
 #' 		df_entrez,
@@ -3101,10 +3086,7 @@ setMethod("test_gene_overrepresentation",
 #' @examples
 #'
 #'
-#' 	pivot_sample(
-#'			tidybulk::counts_mini,
-#'			.sample = sample
-#'		)
+#' 	pivot_sample(tidybulk::se_mini )
 #'
 #'
 #' @docType methods
@@ -3196,10 +3178,7 @@ setMethod("pivot_sample",
 #' @examples
 #'
 #'
-#' 	pivot_transcript(
-#'			tidybulk::counts_mini,
-#'			.transcript = transcript
-#'		)
+#' 	pivot_transcript(tidybulk::se_mini 	)
 #'
 #'
 #' @docType methods
@@ -3294,7 +3273,7 @@ setMethod("pivot_transcript",
 #'
 #' @examples
 #'
-#' fill_missing_abundance(tidybulk::counts_mini, sample, transcript, count, fill_with = 0)
+#' tidybulk::se_mini %>% tidybulk() %>% fill_missing_abundance( fill_with = 0)
 #'
 #'
 #' @docType methods
@@ -3402,11 +3381,8 @@ setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
 #'
 #' res =
 #' 	impute_missing_abundance(
-#' 		tidybulk::counts_mini,
-#' 	~ condition,
-#' 	.sample = sample,
-#' 	.transcript = transcript,
-#' 	.abundance = count
+#' 		tidybulk::se_mini,
+#' 	~ condition
 #' )
 #'
 #'
@@ -3555,11 +3531,8 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #'
 #'  # Regular regression
 #' 	test_differential_cellularity(
-#' 	 tidybulk::counts_mini,
+#' 	 tidybulk::se_mini ,
 #' 	    . ~ condition,
-#' 	    sample,
-#' 	    transcript,
-#' 	    count,
 #' 	    cores = 1
 #' 	)
 #'
@@ -3567,7 +3540,8 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #' 	library(dplyr)
 #' 	library(tidyr)
 #'
-#'	tidybulk::counts_mini %>%
+#'	tidybulk::se_mini %>%
+#'	   tidybulk() %>%
 #'
 #'		# Add survival data
 #'		nest(data = -sample) %>%
@@ -3580,9 +3554,6 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #'		# Test
 #'		test_differential_cellularity(
 #'		    survival::Surv(days, dead) ~ .,
-#'		    sample,
-#'		    transcript,
-#'		    count,
 #'		    cores = 1
 #'		)
 #'
@@ -3725,7 +3696,8 @@ setMethod("test_differential_cellularity",
 #' library(dplyr)
 #' library(tidyr)
 #'
-#'  tidybulk::counts_mini %>%
+#'	tidybulk::se_mini %>%
+#'	   tidybulk() %>%
 #'
 #'	# Add survival data
 #'	nest(data = -sample) %>%
@@ -3736,9 +3708,6 @@ setMethod("test_differential_cellularity",
 #'	unnest(data) %>%
 #'	test_stratification_cellularity(
 #'		survival::Surv(days, dead) ~ .,
-#'		sample,
-#'		transcript,
-#'		count,
 #'		cores = 1
 #'	)
 #'
@@ -3851,7 +3820,7 @@ setMethod("test_stratification_cellularity",
 #' @examples
 #'
 #' # Define tidybulk tibble
-#' df = tidybulk(tidybulk::counts_mini, sample, transcript, count)
+#' df = tidybulk(tidybulk::se_mini)
 #'
 #' get_bibliography(df)
 #'

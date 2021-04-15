@@ -119,10 +119,7 @@ At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
 
 
 	identify_abundant(
-	tidybulk::counts_mini,
-	    sample,
-	    transcript,
-	    `count`
+	tidybulk::se_mini
 	)
 
 
