@@ -18,6 +18,7 @@ test_gene_enrichment(
   .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_collections = "all",
   species,
   cores = 10
 )
@@ -30,6 +31,7 @@ test_gene_enrichment(
   .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_collections = "all",
   species,
   cores = 10
 )
@@ -42,6 +44,7 @@ test_gene_enrichment(
   .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_collections = "all",
   species,
   cores = 10
 )
@@ -54,6 +57,7 @@ test_gene_enrichment(
   .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_collections = "all",
   species,
   cores = 10
 )
@@ -95,7 +99,9 @@ test_gene_enrichment(
 
 \item{.contrasts}{= NULL,}
 
-\item{method}{A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.}
+\item{method}{A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.}
+
+\item{gene_collections}{A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: "h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling". c1 is human specific. Default is "all", all MSigDB and KEGG gene set collections are used.}
 
 \item{species}{A character. For example, human or mouse}
 
@@ -115,12 +121,12 @@ A `tbl` object
 A `tbl` object
 }
 \description{
-test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` of gene set information
 }
 \details{
 `r lifecycle::badge("maturing")`
 
-This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
+This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 
 
 dge =
@@ -135,7 +141,8 @@ dge =
 	as_matrix(rownames = !!.entrez) %>%
 	edgeR::DGEList(counts = .)
 
-idx =  buildIdx(entrezIDs = rownames(dge), species = species)
+idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets, 
+               kegg.exclude = kegg.exclude)
 
 dge %>%
 
@@ -146,6 +153,7 @@ dge %>%
 	egsea(
 		contrasts = my_contrasts,
 		baseGSEAs = method,
+		gs.annots = idx,
 		sort.by = "med.rank",
 		num.threads = cores,
 		report = FALSE
@@ -165,7 +173,8 @@ library("EGSEA")
 		.sample = sample,
 		.entrez = entrez,
 		.abundance = count,
-      method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+         method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+         gene_collections = "all",
 		species="human",
 		cores = 2
 	)
