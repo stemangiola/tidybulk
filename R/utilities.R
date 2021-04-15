@@ -990,7 +990,7 @@ get_specific_annotation_columns = function(.data, .col){
 
 #' log10_reverse_trans
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description it perform log scaling and reverse the axis. Useful to plot negative log probabilities. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
 #'
@@ -1019,7 +1019,7 @@ log10_reverse_trans <- function() {
 
 #' logit scale
 #'
-#' \lifecycle{maturing}
+#' `r lifecycle::badge("maturing")`
 #'
 #' @description it perform logit scaling with right axis formatting. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
 #'

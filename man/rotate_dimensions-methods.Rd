@@ -118,7 +118,7 @@ A `SummarizedExperiment` object
 rotate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This function to rotate two dimensions such as the reduced dimensions.
 
@@ -136,8 +136,7 @@ Underlying custom method:
 \examples{
 
 counts.MDS =
- tidybulk::counts_mini \%>\%
- tidybulk(sample, transcript, count) \%>\%
+ tidybulk::se_mini \%>\%
  identify_abundant() \%>\%
  reduce_dimensions( method="MDS", .dims = 3)
 

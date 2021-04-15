@@ -5,7 +5,7 @@
 #' @param data A tbl. (See tidyr)
 #' @param cols <[`tidy-select`][tidyr_tidy_select]> Columns to unnest.
 #'   If you `unnest()` multiple columns, parallel entries must be of
-#'   compatible sizes, i.e. they're either equal or length 1 (following the
+#'   compatibble sizes, i.e. they're either equal or length 1 (following the
 #'   standard tidyverse recycling rules).
 #' @param ... <[`tidy-select`][tidyr_tidy_select]> Columns to nest, specified
 #'   using name-variable pairs of the form `new_col=c(col1, col2, col3)`.
@@ -43,7 +43,7 @@
 #'
 #' library(dplyr)
 #' 
-#' nest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript) %>%
+#' tidybulk::se_mini %>% tidybulk() %>% nest( data = -feature) %>%
 #' unnest(data)
 #'
 #' @rdname nest-methods
@@ -84,7 +84,7 @@ unnest.nested_tidybulk <- function (data, cols, ..., keep_empty=FALSE, ptype=NUL
 #'
 #' @examples
 #'
-#' nest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript)
+#' tidybulk::se_mini %>% tidybulk() %>% nest( data = -feature)
 #'
 #' @rdname nest-methods
 #' @name nest

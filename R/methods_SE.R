@@ -1665,6 +1665,9 @@ setMethod("pivot_transcript",
 				select( transcript, col_formula) %>%
 				distinct()
 			
+			# If no missing just return the same matrix
+			if(nrow(NA_data) == 0) return(.x)
+			
 			.data_OK = 
 				.my_data %>%
 				anti_join(NA_data, by = c("transcript", col_formula))

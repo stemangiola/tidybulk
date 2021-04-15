@@ -166,7 +166,7 @@ A `SummarizedExperiment` object
 test_differential_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with additional columns for the statistics from the hypothesis test.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This function provides the option to use edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}, limma-voom \url{https://doi.org/10.1186/gb-2014-15-2-r29}, limma_voom_sample_weights \url{https://doi.org/10.1093/nar/gkv412} or  DESeq2 \url{https://doi.org/10.1186/s13059-014-0550-8} to perform the testing.
 All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.
@@ -211,15 +211,13 @@ DESeq2::results()
 
  # edgeR
 
- tidybulk::counts_mini \%>\%
- tidybulk(sample, transcript, count) \%>\%
+ tidybulk::se_mini \%>\%
  identify_abundant() \%>\%
 	test_differential_abundance( ~ condition )
 
 	# The function `test_differential_abundance` operates with contrasts too
 
- tidybulk::counts_mini \%>\%
- tidybulk(sample, transcript, count) \%>\%
+ tidybulk::se_mini \%>\%
  identify_abundant() \%>\%
  test_differential_abundance(
 	    ~ 0 + condition,
@@ -228,15 +226,16 @@ DESeq2::results()
 
  # DESeq2 - equivalent for limma-voom
 
- tidybulk::counts_mini \%>\%
- tidybulk(sample, transcript, count) \%>\%
+my_se_mini = tidybulk::se_mini
+my_se_mini$condition  = factor(my_se_mini$condition)
+
+my_se_mini  \%>\%
  identify_abundant() \%>\%
 	test_differential_abundance( ~ condition, method="deseq2" )
 
 	# The function `test_differential_abundance` operates with contrasts too
 
- tidybulk::counts_mini \%>\%
- tidybulk(sample, transcript, count) \%>\%
+ my_se_mini \%>\%
  identify_abundant() \%>\%
  test_differential_abundance(
 	    ~ 0 + condition,

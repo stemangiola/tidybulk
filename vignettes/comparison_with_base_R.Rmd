@@ -80,6 +80,8 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
+tibble_counts = tidybulk::counts_SE %>% tidybulk() %>% as_tibble()
+
 ```
 
 In this article we show some examples of the differences in coding between tidybulk/tidyverse and base R. We noted a decrease > 10x of assignments and a decrease of > 2x of line numbers.
@@ -164,9 +166,9 @@ x <- x[o[1L:top],,drop=FALSE]
 
 norm_counts.table = norm_counts.table[rownames(x)]
 
-norm_counts.table$cell_type = tidybulk::counts[
+norm_counts.table$cell_type = tibble_counts[
 	match(
-		tidybulk::counts$sample,
+		tibble_counts$sample,
 		rownames(norm_counts.table)
 	),
 	"Cell type"
@@ -200,8 +202,8 @@ cmds = cmds %$%
 	cmdscale.out %>%
 	setNames(sprintf("Dim%s", 1:6))
 
-cmds$cell_type = tidybulk::counts[
-	match(tidybulk::counts$sample, rownames(cmds)),
+cmds$cell_type = tibble_counts[
+	match(tibble_counts$sample, rownames(cmds)),
 	"Cell type"
 ]
 ```
@@ -260,8 +262,8 @@ tsne = Rtsne::Rtsne(
 	perplexity=10,
 		pca_scale =TRUE
 )$Y
-tsne$cell_type = tidybulk::counts[
-	match(tidybulk::counts$sample, rownames(tsne)),
+tsne$cell_type = tibble_counts[
+	match(tibble_counts$sample, rownames(tsne)),
 	"Cell type"
 ]
 ```
@@ -390,8 +392,8 @@ results <- CIBERSORT(
 	"mixture_file.txt",
 	perm=100, QN=TRUE
 )
-results$cell_type = tidybulk::counts[
-	match(tidybulk::counts$sample, rownames(results)),
+results$cell_type = tibble_counts[
+	match(tibble_counts$sample, rownames(results)),
 	"Cell type"
 ]
 
@@ -418,8 +420,8 @@ count_m_log = log(count_m + 1)
 k = kmeans(count_m_log, iter.max = 1000, ...)
 cluster = k$cluster
 
-cluster$cell_type = tidybulk::counts[
-	match(tidybulk::counts$sample, rownames(cluster)),
+cluster$cell_type = tibble_counts[
+	match(tibble_counts$sample, rownames(cluster)),
 	c("Cell type", "Dim1", "Dim2")
 ]
 
@@ -454,8 +456,8 @@ snn = FindNeighbors(snn)
 snn = FindClusters(snn, method = "igraph", ...)
 snn = snn[["seurat_clusters"]]
 
-snn$cell_type = tidybulk::counts[
-	match(tidybulk::counts$sample, rownames(snn)),
+snn$cell_type = tibble_counts[
+	match(tibble_counts$sample, rownames(snn)),
 	c("Cell type", "Dim1", "Dim2")
 ]
 

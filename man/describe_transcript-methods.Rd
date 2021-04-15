@@ -62,6 +62,6 @@ describe_transcript
 }
 \examples{
 
-describe_transcript(tidybulk::counts_mini, .transcript = transcript)
+describe_transcript(tidybulk::se_mini)
 
 }

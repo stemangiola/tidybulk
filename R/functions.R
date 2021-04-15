@@ -2477,7 +2477,7 @@ run_epic = function(mix, reference = NULL) {
 		devtools::install_github("GfellerLab/EPIC")
 	}
 	
-	if("EPIC" %in% .packages() %>% not) stop("tidybulk says: Please attach the apckage EPIC manually (i.e. library(EPIC)). This is because EPIC is only available on GitHub and it is not possible to seemlessy make EPIC part of the dependencies.")
+	if("EPIC" %in% .packages() %>% not) stop("tidybulk says: Please install and then load the package EPIC manually (i.e. library(EPIC)). This is because EPIC is not in Bioconductor or CRAN so it is not possible to seamlessly make EPIC part of the dependencies.")
 		
 	# Get common markers
 	if( reference %>% class %>% equals("data.frame")){
@@ -2621,7 +2621,7 @@ get_cell_type_proportions = function(.data,
 			# Other (hidden for the moment) methods using third party wrapper https://icbi-lab.github.io/immunedeconv	
 			method %>% tolower %in% c("mcp_counter", "quantiseq", "xcell") ~ {
 				
-				# Check if package is installed, otherwise install
+				# # Check if package is installed, otherwise install
 				if (find.package("immunedeconv", quiet = TRUE) %>% length %>% equals(0)) {
 					message("Installing immunedeconv")
 					devtools::install_github("icbi-lab/immunedeconv", upgrade = FALSE)
@@ -2955,7 +2955,9 @@ tidybulk_to_SummarizedExperiment = function(.data,
 #'
 #' @examples
 #'
-#' as_matrix(head(dplyr::select(tidybulk::counts_mini, transcript, count)), rownames=transcript)
+#' library(dplyr)
+#' 
+#' tidybulk::se_mini %>% tidybulk() %>% select(feature, count) %>% head %>% as_matrix(rownames=feature)
 #'
 #' @export
 as_matrix <- function(tbl,
