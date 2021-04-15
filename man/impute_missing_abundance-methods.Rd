@@ -74,7 +74,7 @@ A `SummarizedExperiment` object
 impute_missing_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 }
@@ -83,11 +83,8 @@ This function imputes the abundance of missing sample-transcript pair using the 
 
 res =
 	impute_missing_abundance(
-		tidybulk::counts_mini,
-	~ condition,
-	.sample = sample,
-	.transcript = transcript,
-	.abundance = count
+		tidybulk::se_mini,
+	~ condition
 )
 
 

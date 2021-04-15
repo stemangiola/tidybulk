@@ -201,7 +201,7 @@ bind_cols.tidybulk <- function(..., .id = NULL)
 #' 
 #' @examples
 #'
-#' distinct(tidybulk::counts_mini)
+#' tidybulk::se_mini %>% tidybulk() %>% distinct()
 #'
 #'
 #' @export
@@ -723,8 +723,8 @@ rowwise.tidybulk <- function(data, ...)
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts %>% distinct(sample) %>% mutate(source = "AU")
-#' tidybulk::counts %>% left_join(annotation)
+#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(sample) %>% mutate(source = "AU")
+#' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% left_join(annotation)
 #'
 #' @rdname dplyr-methods
 #' @name left_join
@@ -763,8 +763,8 @@ left_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", 
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts %>% distinct(sample) %>% mutate(source = "AU")
-#' tidybulk::counts %>% inner_join(annotation)
+#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(sample) %>% mutate(source = "AU")
+#' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% inner_join(annotation)
 #'
 #' @rdname join-methods
 #' @name inner_join
@@ -802,8 +802,8 @@ inner_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts %>% distinct(sample) %>% mutate(source = "AU")
-#' tidybulk::counts %>% right_join(annotation)
+#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(sample) %>% mutate(source = "AU")
+#' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% right_join(annotation)
 #'
 #' @rdname join-methods
 #' @name right_join
@@ -843,8 +843,8 @@ right_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts %>% distinct(sample) %>% mutate(source = "AU")
-#' tidybulk::counts %>% full_join(annotation)
+#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(sample) %>% mutate(source = "AU")
+#' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% full_join(annotation)
 #'
 #' @rdname join-methods
 #' @name full_join

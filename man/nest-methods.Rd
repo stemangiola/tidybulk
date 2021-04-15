@@ -9,7 +9,7 @@
 
 \item{cols}{<[`tidy-select`][tidyr_tidy_select]> Columns to unnest.
 If you `unnest()` multiple columns, parallel entries must be of
-compatible sizes, i.e. they're either equal or length 1 (following the
+compatibble sizes, i.e. they're either equal or length 1 (following the
 standard tidyverse recycling rules).}
 
 \item{names_sep}{If `NULL`, the default, the names will be left
@@ -54,10 +54,10 @@ nest
 
 library(dplyr)
 
-nest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript) \%>\%
+tidybulk::se_mini \%>\% tidybulk() \%>\% nest( data = -feature) \%>\%
 unnest(data)
 
 
-nest(tidybulk(tidybulk::counts_mini, sample, transcript, count), data = -transcript)
+tidybulk::se_mini \%>\% tidybulk() \%>\% nest( data = -feature)
 
 }

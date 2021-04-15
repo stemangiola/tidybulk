@@ -1,8 +1,11 @@
 context('Bulk methods SummarizedExperiment')
 
-input_df = setNames(tidybulk::counts_mini, c("a", "b", "Cell type", "c",  "time" , "condition"))
+data("se_mini")
+data("breast_tcga_mini_SE")
 
-input_df_breast = setNames(tidybulk::breast_tcga_mini, c("a", "b", "c norm", "call", "c"))
+input_df =  setNames(se_mini %>% tidybulk() %>% as_tibble(), c( "b","a",  "c", "Cell type",  "time" , "condition"))
+
+input_df_breast = setNames( breast_tcga_mini_SE %>% tidybulk() %>% as_tibble(), c( "b", "a","c", "c norm", "call" ))
 
 test_that("tidybulk SummarizedExperiment conversion",{
 
@@ -125,19 +128,19 @@ test_that("Drop redundant correlated - SummarizedExperiment",{
 
 test_that("Get adjusted counts - SummarizedExperiment",{
 
-	cm = input_df
+	cm = se_mini
 	cm$batch = 0
-	cm$batch[cm$a %in% c("SRR1740035", "SRR1740043")] = 1
+	cm$batch[colnames(cm) %in% c("SRR1740035", "SRR1740043")] = 1
 
 	res =
 		adjust_abundance(
-			tidybulk:::tidybulk_to_SummarizedExperiment(cm, a, b, c) %>% identify_abundant(),
+			cm %>% identify_abundant(),
 			~ condition + batch
 		)
 
 	expect_equal(nrow(res),	527	)
 
-	expect_equal(	names(SummarizedExperiment::assays(res)),	c("c" ,"c_adjusted")	)
+	expect_equal(	names(SummarizedExperiment::assays(res)),	c("count" ,"count_adjusted")	)
 
 
 })
@@ -153,7 +156,7 @@ test_that("Aggregate duplicated transcript - SummarizedExperiment",{
 
 test_that("Add cell type proportions - SummarizedExperiment",{
 
-	res =		deconvolve_cellularity(tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c), cores=1	)
+	res =		deconvolve_cellularity(se_mini, cores=1	)
 
 	expect_equal(
 		as.numeric(as.data.frame(res@colData[1, 4:7])),
@@ -166,7 +169,7 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 test_that("differential trancript abundance - SummarizedExperiment",{
 
 	res =		test_differential_abundance(
-		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>% 
+		se_mini %>% 
 			identify_abundant(factor_of_interest = condition),	
 		~ condition	
 	)
@@ -198,7 +201,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 	
 	# Likelihood ratio
 	res2 =		test_differential_abundance(
-		tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c) %>%
+		se_mini %>%
 			identify_abundant(factor_of_interest = condition),	
 		~ condition, method = "edgeR_likelihood_ratio"	)
 	
@@ -225,8 +228,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 	)
 	
 	# Treat
-	input_df %>% 
-		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+	se_mini %>%
 		identify_abundant(a, b, c, factor_of_interest = condition) %>%
 		test_differential_abundance(
 			~ condition,
@@ -264,7 +266,7 @@ test_that("filter variable - no object",{
 
 	res =
 		keep_variable(
-			tidybulk:::tidybulk_to_SummarizedExperiment(input_df, a, b, c),
+			se_mini,
 			top = 5
 		)
 
@@ -285,7 +287,7 @@ test_that("impute missing",{
 		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
 		impute_missing_abundance(	~ condition	)
 	
-	expect_equal(	assays(res) %>% as.list() %>% .[[1]] %>% .["TNFRSF4", "SRR1740034"],	203.5	)
+	expect_equal(	SummarizedExperiment::assays(res) %>% as.list() %>% .[[1]] %>% .["TNFRSF4", "SRR1740034"],	6	)
 	
 
 	expect_equal(	nrow(res)*ncol(res),	nrow(input_df)	)
@@ -295,8 +297,7 @@ test_that("impute missing",{
 test_that("differential composition",{
 	
 	# Cibersort
-	input_df %>%
-		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+	se_mini %>%
 		test_differential_cellularity(. ~ condition	, cores = 1	) %>% 
 		pull(`estimate_(Intercept)`) %>%
 		.[[1]] %>%
@@ -304,8 +305,7 @@ test_that("differential composition",{
 		expect_equal(	-2, 	tollerance =1e-3)
 	
 	# llsr
-	input_df %>%
-		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+	se_mini %>%
 	test_differential_cellularity(
 		. ~ condition,
 		method="llsr",
@@ -426,21 +426,21 @@ test_that("test_stratification_cellularity",{
 
 test_that("pivot",{
 	
-	expect_equal(	ncol(pivot_sample(tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk(input_df, a, b, c)))	), 4)
+	expect_equal(	ncol(pivot_sample(se_mini)	), 4)
 	
-	expect_equal(	ncol(pivot_transcript(tidybulk:::tidybulk_to_SummarizedExperiment(tidybulk(input_df, a, b, c)))	), 1)
+	expect_equal(	ncol(pivot_transcript(se_mini)	), 1)
 	
 })
 
 test_that("gene over representation",{
 	
-	df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
-	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
-	df_entrez = mutate(df_entrez, do_test = transcript %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+	df_entrez = symbol_to_entrez(input_df, .transcript = b, .sample = a)
+	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = a, .transcript = entrez, .abundance = c)
+	df_entrez = mutate(df_entrez, do_test = b %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 	
 	res =
 		df_entrez %>%
-		tidybulk:::tidybulk_to_SummarizedExperiment(sample, transcript, count) %>%
+		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
 		test_gene_overrepresentation(
 			.entrez = entrez,
 			.do_test = do_test,
@@ -450,5 +450,35 @@ test_that("gene over representation",{
 	expect_equal(	ncol(res),	10	)
 	
 	
+	
+})
+
+
+test_that("Only reduced dimensions MDS - no object",{
+	
+	
+	
+
+	res =
+		se_mini %>%
+		reduce_dimensions(
+			method = "MDS",
+			.abundance = c,
+			.element = a,
+			.feature = b
+		)
+	
+	expect_equal(
+		res$`Dim1`,
+		c(1.4048441,  1.3933490, -2.0138120 , 0.8832354, -1.6676164),
+		tolerance=10
+	)
+	
+	expect_equal(
+		ncol(colData(res)),
+		5
+	)
+	
+	expect_equal(	class(attr(res, "internals")$MDS[[1]])[1], 	"MDS"  )
 	
 })

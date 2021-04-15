@@ -118,7 +118,7 @@ A `SummarizedExperiment` object
 cluster_elements() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and identify clusters in the data.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 identifies clusters in the data, normally of samples.
 This function returns a tibble with additional columns for the cluster annotation.
@@ -139,6 +139,6 @@ Seurat::FindClusters(method = "igraph", ...)
 \examples{
 
 
-    cluster_elements(tidybulk::counts_mini, sample, transcript, count,	centers = 2, method="kmeans")
+    cluster_elements(tidybulk::se_mini,	centers = 2, method="kmeans")
 
 }

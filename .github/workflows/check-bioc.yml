@@ -157,6 +157,13 @@ jobs:
         run: |
           BiocManager::install(version = "${{ matrix.config.bioc }}", ask = FALSE)
         shell: Rscript {0}
+        
+      ## 12th April 2021 No Seurat binary available for Mac currently so install from source
+      - name: Install Seurat for macOS-latest
+        if: matrix.config.os == 'macOS-latest'
+        run: |
+          BiocManager::install("Seurat", type="source")
+        shell: Rscript {0}
 
       - name: Install dependencies pass 1
         run: |

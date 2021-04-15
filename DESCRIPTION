@@ -66,7 +66,8 @@ Suggests:
     devtools,
     functional,
     survminer,
-    tidySummarizedExperiment
+    tidySummarizedExperiment,
+    markdown
 VignetteBuilder: 
     knitr
 RdMacros:
@@ -76,3 +77,4 @@ biocViews: AssayDomain, Infrastructure, RNASeq, DifferentialExpression, GeneExpr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
+LazyDataCompression: xz

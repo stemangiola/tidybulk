@@ -1,13 +1,3 @@
-#' Example data set
-#'
-#'
-"counts"
-
-#' Example data set reduced
-#'
-#'
-"counts_mini"
-
 #' Cibersort reference
 #'
 #'
@@ -22,11 +12,6 @@
 #'
 #'
 "ensembl_symbol_mapping"
-
-#' Data set
-#'
-#'
-"breast_tcga_mini"
 
 #' flybaseIDs
 #'
