@@ -45,6 +45,8 @@
 
 
 
+
+
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
@@ -56,9 +58,18 @@
 
 
 
+<!-- dependencies from examples -->
+
+
+  
+
+  
+
   </head>
 
   <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -72,19 +83,13 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -101,7 +106,7 @@
       <a href="../articles/introduction.html">Overview of the tidybulk package</a>
     </li>
     <li>
-      <a href="../articles/manuscript_differential_transcript_abundance.html">Manuscript code - differential transcript abundance</a>
+      <a href="../articles/manuscript_differential_transcript_abundance.html">Manuscript code - differential feature abundance</a>
     </li>
     <li>
       <a href="../articles/manuscript_transcriptional_signatures.html">Manuscript code - transcriptional signature identification</a>
@@ -133,7 +138,7 @@
     <p>keep_variable() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; | and returns a `tbl` with additional columns for the statistics from the hypothesis test.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>keep_variable</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'><a href='keep_variable-methods.html'>keep_variable</a></span><span class='op'>(</span>
   <span class='va'>.data</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -143,7 +148,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for spec_tbl_df</span>
-<span class='fu'>keep_variable</span><span class='op'>(</span>
+<span class='fu'><a href='keep_variable-methods.html'>keep_variable</a></span><span class='op'>(</span>
   <span class='va'>.data</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -153,7 +158,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for tbl_df</span>
-<span class='fu'>keep_variable</span><span class='op'>(</span>
+<span class='fu'><a href='keep_variable-methods.html'>keep_variable</a></span><span class='op'>(</span>
   <span class='va'>.data</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -163,7 +168,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for tidybulk</span>
-<span class='fu'>keep_variable</span><span class='op'>(</span>
+<span class='fu'><a href='keep_variable-methods.html'>keep_variable</a></span><span class='op'>(</span>
   <span class='va'>.data</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -173,10 +178,10 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for SummarizedExperiment</span>
-<span class='fu'>keep_variable</span><span class='op'>(</span><span class='va'>.data</span>, top <span class='op'>=</span> <span class='fl'>500</span>, log_transform <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='keep_variable-methods.html'>keep_variable</a></span><span class='op'>(</span><span class='va'>.data</span>, top <span class='op'>=</span> <span class='fl'>500</span>, log_transform <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
 <span class='co'># S4 method for RangedSummarizedExperiment</span>
-<span class='fu'>keep_variable</span><span class='op'>(</span><span class='va'>.data</span>, top <span class='op'>=</span> <span class='fl'>500</span>, log_transform <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
+<span class='fu'><a href='keep_variable-methods.html'>keep_variable</a></span><span class='op'>(</span><span class='va'>.data</span>, top <span class='op'>=</span> <span class='fl'>500</span>, log_transform <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -222,36 +227,27 @@ variable_trancripts = rownames(x)</p>
 <p>A `SummarizedExperiment` object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a></p>
+    <p>`r lifecycle::badge("maturing")`</p>
 <p>At the moment this function uses edgeR <a href='https://doi.org/10.1093/bioinformatics/btp616'>https://doi.org/10.1093/bioinformatics/btp616</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 
 
-  <span class='fu'>keep_variable</span><span class='op'>(</span>
-  <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_mini.html'>counts_mini</a></span>,
-      <span class='va'>sample</span>,
-      <span class='va'>transcript</span>,
-      <span class='va'>`count`</span>,
+  <span class='fu'><a href='keep_variable-methods.html'>keep_variable</a></span><span class='op'>(</span>
+  <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span>,
       top <span class='op'>=</span> <span class='fl'>500</span>
   <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Getting the 500 most variable genes</span></div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 2,500 x 6</span><span>
-#&gt;    sample     transcript `Cell type` count time  condition
-#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>    
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> SRR1740034 TNFRSF4    b_cell          6 0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> SRR1740034 PLCH2      b_cell        926 0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> SRR1740034 PADI4      b_cell         21 0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> SRR1740034 CDA        b_cell          1 0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> SRR1740034 RCAN3      b_cell        905 0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> SRR1740034 SMPDL3B    b_cell          3 0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> SRR1740034 EPB41      b_cell       </span><span style='text-decoration: underline;'>4</span><span>667 0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> SRR1740034 LCK        b_cell        436 0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> SRR1740034 COL8A2     b_cell          1 0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span> SRR1740034 CSF3R      b_cell          4 0 d   TRUE     
-#&gt; </span><span style='color: #949494;'># … with 2,490 more rows</span><span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.</span></div><div class='output co'>#&gt; <span class='message'>Getting the 500 most variable genes</span></div><div class='output co'>#&gt; class: SummarizedExperiment 
+#&gt; dim: 500 5 
+#&gt; metadata(0):
+#&gt; assays(1): count
+#&gt; rownames(500): IGKC TCL1A ... ATXN8OS CCL13
+#&gt; rowData names(0):
+#&gt; colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
+#&gt; colData names(3): Cell.type time condition</div><div class='input'>
 
-</div></span></pre>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -263,11 +259,11 @@ variable_trancripts = rownames(x)</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Stefano Mangiola.</p>
+  <p><p>Developed by Stefano Mangiola.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
 
       </footer>
@@ -275,6 +271,8 @@ variable_trancripts = rownames(x)</p>
 
   
 
+
+  
 
   </body>
 </html>

@@ -44,6 +44,8 @@
 
 
 
+
+
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
@@ -55,9 +57,16 @@
 
 
 
+
+  
+
+  
+
   </head>
 
   <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-reference-index">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -71,19 +80,13 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -100,7 +103,7 @@
       <a href="../articles/introduction.html">Overview of the tidybulk package</a>
     </li>
     <li>
-      <a href="../articles/manuscript_differential_transcript_abundance.html">Manuscript code - differential transcript abundance</a>
+      <a href="../articles/manuscript_differential_transcript_abundance.html">Manuscript code - differential feature abundance</a>
     </li>
     <li>
       <a href="../articles/manuscript_transcriptional_signatures.html">Manuscript code - transcriptional signature identification</a>
@@ -167,21 +170,33 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="arrange-methods.html">arrange</a></code> </p>
+        </td>
+        <td><p>Arrange rows by column values</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="as_SummarizedExperiment-methods.html">as_SummarizedExperiment()</a></code> </p>
+        </td>
+        <td><p>as_SummarizedExperiment</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="as_matrix.html">as_matrix()</a></code> </p>
         </td>
         <td><p>Get matrix from tibble</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="bind.html">bind</a></code> </p>
+          <p><code><a href="bind-methods.html">bind_rows()</a></code> <code><a href="bind-methods.html">bind_cols()</a></code> </p>
         </td>
         <td><p>Efficiently bind multiple data frames by row and column</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="breast_tcga_mini.html">breast_tcga_mini</a></code> </p>
+          <p><code><a href="breast_tcga_mini_SE.html">breast_tcga_mini_SE</a></code> </p>
         </td>
-        <td><p>Data set</p></td>
+        <td><p>Needed for vignette breast_tcga_mini_SE</p></td>
       </tr><tr>
         
         <td>
@@ -191,9 +206,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="counts.html">counts</a></code> </p>
+          <p><code><a href="counts_SE.html">counts_SE</a></code> </p>
         </td>
-        <td><p>Example data set</p></td>
+        <td><p>Needed for vignette counts_SE</p></td>
       </tr><tr>
         
         <td>
@@ -203,33 +218,27 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="counts_mini.html">counts_mini</a></code> </p>
-        </td>
-        <td><p>Example data set reduced</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="deconvolve_cellularity-methods.html">deconvolve_cellularity()</a></code> </p>
         </td>
         <td><p>Get cell type proportions from samples</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="describe_transcript.html">describe_transcript()</a></code> </p>
+          <p><code><a href="describe_transcript-methods.html">describe_transcript()</a></code> <code><a href="describe_transcript-methods.html">.describe_transcript_SE()</a></code> </p>
         </td>
         <td><p>Get DESCRIPTION from gene SYMBOL for Human and Mouse</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="distinct.html">distinct()</a></code> </p>
+          <p><code><a href="distinct-methods.html">distinct</a></code> </p>
         </td>
         <td><p>distinct</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="dplyr-methods.html">arrange()</a></code> <code><a href="dplyr-methods.html">bind_rows()</a></code> <code><a href="dplyr-methods.html">bind_cols()</a></code> <code><a href="dplyr-methods.html">ungroup()</a></code> </p>
+          <p><code><a href="dplyr-methods.html">left_join</a></code> </p>
         </td>
-        <td><p>drplyr-methods</p></td>
+        <td><p>Left join datasets</p></td>
       </tr><tr>
         
         <td>
@@ -251,7 +260,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="filter.html">filter()</a></code> </p>
+          <p><code><a href="filter-methods.html">filter</a></code> </p>
         </td>
         <td><p>Subset rows using column values</p></td>
       </tr><tr>
@@ -263,19 +272,13 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="full_join.html">full_join()</a></code> </p>
-        </td>
-        <td><p>Full join datasets</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="get_bibliography-methods.html">get_bibliography()</a></code> </p>
         </td>
         <td><p>Produces the bibliography list of your workflow</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="group_by.html">group_by()</a></code> </p>
+          <p><code><a href="group_by-methods.html">group_by</a></code> </p>
         </td>
         <td><p>Group by one or more variables</p></td>
       </tr><tr>
@@ -293,7 +296,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="inner_join.html">inner_join()</a></code> </p>
+          <p><code><a href="join-methods.html">inner_join</a></code> </p>
         </td>
         <td><p>Inner join datasets</p></td>
       </tr><tr>
@@ -311,12 +314,6 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="left_join.html">left_join()</a></code> </p>
-        </td>
-        <td><p>Left join datasets</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="log10_reverse_trans.html">log10_reverse_trans()</a></code> </p>
         </td>
         <td><p>log10_reverse_trans</p></td>
@@ -329,9 +326,15 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="mutate.html">mutate()</a></code> </p>
+          <p><code><a href="mutate-methods.html">mutate</a></code> </p>
         </td>
         <td><p>Create, modify, and delete columns</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="nest-methods.html">unnest</a></code> </p>
+        </td>
+        <td><p>unnest</p></td>
       </tr><tr>
         
         <td>
@@ -365,15 +368,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="rename.html">rename()</a></code> </p>
+          <p><code><a href="rename-methods.html">rename</a></code> </p>
         </td>
         <td><p>Rename columns</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="right_join.html">right_join()</a></code> </p>
-        </td>
-        <td><p>Right join datasets</p></td>
       </tr><tr>
         
         <td>
@@ -383,7 +380,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="rowwise.html">rowwise()</a></code> </p>
+          <p><code><a href="rowwise-methods.html">rowwise</a></code> </p>
         </td>
         <td><p>Group input by rows</p></td>
       </tr><tr>
@@ -407,7 +404,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="summarise.html">summarise()</a></code> </p>
+          <p><code><a href="summarise-methods.html">summarise</a></code> </p>
         </td>
         <td><p>Summarise each group to fewer rows</p></td>
       </tr><tr>
@@ -467,12 +464,6 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="tidyr-methods.html">unnest()</a></code> <code><a href="tidyr-methods.html">nest()</a></code> </p>
-        </td>
-        <td><p>unnest</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="vignette_manuscript_signature_boxplot.html">vignette_manuscript_signature_boxplot</a></code> </p>
         </td>
         <td><p>Needed for vignette vignette_manuscript_signature_boxplot</p></td>
@@ -503,11 +494,11 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Stefano Mangiola.</p>
+  <p><p>Developed by Stefano Mangiola.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
 
       </footer>
@@ -515,6 +506,8 @@
 
   
 
+
+  
 
   </body>
 </html>

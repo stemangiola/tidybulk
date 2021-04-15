@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -60,7 +56,7 @@
       <a href="../articles/introduction.html">Overview of the tidybulk package</a>
     </li>
     <li>
-      <a href="../articles/manuscript_differential_transcript_abundance.html">Manuscript code - differential transcript abundance</a>
+      <a href="../articles/manuscript_differential_transcript_abundance.html">Manuscript code - differential feature abundance</a>
     </li>
     <li>
       <a href="../articles/manuscript_transcriptional_signatures.html">Manuscript code - transcriptional signature identification</a>
@@ -78,13 +74,13 @@
 
       
 
-      </header><script src="manuscript_transcriptional_signatures_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="manuscript_transcriptional_signatures_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Manuscript code - transcriptional signature identification</h1>
-                        <h4 class="author">Stefano Mangiola</h4>
+                        <h4 data-toc-skip class="author">Stefano Mangiola</h4>
             
-            <h4 class="date">2021-03-11</h4>
+            <h4 data-toc-skip class="date">2021-04-15</h4>
       
       
       <div class="hidden name"><code>manuscript_transcriptional_signatures.Rmd</code></div>
@@ -99,115 +95,115 @@
   <span class="va">counts_cell_type</span> <span class="op">%&gt;%</span>
     
     <span class="co"># Convert to tidybulk tibble</span>
-  <span class="fu"><a href="../reference/tidybulk.html">tidybulk</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">symbol</span>, <span class="va">count</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">symbol</span>, <span class="va">count</span><span class="op">)</span> <span class="op">%&gt;%</span>
     
     <span class="co"># Preprocess and scale the data</span>
-  <span class="fu"><a href="../reference/aggregate_duplicates.html">aggregate_duplicates</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/identify_abundant.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/scale_abundance.html">scale_abundance</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/aggregate_duplicates-methods.html">aggregate_duplicates</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/scale_abundance-methods.html">scale_abundance</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
     
     <span class="co"># Impute missing sample-transcript pairs</span>
-    <span class="fu"><a href="../reference/impute_missing_abundance.html">impute_missing_abundance</a></span><span class="op">(</span><span class="op">~</span><span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/mutate.html">mutate</a></span><span class="op">(</span>.abundant <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+    <span class="fu"><a href="../reference/impute_missing_abundance-methods.html">impute_missing_abundance</a></span><span class="op">(</span><span class="op">~</span><span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>.abundant <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_non_red</span> <span class="op">=</span>
   <span class="va">counts_scaled</span> <span class="op">%&gt;%</span>
     
     <span class="co"># Perform operation for each cell type</span>
-    <span class="fu"><a href="../reference/unnest.html">nest</a></span><span class="op">(</span>data <span class="op">=</span> <span class="op">-</span><span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/mutate.html">mutate</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">map</span><span class="op">(</span>
+    <span class="fu"><a href="../reference/nest-methods.html">nest</a></span><span class="op">(</span>data <span class="op">=</span> <span class="op">-</span><span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">map</span><span class="op">(</span>
         <span class="va">data</span>,
         <span class="op">~</span> <span class="va">.x</span> <span class="op">%&gt;%</span>
-            <span class="fu"><a href="../reference/remove_redundancy.html">remove_redundancy</a></span><span class="op">(</span>
+            <span class="fu"><a href="../reference/remove_redundancy-methods.html">remove_redundancy</a></span><span class="op">(</span>
             method<span class="op">=</span><span class="st">"correlation"</span>,
             correlation_threshold <span class="op">=</span> <span class="fl">0.99</span>,
             top<span class="op">=</span><span class="fl">1000</span>
          <span class="op">)</span>
     <span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/unnest.html">unnest</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></code></pre></div>
+    <span class="fu"><a href="../reference/nest-methods.html">unnest</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Select genes that are in at least one sample for all cell types</span>
 <span class="va">gene_all</span> <span class="op">=</span> 
     <span class="va">counts_non_red</span> <span class="op">%&gt;%</span>
-        <span class="fu"><a href="../reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">symbol</span>, <span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op">(</span><span class="va">symbol</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/filter.html">filter</a></span><span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span>
+        <span class="fu"><a href="../reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">symbol</span>, <span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">symbol</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/filter-methods.html">filter</a></span><span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># filter dataset and impute missing transcripts-samples pairs</span>
 <span class="va">counts_non_red_common</span> <span class="op">=</span>
     <span class="va">counts_non_red</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/inner_join.html">inner_join</a></span><span class="op">(</span><span class="va">gene_all</span><span class="op">)</span> </code></pre></div>
+    <span class="fu"><a href="../reference/join-methods.html">inner_join</a></span><span class="op">(</span><span class="va">gene_all</span><span class="op">)</span> </code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_non_red_common</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"tSNE"</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color <span class="op">=</span> <span class="va">cell_type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="../reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"tSNE"</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color <span class="op">=</span> <span class="va">cell_type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p><img src="manuscript_transcriptional_signatures_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">markers</span> <span class="op">=</span>
 
   <span class="co"># Define all-versus-all cell type permutations</span>
   <span class="va">counts_non_red_common</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">gtools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gtools/man/combinations.html">permutations</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>, r <span class="op">=</span> <span class="fl">2</span>, v <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cell_type1"</span>, <span class="st">"cell_type2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/mutate.html">mutate</a></span><span class="op">(</span>contrast <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"cell_type%s - cell_type%s"</span>, <span class="va">cell_type1</span>, <span class="va">cell_type2</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">gtools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gtools/man/combinations.html" class="external-link">permutations</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>, r <span class="op">=</span> <span class="fl">2</span>, v <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell_type1"</span>, <span class="st">"cell_type2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>contrast <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"cell_type%s - cell_type%s"</span>, <span class="va">cell_type1</span>, <span class="va">cell_type2</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
 
   <span class="co"># Rank marker genes</span>
-  <span class="fu"><a href="../reference/mutate.html">mutate</a></span><span class="op">(</span>de <span class="op">=</span>
+  <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>de <span class="op">=</span>
     <span class="fu">pmap</span><span class="op">(</span>
-      <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">cell_type1</span>, <span class="va">cell_type2</span>, <span class="va">contrast</span><span class="op">)</span>,
+      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">cell_type1</span>, <span class="va">cell_type2</span>, <span class="va">contrast</span><span class="op">)</span>,
       <span class="op">~</span>   <span class="va">counts_non_red_common</span> <span class="op">%&gt;%</span>
-        <span class="fu"><a href="../reference/filter.html">filter</a></span><span class="op">(</span><span class="va">cell_type</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">..1</span>, <span class="va">..2</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-        <span class="fu"><a href="../reference/test_differential_abundance.html">test_differential_abundance</a></span><span class="op">(</span><span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cell_type</span>, .contrasts <span class="op">=</span> <span class="va">..3</span>, fill_missing_values <span class="op">=</span> <span class="cn">TRUE</span>, action<span class="op">=</span><span class="st">"get"</span>, omit_contrast_in_colnames <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="op">%&gt;%</span>
-        <span class="fu"><a href="../reference/filter.html">filter</a></span><span class="op">(</span><span class="va">logFC</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">%&gt;%</span>
-        <span class="fu"><a href="../reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">FDR</span><span class="op">)</span> <span class="op">%&gt;%</span>
-       <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rowid_to_column</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">"i"</span><span class="op">)</span>
+        <span class="fu"><a href="../reference/filter-methods.html">filter</a></span><span class="op">(</span><span class="va">cell_type</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">..1</span>, <span class="va">..2</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+        <span class="fu"><a href="../reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span><span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">cell_type</span>, .contrasts <span class="op">=</span> <span class="va">..3</span>, fill_missing_values <span class="op">=</span> <span class="cn">TRUE</span>, action<span class="op">=</span><span class="st">"get"</span>, omit_contrast_in_colnames <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="op">%&gt;%</span>
+        <span class="fu"><a href="../reference/filter-methods.html">filter</a></span><span class="op">(</span><span class="va">logFC</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">%&gt;%</span>
+        <span class="fu"><a href="../reference/arrange-methods.html">arrange</a></span><span class="op">(</span><span class="va">FDR</span><span class="op">)</span> <span class="op">%&gt;%</span>
+       <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rowid_to_column</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">"i"</span><span class="op">)</span>
     <span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/unnest.html">unnest</a></span><span class="op">(</span><span class="va">de</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="../reference/nest-methods.html">unnest</a></span><span class="op">(</span><span class="va">de</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">markers</span> <span class="op">%&gt;%</span>
 
     <span class="co"># Filter best markers for monocytes</span>
-    <span class="fu"><a href="../reference/filter.html">filter</a></span><span class="op">(</span><span class="va">cell_type1</span><span class="op">==</span><span class="st">"monocyte"</span> <span class="op">&amp;</span> <span class="va">i</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/filter-methods.html">filter</a></span><span class="op">(</span><span class="va">cell_type1</span><span class="op">==</span><span class="st">"monocyte"</span> <span class="op">&amp;</span> <span class="va">i</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span>
 
     <span class="co"># Prettify contrasts for plotting</span>
-    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unite.html">unite</a></span><span class="op">(</span><span class="va">pair</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cell_type1"</span>, <span class="st">"cell_type2"</span><span class="op">)</span>, remove <span class="op">=</span> <span class="cn">FALSE</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unite.html" class="external-link">unite</a></span><span class="op">(</span><span class="va">pair</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell_type1"</span>, <span class="st">"cell_type2"</span><span class="op">)</span>, remove <span class="op">=</span> <span class="cn">FALSE</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span> <span class="op">%&gt;%</span>
 
     <span class="co"># Reshape</span>
-    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span><span class="op">(</span><span class="va">which</span>, <span class="va">cell_type</span>, <span class="va">cell_type1</span>, <span class="va">cell_type2</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">pair</span>,  <span class="va">symbol</span>,   <span class="va">which</span>, <span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html" class="external-link">gather</a></span><span class="op">(</span><span class="va">which</span>, <span class="va">cell_type</span>, <span class="va">cell_type1</span>, <span class="va">cell_type2</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">pair</span>,  <span class="va">symbol</span>,   <span class="va">which</span>, <span class="va">cell_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
 
     <span class="co"># Attach counts</span>
-    <span class="fu"><a href="../reference/left_join.html">left_join</a></span><span class="op">(</span><span class="va">counts_non_red</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/dplyr-methods.html">left_join</a></span><span class="op">(</span><span class="va">counts_non_red</span><span class="op">)</span> <span class="op">%&gt;%</span>
 
     <span class="co"># Plot</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">count_scaled</span> <span class="op">+</span> <span class="fl">1</span>, x <span class="op">=</span> <span class="va">cell_type</span>, fill <span class="op">=</span> <span class="va">cell_type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html">geom_boxplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">pair</span><span class="op">+</span> <span class="va">symbol</span>, scales <span class="op">=</span><span class="st">"free_x"</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">count_scaled</span> <span class="op">+</span> <span class="fl">1</span>, x <span class="op">=</span> <span class="va">cell_type</span>, fill <span class="op">=</span> <span class="va">cell_type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">pair</span><span class="op">+</span> <span class="va">symbol</span>, scales <span class="op">=</span><span class="st">"free_x"</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="manuscript_transcriptional_signatures_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">markers</span> <span class="op">%&gt;%</span>
 
   <span class="co"># Select first 5 markers from each cell-type pair</span>
-  <span class="fu"><a href="../reference/filter.html">filter</a></span><span class="op">(</span><span class="va">i</span> <span class="op">&lt;=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unite.html">unite</a></span><span class="op">(</span><span class="va">pair</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cell_type1"</span>, <span class="st">"cell_type2"</span><span class="op">)</span>, remove <span class="op">=</span> <span class="cn">FALSE</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/filter-methods.html">filter</a></span><span class="op">(</span><span class="va">i</span> <span class="op">&lt;=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unite.html" class="external-link">unite</a></span><span class="op">(</span><span class="va">pair</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell_type1"</span>, <span class="st">"cell_type2"</span><span class="op">)</span>, remove <span class="op">=</span> <span class="cn">FALSE</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span> <span class="op">%&gt;%</span>
 
   <span class="co"># Reshape</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span><span class="op">(</span><span class="va">which</span>, <span class="va">cell_type</span>, <span class="va">cell_type1</span>, <span class="va">cell_type2</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">symbol</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html" class="external-link">gather</a></span><span class="op">(</span><span class="va">which</span>, <span class="va">cell_type</span>, <span class="va">cell_type1</span>, <span class="va">cell_type2</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">symbol</span><span class="op">)</span> <span class="op">%&gt;%</span>
 
   <span class="co"># Attach counts</span>
-  <span class="fu"><a href="../reference/left_join.html">left_join</a></span><span class="op">(</span><span class="va">counts_non_red</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"symbol"</span><span class="op">)</span><span class="op">)</span>  <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/dplyr-methods.html">left_join</a></span><span class="op">(</span><span class="va">counts_non_red</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"symbol"</span><span class="op">)</span><span class="op">)</span>  <span class="op">%&gt;%</span>
 
   <span class="co"># Plot</span>
-  <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">symbol</span>, <span class="va">count_scaled</span>, method <span class="op">=</span> <span class="st">"tSNE"</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/pivot_sample.html">pivot_sample</a></span><span class="op">(</span><span class="va">sample</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color <span class="op">=</span> <span class="va">cell_type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span><span class="fl">2</span><span class="op">)</span> </code></pre></div>
+  <span class="fu"><a href="../reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">symbol</span>, <span class="va">count_scaled</span>, method <span class="op">=</span> <span class="st">"tSNE"</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="va">sample</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color <span class="op">=</span> <span class="va">cell_type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span><span class="fl">2</span><span class="op">)</span> </code></pre></div>
 <p><img src="manuscript_transcriptional_signatures_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
   </div>
 
@@ -220,11 +216,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Stefano Mangiola.</p>
+  <p></p>
+<p>Developed by Stefano Mangiola.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.6.1.9001.</p>
 </div>
 
       </footer>
@@ -232,6 +230,8 @@
 
   
 
+
+  
 
   </body>
 </html>
