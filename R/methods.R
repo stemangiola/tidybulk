@@ -2735,7 +2735,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #'
 #' `r lifecycle::badge("maturing")`
 #'
-#' @description test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+#' @description test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` of gene set information
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -2748,12 +2748,13 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts = NULL,
-#' @param method A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.
+#' @param method A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
+#' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: "h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling". c1 is human specific. Default is "all", all MSigDB and KEGG gene set collections are used.
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
 #'
 #'
-#' @details This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
+#' @details This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 #'
 #'
 #' dge =
@@ -2768,7 +2769,8 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	as_matrix(rownames = !!.entrez) %>%
 #' 	edgeR::DGEList(counts = .)
 #'
-#' idx =  buildIdx(entrezIDs = rownames(dge), species = species)
+#' idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets, 
+#'	               kegg.exclude = kegg.exclude)
 #'
 #' dge %>%
 #'
@@ -2779,6 +2781,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	egsea(
 #' 		contrasts = my_contrasts,
 #' 		baseGSEAs = method,
+#' 		gs.annots = idx,
 #' 		sort.by = "med.rank",
 #' 		num.threads = cores,
 #' 		report = FALSE
@@ -2803,7 +2806,8 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #'			.sample = sample,
 #'			.entrez = entrez,
 #'			.abundance = count,
-#'       method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+#'          method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+#'          gene_collections = "all",
 #'			species="human",
 #'			cores = 2
 #'		)
@@ -2821,7 +2825,8 @@ setGeneric("test_gene_enrichment", function(.data,
 																							 .entrez,
 																							 .abundance = NULL,
 																							 .contrasts = NULL,
-																								method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																							 method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																							 gene_collections = "all", 
 																							 species,
 																							 cores = 10)
 	standardGeneric("test_gene_enrichment"))
@@ -2833,7 +2838,8 @@ setGeneric("test_gene_enrichment", function(.data,
 																			.entrez,
 																			.abundance = NULL,
 																			.contrasts = NULL,
-																	    method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																	        method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																			gene_collections = "all", 
 																			species,
 																			cores = 10)	{
 	# Make col names
@@ -2869,6 +2875,7 @@ setGeneric("test_gene_enrichment", function(.data,
 			.abundance = !!.abundance,
 			.contrasts = .contrasts,
 			method = method,
+			gene_collections = gene_collections,
 			species = species,
 			cores = cores
 		)
