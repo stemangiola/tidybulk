@@ -508,6 +508,10 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_quasi_likelihood")),
 				tolower(method) ==  "edger_robust_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edger_robust_likelihood_ratio"))
 			)	%>%
+        	when(
+        	    !is.null(test_above_log2_fold_change) ~ (.) %>% memorise_methods_used("treat"),
+        	    ~ (.)
+        	) %>%
 
 		# Add raw object
 		attach_to_internals(edgeR_object, "edgeR") %>%
@@ -720,7 +724,11 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 			tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
 			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights")
 		) %>%
-
+	    when(
+			!is.null(test_above_log2_fold_change) ~ (.) %>% memorise_methods_used("treat"),
+			~ (.)
+		) %>%
+	    
 		# Add raw object
 		attach_to_internals(voom_object, "voom") %>%
 		# Communicate the attribute added
