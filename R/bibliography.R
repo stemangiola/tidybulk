@@ -269,7 +269,7 @@ my_bibliography = function() {
   volume = {26},
   number = {17},
   pages = {2176--2182},
-  author = {Di Wu and Elgene Lim and François Vaillant and Marie-Liesse Asselin-Labat and Jane E. Visvader and Gordon K. Smyth},
+  author = {Di Wu and Elgene Lim and Fran\u0037ois Vaillant and Marie-Liesse Asselin-Labat and Jane E. Visvader and Gordon K. Smyth},
   title = {{ROAST}: rotation gene set tests for complex microarray experiments},
   journal = {Bioinformatics}
 }",
