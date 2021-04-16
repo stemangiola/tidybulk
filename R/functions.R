@@ -2678,8 +2678,11 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 			object = as.formula("~" %>% paste0(parse_formula(.formula)[1])),
 			# get first argument of the .formula
 			data = df_for_combat %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
-		) %>%
-		set_colnames(c("(Intercept)", parse_formula(.formula)[1]))
+		) 
+	
+	# Maybe not needed and causing trouble if more columns that in the formula
+	  # %>%
+		#set_colnames(c("(Intercept)", parse_formula(.formula)[1]))
 
 	# Check if package is installed, otherwise install
 	if (find.package("sva", quiet = TRUE) %>% length %>% equals(0)) {

@@ -620,8 +620,11 @@ setMethod("remove_redundancy",
 	design =
 		model.matrix(object = as.formula("~" %>% paste0(parse_formula(.formula)[1])),
 								 # get first argument of the .formula
-								 data = colData(.data)) %>%
-		set_colnames(c("(Intercept)", parse_formula(.formula)[1]))
+								 data = colData(.data)) 
+
+	# Maybe not needed and causing trouble if more columns that in the formula
+	# %>%
+	#set_colnames(c("(Intercept)", parse_formula(.formula)[1]))
 	
 	
 	
