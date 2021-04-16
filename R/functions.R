@@ -474,6 +474,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 							# select method
 							when(
+							    !is.null(test_above_log2_fold_change) ~ (.) %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts[, .x], lfc=test_above_log2_fold_change),
 								tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
 								tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
 							)	%>%
