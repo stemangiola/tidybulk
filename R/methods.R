@@ -2245,7 +2245,7 @@ such as batch effects (if applicable) in the formula.
 			),
 
 			# Voom
-			grepl("voom", method) ~ get_differential_transcript_abundance_bulk_voom(
+			grepl("limma_voom", method) ~ get_differential_transcript_abundance_bulk_voom(
 					.,
 					.formula,
 					.sample = !!.sample,
