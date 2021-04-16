@@ -550,6 +550,51 @@ test_that("Voom with sample weights method",{
 	)
 })
 
+test_that("Voom with treat method",{
+	
+	input_df %>%
+        identify_abundant(a, b, c, factor_of_interest = condition) %>%
+		test_differential_abundance(
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "limma_voom",
+			test_above_log2_fold_change = 1,
+			action="only"
+		) %>%
+	    filter(adj.P.Val<0.05) %>%
+		nrow %>%
+		expect_equal(97)
+    
+        # with multiple contrasts
+    	res <-
+    	input_df %>%
+    	rename(cell_type = `Cell type`) %>%
+        identify_abundant(a, b, c, factor_of_interest = cell_type) %>%
+		test_differential_abundance(
+			~ 0 + cell_type,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			.contrasts = c("cell_typeb_cell-cell_typemonocyte", "cell_typeb_cell-cell_typet_cell"),
+			method = "limma_voom",
+			test_above_log2_fold_change = 1,
+			action="only"
+		)
+	    
+    	res %>%    
+    	filter(`adj.P.Val___cell_typeb_cell-cell_typemonocyte` < 0.05) %>%
+		nrow %>%
+		expect_equal(293)
+    	
+    	res %>%    
+    	filter(`adj.P.Val___cell_typeb_cell-cell_typet_cell`<0.05) %>%
+		nrow %>%
+		expect_equal(246)
+    
+})
+
 test_that("New method choice",{
 	
 	res =
