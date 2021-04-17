@@ -42,8 +42,10 @@ This is useful since different resources use ensembl IDs while others use gene s
 }
 \examples{
 
+library(dplyr)
 
-	ensembl_to_symbol(tidybulk::counts_ensembl, ens)
+tidybulk::counts_SE \%>\% tidybulk() \%>\% as_tibble() \%>\% ensembl_to_symbol(feature)
+ 	
 
 
 }

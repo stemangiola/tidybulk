@@ -94,7 +94,7 @@ A `RangedSummarizedExperiment` object
 test_gene_overrepresentation() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
 This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
@@ -114,9 +114,9 @@ Undelying method:
 }
 \examples{
 
-df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+df_entrez = tidybulk::se_mini \%>\% tidybulk() \%>\% as_tibble() \%>\% symbol_to_entrez( .transcript = feature, .sample = sample)
 df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
-df_entrez = mutate(df_entrez, do_test = transcript \%in\% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+df_entrez = mutate(df_entrez, do_test = feature \%in\% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 
 	test_gene_overrepresentation(
 		df_entrez,

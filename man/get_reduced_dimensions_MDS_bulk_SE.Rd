@@ -9,7 +9,8 @@ get_reduced_dimensions_MDS_bulk_SE(
   .dims = 2,
   top = 500,
   of_samples = TRUE,
-  log_transform = TRUE
+  log_transform = TRUE,
+  scale = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ get_reduced_dimensions_MDS_bulk_SE(
 \item{of_samples}{A boolean}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+
+\item{scale}{A boolean}
 
 \item{.abundance}{A column symbol with the value the clustering is based on (e.g., `count`)}
 

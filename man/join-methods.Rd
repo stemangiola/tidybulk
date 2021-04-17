@@ -34,15 +34,15 @@ Full join datasets
 }
 \examples{
 `\%>\%` = magrittr::`\%>\%`
-annotation = tidybulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
-tidybulk::counts \%>\% inner_join(annotation)
+annotation = tidybulk::counts_SE \%>\% tidybulk() \%>\% as_tibble() \%>\% distinct(sample) \%>\% mutate(source = "AU")
+tidybulk::counts_SE \%>\% tidybulk() \%>\% as_tibble() \%>\% inner_join(annotation)
 
 `\%>\%` = magrittr::`\%>\%`
-annotation = tidybulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
-tidybulk::counts \%>\% right_join(annotation)
+annotation = tidybulk::counts_SE \%>\% tidybulk() \%>\% as_tibble() \%>\% distinct(sample) \%>\% mutate(source = "AU")
+tidybulk::counts_SE \%>\% tidybulk() \%>\% as_tibble() \%>\% right_join(annotation)
 
 `\%>\%` = magrittr::`\%>\%`
-annotation = tidybulk::counts \%>\% distinct(sample) \%>\% mutate(source = "AU")
-tidybulk::counts \%>\% full_join(annotation)
+annotation = tidybulk::counts_SE \%>\% tidybulk() \%>\% as_tibble() \%>\% distinct(sample) \%>\% mutate(source = "AU")
+tidybulk::counts_SE \%>\% tidybulk() \%>\% as_tibble() \%>\% full_join(annotation)
 
 }

@@ -13,7 +13,7 @@ A scales object
 it perform logit scaling with right axis formatting. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 }
 \examples{
 

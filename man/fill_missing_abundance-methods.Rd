@@ -70,7 +70,7 @@ This function fills the abundance of missing sample-transcript pair using the me
 }
 \examples{
 
-fill_missing_abundance(tidybulk::counts_mini, sample, transcript, count, fill_with = 0)
+tidybulk::se_mini \%>\% tidybulk() \%>\% fill_missing_abundance( fill_with = 0)
 
 
 }

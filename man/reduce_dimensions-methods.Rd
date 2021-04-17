@@ -142,7 +142,7 @@ A `SummarizedExperiment` object
 reduce_dimensions() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and calculates the reduced dimensional space of the transcript abundance.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This function reduces the dimensions of the transcript abundances.
 It can use multi-dimensional scaling (MDS; DOI.org/10.1186/gb-2010-11-3-r25),
@@ -162,15 +162,13 @@ Rtsne::Rtsne(data, ...)
 
 
 counts.MDS =
- tidybulk::counts_mini \%>\%
- tidybulk(sample, transcript, count) \%>\%
+ tidybulk::se_mini \%>\%
  identify_abundant() \%>\%
  reduce_dimensions( method="MDS", .dims = 3)
 
 
 counts.PCA =
- tidybulk::counts_mini \%>\%
- tidybulk(sample, transcript, count) \%>\%
+ tidybulk::se_mini \%>\%
  identify_abundant() \%>\%
  reduce_dimensions(method="PCA", .dims = 3)
 

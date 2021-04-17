@@ -10,6 +10,7 @@ get_reduced_dimensions_TSNE_bulk_SE(
   top = 500,
   of_samples = TRUE,
   log_transform = TRUE,
+  scale = NULL,
   ...
 )
 }
@@ -23,6 +24,8 @@ get_reduced_dimensions_TSNE_bulk_SE(
 \item{of_samples}{A boolean}
 
 \item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+
+\item{scale}{A boolean}
 
 \item{...}{Further parameters passed to the function Rtsne}
 

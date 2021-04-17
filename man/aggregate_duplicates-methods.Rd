@@ -94,7 +94,7 @@ A `SummarizedExperiment` object
 aggregate_duplicates() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.
 }
 \details{
-\lifecycle{maturing}
+`r lifecycle::badge("maturing")`
 
 This function aggregates duplicated transcripts (e.g., isoforms, ensembl).
 For example, we often have to convert ensembl symbols to gene/transcript symbol,
@@ -112,10 +112,7 @@ For example, we often have to convert ensembl symbols to gene/transcript symbol,
 \examples{
 
     aggregate_duplicates(
-    tidybulk::counts_mini,
-    sample,
-    transcript,
-    `count`,
+    tidybulk::se_mini,
     aggregation_function = sum
     )
 
