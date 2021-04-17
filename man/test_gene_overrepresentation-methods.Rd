@@ -16,6 +16,7 @@ test_gene_overrepresentation(
   .do_test,
   species,
   .sample = NULL,
+  gene_collections = NULL,
   gene_set = NULL
 )
 
@@ -25,6 +26,7 @@ test_gene_overrepresentation(
   .do_test,
   species,
   .sample = NULL,
+  gene_collections = NULL,
   gene_set = NULL
 )
 
@@ -34,6 +36,7 @@ test_gene_overrepresentation(
   .do_test,
   species,
   .sample = NULL,
+  gene_collections = NULL,
   gene_set = NULL
 )
 
@@ -43,6 +46,7 @@ test_gene_overrepresentation(
   .do_test,
   species,
   .sample = NULL,
+  gene_collections = NULL,
   gene_set = NULL
 )
 
@@ -52,7 +56,7 @@ test_gene_overrepresentation(
   .do_test,
   species,
   .sample = NULL,
-  gene_set = NULL
+  gene_collections = NULL
 )
 
 \S4method{test_gene_overrepresentation}{RangedSummarizedExperiment}(
@@ -61,7 +65,7 @@ test_gene_overrepresentation(
   .do_test,
   species,
   .sample = NULL,
-  gene_set = NULL
+  gene_collections = NULL
 )
 }
 \arguments{
@@ -75,7 +79,9 @@ test_gene_overrepresentation(
 
 \item{.sample}{The name of the sample column}
 
-\item{gene_set}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
+\item{gene_collections}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
+
+\item{gene_set}{DEPRECATED. Use gene_collections instead.}
 }
 \value{
 A `tbl` object
@@ -124,7 +130,7 @@ df_entrez = mutate(df_entrez, do_test = feature \%in\% c("TNFRSF4", "PLCH2", "PA
 		.entrez = entrez,
 		.do_test = do_test,
 		species="Homo sapiens",
-   gene_set=c("C2")
+   gene_collections =c("C2")
 	)
 
 

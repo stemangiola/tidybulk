@@ -3214,7 +3214,7 @@ fill_NA_using_value = function(.data,
 
 
 #' @importFrom stats p.adjust
-entrez_over_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
+entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
 
 	# From the page
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
@@ -3236,9 +3236,9 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	# Get gene sets signatures
 	msigdbr::msigdbr(species = species) %>%
 
-		# Filter specific gene_set if specified. This was introduced to speed up examples executionS
+		# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
 		when(
-			!is.null(gene_set) ~ filter(., gs_cat %in% gene_set),
+			!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
 			~ (.)
 		) %>%
 		
@@ -3274,7 +3274,7 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 #' @importFrom stats p.adjust
 #' @importFrom purrr map
 #' 
-entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
+entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
 	
 	# From the page
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
@@ -3303,9 +3303,9 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	# Get gene sets signatures
 	msigdbr::msigdbr(species = species) %>%
 		
-		# Filter specific gene_set if specified. This was introduced to speed up examples executionS
+		# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
 		when(
-			!is.null(gene_set) ~ filter(., gs_cat %in% gene_set),
+			!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
 			~ (.)
 		) %>%
 		

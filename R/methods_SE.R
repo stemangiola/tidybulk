@@ -1465,7 +1465,7 @@ setMethod("test_gene_enrichment",
 																					 .do_test,
 																					 species,
 																					 .sample = NULL,
-																					 gene_set = NULL)	{
+																					 gene_collections = NULL)	{
 
 	# Comply with CRAN NOTES
 	. = NULL
@@ -1502,7 +1502,7 @@ setMethod("test_gene_enrichment",
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
-		entrez_over_to_gsea(species, gene_set = gene_set)
+		entrez_over_to_gsea(species, gene_collections = gene_collections)
 	
 	
 }
@@ -1536,7 +1536,7 @@ setMethod("test_gene_overrepresentation",
 																.arrange_desc,
 																species,
 																.sample = NULL,
-																gene_set = NULL)	{
+																gene_collections = NULL)	{
 	
 	# Comply with CRAN NOTES
 	. = NULL
@@ -1569,7 +1569,7 @@ setMethod("test_gene_overrepresentation",
 		arrange(desc(!!.arrange_desc)) %>%
 		select(!!.entrez, !!.arrange_desc) %>%
 		deframe() %>%
-		entrez_rank_to_gsea(species, gene_set = gene_set)
+		entrez_rank_to_gsea(species, gene_collections = gene_collections)
 	
 	
 }

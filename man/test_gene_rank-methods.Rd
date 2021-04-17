@@ -16,6 +16,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
+  gene_collections = NULL,
   gene_set = NULL
 )
 
@@ -25,6 +26,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
+  gene_collections = NULL,
   gene_set = NULL
 )
 
@@ -34,6 +36,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
+  gene_collections = NULL,
   gene_set = NULL
 )
 
@@ -43,6 +46,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
+  gene_collections = NULL,
   gene_set = NULL
 )
 
@@ -52,7 +56,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_set = NULL
+  gene_collections = NULL
 )
 
 \S4method{test_gene_rank}{RangedSummarizedExperiment}(
@@ -61,7 +65,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_set = NULL
+  gene_collections = NULL
 )
 }
 \arguments{
@@ -75,7 +79,9 @@ test_gene_rank(
 
 \item{.sample}{The name of the sample column}
 
-\item{gene_set}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
+\item{gene_collections}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
+
+\item{gene_set}{DEPRECATED. Use gene_collections instead.}
 }
 \value{
 A `tbl` object
@@ -100,31 +106,42 @@ This wrapper execute gene enrichment analyses of the dataset using a list of tra
 This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
 
 Undelying method:
- msigdbr::msigdbr(species = species) %>%#'
-	nest(data = -gs_cat) %>%
-	mutate(test =
-			map(
-				data,
-				~ clusterProfiler::enricher(
-					my_entrez_rank,
-				 	TERM2GENE=.x %>% select(gs_name, entrez_gene),
-					pvalueCutoff = 1
-					) %>%	as_tibble
-			))
+# Get gene sets signatures
+msigdbr::msigdbr(species = species) %>%
+
+# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
+when(
+	!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
+	~ (.)
+) %>%
+
+# Execute calculation
+nest(data = -gs_cat) %>%
+mutate(fit =
+			 	map(
+			 		data,
+			 		~ 	clusterProfiler::GSEA(
+			 			my_entrez_rank, 
+			 			TERM2GENE=.x %>% select(gs_name, entrez_gene),
+			 			pvalueCutoff = 1
+			 		) 
+			 		
+			 	))
 }
 \examples{
 
-df_entrez = symbol_to_entrez(tidybulk::counts_mini, .transcript = transcript, .sample = sample)
+df_entrez = tidybulk::se_mini \%>\% tidybulk() \%>\% as_tibble() \%>\% symbol_to_entrez( .transcript = feature, .sample = sample)
 df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
-df_entrez = mutate(df_entrez, do_test = transcript \%in\% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+df_entrez = mutate(df_entrez, do_test = feature \%in\% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+df_entrez  = df_entrez \%>\% test_differential_abundance(~ condition)
 
-	test_gene_rank(
-		df_entrez,
+test_gene_rank(
+	df_entrez,
 		.sample = sample,
-		.entrez = entrez,
-		.do_test = do_test,
+	.entrez = entrez,
 		species="Homo sapiens",
-   gene_set=c("C2")
+   gene_collections =c("C2"),
+ .arrange_desc = logFC 
 	)
 
 
