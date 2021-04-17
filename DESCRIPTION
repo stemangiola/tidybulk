@@ -29,7 +29,8 @@ Imports:
     lifecycle,
     scales,
     SummarizedExperiment,
-    methods
+    methods,
+    ggplot2
 Suggests:
     BiocStyle,
     testthat,
@@ -51,7 +52,6 @@ Suggests:
     KernSmooth,
     Rtsne,
     S4Vectors,
-    ggplot2,
     widyr,
     clusterProfiler,
     msigdbr,
