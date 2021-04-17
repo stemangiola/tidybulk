@@ -3216,11 +3216,10 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 }
 
 
-#' @importFrom furrr future_imap
-#' @importFrom furrr future_map
 #' @importFrom tibble rowid_to_column
 #' @importFrom stats p.adjust
 #' @importFrom ggplot2 fortify
+#' @importFrom purrr map
 #' 
 entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	
@@ -3256,7 +3255,7 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 		# Execute calculation
 		nest(data = -gs_cat) %>%
 		mutate(fit =
-					 	future_map(
+					 	map(
 					 		data,
 					 		~ 	clusterProfiler::GSEA(
 					 				my_entrez_rank, 
