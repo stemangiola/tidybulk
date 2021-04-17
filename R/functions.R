@@ -3272,7 +3272,6 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 
 #' @importFrom tibble rowid_to_column
 #' @importFrom stats p.adjust
-#' @importFrom ggplot2 fortify
 #' @importFrom purrr map
 #' 
 entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
@@ -3296,6 +3295,10 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 		BiocManager::install("enrichplot", ask = FALSE)
 	}
 	
+	if (find.package("ggplot2", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing ggplot2 needed for analyses")
+		install.packages("ggplot2", repos = "https://cloud.r-project.org")
+	}
 	
 	# Get gene sets signatures
 	msigdbr::msigdbr(species = species) %>%
@@ -3322,7 +3325,7 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 					 	map(
 					 		fit,
 					 		~ .x %>%
-					 			fortify(showCategory=Inf) %>%
+					 			ggplot2::fortify(showCategory=Inf) %>%
 					 			as_tibble() %>%
 					 			rowid_to_column(var = "idx_for_plotting")
 					 			#%>%
