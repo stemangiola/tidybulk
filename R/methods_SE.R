@@ -971,6 +971,7 @@ such as batch effects (if applicable) in the formula.
 				.contrasts = .contrasts,
 				colData(.data),
 				method = method,
+				test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
 				prefix = prefix
@@ -1011,6 +1012,11 @@ such as batch effects (if applicable) in the formula.
 			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights"),
 			tolower(method) == "deseq2" ~ (.) %>% memorise_methods_used("DESeq2"),
 			~ stop("tidybulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)")
+		) %>%
+	    
+	    when(
+			!is.null(test_above_log2_fold_change) ~ (.) %>% memorise_methods_used("treat"),
+			~ (.)
 		) %>%
 		
 		attach_to_internals(my_differential_abundance$result_raw, method) %>%
