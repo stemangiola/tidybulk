@@ -271,14 +271,13 @@ test_that("Voom with treat method",{
     # with multiple contrasts
     res <-
     	se_mini %>%
-    	rename(cell_type = Cell.type) %>%
-        identify_abundant(a, b, c, factor_of_interest = cell_type) %>%
+        identify_abundant(a, b, c, factor_of_interest = Cell.type) %>%
 		test_differential_abundance(
-			~ 0 + cell_type,
+			~ 0 + Cell.type,
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			.contrasts = c("cell_typeb_cell-cell_typemonocyte", "cell_typeb_cell-cell_typet_cell"),
+			.contrasts = c("Cell.typeb_cell-Cell.typemonocyte", "Cell.typeb_cell-Cell.typet_cell"),
 			method = "limma_voom",
 			test_above_log2_fold_change = 1,
 			action="only"
@@ -287,12 +286,12 @@ test_that("Voom with treat method",{
 		as_tibble()
 	    
     	res %>%    
-    	filter(`adj.P.Val___cell_typeb_cell.cell_typemonocyte` < 0.05) %>%
+    	filter(adj.P.Val___Cell.typeb_cell.Cell.typemonocyte < 0.05) %>%
 		nrow %>%
 		expect_equal(293)
     	
     	res %>%    
-    	filter(`adj.P.Val___cell_typeb_cell.cell_typet_cell`<0.05) %>%
+    	filter(adj.P.Val___Cell.typeb_cell.Cell.typet_cell < 0.05) %>%
 		nrow %>%
 		expect_equal(246)
     
