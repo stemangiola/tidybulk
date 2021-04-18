@@ -3000,7 +3000,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 	if (is_present(gene_set) & !is.null(gene_set)) {
 		
 		# Signal the deprecation to the user
-		deprecate_warn("1.3.1", "tidybulk::scale_abundance(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
+		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
 		gene_collections = gene_set
 	}
 	
@@ -3174,7 +3174,7 @@ setGeneric("test_gene_rank", function(.data,
 	if (is_present(gene_set) & !is.null(gene_set)) {
 		
 		# Signal the deprecation to the user
-		deprecate_warn("1.3.1", "tidybulk::scale_abundance(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
+		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
 		gene_collections = gene_set
 		
 	}

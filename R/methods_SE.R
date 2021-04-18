@@ -1465,10 +1465,20 @@ setMethod("test_gene_enrichment",
 																					 .do_test,
 																					 species,
 																					 .sample = NULL,
-																					 gene_collections = NULL)	{
+																					 gene_collections = NULL,
+																					 gene_set = NULL  # DEPRECATED
+																					 )	{
 
 	# Comply with CRAN NOTES
 	. = NULL
+	
+	# DEPRECATION OF reference function
+	if (is_present(gene_set) & !is.null(gene_set)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
+		gene_collections = gene_set
+	}
 	
 	# Get column names
 	.do_test = enquo(.do_test)
@@ -1536,10 +1546,21 @@ setMethod("test_gene_overrepresentation",
 																.arrange_desc,
 																species,
 																.sample = NULL,
-																gene_collections = NULL)	{
+																gene_collections = NULL,
+																gene_set = NULL  # DEPRECATED
+																)	{
 	
 	# Comply with CRAN NOTES
 	. = NULL
+	
+	# DEPRECATION OF reference function
+	if (is_present(gene_set) & !is.null(gene_set)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
+		gene_collections = gene_set
+		
+	}
 	
 	# Get column names
 	.arrange_desc = enquo(.arrange_desc)
