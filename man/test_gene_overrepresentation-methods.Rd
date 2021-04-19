@@ -56,7 +56,8 @@ test_gene_overrepresentation(
   .do_test,
   species,
   .sample = NULL,
-  gene_collections = NULL
+  gene_collections = NULL,
+  gene_set = NULL
 )
 
 \S4method{test_gene_overrepresentation}{RangedSummarizedExperiment}(
@@ -65,7 +66,8 @@ test_gene_overrepresentation(
   .do_test,
   species,
   .sample = NULL,
-  gene_collections = NULL
+  gene_collections = NULL,
+  gene_set = NULL
 )
 }
 \arguments{

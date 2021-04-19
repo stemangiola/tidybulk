@@ -56,7 +56,8 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_collections = NULL
+  gene_collections = NULL,
+  gene_set = NULL
 )
 
 \S4method{test_gene_rank}{RangedSummarizedExperiment}(
@@ -65,7 +66,8 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_collections = NULL
+  gene_collections = NULL,
+  gene_set = NULL
 )
 }
 \arguments{
