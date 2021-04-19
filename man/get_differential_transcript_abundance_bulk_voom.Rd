@@ -12,6 +12,7 @@ get_differential_transcript_abundance_bulk_voom(
   .abundance = NULL,
   .contrasts = NULL,
   method = NULL,
+  test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = ""

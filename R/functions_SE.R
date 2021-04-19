@@ -611,7 +611,7 @@ remove_redundancy_elements_though_reduced_dimensions_SE <-
 #' @param .formula a formula with no response variable, referring only to numeric variables
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
-#' @param test_above_log2_fold_change A positive real value. At the moment this works just for edgeR methods, and use the `treat` function, which test the that the difference in abundance is bigger than this parameter rather than zero \url{https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat}.
+#' @param test_above_log2_fold_change A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #'
@@ -727,6 +727,7 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 								
 								# select method
 								when(
+								    !is.null(test_above_log2_fold_change) ~ (.) %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts[, .x], lfc=test_above_log2_fold_change),
 									tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
 									tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
 								)	%>%
@@ -785,7 +786,8 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 																														.formula,
 																														sample_annotation,
 																														.contrasts = NULL,
-																														method = NULL,     
+																														method = NULL,
+																														test_above_log2_fold_change = NULL,
 																														scaling_method = "TMM",
 																														omit_contrast_in_colnames = FALSE,
 																														prefix = "") {
@@ -868,12 +870,17 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 					limma::contrasts.fit(contrasts=my_contrasts, coefficients =  when(my_contrasts, is.null(.) ~ 2)) %>%
 					limma::eBayes() %>%
 					
-					# Convert to tibble
-					# when(
-					# 	!is.null(test_above_log2_fold_change) ~ (.) %>% limma::topTreat(n = Inf),
-					# 	~ (.) %>% limma::topTags(n = Inf)
-					# ) %$%
-					limma::topTable(n = Inf) %>%
+			        when(
+			            
+				    	!is.null(test_above_log2_fold_change) ~ (.) %>% 
+				    	    limma::treat(lfc=test_above_log2_fold_change) %>%
+				    	    limma::topTreat(n = Inf),
+				    	
+				    	~ (.) %>% limma::topTable(n = Inf) 
+     
+				    ) %>%
+    
+			        # Convert to tibble
 					as_tibble(rownames = "transcript") %>%
 					
 					# # Mark DE genes
@@ -893,9 +900,16 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 								# Contrasts
 								limma::contrasts.fit(contrasts=my_contrasts[, .x]) %>%
 								limma::eBayes() %>%
-								
-								# Convert to tibble
-								limma::topTable(n = Inf) %>%
+						        when(
+						            
+						            !is.null(test_above_log2_fold_change) ~ (.) %>% 
+						            limma::treat(lfc=test_above_log2_fold_change) %>%
+						            limma::topTreat(n = Inf),
+						            
+						            ~ (.) %>% limma::topTable(n = Inf) 
+						        ) %>%
+    
+							    # Convert to tibble
 								as_tibble(rownames = "transcript") %>%
 								mutate(constrast = colnames(my_contrasts)[.x]) 
 							# %>%

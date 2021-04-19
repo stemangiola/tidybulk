@@ -2034,7 +2034,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights"
-#' @param test_above_log2_fold_change A positive real value. At the moment this works just for edgeR methods, and use the `treat` function, which test the that the difference in abundance is bigger than this parameter rather than zero \url{https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat}.
+#' @param test_above_log2_fold_change A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
 #' @param scaling_method A character string. The scaling method passed to the back-end functions: edgeR and limma-voom (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile"). Setting the parameter to \"none\" will skip the compensation for sequencing-depth for the method edgeR or limma-voom.
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to compare several methods.
@@ -2253,6 +2253,7 @@ such as batch effects (if applicable) in the formula.
 					.abundance = !!.abundance,
 					.contrasts = .contrasts,
 					method = method,
+					test_above_log2_fold_change = test_above_log2_fold_change,
 					scaling_method = scaling_method,
 					omit_contrast_in_colnames = omit_contrast_in_colnames,
 					prefix = prefix
@@ -2735,7 +2736,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #'
 #' `r lifecycle::badge("maturing")`
 #'
-#' @description test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+#' @description test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` of gene set information
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -2748,12 +2749,13 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts = NULL,
-#' @param method A character vector. The methods to be included in the ensembl. Type EGSEA::egsea.base() to see the supported GSE methods.
+#' @param method A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
+#' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: "h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling". c1 is human specific. Default is "all", all MSigDB and KEGG gene set collections are used.
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
 #'
 #'
-#' @details This wrapper execute ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
+#' @details This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 #'
 #'
 #' dge =
@@ -2768,7 +2770,8 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	as_matrix(rownames = !!.entrez) %>%
 #' 	edgeR::DGEList(counts = .)
 #'
-#' idx =  buildIdx(entrezIDs = rownames(dge), species = species)
+#' idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets, 
+#'	               kegg.exclude = kegg.exclude)
 #'
 #' dge %>%
 #'
@@ -2779,6 +2782,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	egsea(
 #' 		contrasts = my_contrasts,
 #' 		baseGSEAs = method,
+#' 		gs.annots = idx,
 #' 		sort.by = "med.rank",
 #' 		num.threads = cores,
 #' 		report = FALSE
@@ -2803,7 +2807,8 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #'			.sample = sample,
 #'			.entrez = entrez,
 #'			.abundance = count,
-#'       method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+#'          method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+#'          gene_collections = "all",
 #'			species="human",
 #'			cores = 2
 #'		)
@@ -2821,7 +2826,8 @@ setGeneric("test_gene_enrichment", function(.data,
 																							 .entrez,
 																							 .abundance = NULL,
 																							 .contrasts = NULL,
-																								method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																							 method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																							 gene_collections = "all", 
 																							 species,
 																							 cores = 10)
 	standardGeneric("test_gene_enrichment"))
@@ -2833,7 +2839,8 @@ setGeneric("test_gene_enrichment", function(.data,
 																			.entrez,
 																			.abundance = NULL,
 																			.contrasts = NULL,
-																	    method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																	        method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																			gene_collections = "all", 
 																			species,
 																			cores = 10)	{
 	# Make col names
@@ -2869,6 +2876,7 @@ setGeneric("test_gene_enrichment", function(.data,
 			.abundance = !!.abundance,
 			.contrasts = .contrasts,
 			method = method,
+			gene_collections = gene_collections,
 			species = species,
 			cores = cores
 		)
@@ -2927,8 +2935,10 @@ setMethod("test_gene_enrichment",
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .do_test A boolean column name symbol. It indicates the transcript to check
 #' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
-#' @param gene_set A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
+#' @param gene_collections  A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
 #'
+#' @param gene_set DEPRECATED. Use gene_collections instead.
+#' 
 #' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
 #' This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
 #'
@@ -2962,7 +2972,7 @@ setMethod("test_gene_enrichment",
 #' 		.entrez = entrez,
 #' 		.do_test = do_test,
 #' 		species="Homo sapiens",
-#'    gene_set=c("C2")
+#'    gene_collections =c("C2")
 #' 	)
 #'
 #'
@@ -2976,8 +2986,9 @@ setGeneric("test_gene_overrepresentation", function(.data,
 																										.do_test,
 																										species,
 																										.sample = NULL,
-
-																										gene_set = NULL)
+																										gene_collections  = NULL,
+																										gene_set = NULL # DEPRECATED
+																										)
 	standardGeneric("test_gene_overrepresentation"))
 
 # Set internal
@@ -2986,12 +2997,21 @@ setGeneric("test_gene_overrepresentation", function(.data,
 																					 .do_test,
 																					 species,
 																					 .sample = NULL,
-
-																					 gene_set = NULL)	{
+																					 gene_collections  = NULL,
+																					 gene_set = NULL  # DEPRECATED
+																					 )	{
 
 	# Comply with CRAN NOTES
 	. = NULL
 
+	# DEPRECATION OF reference function
+	if (is_present(gene_set) & !is.null(gene_set)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
+		gene_collections = gene_set
+	}
+	
 
 	# Get column names
 	.sample = enquo(.sample)
@@ -3023,7 +3043,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
-		entrez_rank_to_gsea(species, gene_set = gene_set)
+		entrez_over_to_gsea(species, gene_collections  = gene_collections )
 
 
 }
@@ -3060,6 +3080,180 @@ setMethod("test_gene_overrepresentation",
 setMethod("test_gene_overrepresentation",
 					"tidybulk",
 					.test_gene_overrepresentation)
+
+#' analyse gene rank with GSEA
+#'
+#' \lifecycle{maturing}
+#'
+#' @description test_gene_rank() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
+#'
+#' @importFrom rlang enquo
+#' @importFrom rlang quo_is_missing
+#' @importFrom magrittr "%>%"
+#'
+#' @name test_gene_rank
+#'
+#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .sample The name of the sample column
+#' @param .entrez The ENTREZ ID of the transcripts/genes
+#' @param .arrange_desc A column name of the column to arrange in decreasing order
+#' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
+#' @param gene_collections  A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
+#'
+#' @param gene_set DEPRECATED. Use gene_collections instead.
+#' 
+#' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
+#' This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
+#'
+#' Undelying method:
+#'# Get gene sets signatures
+#'msigdbr::msigdbr(species = species) %>%
+#'	
+#'	# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
+#'	when(
+#'		!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
+#'		~ (.)
+#'	) %>%
+#'	
+#'	# Execute calculation
+#'	nest(data = -gs_cat) %>%
+#'	mutate(fit =
+#'				 	map(
+#'				 		data,
+#'				 		~ 	clusterProfiler::GSEA(
+#'				 			my_entrez_rank, 
+#'				 			TERM2GENE=.x %>% select(gs_name, entrez_gene),
+#'				 			pvalueCutoff = 1
+#'				 		) 
+#'				 		
+#'				 	))
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#' df_entrez = tidybulk::se_mini %>% tidybulk() %>% as_tibble() %>% symbol_to_entrez( .transcript = feature, .sample = sample)
+#' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+#' df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+#' df_entrez  = df_entrez %>% test_differential_abundance(~ condition)
+#' 
+#'	test_gene_rank(
+#'		df_entrez,
+#' 		.sample = sample,
+#'		.entrez = entrez,
+#' 		species="Homo sapiens",
+#'    gene_collections =c("C2"),
+#'  .arrange_desc = logFC 
+#' 	)
+#'
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#' @export
+#'
+#'
+setGeneric("test_gene_rank", function(.data,
+																			.entrez,
+																			.arrange_desc,
+																			species,
+																			.sample = NULL,
+																			gene_collections  = NULL,
+																			gene_set = NULL  # DEPRECATED
+																			)
+	standardGeneric("test_gene_rank"))
+
+# Set internal
+.test_gene_rank = 		function(.data,
+														 .entrez,
+														 .arrange_desc,
+														 species,
+														 .sample = NULL,
+														 gene_collections  = NULL,
+														 gene_set = NULL  # DEPRECATED
+														 )	{
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
+	# DEPRECATION OF reference function
+	if (is_present(gene_set) & !is.null(gene_set)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
+		gene_collections = gene_set
+		
+	}
+	
+	# Get column names
+	.sample = enquo(.sample)
+	.sample =  get_sample(.data, .sample)$.sample
+	.arrange_desc = enquo(.arrange_desc)
+	.entrez = enquo(.entrez)
+	
+	# Check if ranking is set
+	if(quo_is_missing(.arrange_desc))
+		stop("tidybulk says: the .arrange_desc parameter appears to no be set")
+		
+	# Check if entrez is set
+	if(quo_is_missing(.entrez))
+		stop("tidybulk says: the .entrez parameter appears to no be set")
+	
+	# Check packages msigdbr
+	# Check if package is installed, otherwise install
+	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
+		message("msigdbr not installed. Installing.")
+		BiocManager::install("msigdbr", ask = FALSE)
+	}
+	
+	# Check is correct species name
+	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+	
+	.data %>%
+		pivot_transcript() %>%
+		arrange(desc(!!.arrange_desc)) %>%
+		select(!!.entrez, !!.arrange_desc) %>%
+		deframe() %>%
+		entrez_rank_to_gsea(species, gene_collections  = gene_collections )
+	
+	
+}
+
+#' test_gene_rank
+#' @inheritParams test_gene_rank
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#'
+#' @return A `spec_tbl_df` object
+setMethod("test_gene_rank",
+					"spec_tbl_df",
+					.test_gene_rank)
+
+#' test_gene_rank
+#' @inheritParams test_gene_rank
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#'
+#' @return A `tbl_df` object
+setMethod("test_gene_rank",
+					"tbl_df",
+					.test_gene_rank)
+
+#' test_gene_rank
+#' @inheritParams test_gene_rank
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#'
+#' @return A `tidybulk` object
+setMethod("test_gene_rank",
+					"tidybulk",
+					.test_gene_rank)
 
 
 #' Extract sample-wise information
