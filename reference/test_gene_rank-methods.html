@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>analyse gene over-representation with GSEA — test_gene_overrepresentation • tidybulk</title>
+<title>analyse gene rank with GSEA — test_gene_rank • tidybulk</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="analyse gene over-representation with GSEA — test_gene_overrepresentation" />
-<meta property="og:description" content="test_gene_overrepresentation() takes as input a `tbl` formatted as | &amp;lt;SAMPLE&amp;gt; | &amp;lt;ENSEMBL_ID&amp;gt; | &amp;lt;COUNT&amp;gt; | &amp;lt;...&amp;gt; | and returns a `tbl` with the GSEA statistics" />
+<meta property="og:title" content="analyse gene rank with GSEA — test_gene_rank" />
+<meta property="og:description" content="test_gene_rank() takes as input a `tbl` formatted as | &amp;lt;SAMPLE&amp;gt; | &amp;lt;ENSEMBL_ID&amp;gt; | &amp;lt;COUNT&amp;gt; | &amp;lt;...&amp;gt; | and returns a `tbl` with the GSEA statistics" />
 
 
 
@@ -129,19 +129,19 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>analyse gene over-representation with GSEA</h1>
+    <h1>analyse gene rank with GSEA</h1>
     
-    <div class="hidden name"><code>test_gene_overrepresentation-methods.Rd</code></div>
+    <div class="hidden name"><code>test_gene_rank-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>test_gene_overrepresentation() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;ENSEMBL_ID&gt; | &lt;COUNT&gt; | &lt;...&gt; | and returns a `tbl` with the GSEA statistics</p>
+    <p>test_gene_rank() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;ENSEMBL_ID&gt; | &lt;COUNT&gt; | &lt;...&gt; | and returns a `tbl` with the GSEA statistics</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='test_gene_overrepresentation-methods.html'>test_gene_overrepresentation</a></span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'><a href='test_gene_rank-methods.html'>test_gene_rank</a></span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.entrez</span>,
-  <span class='va'>.do_test</span>,
+  <span class='va'>.arrange_desc</span>,
   <span class='va'>species</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   gene_collections <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -149,10 +149,10 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for spec_tbl_df</span>
-<span class='fu'><a href='test_gene_overrepresentation-methods.html'>test_gene_overrepresentation</a></span><span class='op'>(</span>
+<span class='fu'><a href='test_gene_rank-methods.html'>test_gene_rank</a></span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.entrez</span>,
-  <span class='va'>.do_test</span>,
+  <span class='va'>.arrange_desc</span>,
   <span class='va'>species</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   gene_collections <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -160,10 +160,10 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for tbl_df</span>
-<span class='fu'><a href='test_gene_overrepresentation-methods.html'>test_gene_overrepresentation</a></span><span class='op'>(</span>
+<span class='fu'><a href='test_gene_rank-methods.html'>test_gene_rank</a></span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.entrez</span>,
-  <span class='va'>.do_test</span>,
+  <span class='va'>.arrange_desc</span>,
   <span class='va'>species</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   gene_collections <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -171,10 +171,10 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for tidybulk</span>
-<span class='fu'><a href='test_gene_overrepresentation-methods.html'>test_gene_overrepresentation</a></span><span class='op'>(</span>
+<span class='fu'><a href='test_gene_rank-methods.html'>test_gene_rank</a></span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.entrez</span>,
-  <span class='va'>.do_test</span>,
+  <span class='va'>.arrange_desc</span>,
   <span class='va'>species</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   gene_collections <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -182,10 +182,10 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for SummarizedExperiment</span>
-<span class='fu'><a href='test_gene_overrepresentation-methods.html'>test_gene_overrepresentation</a></span><span class='op'>(</span>
+<span class='fu'><a href='test_gene_rank-methods.html'>test_gene_rank</a></span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.entrez</span>,
-  <span class='va'>.do_test</span>,
+  <span class='va'>.arrange_desc</span>,
   <span class='va'>species</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   gene_collections <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -193,10 +193,10 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for RangedSummarizedExperiment</span>
-<span class='fu'><a href='test_gene_overrepresentation-methods.html'>test_gene_overrepresentation</a></span><span class='op'>(</span>
+<span class='fu'><a href='test_gene_rank-methods.html'>test_gene_rank</a></span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.entrez</span>,
-  <span class='va'>.do_test</span>,
+  <span class='va'>.arrange_desc</span>,
   <span class='va'>species</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   gene_collections <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -215,8 +215,8 @@
       <td><p>The ENTREZ ID of the transcripts/genes</p></td>
     </tr>
     <tr>
-      <th>.do_test</th>
-      <td><p>A boolean column name symbol. It indicates the transcript to check</p></td>
+      <th>.arrange_desc</th>
+      <td><p>A column name of the column to arrange in decreasing order</p></td>
     </tr>
     <tr>
       <th>species</th>
@@ -246,50 +246,53 @@
 <p>A `RangedSummarizedExperiment` object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>`r lifecycle::badge("maturing")`</p>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a></p>
 <p>This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
 This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.</p>
 <p>Undelying method:
- msigdbr::msigdbr(species = species) <!-- %&gt;%#' -->
-	nest(data = -gs_cat) <!-- %&gt;% -->
-	mutate(test =
-			map(
-				data,
-				~ clusterProfiler::enricher(
-					my_entrez_rank,
-				 	TERM2GENE=.x <!-- %&gt;% select(gs_name, entrez_gene), -->
-					pvalueCutoff = 1
-					) <!-- %&gt;%	as_tibble -->
-			))</p>
+# Get gene sets signatures
+msigdbr::msigdbr(species = species) <!-- %&gt;% --></p>
+<p># Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
+when(
+	!is.null(gene_collections ) ~ filter(., gs_cat <!-- %in% gene_collections ), -->
+	~ (.)
+) <!-- %&gt;% --></p>
+<p># Execute calculation
+nest(data = -gs_cat) <!-- %&gt;% -->
+mutate(fit =
+			 	map(
+			 		data,
+			 		~ 	clusterProfiler::GSEA(
+			 			my_entrez_rank, 
+			 			TERM2GENE=.x <!-- %&gt;% select(gs_name, entrez_gene), -->
+			 			pvalueCutoff = 1
+			 		)</p>			 		
+<p>))</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='va'>df_entrez</span> <span class='op'>=</span> <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'>%&gt;%</span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='symbol_to_entrez.html'>symbol_to_entrez</a></span><span class='op'>(</span> .transcript <span class='op'>=</span> <span class='va'>feature</span>, .sample <span class='op'>=</span> <span class='va'>sample</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='input'><span class='va'>df_entrez</span> <span class='op'>=</span> <span class='fu'><a href='aggregate_duplicates-methods.html'>aggregate_duplicates</a></span><span class='op'>(</span><span class='va'>df_entrez</span>, aggregation_function <span class='op'>=</span> <span class='va'>sum</span>, .sample <span class='op'>=</span> <span class='va'>sample</span>, .transcript <span class='op'>=</span> <span class='va'>entrez</span>, .abundance <span class='op'>=</span> <span class='va'>count</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='warning'>Warning: tidybulk says: for aggregation, factors and logical columns were converted to character</span></div><div class='output co'>#&gt; <span class='message'>Converted to characters</span></div><div class='output co'>#&gt; <span class='message'>factorfactorfactorlogical</span></div><div class='input'><span class='va'>df_entrez</span> <span class='op'>=</span> <span class='fu'><a href='mutate-methods.html'>mutate</a></span><span class='op'>(</span><span class='va'>df_entrez</span>, do_test <span class='op'>=</span> <span class='va'>feature</span> <span class='op'>%in%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"TNFRSF4"</span>, <span class='st'>"PLCH2"</span>, <span class='st'>"PADI4"</span>, <span class='st'>"PAX7"</span><span class='op'>)</span><span class='op'>)</span>
-
-  <span class='fu'><a href='test_gene_overrepresentation-methods.html'>test_gene_overrepresentation</a></span><span class='op'>(</span>
-    <span class='va'>df_entrez</span>,
+<span class='va'>df_entrez</span>  <span class='op'>=</span> <span class='va'>df_entrez</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='test_differential_abundance-methods.html'>test_differential_abundance</a></span><span class='op'>(</span><span class='op'>~</span> <span class='va'>condition</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>=====================================</span>
+#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance</span>
+#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates</span>
+#&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
+#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='warning'>Warning: tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "(Intercept), conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span></div><div class='input'>
+<span class='fu'><a href='test_gene_rank-methods.html'>test_gene_rank</a></span><span class='op'>(</span>
+  <span class='va'>df_entrez</span>,
     .sample <span class='op'>=</span> <span class='va'>sample</span>,
-    .entrez <span class='op'>=</span> <span class='va'>entrez</span>,
-    .do_test <span class='op'>=</span> <span class='va'>do_test</span>,
+  .entrez <span class='op'>=</span> <span class='va'>entrez</span>,
     species<span class='op'>=</span><span class='st'>"Homo sapiens"</span>,
-   gene_collections <span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"C2"</span><span class='op'>)</span>
+   gene_collections <span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"C2"</span><span class='op'>)</span>,
+ .arrange_desc <span class='op'>=</span> <span class='va'>logFC</span> 
   <span class='op'>)</span>
-</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 59 x 10</span><span>
-#&gt;    gs_cat ID       Description  GeneRatio BgRatio  pvalue p.adjust  qvalue Count
-#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>   </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> C2     HOFFMAN… HOFFMAN_CLO… 1/4       10/215… 0.001</span><span style='text-decoration: underline;'>85</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> C2     PEDRIOL… PEDRIOLI_MI… 2/4       412/21… 0.002</span><span style='text-decoration: underline;'>13</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     2
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> C2     LIM_MAM… LIM_MAMMARY… 1/4       14/215… 0.002</span><span style='text-decoration: underline;'>59</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> C2     GAVIN_I… GAVIN_IL2_R… 1/4       19/215… 0.003</span><span style='text-decoration: underline;'>52</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> C2     MYLLYKA… MYLLYKANGAS… 1/4       19/215… 0.003</span><span style='text-decoration: underline;'>52</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> C2     REACTOM… REACTOME_SY… 1/4       26/215… 0.004</span><span style='text-decoration: underline;'>81</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> C2     REACTOM… REACTOME_TN… 1/4       29/215… 0.005</span><span style='text-decoration: underline;'>36</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> C2     PEPPER_… PEPPER_CHRO… 1/4       32/215… 0.005</span><span style='text-decoration: underline;'>92</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> C2     VALK_AM… VALK_AML_CL… 1/4       34/215… 0.006</span><span style='text-decoration: underline;'>29</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span> C2     JAERVIN… JAERVINEN_A… 1/4       40/215… 0.007</span><span style='text-decoration: underline;'>39</span><span>   0.039</span><span style='text-decoration: underline;'>8</span><span> 0.009</span><span style='text-decoration: underline;'>95</span><span>     1
-#&gt; </span><span style='color: #949494;'># … with 49 more rows, and 1 more variable: entrez &lt;list&gt;</span><span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='message'>preparing geneSet collections...</span></div><div class='output co'>#&gt; <span class='message'>GSEA analysis...</span></div><div class='output co'>#&gt; <span class='warning'>Warning: There are ties in the preranked stats (1.34% of the list).</span>
+#&gt; <span class='warning'>The order of those tied genes will be arbitrary, which may produce unexpected results.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: For some pathways, in reality P-values are less than 1e-10. You can set the `eps` argument to zero for better estimation.</span></div><div class='output co'>#&gt; <span class='message'>leading edge analysis...</span></div><div class='output co'>#&gt; <span class='message'>done...</span></div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 1 x 3</span><span>
+#&gt;   gs_cat fit             test                    
+#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #949494;font-style: italic;'>&lt;list&gt;</span><span>          </span><span style='color: #949494;font-style: italic;'>&lt;list&gt;</span><span>                  
+#&gt; </span><span style='color: #BCBCBC;'>1</span><span> C2     </span><span style='color: #949494;'>&lt;gseaRslt[,11]&gt;</span><span> </span><span style='color: #949494;'>&lt;tibble[,15] [498 × 15]&gt;</span><span></div><div class='input'>
 
 </div></span></pre>
   </div>

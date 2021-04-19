@@ -284,7 +284,7 @@
     </tr>
     <tr>
       <th>test_above_log2_fold_change</th>
-      <td><p>A positive real value. At the moment this works just for edgeR methods, and use the `treat` function, which test the that the difference in abundance is bigger than this parameter rather than zero <a href='https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat'>https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat</a>.</p></td>
+      <td><p>A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero <a href='https://pubmed.ncbi.nlm.nih.gov/19176553'>https://pubmed.ncbi.nlm.nih.gov/19176553</a>.</p></td>
     </tr>
     <tr>
       <th>scaling_method</th>
@@ -412,8 +412,7 @@ DESeq2::results()</p>
 #&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance </span>
 #&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates </span>
 #&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
-#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>Installing acepack needed for analyses</span></div><div class='output co'>#&gt; <span class='message'>Installing package into ‘/__w/_temp/Library’</span>
-#&gt; <span class='message'>(as ‘lib’ is unspecified)</span></div><div class='output co'>#&gt; <span class='message'>renaming the first element in assays to 'counts'</span></div><div class='output co'>#&gt; <span class='message'>converting counts to integer mode</span></div><div class='output co'>#&gt; <span class='message'>estimating size factors</span></div><div class='output co'>#&gt; <span class='message'>estimating dispersions</span></div><div class='output co'>#&gt; <span class='message'>gene-wise dispersion estimates</span></div><div class='output co'>#&gt; <span class='message'>mean-dispersion relationship</span></div><div class='output co'>#&gt; <span class='message'>-- note: fitType='parametric', but the dispersion trend was not well captured by the</span>
+#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>renaming the first element in assays to 'counts'</span></div><div class='output co'>#&gt; <span class='message'>converting counts to integer mode</span></div><div class='output co'>#&gt; <span class='message'>estimating size factors</span></div><div class='output co'>#&gt; <span class='message'>estimating dispersions</span></div><div class='output co'>#&gt; <span class='message'>gene-wise dispersion estimates</span></div><div class='output co'>#&gt; <span class='message'>mean-dispersion relationship</span></div><div class='output co'>#&gt; <span class='message'>-- note: fitType='parametric', but the dispersion trend was not well captured by the</span>
 #&gt; <span class='message'>   function: y = a/x + b, and a local regression fit was automatically substituted.</span>
 #&gt; <span class='message'>   specify fitType='local' or 'mean' to avoid this message next time.</span></div><div class='output co'>#&gt; <span class='message'>final dispersion estimates</span></div><div class='output co'>#&gt; <span class='message'>fitting model and testing</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$deseq2`</span></div><div class='output co'>#&gt; class: SummarizedExperiment 
 #&gt; dim: 527 5 
