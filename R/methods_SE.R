@@ -1471,10 +1471,20 @@ setMethod("test_gene_enrichment",
 																					 .do_test,
 																					 species,
 																					 .sample = NULL,
-																					 gene_set = NULL)	{
+																					 gene_collections = NULL,
+																					 gene_set = NULL  # DEPRECATED
+																					 )	{
 
 	# Comply with CRAN NOTES
 	. = NULL
+	
+	# DEPRECATION OF reference function
+	if (is_present(gene_set) & !is.null(gene_set)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
+		gene_collections = gene_set
+	}
 	
 	# Get column names
 	.do_test = enquo(.do_test)
@@ -1508,7 +1518,7 @@ setMethod("test_gene_enrichment",
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
-		entrez_rank_to_gsea(species, gene_set = gene_set)
+		entrez_over_to_gsea(species, gene_collections = gene_collections)
 	
 	
 }
@@ -1534,6 +1544,86 @@ setMethod("test_gene_overrepresentation",
 setMethod("test_gene_overrepresentation",
 					"RangedSummarizedExperiment",
 					.test_gene_overrepresentation_SE)
+
+
+# Set internal
+.test_gene_rank_SE = 		function(.data,
+																.entrez,
+																.arrange_desc,
+																species,
+																.sample = NULL,
+																gene_collections = NULL,
+																gene_set = NULL  # DEPRECATED
+																)	{
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
+	# DEPRECATION OF reference function
+	if (is_present(gene_set) & !is.null(gene_set)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
+		gene_collections = gene_set
+		
+	}
+	
+	# Get column names
+	.arrange_desc = enquo(.arrange_desc)
+	.entrez = enquo(.entrez)
+	# 
+	# expr <- rlang::quo_get_expr(.do_test)
+	# env <- quo_get_env(x)
+	# 
+	
+	# Check if entrez is set
+	if(quo_is_missing(.entrez))
+		stop("tidybulk says: the .entrez parameter appears to no be set")
+	
+	# Check packages msigdbr
+	# Check if package is installed, otherwise install
+	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
+		message("msigdbr not installed. Installing.")
+		BiocManager::install("msigdbr", ask = FALSE)
+	}
+	
+	# Check is correct species name
+	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+	
+	.data %>%
+		pivot_transcript() %>%
+		arrange(desc(!!.arrange_desc)) %>%
+		select(!!.entrez, !!.arrange_desc) %>%
+		deframe() %>%
+		entrez_rank_to_gsea(species, gene_collections = gene_collections)
+	
+	
+}
+
+#' test_gene_rank
+#' @inheritParams test_gene_rank
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#'
+#' @return A `SummarizedExperiment` object
+setMethod("test_gene_rank",
+					"SummarizedExperiment",
+					.test_gene_rank_SE)
+
+#' test_gene_rank
+#' @inheritParams test_gene_rank
+#'
+#' @docType methods
+#' @rdname test_gene_rank-methods
+#'
+#' @return A `RangedSummarizedExperiment` object
+setMethod("test_gene_rank",
+					"RangedSummarizedExperiment",
+					.test_gene_rank_SE)
+
+
 
 
 # Set internal

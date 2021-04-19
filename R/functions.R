@@ -3300,7 +3300,7 @@ fill_NA_using_value = function(.data,
 
 
 #' @importFrom stats p.adjust
-entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
+entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
 
 	# From the page
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
@@ -3322,9 +3322,9 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	# Get gene sets signatures
 	msigdbr::msigdbr(species = species) %>%
 
-		# Filter specific gene_set if specified. This was introduced to speed up examples executionS
+		# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
 		when(
-			!is.null(gene_set) ~ filter(., gs_cat %in% gene_set),
+			!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
 			~ (.)
 		) %>%
 		
@@ -3333,7 +3333,11 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 		mutate(test =
 					 	map(
 					 		data,
-					 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
+					 		~ clusterProfiler::enricher(
+					 			my_entrez_rank, 
+					 			TERM2GENE=.x %>% select(gs_name, entrez_gene), 
+					 			pvalueCutoff = 1
+					 		) %>%
 					 			as_tibble
 					 	)) %>%
 		select(-data) %>%
@@ -3352,6 +3356,78 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 }
 
 
+#' @importFrom tibble rowid_to_column
+#' @importFrom stats p.adjust
+#' @importFrom purrr map
+#' 
+entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
+	
+	# From the page
+	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
+	
+	# Check if package is installed, otherwise install
+	if (find.package("fastmatch", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing fastmatch needed for analyses")
+		install.packages("fastmatch", repos = "https://cloud.r-project.org")
+	}
+	
+	if (find.package("clusterProfiler", quiet = TRUE) %>% length %>% equals(0)) {
+		message("clusterProfiler not installed. Installing.")
+		BiocManager::install("clusterProfiler", ask = FALSE)
+	}
+	
+	if (find.package("enrichplot", quiet = TRUE) %>% length %>% equals(0)) {
+		message("enrichplot not installed. Installing.")
+		BiocManager::install("enrichplot", ask = FALSE)
+	}
+	
+	if (find.package("ggplot2", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing ggplot2 needed for analyses")
+		install.packages("ggplot2", repos = "https://cloud.r-project.org")
+	}
+	
+	# Get gene sets signatures
+	msigdbr::msigdbr(species = species) %>%
+		
+		# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
+		when(
+			!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
+			~ (.)
+		) %>%
+		
+		# Execute calculation
+		nest(data = -gs_cat) %>%
+		mutate(fit =
+					 	map(
+					 		data,
+					 		~ 	clusterProfiler::GSEA(
+					 				my_entrez_rank, 
+					 				TERM2GENE=.x %>% select(gs_name, entrez_gene),
+					 				pvalueCutoff = 1
+					 		) 
+					  
+					 	)) %>%
+			mutate(test =
+					 	map(
+					 		fit,
+					 		~ .x %>%
+					 			ggplot2::fortify(showCategory=Inf) %>%
+					 			as_tibble() %>%
+					 			rowid_to_column(var = "idx_for_plotting")
+					 			#%>%
+					 			#	mutate(plot = future_imap(ID, ~ enrichplot::gseaplot2(fit, geneSetID = .y, title = .x)))
+					 	
+					 	)) %>%
+		select(-data) %>%
+		#unnest(test) %>%
+		
+		# Order
+		#arrange(`p.adjust`) %>%
+		
+		# Add methods used
+		memorise_methods_used(c("clusterProfiler", "msigdbr", "enrichplot"))
+	
+}
 
 # gsea_de = function(.data,
 # 								 .formula,
