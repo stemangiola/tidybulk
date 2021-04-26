@@ -1767,7 +1767,7 @@ symbol_to_entrez = function(.data,
 			# Get entrez mapping 1:1
 			AnnotationDbi::mapIds(
 				org.Hs.eg.db::org.Hs.eg.db,
-				.data %>% distinct(!!.transcript) %>% pull(!!.transcript) %>% as.character,
+				.data %>% distinct(!!.transcript) %>% pull(!!.transcript) %>% as.character %>% toupper(),
 				'ENTREZID',
 				'SYMBOL'
 			) %>%
