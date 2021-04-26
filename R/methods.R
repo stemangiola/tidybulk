@@ -1763,21 +1763,29 @@ symbol_to_entrez = function(.data,
 	}
 
 	.data %>%
+		
+		# Solve the lower case 
+		mutate(transcript_upper := !!.transcript %>% toupper()) %>%
+		
+		# Join
 		dplyr::left_join(
 			# Get entrez mapping 1:1
 			AnnotationDbi::mapIds(
 				org.Hs.eg.db::org.Hs.eg.db,
-				.data %>% distinct(!!.transcript) %>% pull(!!.transcript) %>% as.character %>% toupper(),
+				(.) %>% pull(transcript_upper) %>% as.character() %>% unique(),
 				'ENTREZID',
 				'SYMBOL'
 			) %>%
-				enframe(name = quo_name(.transcript), value = "entrez") %>%
+				enframe(name = "transcript_upper", value = "entrez") %>%
 				filter(entrez %>% is.na %>% not()) %>%
-				group_by(!!.transcript) %>%
+				group_by(transcript_upper) %>%
 				slice(1) %>%
 				ungroup(),
-			by = quo_name(.transcript)
-		)
+			by = "transcript_upper"
+		) %>%
+		
+		# Eliminate the upper case
+		select(-transcript_upper)
 
 }
 
