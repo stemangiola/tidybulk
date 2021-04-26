@@ -249,6 +249,54 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 })
 
 
+test_that("Voom with treat method",{
+	
+	se_mini %>%
+        identify_abundant(a, b, c, factor_of_interest = condition) %>%
+		test_differential_abundance(
+			~ condition,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			method = "limma_voom",
+			test_above_log2_fold_change = 1,
+			action="only"
+		) %>%
+    	`@` (elementMetadata) %>%
+		as_tibble() %>%
+	    filter(adj.P.Val<0.05) %>%
+		nrow %>%
+		expect_equal(97)
+    
+    # with multiple contrasts
+    res <-
+    	se_mini %>%
+        identify_abundant(a, b, c, factor_of_interest = Cell.type) %>%
+		test_differential_abundance(
+			~ 0 + Cell.type,
+			.sample = a,
+			.transcript = b,
+			.abundance = c,
+			.contrasts = c("Cell.typeb_cell-Cell.typemonocyte", "Cell.typeb_cell-Cell.typet_cell"),
+			method = "limma_voom",
+			test_above_log2_fold_change = 1,
+			action="only"
+		) %>%
+    	`@` (elementMetadata) %>%
+		as_tibble()
+	    
+    	res %>%    
+    	filter(adj.P.Val___Cell.typeb_cell.Cell.typemonocyte < 0.05) %>%
+		nrow %>%
+		expect_equal(293)
+    	
+    	res %>%    
+    	filter(adj.P.Val___Cell.typeb_cell.Cell.typet_cell < 0.05) %>%
+		nrow %>%
+		expect_equal(246)
+    
+})
+
 
 test_that("filter abundant - SummarizedExperiment",{
 

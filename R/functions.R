@@ -286,7 +286,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
-#' @param test_above_log2_fold_change A positive real value. At the moment this works just for edgeR methods, and use the `treat` function, which test the that the difference in abundance is bigger than this parameter rather than zero \url{https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/glmTreat}.
+#' @param test_above_log2_fold_change A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param .sample_total_read_count
@@ -474,6 +474,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 							# select method
 							when(
+							    !is.null(test_above_log2_fold_change) ~ (.) %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts[, .x], lfc=test_above_log2_fold_change),
 								tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
 								tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
 							)	%>%
@@ -508,6 +509,10 @@ get_differential_transcript_abundance_bulk <- function(.data,
 				tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_quasi_likelihood")),
 				tolower(method) ==  "edger_robust_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edger_robust_likelihood_ratio"))
 			)	%>%
+        	when(
+        	    !is.null(test_above_log2_fold_change) ~ (.) %>% memorise_methods_used("treat"),
+        	    ~ (.)
+        	) %>%
 
 		# Add raw object
 		attach_to_internals(edgeR_object, "edgeR") %>%
@@ -552,7 +557,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 																											 .transcript = NULL,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
-                                                       method = NULL,     
+                                                                                                             method = NULL,
+																											 test_above_log2_fold_change = NULL,
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
 																											 prefix = "") {
@@ -640,7 +646,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		) %>%
 		
 	    limma::lmFit(design)
-
+	
 	voom_object %>%
 
 		# If I have multiple .contrasts merge the results
@@ -653,13 +659,17 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 				# Contrasts
 				limma::contrasts.fit(contrasts=my_contrasts, coefficients =  when(my_contrasts, is.null(.) ~ 2)) %>%
 				limma::eBayes() %>%
+			    when(
+			        
+					!is.null(test_above_log2_fold_change) ~ (.) %>% 
+					    limma::treat(lfc=test_above_log2_fold_change) %>%
+					    limma::topTreat(n = Inf),
+					
+					~ (.) %>% limma::topTable(n = Inf) 
+ 
+				) %>%
 
-			# Convert to tibble
-				# when(
-				# 	!is.null(test_above_log2_fold_change) ~ (.) %>% limma::topTreat(n = Inf),
-				# 	~ (.) %>% limma::topTags(n = Inf)
-				# ) %$%
-				limma::topTable(n = Inf) %>%
+			    # Convert to tibble
 				as_tibble(rownames = quo_name(.transcript)) %>%
 
 				# # Mark DE genes
@@ -679,36 +689,47 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 							# Contrasts
 							limma::contrasts.fit(contrasts=my_contrasts[, .x]) %>%
 							limma::eBayes() %>%
+						    when(
+						        
+						        !is.null(test_above_log2_fold_change) ~ (.) %>% 
+						        limma::treat(lfc=test_above_log2_fold_change) %>%
+						        limma::topTreat(n = Inf),
+						        
+						        ~ (.) %>% limma::topTable(n = Inf) 
+						    ) %>%
 
 							# Convert to tibble
-							limma::topTable(n = Inf) %>%
 							as_tibble(rownames = quo_name(.transcript)) %>%
-							mutate(constrast = colnames(my_contrasts)[.x]) 
+							mutate(constrast = colnames(my_contrasts)[.x])
 							# %>%
-							# 
+							#
 							# # Mark DE genes
 							# mutate(significant = adj.P.Val < significance_threshold)
 					) %>%
 					pivot_wider(values_from = -c(!!.transcript, constrast),
 											names_from = constrast, names_sep = "___")
 			}
-		)	 %>%
-		
+		) %>%
+
 		# Attach prefix
 		setNames(c(
-			colnames(.)[1], 
+			colnames(.)[1],
 			sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
 		)) %>%
-		
+
 		# Attach attributes
 		reattach_internals(.data) %>%
-	    
+
 	    # select method
 	    when(
 			tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
 			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights")
 		) %>%
-
+	    when(
+			!is.null(test_above_log2_fold_change) ~ (.) %>% memorise_methods_used("treat"),
+			~ (.)
+		) %>%
+	    
 		# Add raw object
 		attach_to_internals(voom_object, "voom") %>%
 		# Communicate the attribute added
@@ -1263,18 +1284,35 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
     
 	# Specify gene sets to include
 	
-	# Remove kegg_ prefix
-	gene_collections = gene_collections %>% str_replace("kegg_", "")
-	
+	# Include all msigdb and kegg if "all"
 	if ("all" %in% gene_collections) {
 	    msigdb.gsets <- "all"
 	    kegg.exclude <- c()
+	    collections = c("kegg", "msigdb")
 	} else {
-	    msig <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
-	    kegg <- c("disease", "metabolism", "signaling")
-	    msigdb.gsets <- gene_collections[gene_collections %in% msig]
-	    kegg.exclude <- kegg[!(kegg %in% gene_collections)]
+	    # Record which collections used (kegg, msigdb) for bibliography
+	    collections = c()
 	    
+	    # Identify any msigdb sets to be included
+	    msig <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
+	    msigdb.gsets <- gene_collections[gene_collections %in% msig]
+	    
+	    # Record if msigdb used for bibliography
+	    if (length(msigdb.gsets) >= 1) {
+	        collections = c(collections, "msigdb")
+	    }
+	    
+	    # Specify kegg sets
+	    
+	    # Record if kegg used for bibliography
+	    if ("kegg" %in% gene_collections) {
+	        gene_collections = gene_collections %>% str_replace("kegg_", "")
+	        collections = c(collections, "kegg")
+	    }
+	    
+	     # Identify any kegg sets to be included
+	    kegg <- c("disease", "metabolism", "signaling")
+	    kegg.exclude <- kegg[!(kegg %in% gene_collections)]
 	    # If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object 
 	    if (length(kegg.exclude) == 3) {
 	        kegg.exclude = "all"
@@ -1365,13 +1403,15 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	
 	# output tibble
 	if (exists("res_formatted_nonkegg") & exists("res_formatted_kegg")) {
-	    bind_rows(res_formatted_nonkegg, res_formatted_kegg)
+	    out = bind_rows(res_formatted_nonkegg, res_formatted_kegg)
 	} else if (exists("res_formatted_nonkegg")) {
-	    res_formatted_nonkegg
+	    out = res_formatted_nonkegg
 	} else {
-	    res_formatted_kegg
+	    out = res_formatted_kegg
 	}
 
+	# add to bibliography
+	out %>% memorise_methods_used(c("egsea", collections, method))
 }
 
 #' Get K-mean clusters to a tibble
@@ -3263,7 +3303,7 @@ fill_NA_using_value = function(.data,
 
 
 #' @importFrom stats p.adjust
-entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
+entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
 
 	# From the page
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
@@ -3285,9 +3325,9 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 	# Get gene sets signatures
 	msigdbr::msigdbr(species = species) %>%
 
-		# Filter specific gene_set if specified. This was introduced to speed up examples executionS
+		# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
 		when(
-			!is.null(gene_set) ~ filter(., gs_cat %in% gene_set),
+			!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
 			~ (.)
 		) %>%
 		
@@ -3296,7 +3336,11 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 		mutate(test =
 					 	map(
 					 		data,
-					 		~ clusterProfiler::enricher(my_entrez_rank, TERM2GENE=.x %>% select(gs_name, entrez_gene), pvalueCutoff = 1) %>%
+					 		~ clusterProfiler::enricher(
+					 			my_entrez_rank, 
+					 			TERM2GENE=.x %>% select(gs_name, entrez_gene), 
+					 			pvalueCutoff = 1
+					 		) %>%
 					 			as_tibble
 					 	)) %>%
 		select(-data) %>%
@@ -3310,11 +3354,83 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_set = NULL){
 		select(-geneID) %>% 
 		
 		# Add methods used
-		memorise_methods_used(c("clusterProfiler", "msigdbr"))
+		memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"))
 
 }
 
 
+#' @importFrom tibble rowid_to_column
+#' @importFrom stats p.adjust
+#' @importFrom purrr map
+#' 
+entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
+	
+	# From the page
+	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
+	
+	# Check if package is installed, otherwise install
+	if (find.package("fastmatch", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing fastmatch needed for analyses")
+		install.packages("fastmatch", repos = "https://cloud.r-project.org")
+	}
+	
+	if (find.package("clusterProfiler", quiet = TRUE) %>% length %>% equals(0)) {
+		message("clusterProfiler not installed. Installing.")
+		BiocManager::install("clusterProfiler", ask = FALSE)
+	}
+	
+	if (find.package("enrichplot", quiet = TRUE) %>% length %>% equals(0)) {
+		message("enrichplot not installed. Installing.")
+		BiocManager::install("enrichplot", ask = FALSE)
+	}
+	
+	if (find.package("ggplot2", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing ggplot2 needed for analyses")
+		install.packages("ggplot2", repos = "https://cloud.r-project.org")
+	}
+	
+	# Get gene sets signatures
+	msigdbr::msigdbr(species = species) %>%
+		
+		# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
+		when(
+			!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
+			~ (.)
+		) %>%
+		
+		# Execute calculation
+		nest(data = -gs_cat) %>%
+		mutate(fit =
+					 	map(
+					 		data,
+					 		~ 	clusterProfiler::GSEA(
+					 				my_entrez_rank, 
+					 				TERM2GENE=.x %>% select(gs_name, entrez_gene),
+					 				pvalueCutoff = 1
+					 		) 
+					  
+					 	)) %>%
+			mutate(test =
+					 	map(
+					 		fit,
+					 		~ .x %>%
+					 			ggplot2::fortify(showCategory=Inf) %>%
+					 			as_tibble() %>%
+					 			rowid_to_column(var = "idx_for_plotting")
+					 			#%>%
+					 			#	mutate(plot = future_imap(ID, ~ enrichplot::gseaplot2(fit, geneSetID = .y, title = .x)))
+					 	
+					 	)) %>%
+		select(-data) %>%
+		#unnest(test) %>%
+		
+		# Order
+		#arrange(`p.adjust`) %>%
+		
+		# Add methods used
+		memorise_methods_used(c("clusterProfiler", "msigdbr", "enrichplot"))
+	
+}
 
 # gsea_de = function(.data,
 # 								 .formula,
