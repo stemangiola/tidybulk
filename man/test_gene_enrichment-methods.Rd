@@ -70,6 +70,7 @@ test_gene_enrichment(
   .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg"),
   species,
   cores = 10
 )
@@ -82,6 +83,7 @@ test_gene_enrichment(
   .abundance = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg"),
   species,
   cores = 10
 )
