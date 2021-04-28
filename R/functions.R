@@ -1191,7 +1191,7 @@ test_stratification_cellularity_ <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
-#' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: "h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling". c1 is human specific. Default is "all", all MSigDB and KEGG gene set collections are used.
+#' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"). c1 is human specific.
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
 #'
@@ -1283,41 +1283,29 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		edgeR::DGEList(counts = .)
     
 	# Specify gene sets to include
+	msig_all <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
+	kegg_all <- c("kegg_disease", "kegg_metabolism", "kegg_signaling")
 	
-	# Include all msigdb and kegg if "all"
-	if ("all" %in% gene_collections) {
-	    msigdb.gsets <- "all"
-	    kegg.exclude <- c()
-	    collections = c("kegg", "msigdb")
-	} else {
-	    # Record which collections used (kegg, msigdb) for bibliography
-	    collections = c()
-	    
-	    # Identify any msigdb sets to be included
-	    msig <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
-	    msigdb.gsets <- gene_collections[gene_collections %in% msig]
-	    
-	    # Record if msigdb used for bibliography
-	    if (length(msigdb.gsets) >= 1) {
-	        collections = c(collections, "msigdb")
-	    }
-	    
-	    # Specify kegg sets
-	    
-	    # Record if kegg used for bibliography
-	    if ("kegg" %in% gene_collections) {
-	        gene_collections = gene_collections %>% str_replace("kegg_", "")
-	        collections = c(collections, "kegg")
-	    }
-	    
-	     # Identify any kegg sets to be included
-	    kegg <- c("disease", "metabolism", "signaling")
-	    kegg.exclude <- kegg[!(kegg %in% gene_collections)]
-	    # If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object 
-	    if (length(kegg.exclude) == 3) {
-	        kegg.exclude = "all"
-	    }
+	# Record which collections used (kegg, msigdb) for bibliography
+	collections_bib = c()
+	
+	# Identify any msigdb sets to be included
+	msigdb.gsets <- gene_collections[gene_collections %in% msig_all]
+	if (length(msigdb.gsets) >= 1) {
+	    collections_bib = c(collections_bib, "msigdb")
 	}
+	
+	# Have to identify kegg sets to exclude for EGSEA 
+	kegg_to_exclude = kegg_all[!(kegg_all %in% gene_collections)]
+	
+	# If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object 
+    if (length(kegg_to_exclude) == 3) {
+            kegg.exclude = "all"
+    } else {
+	    kegg.exclude = kegg_to_exclude %>% str_replace("kegg_", "")
+	    collections_bib = c(collections_bib, "kegg")
+	} 
+
 
 	idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets, 
 	                kegg.exclude = kegg.exclude)
@@ -1411,7 +1399,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	}
 
 	# add to bibliography
-	out %>% memorise_methods_used(c("egsea", collections, method))
+	out %>% memorise_methods_used(c("egsea", collections_bib, method))
 }
 
 #' Get K-mean clusters to a tibble

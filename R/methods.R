@@ -2758,7 +2758,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts = NULL,
 #' @param method A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
-#' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: "h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling". c1 is human specific. Default is "all", all MSigDB and KEGG gene set collections are used.
+#' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"). c1 is human specific.
 #' @param species A character. For example, human or mouse
 #' @param cores An integer. The number of cores available
 #'
@@ -2816,7 +2816,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #'			.entrez = entrez,
 #'			.abundance = count,
 #'          method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
-#'          gene_collections = "all",
+#'          gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 #'			species="human",
 #'			cores = 2
 #'		)
@@ -2835,7 +2835,7 @@ setGeneric("test_gene_enrichment", function(.data,
 																							 .abundance = NULL,
 																							 .contrasts = NULL,
 																							 method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
-																							 gene_collections = "all", 
+																							 gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), 
 																							 species,
 																							 cores = 10)
 	standardGeneric("test_gene_enrichment"))
@@ -2848,7 +2848,7 @@ setGeneric("test_gene_enrichment", function(.data,
 																			.abundance = NULL,
 																			.contrasts = NULL,
 																	        method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
-																			gene_collections = "all", 
+																			gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), 
 																			species,
 																			cores = 10)	{
 	# Make col names
