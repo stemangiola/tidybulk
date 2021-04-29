@@ -1288,6 +1288,7 @@ setMethod("keep_abundant",
 																			.contrasts = NULL,
 																			method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																			gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+																			gene_sets = NULL,
 																			species,
 																			cores = 10)	{
 
@@ -1387,33 +1388,48 @@ setMethod("keep_abundant",
 		# as_matrix(rownames = !!.entrez) %>%
 		edgeR::DGEList(counts = .)
 	
-	# Specify gene sets to include
-	msig_all <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
-	kegg_all <- c("kegg_disease", "kegg_metabolism", "kegg_signaling")
+	if (!is.null(gene_sets)) {
+	    
+	    idx =  buildCustomIdx(geneIDs = rownames(dge), species = species, gsets=gene_sets)
+	    nonkegg_genesets = idx
+	    kegg_genesets = NULL
+	 
+	} else {
 	
-	# Record which collections used (kegg, msigdb) for bibliography
-	collections_bib = c()
+    	# Specify gene sets to include
+    	msig_all <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
+    	kegg_all <- c("kegg_disease", "kegg_metabolism", "kegg_signaling")
+    	
+    	# Record which collections used (kegg, msigdb) for bibliography
+    	collections_bib = c()
+    	
+    	# Identify any msigdb sets to be included
+    	msigdb.gsets <- gene_collections[gene_collections %in% msig_all]
+    	if (length(msigdb.gsets) >= 1) {
+    	    collections_bib = c(collections_bib, "msigdb")
+    	}
+    	
+    	# Have to identify kegg sets to exclude for EGSEA 
+    	kegg_to_exclude = kegg_all[!(kegg_all %in% gene_collections)]
+    	
+    	# If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object 
+        if (length(kegg_to_exclude) == 3) {
+                kegg.exclude = "all"
+        } else {
+    	    kegg.exclude = kegg_to_exclude %>% str_replace("kegg_", "")
+    	    collections_bib = c(collections_bib, "kegg")
+    	} 
+    
+    
+    	idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets, 
+    	                kegg.exclude = kegg.exclude)
+    	
+    	# Due to a bug with kegg pathview overlays, this collection is run without report
+        # https://support.bioconductor.org/p/122172/#122218
 	
-	# Identify any msigdb sets to be included
-	msigdb.gsets <- gene_collections[gene_collections %in% msig_all]
-	if (length(msigdb.gsets) >= 1) {
-	    collections_bib = c(collections_bib, "msigdb")
+	    kegg_genesets = idx[which(names(idx)=="kegg")]
+	    nonkegg_genesets = idx[which(names(idx)!="kegg")]
 	}
-	
-	# Have to identify kegg sets to exclude for EGSEA 
-	kegg_to_exclude = kegg_all[!(kegg_all %in% gene_collections)]
-	
-	# If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object 
-    if (length(kegg_to_exclude) == 3) {
-            kegg.exclude = "all"
-    } else {
-	    kegg.exclude = kegg_to_exclude %>% str_replace("kegg_", "")
-	    collections_bib = c(collections_bib, "kegg")
-	} 
-
-
-	idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets, 
-	                kegg.exclude = kegg.exclude)
 	
 	# Specify column to use to sort results in output table
 	# If only one method is specified there is no med.rank column
@@ -1423,11 +1439,6 @@ setMethod("keep_abundant",
 	    sort_column = "med.rank"
 	}
 	
-	# Due to a bug with kegg pathview overlays, this collection is run without report
-    # https://support.bioconductor.org/p/122172/#122218
-	
-	kegg_genesets = idx[which(names(idx)=="kegg")]
-	nonkegg_genesets = idx[which(names(idx)!="kegg")]
 	
 	if (length(nonkegg_genesets) != 0) {
     	res =
@@ -1504,7 +1515,9 @@ setMethod("keep_abundant",
 	}
 
 	# add to bibliography
-	out %>% memorise_methods_used(c("egsea", collections_bib, method))
+	if (exists("collections_bib")) {
+	    out %>% memorise_methods_used(c("egsea", collections_bib, method))
+	}
 	
 }
 

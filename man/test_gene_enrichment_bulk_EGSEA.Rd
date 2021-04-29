@@ -13,6 +13,7 @@ test_gene_enrichment_bulk_EGSEA(
   .contrasts = NULL,
   method,
   gene_collections,
+  gene_sets = NULL,
   species,
   cores = 10
 )
@@ -34,7 +35,9 @@ test_gene_enrichment_bulk_EGSEA(
 
 \item{gene_collections}{A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"). c1 is human specific.}
 
-\item{species}{A character. For example, human or mouse}
+\item{gene_sets}{A list of user-supplied gene sets. Each gene set is a character vector of Entrez IDs and the names of the list are the gene set names. Used with EGSEA buildCustomIdx. If supplied, gene_collections is not used.}
+
+\item{species}{A character. It can be human, mouse or rat.}
 
 \item{cores}{An integer. The number of cores available}
 }
