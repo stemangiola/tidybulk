@@ -14,3 +14,4 @@ dev/*rda
 dev/*pdf
 dev/dplyr-master/*
 tidybulk.Rproj
+egsea_report_*
