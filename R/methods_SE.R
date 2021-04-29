@@ -715,10 +715,8 @@ setMethod("adjust_abundance",
 																		aggregation_function = sum,
 																		keep_integer = TRUE) {
 	# Make col names
-	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	
+
 	.data %>%
 		
 		# Convert to tidybulk
@@ -726,9 +724,7 @@ setMethod("adjust_abundance",
 		
 		# Apply scale method
 		aggregate_duplicates(
-			.sample = !!.sample,
 			.transcript = !!.transcript,
-			.abundance = !!.abundance,
 			aggregation_function = aggregation_function,
 			keep_integer = keep_integer
 		) %>%
@@ -1308,6 +1304,10 @@ setMethod("keep_abundant",
 			~ (.)
 		)
 	
+	# Check if duplicated entrez
+	if(rowData(.data)[,quo_name(.entrez)] %>% duplicated() %>% any())
+		stop("tidybulk says: There are duplicated .entrez IDs. Please use aggregate_duplicates(.transcript = entrez).")
+		
 	# For use within when
 	.my_data = .data
 	
