@@ -1238,7 +1238,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			pull(n) %>%
 			min %>%
 			st(2))
-		stop("tidybulk says: You need at least two replicated for each condition for EGSEA to work")
+		stop("tidybulk says: You need at least two replicates for each condition for EGSEA to work")
 
 
 	# Create design matrix

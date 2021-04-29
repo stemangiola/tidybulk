@@ -1325,7 +1325,7 @@ setMethod("keep_abundant",
 			pull(n) %>%
 			min %>%
 			st(2))
-		stop("tidybulk says: You need at least two replicated for each condition for EGSEA to work")
+		stop("tidybulk says: You need at least two replicates for each condition for EGSEA to work")
 	
 	
 	# Create design matrix
