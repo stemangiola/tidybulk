@@ -2860,6 +2860,17 @@ setGeneric("test_gene_enrichment", function(.data,
 
 	.entrez = enquo(.entrez)
 
+	# Check that there are no entrez missing
+	.data = 
+		.data %>%
+		when(
+			filter(., !!.entrez %>% is.na) %>% nrow() %>% gt(0) ~ {
+				warning("tidybulk says: There are NA entrez IDs. Those genes will be filtered")
+				filter(., !!.entrez %>% is.na %>% not())
+			},
+			~ (.)
+		)
+	
 	# Validate data frame
 	if(do_validate()) {
 	validation(.data, !!.sample, !!.entrez, !!.abundance)
