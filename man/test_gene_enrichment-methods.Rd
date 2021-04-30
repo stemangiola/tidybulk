@@ -16,6 +16,7 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
+  .symbol = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
@@ -31,6 +32,7 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
+  .symbol = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
@@ -46,6 +48,7 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
+  .symbol = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
@@ -61,6 +64,7 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
+  .symbol = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
@@ -76,6 +80,7 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
+  .symbol = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
@@ -91,6 +96,7 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
+  .symbol = NULL,
   .contrasts = NULL,
   method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
@@ -110,6 +116,8 @@ test_gene_enrichment(
 \item{.entrez}{The ENTREZ ID of the transcripts/genes}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{.symbol}{The name of the gene symbol column for the heatmaps. Optional.}
 
 \item{.contrasts}{= NULL,}
 

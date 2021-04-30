@@ -2756,6 +2756,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @param .sample The name of the sample column
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param .symbol The name of the gene symbol column for the heatmaps. Optional.
 #' @param .contrasts = NULL,
 #' @param method A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
 #' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"). c1 is human specific.
@@ -2834,6 +2835,7 @@ setGeneric("test_gene_enrichment", function(.data,
 																							 .sample = NULL,
 																							 .entrez,
 																							 .abundance = NULL,
+																							 .symbol = NULL,
 																							 .contrasts = NULL,
 																							 method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																							 gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), 
@@ -2848,6 +2850,7 @@ setGeneric("test_gene_enrichment", function(.data,
 																			.sample = NULL,
 																			.entrez,
 																			.abundance = NULL,
+																			.symbol = NULL,
 																			.contrasts = NULL,
 																	        method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																			gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
@@ -2861,6 +2864,7 @@ setGeneric("test_gene_enrichment", function(.data,
 	.sample = col_names$.sample
 	.abundance = col_names$.abundance
 
+	.symbol = enquo(.symbol)
 	.entrez = enquo(.entrez)
 
 	# Check that there are no entrez missing
@@ -2896,6 +2900,7 @@ setGeneric("test_gene_enrichment", function(.data,
 			.sample = !!.sample,
 			.entrez = !!.entrez,
 			.abundance = !!.abundance,
+			.symbol = !!.symbol,
 			.contrasts = .contrasts,
 			method = method,
 			gene_collections = gene_collections,

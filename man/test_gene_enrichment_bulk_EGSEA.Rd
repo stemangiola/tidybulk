@@ -10,6 +10,7 @@ test_gene_enrichment_bulk_EGSEA(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
+  .symbol = NULL,
   .contrasts = NULL,
   method,
   gene_collections,
