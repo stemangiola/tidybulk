@@ -1285,7 +1285,6 @@ setMethod("keep_abundant",
 																			.sample = NULL,
 																			.entrez,
 																			.abundance = NULL,
-																			.symbol = NULL,
 																			.contrasts = NULL,
 																			method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																			gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
@@ -1293,7 +1292,6 @@ setMethod("keep_abundant",
 																			species,
 																			cores = 10)	{
 
-    .symbol = enquo(.symbol)
 	.entrez = enquo(.entrez)
 
 	# Check that there are no entrez missing
@@ -1390,20 +1388,7 @@ setMethod("keep_abundant",
 		edgeR::DGEList(counts = .)
 	
 	# Add gene ids for Interpret Results tables in report
-	if (!quo_is_null(.symbol)) {
-	    entrez_array <- rowData(.data)[, c(quo_name(.entrez), quo_name(.symbol))]
-	} else {
-	    entrez_array <- rowData(.data)[, quo_name(.entrez), drop=FALSE]
-	}
-	
-	dge$genes <- entrez_array[match(rownames(dge$counts), entrez_array[, quo_name(.entrez)]), ]
-
-	# Add symbol to heatmap plots
-    if (!quo_is_null(.symbol)) {
-        symbolsMap=dge$genes
-    } else{
-        symbolsMap=NULL
-    }
+	dge$genes = rownames(dge$counts)
 
 	if (!is.null(gene_sets)) {
 
@@ -1470,8 +1455,7 @@ setMethod("keep_abundant",
         		gs.annots = nonkegg_genesets,
         		baseGSEAs = method,
         		sort.by = sort_column,
-        		num.threads = cores,
-        		symbolsMap = symbolsMap
+        		num.threads = cores
         	)
 
         gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
@@ -1507,7 +1491,6 @@ setMethod("keep_abundant",
     			baseGSEAs = method,
     			sort.by = sort_column,
     			num.threads = cores,
-    			symbolsMap = symbolsMap,
     			report = FALSE
     		)
 

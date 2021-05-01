@@ -1203,7 +1203,6 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 																							 .sample = NULL,
 																							 .entrez,
 																							 .abundance = NULL,
-																							 .symbol = NULL,
 																							 .contrasts = NULL,
 																						     method,
 																							 gene_collections,
@@ -1217,14 +1216,13 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	.sample = enquo(.sample)
 	.abundance = enquo(.abundance)
 
-	.symbol = enquo(.symbol)
 	.entrez = enquo(.entrez)
 
 	# distinct_at is not released yet for dplyr, thus we have to use this trick
 	df_for_edgeR <- .data %>%
 
 		# Prepare the data frame
-		select(!!.entrez, !!.sample, !!.abundance, !!.symbol,
+		select(!!.entrez, !!.sample, !!.abundance,
 					 one_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
@@ -1287,24 +1285,9 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		edgeR::DGEList(counts = .)
 	
 	# Add gene ids for Interpret Results tables in report
-	entrez_array = df_for_edgeR %>%
-	    when(
-	        !quo_is_null(.symbol) ~ (.) %>% distinct(!!.entrez, !!.symbol),
-	        ~ (.) %>% distinct(!!.entrez)
-	    ) %>%
-	   arrange(!!.entrez %>% match(rownames(dge$counts))) %>%
-	   as_matrix()
-	    
-    dge$genes=entrez_array
+    dge$genes = rownames(dge$counts)
     
-    # Add symbol to heatmap plots
-    if (!quo_is_null(.symbol)) {
-        symbolsMap=entrez_array
-    } else{
-        symbolsMap=NULL
-    }
     
-
 	if (!is.null(gene_sets)) {
 
 	    idx =  buildCustomIdx(geneIDs = rownames(dge), species = species, gsets=gene_sets)
@@ -1369,8 +1352,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
         		gs.annots = nonkegg_genesets,
         		baseGSEAs = method,
         		sort.by = sort_column,
-        		num.threads = cores,
-        		symbolsMap= symbolsMap
+        		num.threads = cores
         	)
 
         gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
@@ -1406,7 +1388,6 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
     			baseGSEAs = method,
     			sort.by = sort_column,
     			num.threads = cores,
-    			symbolsMap= symbolsMap,
     			report = FALSE
 
     		)
