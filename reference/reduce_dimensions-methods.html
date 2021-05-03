@@ -312,24 +312,24 @@ Rtsne::Rtsne(data, ...)</p>
 
 
 <span class='va'>counts.MDS</span> <span class='op'>=</span>
- <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'>%&gt;%</span>
- <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
+ <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
  <span class='fu'><a href='reduce_dimensions-methods.html'>reduce_dimensions</a></span><span class='op'>(</span> method<span class='op'>=</span><span class='st'>"MDS"</span>, .dims <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>Getting the 182 most variable genes</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results do `attr(..., "internals")$MDS`</span></div><div class='input'>
+</div><div class='co'>#&gt; No group or design set. Assuming all samples belong to one group.</div><div class='co'>#&gt; Getting the 182 most variable genes</div><div class='co'>#&gt; tidybulk says: to access the raw results do `attr(..., "internals")$MDS`</div><div class='input'>
 
 <span class='va'>counts.PCA</span> <span class='op'>=</span>
- <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'>%&gt;%</span>
- <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
+ <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
  <span class='fu'><a href='reduce_dimensions-methods.html'>reduce_dimensions</a></span><span class='op'>(</span>method<span class='op'>=</span><span class='st'>"PCA"</span>, .dims <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>Getting the 182 most variable genes</span></div><div class='output co'>#&gt; <span class='message'>Fraction of variance explained by the selected principal components</span></div><div class='output co'>#&gt; <span class='message'><span style='color: #949494;'># A tibble: 3 x 2</span><span></span>
-#&gt; <span class='message'>  `Fraction of variance`    PC</span>
-#&gt; <span class='message'>                   </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span></span>
-#&gt; <span class='message'></span><span style='color: #BCBCBC;'>1</span><span>                 0.598      1</span>
-#&gt; <span class='message'></span><span style='color: #BCBCBC;'>2</span><span>                 0.302      2</span>
-#&gt; <span class='message'></span><span style='color: #BCBCBC;'>3</span><span>                 0.085</span><span style='text-decoration: underline;'>2</span><span>     3</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results do `attr(..., "internals")$PCA`</span></div><div class='input'>
+</div><div class='co'>#&gt; No group or design set. Assuming all samples belong to one group.</div><div class='co'>#&gt; Getting the 182 most variable genes</div><div class='co'>#&gt; Fraction of variance explained by the selected principal components</div><div class='co'>#&gt; <span style='color: #949494;'># A tibble: 3 x 2</span>
+#&gt;   `Fraction of variance`    PC
+#&gt;                    <span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span><span>                 0.598      1</span>
+#&gt; <span style='color: #BCBCBC;'>2</span><span>                 0.302      2</span>
+#&gt; <span style='color: #BCBCBC;'>3</span><span>                 0.085</span><span style='text-decoration: underline;'>2</span><span>     3</span></div><div class='co'>#&gt; tidybulk says: to access the raw results do `attr(..., "internals")$PCA`</div><div class='input'>
 
 
-</div></span></pre>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

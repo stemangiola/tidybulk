@@ -213,39 +213,39 @@ standard tidyverse recycling rules).</p></td>
     <pre class="examples"><div class='input'>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
 
-<span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'>%&gt;%</span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='nest-methods.html'>nest</a></span><span class='op'>(</span> data <span class='op'>=</span> <span class='op'>-</span><span class='va'>feature</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+<span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='nest-methods.html'>nest</a></span><span class='op'>(</span> data <span class='op'>=</span> <span class='op'>-</span><span class='va'>feature</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
 <span class='fu'><a href='nest-methods.html'>unnest</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 2,635 x 6</span><span>
+</div><div class='co'>#&gt; <span style='color: #949494;'># A tibble: 2,635 x 6</span>
 #&gt;    feature sample     count Cell.type         time  condition
-#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>   </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>             </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>    
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> ABCB4   SRR1740034  </span><span style='text-decoration: underline;'>1</span><span>035 b_cell            0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> ABCB4   SRR1740035  </span><span style='text-decoration: underline;'>1</span><span>123 b_cell            1 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> ABCB4   SRR1740043     5 monocyte          1 d   FALSE    
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> ABCB4   SRR1740058    10 t_cell            0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> ABCB4   SRR1740067    94 dendritic_myeloid 1 d   FALSE    
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> ABCB9   SRR1740034    45 b_cell            0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> ABCB9   SRR1740035    53 b_cell            1 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> ABCB9   SRR1740043     7 monocyte          1 d   FALSE    
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> ABCB9   SRR1740058   118 t_cell            0 d   TRUE     
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span> ABCB9   SRR1740067    10 dendritic_myeloid 1 d   FALSE    
-#&gt; </span><span style='color: #949494;'># … with 2,625 more rows</span><span></div><div class='input'>
+#&gt;    <span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>   </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>             </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>    </span>
+#&gt; <span style='color: #BCBCBC;'> 1</span><span> ABCB4   SRR1740034  </span><span style='text-decoration: underline;'>1</span><span>035 b_cell            0 d   TRUE     </span>
+#&gt; <span style='color: #BCBCBC;'> 2</span><span> ABCB4   SRR1740035  </span><span style='text-decoration: underline;'>1</span><span>123 b_cell            1 d   TRUE     </span>
+#&gt; <span style='color: #BCBCBC;'> 3</span><span> ABCB4   SRR1740043     5 monocyte          1 d   FALSE    </span>
+#&gt; <span style='color: #BCBCBC;'> 4</span><span> ABCB4   SRR1740058    10 t_cell            0 d   TRUE     </span>
+#&gt; <span style='color: #BCBCBC;'> 5</span><span> ABCB4   SRR1740067    94 dendritic_myeloid 1 d   FALSE    </span>
+#&gt; <span style='color: #BCBCBC;'> 6</span><span> ABCB9   SRR1740034    45 b_cell            0 d   TRUE     </span>
+#&gt; <span style='color: #BCBCBC;'> 7</span><span> ABCB9   SRR1740035    53 b_cell            1 d   TRUE     </span>
+#&gt; <span style='color: #BCBCBC;'> 8</span><span> ABCB9   SRR1740043     7 monocyte          1 d   FALSE    </span>
+#&gt; <span style='color: #BCBCBC;'> 9</span><span> ABCB9   SRR1740058   118 t_cell            0 d   TRUE     </span>
+#&gt; <span style='color: #BCBCBC;'>10</span><span> ABCB9   SRR1740067    10 dendritic_myeloid 1 d   FALSE    </span>
+#&gt; <span style='color: #949494;'># … with 2,625 more rows</span></div><div class='input'>
 
-<span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'>%&gt;%</span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='nest-methods.html'>nest</a></span><span class='op'>(</span> data <span class='op'>=</span> <span class='op'>-</span><span class='va'>feature</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 527 x 2</span><span>
+<span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='nest-methods.html'>nest</a></span><span class='op'>(</span> data <span class='op'>=</span> <span class='op'>-</span><span class='va'>feature</span><span class='op'>)</span>
+</div><div class='co'>#&gt; <span style='color: #949494;'># A tibble: 527 x 2</span>
 #&gt;    feature  data                  
-#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;list&gt;</span><span>                
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> ABCB4    </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> ABCB9    </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> ACAP1    </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> ACHE     </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> ACP5     </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> ADAM28   </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> ADAMDEC1 </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> ADAMTS3  </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> ADRB2    </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span> AIF1     </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span><span>
-#&gt; </span><span style='color: #949494;'># … with 517 more rows</span><span></div><div class='input'>
-</div></span></pre>
+#&gt;    <span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;list&gt;</span><span>                </span>
+#&gt; <span style='color: #BCBCBC;'> 1</span><span> ABCB4    </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 2</span><span> ABCB9    </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 3</span><span> ACAP1    </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 4</span><span> ACHE     </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 5</span><span> ACP5     </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 6</span><span> ADAM28   </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 7</span><span> ADAMDEC1 </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 8</span><span> ADAMTS3  </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 9</span><span> ADRB2    </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>10</span><span> AIF1     </span><span style='color: #949494;'>&lt;tidybulk[,5] [5 × 5]&gt;</span>
+#&gt; <span style='color: #949494;'># … with 517 more rows</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

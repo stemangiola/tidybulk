@@ -223,9 +223,9 @@ individual methods for extra arguments and differences in behaviour.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>`%&gt;%`</span> <span class='op'>=</span> <span class='fu'>magrittr</span><span class='fu'>::</span><span class='va'>`%&gt;%`</span>
 <span class='co'># A summary applied to ungrouped tbl returns a single row</span>
-<span class='va'>mtcars</span> <span class='op'>%&gt;%</span>
+<span class='va'>mtcars</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
   <span class='fu'><a href='summarise-methods.html'>summarise</a></span><span class='op'>(</span>mean <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>disp</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;       mean
+</div><div class='co'>#&gt;       mean
 #&gt; 1 230.7219</div><div class='input'>
 
 </div></pre>

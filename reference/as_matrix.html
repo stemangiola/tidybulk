@@ -164,16 +164,16 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:tidybulk’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    bind_cols, bind_rows</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    filter, lag</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    intersect, setdiff, setequal, union</span></div><div class='input'>
-<span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'>%&gt;%</span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>feature</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='va'>head</span> <span class='op'>%&gt;%</span> <span class='fu'>as_matrix</span><span class='op'>(</span>rownames<span class='op'>=</span><span class='va'>feature</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;        count
+</div><div class='co'>#&gt; 
+#&gt; Attaching package: ‘dplyr’</div><div class='co'>#&gt; The following objects are masked from ‘package:tidybulk’:
+#&gt; 
+#&gt;     bind_cols, bind_rows</div><div class='co'>#&gt; The following objects are masked from ‘package:stats’:
+#&gt; 
+#&gt;     filter, lag</div><div class='co'>#&gt; The following objects are masked from ‘package:base’:
+#&gt; 
+#&gt;     intersect, setdiff, setequal, union</div><div class='input'>
+<span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>feature</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='va'>head</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'>as_matrix</span><span class='op'>(</span>rownames<span class='op'>=</span><span class='va'>feature</span><span class='op'>)</span>
+</div><div class='co'>#&gt;        count
 #&gt; ABCB4   1035
 #&gt; ABCB9     45
 #&gt; ACAP1   7151

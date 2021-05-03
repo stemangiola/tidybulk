@@ -281,10 +281,10 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='va'>counts.MDS</span> <span class='op'>=</span>
- <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'>%&gt;%</span>
- <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
+ <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
  <span class='fu'><a href='reduce_dimensions-methods.html'>reduce_dimensions</a></span><span class='op'>(</span> method<span class='op'>=</span><span class='st'>"MDS"</span>, .dims <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>Getting the 182 most variable genes</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results do `attr(..., "internals")$MDS`</span></div><div class='input'>
+</div><div class='co'>#&gt; No group or design set. Assuming all samples belong to one group.</div><div class='co'>#&gt; Getting the 182 most variable genes</div><div class='co'>#&gt; tidybulk says: to access the raw results do `attr(..., "internals")$MDS`</div><div class='input'>
 <span class='va'>counts.MDS.rotated</span> <span class='op'>=</span>  <span class='fu'><a href='rotate_dimensions-methods.html'>rotate_dimensions</a></span><span class='op'>(</span><span class='va'>counts.MDS</span>, <span class='va'>`Dim1`</span>, <span class='va'>`Dim2`</span>, rotation_degrees <span class='op'>=</span> <span class='fl'>45</span>, .element <span class='op'>=</span> <span class='va'>sample</span><span class='op'>)</span>
 
 

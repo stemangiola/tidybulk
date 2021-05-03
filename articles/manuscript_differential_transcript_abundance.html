@@ -80,7 +80,7 @@
       <h1 data-toc-skip>Manuscript code - differential feature abundance</h1>
                         <h4 data-toc-skip class="author">Stefano Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2021-04-19</h4>
+            <h4 data-toc-skip class="date">2021-05-03</h4>
       
       
       <div class="hidden name"><code>manuscript_differential_transcript_abundance.Rmd</code></div>
@@ -107,32 +107,32 @@
 
 <span class="co"># Create tidybulk object</span>
 <span class="va">counts</span> <span class="op">=</span>
-    <span class="va">cts</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span>rownames <span class="op">=</span> <span class="st">"feature"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="va">cts</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span>rownames <span class="op">=</span> <span class="st">"feature"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span>names_to <span class="op">=</span> <span class="st">"sample"</span>,
                              values_to <span class="op">=</span> <span class="st">"count"</span>,
-                             cols <span class="op">=</span> <span class="op">-</span><span class="va">feature</span><span class="op">)</span> <span class="op">%&gt;%</span>
+                             cols <span class="op">=</span> <span class="op">-</span><span class="va">feature</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/dplyr-methods.html">left_join</a></span><span class="op">(</span>
-        <span class="va">coldata</span> <span class="op">%&gt;%</span>
-        <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span>rownames <span class="op">=</span> <span class="st">"sample"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+        <span class="va">coldata</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+        <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span>rownames <span class="op">=</span> <span class="st">"sample"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
         <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>sample <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"fb"</span>, <span class="st">""</span>, <span class="va">sample</span><span class="op">)</span><span class="op">)</span>
-    <span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html" class="external-link">mutate_if</a></span><span class="op">(</span><span class="va">is.character</span>, <span class="va">as.factor</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Create a tt object with unique raw and normalised counts</span>
 <span class="va">tt_scaled</span> <span class="op">&lt;-</span> 
-    <span class="fu"><a href="../reference/tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="va">counts</span>, <span class="va">sample</span>, <span class="va">feature</span>, <span class="va">count</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/aggregate_duplicates-methods.html">aggregate_duplicates</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="va">counts</span>, <span class="va">sample</span>, <span class="va">feature</span>, <span class="va">count</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="../reference/aggregate_duplicates-methods.html">aggregate_duplicates</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="../reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/scale_abundance-methods.html">scale_abundance</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="co"># Plot count densities</span>
-<span class="va">tt_scaled</span> <span class="op">%&gt;%</span>
+<span class="va">tt_scaled</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span>
         <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">count</span>, <span class="va">count_scaled</span><span class="op">)</span>,
         values_to <span class="op">=</span> <span class="st">"count"</span>, 
         names_to <span class="op">=</span> <span class="st">"Normalisation"</span>
-    <span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">count</span> <span class="op">+</span> <span class="fl">1</span>, group<span class="op">=</span><span class="va">sample</span>, color<span class="op">=</span><span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="op">~</span><span class="va">Normalisation</span><span class="op">)</span> <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html" class="external-link">geom_density</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
@@ -140,21 +140,21 @@
 <p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Reduce data dimensionality with arbitrary number of dimensions</span>
-<span class="va">tt_mds</span> <span class="op">&lt;-</span> <span class="va">tt_scaled</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
+<span class="va">tt_mds</span> <span class="op">&lt;-</span> <span class="va">tt_scaled</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
 
 <span class="co"># Plot all-vs-all MDS dimensions </span>
-<span class="va">tt_mds</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">tt_mds</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html" class="external-link">ggpairs</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">9</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>colour<span class="op">=</span><span class="va">condition</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Adjust for visualisation</span>
-<span class="va">tt_adj</span> <span class="op">&lt;-</span> <span class="va">tt_mds</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/adjust_abundance-methods.html">adjust_abundance</a></span><span class="op">(</span><span class="op">~</span> <span class="va">condition</span> <span class="op">+</span> <span class="va">type</span><span class="op">)</span>
+<span class="va">tt_adj</span> <span class="op">&lt;-</span> <span class="va">tt_mds</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/adjust_abundance-methods.html">adjust_abundance</a></span><span class="op">(</span><span class="op">~</span> <span class="va">condition</span> <span class="op">+</span> <span class="va">type</span><span class="op">)</span>
 
 <span class="co"># Visualise the association between reduced dimensions and factors</span>
 <span class="va">tt_mds_adj_mds</span> <span class="op">&lt;-</span> 
-    <span class="va">tt_adj</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/filter-methods.html">filter</a></span><span class="op">(</span> <span class="va">count_scaled_adjusted</span> <span class="op">%&gt;%</span> <span class="va">is.na</span> <span class="op">%&gt;%</span> <span class="va">`!`</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="va">tt_adj</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="../reference/filter-methods.html">filter</a></span><span class="op">(</span> <span class="va">count_scaled_adjusted</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">is.na</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">`!`</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
 
     <span class="co"># Calculate reduced dimensions on the adjusted counts as well</span>
     <span class="fu"><a href="../reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>
@@ -163,16 +163,16 @@
     <span class="op">)</span> </code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Data manipulation and visualisation </span>
-<span class="va">tt_mds_adj_mds</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">tt_mds_adj_mds</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
 
     <span class="co"># First level reshaping</span>
-    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"Dim"</span>, values_to <span class="op">=</span> <span class="st">".value"</span><span class="op">)</span>   <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate.html" class="external-link">separate</a></span><span class="op">(</span><span class="va">Dim</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dim"</span>, <span class="st">"Adj"</span><span class="op">)</span>, sep<span class="op">=</span><span class="st">"\\."</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>Adj <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">Adj</span> <span class="op">==</span> <span class="st">"y"</span>, <span class="st">"non"</span>, <span class="st">"adj"</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"scaled"</span>, <span class="st">"adj"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"Dim"</span>, values_to <span class="op">=</span> <span class="st">".value"</span><span class="op">)</span>   <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate.html" class="external-link">separate</a></span><span class="op">(</span><span class="va">Dim</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dim"</span>, <span class="st">"Adj"</span><span class="op">)</span>, sep<span class="op">=</span><span class="st">"\\."</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>Adj <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">Adj</span> <span class="op">==</span> <span class="st">"y"</span>, <span class="st">"non"</span>, <span class="st">"adj"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"scaled"</span>, <span class="st">"adj"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
 
     <span class="co"># Second level reshaping</span>
-    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">type</span>, <span class="va">condition</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"covar"</span>, values_to <span class="op">=</span> <span class="st">"which"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">type</span>, <span class="va">condition</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"covar"</span>, values_to <span class="op">=</span> <span class="st">"which"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
 
     <span class="co"># Visualise the integrative plot</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">.value</span>, x <span class="op">=</span> <span class="va">covar</span>, fill <span class="op">=</span> <span class="va">`which`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
@@ -180,16 +180,16 @@
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="va">Adj</span> <span class="op">~</span> <span class="va">Dim</span><span class="op">)</span></code></pre></div>
 <p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tt_test</span> <span class="op">&lt;-</span> <span class="va">tt_adj</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span><span class="op">~</span> <span class="va">condition</span> <span class="op">+</span> <span class="va">type</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">tt_test</span> <span class="op">&lt;-</span> <span class="va">tt_adj</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span><span class="op">~</span> <span class="va">condition</span> <span class="op">+</span> <span class="va">type</span><span class="op">)</span>
 
 <span class="co"># MA plot</span>
-<span class="va">tt_test</span> <span class="op">%&gt;%</span>
-        <span class="fu"><a href="../reference/keep_abundant-methods.html">keep_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-      <span class="fu"><a href="../reference/pivot_transcript-methods.html">pivot_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">tt_test</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+        <span class="fu"><a href="../reference/keep_abundant-methods.html">keep_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+      <span class="fu"><a href="../reference/pivot_transcript-methods.html">pivot_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     
     <span class="co"># Subset data</span>
-    <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>significant <span class="op">=</span> <span class="va">FDR</span><span class="op">&lt;</span><span class="fl">0.05</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">logFC</span><span class="op">)</span> <span class="op">&gt;=</span><span class="fl">2</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>feature <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">significant</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">feature</span><span class="op">)</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>significant <span class="op">=</span> <span class="va">FDR</span><span class="op">&lt;</span><span class="fl">0.05</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">logFC</span><span class="op">)</span> <span class="op">&gt;=</span><span class="fl">2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>feature <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">significant</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">feature</span><span class="op">)</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
 
     <span class="co"># Plot</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">logCPM</span>, y <span class="op">=</span> <span class="va">logFC</span>, label<span class="op">=</span><span class="va">feature</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
@@ -199,10 +199,10 @@
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_size.html" class="external-link">scale_size_discrete</a></span><span class="op">(</span>range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tt_test</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">tt_test</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     
     <span class="co"># Select top genes and reshape data</span>
-    <span class="fu"><a href="../reference/join-methods.html">inner_join</a></span><span class="op">(</span> <span class="fu"><a href="../reference/arrange-methods.html">arrange</a></span><span class="op">(</span><span class="op">(</span><span class="va">.</span><span class="op">)</span>, <span class="va">PValue</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">feature</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/join-methods.html">inner_join</a></span><span class="op">(</span> <span class="fu"><a href="../reference/arrange-methods.html">arrange</a></span><span class="op">(</span><span class="op">(</span><span class="va">.</span><span class="op">)</span>, <span class="va">PValue</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">feature</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
 
     <span class="co"># High level reshaping of the data. </span>
     <span class="co"># All three count columns are shaped as two columns: </span>
@@ -210,7 +210,7 @@
     <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span>
         <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">count</span>, <span class="va">count_scaled</span>, <span class="va">count_scaled_adjusted</span><span class="op">)</span>, 
         names_to <span class="op">=</span> <span class="st">"Stage"</span>, values_to <span class="op">=</span> <span class="st">"count"</span>
-    <span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
 
     <span class="co"># This allows the faceted plot</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Stage</span>, y <span class="op">=</span> <span class="va">count</span> <span class="op">+</span> <span class="fl">1</span>, fill <span class="op">=</span> <span class="va">condition</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
@@ -220,15 +220,15 @@
 <p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Heatmap</span>
-<span class="va">tt_test</span> <span class="op">%&gt;%</span>
-        <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">tt_test</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+        <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     
     <span class="co"># Select differentially abundant</span>
-    <span class="fu"><a href="../reference/filter-methods.html">filter</a></span><span class="op">(</span><span class="va">FDR</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">logFC</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">2</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/filter-methods.html">filter</a></span><span class="op">(</span><span class="va">FDR</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">logFC</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
 
     <span class="co"># Plot</span>
-    <span class="fu"><a href="https://rdrr.io/r/stats/heatmap.html" class="external-link">heatmap</a></span><span class="op">(</span> <span class="va">feature</span>, <span class="va">sample</span>, <span class="va">count_scaled_adjusted</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-    <span class="fu">add_tile</span><span class="op">(</span><span class="va">condition</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://rdrr.io/r/stats/heatmap.html" class="external-link">heatmap</a></span><span class="op">(</span> <span class="va">feature</span>, <span class="va">sample</span>, <span class="va">count_scaled_adjusted</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
+    <span class="fu">add_tile</span><span class="op">(</span><span class="va">condition</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu">add_tile</span><span class="op">(</span><span class="va">type</span><span class="op">)</span></code></pre></div>
 <p><img src="manuscript_differential_transcript_abundance_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
   </div>

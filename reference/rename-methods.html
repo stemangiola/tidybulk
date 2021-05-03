@@ -187,21 +187,21 @@ individual methods for extra arguments and differences in behaviour.</p>
     <pre class="examples"><div class='input'><span class='va'>`%&gt;%`</span> <span class='op'>=</span> <span class='fu'>magrittr</span><span class='fu'>::</span><span class='va'>`%&gt;%`</span>
 <span class='va'>iris</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='op'>(</span><span class='va'>iris</span><span class='op'>)</span> <span class='co'># so it prints a little nicer</span>
 <span class='fu'><a href='rename-methods.html'>rename</a></span><span class='op'>(</span><span class='va'>iris</span>, petal_length <span class='op'>=</span> <span class='va'>Petal.Length</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 150 x 5</span><span>
+</div><div class='co'>#&gt; <span style='color: #949494;'># A tibble: 150 x 5</span>
 #&gt;    Sepal.Length Sepal.Width petal_length Petal.Width Species
-#&gt;           </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>        </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>  
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span>          5.1         3.5          1.4         0.2 setosa 
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span>          4.9         3            1.4         0.2 setosa 
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span>          4.7         3.2          1.3         0.2 setosa 
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span>          4.6         3.1          1.5         0.2 setosa 
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span>          5           3.6          1.4         0.2 setosa 
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span>          5.4         3.9          1.7         0.4 setosa 
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span>          4.6         3.4          1.4         0.3 setosa 
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span>          5           3.4          1.5         0.2 setosa 
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span>          4.4         2.9          1.4         0.2 setosa 
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span>          4.9         3.1          1.5         0.1 setosa 
-#&gt; </span><span style='color: #949494;'># … with 140 more rows</span><span></div><div class='input'>
-</div></span></pre>
+#&gt;           <span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>        </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>  </span>
+#&gt; <span style='color: #BCBCBC;'> 1</span><span>          5.1         3.5          1.4         0.2 setosa </span>
+#&gt; <span style='color: #BCBCBC;'> 2</span><span>          4.9         3            1.4         0.2 setosa </span>
+#&gt; <span style='color: #BCBCBC;'> 3</span><span>          4.7         3.2          1.3         0.2 setosa </span>
+#&gt; <span style='color: #BCBCBC;'> 4</span><span>          4.6         3.1          1.5         0.2 setosa </span>
+#&gt; <span style='color: #BCBCBC;'> 5</span><span>          5           3.6          1.4         0.2 setosa </span>
+#&gt; <span style='color: #BCBCBC;'> 6</span><span>          5.4         3.9          1.7         0.4 setosa </span>
+#&gt; <span style='color: #BCBCBC;'> 7</span><span>          4.6         3.4          1.4         0.3 setosa </span>
+#&gt; <span style='color: #BCBCBC;'> 8</span><span>          5           3.4          1.5         0.2 setosa </span>
+#&gt; <span style='color: #BCBCBC;'> 9</span><span>          4.4         2.9          1.4         0.2 setosa </span>
+#&gt; <span style='color: #BCBCBC;'>10</span><span>          4.9         3.1          1.5         0.1 setosa </span>
+#&gt; <span style='color: #949494;'># … with 140 more rows</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

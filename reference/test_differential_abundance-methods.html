@@ -363,14 +363,14 @@ DESeq2::results()</p>
     <pre class="examples"><div class='input'>
  <span class='co'># edgeR</span>
 
- <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'>%&gt;%</span>
- <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
+ <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
   <span class='fu'><a href='test_differential_abundance-methods.html'>test_differential_abundance</a></span><span class='op'>(</span> <span class='op'>~</span> <span class='va'>condition</span> <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>=====================================</span>
-#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance </span>
-#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates </span>
-#&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
-#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "(Intercept), conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR_quasi_likelihood`</span></div><div class='output co'>#&gt; class: SummarizedExperiment 
+</div><div class='co'>#&gt; No group or design set. Assuming all samples belong to one group.</div><div class='co'>#&gt; =====================================
+#&gt; tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance 
+#&gt; or adjust_abundance have been calculated. Therefore, it is essential to add covariates 
+#&gt; such as batch effects (if applicable) in the formula.
+#&gt; =====================================</div><div class='co'>#&gt; tidybulk says: The design column names are "(Intercept), conditionTRUE"</div><div class='co'>#&gt; tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR_quasi_likelihood`</div><div class='co'>#&gt; class: SummarizedExperiment 
 #&gt; dim: 527 5 
 #&gt; metadata(0):
 #&gt; assays(1): count
@@ -380,17 +380,17 @@ DESeq2::results()</p>
 #&gt; colData names(3): Cell.type time condition</div><div class='input'>
   <span class='co'># The function `test_differential_abundance` operates with contrasts too</span>
 
- <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'>%&gt;%</span>
- <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
+ <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
  <span class='fu'><a href='test_differential_abundance-methods.html'>test_differential_abundance</a></span><span class='op'>(</span>
       <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>+</span> <span class='va'>condition</span>,
       .contrasts <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span> <span class='st'>"conditionTRUE - conditionFALSE"</span><span class='op'>)</span>
  <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>=====================================</span>
-#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance </span>
-#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates </span>
-#&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
-#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: The design column names are "conditionFALSE, conditionTRUE"</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR_quasi_likelihood`</span></div><div class='output co'>#&gt; class: SummarizedExperiment 
+</div><div class='co'>#&gt; No group or design set. Assuming all samples belong to one group.</div><div class='co'>#&gt; =====================================
+#&gt; tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance 
+#&gt; or adjust_abundance have been calculated. Therefore, it is essential to add covariates 
+#&gt; such as batch effects (if applicable) in the formula.
+#&gt; =====================================</div><div class='co'>#&gt; tidybulk says: The design column names are "conditionFALSE, conditionTRUE"</div><div class='co'>#&gt; tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR_quasi_likelihood`</div><div class='co'>#&gt; class: SummarizedExperiment 
 #&gt; dim: 527 5 
 #&gt; metadata(0):
 #&gt; assays(1): count
@@ -405,16 +405,17 @@ DESeq2::results()</p>
 <span class='va'>my_se_mini</span> <span class='op'>=</span> <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span>
 <span class='va'>my_se_mini</span><span class='op'>$</span><span class='va'>condition</span>  <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>my_se_mini</span><span class='op'>$</span><span class='va'>condition</span><span class='op'>)</span>
 
-<span class='va'>my_se_mini</span>  <span class='op'>%&gt;%</span>
- <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+<span class='va'>my_se_mini</span>  <span class='op'><a href='pipe.html'>%&gt;%</a></span>
+ <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
   <span class='fu'><a href='test_differential_abundance-methods.html'>test_differential_abundance</a></span><span class='op'>(</span> <span class='op'>~</span> <span class='va'>condition</span>, method<span class='op'>=</span><span class='st'>"deseq2"</span> <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>=====================================</span>
-#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance </span>
-#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates </span>
-#&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
-#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>renaming the first element in assays to 'counts'</span></div><div class='output co'>#&gt; <span class='message'>converting counts to integer mode</span></div><div class='output co'>#&gt; <span class='message'>estimating size factors</span></div><div class='output co'>#&gt; <span class='message'>estimating dispersions</span></div><div class='output co'>#&gt; <span class='message'>gene-wise dispersion estimates</span></div><div class='output co'>#&gt; <span class='message'>mean-dispersion relationship</span></div><div class='output co'>#&gt; <span class='message'>-- note: fitType='parametric', but the dispersion trend was not well captured by the</span>
-#&gt; <span class='message'>   function: y = a/x + b, and a local regression fit was automatically substituted.</span>
-#&gt; <span class='message'>   specify fitType='local' or 'mean' to avoid this message next time.</span></div><div class='output co'>#&gt; <span class='message'>final dispersion estimates</span></div><div class='output co'>#&gt; <span class='message'>fitting model and testing</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$deseq2`</span></div><div class='output co'>#&gt; class: SummarizedExperiment 
+</div><div class='co'>#&gt; No group or design set. Assuming all samples belong to one group.</div><div class='co'>#&gt; =====================================
+#&gt; tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance 
+#&gt; or adjust_abundance have been calculated. Therefore, it is essential to add covariates 
+#&gt; such as batch effects (if applicable) in the formula.
+#&gt; =====================================</div><div class='co'>#&gt; Installing acepack needed for analyses</div><div class='co'>#&gt; Installing package into ‘/__w/_temp/Library’
+#&gt; (as ‘lib’ is unspecified)</div><div class='co'>#&gt; renaming the first element in assays to 'counts'</div><div class='co'>#&gt; converting counts to integer mode</div><div class='co'>#&gt; estimating size factors</div><div class='co'>#&gt; estimating dispersions</div><div class='co'>#&gt; gene-wise dispersion estimates</div><div class='co'>#&gt; mean-dispersion relationship</div><div class='co'>#&gt; -- note: fitType='parametric', but the dispersion trend was not well captured by the
+#&gt;    function: y = a/x + b, and a local regression fit was automatically substituted.
+#&gt;    specify fitType='local' or 'mean' to avoid this message next time.</div><div class='co'>#&gt; final dispersion estimates</div><div class='co'>#&gt; fitting model and testing</div><div class='co'>#&gt; tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$deseq2`</div><div class='co'>#&gt; class: SummarizedExperiment 
 #&gt; dim: 527 5 
 #&gt; metadata(0):
 #&gt; assays(1): count
@@ -424,20 +425,20 @@ DESeq2::results()</p>
 #&gt; colData names(3): Cell.type time condition</div><div class='input'>
   <span class='co'># The function `test_differential_abundance` operates with contrasts too</span>
 
- <span class='va'>my_se_mini</span> <span class='op'>%&gt;%</span>
- <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='va'>my_se_mini</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
+ <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span>
  <span class='fu'><a href='test_differential_abundance-methods.html'>test_differential_abundance</a></span><span class='op'>(</span>
       <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>+</span> <span class='va'>condition</span>,
       .contrasts <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"condition"</span>, <span class='st'>"TRUE"</span>, <span class='st'>"FALSE"</span><span class='op'>)</span><span class='op'>)</span>,
       method<span class='op'>=</span><span class='st'>"deseq2"</span>
  <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>No group or design set. Assuming all samples belong to one group.</span></div><div class='output co'>#&gt; <span class='message'>=====================================</span>
-#&gt; <span class='message'>tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance </span>
-#&gt; <span class='message'>or adjust_abundance have been calculated. Therefore, it is essential to add covariates </span>
-#&gt; <span class='message'>such as batch effects (if applicable) in the formula.</span>
-#&gt; <span class='message'>=====================================</span></div><div class='output co'>#&gt; <span class='message'>renaming the first element in assays to 'counts'</span></div><div class='output co'>#&gt; <span class='message'>converting counts to integer mode</span></div><div class='output co'>#&gt; <span class='message'>estimating size factors</span></div><div class='output co'>#&gt; <span class='message'>estimating dispersions</span></div><div class='output co'>#&gt; <span class='message'>gene-wise dispersion estimates</span></div><div class='output co'>#&gt; <span class='message'>mean-dispersion relationship</span></div><div class='output co'>#&gt; <span class='message'>-- note: fitType='parametric', but the dispersion trend was not well captured by the</span>
-#&gt; <span class='message'>   function: y = a/x + b, and a local regression fit was automatically substituted.</span>
-#&gt; <span class='message'>   specify fitType='local' or 'mean' to avoid this message next time.</span></div><div class='output co'>#&gt; <span class='message'>final dispersion estimates</span></div><div class='output co'>#&gt; <span class='message'>fitting model and testing</span></div><div class='output co'>#&gt; <span class='message'>tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$deseq2`</span></div><div class='output co'>#&gt; class: SummarizedExperiment 
+</div><div class='co'>#&gt; No group or design set. Assuming all samples belong to one group.</div><div class='co'>#&gt; =====================================
+#&gt; tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance 
+#&gt; or adjust_abundance have been calculated. Therefore, it is essential to add covariates 
+#&gt; such as batch effects (if applicable) in the formula.
+#&gt; =====================================</div><div class='co'>#&gt; renaming the first element in assays to 'counts'</div><div class='co'>#&gt; converting counts to integer mode</div><div class='co'>#&gt; estimating size factors</div><div class='co'>#&gt; estimating dispersions</div><div class='co'>#&gt; gene-wise dispersion estimates</div><div class='co'>#&gt; mean-dispersion relationship</div><div class='co'>#&gt; -- note: fitType='parametric', but the dispersion trend was not well captured by the
+#&gt;    function: y = a/x + b, and a local regression fit was automatically substituted.
+#&gt;    specify fitType='local' or 'mean' to avoid this message next time.</div><div class='co'>#&gt; final dispersion estimates</div><div class='co'>#&gt; fitting model and testing</div><div class='co'>#&gt; tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$deseq2`</div><div class='co'>#&gt; class: SummarizedExperiment 
 #&gt; dim: 527 5 
 #&gt; metadata(0):
 #&gt; assays(1): count
