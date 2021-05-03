@@ -1287,8 +1287,7 @@ setMethod("keep_abundant",
 																			.abundance = NULL,
 																			.contrasts = NULL,
 																			method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
-																			gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
-																			gene_sets = NULL,
+																			gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 																			species,
 																			cores = 10)	{
 
@@ -1390,7 +1389,7 @@ setMethod("keep_abundant",
 	# Add gene ids for Interpret Results tables in report
 	dge$genes = rownames(dge$counts)
 
-	if (!is.null(gene_sets)) {
+	if (is.list(gene_sets)) {
 
 	    idx =  buildCustomIdx(geneIDs = rownames(dge), species = species, gsets=gene_sets)
 	    nonkegg_genesets = idx
@@ -1406,13 +1405,13 @@ setMethod("keep_abundant",
     	collections_bib = c()
 
     	# Identify any msigdb sets to be included
-    	msigdb.gsets <- gene_collections[gene_collections %in% msig_all]
+    	msigdb.gsets <- gene_sets[gene_sets %in% msig_all]
     	if (length(msigdb.gsets) >= 1) {
     	    collections_bib = c(collections_bib, "msigdb")
     	}
 
     	# Have to identify kegg sets to exclude for EGSEA
-    	kegg_to_exclude = kegg_all[!(kegg_all %in% gene_collections)]
+    	kegg_to_exclude = kegg_all[!(kegg_all %in% gene_sets)]
 
     	# If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object
         if (length(kegg_to_exclude) == 3) {

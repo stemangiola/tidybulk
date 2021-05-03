@@ -1191,8 +1191,7 @@ test_stratification_cellularity_ <- function(.data,
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
-#' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"). c1 is human specific.
-#' @param gene_sets A list of user-supplied gene sets. Each gene set is a character vector of Entrez IDs and the names of the list are the gene set names. Used with EGSEA buildCustomIdx. If supplied, gene_collections is not used.
+#' @param gene_sets A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.
 #' @param species A character. It can be human, mouse or rat.
 #' @param cores An integer. The number of cores available
 #'
@@ -1205,8 +1204,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 																							 .abundance = NULL,
 																							 .contrasts = NULL,
 																						     method,
-																							 gene_collections,
-																							 gene_sets=NULL,
+																							 gene_sets,
 																							 species,
 																							 cores = 10) {
 	# Comply with CRAN NOTES
@@ -1288,7 +1286,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
     dge$genes = rownames(dge$counts)
     
     
-	if (!is.null(gene_sets)) {
+	if (is.list(gene_sets)) {
 
 	    idx =  buildCustomIdx(geneIDs = rownames(dge), species = species, gsets=gene_sets)
 	    nonkegg_genesets = idx
@@ -1296,7 +1294,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	} else {
 
-    	# Specify gene sets to include
+    	# Check gene sets to include
     	msig_all <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
     	kegg_all <- c("kegg_disease", "kegg_metabolism", "kegg_signaling")
 
@@ -1304,13 +1302,13 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
     	collections_bib = c()
 
     	# Identify any msigdb sets to be included
-    	msigdb.gsets <- gene_collections[gene_collections %in% msig_all]
+    	msigdb.gsets <- gene_sets[gene_sets %in% msig_all]
     	if (length(msigdb.gsets) >= 1) {
     	    collections_bib = c(collections_bib, "msigdb")
     	}
 
     	# Have to identify kegg sets to exclude for EGSEA
-    	kegg_to_exclude = kegg_all[!(kegg_all %in% gene_collections)]
+    	kegg_to_exclude = kegg_all[!(kegg_all %in% gene_sets)]
 
     	# If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object
         if (length(kegg_to_exclude) == 3) {
