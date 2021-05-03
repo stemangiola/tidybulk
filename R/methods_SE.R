@@ -1694,7 +1694,7 @@ setMethod("pivot_sample",
 
 	range_info <-
 		get_special_datasets(.data) %>%
-		reduce(left_join, by="transcript")
+		reduce(left_join, by="feature")
 	
 	gene_info <-
 		rowData(.data) %>%
@@ -1702,15 +1702,15 @@ setMethod("pivot_sample",
 		# If reserved column names are present add .x
 		setNames(
 			colnames(.) %>% 
-				str_replace("^transcript$", "transcript.x")
+				str_replace("^feature$", "feature.x")
 		) %>%
 		
 		# Convert to tibble
-		tibble::as_tibble(rownames="transcript")
+		tibble::as_tibble(rownames="feature")
 	
 	gene_info %>%
 		when(
-			nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by="transcript"), 
+			nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by="feature"), 
 			~ (.)
 		) 
 }
