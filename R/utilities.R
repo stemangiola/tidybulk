@@ -1594,7 +1594,7 @@ get_special_datasets <- function(SummarizedExperiment_object) {
 			suppressWarnings(
 				select(-one_of(colnames(rowData(SummarizedExperiment_object))))
 			) %>%
-			tibble::as_tibble(rownames="transcript") %>%
+			tibble::as_tibble(rownames="feature") %>%
 			list()
 	} else {
 		tibble() %>% list()
