@@ -1763,21 +1763,29 @@ symbol_to_entrez = function(.data,
 	}
 
 	.data %>%
+		
+		# Solve the lower case 
+		mutate(transcript_upper := !!.transcript %>% toupper()) %>%
+		
+		# Join
 		dplyr::left_join(
 			# Get entrez mapping 1:1
 			AnnotationDbi::mapIds(
 				org.Hs.eg.db::org.Hs.eg.db,
-				.data %>% distinct(!!.transcript) %>% pull(!!.transcript) %>% as.character,
+				(.) %>% pull(transcript_upper) %>% as.character() %>% unique(),
 				'ENTREZID',
 				'SYMBOL'
 			) %>%
-				enframe(name = quo_name(.transcript), value = "entrez") %>%
+				enframe(name = "transcript_upper", value = "entrez") %>%
 				filter(entrez %>% is.na %>% not()) %>%
-				group_by(!!.transcript) %>%
+				group_by(transcript_upper) %>%
 				slice(1) %>%
 				ungroup(),
-			by = quo_name(.transcript)
-		)
+			by = "transcript_upper"
+		) %>%
+		
+		# Eliminate the upper case
+		select(-transcript_upper)
 
 }
 
@@ -2245,7 +2253,7 @@ such as batch effects (if applicable) in the formula.
 			),
 
 			# Voom
-			grepl("voom", method) ~ get_differential_transcript_abundance_bulk_voom(
+			grepl("limma_voom", method) ~ get_differential_transcript_abundance_bulk_voom(
 					.,
 					.formula,
 					.sample = !!.sample,
@@ -2852,6 +2860,17 @@ setGeneric("test_gene_enrichment", function(.data,
 
 	.entrez = enquo(.entrez)
 
+	# Check that there are no entrez missing
+	.data = 
+		.data %>%
+		when(
+			filter(., !!.entrez %>% is.na) %>% nrow() %>% gt(0) ~ {
+				warning("tidybulk says: There are NA entrez IDs. Those genes will be filtered")
+				filter(., !!.entrez %>% is.na %>% not())
+			},
+			~ (.)
+		)
+	
 	# Validate data frame
 	if(do_validate()) {
 	validation(.data, !!.sample, !!.entrez, !!.abundance)

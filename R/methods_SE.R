@@ -620,8 +620,11 @@ setMethod("remove_redundancy",
 	design =
 		model.matrix(object = as.formula("~" %>% paste0(parse_formula(.formula)[1])),
 								 # get first argument of the .formula
-								 data = colData(.data)) %>%
-		set_colnames(c("(Intercept)", parse_formula(.formula)[1]))
+								 data = colData(.data)) 
+
+	# Maybe not needed and causing trouble if more columns that in the formula
+	# %>%
+	#set_colnames(c("(Intercept)", parse_formula(.formula)[1]))
 	
 	
 	
@@ -712,10 +715,8 @@ setMethod("adjust_abundance",
 																		aggregation_function = sum,
 																		keep_integer = TRUE) {
 	# Make col names
-	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-	
+
 	.data %>%
 		
 		# Convert to tidybulk
@@ -723,9 +724,7 @@ setMethod("adjust_abundance",
 		
 		# Apply scale method
 		aggregate_duplicates(
-			.sample = !!.sample,
 			.transcript = !!.transcript,
-			.abundance = !!.abundance,
 			aggregation_function = aggregation_function,
 			keep_integer = keep_integer
 		) %>%
@@ -1288,11 +1287,27 @@ setMethod("keep_abundant",
 																			.abundance = NULL,
 																			.contrasts = NULL,
 																			method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																			gene_collections = c("h" ,   "c1" ,  "c2" ,  "c3" ,  "c4" ,  "c5" ,  "c6"  , "c7" ,  "kegg"),
 																			species,
 																			cores = 10)	{
 
 	.entrez = enquo(.entrez)
 
+	# Check that there are no entrez missing
+	.data = 
+		.data %>%
+		when(
+			filter(., !!.entrez %>% is.na) %>% nrow() %>% gt(0) ~ {
+				warning("tidybulk says: There are NA entrez IDs. Those genes will be filtered")
+				filter(., !!.entrez %>% is.na %>% not())
+			},
+			~ (.)
+		)
+	
+	# Check if duplicated entrez
+	if(rowData(.data)[,quo_name(.entrez)] %>% duplicated() %>% any())
+		stop("tidybulk says: There are duplicated .entrez IDs. Please use aggregate_duplicates(.transcript = entrez).")
+		
 	# For use within when
 	.my_data = .data
 	
@@ -1372,12 +1387,13 @@ setMethod("keep_abundant",
 		# as_matrix(rownames = !!.entrez) %>%
 		edgeR::DGEList(counts = .)
 	
-	idx =  buildIdx(entrezIDs = rownames(dge), species = species)
+	idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = gene_collections)
 	
 	# Due to a bug in kegg, this data set is run without report
 	# http://supportupgrade.bioconductor.org/p/122172/#122218
 	message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
 	
+	if("kegg" %in% gene_collections){
 	res_kegg =
 		dge %>%
 		
@@ -1404,6 +1420,7 @@ setMethod("keep_abundant",
 		) %>%
 		arrange(med.rank) %>%
 		select(data_base, pathway, everything())
+	}
 	
 	res =
 		dge %>%
@@ -1436,10 +1453,11 @@ setMethod("keep_abundant",
 		mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
 		select(data_base, pathway, web_page, med.rank, everything()) 
 	
-	
-	bind_rows(res_formatted_all, res_formatted_kegg)
-	
-	
+	res_formatted_all %>%
+		when(
+			"kegg" %in% gene_collections ~ bind_rows(., res_formatted_kegg),~ (.)
+		)
+
 }
 
 #' test_gene_enrichment
@@ -1676,7 +1694,7 @@ setMethod("pivot_sample",
 
 	range_info <-
 		get_special_datasets(.data) %>%
-		reduce(left_join, by="transcript")
+		reduce(left_join, by="feature")
 	
 	gene_info <-
 		rowData(.data) %>%
@@ -1684,15 +1702,15 @@ setMethod("pivot_sample",
 		# If reserved column names are present add .x
 		setNames(
 			colnames(.) %>% 
-				str_replace("^transcript$", "transcript.x")
+				str_replace("^feature$", "feature.x")
 		) %>%
 		
 		# Convert to tibble
-		tibble::as_tibble(rownames="transcript")
+		tibble::as_tibble(rownames="feature")
 	
 	gene_info %>%
 		when(
-			nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by="transcript"), 
+			nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by="feature"), 
 			~ (.)
 		) 
 }
