@@ -19,8 +19,8 @@
 
 \section{Changes in version 1.3.2, Bioconductor 3.13 Release}{
 \itemize{
-    \item Tidybulk now operates natively with SummarizedExperment data container, in a seemless way thanks to tidySummarisedExperiment 10.18129/B9.bioc.tidySummarizedExperiment     
-    \item Added robust edgeR as outperforming many other methods as shown here doi.org/10.1093/nargab/lqab005
+    \item Tidybulk now operates natively with SummarizedExperment data container, in a seamless way thanks to tidySummarisedExperiment 10.18129/B9.bioc.tidySummarizedExperiment     
+    \item Added robust edgeR as it outperforms many other methods as shown here doi.org/10.1093/nargab/lqab005
     \item Added test stratifiction cellularity, to easily calculate Kaplan-Meier curves
     \item Production of SummarizedExperiment from BAM or SAM files
     \item Added treat method to edgeR and voom differential transcription tests doi.org/10.1093/bioinformatics/btp053
