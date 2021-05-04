@@ -2762,7 +2762,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @param species A character. It can be human, mouse or rat.
 #' @param cores An integer. The number of cores available
 #' 
-#' @param methods DEPRECATED. Please use methods.
+#' @param method DEPRECATED. Please use methods.
 #'
 #' @details This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 #'
@@ -2790,7 +2790,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	# Execute EGSEA
 #' 	egsea(
 #' 		contrasts = my_contrasts,
-#' 		baseGSEAs = method,
+#' 		baseGSEAs = methods,
 #' 		gs.annots = idx,
 #' 		sort.by = "med.rank",
 #' 		num.threads = cores,
@@ -2816,7 +2816,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #'			.sample = sample,
 #'			.entrez = entrez,
 #'			.abundance = count,
-#'          method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+#'          methods = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
 #'          gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 #'			species="human",
 #'			cores = 2
@@ -2911,7 +2911,7 @@ setGeneric("test_gene_enrichment", function(.data,
 			.entrez = !!.entrez,
 			.abundance = !!.abundance,
 			.contrasts = .contrasts,
-			method = methods,
+			methods = methods,
 			gene_sets = gene_sets,
 			species = species,
 			cores = cores

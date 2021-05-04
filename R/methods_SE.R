@@ -1528,7 +1528,7 @@ setMethod("keep_abundant",
 
 	# add to bibliography
 	if (exists("collections_bib")) {
-	    out %>% memorise_methods_used(c("egsea", collections_bib, method))
+	    out %>% memorise_methods_used(c("egsea", collections_bib, methods))
 	}
 
 }

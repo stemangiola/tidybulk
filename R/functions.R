@@ -1190,7 +1190,7 @@ test_stratification_cellularity_ <- function(.data,
 #' @param .entrez The ENTREZ code of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
+#' @param methods A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
 #' @param gene_sets A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.
 #' @param species A character. It can be human, mouse or rat.
 #' @param cores An integer. The number of cores available
@@ -1203,7 +1203,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 																							 .entrez,
 																							 .abundance = NULL,
 																							 .contrasts = NULL,
-																						     method,
+																						     methods,
 																							 gene_sets,
 																							 species,
 																							 cores = 10) {
@@ -1331,7 +1331,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	# Specify column to use to sort results in output table
 	# If only one method is specified there is no med.rank column
-	if (length(method) == 1) {
+	if (length(methods) == 1) {
 	    sort_column = "p.value"
 	} else {
 	    sort_column = "med.rank"
@@ -1348,7 +1348,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
         	egsea(
         		contrasts = my_contrasts,
         		gs.annots = nonkegg_genesets,
-        		baseGSEAs = method,
+        		baseGSEAs = methods,
         		sort.by = sort_column,
         		num.threads = cores
         	)
@@ -1383,7 +1383,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
     		egsea(
     			contrasts = my_contrasts,
     			gs.annots = kegg_genesets,
-    			baseGSEAs = method,
+    			baseGSEAs = methods,
     			sort.by = sort_column,
     			num.threads = cores,
     			report = FALSE
@@ -1414,7 +1414,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	# add to bibliography
 	if (exists("collections_bib")) {
-	    out %>% memorise_methods_used(c("egsea", collections_bib, method))
+	    out %>% memorise_methods_used(c("egsea", collections_bib, methods))
 	}
 }
 
