@@ -16,7 +16,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_collections = NULL,
+  gene_sets = NULL,
   gene_set = NULL
 )
 
@@ -26,7 +26,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_collections = NULL,
+  gene_sets = NULL,
   gene_set = NULL
 )
 
@@ -36,7 +36,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_collections = NULL,
+  gene_sets = NULL,
   gene_set = NULL
 )
 
@@ -46,7 +46,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_collections = NULL,
+  gene_sets = NULL,
   gene_set = NULL
 )
 
@@ -56,7 +56,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_collections = NULL,
+  gene_sets = NULL,
   gene_set = NULL
 )
 
@@ -66,7 +66,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_collections = NULL,
+  gene_sets = NULL,
   gene_set = NULL
 )
 }
@@ -81,9 +81,9 @@ test_gene_rank(
 
 \item{.sample}{The name of the sample column}
 
-\item{gene_collections}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
+\item{gene_sets}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
 
-\item{gene_set}{DEPRECATED. Use gene_collections instead.}
+\item{gene_set}{DEPRECATED. Use gene_sets instead.}
 }
 \value{
 A `tbl` object
@@ -111,9 +111,9 @@ Undelying method:
 # Get gene sets signatures
 msigdbr::msigdbr(species = species) %>%
 
-# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
+# Filter specific gene_sets  if specified. This was introduced to speed up examples executionS
 when(
-	!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
+	!is.null(gene_sets ) ~ filter(., gs_cat %in% gene_sets ),
 	~ (.)
 ) %>%
 
@@ -142,7 +142,7 @@ test_gene_rank(
 		.sample = sample,
 	.entrez = entrez,
 		species="Homo sapiens",
-   gene_collections =c("C2"),
+   gene_sets =c("C2"),
  .arrange_desc = logFC 
 	)
 

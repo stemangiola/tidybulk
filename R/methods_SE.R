@@ -1279,18 +1279,29 @@ setMethod("keep_abundant",
 
 
 
-
+#' @importFrom lifecycle deprecate_warn
 .test_gene_enrichment_SE = 		function(.data,
 																			.formula,
 																			.sample = NULL,
 																			.entrez,
 																			.abundance = NULL,
 																			.contrasts = NULL,
-																			method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																			methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																			gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 																			species,
-																			cores = 10)	{
+																			cores = 10,
+																			
+																			method = NULL # DEPRECATED
+																		)	{
 
+	# DEPRECATION OF reference function
+	if (is_present(method) & !is.null(method)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", details = "The argument method is now deprecated please use methods")
+		methods = method
+	}
+	
 	.entrez = enquo(.entrez)
 
 	# Check that there are no entrez missing
@@ -1434,7 +1445,7 @@ setMethod("keep_abundant",
 
 	# Specify column to use to sort results in output table
 	# If only one method is specified there is no med.rank column
-	if (length(method) == 1) {
+	if (length(methods) == 1) {
 	    sort_column = "p.value"
 	} else {
 	    sort_column = "med.rank"
@@ -1452,7 +1463,7 @@ setMethod("keep_abundant",
         	egsea(
         		contrasts = my_contrasts,
         		gs.annots = nonkegg_genesets,
-        		baseGSEAs = method,
+        		baseGSEAs = methods,
         		sort.by = sort_column,
         		num.threads = cores
         	)
@@ -1487,7 +1498,7 @@ setMethod("keep_abundant",
     		egsea(
     			contrasts = my_contrasts,
     			gs.annots = kegg_genesets,
-    			baseGSEAs = method,
+    			baseGSEAs = methods,
     			sort.by = sort_column,
     			num.threads = cores,
     			report = FALSE
@@ -1551,7 +1562,7 @@ setMethod("test_gene_enrichment",
 																					 .do_test,
 																					 species,
 																					 .sample = NULL,
-																					 gene_collections = NULL,
+																					 gene_sets = NULL,
 																					 gene_set = NULL  # DEPRECATED
 																					 )	{
 
@@ -1562,8 +1573,8 @@ setMethod("test_gene_enrichment",
 	if (is_present(gene_set) & !is.null(gene_set)) {
 		
 		# Signal the deprecation to the user
-		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
-		gene_collections = gene_set
+		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_sets.")
+		gene_sets = gene_set
 	}
 	
 	# Get column names
@@ -1598,7 +1609,7 @@ setMethod("test_gene_enrichment",
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
-		entrez_over_to_gsea(species, gene_collections = gene_collections)
+		entrez_over_to_gsea(species, gene_collections = gene_sets)
 	
 	
 }
@@ -1632,7 +1643,7 @@ setMethod("test_gene_overrepresentation",
 																.arrange_desc,
 																species,
 																.sample = NULL,
-																gene_collections = NULL,
+																gene_sets = NULL,
 																gene_set = NULL  # DEPRECATED
 																)	{
 	
@@ -1643,8 +1654,8 @@ setMethod("test_gene_overrepresentation",
 	if (is_present(gene_set) & !is.null(gene_set)) {
 		
 		# Signal the deprecation to the user
-		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
-		gene_collections = gene_set
+		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", details = "The argument gene_set is now deprecated please use gene_sets.")
+		gene_sets = gene_set
 		
 	}
 	
@@ -1676,7 +1687,7 @@ setMethod("test_gene_overrepresentation",
 		arrange(desc(!!.arrange_desc)) %>%
 		select(!!.entrez, !!.arrange_desc) %>%
 		deframe() %>%
-		entrez_rank_to_gsea(species, gene_collections = gene_collections)
+		entrez_rank_to_gsea(species, gene_collections = gene_sets)
 	
 	
 }
