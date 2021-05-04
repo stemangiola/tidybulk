@@ -2762,7 +2762,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @param species A character. It can be human, mouse or rat.
 #' @param cores An integer. The number of cores available
 #' 
-#' @param methods DEPRECATED. Please use methods.
+#' @param method DEPRECATED. Please use methods.
 #'
 #' @details This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 #'
