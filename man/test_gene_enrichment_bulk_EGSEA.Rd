@@ -11,7 +11,7 @@ test_gene_enrichment_bulk_EGSEA(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
-  method,
+  methods,
   gene_sets,
   species,
   cores = 10
@@ -30,7 +30,7 @@ test_gene_enrichment_bulk_EGSEA(
 
 \item{.contrasts}{A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
-\item{method}{A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.}
+\item{methods}{A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.}
 
 \item{gene_sets}{A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.}
 

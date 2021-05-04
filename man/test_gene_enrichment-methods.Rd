@@ -168,7 +168,7 @@ dge %>%
 	# Execute EGSEA
 	egsea(
 		contrasts = my_contrasts,
-		baseGSEAs = method,
+		baseGSEAs = methods,
 		gs.annots = idx,
 		sort.by = "med.rank",
 		num.threads = cores,
@@ -189,7 +189,7 @@ library("EGSEA")
 		.sample = sample,
 		.entrez = entrez,
 		.abundance = count,
-         method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+         methods = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
          gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 		species="human",
 		cores = 2
