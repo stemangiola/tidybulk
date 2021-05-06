@@ -431,6 +431,8 @@ cluster$cell_type = tibble_counts[
 
 ### SNN
 
+Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable.
+
 <div class="column-left">
 Tidy transcriptomics
 ```{r SNN, eval=FALSE, message=FALSE, warning=FALSE, results='hide'}

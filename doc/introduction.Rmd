@@ -623,9 +623,11 @@ We can add cluster annotation to the MDS dimension reduced data set and plot.
 
 **SNN**
 
+Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable.
+
 <div class="column-left">
 TidyTranscriptomics
-```{r SNN, message=FALSE, warning=FALSE, results='hide'}
+```{r SNN, eval=FALSE, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 counts_SE.norm.SNN =
 	counts_SE.norm.tSNE %>%
 	cluster_elements(method = "SNN")
@@ -657,7 +659,7 @@ snn$cell_type = tibble_counts[
 </div>
 <div style="clear:both;"></div>
 
-```{r SNN_plot}
+```{r SNN_plot, eval=FALSE}
 counts_SE.norm.SNN %>%
 	pivot_sample() %>%
 	select(contains("tSNE"), everything()) 

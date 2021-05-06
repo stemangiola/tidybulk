@@ -222,7 +222,7 @@ setMethod("scale_abundance",
 		method %>%
 			when(
 				(.) == "kmeans" ~ get_clusters_kmeans_bulk_SE,
-				(.) == "SNN" ~ get_clusters_SNN_bulk_SE,
+				(.) == "SNN" ~  stop("tidybulk says: Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable."), #get_clusters_SNN_bulk_SE,
 				~ stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
 			)
 	
