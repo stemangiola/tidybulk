@@ -433,7 +433,7 @@ cluster$cell_type = tibble_counts[
 
 <div class="column-left">
 Tidy transcriptomics
-```{r SNN, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
+```{r SNN, eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
 tt.norm.SNN =
 	tt.norm.tSNE %>%
 	cluster_elements(method = "SNN")

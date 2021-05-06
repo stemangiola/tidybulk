@@ -1551,7 +1551,7 @@ get_clusters_SNN_bulk <-
 												num.cores = 4,
 												do.par = TRUE) %>%
 			Seurat::FindVariableFeatures(selection.method = "vst") %>%
-			Seurat::RunPCA(npcs = 30) %>%
+			Seurat::RunPCA(npcs = 10) %>%
 			Seurat::FindNeighbors() %>%
 			Seurat::FindClusters(method = "igraph", ...) %>%
 			`[[` ("seurat_clusters") %>%

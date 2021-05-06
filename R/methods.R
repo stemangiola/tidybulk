@@ -594,14 +594,15 @@ setGeneric("cluster_elements", function(.data,
 				log_transform = log_transform,
 				...
 			),
-			method == "SNN" ~ get_clusters_SNN_bulk(.,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			),
+			method == "SNN" ~ stop("tidybulk says: Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable."),
+			# 	get_clusters_SNN_bulk(.,
+			# 	.abundance = !!.abundance,
+			# 	.element = !!.element,
+			# 	.feature = !!.feature,
+			# 	of_samples = of_samples,
+			# 	log_transform = log_transform,
+			# 	...
+			# ),
 			TRUE ~ 		stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
 
 		)
