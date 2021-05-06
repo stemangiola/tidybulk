@@ -328,10 +328,10 @@ counts_SE.norm.cluster = counts_SE.norm.MDS %>%
   geom_point() +
   my_theme
 
-## ----SNN, message=FALSE, warning=FALSE, results='hide'------------------------
-counts_SE.norm.SNN =
-	counts_SE.norm.tSNE %>%
-	cluster_elements(method = "SNN")
+## ----SNN, eval=FALSE, cache=TRUE, message=FALSE, warning=FALSE, results='hide'----
+#  counts_SE.norm.SNN =
+#  	counts_SE.norm.tSNE %>%
+#  	cluster_elements(method = "SNN")
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  library(Seurat)
@@ -354,25 +354,25 @@ counts_SE.norm.SNN =
 #  ]
 #  
 
-## ----SNN_plot-----------------------------------------------------------------
-counts_SE.norm.SNN %>%
-	pivot_sample() %>%
-	select(contains("tSNE"), everything()) 
-
-counts_SE.norm.SNN %>%
-	pivot_sample() %>%
-	gather(source, Call, c("cluster_SNN", "Call")) %>%
-	distinct() %>%
-	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
-
-
-# Do differential transcription between clusters
-counts_SE.norm.SNN %>%
-	mutate(factor_of_interest = `cluster_SNN` == 3) %>%
-	test_differential_abundance(
-    ~ factor_of_interest,
-    action="get"
-   )
+## ----SNN_plot, eval=FALSE-----------------------------------------------------
+#  counts_SE.norm.SNN %>%
+#  	pivot_sample() %>%
+#  	select(contains("tSNE"), everything())
+#  
+#  counts_SE.norm.SNN %>%
+#  	pivot_sample() %>%
+#  	gather(source, Call, c("cluster_SNN", "Call")) %>%
+#  	distinct() %>%
+#  	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
+#  
+#  
+#  # Do differential transcription between clusters
+#  counts_SE.norm.SNN %>%
+#  	mutate(factor_of_interest = `cluster_SNN` == 3) %>%
+#  	test_differential_abundance(
+#      ~ factor_of_interest,
+#      action="get"
+#     )
 
 ## ----drop---------------------------------------------------------------------
 counts_SE.norm.non_redundant =

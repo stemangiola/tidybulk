@@ -1045,84 +1045,84 @@ test_that("Add cluster lables based on Kmeans - no object",{
 
 })
 
-test_that("Only cluster lables based on SNN - no object",{
+# test_that("Only cluster lables based on SNN - no object",{
+# 
+# 	res =
+# 		cluster_elements(
+# 			input_df_breast,
+# 			.element = a,
+# 			.feature = b,
+# 			.abundance = `c norm`,
+# 			method="SNN",
+# 			resolution=0.8,
+# 			action="only"
+# 		)
+# 
+# 	expect_equal(
+# 		typeof(res$`cluster SNN`),
+# 		"integer"
+# 	)
+# 
+# 	expect_equal(
+# 		ncol(res),
+# 		2
+# 	)
+# 
+# })
 
-	res =
-		cluster_elements(
-			input_df_breast,
-			.element = a,
-			.feature = b,
-			.abundance = `c norm`,
-			method="SNN",
-			resolution=0.8,
-			action="only"
-		)
+# test_that("Get cluster lables based on SNN - no object",{
+# 
+# 	res =
+# 		cluster_elements(
+# 			input_df_breast,
+# 			.element = a,
+# 			.feature = b,
+# 			.abundance = `c norm`,
+# 			method="SNN",
+# 			resolution=0.8,
+# 			action="get"
+# 		)
+# 
+# 	expect_equal(
+# 		typeof(res$`cluster SNN`),
+# 		"integer"
+# 	)
+# 
+# 	expect_equal(
+# 		ncol(res),
+# 		3
+# 	)
+# 	expect_equal(
+# 		nrow(res),
+# 		251
+# 	)
+# 
+# })
 
-	expect_equal(
-		typeof(res$`cluster SNN`),
-		"integer"
-	)
-
-	expect_equal(
-		ncol(res),
-		2
-	)
-
-})
-
-test_that("Get cluster lables based on SNN - no object",{
-
-	res =
-		cluster_elements(
-			input_df_breast,
-			.element = a,
-			.feature = b,
-			.abundance = `c norm`,
-			method="SNN",
-			resolution=0.8,
-			action="get"
-		)
-
-	expect_equal(
-		typeof(res$`cluster SNN`),
-		"integer"
-	)
-
-	expect_equal(
-		ncol(res),
-		3
-	)
-	expect_equal(
-		nrow(res),
-		251
-	)
-
-})
-
-test_that("Add cluster lables based on SNN - no object",{
-
-	res =
-		cluster_elements(
-			input_df_breast,
-			.element = a,
-			.feature = b,
-			.abundance = `c norm`,
-			method="SNN",
-			resolution=0.8,
-			action="add"
-		)
-
-	expect_equal(
-		typeof(res$`cluster SNN`),
-		"integer"
-	)
-
-	expect_equal(
-		ncol(res),
-		6
-	)
-
-})
+# test_that("Add cluster lables based on SNN - no object",{
+# 
+# 	res =
+# 		cluster_elements(
+# 			input_df_breast,
+# 			.element = a,
+# 			.feature = b,
+# 			.abundance = `c norm`,
+# 			method="SNN",
+# 			resolution=0.8,
+# 			action="add"
+# 		)
+# 
+# 	expect_equal(
+# 		typeof(res$`cluster SNN`),
+# 		"integer"
+# 	)
+# 
+# 	expect_equal(
+# 		ncol(res),
+# 		6
+# 	)
+# 
+# })
 
 test_that("Only reduced dimensions MDS - no object",{
 
