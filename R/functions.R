@@ -1190,9 +1190,9 @@ test_stratification_cellularity_ <- function(.data,
 #' @param .entrez The ENTREZ code of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
-#' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: "h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling". c1 is human specific. Default is "all", all MSigDB and KEGG gene set collections are used.
-#' @param species A character. For example, human or mouse
+#' @param methods A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
+#' @param gene_sets A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.
+#' @param species A character. It can be human, mouse or rat.
 #' @param cores An integer. The number of cores available
 #'
 #' @return A tibble with edgeR results
@@ -1203,8 +1203,8 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 																							 .entrez,
 																							 .abundance = NULL,
 																							 .contrasts = NULL,
-																						     method,
-																							 gene_collections,
+																						     methods,
+																							 gene_sets,
 																							 species,
 																							 cores = 10) {
 	# Comply with CRAN NOTES
@@ -1236,7 +1236,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 			pull(n) %>%
 			min %>%
 			st(2))
-		stop("tidybulk says: You need at least two replicated for each condition for EGSEA to work")
+		stop("tidybulk says: You need at least two replicates for each condition for EGSEA to work")
 
 
 	# Create design matrix
@@ -1281,79 +1281,80 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.entrez) %>%
 		edgeR::DGEList(counts = .)
-    
-	# Specify gene sets to include
 	
-	# Include all msigdb and kegg if "all"
-	if ("all" %in% gene_collections) {
-	    msigdb.gsets <- "all"
-	    kegg.exclude <- c()
-	    collections = c("kegg", "msigdb")
+	# Add gene ids for Interpret Results tables in report
+    dge$genes = rownames(dge$counts)
+    
+    
+	if (is.list(gene_sets)) {
+
+	    idx =  buildCustomIdx(geneIDs = rownames(dge), species = species, gsets=gene_sets)
+	    nonkegg_genesets = idx
+	    kegg_genesets = NULL
+
 	} else {
-	    # Record which collections used (kegg, msigdb) for bibliography
-	    collections = c()
-	    
-	    # Identify any msigdb sets to be included
-	    msig <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
-	    msigdb.gsets <- gene_collections[gene_collections %in% msig]
-	    
-	    # Record if msigdb used for bibliography
-	    if (length(msigdb.gsets) >= 1) {
-	        collections = c(collections, "msigdb")
-	    }
-	    
-	    # Specify kegg sets
-	    
-	    # Record if kegg used for bibliography
-	    if ("kegg" %in% gene_collections) {
-	        gene_collections = gene_collections %>% str_replace("kegg_", "")
-	        collections = c(collections, "kegg")
-	    }
-	    
-	     # Identify any kegg sets to be included
-	    kegg <- c("disease", "metabolism", "signaling")
-	    kegg.exclude <- kegg[!(kegg %in% gene_collections)]
-	    # If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object 
-	    if (length(kegg.exclude) == 3) {
-	        kegg.exclude = "all"
-	    }
+
+    	# Check gene sets to include
+    	msig_all <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
+    	kegg_all <- c("kegg_disease", "kegg_metabolism", "kegg_signaling")
+
+    	# Record which collections used (kegg, msigdb) for bibliography
+    	collections_bib = c()
+
+    	# Identify any msigdb sets to be included
+    	msigdb.gsets <- gene_sets[gene_sets %in% msig_all]
+    	if (length(msigdb.gsets) >= 1) {
+    	    collections_bib = c(collections_bib, "msigdb")
+    	}
+
+    	# Have to identify kegg sets to exclude for EGSEA
+    	kegg_to_exclude = kegg_all[!(kegg_all %in% gene_sets)]
+
+    	# If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object
+        if (length(kegg_to_exclude) == 3) {
+                kegg.exclude = "all"
+        } else {
+    	    kegg.exclude = kegg_to_exclude %>% str_replace("kegg_", "")
+    	    collections_bib = c(collections_bib, "kegg")
+    	}
+
+
+    	idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets,
+    	                kegg.exclude = kegg.exclude)
+
+        # Due to a bug with kegg pathview overlays, this collection is run without report
+        # https://support.bioconductor.org/p/122172/#122218
+
+	    kegg_genesets = idx[which(names(idx)=="kegg")]
+	    nonkegg_genesets = idx[which(names(idx)!="kegg")]
 	}
 
-	idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets, 
-	                kegg.exclude = kegg.exclude)
-	
 	# Specify column to use to sort results in output table
 	# If only one method is specified there is no med.rank column
-	if (length(method) == 1) {
-	    sort_column = "p.value" 
+	if (length(methods) == 1) {
+	    sort_column = "p.value"
 	} else {
 	    sort_column = "med.rank"
 	}
-	
-	# Due to a bug with kegg pathview overlays, this collection is run without report
-    # https://support.bioconductor.org/p/122172/#122218
-	
-	kegg_genesets = idx[which(names(idx)=="kegg")]
-	nonkegg_genesets = idx[which(names(idx)!="kegg")]
-	
+
 	if (length(nonkegg_genesets) != 0) {
     	res =
         	dge %>%
-        
+
         	# Calculate weights
         	limma::voom(design, plot = FALSE) %>%
-        
+
         	# Execute EGSEA
         	egsea(
         		contrasts = my_contrasts,
         		gs.annots = nonkegg_genesets,
-        		baseGSEAs = method,
+        		baseGSEAs = methods,
         		sort.by = sort_column,
         		num.threads = cores
         	)
-        
+
         gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
-        
+
         res_formatted_nonkegg =
         	res@results %>%
         	map2_dfr(
@@ -1363,31 +1364,32 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
         			mutate(data_base = .y)
         	) %>%
         	arrange(sort_column) %>%
-        	
+
         	# Add webpage
         	mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
-        	select(data_base, pathway, web_page, sort_column, everything()) 
+        	select(data_base, pathway, web_page, sort_column, everything())
 	}
 
     if (length(kegg_genesets) != 0) {
     	message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
-	    
+
     	res_kegg =
     		dge %>%
-    
+
     		# Calculate weights
     		limma::voom(design, plot = FALSE) %>%
-    
+
     		# Execute EGSEA
     		egsea(
     			contrasts = my_contrasts,
     			gs.annots = kegg_genesets,
-    			baseGSEAs = method,
+    			baseGSEAs = methods,
     			sort.by = sort_column,
     			num.threads = cores,
     			report = FALSE
+
     		)
-    
+
     	res_formatted_kegg =
     		res_kegg@results %>%
     		map2_dfr(
@@ -1398,9 +1400,9 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
     		) %>%
     		arrange(sort_column) %>%
     		select(data_base, pathway, everything())
-    
+
     }
-	
+
 	# output tibble
 	if (exists("res_formatted_nonkegg") & exists("res_formatted_kegg")) {
 	    out = bind_rows(res_formatted_nonkegg, res_formatted_kegg)
@@ -1411,7 +1413,9 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	}
 
 	# add to bibliography
-	out %>% memorise_methods_used(c("egsea", collections, method))
+	if (exists("collections_bib")) {
+	    out %>% memorise_methods_used(c("egsea", collections_bib, methods))
+	}
 }
 
 #' Get K-mean clusters to a tibble
@@ -1547,7 +1551,7 @@ get_clusters_SNN_bulk <-
 												num.cores = 4,
 												do.par = TRUE) %>%
 			Seurat::FindVariableFeatures(selection.method = "vst") %>%
-			Seurat::RunPCA(npcs = 30) %>%
+			Seurat::RunPCA(npcs = 10) %>%
 			Seurat::FindNeighbors() %>%
 			Seurat::FindClusters(method = "igraph", ...) %>%
 			`[[` ("seurat_clusters") %>%

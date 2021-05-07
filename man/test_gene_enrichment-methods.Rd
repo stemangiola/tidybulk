@@ -17,10 +17,12 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
-  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_collections = "all",
+  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
+    "kegg_metabolism", "kegg_signaling"),
   species,
-  cores = 10
+  cores = 10,
+  method = NULL
 )
 
 \S4method{test_gene_enrichment}{spec_tbl_df}(
@@ -30,10 +32,12 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
-  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_collections = "all",
+  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
+    "kegg_metabolism", "kegg_signaling"),
   species,
-  cores = 10
+  cores = 10,
+  method = NULL
 )
 
 \S4method{test_gene_enrichment}{tbl_df}(
@@ -43,10 +47,12 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
-  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_collections = "all",
+  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
+    "kegg_metabolism", "kegg_signaling"),
   species,
-  cores = 10
+  cores = 10,
+  method = NULL
 )
 
 \S4method{test_gene_enrichment}{tidybulk}(
@@ -56,10 +62,12 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
-  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_collections = "all",
+  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
+    "kegg_metabolism", "kegg_signaling"),
   species,
-  cores = 10
+  cores = 10,
+  method = NULL
 )
 
 \S4method{test_gene_enrichment}{SummarizedExperiment}(
@@ -69,10 +77,12 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
-  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg"),
+  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
+    "kegg_metabolism", "kegg_signaling"),
   species,
-  cores = 10
+  cores = 10,
+  method = NULL
 )
 
 \S4method{test_gene_enrichment}{RangedSummarizedExperiment}(
@@ -82,10 +92,12 @@ test_gene_enrichment(
   .entrez,
   .abundance = NULL,
   .contrasts = NULL,
-  method = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_collections = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg"),
+  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
+    "kegg_metabolism", "kegg_signaling"),
   species,
-  cores = 10
+  cores = 10,
+  method = NULL
 )
 }
 \arguments{
@@ -101,13 +113,15 @@ test_gene_enrichment(
 
 \item{.contrasts}{= NULL,}
 
-\item{method}{A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.}
+\item{methods}{A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.}
 
-\item{gene_collections}{A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: "h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling". c1 is human specific. Default is "all", all MSigDB and KEGG gene set collections are used.}
+\item{gene_sets}{A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.}
 
-\item{species}{A character. For example, human or mouse}
+\item{species}{A character. It can be human, mouse or rat.}
 
 \item{cores}{An integer. The number of cores available}
+
+\item{method}{DEPRECATED. Please use methods.}
 }
 \value{
 A `tbl` object
@@ -154,7 +168,7 @@ dge %>%
 	# Execute EGSEA
 	egsea(
 		contrasts = my_contrasts,
-		baseGSEAs = method,
+		baseGSEAs = methods,
 		gs.annots = idx,
 		sort.by = "med.rank",
 		num.threads = cores,
@@ -175,8 +189,8 @@ library("EGSEA")
 		.sample = sample,
 		.entrez = entrez,
 		.abundance = count,
-         method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
-         gene_collections = "all",
+         methods = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+         gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 		species="human",
 		cores = 2
 	)

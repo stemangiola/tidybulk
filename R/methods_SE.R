@@ -222,7 +222,7 @@ setMethod("scale_abundance",
 		method %>%
 			when(
 				(.) == "kmeans" ~ get_clusters_kmeans_bulk_SE,
-				(.) == "SNN" ~ get_clusters_SNN_bulk_SE,
+				(.) == "SNN" ~  stop("tidybulk says: Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable."), #get_clusters_SNN_bulk_SE,
 				~ stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
 			)
 	
@@ -1279,18 +1279,29 @@ setMethod("keep_abundant",
 
 
 
-
+#' @importFrom lifecycle deprecate_warn
 .test_gene_enrichment_SE = 		function(.data,
 																			.formula,
 																			.sample = NULL,
 																			.entrez,
 																			.abundance = NULL,
 																			.contrasts = NULL,
-																			method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
-																			gene_collections = c("h" ,   "c1" ,  "c2" ,  "c3" ,  "c4" ,  "c5" ,  "c6"  , "c7" ,  "kegg"),
+																			methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																			gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 																			species,
-																			cores = 10)	{
+																			cores = 10,
+																			
+																			method = NULL # DEPRECATED
+																		)	{
 
+	# DEPRECATION OF reference function
+	if (is_present(method) & !is.null(method)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", details = "The argument method is now deprecated please use methods")
+		methods = method
+	}
+	
 	.entrez = enquo(.entrez)
 
 	# Check that there are no entrez missing
@@ -1315,7 +1326,6 @@ setMethod("keep_abundant",
 	# Comply with CRAN NOTES
 	. = NULL
 	
-	
 	# Check if at least two samples for each group
 	if (.data %>%
 			pivot_sample() %>%
@@ -1324,7 +1334,7 @@ setMethod("keep_abundant",
 			pull(n) %>%
 			min %>%
 			st(2))
-		stop("tidybulk says: You need at least two replicated for each condition for EGSEA to work")
+		stop("tidybulk says: You need at least two replicates for each condition for EGSEA to work")
 	
 	
 	# Create design matrix
@@ -1387,76 +1397,139 @@ setMethod("keep_abundant",
 		# as_matrix(rownames = !!.entrez) %>%
 		edgeR::DGEList(counts = .)
 	
-	idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = gene_collections)
-	
-	# Due to a bug in kegg, this data set is run without report
-	# http://supportupgrade.bioconductor.org/p/122172/#122218
-	message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
-	
-	if("kegg" %in% gene_collections){
-	res_kegg =
-		dge %>%
-		
-		# Calculate weights
-		limma::voom(design, plot = FALSE) %>%
-		
-		# Execute EGSEA
-		egsea(
-			contrasts = my_contrasts,
-			gs.annots = idx %>% .["kegg"],
-			baseGSEAs = method,
-			sort.by = "med.rank",
-			num.threads = cores,
-			report = FALSE
-		)
-	
-	res_formatted_kegg =
-		res_kegg@results %>%
-		map2_dfr(
-			(.) %>% names,
-			~ .x[[1]][[1]] %>%
-				as_tibble(rownames = "pathway") %>%
-				mutate(data_base = .y)
-		) %>%
-		arrange(med.rank) %>%
-		select(data_base, pathway, everything())
+	# Add gene ids for Interpret Results tables in report
+	dge$genes = rownames(dge$counts)
+
+	if (is.list(gene_sets)) {
+
+	    idx =  buildCustomIdx(geneIDs = rownames(dge), species = species, gsets=gene_sets)
+	    nonkegg_genesets = idx
+	    kegg_genesets = NULL
+
+	} else {
+
+    	# Specify gene sets to include
+    	msig_all <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
+    	kegg_all <- c("kegg_disease", "kegg_metabolism", "kegg_signaling")
+
+    	# Record which collections used (kegg, msigdb) for bibliography
+    	collections_bib = c()
+
+    	# Identify any msigdb sets to be included
+    	msigdb.gsets <- gene_sets[gene_sets %in% msig_all]
+    	if (length(msigdb.gsets) >= 1) {
+    	    collections_bib = c(collections_bib, "msigdb")
+    	}
+
+    	# Have to identify kegg sets to exclude for EGSEA
+    	kegg_to_exclude = kegg_all[!(kegg_all %in% gene_sets)]
+
+    	# If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object
+        if (length(kegg_to_exclude) == 3) {
+                kegg.exclude = "all"
+        } else {
+    	    kegg.exclude = kegg_to_exclude %>% str_replace("kegg_", "")
+    	    collections_bib = c(collections_bib, "kegg")
+    	}
+
+
+    	idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets,
+    	                kegg.exclude = kegg.exclude)
+
+    	# Due to a bug with kegg pathview overlays, this collection is run without report
+        # https://support.bioconductor.org/p/122172/#122218
+
+	    kegg_genesets = idx[which(names(idx)=="kegg")]
+	    nonkegg_genesets = idx[which(names(idx)!="kegg")]
 	}
-	
-	res =
-		dge %>%
-		
-		# Calculate weights
-		limma::voom(design, plot = FALSE) %>%
-		
-		# Execute EGSEA
-		egsea(
-			contrasts = my_contrasts,
-			gs.annots = idx[which(names(idx)!="kegg")],
-			baseGSEAs = method,
-			sort.by = "med.rank",
-			num.threads = cores,
-		)
-	
-	gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
-	
-	res_formatted_all =
-		res@results %>%
-		map2_dfr(
-			(.) %>% names,
-			~ .x[[1]][[1]] %>%
-				as_tibble(rownames = "pathway") %>%
-				mutate(data_base = .y)
-		) %>%
-		arrange(med.rank) %>%
-		
-		# Add webpage
-		mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
-		select(data_base, pathway, web_page, med.rank, everything()) 
-	
-	res_formatted_all %>%
-		when(
-			"kegg" %in% gene_collections ~ bind_rows(., res_formatted_kegg),~ (.)
-		)
+
+	# Specify column to use to sort results in output table
+	# If only one method is specified there is no med.rank column
+	if (length(methods) == 1) {
+	    sort_column = "p.value"
+	} else {
+	    sort_column = "med.rank"
+	}
+
+
+	if (length(nonkegg_genesets) != 0) {
+    	res =
+        	dge %>%
+
+        	# Calculate weights
+        	limma::voom(design, plot = FALSE) %>%
+
+        	# Execute EGSEA
+        	egsea(
+        		contrasts = my_contrasts,
+        		gs.annots = nonkegg_genesets,
+        		baseGSEAs = methods,
+        		sort.by = sort_column,
+        		num.threads = cores
+        	)
+
+        gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
+
+        res_formatted_nonkegg =
+        	res@results %>%
+        	map2_dfr(
+        		(.) %>% names,
+        		~ .x[[1]][[1]] %>%
+        			as_tibble(rownames = "pathway") %>%
+        			mutate(data_base = .y)
+        	) %>%
+        	arrange(sort_column) %>%
+
+        	# Add webpage
+        	mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
+        	select(data_base, pathway, web_page, sort_column, everything())
+	}
+
+    if (length(kegg_genesets) != 0) {
+    	message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
+
+    	res_kegg =
+    		dge %>%
+
+    		# Calculate weights
+    		limma::voom(design, plot = FALSE) %>%
+
+    		# Execute EGSEA
+    		egsea(
+    			contrasts = my_contrasts,
+    			gs.annots = kegg_genesets,
+    			baseGSEAs = methods,
+    			sort.by = sort_column,
+    			num.threads = cores,
+    			report = FALSE
+    		)
+
+    	res_formatted_kegg =
+    		res_kegg@results %>%
+    		map2_dfr(
+    			(.) %>% names,
+    			~ .x[[1]][[1]] %>%
+    				as_tibble(rownames = "pathway") %>%
+    				mutate(data_base = .y)
+    		) %>%
+    		arrange(sort_column) %>%
+    		select(data_base, pathway, everything())
+
+    }
+
+	# output tibble
+	if (exists("res_formatted_nonkegg") & exists("res_formatted_kegg")) {
+	    out = bind_rows(res_formatted_nonkegg, res_formatted_kegg)
+	} else if (exists("res_formatted_nonkegg")) {
+	    out = res_formatted_nonkegg
+	} else {
+	    out = res_formatted_kegg
+	}
+
+	# add to bibliography
+	if (exists("collections_bib")) {
+	    out %>% memorise_methods_used(c("egsea", collections_bib, methods))
+	}
 
 }
 
@@ -1489,7 +1562,7 @@ setMethod("test_gene_enrichment",
 																					 .do_test,
 																					 species,
 																					 .sample = NULL,
-																					 gene_collections = NULL,
+																					 gene_sets = NULL,
 																					 gene_set = NULL  # DEPRECATED
 																					 )	{
 
@@ -1500,8 +1573,8 @@ setMethod("test_gene_enrichment",
 	if (is_present(gene_set) & !is.null(gene_set)) {
 		
 		# Signal the deprecation to the user
-		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
-		gene_collections = gene_set
+		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_sets.")
+		gene_sets = gene_set
 	}
 	
 	# Get column names
@@ -1536,7 +1609,7 @@ setMethod("test_gene_enrichment",
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
-		entrez_over_to_gsea(species, gene_collections = gene_collections)
+		entrez_over_to_gsea(species, gene_collections = gene_sets)
 	
 	
 }
@@ -1570,7 +1643,7 @@ setMethod("test_gene_overrepresentation",
 																.arrange_desc,
 																species,
 																.sample = NULL,
-																gene_collections = NULL,
+																gene_sets = NULL,
 																gene_set = NULL  # DEPRECATED
 																)	{
 	
@@ -1581,8 +1654,8 @@ setMethod("test_gene_overrepresentation",
 	if (is_present(gene_set) & !is.null(gene_set)) {
 		
 		# Signal the deprecation to the user
-		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
-		gene_collections = gene_set
+		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", details = "The argument gene_set is now deprecated please use gene_sets.")
+		gene_sets = gene_set
 		
 	}
 	
@@ -1614,7 +1687,7 @@ setMethod("test_gene_overrepresentation",
 		arrange(desc(!!.arrange_desc)) %>%
 		select(!!.entrez, !!.arrange_desc) %>%
 		deframe() %>%
-		entrez_rank_to_gsea(species, gene_collections = gene_collections)
+		entrez_rank_to_gsea(species, gene_collections = gene_sets)
 	
 	
 }

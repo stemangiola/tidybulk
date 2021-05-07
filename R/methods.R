@@ -594,14 +594,15 @@ setGeneric("cluster_elements", function(.data,
 				log_transform = log_transform,
 				...
 			),
-			method == "SNN" ~ get_clusters_SNN_bulk(.,
-				.abundance = !!.abundance,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_samples = of_samples,
-				log_transform = log_transform,
-				...
-			),
+			method == "SNN" ~ stop("tidybulk says: Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable."),
+			# 	get_clusters_SNN_bulk(.,
+			# 	.abundance = !!.abundance,
+			# 	.element = !!.element,
+			# 	.feature = !!.feature,
+			# 	of_samples = of_samples,
+			# 	log_transform = log_transform,
+			# 	...
+			# ),
 			TRUE ~ 		stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
 
 		)
@@ -2757,11 +2758,12 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param .contrasts = NULL,
-#' @param method A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
-#' @param gene_collections A character vector. Used to determine which gene set collections to include in EGSEA buildIdx. It can take one or more of the following: "h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling". c1 is human specific. Default is "all", all MSigDB and KEGG gene set collections are used.
-#' @param species A character. For example, human or mouse
+#' @param methods A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
+#' @param gene_sets A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.
+#' @param species A character. It can be human, mouse or rat.
 #' @param cores An integer. The number of cores available
-#'
+#' 
+#' @param method DEPRECATED. Please use methods.
 #'
 #' @details This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 #'
@@ -2789,7 +2791,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	# Execute EGSEA
 #' 	egsea(
 #' 		contrasts = my_contrasts,
-#' 		baseGSEAs = method,
+#' 		baseGSEAs = methods,
 #' 		gs.annots = idx,
 #' 		sort.by = "med.rank",
 #' 		num.threads = cores,
@@ -2815,8 +2817,8 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #'			.sample = sample,
 #'			.entrez = entrez,
 #'			.abundance = count,
-#'          method = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
-#'          gene_collections = "all",
+#'          methods = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+#'          gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 #'			species="human",
 #'			cores = 2
 #'		)
@@ -2834,23 +2836,39 @@ setGeneric("test_gene_enrichment", function(.data,
 																							 .entrez,
 																							 .abundance = NULL,
 																							 .contrasts = NULL,
-																							 method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
-																							 gene_collections = "all", 
+																							 methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																							 gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 																							 species,
-																							 cores = 10)
+																							 cores = 10,
+																						
+																						method = NULL # DEPRECATED
+																						)
 	standardGeneric("test_gene_enrichment"))
 
 # Set internal
+#' @importFrom lifecycle deprecate_warn
 .test_gene_enrichment = 		function(.data,
 																			.formula,
 																			.sample = NULL,
 																			.entrez,
 																			.abundance = NULL,
 																			.contrasts = NULL,
-																	        method = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
-																			gene_collections = "all", 
+																	    methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																			gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 																			species,
-																			cores = 10)	{
+																			cores = 10,
+																	 
+																	 method = NULL # DEPRECATED
+																	 )	{
+	
+	# DEPRECATION OF reference function
+	if (is_present(method) & !is.null(method)) {
+		
+		# Signal the deprecation to the user
+		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", details = "The argument method is now deprecated please use methods")
+		methods = method
+	}
+	
 	# Make col names
 	.sample = enquo(.sample)
 	.abundance = enquo(.abundance)
@@ -2894,8 +2912,8 @@ setGeneric("test_gene_enrichment", function(.data,
 			.entrez = !!.entrez,
 			.abundance = !!.abundance,
 			.contrasts = .contrasts,
-			method = method,
-			gene_collections = gene_collections,
+			methods = methods,
+			gene_sets = gene_sets,
 			species = species,
 			cores = cores
 		)
@@ -2954,9 +2972,9 @@ setMethod("test_gene_enrichment",
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .do_test A boolean column name symbol. It indicates the transcript to check
 #' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
-#' @param gene_collections  A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
+#' @param gene_sets  A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
 #'
-#' @param gene_set DEPRECATED. Use gene_collections instead.
+#' @param gene_set DEPRECATED. Use gene_sets instead.
 #' 
 #' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
 #' This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
@@ -2991,7 +3009,7 @@ setMethod("test_gene_enrichment",
 #' 		.entrez = entrez,
 #' 		.do_test = do_test,
 #' 		species="Homo sapiens",
-#'    gene_collections =c("C2")
+#'    gene_sets =c("C2")
 #' 	)
 #'
 #'
@@ -3005,7 +3023,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 																										.do_test,
 																										species,
 																										.sample = NULL,
-																										gene_collections  = NULL,
+																										gene_sets  = NULL,
 																										gene_set = NULL # DEPRECATED
 																										)
 	standardGeneric("test_gene_overrepresentation"))
@@ -3016,21 +3034,12 @@ setGeneric("test_gene_overrepresentation", function(.data,
 																					 .do_test,
 																					 species,
 																					 .sample = NULL,
-																					 gene_collections  = NULL,
+																					 gene_sets  = NULL,
 																					 gene_set = NULL  # DEPRECATED
 																					 )	{
 
 	# Comply with CRAN NOTES
 	. = NULL
-
-	# DEPRECATION OF reference function
-	if (is_present(gene_set) & !is.null(gene_set)) {
-		
-		# Signal the deprecation to the user
-		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
-		gene_collections = gene_set
-	}
-	
 
 	# Get column names
 	.sample = enquo(.sample)
@@ -3062,7 +3071,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
-		entrez_over_to_gsea(species, gene_collections  = gene_collections )
+		entrez_over_to_gsea(species, gene_collections  = gene_sets )
 
 
 }
@@ -3117,9 +3126,9 @@ setMethod("test_gene_overrepresentation",
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .arrange_desc A column name of the column to arrange in decreasing order
 #' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
-#' @param gene_collections  A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
+#' @param gene_sets  A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
 #'
-#' @param gene_set DEPRECATED. Use gene_collections instead.
+#' @param gene_set DEPRECATED. Use gene_sets instead.
 #' 
 #' @details This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
 #' This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
@@ -3128,9 +3137,9 @@ setMethod("test_gene_overrepresentation",
 #'# Get gene sets signatures
 #'msigdbr::msigdbr(species = species) %>%
 #'	
-#'	# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
+#'	# Filter specific gene_sets  if specified. This was introduced to speed up examples executionS
 #'	when(
-#'		!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
+#'		!is.null(gene_sets ) ~ filter(., gs_cat %in% gene_sets ),
 #'		~ (.)
 #'	) %>%
 #'	
@@ -3164,7 +3173,7 @@ setMethod("test_gene_overrepresentation",
 #' 		.sample = sample,
 #'		.entrez = entrez,
 #' 		species="Homo sapiens",
-#'    gene_collections =c("C2"),
+#'    gene_sets =c("C2"),
 #'  .arrange_desc = logFC 
 #' 	)
 #'
@@ -3179,7 +3188,7 @@ setGeneric("test_gene_rank", function(.data,
 																			.arrange_desc,
 																			species,
 																			.sample = NULL,
-																			gene_collections  = NULL,
+																			gene_sets  = NULL,
 																			gene_set = NULL  # DEPRECATED
 																			)
 	standardGeneric("test_gene_rank"))
@@ -3190,7 +3199,7 @@ setGeneric("test_gene_rank", function(.data,
 														 .arrange_desc,
 														 species,
 														 .sample = NULL,
-														 gene_collections  = NULL,
+														 gene_sets  = NULL,
 														 gene_set = NULL  # DEPRECATED
 														 )	{
 	
@@ -3201,8 +3210,8 @@ setGeneric("test_gene_rank", function(.data,
 	if (is_present(gene_set) & !is.null(gene_set)) {
 		
 		# Signal the deprecation to the user
-		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", details = "The argument gene_set is now deprecated please use gene_collections.")
-		gene_collections = gene_set
+		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", details = "The argument gene_set is now deprecated please use gene_sets.")
+		gene_sets = gene_set
 		
 	}
 	
@@ -3236,7 +3245,7 @@ setGeneric("test_gene_rank", function(.data,
 		arrange(desc(!!.arrange_desc)) %>%
 		select(!!.entrez, !!.arrange_desc) %>%
 		deframe() %>%
-		entrez_rank_to_gsea(species, gene_collections  = gene_collections )
+		entrez_rank_to_gsea(species, gene_collections  = gene_sets )
 	
 	
 }
