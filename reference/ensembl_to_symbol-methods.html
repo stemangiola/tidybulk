@@ -83,7 +83,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
       </span>
     </div>
 
@@ -178,28 +178,29 @@
 <p>This is useful since different resources use ensembl IDs while others use gene symbol IDs. At the moment this work for human (genes and transcripts) and mouse (genes) data.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
-
-<span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_SE.html'>counts_SE</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='ensembl_to_symbol-methods.html'>ensembl_to_symbol</a></span><span class='op'>(</span><span class='va'>feature</span><span class='op'>)</span>
-</div><div class='co'>#&gt; <span style='color: #949494;'># A tibble: 408,624 x 10</span>
-#&gt;    feature  sample     count Cell.type time  condition batch factor_of_interest
-#&gt;    <span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>             </span>
-#&gt; <span style='color: #BCBCBC;'> 1</span><span> A1BG     SRR1740034   153 b_cell    0 d   TRUE      0     TRUE              </span>
-#&gt; <span style='color: #BCBCBC;'> 2</span><span> A1BG-AS1 SRR1740034    83 b_cell    0 d   TRUE      0     TRUE              </span>
-#&gt; <span style='color: #BCBCBC;'> 3</span><span> AAAS     SRR1740034   868 b_cell    0 d   TRUE      0     TRUE              </span>
-#&gt; <span style='color: #BCBCBC;'> 4</span><span> AACS     SRR1740034   222 b_cell    0 d   TRUE      0     TRUE              </span>
-#&gt; <span style='color: #BCBCBC;'> 5</span><span> AAGAB    SRR1740034   590 b_cell    0 d   TRUE      0     TRUE              </span>
-#&gt; <span style='color: #BCBCBC;'> 6</span><span> AAMDC    SRR1740034    48 b_cell    0 d   TRUE      0     TRUE              </span>
-#&gt; <span style='color: #BCBCBC;'> 7</span><span> AAMP     SRR1740034  </span><span style='text-decoration: underline;'>1</span><span>257 b_cell    0 d   TRUE      0     TRUE              </span>
-#&gt; <span style='color: #BCBCBC;'> 8</span><span> AANAT    SRR1740034   284 b_cell    0 d   TRUE      0     TRUE              </span>
-#&gt; <span style='color: #BCBCBC;'> 9</span><span> AAR2     SRR1740034   379 b_cell    0 d   TRUE      0     TRUE              </span>
-#&gt; <span style='color: #BCBCBC;'>10</span><span> AARS2    SRR1740034   685 b_cell    0 d   TRUE      0     TRUE              </span>
-#&gt; <span style='color: #949494;'># … with 408,614 more rows, and 2 more variables: transcript &lt;chr&gt;,</span>
-#&gt; <span style='color: #949494;'>#   ref_genome &lt;chr&gt;</span></div><div class='input'>   
-
-
-</div></pre>
+    <pre class="examples"><span class='r-in'></span>
+<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='counts_SE.html'>counts_SE</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='ensembl_to_symbol-methods.html'>ensembl_to_symbol</a></span><span class='op'>(</span><span class='va'>feature</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 408,624 x 10</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    feature  sample     count Cell.type time  condition batch factor_of_interest</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    <span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>             </span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 1</span><span> A1BG     SRR1740034   153 b_cell    0 d   TRUE      0     TRUE              </span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 2</span><span> A1BG-AS1 SRR1740034    83 b_cell    0 d   TRUE      0     TRUE              </span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 3</span><span> AAAS     SRR1740034   868 b_cell    0 d   TRUE      0     TRUE              </span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 4</span><span> AACS     SRR1740034   222 b_cell    0 d   TRUE      0     TRUE              </span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 5</span><span> AAGAB    SRR1740034   590 b_cell    0 d   TRUE      0     TRUE              </span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 6</span><span> AAMDC    SRR1740034    48 b_cell    0 d   TRUE      0     TRUE              </span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 7</span><span> AAMP     SRR1740034  </span><span style='text-decoration: underline;'>1</span><span>257 b_cell    0 d   TRUE      0     TRUE              </span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 8</span><span> AANAT    SRR1740034   284 b_cell    0 d   TRUE      0     TRUE              </span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 9</span><span> AAR2     SRR1740034   379 b_cell    0 d   TRUE      0     TRUE              </span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>10</span><span> AARS2    SRR1740034   685 b_cell    0 d   TRUE      0     TRUE              </span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 408,614 more rows, and 2 more variables: transcript &lt;chr&gt;,</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   ref_genome &lt;chr&gt;</span></span>
+<span class='r-in'>   </span>
+<span class='r-in'></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

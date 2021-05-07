@@ -83,7 +83,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
       </span>
     </div>
 
@@ -231,23 +231,26 @@ variable_trancripts = rownames(x)</p>
 <p>At the moment this function uses edgeR <a href='https://doi.org/10.1093/bioinformatics/btp616'>https://doi.org/10.1093/bioinformatics/btp616</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-
-
-  <span class='fu'><a href='keep_variable-methods.html'>keep_variable</a></span><span class='op'>(</span>
-  <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span>,
-      top <span class='op'>=</span> <span class='fl'>500</span>
-  <span class='op'>)</span>
-</div><div class='co'>#&gt; <span class='warning'>Warning: </span>tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.</div><div class='co'>#&gt; Getting the 500 most variable genes</div><div class='co'>#&gt; class: SummarizedExperiment 
-#&gt; dim: 500 5 
-#&gt; metadata(0):
-#&gt; assays(1): count
-#&gt; rownames(500): IGKC TCL1A ... ATXN8OS CCL13
-#&gt; rowData names(0):
-#&gt; colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
-#&gt; colData names(3): Cell.type time condition</div><div class='input'>
-
-</div></pre>
+    <pre class="examples"><span class='r-in'></span>
+<span class='r-in'></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='fu'><a href='keep_variable-methods.html'>keep_variable</a></span><span class='op'>(</span></span>
+<span class='r-in'>  <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span>,</span>
+<span class='r-in'>      top <span class='op'>=</span> <span class='fl'>500</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Getting the 500 most variable genes</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> class: SummarizedExperiment </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> dim: 500 5 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> metadata(0):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> assays(1): count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> rownames(500): IGKC TCL1A ... ATXN8OS CCL13</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> rowData names(0):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> colData names(3): Cell.type time condition</span>
+<span class='r-in'></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

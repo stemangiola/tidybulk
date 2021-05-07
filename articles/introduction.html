@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 data-toc-skip class="author">Stefano Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2021-05-03</h4>
+            <h4 data-toc-skip class="date">2021-05-07</h4>
       
       
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -525,18 +525,18 @@
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <pre><code>## # A tibble: 251 x 4
-##     tSNE1  tSNE2 sample                       Call 
-##     &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
-##  1  -8.40   3.13 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  2   1.92  -3.36 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  3 -11.7    9.60 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  4  -4.26 -10.8  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  5  -8.31  -4.89 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  6  10.9    4.42 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  7  25.1  -17.6  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  8   2.56 -12.2  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  9   3.57 -11.1  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-## 10 -19.2   15.2  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##      tSNE1  tSNE2 sample                       Call 
+##      &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
+##  1  -7.44  -4.10  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  2  -1.07   5.55  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  3  -0.158 -8.66  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  4   3.90  -5.76  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  5  -6.75  -0.290 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  6  -1.72  -8.06  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  7  16.6   20.4   TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  8  11.1   -7.40  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  9  10.0   -7.93  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+## 10 -19.7   -4.90  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -767,6 +767,7 @@ We may want to test for differential transcription between sample-wise factors o
   <span class="va">my_theme</span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_cluster-1.png" width="700"></p>
 <p><strong>SNN</strong></p>
+<p>Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
@@ -802,53 +803,22 @@ We may want to test for differential transcription between sample-wise factors o
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
-<pre><code>## # A tibble: 251 x 5
-##     tSNE1  tSNE2 sample                       Call  cluster_SNN
-##     &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt; &lt;fct&gt;      
-##  1  -8.40   3.13 TCGA-A1-A0SD-01A-11R-A115-07 LumA  0          
-##  2   1.92  -3.36 TCGA-A1-A0SF-01A-11R-A144-07 LumA  1          
-##  3 -11.7    9.60 TCGA-A1-A0SG-01A-11R-A144-07 LumA  0          
-##  4  -4.26 -10.8  TCGA-A1-A0SH-01A-11R-A084-07 LumA  3          
-##  5  -8.31  -4.89 TCGA-A1-A0SI-01A-11R-A144-07 LumB  3          
-##  6  10.9    4.42 TCGA-A1-A0SJ-01A-11R-A084-07 LumA  0          
-##  7  25.1  -17.6  TCGA-A1-A0SK-01A-12R-A084-07 Basal 1          
-##  8   2.56 -12.2  TCGA-A1-A0SM-01A-11R-A084-07 LumA  3          
-##  9   3.57 -11.1  TCGA-A1-A0SN-01A-11R-A144-07 LumB  3          
-## 10 -19.2   15.2  TCGA-A1-A0SQ-01A-21R-A144-07 LumA  0          
-## # … with 241 more rows</code></pre>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> 
+
+<span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html" class="external-link">gather</a></span><span class="op">(</span><span class="va">source</span>, <span class="va">Call</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cluster_SNN"</span>, <span class="st">"Call"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color<span class="op">=</span><span class="va">Call</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="op">~</span><span class="va">source</span><span class="op">)</span> <span class="op">+</span> <span class="va">my_theme</span></code></pre></div>
-<p><img src="introduction_files/figure-html/SNN_plot-1.png" width="700"></p>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Do differential transcription between clusters</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color<span class="op">=</span><span class="va">Call</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="op">~</span><span class="va">source</span><span class="op">)</span> <span class="op">+</span> <span class="va">my_theme</span>
+
+
+<span class="co"># Do differential transcription between clusters</span>
 <span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">`cluster_SNN`</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span>
     <span class="op">~</span> <span class="va">factor_of_interest</span>,
     action<span class="op">=</span><span class="st">"get"</span>
    <span class="op">)</span></code></pre></div>
-<pre><code>## # A SummarizedExperiment-tibble abstraction: 125,500 x 15
-## [90m# Transcripts=500 | Samples=251 | Assays=count, count_scaled[39m
-##    feature sample  count count_scaled Call  tSNE1 tSNE2 cluster_SNN
-##    &lt;chr&gt;   &lt;chr&gt;   &lt;int&gt;        &lt;int&gt; &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;      
-##  1 ENSG00… TCGA-…  22114        22114 LumA  -8.40  3.13 0          
-##  2 ENSG00… TCGA-… 128257       128257 LumA  -8.40  3.13 0          
-##  3 ENSG00… TCGA-…  23971        23971 LumA  -8.40  3.13 0          
-##  4 ENSG00… TCGA-…  22518        22518 LumA  -8.40  3.13 0          
-##  5 ENSG00… TCGA-…  23250        23250 LumA  -8.40  3.13 0          
-##  6 ENSG00… TCGA-…  30039        30039 LumA  -8.40  3.13 0          
-##  7 ENSG00… TCGA-…  32987        32987 LumA  -8.40  3.13 0          
-##  8 ENSG00… TCGA-…  42292        42292 LumA  -8.40  3.13 0          
-##  9 ENSG00… TCGA-…  12417        12417 LumA  -8.40  3.13 0          
-## 10 ENSG00… TCGA-…  40820        40820 LumA  -8.40  3.13 0          
-## # … with 40 more rows, and 7 more variables: factor_of_interest &lt;lgl&gt;,
-## #   .abundant &lt;lgl&gt;, logFC &lt;dbl&gt;, logCPM &lt;dbl&gt;, F &lt;dbl&gt;, PValue &lt;dbl&gt;,
-## #   FDR &lt;dbl&gt;</code></pre>
 </div>
 <div id="drop-redundant-transcripts" class="section level2">
 <h2 class="hasAnchor">
@@ -861,14 +831,14 @@ We may want to test for differential transcription between sample-wise factors o
 <p><strong>Approach 1</strong></p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.non_redundant</span> <span class="op">=</span>
     <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/remove_redundancy-methods.html">remove_redundancy</a></span><span class="op">(</span>    method <span class="op">=</span> <span class="st">"correlation"</span> <span class="op">)</span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/dgrtwo/widyr" class="external-link">widyr</a></span><span class="op">)</span>
 
 <span class="va">.data.correlated</span> <span class="op">=</span>
@@ -894,7 +864,7 @@ We may want to test for differential transcription between sample-wise factors o
 
 </div>
 <p>We can visualise how the reduced redundancy with the reduced dimentions look like</p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.non_redundant</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
@@ -902,7 +872,7 @@ We may want to test for differential transcription between sample-wise factors o
   <span class="va">my_theme</span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_drop-1.png" width="700"></p>
 <p><strong>Approach 2</strong></p>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.non_redundant</span> <span class="op">=</span>
     <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/remove_redundancy-methods.html">remove_redundancy</a></span><span class="op">(</span>
@@ -911,7 +881,7 @@ We may want to test for differential transcription between sample-wise factors o
     Dim_b_column <span class="op">=</span> <span class="va">`Dim2`</span>
   <span class="op">)</span></code></pre></div>
 <p>We can visualise MDS reduced dimensions of the samples with the closest pair removed.</p>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.non_redundant</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
@@ -928,7 +898,7 @@ We may want to test for differential transcription between sample-wise factors o
 <h2 class="hasAnchor">
 <a href="#from-bamsam-to-tibble-of-gene-counts" class="anchor" aria-hidden="true"></a>From BAM/SAM to tibble of gene counts</h2>
 <p>We can calculate gene counts (using FeatureCounts; Liao Y et al., 10.1093/nar/gkz114) from a list of BAM/SAM files and format them into a tidy structure (similar to counts).</p>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts</span> <span class="op">=</span> <span class="fu"><a href="../reference/tidybulk_SAM_BAM-methods.html">tidybulk_SAM_BAM</a></span><span class="op">(</span>
     <span class="va">file_names</span>,
     genome <span class="op">=</span> <span class="st">"hg38"</span>,
@@ -942,7 +912,7 @@ We may want to test for differential transcription between sample-wise factors o
 <h2 class="hasAnchor">
 <a href="#from-ensembl-ids-to-gene-symbol-ids" class="anchor" aria-hidden="true"></a>From ensembl IDs to gene symbol IDs</h2>
 <p>We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs. This currently works for human and mouse.</p>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_ensembl</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/ensembl_to_symbol-methods.html">ensembl_to_symbol</a></span><span class="op">(</span><span class="va">ens</span><span class="op">)</span></code></pre></div>
 <pre><code>## # A tibble: 119 x 8
 ##    ens    iso   `read count` sample cases_0_project… cases_0_samples… transcript
@@ -963,7 +933,7 @@ We may want to test for differential transcription between sample-wise factors o
 <h2 class="hasAnchor">
 <a href="#from-gene-symbol-to-gene-description-gene-name-in-full" class="anchor" aria-hidden="true"></a>From gene symbol to gene description (gene name in full)</h2>
 <p>We can add gene full name (and in future description) from symbol identifiers. This currently works for human and mouse.</p>
-<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
     <span class="fu"><a href="../reference/describe_transcript-methods.html">describe_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">feature</span>, <span class="va">description</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
@@ -986,7 +956,7 @@ We may want to test for differential transcription between sample-wise factors o
 <div id="appendix" class="section level2">
 <h2 class="hasAnchor">
 <a href="#appendix" class="anchor" aria-hidden="true"></a>Appendix</h2>
-<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R Under development (unstable) (2021-04-15 r80175)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
@@ -1010,69 +980,53 @@ We may want to test for differential transcription between sample-wise factors o
 ## other attached packages:
 ##  [1] tidySummarizedExperiment_1.1.5 SummarizedExperiment_1.21.3   
 ##  [3] Biobase_2.51.0                 GenomicRanges_1.43.4          
-##  [5] GenomeInfoDb_1.27.11           IRanges_2.25.10               
-##  [7] S4Vectors_0.29.17              BiocGenerics_0.37.4           
+##  [5] GenomeInfoDb_1.27.11           IRanges_2.25.11               
+##  [7] S4Vectors_0.29.18              BiocGenerics_0.37.5           
 ##  [9] MatrixGenerics_1.3.1           matrixStats_0.58.0            
-## [11] tidybulk_1.3.2                 ggrepel_0.9.1                 
+## [11] tidybulk_1.3.3                 ggrepel_0.9.1                 
 ## [13] ggplot2_3.3.3                  magrittr_2.0.1                
 ## [15] tibble_3.1.1                   tidyr_1.1.3                   
-## [17] dplyr_1.0.5                    knitr_1.33                    
+## [17] dplyr_1.0.6                    knitr_1.33                    
 ## [19] BiocStyle_2.19.2              
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] utf8_1.2.1             reticulate_1.20        tidyselect_1.1.1      
-##   [4] RSQLite_2.2.7          AnnotationDbi_1.53.1   htmlwidgets_1.5.3     
-##   [7] grid_4.1.0             BiocParallel_1.25.5    Rtsne_0.15            
-##  [10] widyr_0.1.3            munsell_0.5.0          codetools_0.2-18      
-##  [13] ragg_1.1.2             ica_1.0-2              preprocessCore_1.53.2 
-##  [16] future_1.21.0          miniUI_0.1.1.1         withr_2.4.2           
-##  [19] colorspace_2.0-0       highr_0.9              rstudioapi_0.13       
-##  [22] Seurat_4.0.1           ROCR_1.0-11            tensor_1.5            
-##  [25] listenv_0.8.0          labeling_0.4.2         GenomeInfoDbData_1.2.4
-##  [28] polyclip_1.10-0        bit64_4.0.5            farver_2.1.0          
-##  [31] rprojroot_2.0.2        parallelly_1.25.0      vctrs_0.3.8           
-##  [34] generics_0.1.0         xfun_0.22              R6_2.5.0              
-##  [37] locfit_1.5-9.4         bitops_1.0-7           spatstat.utils_2.1-0  
-##  [40] cachem_1.0.4           reshape_0.8.8          DelayedArray_0.17.11  
-##  [43] promises_1.2.0.1       scales_1.1.1           gtable_0.3.0          
-##  [46] org.Mm.eg.db_3.12.0    globals_0.14.0         sva_3.39.0            
-##  [49] goftest_1.2-2          rlang_0.4.11           genefilter_1.73.1     
-##  [52] systemfonts_1.0.1      splines_4.1.0          lazyeval_0.2.2        
-##  [55] spatstat.geom_2.1-0    broom_0.7.6            tidytext_0.3.1        
-##  [58] BiocManager_1.30.12    yaml_2.2.1             reshape2_1.4.4        
-##  [61] abind_1.4-5            backports_1.2.1        httpuv_1.6.0          
-##  [64] tokenizers_0.2.1       tools_4.1.0            bookdown_0.22         
-##  [67] ellipsis_0.3.2         spatstat.core_2.1-2    jquerylib_0.1.4       
-##  [70] RColorBrewer_1.1-2     proxy_0.4-25           ggridges_0.5.3        
-##  [73] Rcpp_1.0.6             plyr_1.8.6             zlibbioc_1.37.0       
-##  [76] purrr_0.3.4            RCurl_1.98-1.3         ps_1.6.0              
-##  [79] rpart_4.1-15           deldir_0.2-10          pbapply_1.4-3         
-##  [82] cowplot_1.1.1          zoo_1.8-9              SeuratObject_4.0.0    
-##  [85] cluster_2.1.2          fs_1.5.0               data.table_1.14.0     
-##  [88] scattermore_0.7        lmtest_0.9-38          RANN_2.6.1            
-##  [91] SnowballC_0.7.0        fitdistrplus_1.1-3     hms_1.0.0             
-##  [94] patchwork_1.1.1        mime_0.10              evaluate_0.14         
-##  [97] xtable_1.8-4           XML_3.99-0.6           gridExtra_2.3         
-## [100] compiler_4.1.0         KernSmooth_2.23-18     crayon_1.4.1          
-## [103] htmltools_0.5.1.1      mgcv_1.8-35            later_1.2.0           
-## [106] DBI_1.1.1              MASS_7.3-53.1          Matrix_1.3-2          
-## [109] readr_1.4.0            cli_2.5.0              igraph_1.2.6          
-## [112] pkgconfig_2.0.3        pkgdown_1.6.1.9001     plotly_4.9.3          
-## [115] spatstat.sparse_2.0-0  annotate_1.69.2        bslib_0.2.4           
-## [118] XVector_0.31.1         janeaustenr_0.1.5      stringr_1.4.0         
-## [121] digest_0.6.27          sctransform_0.3.2      RcppAnnoy_0.0.18      
-## [124] spatstat.data_2.1-0    Biostrings_2.59.2      rmarkdown_2.7         
-## [127] leiden_0.3.7           uwot_0.1.10            edgeR_3.33.3          
-## [130] shiny_1.6.0            lifecycle_1.0.0        nlme_3.1-152          
-## [133] jsonlite_1.7.2         desc_1.3.0             viridisLite_0.4.0     
-## [136] limma_3.47.12          fansi_0.4.2            pillar_1.6.0          
-## [139] lattice_0.20-44        GGally_2.1.1           KEGGREST_1.31.1       
-## [142] fastmap_1.1.0          httr_1.4.2             survival_3.2-11       
-## [145] glue_1.4.2             png_0.1-7              bit_4.0.4             
-## [148] class_7.3-18           stringi_1.5.3          sass_0.3.1            
-## [151] blob_1.2.1             textshaping_0.3.3      org.Hs.eg.db_3.12.0   
-## [154] memoise_2.0.0          irlba_2.3.3            e1071_1.7-6           
-## [157] future.apply_1.7.0</code></pre>
+##   [1] Rtsne_0.15             colorspace_2.0-1       ellipsis_0.3.2        
+##   [4] class_7.3-19           rprojroot_2.0.2        XVector_0.31.1        
+##   [7] fs_1.5.0               tidytext_0.3.1         rstudioapi_0.13       
+##  [10] proxy_0.4-25           farver_2.1.0           SnowballC_0.7.0       
+##  [13] bit64_4.0.5            AnnotationDbi_1.53.1   fansi_0.4.2           
+##  [16] codetools_0.2-18       splines_4.1.0          cachem_1.0.4          
+##  [19] jsonlite_1.7.2         broom_0.7.6            annotate_1.69.2       
+##  [22] png_0.1-7              BiocManager_1.30.12    readr_1.4.0           
+##  [25] compiler_4.1.0         httr_1.4.2             backports_1.2.1       
+##  [28] Matrix_1.3-3           fastmap_1.1.0          lazyeval_0.2.2        
+##  [31] limma_3.47.13          cli_2.5.0              org.Mm.eg.db_3.13.0   
+##  [34] htmltools_0.5.1.1      tools_4.1.0            gtable_0.3.0          
+##  [37] glue_1.4.2             GenomeInfoDbData_1.2.5 reshape2_1.4.4        
+##  [40] Rcpp_1.0.6             jquerylib_0.1.4        pkgdown_1.6.1.9001    
+##  [43] vctrs_0.3.8            Biostrings_2.59.2      preprocessCore_1.53.2 
+##  [46] nlme_3.1-152           xfun_0.22              stringr_1.4.0         
+##  [49] ps_1.6.0               lifecycle_1.0.0        XML_3.99-0.6          
+##  [52] org.Hs.eg.db_3.13.0    edgeR_3.33.3           zlibbioc_1.37.0       
+##  [55] scales_1.1.1           ragg_1.1.2             hms_1.0.0             
+##  [58] RColorBrewer_1.1-2     yaml_2.2.1             memoise_2.0.0         
+##  [61] sass_0.3.1             reshape_0.8.8          stringi_1.5.3         
+##  [64] RSQLite_2.2.7          highr_0.9              genefilter_1.73.1     
+##  [67] tokenizers_0.2.1       desc_1.3.0             e1071_1.7-6           
+##  [70] BiocParallel_1.25.5    rlang_0.4.11           pkgconfig_2.0.3       
+##  [73] systemfonts_1.0.1      bitops_1.0-7           evaluate_0.14         
+##  [76] lattice_0.20-44        purrr_0.3.4            htmlwidgets_1.5.3     
+##  [79] labeling_0.4.2         bit_4.0.4              tidyselect_1.1.1      
+##  [82] GGally_2.1.1           plyr_1.8.6             bookdown_0.22         
+##  [85] R6_2.5.0               generics_0.1.0         DelayedArray_0.17.13  
+##  [88] DBI_1.1.1              pillar_1.6.0           withr_2.4.2           
+##  [91] mgcv_1.8-35            survival_3.2-11        KEGGREST_1.31.2       
+##  [94] RCurl_1.98-1.3         janeaustenr_0.1.5      widyr_0.1.3           
+##  [97] crayon_1.4.1           utf8_1.2.1             plotly_4.9.3          
+## [100] rmarkdown_2.7          locfit_1.5-9.4         grid_4.1.0            
+## [103] sva_3.39.0             data.table_1.14.0      blob_1.2.1            
+## [106] digest_0.6.27          xtable_1.8-4           textshaping_0.3.3     
+## [109] munsell_0.5.0          viridisLite_0.4.0      bslib_0.2.4</code></pre>
 </div>
 </div>
   </div>
