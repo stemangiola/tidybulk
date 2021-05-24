@@ -1580,7 +1580,7 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference will be used for each algorithm. For llsr will be LM22.
+#' @param reference A data frame. A rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.
 #' @param method A character string. The method to be used. At the moment Cibersort (default), epic and llsr (linear least squares regression) are available.
 #' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).

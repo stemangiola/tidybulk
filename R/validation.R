@@ -313,7 +313,7 @@ validate_signature = function(.data, reference, .transcript){
 			length %>%
 			st(50))
 		stop(
-			"tidybulk says: You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
+			"tidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes"
 		)
 	
 	# Check if rownames exist
@@ -332,7 +332,7 @@ validate_signature_SE = function(.data, reference, .transcript){
 			length %>%
 			st(50))
 		stop(
-			"tidybulk says: You have less than 50 genes that overlap the Cibersort signature. Please check again your input dataframe"
+			"tidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes"
 		)
 	
 	# Check if rownames exist
