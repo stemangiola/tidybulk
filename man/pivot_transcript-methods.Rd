@@ -28,13 +28,7 @@ pivot_transcript(.data, .transcript = NULL)
 \item{.transcript}{The name of the transcript column}
 }
 \value{
-A consistent object (to the input)
-
-A consistent object (to the input)
-
-A consistent object (to the input)
-
-A consistent object (to the input)
+A `tbl` with transcript-related information
 
 A consistent object (to the input)
 
