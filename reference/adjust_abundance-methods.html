@@ -58,9 +58,6 @@
 
 
 
-<!-- dependencies from examples -->
-
-
   
 
   
@@ -138,7 +135,7 @@
     <p>adjust_abundance() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='adjust_abundance-methods.html'>adjust_abundance</a></span><span class='op'>(</span>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>adjust_abundance</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.formula</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -150,7 +147,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for spec_tbl_df</span>
-<span class='fu'><a href='adjust_abundance-methods.html'>adjust_abundance</a></span><span class='op'>(</span>
+<span class='fu'>adjust_abundance</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.formula</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -162,7 +159,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for tbl_df</span>
-<span class='fu'><a href='adjust_abundance-methods.html'>adjust_abundance</a></span><span class='op'>(</span>
+<span class='fu'>adjust_abundance</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.formula</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -174,7 +171,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for tidybulk</span>
-<span class='fu'><a href='adjust_abundance-methods.html'>adjust_abundance</a></span><span class='op'>(</span>
+<span class='fu'>adjust_abundance</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.formula</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -186,7 +183,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for SummarizedExperiment</span>
-<span class='fu'><a href='adjust_abundance-methods.html'>adjust_abundance</a></span><span class='op'>(</span>
+<span class='fu'>adjust_abundance</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.formula</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -198,7 +195,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for RangedSummarizedExperiment</span>
-<span class='fu'><a href='adjust_abundance-methods.html'>adjust_abundance</a></span><span class='op'>(</span>
+<span class='fu'>adjust_abundance</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>.formula</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -207,7 +204,7 @@
   log_transform <span class='op'>=</span> <span class='cn'>TRUE</span>,
   action <span class='op'>=</span> <span class='st'>"add"</span>,
   <span class='va'>...</span>
-<span class='op'>)</span></pre>
+<span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -263,7 +260,7 @@ At the moment just an unwanted covariate is allowed at a time using Combat (DOI:
 	sva::ComBat(data, batch = my_batch,	mod = design,	prior.plots = FALSE, ...)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='r-in'></span>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
 <span class='r-in'></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='va'>cm</span> <span class='op'>=</span> <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span></span>
@@ -274,7 +271,7 @@ At the moment just an unwanted covariate is allowed at a time using Combat (DOI:
 <span class='r-in'> <span class='va'>cm</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
 <span class='r-in'> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>transcript</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
 <span class='r-in'> <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
-<span class='r-in'>  <span class='fu'><a href='adjust_abundance-methods.html'>adjust_abundance</a></span><span class='op'>(</span>  <span class='op'>~</span> <span class='va'>condition</span> <span class='op'>+</span> <span class='va'>batch</span>  <span class='op'>)</span></span>
+<span class='r-in'>  <span class='fu'>adjust_abundance</span><span class='op'>(</span>  <span class='op'>~</span> <span class='va'>condition</span> <span class='op'>+</span> <span class='va'>batch</span>  <span class='op'>)</span></span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> No group or design set. Assuming all samples belong to one group.</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> Found2batches</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> Adjusting for1covariate(s) or covariate level(s)</span>
@@ -284,7 +281,7 @@ At the moment just an unwanted covariate is allowed at a time using Combat (DOI:
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> Adjusting the Data</span>
 <span class='r-in'></span>
 <span class='r-in'></span>
-</pre>
+</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

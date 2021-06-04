@@ -58,9 +58,6 @@
 
 
 
-<!-- dependencies from examples -->
-
-
   
 
   
@@ -138,7 +135,7 @@
     <p>reduce_dimensions() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; | and calculates the reduced dimensional space of the transcript abundance.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='reduce_dimensions-methods.html'>reduce_dimensions</a></span><span class='op'>(</span>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>reduce_dimensions</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   .element <span class='op'>=</span> <span class='cn'>NULL</span>,
   .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -154,7 +151,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for spec_tbl_df</span>
-<span class='fu'><a href='reduce_dimensions-methods.html'>reduce_dimensions</a></span><span class='op'>(</span>
+<span class='fu'>reduce_dimensions</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   .element <span class='op'>=</span> <span class='cn'>NULL</span>,
   .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -170,7 +167,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for tbl_df</span>
-<span class='fu'><a href='reduce_dimensions-methods.html'>reduce_dimensions</a></span><span class='op'>(</span>
+<span class='fu'>reduce_dimensions</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   .element <span class='op'>=</span> <span class='cn'>NULL</span>,
   .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -186,7 +183,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for tidybulk</span>
-<span class='fu'><a href='reduce_dimensions-methods.html'>reduce_dimensions</a></span><span class='op'>(</span>
+<span class='fu'>reduce_dimensions</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   .element <span class='op'>=</span> <span class='cn'>NULL</span>,
   .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -202,7 +199,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for SummarizedExperiment</span>
-<span class='fu'><a href='reduce_dimensions-methods.html'>reduce_dimensions</a></span><span class='op'>(</span>
+<span class='fu'>reduce_dimensions</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   .element <span class='op'>=</span> <span class='cn'>NULL</span>,
   .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -218,7 +215,7 @@
 <span class='op'>)</span>
 
 <span class='co'># S4 method for RangedSummarizedExperiment</span>
-<span class='fu'><a href='reduce_dimensions-methods.html'>reduce_dimensions</a></span><span class='op'>(</span>
+<span class='fu'>reduce_dimensions</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   .element <span class='op'>=</span> <span class='cn'>NULL</span>,
   .feature <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -231,7 +228,7 @@
   scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
   action <span class='op'>=</span> <span class='st'>"add"</span>,
   <span class='va'>...</span>
-<span class='op'>)</span></pre>
+<span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -308,13 +305,13 @@ limma::plotMDS(ndim = .dims, plot = FALSE, top = top)</p>
 Rtsne::Rtsne(data, ...)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='r-in'></span>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
 <span class='r-in'></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='va'>counts.MDS</span> <span class='op'>=</span></span>
 <span class='r-in'> <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
 <span class='r-in'> <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
-<span class='r-in'> <span class='fu'><a href='reduce_dimensions-methods.html'>reduce_dimensions</a></span><span class='op'>(</span> method<span class='op'>=</span><span class='st'>"MDS"</span>, .dims <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='fu'>reduce_dimensions</span><span class='op'>(</span> method<span class='op'>=</span><span class='st'>"MDS"</span>, .dims <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span></span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> No group or design set. Assuming all samples belong to one group.</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> Getting the 182 most variable genes</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> tidybulk says: to access the raw results do `attr(..., "internals")$MDS`</span>
@@ -323,21 +320,21 @@ Rtsne::Rtsne(data, ...)</p>
 <span class='r-in'><span class='va'>counts.PCA</span> <span class='op'>=</span></span>
 <span class='r-in'> <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
 <span class='r-in'> <span class='fu'><a href='identify_abundant-methods.html'>identify_abundant</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
-<span class='r-in'> <span class='fu'><a href='reduce_dimensions-methods.html'>reduce_dimensions</a></span><span class='op'>(</span>method<span class='op'>=</span><span class='st'>"PCA"</span>, .dims <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='fu'>reduce_dimensions</span><span class='op'>(</span>method<span class='op'>=</span><span class='st'>"PCA"</span>, .dims <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span></span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> No group or design set. Assuming all samples belong to one group.</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> Getting the 182 most variable genes</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> Fraction of variance explained by the selected principal components</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 3 x 2</span></span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span>   `Fraction of variance`    PC</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span>                    <span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span></span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span><span>                 0.598      1</span></span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span><span>                 0.302      2</span></span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span><span>                 0.085</span><span style='text-decoration: underline;'>2</span><span>     3</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span>                    <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span>                 0.598      1</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span>                 0.302      2</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span>                 0.085<span style='text-decoration: underline;'>2</span>     3</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> tidybulk says: to access the raw results do `attr(..., "internals")$PCA`</span>
 <span class='r-in'></span>
 <span class='r-in'></span>
 <span class='r-in'></span>
-</pre>
+</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

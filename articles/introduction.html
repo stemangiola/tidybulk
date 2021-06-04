@@ -74,13 +74,13 @@
 
       
 
-      </header><script src="introduction_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="introduction_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 data-toc-skip class="author">Stefano Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2021-05-07</h4>
+            <h4 data-toc-skip class="date">2021-06-04</h4>
       
       
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -527,16 +527,16 @@
 <pre><code>## # A tibble: 251 x 4
 ##      tSNE1  tSNE2 sample                       Call 
 ##      &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
-##  1  -7.44  -4.10  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  2  -1.07   5.55  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  3  -0.158 -8.66  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  4   3.90  -5.76  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  5  -6.75  -0.290 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  6  -1.72  -8.06  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  7  16.6   20.4   TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  8  11.1   -7.40  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  9  10.0   -7.93  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-## 10 -19.7   -4.90  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##  1  -6.97   -4.16 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  2  -0.756   8.19 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  3  -5.73  -10.8  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  4   4.00   -3.53 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  5  -3.44   -1.13 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  6  -5.37   11.2  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  7  19.5    18.6  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  8   6.11   -1.84 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  9   7.31   -1.60 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+## 10 -13.4   -16.6  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -958,7 +958,7 @@ We may want to test for differential transcription between sample-wise factors o
 <a href="#appendix" class="anchor" aria-hidden="true"></a>Appendix</h2>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## R Under development (unstable) (2021-04-15 r80175)
+<pre><code>## R version 4.1.0 (2021-05-18)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 20.04.2 LTS
 ## 
@@ -978,55 +978,55 @@ We may want to test for differential transcription between sample-wise factors o
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] tidySummarizedExperiment_1.1.5 SummarizedExperiment_1.21.3   
-##  [3] Biobase_2.51.0                 GenomicRanges_1.43.4          
-##  [5] GenomeInfoDb_1.27.11           IRanges_2.25.11               
-##  [7] S4Vectors_0.29.18              BiocGenerics_0.37.5           
-##  [9] MatrixGenerics_1.3.1           matrixStats_0.58.0            
+##  [1] tidySummarizedExperiment_1.2.0 SummarizedExperiment_1.22.0   
+##  [3] Biobase_2.52.0                 GenomicRanges_1.44.0          
+##  [5] GenomeInfoDb_1.28.0            IRanges_2.26.0                
+##  [7] S4Vectors_0.30.0               BiocGenerics_0.38.0           
+##  [9] MatrixGenerics_1.4.0           matrixStats_0.59.0            
 ## [11] tidybulk_1.3.3                 ggrepel_0.9.1                 
 ## [13] ggplot2_3.3.3                  magrittr_2.0.1                
-## [15] tibble_3.1.1                   tidyr_1.1.3                   
+## [15] tibble_3.1.2                   tidyr_1.1.3                   
 ## [17] dplyr_1.0.6                    knitr_1.33                    
-## [19] BiocStyle_2.19.2              
+## [19] BiocStyle_2.20.0              
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] Rtsne_0.15             colorspace_2.0-1       ellipsis_0.3.2        
-##   [4] class_7.3-19           rprojroot_2.0.2        XVector_0.31.1        
+##   [4] class_7.3-19           rprojroot_2.0.2        XVector_0.32.0        
 ##   [7] fs_1.5.0               tidytext_0.3.1         rstudioapi_0.13       
 ##  [10] proxy_0.4-25           farver_2.1.0           SnowballC_0.7.0       
-##  [13] bit64_4.0.5            AnnotationDbi_1.53.1   fansi_0.4.2           
-##  [16] codetools_0.2-18       splines_4.1.0          cachem_1.0.4          
-##  [19] jsonlite_1.7.2         broom_0.7.6            annotate_1.69.2       
-##  [22] png_0.1-7              BiocManager_1.30.12    readr_1.4.0           
+##  [13] bit64_4.0.5            AnnotationDbi_1.54.0   fansi_0.5.0           
+##  [16] codetools_0.2-18       splines_4.1.0          cachem_1.0.5          
+##  [19] jsonlite_1.7.2         broom_0.7.6            annotate_1.70.0       
+##  [22] png_0.1-7              BiocManager_1.30.15    readr_1.4.0           
 ##  [25] compiler_4.1.0         httr_1.4.2             backports_1.2.1       
-##  [28] Matrix_1.3-3           fastmap_1.1.0          lazyeval_0.2.2        
-##  [31] limma_3.47.13          cli_2.5.0              org.Mm.eg.db_3.13.0   
+##  [28] Matrix_1.3-4           fastmap_1.1.0          lazyeval_0.2.2        
+##  [31] limma_3.48.0           cli_2.5.0              org.Mm.eg.db_3.13.0   
 ##  [34] htmltools_0.5.1.1      tools_4.1.0            gtable_0.3.0          
-##  [37] glue_1.4.2             GenomeInfoDbData_1.2.5 reshape2_1.4.4        
+##  [37] glue_1.4.2             GenomeInfoDbData_1.2.6 reshape2_1.4.4        
 ##  [40] Rcpp_1.0.6             jquerylib_0.1.4        pkgdown_1.6.1.9001    
-##  [43] vctrs_0.3.8            Biostrings_2.59.2      preprocessCore_1.53.2 
-##  [46] nlme_3.1-152           xfun_0.22              stringr_1.4.0         
+##  [43] vctrs_0.3.8            Biostrings_2.60.0      preprocessCore_1.54.0 
+##  [46] nlme_3.1-152           xfun_0.23              stringr_1.4.0         
 ##  [49] ps_1.6.0               lifecycle_1.0.0        XML_3.99-0.6          
-##  [52] org.Hs.eg.db_3.13.0    edgeR_3.33.3           zlibbioc_1.37.0       
-##  [55] scales_1.1.1           ragg_1.1.2             hms_1.0.0             
+##  [52] org.Hs.eg.db_3.13.0    edgeR_3.34.0           zlibbioc_1.38.0       
+##  [55] scales_1.1.1           ragg_1.1.2             hms_1.1.0             
 ##  [58] RColorBrewer_1.1-2     yaml_2.2.1             memoise_2.0.0         
-##  [61] sass_0.3.1             reshape_0.8.8          stringi_1.5.3         
-##  [64] RSQLite_2.2.7          highr_0.9              genefilter_1.73.1     
-##  [67] tokenizers_0.2.1       desc_1.3.0             e1071_1.7-6           
-##  [70] BiocParallel_1.25.5    rlang_0.4.11           pkgconfig_2.0.3       
-##  [73] systemfonts_1.0.1      bitops_1.0-7           evaluate_0.14         
+##  [61] sass_0.4.0             reshape_0.8.8          stringi_1.6.2         
+##  [64] RSQLite_2.2.7          highr_0.9              genefilter_1.74.0     
+##  [67] tokenizers_0.2.1       desc_1.3.0             e1071_1.7-7           
+##  [70] BiocParallel_1.26.0    rlang_0.4.11           pkgconfig_2.0.3       
+##  [73] systemfonts_1.0.2      bitops_1.0-7           evaluate_0.14         
 ##  [76] lattice_0.20-44        purrr_0.3.4            htmlwidgets_1.5.3     
 ##  [79] labeling_0.4.2         bit_4.0.4              tidyselect_1.1.1      
 ##  [82] GGally_2.1.1           plyr_1.8.6             bookdown_0.22         
-##  [85] R6_2.5.0               generics_0.1.0         DelayedArray_0.17.13  
-##  [88] DBI_1.1.1              pillar_1.6.0           withr_2.4.2           
-##  [91] mgcv_1.8-35            survival_3.2-11        KEGGREST_1.31.2       
+##  [85] R6_2.5.0               generics_0.1.0         DelayedArray_0.18.0   
+##  [88] DBI_1.1.1              pillar_1.6.1           withr_2.4.2           
+##  [91] mgcv_1.8-36            survival_3.2-11        KEGGREST_1.32.0       
 ##  [94] RCurl_1.98-1.3         janeaustenr_0.1.5      widyr_0.1.3           
 ##  [97] crayon_1.4.1           utf8_1.2.1             plotly_4.9.3          
-## [100] rmarkdown_2.7          locfit_1.5-9.4         grid_4.1.0            
-## [103] sva_3.39.0             data.table_1.14.0      blob_1.2.1            
-## [106] digest_0.6.27          xtable_1.8-4           textshaping_0.3.3     
-## [109] munsell_0.5.0          viridisLite_0.4.0      bslib_0.2.4</code></pre>
+## [100] rmarkdown_2.8          locfit_1.5-9.4         grid_4.1.0            
+## [103] sva_3.40.0             data.table_1.14.0      blob_1.2.1            
+## [106] digest_0.6.27          xtable_1.8-4           textshaping_0.3.4     
+## [109] munsell_0.5.0          viridisLite_0.4.0      bslib_0.2.5.1</code></pre>
 </div>
 </div>
   </div>
