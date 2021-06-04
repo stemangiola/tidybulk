@@ -13,7 +13,7 @@ get_x_y_annotation_columns(
 )
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.horizontal}{The name of the column horizontally presented in the heatmap}
 

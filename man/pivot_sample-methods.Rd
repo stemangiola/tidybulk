@@ -23,25 +23,25 @@ pivot_sample(.data, .sample = NULL)
 \S4method{pivot_sample}{RangedSummarizedExperiment}(.data, .sample = NULL)
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 }
 \value{
-A `tbl` object
+A consistent object (to the input)
 
-A `tbl` object
+A consistent object (to the input)
 
-A `tbl` object
+A consistent object (to the input)
 
-A `tbl` object
+A consistent object (to the input)
 
-A `tbl` object
+A consistent object (to the input)
 
-A `tbl` object
+A consistent object (to the input)
 }
 \description{
-pivot_sample() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
+pivot_sample() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` with only sample-related columns
 }
 \details{
 `r lifecycle::badge("maturing")`
