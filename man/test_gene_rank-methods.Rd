@@ -71,7 +71,7 @@ test_gene_rank(
 )
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.entrez}{The ENTREZ ID of the transcripts/genes}
 
@@ -86,7 +86,7 @@ test_gene_rank(
 \item{gene_set}{DEPRECATED. Use gene_sets instead.}
 }
 \value{
-A `tbl` object
+A consistent object (to the input)
 
 A `spec_tbl_df` object
 
@@ -99,7 +99,7 @@ A `SummarizedExperiment` object
 A `RangedSummarizedExperiment` object
 }
 \description{
-test_gene_rank() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the GSEA statistics
+test_gene_rank() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` with the GSEA statistics
 }
 \details{
 \lifecycle{maturing}
@@ -123,11 +123,11 @@ mutate(fit =
 			 	map(
 			 		data,
 			 		~ 	clusterProfiler::GSEA(
-			 			my_entrez_rank, 
+			 			my_entrez_rank,
 			 			TERM2GENE=.x %>% select(gs_name, entrez_gene),
 			 			pvalueCutoff = 1
-			 		) 
-			 		
+			 		)
+
 			 	))
 }
 \examples{
@@ -143,7 +143,7 @@ test_gene_rank(
 	.entrez = entrez,
 		species="Homo sapiens",
    gene_sets =c("C2"),
- .arrange_desc = logFC 
+ .arrange_desc = logFC
 	)
 
 

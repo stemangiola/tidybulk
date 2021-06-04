@@ -9,7 +9,7 @@
 \item{...}{Variables to be preserved when calling summarise(). This is typically a set of variables whose combination uniquely identify each row. NB: unlike group_by() you can not create new variables here but instead you can select multiple variables with (e.g.) everything().}
 }
 \value{
-A `tbl`
+A consistent object (to the input)
 
   A `tbl`
 }

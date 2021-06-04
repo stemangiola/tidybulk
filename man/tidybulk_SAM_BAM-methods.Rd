@@ -23,7 +23,7 @@ A `tidybulk` object
 A `tidybulk` object
 }
 \description{
-tidybulk_SAM_BAM() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+tidybulk_SAM_BAM() creates a `tt` object from A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 }
 \details{
 `r lifecycle::badge("maturing")`
