@@ -1,13 +1,14 @@
 # setOldClass("spec_tbl_df")
 setOldClass("tidybulk")
 
-#' Creates a `tt` object from a `tbl` or `SummarizedExperiment` object
+#' Creates an annotated `tidybulk` tibble from a `tbl` or `SummarizedExperiment` object
 #'
 #' `r lifecycle::badge("maturing")`
 #'
-#' @description tidybulk() creates a `tt` object from A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+#' @description tidybulk() creates an annotated `tidybulk` tibble from a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 #'
 #' @importFrom rlang enquo
+#' @importFrom rlang quo_is_missing
 #' @importFrom magrittr "%>%"
 #' @import readr
 #' @import SummarizedExperiment
@@ -59,6 +60,12 @@ setGeneric("tidybulk", function(.data,
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 	.abundance_scaled = enquo(.abundance_scaled)
+
+	if(
+	  quo_is_missing(.sample) |
+	  quo_is_missing(.transcript) |
+	  quo_is_missing(.abundance)
+	) stop("tidybulk says: the arguments .sample, .transcript and .abundance must include column names (not surrounded by quotes)")
 
 	# Validate data frame
 	if(do_validate()) validation(.data,
