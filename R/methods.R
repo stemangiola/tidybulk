@@ -3300,7 +3300,7 @@ setMethod("test_gene_rank",
 #'
 #' @details This functon extracts only sample-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to tidybulk function.
 #'
-#' @return A consistent object (to the input)
+#' @return A `tbl` with transcript-related information
 #'
 #'
 #'
@@ -3349,7 +3349,6 @@ setGeneric("pivot_sample", function(.data,
 #' @docType methods
 #' @rdname pivot_sample-methods
 #'
-#' @return A consistent object (to the input)
 setMethod("pivot_sample",
 					"spec_tbl_df",
 					.pivot_sample)
@@ -3360,7 +3359,6 @@ setMethod("pivot_sample",
 #' @docType methods
 #' @rdname pivot_sample-methods
 #'
-#' @return A consistent object (to the input)
 setMethod("pivot_sample",
 					"tbl_df",
 					.pivot_sample)
@@ -3371,7 +3369,6 @@ setMethod("pivot_sample",
 #' @docType methods
 #' @rdname pivot_sample-methods
 #'
-#' @return A consistent object (to the input)
 setMethod("pivot_sample",
 					"tidybulk",
 					.pivot_sample)
@@ -3392,7 +3389,7 @@ setMethod("pivot_sample",
 #'
 #' @details This functon extracts only transcript-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to tidybulk function.
 #'
-#' @return A consistent object (to the input)
+#' @return A `tbl` with transcript-related information
 #'
 #'
 #'
@@ -3441,7 +3438,6 @@ setGeneric("pivot_transcript", function(.data,
 #' @docType methods
 #' @rdname pivot_transcript-methods
 #'
-#' @return A consistent object (to the input)
 setMethod("pivot_transcript",
 					"spec_tbl_df",
 					.pivot_transcript)
@@ -3452,7 +3448,6 @@ setMethod("pivot_transcript",
 #' @docType methods
 #' @rdname pivot_transcript-methods
 #'
-#' @return A consistent object (to the input)
 setMethod("pivot_transcript",
 					"tbl_df",
 					.pivot_transcript)
@@ -3463,7 +3458,6 @@ setMethod("pivot_transcript",
 #' @docType methods
 #' @rdname pivot_transcript-methods
 #'
-#' @return A consistent object (to the input)
 setMethod("pivot_transcript",
 					"tidybulk",
 					.pivot_transcript)
@@ -3843,7 +3837,6 @@ setGeneric("test_differential_cellularity", function(.data,
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
 #'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_cellularity",
 					"spec_tbl_df",
 					.test_differential_cellularity)
@@ -3854,7 +3847,6 @@ setMethod("test_differential_cellularity",
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
 #'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_cellularity",
 					"tbl_df",
 					.test_differential_cellularity)
@@ -3865,7 +3857,6 @@ setMethod("test_differential_cellularity",
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
 #'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_differential_cellularity",
 					"tidybulk",
 					.test_differential_cellularity)
@@ -3994,7 +3985,6 @@ setGeneric("test_stratification_cellularity", function(.data,
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
 #'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_stratification_cellularity",
 					"spec_tbl_df",
 					.test_stratification_cellularity)
@@ -4005,7 +3995,6 @@ setMethod("test_stratification_cellularity",
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
 #'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_stratification_cellularity",
 					"tbl_df",
 					.test_stratification_cellularity)
@@ -4016,7 +4005,6 @@ setMethod("test_stratification_cellularity",
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
 #'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_stratification_cellularity",
 					"tidybulk",
 					.test_stratification_cellularity)

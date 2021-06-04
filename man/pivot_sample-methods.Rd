@@ -28,13 +28,7 @@ pivot_sample(.data, .sample = NULL)
 \item{.sample}{The name of the sample column}
 }
 \value{
-A consistent object (to the input)
-
-A consistent object (to the input)
-
-A consistent object (to the input)
-
-A consistent object (to the input)
+A `tbl` with transcript-related information
 
 A consistent object (to the input)
 
