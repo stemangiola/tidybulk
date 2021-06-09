@@ -83,7 +83,7 @@ deconvolve_cellularity(
 )
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 
@@ -102,20 +102,20 @@ deconvolve_cellularity(
 \item{...}{Further parameters passed to the function Cibersort}
 }
 \value{
-A `tbl` object including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns for each cell type estimated
 
-A `tbl` object including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns for each cell type estimated
 
-A `tbl` object including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns for each cell type estimated
 
-A `tbl` object including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns for each cell type estimated
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-deconvolve_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
+deconvolve_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with the estimated cell type abundance for each sample
 }
 \details{
 `r lifecycle::badge("maturing")`

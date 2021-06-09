@@ -101,7 +101,7 @@ test_gene_enrichment(
 )
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.formula}{A formula with no response variable, representing the desired linear model}
 
@@ -124,20 +124,20 @@ test_gene_enrichment(
 \item{method}{DEPRECATED. Please use methods.}
 }
 \value{
-A `tbl` object
+A consistent object (to the input)
 
-A `tbl` object
+A consistent object (to the input)
 
-A `tbl` object
+A consistent object (to the input)
 
-A `tbl` object
+A consistent object (to the input)
 
-A `tbl` object
+A consistent object (to the input)
 
-A `tbl` object
+A consistent object (to the input)
 }
 \description{
-test_gene_enrichment() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` of gene set information
+test_gene_enrichment() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` of gene set information
 }
 \details{
 `r lifecycle::badge("maturing")`
@@ -157,7 +157,7 @@ dge =
 	as_matrix(rownames = !!.entrez) %>%
 	edgeR::DGEList(counts = .)
 
-idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets, 
+idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets,
                kegg.exclude = kegg.exclude)
 
 dge %>%
