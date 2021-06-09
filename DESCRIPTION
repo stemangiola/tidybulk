@@ -22,6 +22,7 @@ Imports:
     stringr,
     rlang,
     purrr,
+    tidyselect,
     preprocessCore,
     stats,
     parallel,
