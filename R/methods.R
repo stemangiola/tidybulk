@@ -3246,9 +3246,21 @@ setGeneric("test_gene_rank", function(.data,
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
 		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
-
+	
+	# Check if missing entrez
+	if(.data %>% filter(!!.entrez %>% is.na) %>% nrow() %>% gt(0) ){
+		warning("tidybulk says: there are .entrez that are NA. Those will be removed")
+		.data = .data %>%	filter(!!.entrez %>% is.na %>% not())
+	}
+	
+	# Check if missing .arrange_desc
+	if(.data %>% filter(!!.arrange_desc %>% is.na) %>% nrow() %>% gt(0) ){
+		warning("tidybulk says: there are .arrange_desc that are NA. Those will be removed")
+		.data = .data %>%	filter(!!.arrange_desc %>% is.na %>% not())
+	}
+  
 	.data %>%
-		pivot_transcript() %>%
+		pivot_transcript(!!.entrez) %>%
 		arrange(desc(!!.arrange_desc)) %>%
 		select(!!.entrez, !!.arrange_desc) %>%
 		deframe() %>%

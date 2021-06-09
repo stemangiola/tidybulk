@@ -24,34 +24,46 @@
 								~ as.symbol(.x),
 								~ NULL)
 	
-	# Do conversion
-	SummarizedExperiment::assays(.data) %>%
-		as.list() %>%
-		map2(
-			SummarizedExperiment::assays(.data) %>%  names,
-			~ .x %>%
-				as_tibble(rownames = "feature") %>%
-				gather(sample,!!.y,-feature)
-		) %>%
+	sample_info <-
+		colData(.data) %>% 
 		
-		# Join the assays
-		purrr::reduce(dplyr::left_join, by = c("sample", "feature")) %>%
+		# If reserved column names are present add .x
+		change_reserved_column_names() %>%
 		
-		# Attach annotation
-		left_join(
-			SummarizedExperiment::rowData(.data) %>% as.data.frame() %>% as_tibble(rownames = "feature"),
-			by = "feature"
-		) %>%
-		left_join(SummarizedExperiment::colData(.data) %>% as_tibble(rownames =
-																																 	"sample"),
-							by = "sample") %>%
-		mutate_if(is.character, as.factor) %>%
-		tidybulk(
-			sample,
-			feature,
-			!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
-			!!norm_col # scaled counts if any
-		)
+		# Convert to tibble
+		tibble::as_tibble(rownames="sample")
+	
+
+	range_info <-
+		 get_special_datasets(.data) %>%
+			reduce(left_join, by="coordinate") 
+	
+	gene_info <-
+		rowData(.data) %>%
+		
+		# If reserved column names are present add .x
+		change_reserved_column_names() %>%
+		
+		# Convert to tibble
+		tibble::as_tibble(rownames="feature") 
+	
+	count_info <- get_count_datasets(.data)
+	
+	# Return 
+	count_info %>%
+	left_join(sample_info, by="sample") %>%
+	left_join(gene_info, by="feature") %>%
+	when(nrow(range_info) > 0 ~ (.) %>% left_join(range_info) %>% suppressMessages(), ~ (.)) %>%
+		
+	mutate_if(is.character, as.factor) %>%
+	tidybulk(
+		sample,
+		feature,
+		!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
+		!!norm_col # scaled counts if any
+	)
+
+	
 	
 }
 
@@ -1604,8 +1616,14 @@ setMethod("test_gene_enrichment",
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
 		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
 	
+	# # Check if missing entrez
+	# if(.data %>% filter(!!.entrez %>% is.na) %>% nrow() %>% gt(0) ){
+	# 	warning("tidybulk says: there are .entrez that are NA. Those will be removed")
+	# 	.data = .data %>%	filter(!!.entrez %>% is.na %>% not())
+	# }
+	
 	.data %>%
-		pivot_transcript() %>%
+		pivot_transcript(!!.entrez) %>%
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
