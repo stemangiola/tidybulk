@@ -52,16 +52,16 @@ fill_missing_abundance(
 \item{fill_with}{A numerical abundance with which fill the missing data points}
 }
 \value{
-A `tbl` non-sparse abundance
+A consistent object (to the input) non-sparse abundance
 
-A `tbl` with filled abundance
+A consistent object (to the input) with filled abundance
 
-A `tbl` with filled abundance
+A consistent object (to the input) with filled abundance
 
-A `tbl` with filled abundance
+A consistent object (to the input) with filled abundance
 }
 \description{
-fill_missing_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with new observations
+fill_missing_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with new observations
 }
 \details{
 \lifecycle{questioning}

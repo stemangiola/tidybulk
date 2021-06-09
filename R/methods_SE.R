@@ -1539,7 +1539,7 @@ setMethod("keep_abundant",
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("test_gene_enrichment",
 					"SummarizedExperiment",
 					.test_gene_enrichment_SE)
@@ -1550,7 +1550,7 @@ setMethod("test_gene_enrichment",
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("test_gene_enrichment",
 					"RangedSummarizedExperiment",
 					.test_gene_enrichment_SE)
@@ -1743,7 +1743,7 @@ setMethod("test_gene_rank",
 #' @docType methods
 #' @rdname pivot_sample-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("pivot_sample",
 					"SummarizedExperiment",
 					.pivot_sample)
@@ -1754,7 +1754,7 @@ setMethod("pivot_sample",
 #' @docType methods
 #' @rdname pivot_sample-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("pivot_sample",
 					"RangedSummarizedExperiment",
 					.pivot_sample)
@@ -1794,7 +1794,7 @@ setMethod("pivot_sample",
 #' @docType methods
 #' @rdname pivot_transcript-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("pivot_transcript",
 					"SummarizedExperiment",
 					.pivot_transcript)
@@ -1805,7 +1805,7 @@ setMethod("pivot_transcript",
 #' @docType methods
 #' @rdname pivot_transcript-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("pivot_transcript",
 					"RangedSummarizedExperiment",
 					.pivot_transcript)
@@ -2129,7 +2129,7 @@ setMethod(
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
 #'
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_stratification_cellularity",
 					"SummarizedExperiment",
 					.test_stratification_cellularity_SE)
@@ -2140,7 +2140,7 @@ setMethod("test_stratification_cellularity",
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
 #'
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_stratification_cellularity",
 					"RangedSummarizedExperiment",
 					.test_stratification_cellularity_SE)
@@ -2154,7 +2154,7 @@ setMethod("test_stratification_cellularity",
 #' @docType methods
 #' @rdname get_bibliography-methods
 #'
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("get_bibliography",
 					"SummarizedExperiment",
 					.get_bibliography)
@@ -2165,7 +2165,7 @@ setMethod("get_bibliography",
 #' @docType methods
 #' @rdname get_bibliography-methods
 #'
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("get_bibliography",
 					"RangedSummarizedExperiment",
 					.get_bibliography)
@@ -2269,7 +2269,7 @@ setMethod("get_bibliography",
 #' @docType methods
 #' @rdname describe_transcript-methods
 #'
-#' @return A `tbl` object including additional columns for transcript symbol
+#' @return A consistent object (to the input) including additional columns for transcript symbol
 setMethod("describe_transcript", "SummarizedExperiment", .describe_transcript_SE)
 
 #' describe_transcript
@@ -2278,5 +2278,5 @@ setMethod("describe_transcript", "SummarizedExperiment", .describe_transcript_SE
 #' @docType methods
 #' @rdname describe_transcript-methods
 #'
-#' @return A `tbl` object including additional columns for transcript symbol
+#' @return A consistent object (to the input) including additional columns for transcript symbol
 setMethod("describe_transcript", "RangedSummarizedExperiment", .describe_transcript_SE)

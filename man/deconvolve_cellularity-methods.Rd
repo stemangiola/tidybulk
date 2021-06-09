@@ -83,7 +83,7 @@ deconvolve_cellularity(
 )
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 
@@ -91,7 +91,7 @@ deconvolve_cellularity(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{reference}{A data frame. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference will be used for each algorithm. For llsr will be LM22.}
+\item{reference}{A data frame. A rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.}
 
 \item{method}{A character string. The method to be used. At the moment Cibersort (default), epic and llsr (linear least squares regression) are available.}
 
@@ -102,20 +102,20 @@ deconvolve_cellularity(
 \item{...}{Further parameters passed to the function Cibersort}
 }
 \value{
-A `tbl` object including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns for each cell type estimated
 
-A `tbl` object including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns for each cell type estimated
 
-A `tbl` object including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns for each cell type estimated
 
-A `tbl` object including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns for each cell type estimated
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-deconvolve_cellularity() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with the estimated cell type abundance for each sample
+deconvolve_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with the estimated cell type abundance for each sample
 }
 \details{
 `r lifecycle::badge("maturing")`

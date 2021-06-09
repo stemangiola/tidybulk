@@ -79,9 +79,9 @@ check_if_counts_is_na = function(.data, .abundance) {
 
 check_if_transcript_is_na = function(.data, .transcript) {
 	.transcript = enquo(.transcript)
-	
+
 	.data %>% filter(!!.transcript %>% is.na) %>% nrow %>% equals(0)
-	
+
 }
 
 check_if_column_missing = function(.data, .sample, .transcript, .abundance) {
@@ -192,11 +192,11 @@ validation_default = function(.data,
 	if (type == "hard" &
 			!is_missing)
 		stop(
-			"tidybulk says: One or more columns .sample .transcript or .abundance are missing from your data frame."
+			"tidybulk says: One or more columns that should include sample identifier, transcript identified or transcript abundance are missing from your data frame."
 		)
 	if (type == "soft" & !is_missing) {
 		warning(
-			"tidybulk says: One or more columns .sample .transcript or .abundance are missing from your data frame. The tidybulk object has been converted to a `tbl`"
+			"tidybulk says: One or more columns that should include sample identifier, transcript identified or transcript abundance are missing from your data frame. The tidybulk object has been converted to a `tbl`"
 		)
 		return(.data %>% tidybulk_to_tbl)
 	}
@@ -219,9 +219,9 @@ validation_default = function(.data,
 	if (!skip_dupli_check) {
 		is_unique = check_if_duplicated_genes(.data,!!.sample,!!.transcript,!!.abundance)
 		if (type == "hard" & !is_unique){
-			
-			dup = paste(pull(.data, !!.sample), pull(.data, !!.transcript) ) 
-			
+
+			dup = paste(pull(.data, !!.sample), pull(.data, !!.transcript) )
+
 			stop(
 				"tidybulk says: Your dataset include duplicated sample/gene pairs. ",
 				dup[dup %>% duplicated()] %>% head(30) %>% paste(collapse=", "),
@@ -304,9 +304,9 @@ validation.tidybulk = function(.data,
 }
 
 validate_signature = function(.data, reference, .transcript){
-	
+
 	.transcript = enquo(.transcript)
-	
+
 	if ((.data %>%
 			 pull(!!.transcript) %in% (reference %>% rownames)) %>%
 			which %>%
@@ -315,17 +315,17 @@ validate_signature = function(.data, reference, .transcript){
 		stop(
 			"tidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes"
 		)
-	
+
 	# Check if rownames exist
 	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% not() %>% any)
 		stop("tidybulk says: your reference has non-numeric/integer columns.")
-	
+
 }
 
 validate_signature_SE = function(.data, reference, .transcript){
-	
+
 	.transcript = enquo(.transcript)
-	
+
 	if ((.data %>%
 			 rownames %in% (reference %>% rownames)) %>%
 			which %>%
@@ -334,9 +334,9 @@ validate_signature_SE = function(.data, reference, .transcript){
 		stop(
 			"tidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes"
 		)
-	
+
 	# Check if rownames exist
 	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% not() %>% any)
 		stop("tidybulk says: your reference has non-numeric/integer columns.")
-	
+
 }

@@ -77,7 +77,7 @@ adjust_abundance(
 )
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.formula}{A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)}
 
@@ -94,20 +94,20 @@ adjust_abundance(
 \item{...}{Further parameters passed to the function sva::ComBat}
 }
 \value{
-A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
+A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 
-A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
+A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 
-A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
+A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 
-A `tbl` with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
+A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-adjust_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
+adjust_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with an additional adjusted abundance column. This method uses scaled counts if present.
 }
 \details{
 `r lifecycle::badge("maturing")`
