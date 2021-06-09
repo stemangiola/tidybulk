@@ -91,7 +91,7 @@ deconvolve_cellularity(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{reference}{A data frame. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference will be used for each algorithm. For llsr will be LM22.}
+\item{reference}{A data frame. A rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.}
 
 \item{method}{A character string. The method to be used. At the moment Cibersort (default), epic and llsr (linear least squares regression) are available.}
 
