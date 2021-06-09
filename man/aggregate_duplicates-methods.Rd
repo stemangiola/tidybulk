@@ -65,7 +65,7 @@ aggregate_duplicates(
 )
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 
@@ -78,20 +78,20 @@ aggregate_duplicates(
 \item{keep_integer}{A boolean. Whether to force the aggregated counts to integer}
 }
 \value{
-A `tbl` object with aggregated transcript abundance and annotation
+A consistent object (to the input) with aggregated transcript abundance and annotation
 
-A `tbl` object with aggregated transcript abundance and annotation
+A consistent object (to the input) with aggregated transcript abundance and annotation
 
-A `tbl` object with aggregated transcript abundance and annotation
+A consistent object (to the input) with aggregated transcript abundance and annotation
 
-A `tbl` object with aggregated transcript abundance and annotation
+A consistent object (to the input) with aggregated transcript abundance and annotation
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-aggregate_duplicates() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with aggregated transcripts that were duplicated.
+aggregate_duplicates() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with aggregated transcripts that were duplicated.
 }
 \details{
 `r lifecycle::badge("maturing")`

@@ -1184,7 +1184,7 @@ test_stratification_cellularity_ <- function(.data,
 #' @importFrom utils install.packages
 #'
 #'
-#' @param .data A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+#' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 #' @param .formula A formula with no response variable, representing the desired linear model
 #' @param .sample The name of the sample column
 #' @param .entrez The ENTREZ code of the transcripts/genes

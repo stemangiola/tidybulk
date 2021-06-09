@@ -33,17 +33,17 @@ describe_transcript(.data, .transcript = NULL)
 \value{
 A tbl
 
-A `tbl` object including additional columns for transcript symbol
+A consistent object (to the input) including additional columns for transcript symbol
 
-A `tbl` object including additional columns for transcript symbol
+A consistent object (to the input) including additional columns for transcript symbol
 
-A `tbl` object including additional columns for transcript symbol
+A consistent object (to the input) including additional columns for transcript symbol
 
 A `SummarizedExperiment` object
 
-A `tbl` object including additional columns for transcript symbol
+A consistent object (to the input) including additional columns for transcript symbol
 
-A `tbl` object including additional columns for transcript symbol
+A consistent object (to the input) including additional columns for transcript symbol
 }
 \description{
 Get DESCRIPTION from gene SYMBOL for Human and Mouse

@@ -15,7 +15,7 @@ test_that("tidybulk SummarizedExperiment conversion",{
 
 	expect_equal(	nrow(res),	800	)
 
-	expect_equal(	ncol(res),	12	)
+	expect_equal(	ncol(res),	21	)
 
 	res = res %>% tidybulk:::tidybulk_to_SummarizedExperiment()
 
@@ -32,11 +32,11 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 	res = tidybulk(tidybulk:::tidybulk_to_SummarizedExperiment(scale_abundance(tidybulk(se) %>% identify_abundant())))
 
 	res2 = tidybulk(se) %>% identify_abundant() %>% scale_abundance()
-	
+
 	res %>% distinct(sample, multiplier) %>% pull(multiplier)
 	res2 %>% distinct(sample, multiplier) %>% pull(multiplier)
-	
-	
+
+
 	expect_equal(
 		res %>% distinct(sample, multiplier) %>% pull(multiplier),
 		res2 %>% distinct(sample, multiplier) %>% pull(multiplier) %>% as.numeric(),
@@ -45,7 +45,7 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 
 	expect_equal(	nrow(res),	800	)
 
-	expect_equal(	ncol(res),	16	)
+	expect_equal(	ncol(res),	25	)
 
 
 	res = rlang::quo_name(attr(res, "internals")$tt_columns[[4]])
@@ -169,13 +169,13 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 test_that("differential trancript abundance - SummarizedExperiment",{
 
 	res =		test_differential_abundance(
-		se_mini %>% 
-			identify_abundant(factor_of_interest = condition),	
-		~ condition	
+		se_mini %>%
+			identify_abundant(factor_of_interest = condition),
+		~ condition
 	)
-	
+
 	w = match(  c("CLEC7A" , "FAM198B", "FCN1"  ,  "HK3"   ), rownames(res) )
-	
+
 	# Quasi likelihood
 	res_tibble =		test_differential_abundance(
 		input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
@@ -188,23 +188,23 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 		c(-11.58385, -13.53406, -12.58204, -12.19271),
 		tolerance=1e-4
 	)
-	
+
 	expect_equal(
 		res@elementMetadata[w,]$logFC,
-		res_tibble %>% 
-			pivot_transcript(b) %>% 
-			filter(b %in% rownames(res)[w]) %>% 
+		res_tibble %>%
+			pivot_transcript(b) %>%
+			filter(b %in% rownames(res)[w]) %>%
 			dplyr::arrange(b) %>%
 			dplyr::pull(logFC),
 		tolerance=1e-4
 	)
-	
+
 	# Likelihood ratio
 	res2 =		test_differential_abundance(
 		se_mini %>%
-			identify_abundant(factor_of_interest = condition),	
+			identify_abundant(factor_of_interest = condition),
 		~ condition, method = "edgeR_likelihood_ratio"	)
-	
+
 	res2_tibble =		test_differential_abundance(
 		input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
 		~ condition	,
@@ -219,14 +219,14 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
 	expect_equal(
 		res2@elementMetadata[w,]$logFC,
-		res2_tibble %>% 
-			pivot_transcript(b) %>% 
-			filter(b %in% rownames(res)[w]) %>% 
+		res2_tibble %>%
+			pivot_transcript(b) %>%
+			filter(b %in% rownames(res)[w]) %>%
 			dplyr::arrange(b) %>%
 			dplyr::pull(logFC),
 		tolerance=1e-4
 	)
-	
+
 	# Treat
 	se_mini %>%
 		identify_abundant(a, b, c, factor_of_interest = condition) %>%
@@ -250,7 +250,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
 
 test_that("Voom with treat method",{
-	
+
 	se_mini %>%
         identify_abundant(a, b, c, factor_of_interest = condition) %>%
 		test_differential_abundance(
@@ -267,7 +267,7 @@ test_that("Voom with treat method",{
 	    filter(adj.P.Val<0.05) %>%
 		nrow %>%
 		expect_equal(97)
-    
+
     # with multiple contrasts
     res <-
     	se_mini %>%
@@ -284,17 +284,17 @@ test_that("Voom with treat method",{
 		) %>%
     	`@` (elementMetadata) %>%
 		as_tibble()
-	    
-    	res %>%    
+
+    	res %>%
     	filter(adj.P.Val___Cell.typeb_cell.Cell.typemonocyte < 0.05) %>%
 		nrow %>%
 		expect_equal(293)
-    	
-    	res %>%    
+
+    	res %>%
     	filter(adj.P.Val___Cell.typeb_cell.Cell.typet_cell < 0.05) %>%
 		nrow %>%
 		expect_equal(246)
-    
+
 })
 
 
@@ -328,42 +328,42 @@ test_that("filter variable - no object",{
 })
 
 test_that("impute missing",{
-	
+
 	res =
 		input_df %>%
 		dplyr::slice(-1) %>%
 		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
 		impute_missing_abundance(	~ condition	)
-	
+
 	expect_equal(	SummarizedExperiment::assays(res) %>% as.list() %>% .[[1]] %>% .["TNFRSF4", "SRR1740034"],	6	)
-	
+
 
 	expect_equal(	nrow(res)*ncol(res),	nrow(input_df)	)
-	
+
 })
 
 test_that("differential composition",{
-	
+
 	# Cibersort
 	se_mini %>%
-		test_differential_cellularity(. ~ condition	, cores = 1	) %>% 
+		test_differential_cellularity(. ~ condition	, cores = 1	) %>%
 		pull(`estimate_(Intercept)`) %>%
 		.[[1]] %>%
 		as.integer %>%
 		expect_equal(	-2, 	tollerance =1e-3)
-	
+
 	# llsr
 	se_mini %>%
 	test_differential_cellularity(
 		. ~ condition,
 		method="llsr",
 		cores = 1
-	) %>% 
+	) %>%
 		pull(`estimate_(Intercept)`) %>%
 		.[[1]] %>%
 		as.integer %>%
 		expect_equal(	-2, 	tollerance =1e-3)
-	
+
 	# Survival analyses
 	input_df %>%
 		dplyr::select(a, b, c) %>%
@@ -385,13 +385,13 @@ test_that("differential composition",{
 			97,  # 97 is the github action MacOS that has different value
 			112, # 112 is the github action UBUNTU that has different value
 			93 # 93 is the github action Windows that has different value
-		) %>% 
+		) %>%
 		expect_true()
-	
+
 })
 
 test_that("test_stratification_cellularity",{
-	
+
 	# Cibersort
 	input_df %>%
 		select(a, b, c) %>%
@@ -409,7 +409,7 @@ test_that("test_stratification_cellularity",{
 		pull(.low_cellularity_expected) %>%
 		.[[1]] %>%
 		expect_equal(3.35, tolerance  =1e-1)
-	
+
 	# llsr
 	input_df %>%
 		select(a, b, c) %>%
@@ -433,15 +433,15 @@ test_that("test_stratification_cellularity",{
 
 
 # test_that("Get gene enrichment - no object",{
-# 	
+#
 # 	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
 # 		message("Installing EGSEA needed for differential transcript abundance analyses")
 # 		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos = "https://cloud.r-project.org")
 # 		BiocManager::install("EGSEA")
 # 	}
-# 	
+#
 # 	library(EGSEA)
-# 	
+#
 # 	res =
 # 		aggregate_duplicates(
 # 			dplyr::rename(symbol_to_entrez(
@@ -459,33 +459,33 @@ test_that("test_stratification_cellularity",{
 # 			.entrez = d,
 # 			species="human"
 # 		)
-# 	
+#
 # 	expect_equal(
 # 		res$pathway[1:4],
 # 		c("GNF2_HCK"    ,  "GSE10325_LUPUS_BCELL_VS_LUPUS_MYELOID_DN"   ,"Amino sugar and nucleotide sugar metabolism", "Phagosome"  )
 # 	)
-# 	
+#
 # 	expect_equal(
 # 		ncol(res),
 # 		20
 # 	)
-# 	
+#
 # })
 
 test_that("pivot",{
-	
+
 	expect_equal(	ncol(pivot_sample(se_mini)	), 4)
-	
+
 	expect_equal(	ncol(pivot_transcript(se_mini)	), 1)
-	
+
 })
 
 test_that("gene over representation",{
-	
+
 	df_entrez = symbol_to_entrez(input_df, .transcript = b, .sample = a)
 	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = a, .transcript = entrez, .abundance = c)
 	df_entrez = mutate(df_entrez, do_test = b %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
-	
+
 	res =
 		df_entrez %>%
 		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
@@ -494,18 +494,18 @@ test_that("gene over representation",{
 			.do_test = do_test,
 			species="Homo sapiens"
 		)
-	
+
 	expect_equal(	ncol(res),	10	)
-	
-	
-	
+
+
+
 })
 
 
 test_that("Only reduced dimensions MDS - no object",{
-	
-	
-	
+
+
+
 
 	res =
 		se_mini %>%
@@ -515,18 +515,18 @@ test_that("Only reduced dimensions MDS - no object",{
 			.element = a,
 			.feature = b
 		)
-	
+
 	expect_equal(
 		res$`Dim1`,
 		c(1.4048441,  1.3933490, -2.0138120 , 0.8832354, -1.6676164),
 		tolerance=10
 	)
-	
+
 	expect_equal(
 		ncol(colData(res)),
 		5
 	)
-	
+
 	expect_equal(	class(attr(res, "internals")$MDS[[1]])[1], 	"MDS"  )
-	
+
 })
