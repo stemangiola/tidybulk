@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Add transcript symbol column from ensembl id for human and mouse data — ensembl_to_symbol" />
-<meta property="og:description" content="ensembl_to_symbol() takes as input a `tbl` formatted as | &amp;lt;SAMPLE&amp;gt; | &amp;lt;ENSEMBL_ID&amp;gt; | &amp;lt;COUNT&amp;gt; | &amp;lt;...&amp;gt; | and returns a `tbl` with the additional transcript symbol column" />
+<meta property="og:description" content="ensembl_to_symbol() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with the additional transcript symbol column" />
 
 
 
@@ -112,7 +112,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stemangiola/tidybulk/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,12 +132,12 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Add transcript symbol column from ensembl id for human and mouse data</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods.R'><code>R/methods.R</code></a></small>
     <div class="hidden name"><code>ensembl_to_symbol-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>ensembl_to_symbol() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;ENSEMBL_ID&gt; | &lt;COUNT&gt; | &lt;...&gt; | and returns a `tbl` with the additional transcript symbol column</p>
+    <p>ensembl_to_symbol() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with the additional transcript symbol column</p>
     </div>
 
     <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>ensembl_to_symbol</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>.ensembl</span>, action <span class='op'>=</span> <span class='st'>"add"</span><span class='op'>)</span>
@@ -151,7 +156,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>.data</th>
-      <td><p>A `tbl` formatted as | &lt;SAMPLE&gt; | &lt;ENSEMBL_ID&gt; | &lt;COUNT&gt; | &lt;...&gt; |</p></td>
+      <td><p>a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></td>
     </tr>
     <tr>
       <th>.ensembl</th>
@@ -165,10 +170,10 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A `tbl` object including additional columns for transcript symbol</p>
-<p>A `tbl` object including additional columns for transcript symbol</p>
-<p>A `tbl` object including additional columns for transcript symbol</p>
-<p>A `tbl` object including additional columns for transcript symbol</p>
+    <p>A consistent object (to the input) including additional columns for transcript symbol</p>
+<p>A consistent object (to the input) including additional columns for transcript symbol</p>
+<p>A consistent object (to the input) including additional columns for transcript symbol</p>
+<p>A consistent object (to the input) including additional columns for transcript symbol</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><a href='https://lifecycle.r-lib.org/articles/stages.html#questioning'><img src='figures/lifecycle-questioning.svg' alt='[Questioning]' /></a></p>
@@ -194,7 +199,7 @@
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>10</span> AARS2    SRR1740034   685 b_cell    0 d   TRUE      0     TRUE              </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 408,614 more rows, and 2 more variables: transcript &lt;chr&gt;,</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   ref_genome &lt;chr&gt;</span></span>
-<span class='r-in'>   </span>
+<span class='r-in'></span>
 <span class='r-in'></span>
 <span class='r-in'></span>
 </code></pre></div>

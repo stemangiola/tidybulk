@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Creates a `tt` object from a `tbl` or `SummarizedExperiment` object — tidybulk" />
-<meta property="og:description" content="tidybulk() creates a `tt` object from a `tbl` formatted as | &amp;lt;SAMPLE&amp;gt; | &amp;lt;TRANSCRIPT&amp;gt; | &amp;lt;COUNT&amp;gt; | &amp;lt;...&amp;gt; |" />
+<meta property="og:description" content="tidybulk() creates a `tt` object from A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))" />
 
 
 
@@ -112,7 +112,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stemangiola/tidybulk/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,12 +132,12 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Creates a `tt` object from a `tbl` or `SummarizedExperiment` object</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods.R'><code>R/methods.R</code></a>, <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods_SE.R'><code>R/methods_SE.R</code></a></small>
     <div class="hidden name"><code>tidybulk-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>tidybulk() creates a `tt` object from a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; |</p>
+    <p>tidybulk() creates a `tt` object from A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p>
     </div>
 
     <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>tidybulk</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>.sample</span>, <span class='va'>.transcript</span>, <span class='va'>.abundance</span>, .abundance_scaled <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
@@ -154,7 +159,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>.data</th>
-      <td><p>A `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; |</p></td>
+      <td><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></td>
     </tr>
     <tr>
       <th>.sample</th>

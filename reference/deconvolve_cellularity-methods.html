@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Get cell type proportions from samples — deconvolve_cellularity" />
-<meta property="og:description" content="deconvolve_cellularity() takes as input a `tbl` formatted as | &amp;lt;SAMPLE&amp;gt; | &amp;lt;TRANSCRIPT&amp;gt; | &amp;lt;COUNT&amp;gt; | &amp;lt;...&amp;gt; | and returns a `tbl` with the estimated cell type abundance for each sample" />
+<meta property="og:description" content="deconvolve_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with the estimated cell type abundance for each sample" />
 
 
 
@@ -112,7 +112,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stemangiola/tidybulk/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,12 +132,12 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get cell type proportions from samples</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods.R'><code>R/methods.R</code></a>, <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods_SE.R'><code>R/methods_SE.R</code></a></small>
     <div class="hidden name"><code>deconvolve_cellularity-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>deconvolve_cellularity() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; | and returns a `tbl` with the estimated cell type abundance for each sample</p>
+    <p>deconvolve_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with the estimated cell type abundance for each sample</p>
     </div>
 
     <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>deconvolve_cellularity</span><span class='op'>(</span>
@@ -217,7 +222,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>.data</th>
-      <td><p>A `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; |</p></td>
+      <td><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></td>
     </tr>
     <tr>
       <th>.sample</th>
@@ -233,7 +238,7 @@
     </tr>
     <tr>
       <th>reference</th>
-      <td><p>A data frame. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference will be used for each algorithm. For llsr will be LM22.</p></td>
+      <td><p>A data frame. A rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.</p></td>
     </tr>
     <tr>
       <th>method</th>
@@ -255,10 +260,10 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A `tbl` object including additional columns for each cell type estimated</p>
-<p>A `tbl` object including additional columns for each cell type estimated</p>
-<p>A `tbl` object including additional columns for each cell type estimated</p>
-<p>A `tbl` object including additional columns for each cell type estimated</p>
+    <p>A consistent object (to the input) including additional columns for each cell type estimated</p>
+<p>A consistent object (to the input) including additional columns for each cell type estimated</p>
+<p>A consistent object (to the input) including additional columns for each cell type estimated</p>
+<p>A consistent object (to the input) including additional columns for each cell type estimated</p>
 <p>A `SummarizedExperiment` object</p>
 <p>A `SummarizedExperiment` object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>

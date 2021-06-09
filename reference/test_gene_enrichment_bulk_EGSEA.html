@@ -112,7 +112,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stemangiola/tidybulk/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,7 +132,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get gene enrichment analyses using EGSEA</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
     <div class="hidden name"><code>test_gene_enrichment_bulk_EGSEA.Rd</code></div>
     </div>
 
@@ -153,7 +158,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>.data</th>
-      <td><p>A `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; |</p></td>
+      <td><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></td>
     </tr>
     <tr>
       <th>.formula</th>

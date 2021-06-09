@@ -112,7 +112,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stemangiola/tidybulk/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,7 +132,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Produces the bibliography list of your workflow</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods.R'><code>R/methods.R</code></a>, <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods_SE.R'><code>R/methods_SE.R</code></a></small>
     <div class="hidden name"><code>get_bibliography-methods.Rd</code></div>
     </div>
 
@@ -160,22 +165,19 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>.data</th>
-      <td><p>A `tidybulk` tibble</p></td>
+      <td><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
-<p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
-<p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
-<p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
-<p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
-<p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
+    <p>NULL. It prints a list of bibliography references for the software used through the workflow.</p>
+<p>A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
+<p>A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>`r lifecycle::badge("maturing")`</p>
-<p>This methods returns the bibliography list of your workflow from the internals of a tidybulk tibble (attr(., "internals"))</p>
+<p>This methods returns the bibliography list of your workflow from the internals of a tidybulk object (attr(., "internals"))</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>

@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) abundances are correlated — remove_redundancy" />
-<meta property="og:description" content="remove_redundancy() takes as input a `tbl` formatted as | &amp;lt;SAMPLE&amp;gt; | &amp;lt;TRANSCRIPT&amp;gt; | &amp;lt;COUNT&amp;gt; | &amp;lt;...&amp;gt; | for correlation method or | &amp;lt;DIMENSION 1&amp;gt; | &amp;lt;DIMENSION 2&amp;gt; | &amp;lt;...&amp;gt; | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., samples)." />
+<meta property="og:description" content="remove_redundancy() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) for correlation method or | &amp;lt;DIMENSION 1&amp;gt; | &amp;lt;DIMENSION 2&amp;gt; | &amp;lt;...&amp;gt; | for reduced_dimensions method, and returns a consistent object (to the input) with dropped elements (e.g., samples)." />
 
 
 
@@ -112,7 +112,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stemangiola/tidybulk/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,12 +132,12 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) abundances are correlated</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods.R'><code>R/methods.R</code></a>, <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods_SE.R'><code>R/methods_SE.R</code></a></small>
     <div class="hidden name"><code>remove_redundancy-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>remove_redundancy() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; | for correlation method or | &lt;DIMENSION 1&gt; | &lt;DIMENSION 2&gt; | &lt;...&gt; | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., samples).</p>
+    <p>remove_redundancy() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) for correlation method or | &lt;DIMENSION 1&gt; | &lt;DIMENSION 2&gt; | &lt;...&gt; | for reduced_dimensions method, and returns a consistent object (to the input) with dropped elements (e.g., samples).</p>
     </div>
 
     <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>remove_redundancy</span><span class='op'>(</span>
@@ -229,7 +234,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>.data</th>
-      <td><p>A `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; |</p></td>
+      <td><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></td>
     </tr>
     <tr>
       <th>.element</th>

@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Dimension reduction of the transcript abundance data — reduce_dimensions" />
-<meta property="og:description" content="reduce_dimensions() takes as input a `tbl` formatted as | &amp;lt;SAMPLE&amp;gt; | &amp;lt;TRANSCRIPT&amp;gt; | &amp;lt;COUNT&amp;gt; | &amp;lt;...&amp;gt; | and calculates the reduced dimensional space of the transcript abundance." />
+<meta property="og:description" content="reduce_dimensions() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and calculates the reduced dimensional space of the transcript abundance." />
 
 
 
@@ -112,7 +112,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stemangiola/tidybulk/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,12 +132,12 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Dimension reduction of the transcript abundance data</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods.R'><code>R/methods.R</code></a>, <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods_SE.R'><code>R/methods_SE.R</code></a></small>
     <div class="hidden name"><code>reduce_dimensions-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>reduce_dimensions() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; | and calculates the reduced dimensional space of the transcript abundance.</p>
+    <p>reduce_dimensions() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and calculates the reduced dimensional space of the transcript abundance.</p>
     </div>
 
     <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>reduce_dimensions</span><span class='op'>(</span>
@@ -235,7 +240,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>.data</th>
-      <td><p>A `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; |</p></td>
+      <td><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></td>
     </tr>
     <tr>
       <th>.element</th>

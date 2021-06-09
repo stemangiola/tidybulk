@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Perform differential transcription testing using edgeR quasi-likelihood (QLT), edgeR likelihood-ratio (LR), limma-voom, limma-voom-with-quality-weights or DESeq2 — test_differential_abundance" />
-<meta property="og:description" content="test_differential_abundance() takes as input a `tbl` formatted as | &amp;lt;SAMPLE&amp;gt; | &amp;lt;TRANSCRIPT&amp;gt; | &amp;lt;COUNT&amp;gt; | &amp;lt;...&amp;gt; | and returns a `tbl` with additional columns for the statistics from the hypothesis test." />
+<meta property="og:description" content="test_differential_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test." />
 
 
 
@@ -112,7 +112,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stemangiola/tidybulk/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,12 +132,12 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Perform differential transcription testing using edgeR quasi-likelihood (QLT), edgeR likelihood-ratio (LR), limma-voom, limma-voom-with-quality-weights or DESeq2</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods.R'><code>R/methods.R</code></a>, <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods_SE.R'><code>R/methods_SE.R</code></a></small>
     <div class="hidden name"><code>test_differential_abundance-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>test_differential_abundance() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; | and returns a `tbl` with additional columns for the statistics from the hypothesis test.</p>
+    <p>test_differential_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.</p>
     </div>
 
     <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>test_differential_abundance</span><span class='op'>(</span>
@@ -253,7 +258,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>.data</th>
-      <td><p>A `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; |</p></td>
+      <td><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></td>
     </tr>
     <tr>
       <th>.formula</th>
@@ -315,10 +320,10 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A `tbl` with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).</p>
-<p>A `tbl` with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).</p>
-<p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
-<p>A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
+    <p>A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).</p>
+<p>A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).</p>
+<p>A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
+<p>A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
 <p>A `SummarizedExperiment` object</p>
 <p>A `SummarizedExperiment` object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
@@ -421,9 +426,6 @@ DESeq2::results()</p>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> or adjust_abundance have been calculated. Therefore, it is essential to add covariates </span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> such as batch effects (if applicable) in the formula.</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> =====================================</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> Installing acepack needed for analyses</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> Installing package into ‘/__w/_temp/Library’</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> (as ‘lib’ is unspecified)</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> renaming the first element in assays to 'counts'</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> converting counts to integer mode</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> estimating size factors</span>

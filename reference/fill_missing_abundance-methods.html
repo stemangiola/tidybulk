@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Fill transcript abundance if missing from sample-transcript pairs — fill_missing_abundance" />
-<meta property="og:description" content="fill_missing_abundance() takes as input a `tbl` formatted as | &amp;lt;SAMPLE&amp;gt; | &amp;lt;TRANSCRIPT&amp;gt; | &amp;lt;COUNT&amp;gt; | &amp;lt;...&amp;gt; | and returns a `tbl` with new observations" />
+<meta property="og:description" content="fill_missing_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with new observations" />
 
 
 
@@ -112,7 +112,12 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/stemangiola/tidybulk/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,12 +132,12 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Fill transcript abundance if missing from sample-transcript pairs</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods.R'><code>R/methods.R</code></a></small>
     <div class="hidden name"><code>fill_missing_abundance-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>fill_missing_abundance() takes as input a `tbl` formatted as | &lt;SAMPLE&gt; | &lt;TRANSCRIPT&gt; | &lt;COUNT&gt; | &lt;...&gt; | and returns a `tbl` with new observations</p>
+    <p>fill_missing_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with new observations</p>
     </div>
 
     <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>fill_missing_abundance</span><span class='op'>(</span>
@@ -197,10 +202,10 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A `tbl` non-sparse abundance</p>
-<p>A `tbl` with filled abundance</p>
-<p>A `tbl` with filled abundance</p>
-<p>A `tbl` with filled abundance</p>
+    <p>A consistent object (to the input) non-sparse abundance</p>
+<p>A consistent object (to the input) with filled abundance</p>
+<p>A consistent object (to the input) with filled abundance</p>
+<p>A consistent object (to the input) with filled abundance</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><a href='https://lifecycle.r-lib.org/articles/stages.html#questioning'><img src='figures/lifecycle-questioning.svg' alt='[Questioning]' /></a></p>
