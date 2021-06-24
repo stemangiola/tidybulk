@@ -23,25 +23,19 @@ pivot_transcript(.data, .transcript = NULL)
 \S4method{pivot_transcript}{RangedSummarizedExperiment}(.data, .transcript = NULL)
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.transcript}{The name of the transcript column}
 }
 \value{
-A `tbl` object
+A `tbl` with transcript-related information
 
-A `tbl` object
+A consistent object (to the input)
 
-A `tbl` object
-
-A `tbl` object
-
-A `tbl` object
-
-A `tbl` object
+A consistent object (to the input)
 }
 \description{
-pivot_transcript() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with only sample-related columns
+pivot_transcript() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` with only transcript-related columns
 }
 \details{
 `r lifecycle::badge("maturing")`

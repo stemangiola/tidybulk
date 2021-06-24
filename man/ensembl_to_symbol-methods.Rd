@@ -17,23 +17,23 @@ ensembl_to_symbol(.data, .ensembl, action = "add")
 \S4method{ensembl_to_symbol}{tidybulk}(.data, .ensembl, action = "add")
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> |}
+\item{.data}{a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.ensembl}{A character string. The column that is represents ensembl gene id}
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
 \value{
-A `tbl` object including additional columns for transcript symbol
+A consistent object (to the input) including additional columns for transcript symbol
 
-A `tbl` object including additional columns for transcript symbol
+A consistent object (to the input) including additional columns for transcript symbol
 
-A `tbl` object including additional columns for transcript symbol
+A consistent object (to the input) including additional columns for transcript symbol
 
-A `tbl` object including additional columns for transcript symbol
+A consistent object (to the input) including additional columns for transcript symbol
 }
 \description{
-ensembl_to_symbol() takes as input a `tbl` formatted as | <SAMPLE> | <ENSEMBL_ID> | <COUNT> | <...> | and returns a `tbl` with the additional transcript symbol column
+ensembl_to_symbol() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with the additional transcript symbol column
 }
 \details{
 \lifecycle{questioning}
@@ -45,7 +45,7 @@ This is useful since different resources use ensembl IDs while others use gene s
 library(dplyr)
 
 tidybulk::counts_SE \%>\% tidybulk() \%>\% as_tibble() \%>\% ensembl_to_symbol(feature)
- 	
+
 
 
 }

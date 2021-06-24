@@ -47,7 +47,7 @@ impute_missing_abundance(
 \S4method{impute_missing_abundance}{RangedSummarizedExperiment}(.data, .formula)
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.formula}{A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)}
 
@@ -58,20 +58,20 @@ impute_missing_abundance(
 \item{.abundance}{The name of the transcript/gene abundance column}
 }
 \value{
-A `tbl` non-sparse abundance
+A consistent object (to the input) non-sparse abundance
 
-A `tbl` with imputed abundance
+A consistent object (to the input) with imputed abundance
 
-A `tbl` with imputed abundance
+A consistent object (to the input) with imputed abundance
 
-A `tbl` with imputed abundance
+A consistent object (to the input) with imputed abundance
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-impute_missing_abundance() takes as input a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> | and returns a `tbl` with an edditional adjusted abundance column. This method uses scaled counts if present.
+impute_missing_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional sample-transcript pairs with imputed transcript abundance.
 }
 \details{
 `r lifecycle::badge("maturing")`

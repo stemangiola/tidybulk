@@ -20,7 +20,7 @@ tidybulk(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
 \S4method{tidybulk}{RangedSummarizedExperiment}(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 
@@ -42,7 +42,7 @@ A `tidybulk` object
 A `tidybulk` object
 }
 \description{
-tidybulk() creates a `tt` object from a `tbl` formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+tidybulk() creates a `tt` object from A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 }
 \details{
 `r lifecycle::badge("maturing")`

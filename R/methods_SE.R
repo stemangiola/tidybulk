@@ -24,34 +24,46 @@
 								~ as.symbol(.x),
 								~ NULL)
 	
-	# Do conversion
-	SummarizedExperiment::assays(.data) %>%
-		as.list() %>%
-		map2(
-			SummarizedExperiment::assays(.data) %>%  names,
-			~ .x %>%
-				as_tibble(rownames = "feature") %>%
-				gather(sample,!!.y,-feature)
-		) %>%
+	sample_info <-
+		colData(.data) %>% 
 		
-		# Join the assays
-		purrr::reduce(dplyr::left_join, by = c("sample", "feature")) %>%
+		# If reserved column names are present add .x
+		change_reserved_column_names() %>%
 		
-		# Attach annotation
-		left_join(
-			SummarizedExperiment::rowData(.data) %>% as.data.frame() %>% as_tibble(rownames = "feature"),
-			by = "feature"
-		) %>%
-		left_join(SummarizedExperiment::colData(.data) %>% as_tibble(rownames =
-																																 	"sample"),
-							by = "sample") %>%
-		mutate_if(is.character, as.factor) %>%
-		tidybulk(
-			sample,
-			feature,
-			!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
-			!!norm_col # scaled counts if any
-		)
+		# Convert to tibble
+		tibble::as_tibble(rownames="sample")
+	
+
+	range_info <-
+		 get_special_datasets(.data) %>%
+			reduce(left_join, by="coordinate") 
+	
+	gene_info <-
+		rowData(.data) %>%
+		
+		# If reserved column names are present add .x
+		change_reserved_column_names() %>%
+		
+		# Convert to tibble
+		tibble::as_tibble(rownames="feature") 
+	
+	count_info <- get_count_datasets(.data)
+	
+	# Return 
+	count_info %>%
+	left_join(sample_info, by="sample") %>%
+	left_join(gene_info, by="feature") %>%
+	when(nrow(range_info) > 0 ~ (.) %>% left_join(range_info) %>% suppressMessages(), ~ (.)) %>%
+		
+	mutate_if(is.character, as.factor) %>%
+	tidybulk(
+		sample,
+		feature,
+		!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
+		!!norm_col # scaled counts if any
+	)
+
+	
 	
 }
 
@@ -1539,7 +1551,7 @@ setMethod("keep_abundant",
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("test_gene_enrichment",
 					"SummarizedExperiment",
 					.test_gene_enrichment_SE)
@@ -1550,7 +1562,7 @@ setMethod("test_gene_enrichment",
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("test_gene_enrichment",
 					"RangedSummarizedExperiment",
 					.test_gene_enrichment_SE)
@@ -1604,8 +1616,14 @@ setMethod("test_gene_enrichment",
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
 		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
 	
+	# # Check if missing entrez
+	# if(.data %>% filter(!!.entrez %>% is.na) %>% nrow() %>% gt(0) ){
+	# 	warning("tidybulk says: there are .entrez that are NA. Those will be removed")
+	# 	.data = .data %>%	filter(!!.entrez %>% is.na %>% not())
+	# }
+	
 	.data %>%
-		pivot_transcript() %>%
+		pivot_transcript(!!.entrez) %>%
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
@@ -1743,7 +1761,7 @@ setMethod("test_gene_rank",
 #' @docType methods
 #' @rdname pivot_sample-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("pivot_sample",
 					"SummarizedExperiment",
 					.pivot_sample)
@@ -1754,7 +1772,7 @@ setMethod("pivot_sample",
 #' @docType methods
 #' @rdname pivot_sample-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("pivot_sample",
 					"RangedSummarizedExperiment",
 					.pivot_sample)
@@ -1794,7 +1812,7 @@ setMethod("pivot_sample",
 #' @docType methods
 #' @rdname pivot_transcript-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("pivot_transcript",
 					"SummarizedExperiment",
 					.pivot_transcript)
@@ -1805,7 +1823,7 @@ setMethod("pivot_transcript",
 #' @docType methods
 #' @rdname pivot_transcript-methods
 #'
-#' @return A `tbl` object
+#' @return A consistent object (to the input)
 setMethod("pivot_transcript",
 					"RangedSummarizedExperiment",
 					.pivot_transcript)
@@ -2129,7 +2147,7 @@ setMethod(
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
 #'
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_stratification_cellularity",
 					"SummarizedExperiment",
 					.test_stratification_cellularity_SE)
@@ -2140,7 +2158,7 @@ setMethod("test_stratification_cellularity",
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
 #'
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_stratification_cellularity",
 					"RangedSummarizedExperiment",
 					.test_stratification_cellularity_SE)
@@ -2154,7 +2172,7 @@ setMethod("test_stratification_cellularity",
 #' @docType methods
 #' @rdname get_bibliography-methods
 #'
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("get_bibliography",
 					"SummarizedExperiment",
 					.get_bibliography)
@@ -2165,7 +2183,7 @@ setMethod("get_bibliography",
 #' @docType methods
 #' @rdname get_bibliography-methods
 #'
-#' @return A `tbl` with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("get_bibliography",
 					"RangedSummarizedExperiment",
 					.get_bibliography)
@@ -2269,7 +2287,7 @@ setMethod("get_bibliography",
 #' @docType methods
 #' @rdname describe_transcript-methods
 #'
-#' @return A `tbl` object including additional columns for transcript symbol
+#' @return A consistent object (to the input) including additional columns for transcript symbol
 setMethod("describe_transcript", "SummarizedExperiment", .describe_transcript_SE)
 
 #' describe_transcript
@@ -2278,5 +2296,5 @@ setMethod("describe_transcript", "SummarizedExperiment", .describe_transcript_SE
 #' @docType methods
 #' @rdname describe_transcript-methods
 #'
-#' @return A `tbl` object including additional columns for transcript symbol
+#' @return A consistent object (to the input) including additional columns for transcript symbol
 setMethod("describe_transcript", "RangedSummarizedExperiment", .describe_transcript_SE)
