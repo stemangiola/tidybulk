@@ -289,7 +289,7 @@ add_tt_columns = function(.data,
       .abundance_scaled %>% quo_is_symbol,
       ~ .x %>% c(		list(.abundance_scaled = .abundance_scaled))
     ) %>%
-    	
+
   	ifelse_pipe(
   		.abundance_adjusted %>% quo_is_symbol,
   		~ .x %>% c(		list(.abundance_adjusted = .abundance_adjusted))
@@ -1041,16 +1041,16 @@ log10_reverse_trans <- function() {
 #'
 #' @export
 logit_trans <- function(){
-	
-	
+
+
 	if (find.package("functional", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing functional needed for analyses")
 		install.packages("functional", repos = "https://cloud.r-project.org")
 	}
-	
+
 	trans <- qlogis
 	inv <- plogis
-	
+
 	trans_new("logit",
 						transform = trans,
 						inverse = inv,
@@ -1122,7 +1122,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("edgeR", ask = FALSE)
 	}
-	
+
 	# Check if factor_of_interest is continuous and exists
 	string_factor_of_interest =
 
@@ -1159,7 +1159,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 			nrow(.) == 0 ~ stop("tidybulk says: you don't have any transcript that is in all samples. Please consider using impute_missing_abundance."),
 			~ (.)
 		) %>%
-		
+
 		# Call edgeR
 		as_matrix(rownames = !!.transcript) %>%
 		edgeR::filterByExpr(
@@ -1203,7 +1203,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
- 
+
 	error_if_log_transformed(.data,!!.abundance)
 
 	# Get data frame for the highly transcribed transcripts
@@ -1245,7 +1245,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 
 	# Return
 	list(
-		# gene_to_exclude = gene_to_exclude, 
+		# gene_to_exclude = gene_to_exclude,
 		nf = nf
 	) %>%
 
@@ -1271,34 +1271,34 @@ outersect <- function(x, y) {
 }
 
 do_validate = function(){
-	
+
 	if(!"tidybulk_do_validate" %in% names(options())) TRUE
 	else getOption("tidybulk_do_validate")
-	
+
 }
 
 #' @importFrom stringr str_remove
 #' @importFrom stringr str_replace_all
-#' 
+#'
 multivariable_differential_tissue_composition = function(
-	deconvoluted, 
-	method, 
+	deconvoluted,
+	method,
 	.my_formula,
 	min_detected_proportion
 ){
-	results_regression = 
+	results_regression =
 		deconvoluted %>%
-		
+
 		# Replace 0s - before
 		mutate(across(starts_with(method), function(.x) if_else(.x==0, min_detected_proportion, .x))) %>%
 		mutate(across(starts_with(method), boot::logit)) %>%
-		
+
 		# Rename columns - after
 		setNames(
 			str_remove(colnames(.), sprintf("%s:", method)) %>%
 				str_replace_all("[ \\(\\)]", "___")
 		) %>%
-		
+
 		# Beta or Cox
 		when(
 			grepl("Surv", .my_formula) %>% any ~ {
@@ -1307,47 +1307,47 @@ multivariable_differential_tissue_composition = function(
 					message("Installing betareg needed for analyses")
 					install.packages("survival", repos = "https://cloud.r-project.org")
 				}
-				
+
 				if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
 					message("Installing boot needed for analyses")
 					install.packages("boot", repos = "https://cloud.r-project.org")
 				}
-				
+
 				(.) %>%
 					survival::coxph(.my_formula, .)	%>%
-					broom::tidy() 
+					broom::tidy()
 			} ,
 			~ {
 				(.) %>%
 					lm(.my_formula, .) %>%
 					broom::tidy() %>%
-					filter(term != "(Intercept)") 
+					filter(term != "(Intercept)")
 			}
-		) 
-	
+		)
+
 	# Join results
-	deconvoluted %>% 
+	deconvoluted %>%
 		pivot_longer(
 			names_prefix = sprintf("%s: ", method),
 			cols = starts_with(method),
-			names_to = ".cell_type", 
+			names_to = ".cell_type",
 			values_to = ".proportion"
 		) %>%
 		tidyr::nest(cell_type_proportions = -.cell_type) %>%
 		bind_cols(
-			results_regression %>% 
+			results_regression %>%
 				select(-term)
-		) 
+		)
 }
 
 univariable_differential_tissue_composition = function(
-	deconvoluted, 
-	method, 
+	deconvoluted,
+	method,
 	.my_formula,
 	min_detected_proportion
 ){
 		deconvoluted %>%
-		
+
 		# Test
 		pivot_longer(
 			names_prefix = sprintf("%s: ", method),
@@ -1355,17 +1355,17 @@ univariable_differential_tissue_composition = function(
 			names_to = ".cell_type",
 			values_to = ".proportion"
 		) %>%
-		
+
 		# Replace 0s
 		mutate(.proportion_0_corrected = if_else(.proportion==0, min_detected_proportion, .proportion)) %>%
-		
+
 		# Test survival
 		tidyr::nest(cell_type_proportions = -.cell_type) %>%
 		mutate(surv_test = map(
 			cell_type_proportions,
 			~ {
 				if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
-				
+
 				# See if regression if censored or not
 				.x %>%
 					when(
@@ -1375,12 +1375,12 @@ univariable_differential_tissue_composition = function(
 								message("Installing betareg needed for analyses")
 								install.packages("survival", repos = "https://cloud.r-project.org")
 							}
-							
+
 							if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
 								message("Installing boot needed for analyses")
 								install.packages("boot", repos = "https://cloud.r-project.org")
 							}
-							
+
 							(.) %>%
 								mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
 								survival::coxph(.my_formula, .)	%>%
@@ -1404,36 +1404,36 @@ univariable_differential_tissue_composition = function(
 					)
 			}
 		)) %>%
-		
-		unnest(surv_test, keep_empty = TRUE) 
+
+		unnest(surv_test, keep_empty = TRUE)
 }
 
 univariable_differential_tissue_stratification = function(
-	deconvoluted, 
-	method, 
+	deconvoluted,
+	method,
 	.my_formula
 ){
-	
+
 	# Check if package is installed, otherwise install
 	if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing survival needed for analyses")
 		install.packages("survival", repos = "https://cloud.r-project.org")
 	}
-	
+
 	# Check if package is installed, otherwise install
 	if (find.package("survminer", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing survminer needed for analyses")
 		install.packages("survminer", repos = "https://cloud.r-project.org")
 	}
-	
-	
+
+
 	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing broom needed for analyses")
 		install.packages("broom", repos = "https://cloud.r-project.org")
 	}
-	
+
 	deconvoluted %>%
-		
+
 		# Test
 		pivot_longer(
 			names_prefix = sprintf("%s: ", method),
@@ -1441,37 +1441,37 @@ univariable_differential_tissue_stratification = function(
 			names_to = ".cell_type",
 			values_to = ".proportion"
 		) %>%
-		
+
 		# Test survival
 		tidyr::nest(cell_type_proportions = -.cell_type) %>%
 		mutate(surv_test = map(
 			cell_type_proportions,
 			~ {
-				
+
 				data = .x %>%
-					mutate(.high_cellularity = .proportion > median(.proportion)) 
-				
+					mutate(.high_cellularity = .proportion > median(.proportion))
+
 				if(data %>%
 					 distinct(.high_cellularity) %>%
 					 nrow %>%
 					 equals(1)
 				) return(NULL)
-				
+
 				# See if regression if censored or not
-				fit = survival::survdiff(data = data, .my_formula) 
-				
-				p = 
+				fit = survival::survdiff(data = data, .my_formula)
+
+				p =
 					survminer::surv_fit(data = data, .my_formula) %>%
 					survminer::ggsurvplot(
-						fit=., 
-						data = data, 
-						risk.table = FALSE, 
+						fit=.,
+						data = data,
+						risk.table = FALSE,
 						conf.int = T,
 						palette = c("#ed6f68",  "#5366A0" ),
 						legend = "none",
 						pval = T
-					) 
-				
+					)
+
 				fit %>%
 					broom::tidy() %>%
 					select(-N, -obs) %>%
@@ -1479,41 +1479,41 @@ univariable_differential_tissue_stratification = function(
 					setNames(c(".low_cellularity_expected", ".high_cellularity_expected")) %>%
 					mutate(pvalue = 1 - pchisq(fit$chisq, length(fit$n) - 1)) %>%
 					mutate(plot = list(p))
-				
+
 			}
 		)) %>%
-		
-		unnest(surv_test, keep_empty = TRUE) 
+
+		unnest(surv_test, keep_empty = TRUE)
 }
 
 univariable_differential_tissue_stratification_SE = function(
-	deconvoluted, 
-	method, 
+	deconvoluted,
+	method,
 	.my_formula
 ){
-	
+
 	# Check if package is installed, otherwise install
 	if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing survival needed for analyses")
 		install.packages("survival", repos = "https://cloud.r-project.org")
 	}
-	
+
 	# Check if package is installed, otherwise install
 	if (find.package("survminer", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing survminer needed for analyses")
 		install.packages("survminer", repos = "https://cloud.r-project.org")
 	}
-	
-	
+
+
 	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing broom needed for analyses")
 		install.packages("broom", repos = "https://cloud.r-project.org")
 	}
-	
+
 	deconvoluted %>%
-		
+
 		pivot_sample() %>%
-		
+
 		# Test
 		pivot_longer(
 			names_prefix = sprintf("%s: ", method),
@@ -1521,37 +1521,37 @@ univariable_differential_tissue_stratification_SE = function(
 			names_to = ".cell_type",
 			values_to = ".proportion"
 		) %>%
-		
+
 		# Test survival
 		tidyr::nest(cell_type_proportions = -.cell_type) %>%
 		mutate(surv_test = map(
 			cell_type_proportions,
 			~ {
-				
+
 				data = .x %>%
-					mutate(.high_cellularity = .proportion > median(.proportion)) 
-				
+					mutate(.high_cellularity = .proportion > median(.proportion))
+
 				if(data %>%
 					 distinct(.high_cellularity) %>%
 					 nrow %>%
 					 equals(1)
 				) return(NULL)
-				
+
 				# See if regression if censored or not
-				fit = survival::survdiff(data = data, .my_formula) 
-				
-				p = 
+				fit = survival::survdiff(data = data, .my_formula)
+
+				p =
 					survminer::surv_fit(data = data, .my_formula) %>%
 					survminer::ggsurvplot(
-						fit=., 
-						data = data, 
-						risk.table = FALSE, 
+						fit=.,
+						data = data,
+						risk.table = FALSE,
 						conf.int = T,
 						palette = c("#ed6f68",  "#5366A0" ),
 						legend = "none",
 						pval = T
-					) 
-				
+					)
+
 				fit %>%
 					broom::tidy() %>%
 					select(-N, -obs) %>%
@@ -1559,11 +1559,11 @@ univariable_differential_tissue_stratification_SE = function(
 					setNames(c(".low_cellularity_expected", ".high_cellularity_expected")) %>%
 					mutate(pvalue = 1 - pchisq(fit$chisq, length(fit$n) - 1)) %>%
 					mutate(plot = list(p))
-				
+
 			}
 		)) %>%
-		
-		unnest(surv_test, keep_empty = TRUE) 
+
+		unnest(surv_test, keep_empty = TRUE)
 }
 
 # Function that rotates a 2D space of a arbitrary angle
@@ -1581,7 +1581,7 @@ rotation = function(m, d) {
 get_special_datasets <- function(SummarizedExperiment_object) {
 	if (
 		"RangedSummarizedExperiment" %in% .class2(SummarizedExperiment_object) &
-		
+
 		rowRanges(SummarizedExperiment_object) %>%
 		as.data.frame() %>%
 		nrow() %>%
@@ -1589,7 +1589,7 @@ get_special_datasets <- function(SummarizedExperiment_object) {
 	) {
 		rowRanges(SummarizedExperiment_object) %>%
 			as.data.frame() %>%
-			
+
 			# Take off rowData columns as there is a recursive anomaly within gene ranges
 			suppressWarnings(
 				select(-one_of(colnames(rowData(SummarizedExperiment_object))))
@@ -1599,4 +1599,45 @@ get_special_datasets <- function(SummarizedExperiment_object) {
 	} else {
 		tibble() %>% list()
 	}
+}
+
+combineByRow <- function(m, fun = NULL) {
+  # Shown here
+  #https://stackoverflow.com/questions/8139301/aggregate-rows-in-a-large-matrix-by-rowname
+
+  m <- m[ order(rownames(m)), ]
+
+  ## keep track of previous row name
+  prev <- rownames(m)[1]
+  i.start <- 1
+  i.end <- 1
+
+  ## cache the rownames -- profiling shows that it takes
+  ## forever to look at them
+  m.rownames <- rownames(m)
+  stopifnot(all(!is.na(m.rownames)))
+
+
+  ## go through matrix in a loop, as we need to combine some unknown
+  ## set of rows
+  for (i in 2:(1+nrow(m))) {
+
+    curr <- m.rownames[i]
+
+    ## if we found a new row name (or are at the end of the matrix),
+    ## combine all rows and mark invalid rows
+    if (prev != curr || is.na(curr)) {
+      if (i.start < i.end) {
+        m[i.start,] <- apply(m[i.start:i.end,], 2, fun)
+        m.rownames[(1+i.start):i.end] <- NA
+      }
+
+      prev <- curr
+      i.start <- i
+    } else {
+      i.end <- i
+    }
+  }
+
+  m[ which(!is.na(m.rownames)),]
 }

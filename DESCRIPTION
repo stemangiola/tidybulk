@@ -30,6 +30,7 @@ Imports:
     lifecycle,
     scales,
     SummarizedExperiment,
+    GenomicRanges,
     methods
 Suggests:
     BiocStyle,

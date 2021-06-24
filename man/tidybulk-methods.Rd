@@ -7,7 +7,7 @@
 \alias{tidybulk,tbl_df-method}
 \alias{tidybulk,SummarizedExperiment-method}
 \alias{tidybulk,RangedSummarizedExperiment-method}
-\title{Creates a `tt` object from a `tbl` or `SummarizedExperiment` object}
+\title{Creates an annotated `tidybulk` tibble from a `tbl` or `SummarizedExperiment` object}
 \usage{
 tidybulk(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
 
@@ -42,7 +42,7 @@ A `tidybulk` object
 A `tidybulk` object
 }
 \description{
-tidybulk() creates a `tt` object from A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+tidybulk() creates an annotated `tidybulk` tibble from a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 }
 \details{
 `r lifecycle::badge("maturing")`
