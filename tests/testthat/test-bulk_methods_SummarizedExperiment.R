@@ -148,9 +148,15 @@ test_that("Get adjusted counts - SummarizedExperiment",{
 test_that("Aggregate duplicated transcript - SummarizedExperiment",{
 
   rowData(se)$bla = rownames(se)
-	res =	aggregate_duplicates(	se, .transcript = bla )
 
-	expect_equal(	dim(res),	c( 100,   8  )	)
+
+  rowData(se)$bla = if_else(rowData(se)$bla  %in% c("LRG_239", "LRG_405"), "BLAAA", rowData(se)$bla )
+
+  res =
+    se %>%
+		aggregate_duplicates(	.transcript = bla )
+
+	expect_equal(	dim(res),	c( 99,   8  )	)
 
 
 })

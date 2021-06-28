@@ -781,12 +781,21 @@ setMethod("adjust_abundance",
 
   # GRanges
   columns_to_collapse = .data %>% rowData() %>% colnames() %>% setdiff(quo_name(.transcript)) %>% c(feature_column_name)
+
+  rr = rowRanges(.data)
+
   new_range_data =
-    .data %>%
-    rowRanges() %>%
-    as_tibble(rownames =feature_column_name) %>%
+    rr %>%
+    as_tibble() %>%
+    # Add names
+    when(
+      is(rr, "CompressedGRangesList") ~ mutate(., !!as.symbol(feature_column_name) := group_name),
+      ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAME)
+    ) %>%
     left_join(
-      .data@rowRanges@elementMetadata %>%
+      rowData(.data) %>%
+        as.data.frame() %>%
+        select(!!as.symbol(quo_name(.transcript))) %>%
         as_tibble(rownames =feature_column_name),
           by = feature_column_name
     ) %>%
@@ -796,6 +805,9 @@ setMethod("adjust_abundance",
       merged.transcripts = n()
     ) %>%
     arrange(!!as.symbol(feature_column_name)) %>%
+
+    select(-one_of("group_name", "group")) %>%
+    suppressWarnings() %>%
 
     makeGRangesListFromDataFrame( split.field = feature_column_name,
                                   keep.extra.columns = TRUE) %>%
