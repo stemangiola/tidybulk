@@ -733,12 +733,17 @@ setMethod("adjust_abundance",
   # Make col names
   .transcript = enquo(.transcript)
 
+
+  if(quo_is_null(.transcript)) stop("tidybulk says: using SummarizedExperiment with aggregate_duplicates, you need to specify .transcript parameter. It should be a feature-wise column (e.g. gene symbol) that you want to collapse he features with (e.g. ensembl)")
+
+  if(!quo_name(.transcript) %in% colnames( .data %>% rowData()))
+    stop("tidybulk says: the .transcript argument must be a feature-wise column names. The feature-wise information can be found with rowData()")
   if(!is.null(.sample) | !is.null(.abundance))
     warning("tidybulk says: for SummarizedExperiment objects only the argument .transcript (feature ID to collapse) is considered")
 
   collapse_function = function(x){ x %>% unique() %>% paste(collapse = "___")	}
 
-  feature_column_name = "feature___"
+  feature_column_name = "feature"
 
   # Row data
   new_row_data =
@@ -750,11 +755,11 @@ setMethod("adjust_abundance",
       across(everything(), ~ .x %>% collapse_function()),
       merged.transcripts = n()
     ) %>%
-    arrange(feature___) %>%
+    arrange(!!as.symbol(feature_column_name)) %>%
     as.data.frame()
 
-  rownames(new_row_data) = new_row_data$`feature___`
-  new_row_data = new_row_data %>% select(-feature___)
+  rownames(new_row_data) = new_row_data[,feature_column_name]
+  new_row_data = new_row_data %>% select(-feature_column_name)
 
   # Counts
   new_count_data =
@@ -780,12 +785,17 @@ setMethod("adjust_abundance",
     .data %>%
     rowRanges() %>%
     as_tibble(rownames =feature_column_name) %>%
+    left_join(
+      .data@rowRanges@elementMetadata %>%
+        as_tibble(rownames =feature_column_name),
+          by = feature_column_name
+    ) %>%
     group_by(!!as.symbol(quo_name(.transcript))) %>%
     mutate(
       across(columns_to_collapse, ~ .x %>% collapse_function()),
       merged.transcripts = n()
     ) %>%
-    arrange(feature___) %>%
+    arrange(!!as.symbol(feature_column_name)) %>%
 
     makeGRangesListFromDataFrame( split.field = feature_column_name,
                                   keep.extra.columns = TRUE) %>%
