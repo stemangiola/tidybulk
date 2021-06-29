@@ -1532,15 +1532,33 @@ setGeneric("aggregate_duplicates", function(.data,
 						 !!.abundance,
 						 skip_dupli_check = TRUE)
 
-	aggregate_duplicated_transcripts_bulk(
-		.data,
+	# If I have a small normal data set
+	if(.data %>% pull(!!.sample) %>% unique %>% length %>% st(100))
+  	aggregate_duplicated_transcripts_bulk(
+  		.data,
 
-		.sample = !!.sample,
-		.transcript = !!.transcript,
-		.abundance = !!.abundance,
-		aggregation_function = aggregation_function,
-		keep_integer = TRUE
-	)
+  		.sample = !!.sample,
+  		.transcript = !!.transcript,
+  		.abundance = !!.abundance,
+  		aggregation_function = aggregation_function,
+  		keep_integer = TRUE
+  	)
+
+	# If I have a big data set
+  else {
+
+    message("tidybulk says: for big data sets (>100 samples) this efficient implementation aggregates count columns and keeps the first instance for sample and transcript annotations")
+
+    aggregate_duplicated_transcripts_DT(
+      .data,
+      .sample = !!.sample,
+      .transcript = !!.transcript,
+      .abundance = !!.abundance,
+      aggregation_function = aggregation_function,
+      keep_integer = TRUE
+    )
+  }
+
 }
 
 #' aggregate_duplicates
@@ -3246,19 +3264,19 @@ setGeneric("test_gene_rank", function(.data,
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
 		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
-	
+
 	# Check if missing entrez
 	if(.data %>% filter(!!.entrez %>% is.na) %>% nrow() %>% gt(0) ){
 		warning("tidybulk says: there are .entrez that are NA. Those will be removed")
 		.data = .data %>%	filter(!!.entrez %>% is.na %>% not())
 	}
-	
+
 	# Check if missing .arrange_desc
 	if(.data %>% filter(!!.arrange_desc %>% is.na) %>% nrow() %>% gt(0) ){
 		warning("tidybulk says: there are .arrange_desc that are NA. Those will be removed")
 		.data = .data %>%	filter(!!.arrange_desc %>% is.na %>% not())
 	}
-  
+
 	.data %>%
 		pivot_transcript(!!.entrez) %>%
 		arrange(desc(!!.arrange_desc)) %>%
