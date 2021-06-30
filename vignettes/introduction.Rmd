@@ -290,7 +290,7 @@ counts_SE.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
 
 counts_SE.norm.MDS %>%
 	pivot_sample() %>%
-  GGally::ggpairs(columns = 10:15, ggplot2::aes(colour=`Cell.type`))
+  GGally::ggpairs(columns = 6:(6+5), ggplot2::aes(colour=`Cell.type`))
 
 
 ```
