@@ -1494,7 +1494,7 @@ setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 #'
 #' # Create a aggregation column
 #' se_mini = tidybulk::se_mini
-#' rowData(se_mini )$gene_name = rownames(se_mini )
+#' SummarizedExperiment::rowData(se_mini )$gene_name = rownames(se_mini )
 #'
 #'    aggregate_duplicates(
 #'      se_mini,
