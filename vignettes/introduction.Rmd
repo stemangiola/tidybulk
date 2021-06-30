@@ -149,8 +149,8 @@ tidybulk provide the `aggregate_duplicates` function to aggregate duplicated tra
 <div class="column-left">
 TidyTranscriptomics
 ```{r aggregate, message=FALSE, warning=FALSE, results='hide', class.source='yellow'}
-rowData(tt)$gene_name = rownames(tt)
-tt.aggr = tt %>% aggregate_duplicates(.transcript = gene_name)
+rowData(counts_SE)$gene_name = rownames(counts_SE)
+counts_SE.aggr = counts_SE %>% aggregate_duplicates(.transcript = gene_name)
 ```
 </div>
 <div class="column-right">
