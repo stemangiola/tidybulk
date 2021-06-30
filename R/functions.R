@@ -181,7 +181,7 @@ get_scaled_counts_bulk <- function(.data,
 
 	# Check if package is installed, otherwise install
 	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing edgeR needed for analyses")
+		message("tidybulk says: Installing edgeR needed for analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("edgeR", ask = FALSE)
@@ -389,7 +389,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 
 	# Check if package is installed, otherwise install
 	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing edgeR needed for differential transcript abundance analyses")
+		message("tidybulk says: Installing edgeR needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("edgeR", ask = FALSE)
@@ -621,7 +621,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 
 	# Check if package is installed, otherwise install
 	if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing limma needed for differential transcript abundance analyses")
+		message("tidybulk says: Installing limma needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("limma", ask = FALSE)
@@ -799,13 +799,13 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 	}
 
 	if (find.package("acepack", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing acepack needed for analyses")
+		message("tidybulk says: Installing acepack needed for analyses")
 		install.packages("acepack", repos = "https://cloud.r-project.org")
 	}
 
 	# Check if package is installed, otherwise install
 	if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing DESeq2 needed for differential transcript abundance analyses")
+		message("tidybulk says: Installing DESeq2 needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("DESeq2", ask = FALSE)
@@ -968,7 +968,7 @@ test_differential_cellularity_ <- function(.data,
 
 
 	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing broom needed for analyses")
+		message("tidybulk says: Installing broom needed for analyses")
 		install.packages("broom", repos = "https://cloud.r-project.org")
 	}
 
@@ -1522,15 +1522,15 @@ get_clusters_SNN_bulk <-
 
 		# Check if package is installed, otherwise install
 		if (find.package("cluster", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing cluster")
+			message("tidybulk says: Installing cluster")
 			install.packages("cluster", repos = "https://cloud.r-project.org")
 		}
 		if (find.package("Seurat", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing Seurat")
+			message("tidybulk says: Installing Seurat")
 			install.packages("Seurat", repos = "https://cloud.r-project.org")
 		}
 		if (find.package("KernSmooth", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing KernSmooth")
+			message("tidybulk says: Installing KernSmooth")
 			install.packages("KernSmooth", repos = "https://cloud.r-project.org")
 		}
 
@@ -1874,7 +1874,7 @@ get_reduced_dimensions_TSNE_bulk <-
 
 		# Check if package is installed, otherwise install
 		if (find.package("Rtsne", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing Rtsne")
+			message("tidybulk says: Installing Rtsne")
 			install.packages("Rtsne", repos = "https://cloud.r-project.org")
 		}
 
@@ -2162,6 +2162,7 @@ aggregate_duplicated_transcripts_bulk =
 #' @importFrom dplyr bind_rows
 #' @importFrom magrittr %$%
 #' @importFrom rlang :=
+#' @importFrom stringi stri_c
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2301,7 +2302,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 
 	# Check if package is installed, otherwise install
 	if (find.package("widyr", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing widyr needed for correlation analyses")
+		message("tidybulk says: Installing widyr needed for correlation analyses")
 		install.packages("widyr", repos = "https://cloud.r-project.org")
 	}
 
@@ -2610,13 +2611,13 @@ run_epic = function(mix, reference = NULL) {
 
 	# Check if package is installed, otherwise install
 	if (find.package("devtools", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing class needed for EPIC")
+		message("tidybulk says: Installing class needed for EPIC")
 		install.packages("devtools", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
 	}
 
 	# Check if package is installed, otherwise install
 	if (find.package("EPIC", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing class needed for EPIC")
+		message("tidybulk says: Installing class needed for EPIC")
 		devtools::install_github("GfellerLab/EPIC")
 	}
 
@@ -2705,19 +2706,19 @@ get_cell_type_proportions = function(.data,
 
 				# Check if package is installed, otherwise install
 				if (find.package("class", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing class needed for Cibersort")
+					message("tidybulk says: Installing class needed for Cibersort")
 					install.packages("class", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
 				}
 
 				# Check if package is installed, otherwise install
 				if (find.package("e1071", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing e1071 needed for Cibersort")
+					message("tidybulk says: Installing e1071 needed for Cibersort")
 					install.packages("e1071", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
 				}
 
 				# Check if package is installed, otherwise install
 				if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing preprocessCore needed for Cibersort")
+					message("tidybulk says: Installing preprocessCore needed for Cibersort")
 					if (!requireNamespace("BiocManager", quietly = TRUE))
 						install.packages("BiocManager", repos = "https://cloud.r-project.org")
 					BiocManager::install("preprocessCore", ask = FALSE)
@@ -2766,7 +2767,7 @@ get_cell_type_proportions = function(.data,
 
 				# # Check if package is installed, otherwise install
 				if (find.package("immunedeconv", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing immunedeconv")
+					message("tidybulk says: Installing immunedeconv")
 					devtools::install_github("icbi-lab/immunedeconv", upgrade = FALSE)
 				}
 
@@ -2875,7 +2876,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 	# Check if package is installed, otherwise install
 	if (find.package("sva", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing sva - Combat needed for adjustment for unwanted variation")
+		message("tidybulk says: Installing sva - Combat needed for adjustment for unwanted variation")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("sva", ask = FALSE)
@@ -3020,13 +3021,13 @@ tidybulk_to_SummarizedExperiment = function(.data,
 
 	# Check if package is installed, otherwise install
 	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing SummarizedExperiment")
+		message("tidybulk says: Installing SummarizedExperiment")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("SummarizedExperiment", ask = FALSE)
 	}
 	if (find.package("S4Vectors", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing S4Vectors")
+		message("tidybulk says: Installing S4Vectors")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("S4Vectors", ask = FALSE)
@@ -3413,7 +3414,7 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 
 	# Check if package is installed, otherwise install
 	if (find.package("fastmatch", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing fastmatch needed for analyses")
+		message("tidybulk says: Installing fastmatch needed for analyses")
 		install.packages("fastmatch", repos = "https://cloud.r-project.org")
 	}
 
@@ -3473,22 +3474,22 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 
 	# Check if package is installed, otherwise install
 	if (find.package("fastmatch", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing fastmatch needed for analyses")
+		message("tidybulk says: Installing fastmatch needed for analyses")
 		install.packages("fastmatch", repos = "https://cloud.r-project.org")
 	}
 
 	if (find.package("clusterProfiler", quiet = TRUE) %>% length %>% equals(0)) {
-		message("clusterProfiler not installed. Installing.")
+		message("tidybulk says: clusterProfiler not installed. Installing.")
 		BiocManager::install("clusterProfiler", ask = FALSE)
 	}
 
 	if (find.package("enrichplot", quiet = TRUE) %>% length %>% equals(0)) {
-		message("enrichplot not installed. Installing.")
+		message("tidybulk says: enrichplot not installed. tidybulk says: Installing.")
 		BiocManager::install("enrichplot", ask = FALSE)
 	}
 
 	if (find.package("ggplot2", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing ggplot2 needed for analyses")
+		message("tidybulk says: Installing ggplot2 needed for analyses")
 		install.packages("ggplot2", repos = "https://cloud.r-project.org")
 	}
 

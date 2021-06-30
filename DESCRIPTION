@@ -19,6 +19,7 @@ Imports:
     dplyr,
     magrittr,
     tidyr,
+    stringi,
     stringr,
     rlang,
     purrr,
