@@ -164,7 +164,7 @@ create_tt_from_bam_sam_bulk <-
 #' @param reference_sample A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.
 #'
 #' @noRd
-#' 
+#'
 #' @return A tibble including additional columns
 #'
 #'
@@ -2049,10 +2049,6 @@ aggregate_duplicated_transcripts_bulk =
 		.sample = enquo(.sample)
 		.transcript = enquo(.transcript)
 		.abundance = enquo(.abundance)
-		col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
-		.sample = col_names$.sample
-		.transcript = col_names$.transcript
-		.abundance = col_names$.abundance
 
 		# Robust paste function that preserves NAs
 		paste3 <- function(..., sep = ", ") {
@@ -2192,10 +2188,6 @@ aggregate_duplicated_transcripts_DT =
     .sample = enquo(.sample)
     .transcript = enquo(.transcript)
     .abundance = enquo(.abundance)
-    col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
-    .sample = col_names$.sample
-    .transcript = col_names$.transcript
-    .abundance = col_names$.abundance
 
 #
 #         data.table::setDT(.data)
@@ -2230,7 +2222,7 @@ aggregate_duplicated_transcripts_DT =
         ~ (.)
       )
 
-    pasted_strings___ = stringi::stri_c(.data$.feature, .data$.sample, sep = "_")
+    pasted_strings___ = stringi::stri_c(pull(.data,quo_name(.transcript)), pull(.data,quo_name(.sample)), sep = "_")
     #.data = .data %>% mutate(pasted_strings___ = pasted_strings___)
     duplicates = pasted_strings___%in%pasted_strings___[which(duplicated(pasted_strings___))]
 

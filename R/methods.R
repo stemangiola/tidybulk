@@ -1521,9 +1521,14 @@ setGeneric("aggregate_duplicates", function(.data,
 																	aggregation_function = sum,
 																	keep_integer = TRUE)  {
 	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+  # Get column names
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+  col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+  .sample = col_names$.sample
+  .transcript = col_names$.transcript
+  .abundance = col_names$.abundance
 
 	# Validate data frame
 	if(do_validate()) validation(.data,
@@ -1533,7 +1538,7 @@ setGeneric("aggregate_duplicates", function(.data,
 						 skip_dupli_check = TRUE)
 
 	# If I have a small normal data set
-	if(.data %>% pull(!!.sample) %>% unique %>% length %>% st(100))
+	if(.data %>% pull(!!.sample) %>% unique %>% length %>% st(100)){
   	aggregate_duplicated_transcripts_bulk(
   		.data,
 
@@ -1543,7 +1548,7 @@ setGeneric("aggregate_duplicates", function(.data,
   		aggregation_function = aggregation_function,
   		keep_integer = TRUE
   	)
-
+}
 	# If I have a big data set
   else {
 

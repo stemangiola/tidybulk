@@ -734,7 +734,7 @@ setMethod("adjust_abundance",
   .transcript = enquo(.transcript)
 
 
-  if(quo_is_null(.transcript)) stop("tidybulk says: using SummarizedExperiment with aggregate_duplicates, you need to specify .transcript parameter. It should be a feature-wise column (e.g. gene symbol) that you want to collapse he features with (e.g. ensembl)")
+  if(quo_is_null(.transcript)) stop("tidybulk says: using SummarizedExperiment with aggregate_duplicates, you need to specify .transcript parameter. It should be a feature-wise column (e.g. gene symbol) that you want to collapse he features with (e.g. ensembl). It cannot be the representation of rownames(SummarizedExperiment), as those are unique by definition, and not part of rowData per-se.")
 
   if(!quo_name(.transcript) %in% colnames( .data %>% rowData()))
     stop("tidybulk says: the .transcript argument must be a feature-wise column names. The feature-wise information can be found with rowData()")
@@ -743,7 +743,7 @@ setMethod("adjust_abundance",
 
   collapse_function = function(x){ x %>% unique() %>% paste(collapse = "___")	}
 
-  feature_column_name = "feature"
+  feature_column_name = ".feature"
 
   # Row data
   new_row_data =
@@ -784,44 +784,46 @@ setMethod("adjust_abundance",
 
   rr = rowRanges(.data)
 
-  new_range_data =
-    rr %>%
-    as_tibble() %>%
-    # Add names
-    when(
-      is(rr, "CompressedGRangesList") ~ mutate(., !!as.symbol(feature_column_name) := group_name),
-      ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAME)
-    ) %>%
-    left_join(
-      rowData(.data) %>%
-        as.data.frame() %>%
-        select(!!as.symbol(quo_name(.transcript))) %>%
-        as_tibble(rownames =feature_column_name),
-          by = feature_column_name
-    ) %>%
-    group_by(!!as.symbol(quo_name(.transcript))) %>%
-    mutate(
-      across(columns_to_collapse, ~ .x %>% collapse_function()),
-      merged.transcripts = n()
-    ) %>%
-    arrange(!!as.symbol(feature_column_name)) %>%
+  if(!is.null(rr))
+    new_range_data =
+      rr %>%
+      as_tibble() %>%
+      # Add names
+      when(
+        is(rr, "CompressedGRangesList") ~ mutate(., !!as.symbol(feature_column_name) := group_name),
+        ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAME)
+      ) %>%
+      left_join(
+        rowData(.data) %>%
+          as.data.frame() %>%
+          select(!!as.symbol(quo_name(.transcript))) %>%
+          as_tibble(rownames =feature_column_name),
+            by = feature_column_name
+      ) %>%
+      group_by(!!as.symbol(quo_name(.transcript))) %>%
+      mutate(
+        across(columns_to_collapse, ~ .x %>% collapse_function()),
+        merged.transcripts = n()
+      ) %>%
+      arrange(!!as.symbol(feature_column_name)) %>%
 
-    select(-one_of("group_name", "group")) %>%
-    suppressWarnings() %>%
+      select(-one_of("group_name", "group")) %>%
+      suppressWarnings() %>%
 
-    makeGRangesListFromDataFrame( split.field = feature_column_name,
-                                  keep.extra.columns = TRUE) %>%
+      makeGRangesListFromDataFrame( split.field = feature_column_name,
+                                    keep.extra.columns = TRUE) %>%
 
-    .[match(rownames(new_count_data[[1]]), names(.))]
+      .[match(rownames(new_count_data[[1]]), names(.))]
 
 
   # Build the object
   .data_collapsed =
     SummarizedExperiment(
       assays = new_count_data,
-      colData = colData(.data),
-      rowRanges = new_range_data
+      colData = colData(.data)
     )
+
+  if(!is.null(rr)) rowRanges(.data_collapsed) = new_range_data
 
   rowData(.data_collapsed) = new_row_data
 
