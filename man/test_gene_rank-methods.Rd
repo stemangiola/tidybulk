@@ -26,7 +26,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_sets = NULL,
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7"),
   gene_set = NULL
 )
 
@@ -36,7 +36,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_sets = NULL,
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7"),
   gene_set = NULL
 )
 
@@ -46,7 +46,7 @@ test_gene_rank(
   .arrange_desc,
   species,
   .sample = NULL,
-  gene_sets = NULL,
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7"),
   gene_set = NULL
 )
 
@@ -81,7 +81,7 @@ test_gene_rank(
 
 \item{.sample}{The name of the sample column}
 
-\item{gene_sets}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
+\item{gene_sets}{A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.}
 
 \item{gene_set}{DEPRECATED. Use gene_sets instead.}
 }
