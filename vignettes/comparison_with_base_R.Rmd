@@ -98,7 +98,8 @@ tt = se_mini
 
 Tidy transcriptomics
 ```{r aggregate, cache=TRUE, message=FALSE, warning=FALSE, results='hide', class.source='yellow'}
-tt.aggr = tt %>% aggregate_duplicates()
+rowData(tt)$gene_name = rownames(tt)
+tt.aggr = tt %>% aggregate_duplicates(.transcript = gene_name)
 ```
 </div>
 <div class="column-right">

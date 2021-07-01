@@ -15,3 +15,5 @@ dev/*pdf
 dev/dplyr-master/*
 tidybulk.Rproj
 egsea_report_*
+/doc*
+/Meta/
