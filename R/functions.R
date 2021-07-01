@@ -3493,14 +3493,18 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 		install.packages("ggplot2", repos = "https://cloud.r-project.org")
 	}
 
-	# Get gene sets signatures
-	msigdbr::msigdbr(species = species) %>%
+  # Get gene sets signatures
+  my_gene_collection =
+    gene_collections %>%
+    when(
+      is.null(gene_collections ) ~  msigdbr::msigdbr(species = species) ,
+      is(., "character") ~  msigdbr::msigdbr(species = species) %>%  filter( gs_cat %in% gene_collections ),
+      is(., "list") ~
+        tibble(gs_name=names(.), entrez_gene = . ) %>% unnest(entrez_gene) %>% mutate(gs_cat = "user_defined"),
+      ~ stop("tidybulk says: the gene sets should be either a character vector or a named list")
+    )
+   my_gene_collection %>%
 
-		# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
-		when(
-			!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
-			~ (.)
-		) %>%
 
 		# Execute calculation
 		nest(data = -gs_cat) %>%
@@ -3532,7 +3536,9 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 		#arrange(`p.adjust`) %>%
 
 		# Add methods used
-		memorise_methods_used(c("clusterProfiler", "msigdbr", "enrichplot"))
+		memorise_methods_used(c("clusterProfiler", "enrichplot")) %>%
+     when(gene_collections %>% is("character") ~ c(., "msigdbr"), ~ (.))
+
 
 }
 
