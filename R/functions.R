@@ -2146,7 +2146,7 @@ aggregate_duplicated_transcripts_bulk =
 			} %>%
 
 			# Rename column of number of duplicates for each gene
-			rename(`merged transcripts` = n_aggr) %>%
+			rename(merged_transcripts = n_aggr) %>%
 
 			# Attach attributes
 			reattach_internals(.data)
@@ -2163,6 +2163,7 @@ aggregate_duplicated_transcripts_bulk =
 #' @importFrom magrittr %$%
 #' @importFrom rlang :=
 #' @importFrom stringi stri_c
+#' @importFrom tidyr replace_na
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2190,11 +2191,11 @@ aggregate_duplicated_transcripts_DT =
     .transcript = enquo(.transcript)
     .abundance = enquo(.abundance)
 
-#
-#         data.table::setDT(.data)
-#
-#         input_df[,.(c = sum(c)), by=c("a", "b")] %>% #Sum the raw_counts of duplicated rows
-#       tidybulk::scale_abundance(.sample = sample, .abundance = abundance, .transcript = transcript)
+    #
+    #         data.table::setDT(.data)
+    #
+    #         input_df[,.(c = sum(c)), by=c("a", "b")] %>% #Sum the raw_counts of duplicated rows
+    #       tidybulk::scale_abundance(.sample = sample, .abundance = abundance, .transcript = transcript)
 
     # Select which are the numerical columns
     numerical_columns =
@@ -2250,8 +2251,9 @@ aggregate_duplicated_transcripts_DT =
 
     .data %>%
       filter(!duplicates) %>%
-       bind_rows(dup) %>%
-       select(.data %>% colnames() )
+      bind_rows(dup) %>%
+      replace_na(list(merged_transcripts = 1)) %>%
+      select(.data %>% colnames() %>% c("merged_transcripts"))
 
   }
 
