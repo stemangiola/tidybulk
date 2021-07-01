@@ -1106,7 +1106,7 @@ such as batch effects (if applicable) in the formula.
 			tolower(method) ==  "edger_robust_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edger_robust_likelihood_ratio")),
 			tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
 			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights"),
-			tolower(method) == "deseq2" ~ (.) %>% memorise_methods_used("DESeq2"),
+			tolower(method) == "deseq2" ~ (.) %>% memorise_methods_used("deseq2"),
 			~ stop("tidybulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)")
 		) %>%
 

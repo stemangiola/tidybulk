@@ -3160,7 +3160,7 @@ setMethod("test_gene_overrepresentation",
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .arrange_desc A column name of the column to arrange in decreasing order
 #' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
-#' @param gene_sets  A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
+#' @param gene_sets A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.
 #'
 #' @param gene_set DEPRECATED. Use gene_sets instead.
 #'
@@ -3233,7 +3233,7 @@ setGeneric("test_gene_rank", function(.data,
 														 .arrange_desc,
 														 species,
 														 .sample = NULL,
-														 gene_sets  = NULL,
+														 gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7"),
 														 gene_set = NULL  # DEPRECATED
 														 )	{
 
