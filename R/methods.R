@@ -2193,6 +2193,7 @@ setGeneric("test_differential_abundance", function(.data,
 					 standardGeneric("test_differential_abundance"))
 
 # Set internal
+#' @importFrom rlang inform
 .test_differential_abundance = 		function(.data,
 																					.formula,
 																					.sample = NULL,
@@ -2239,11 +2240,11 @@ setGeneric("test_differential_abundance", function(.data,
 	}
 
 	# Clearly state what counts are used
-	message("=====================================
+	rlang::inform("=====================================
 tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance
 or adjust_abundance have been calculated. Therefore, it is essential to add covariates
 such as batch effects (if applicable) in the formula.
-=====================================")
+=====================================", .frequency_id = "All testing methods use raw counts",  .frequency = "once")
 
 	# Validate data frame
 	if(do_validate()) {

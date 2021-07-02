@@ -1012,7 +1012,7 @@ setMethod(
 )
 
 
-
+#' @importFrom rlang inform
 .test_differential_abundance_se = function(.data,
 																					 .formula,
 																					 .contrasts = NULL,
@@ -1025,11 +1025,13 @@ setMethod(
 {
 
 	# Clearly state what counts are used
-	message("=====================================
+  # Clearly state what counts are used
+  rlang::inform("=====================================
 tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance
 or adjust_abundance have been calculated. Therefore, it is essential to add covariates
 such as batch effects (if applicable) in the formula.
-=====================================")
+=====================================", .frequency_id = "All testing methods use raw counts",  .frequency = "once")
+
 
 	# Test test_above_log2_fold_change
 	if(!is.null(test_above_log2_fold_change) && test_above_log2_fold_change < 0)
