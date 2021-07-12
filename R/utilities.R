@@ -332,11 +332,12 @@ drop_internals = function(.data){
   .data %>% drop_attr("internals")
 }
 
-memorise_methods_used = function(.data, .method){
+memorise_methods_used = function(.data, .method, object_containing_methods = .data){
+  # object_containing_methods is used in case for example of test gene rank where the output is a tibble that has lost its attributes
 
 	.data %>%
 		attach_to_internals(
-			.data %>%
+		  object_containing_methods %>%
 				attr("internals") %>%
 				.[["methods_used"]] %>%
 				c(.method) %>%	unique(),

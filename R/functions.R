@@ -1071,7 +1071,7 @@ test_differential_cellularity_ <- function(.data,
 					reattach_internals(.data) %>%
 
 					# Add methods used
-					when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+					when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot"), object_containing_methods = .data),
 							 ~ (.))
 
 			}) %>%
@@ -1162,7 +1162,7 @@ test_stratification_cellularity_ <- function(.data,
 				reattach_internals(.data) %>%
 
 				# Add methods used
-				memorise_methods_used(c("survival", "boot", "survminer"))
+				memorise_methods_used(c("survival", "boot", "survminer"), object_containing_methods = .data)
 		} %>%
 
 		# Eliminate prefix
@@ -1416,7 +1416,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	# add to bibliography
 	if (exists("collections_bib")) {
-	    out %>% memorise_methods_used(c("egsea", collections_bib, methods))
+	    out %>% memorise_methods_used(c("egsea", collections_bib, methods), object_containing_methods = .data)
 	}
 }
 
@@ -3457,10 +3457,7 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 
 		# format transcripts
 		mutate(entrez = strsplit(geneID, "/")) %>%
-		select(-geneID) %>%
-
-		# Add methods used
-		memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"))
+		select(-geneID)
 
 }
 
@@ -3531,14 +3528,7 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 					 			#	mutate(plot = future_imap(ID, ~ enrichplot::gseaplot2(fit, geneSetID = .y, title = .x)))
 
 					 	)) %>%
-		select(-data) %>%
-
-		# Add methods used
-		memorise_methods_used(c("clusterProfiler", "enrichplot")) %>%
-     when(
-       gene_collections %>% is("character") ~ (.) %>% memorise_methods_used("msigdbr"),
-       ~ (.)
-      )
+		select(-data)
 
 
 }

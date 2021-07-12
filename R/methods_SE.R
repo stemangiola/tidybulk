@@ -1712,7 +1712,10 @@ setMethod("test_gene_enrichment",
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
-		entrez_over_to_gsea(species, gene_collections = gene_sets)
+		entrez_over_to_gsea(species, gene_collections = gene_sets) %>%
+
+	  # Add methods used
+	  memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"), object_containing_methods = .data)
 
 
 }
@@ -1790,7 +1793,14 @@ setMethod("test_gene_overrepresentation",
 		arrange(desc(!!.arrange_desc)) %>%
 		select(!!.entrez, !!.arrange_desc) %>%
 		deframe() %>%
-		entrez_rank_to_gsea(species, gene_collections = gene_sets)
+		entrez_rank_to_gsea(species, gene_collections = gene_sets)%>%
+
+	  # Add methods used. It is here and not in functions because I need the original .data
+	  memorise_methods_used(c("clusterProfiler", "enrichplot"), object_containing_methods = .data) %>%
+	  when(
+	    gene_sets %>% is("character") ~ (.) %>% memorise_methods_used("msigdbr"),
+	    ~ (.)
+	  )
 
 
 }
