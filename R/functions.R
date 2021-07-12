@@ -3532,14 +3532,13 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 
 					 	)) %>%
 		select(-data) %>%
-		#unnest(test) %>%
-
-		# Order
-		#arrange(`p.adjust`) %>%
 
 		# Add methods used
 		memorise_methods_used(c("clusterProfiler", "enrichplot")) %>%
-     when(gene_collections %>% is("character") ~ c(., "msigdbr"), ~ (.))
+     when(
+       gene_collections %>% is("character") ~ (.) %>% memorise_methods_used("msigdbr"),
+       ~ (.)
+      )
 
 
 }
