@@ -111,10 +111,14 @@ For example, we often have to convert ensembl symbols to gene/transcript symbol,
 }
 \examples{
 
-    aggregate_duplicates(
-    tidybulk::se_mini,
-    aggregation_function = sum
-    )
+# Create a aggregation column
+se_mini = tidybulk::se_mini
+SummarizedExperiment::rowData(se_mini )$gene_name = rownames(se_mini )
+
+   aggregate_duplicates(
+     se_mini,
+   .transcript = gene_name
+   )
 
 
 }

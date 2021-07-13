@@ -1492,10 +1492,14 @@ setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 #'
 #' @examples
 #'
-#'     aggregate_duplicates(
-#'     tidybulk::se_mini,
-#'     aggregation_function = sum
-#'     )
+#' # Create a aggregation column
+#' se_mini = tidybulk::se_mini
+#' SummarizedExperiment::rowData(se_mini )$gene_name = rownames(se_mini )
+#'
+#'    aggregate_duplicates(
+#'      se_mini,
+#'    .transcript = gene_name
+#'    )
 #'
 #'
 #' @docType methods
@@ -1521,9 +1525,14 @@ setGeneric("aggregate_duplicates", function(.data,
 																	aggregation_function = sum,
 																	keep_integer = TRUE)  {
 	# Make col names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+  # Get column names
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+  col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+  .sample = col_names$.sample
+  .transcript = col_names$.transcript
+  .abundance = col_names$.abundance
 
 	# Validate data frame
 	if(do_validate()) validation(.data,
@@ -1532,15 +1541,33 @@ setGeneric("aggregate_duplicates", function(.data,
 						 !!.abundance,
 						 skip_dupli_check = TRUE)
 
-	aggregate_duplicated_transcripts_bulk(
-		.data,
+	# If I have a small normal data set
+	if(.data %>% pull(!!.sample) %>% unique %>% length %>% st(100)){
+  	aggregate_duplicated_transcripts_bulk(
+  		.data,
 
-		.sample = !!.sample,
-		.transcript = !!.transcript,
-		.abundance = !!.abundance,
-		aggregation_function = aggregation_function,
-		keep_integer = TRUE
-	)
+  		.sample = !!.sample,
+  		.transcript = !!.transcript,
+  		.abundance = !!.abundance,
+  		aggregation_function = aggregation_function,
+  		keep_integer = TRUE
+  	)
+}
+	# If I have a big data set
+  else {
+
+    message("tidybulk says: for big data sets (>100 samples) this efficient implementation aggregates count columns and keeps the first instance for sample and transcript annotations")
+
+    aggregate_duplicated_transcripts_DT(
+      .data,
+      .sample = !!.sample,
+      .transcript = !!.transcript,
+      .abundance = !!.abundance,
+      aggregation_function = aggregation_function,
+      keep_integer = TRUE
+    )
+  }
+
 }
 
 #' aggregate_duplicates
@@ -2166,6 +2193,7 @@ setGeneric("test_differential_abundance", function(.data,
 					 standardGeneric("test_differential_abundance"))
 
 # Set internal
+#' @importFrom rlang inform
 .test_differential_abundance = 		function(.data,
 																					.formula,
 																					.sample = NULL,
@@ -2212,11 +2240,11 @@ setGeneric("test_differential_abundance", function(.data,
 	}
 
 	# Clearly state what counts are used
-	message("=====================================
+	rlang::inform("=====================================
 tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance
 or adjust_abundance have been calculated. Therefore, it is essential to add covariates
 such as batch effects (if applicable) in the formula.
-=====================================")
+=====================================", .frequency_id = "All testing methods use raw counts",  .frequency = "once")
 
 	# Validate data frame
 	if(do_validate()) {
@@ -3078,7 +3106,10 @@ setGeneric("test_gene_overrepresentation", function(.data,
 		filter(!!.do_test) %>%
 		distinct(!!.entrez) %>%
 		pull(!!.entrez) %>%
-		entrez_over_to_gsea(species, gene_collections  = gene_sets )
+		entrez_over_to_gsea(species, gene_collections  = gene_sets ) %>%
+
+	  # Add methods used
+	  memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"), object_containing_methods = .data)
 
 
 }
@@ -3133,7 +3164,7 @@ setMethod("test_gene_overrepresentation",
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .arrange_desc A column name of the column to arrange in decreasing order
 #' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")
-#' @param gene_sets  A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.
+#' @param gene_sets A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.
 #'
 #' @param gene_set DEPRECATED. Use gene_sets instead.
 #'
@@ -3206,7 +3237,7 @@ setGeneric("test_gene_rank", function(.data,
 														 .arrange_desc,
 														 species,
 														 .sample = NULL,
-														 gene_sets  = NULL,
+														 gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7"),
 														 gene_set = NULL  # DEPRECATED
 														 )	{
 
@@ -3246,25 +3277,32 @@ setGeneric("test_gene_rank", function(.data,
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
 		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
-	
+
 	# Check if missing entrez
 	if(.data %>% filter(!!.entrez %>% is.na) %>% nrow() %>% gt(0) ){
 		warning("tidybulk says: there are .entrez that are NA. Those will be removed")
 		.data = .data %>%	filter(!!.entrez %>% is.na %>% not())
 	}
-	
+
 	# Check if missing .arrange_desc
 	if(.data %>% filter(!!.arrange_desc %>% is.na) %>% nrow() %>% gt(0) ){
 		warning("tidybulk says: there are .arrange_desc that are NA. Those will be removed")
 		.data = .data %>%	filter(!!.arrange_desc %>% is.na %>% not())
 	}
-  
+
 	.data %>%
 		pivot_transcript(!!.entrez) %>%
 		arrange(desc(!!.arrange_desc)) %>%
 		select(!!.entrez, !!.arrange_desc) %>%
 		deframe() %>%
-		entrez_rank_to_gsea(species, gene_collections  = gene_sets )
+		entrez_rank_to_gsea(species, gene_collections  = gene_sets ) %>%
+
+	  # Add methods used. It is here and not in fucntions because I need the original .data
+	  memorise_methods_used(c("clusterProfiler", "enrichplot"), object_containing_methods = .data) %>%
+	  when(
+	    gene_sets %>% is("character") ~ (.) %>% memorise_methods_used("msigdbr"),
+	    ~ (.)
+	  )
 
 
 }

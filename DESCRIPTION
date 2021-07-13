@@ -19,6 +19,7 @@ Imports:
     dplyr,
     magrittr,
     tidyr,
+    stringi,
     stringr,
     rlang,
     purrr,
@@ -30,6 +31,7 @@ Imports:
     lifecycle,
     scales,
     SummarizedExperiment,
+    GenomicRanges,
     methods
 Suggests:
     BiocStyle,
