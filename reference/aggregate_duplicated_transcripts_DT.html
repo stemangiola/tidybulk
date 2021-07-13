@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get a tibble with scaled counts using TMM — get_scaled_counts_bulk • tidybulk</title>
+<title>Aggregates multiple counts from the same samples (e.g., from isoforms)
+This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns — aggregate_duplicated_transcripts_DT • tidybulk</title>
 
 
 <!-- jquery -->
@@ -39,8 +40,10 @@
 
 
 
-<meta property="og:title" content="Get a tibble with scaled counts using TMM — get_scaled_counts_bulk" />
-<meta property="og:description" content="Get a tibble with scaled counts using TMM" />
+<meta property="og:title" content="Aggregates multiple counts from the same samples (e.g., from isoforms)
+This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns — aggregate_duplicated_transcripts_DT" />
+<meta property="og:description" content="Aggregates multiple counts from the same samples (e.g., from isoforms)
+This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns" />
 
 
 
@@ -80,7 +83,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
       </span>
     </div>
 
@@ -131,22 +134,24 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get a tibble with scaled counts using TMM</h1>
+    <h1>Aggregates multiple counts from the same samples (e.g., from isoforms)
+This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns</h1>
     <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
-    <div class="hidden name"><code>get_scaled_counts_bulk.Rd</code></div>
+    <div class="hidden name"><code>aggregate_duplicated_transcripts_DT.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get a tibble with scaled counts using TMM</p>
+    <p>Aggregates multiple counts from the same samples (e.g., from isoforms)
+This function aggregates counts over samples, concatenates other character columns, and averages other numeric columns</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>get_scaled_counts_bulk</span><span class='op'>(</span>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>aggregate_duplicated_transcripts_DT</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
   .transcript <span class='op'>=</span> <span class='cn'>NULL</span>,
   .abundance <span class='op'>=</span> <span class='cn'>NULL</span>,
-  method <span class='op'>=</span> <span class='st'>"TMM"</span>,
-  reference_sample <span class='op'>=</span> <span class='cn'>NULL</span>
+  aggregation_function <span class='op'>=</span> <span class='va'>sum</span>,
+  keep_integer <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -169,18 +174,18 @@
       <td><p>The name of the transcript/gene abundance column</p></td>
     </tr>
     <tr>
-      <th>method</th>
-      <td><p>A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")</p></td>
+      <th>aggregation_function</th>
+      <td><p>A function for counts aggregation (e.g., sum)</p></td>
     </tr>
     <tr>
-      <th>reference_sample</th>
-      <td><p>A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.</p></td>
+      <th>keep_integer</th>
+      <td><p>A boolean</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A tibble including additional columns</p>
+    <p>A tibble with aggregated genes and annotation</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

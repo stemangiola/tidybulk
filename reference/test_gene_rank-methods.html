@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
       </span>
     </div>
 
@@ -157,7 +157,7 @@
   <span class='va'>.arrange_desc</span>,
   <span class='va'>species</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
-  gene_sets <span class='op'>=</span> <span class='cn'>NULL</span>,
+  gene_sets <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"h"</span>, <span class='st'>"c1"</span>, <span class='st'>"c2"</span>, <span class='st'>"c3"</span>, <span class='st'>"c4"</span>, <span class='st'>"c5"</span>, <span class='st'>"c6"</span>, <span class='st'>"c7"</span><span class='op'>)</span>,
   gene_set <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span>
 
@@ -168,7 +168,7 @@
   <span class='va'>.arrange_desc</span>,
   <span class='va'>species</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
-  gene_sets <span class='op'>=</span> <span class='cn'>NULL</span>,
+  gene_sets <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"h"</span>, <span class='st'>"c1"</span>, <span class='st'>"c2"</span>, <span class='st'>"c3"</span>, <span class='st'>"c4"</span>, <span class='st'>"c5"</span>, <span class='st'>"c6"</span>, <span class='st'>"c7"</span><span class='op'>)</span>,
   gene_set <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span>
 
@@ -179,7 +179,7 @@
   <span class='va'>.arrange_desc</span>,
   <span class='va'>species</span>,
   .sample <span class='op'>=</span> <span class='cn'>NULL</span>,
-  gene_sets <span class='op'>=</span> <span class='cn'>NULL</span>,
+  gene_sets <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"h"</span>, <span class='st'>"c1"</span>, <span class='st'>"c2"</span>, <span class='st'>"c3"</span>, <span class='st'>"c4"</span>, <span class='st'>"c5"</span>, <span class='st'>"c6"</span>, <span class='st'>"c7"</span><span class='op'>)</span>,
   gene_set <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span>
 
@@ -230,7 +230,7 @@
     </tr>
     <tr>
       <th>gene_sets</th>
-      <td><p>A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.</p></td>
+      <td><p>A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.</p></td>
     </tr>
     <tr>
       <th>gene_set</th>
@@ -281,11 +281,6 @@ mutate(fit =
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> factorfactorfactorfactorlogical</span>
 <span class='r-in'><span class='va'>df_entrez</span> <span class='op'>=</span> <span class='fu'><a href='mutate-methods.html'>mutate</a></span><span class='op'>(</span><span class='va'>df_entrez</span>, do_test <span class='op'>=</span> <span class='va'>feature</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"TNFRSF4"</span>, <span class='st'>"PLCH2"</span>, <span class='st'>"PADI4"</span>, <span class='st'>"PAX7"</span><span class='op'>)</span><span class='op'>)</span></span>
 <span class='r-in'><span class='va'>df_entrez</span>  <span class='op'>=</span> <span class='va'>df_entrez</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='test_differential_abundance-methods.html'>test_differential_abundance</a></span><span class='op'>(</span><span class='op'>~</span> <span class='va'>condition</span><span class='op'>)</span></span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> =====================================</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> or adjust_abundance have been calculated. Therefore, it is essential to add covariates</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> such as batch effects (if applicable) in the formula.</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> =====================================</span>
 <span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> tidybulk says: The design column names are "(Intercept), conditionTRUE"</span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR`</span>

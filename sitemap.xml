@@ -43,6 +43,9 @@
     <loc>/reference/adjust_abundance-methods.html</loc>
   </url>
   <url>
+    <loc>/reference/aggregate_duplicated_transcripts_DT.html</loc>
+  </url>
+  <url>
     <loc>/reference/aggregate_duplicated_transcripts_bulk.html</loc>
   </url>
   <url>
@@ -224,9 +227,6 @@
   </url>
   <url>
     <loc>/reference/get_sample_transcript_counts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_scaled_counts_bulk.html</loc>
   </url>
   <url>
     <loc>/reference/get_symbol_from_ensembl.html</loc>
