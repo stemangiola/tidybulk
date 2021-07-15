@@ -2197,6 +2197,10 @@ aggregate_duplicated_transcripts_DT =
     #         input_df[,.(c = sum(c)), by=c("a", "b")] %>% #Sum the raw_counts of duplicated rows
     #       tidybulk::scale_abundance(.sample = sample, .abundance = abundance, .transcript = transcript)
 
+    if(.data %>% filter(is.na(!!.transcript)) %>% nrow() %>% gt(0)){
+      warning(sprintf("tidybulk says: some of your %s are NAs. Those will be eliminated to correctly aggregate the duplicates", quo_name(.transcript)))
+      .data = .data %>% filter(!is.na(!!.transcript))
+    }
     # Select which are the numerical columns
     numerical_columns =
       .data %>%
