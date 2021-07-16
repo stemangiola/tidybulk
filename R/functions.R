@@ -2248,10 +2248,10 @@ aggregate_duplicated_transcripts_DT =
       dup_counts %>%
 
       # Bind cols with dropped duplicated
-      bind_cols(
+      left_join(
         dup[!duplicated(dup_pasted_strings___),] %>%
-          select(-(colnames(dup_counts) %>% setdiff("merged_transcripts")))
-      )
+          select(-aggregate_count_columns)
+        )
 
     .data %>%
       filter(!duplicates) %>%
