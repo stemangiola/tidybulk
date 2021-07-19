@@ -766,6 +766,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param ... Additional arguments for DESeq2
 #'
 #' @return A tibble with edgeR results
 #'
@@ -778,7 +779,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 																											 method = "edgeR_quasi_likelihood",
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
-																											 prefix = "") {
+																											 prefix = "",
+																											 ...) {
 
 	# Check if contrasts are of the same form
 	if(
@@ -846,7 +848,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 		# DESeq2
 		DESeq2::DESeqDataSet( design = .formula) %>%
-		DESeq2::DESeq()
+		DESeq2::DESeq(...)
 
 	# Read ft object
 	deseq2_object %>%
