@@ -587,15 +587,6 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 
 		# drop factors as it can affect design matrix
 		droplevels()
-	# %>%
-
-		# # Check if data rectangular
-		# ifelse2_pipe(
-		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & fill_missing_values,
-		# 	(.) %>% check_if_data_rectangular(!!.sample,!!.transcript,!!.abundance) %>% not() & !fill_missing_values,
-		# 	~ .x %>% fill_NA_using_formula(.formula,!!.sample, !!.transcript, !!.abundance),
-		# 	~ .x %>% eliminate_sparse_transcripts(!!.transcript)
-		# )
 
 
 	# Create design matrix
