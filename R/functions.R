@@ -2317,32 +2317,35 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		ifelse_pipe(log_transform,
 								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 		distinct() %>%
-		spread(!!.element,!!.abundance) %>%
-		drop_na() %>%
 
-		# check that there are non-NA genes for enough samples
-		ifelse2_pipe(# First condition
-			(.) %>% nrow == 0,
+# NO NEED OF RECTANGULAR
+# 		spread(!!.element,!!.abundance) %>%
+# 		drop_na() %>%
+#
+# 		# check that there are non-NA genes for enough samples
+# 		ifelse2_pipe(# First condition
+# 			(.) %>% nrow == 0,
+#
+# 			# Second condition
+# 			(.) %>% nrow < 100,
+#
+# 			# First function
+# 			~ stop(
+# 				"tidybulk says: In calculating correlation there is no gene that have non NA values is all samples"
+# 			),
+#
+# 			# Second function
+# 			~ {
+# 				message(
+# 					"tidybulk says: In calculating correlation there is < 100 genes (that have non NA values) is all samples.
+# The correlation calculation might not be reliable"
+# 				)
+# 				.x
+# 			}) %>%
+#
+# 		# Prepare the data frame
+# 		gather(!!.element,!!.abundance,-!!.feature) %>%
 
-			# Second condition
-			(.) %>% nrow < 100,
-
-			# First function
-			~ stop(
-				"tidybulk says: In calculating correlation there is no gene that have non NA values is all samples"
-			),
-
-			# Second function
-			~ {
-				message(
-					"tidybulk says: In calculating correlation there is < 100 genes (that have non NA values) is all samples.
-The correlation calculation might not be reliable"
-				)
-				.x
-			}) %>%
-
-		# Prepare the data frame
-		gather(!!.element,!!.abundance,-!!.feature) %>%
 		dplyr::rename(rc := !!.abundance,
 									sample := !!.element,
 									transcript := !!.feature) %>% # Is rename necessary?
@@ -2976,7 +2979,7 @@ keep_variable_transcripts = function(.data,
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = quo_name(.transcript))
 
-	s <- rowMeans((x - rowMeans(x)) ^ 2)
+	s <- rowMeans((x - rowMeans(x, na.rm = TRUE)) ^ 2, na.rm = TRUE)
 	o <- order(s, decreasing = TRUE)
 	x <- x[o[1L:top], , drop = FALSE]
 	variable_trancripts = rownames(x)
@@ -2984,7 +2987,7 @@ keep_variable_transcripts = function(.data,
 	.data %>%
 		filter(!!.transcript %in% variable_trancripts) %>%
 
-		# Add methods used
+		# Add methods used. The correlation code comes from there
 		memorise_methods_used(c("edger"))
 }
 
