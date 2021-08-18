@@ -14,7 +14,8 @@ get_differential_transcript_abundance_deseq2(
   method = "edgeR_quasi_likelihood",
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
-  prefix = ""
+  prefix = "",
+  ...
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ get_differential_transcript_abundance_deseq2(
 \item{scaling_method}{A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
 \item{omit_contrast_in_colnames}{If just one contrast is specified you can choose to omit the contrast label in the colnames.}
+
+\item{...}{Additional arguments for DESeq2}
 }
 \value{
 A tibble with edgeR results

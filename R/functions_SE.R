@@ -456,6 +456,7 @@ keep_variable_transcripts_SE = function(.data,
 		# Check if log transform is needed
 		when(log_transform ~ log1p(.), ~ (.) )
 
+
 	s <- rowMeans((x - rowMeans(x, na.rm=TRUE)) ^ 2, na.rm=TRUE)
 	o <- order(s, decreasing = TRUE)
 	x <- x[o[1L:top], , drop = FALSE]
@@ -952,6 +953,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param ... Additional arguments for DESeq2
 #'
 #' @return A tibble with edgeR results
 #'
@@ -961,7 +963,9 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 																												 method = "edgeR_quasi_likelihood",
 																												 scaling_method = "TMM",
 																												 omit_contrast_in_colnames = FALSE,
-																												 prefix = "") {
+																												 prefix = "",
+																												 ...) {
+
 
 	# Check if contrasts are of the same form
 	if(
