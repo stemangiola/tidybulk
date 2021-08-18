@@ -108,30 +108,6 @@ test_that("Only scaled counts - no object",{
 
 })
 
-test_that("Getting scaled counts - no object",{
-
-	res =
-		scale_abundance(
-			input_df %>% identify_abundant(a, b, c),
-			.sample = a,
-			.transcript = b,
-			.abundance = c,
-			action = "get"
-		)
-
-	expect_equal(
-		unique(res$multiplier),
-		c(1.2994008, 1.1781297, 2.6996428, 0.9702628, 1.8290148),
-		tolerance=1e-6
-	)
-
-	expect_equal(
-		ncol(res),
-		6
-	)
-
-})
-
 
 test_that("Adding scaled counts - no object",{
 
@@ -154,6 +130,27 @@ test_that("Adding scaled counts - no object",{
 		ncol(res),
 		10
 	)
+
+})
+
+test_that("Scaled counts - subset",{
+
+  res =
+    input_df %>%
+    identify_abundant(a, b, c) %>%
+    scale_abundance(
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
+      action = "get",
+      .subset_for_scaling = .abundant & grepl("^A", b)
+    )
+
+  expect_equal(
+    unique(res$multiplier),
+    c(1.253886, 1.099169, 1.469270, 1.418187, 1.616244),
+    tolerance=1e-6
+  )
 
 })
 
@@ -206,7 +203,7 @@ test_that("Only differential trancript abundance - no object",{
 	)
 
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
-	
+
 	# Robust version
 	res =
 		test_differential_abundance(
@@ -218,20 +215,20 @@ test_that("Only differential trancript abundance - no object",{
 			method = "edger_robust_likelihood_ratio",
 			action="only"
 		)
-	
+
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-12.58107, -12.19281, -11.58286, -11.19910),
 		tolerance=1e-6
 	)
-	
+
 	expect_equal(
 		ncol(res),
 		6
 	)
-	
+
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
-	
+
 
 	# Continuous covariate
 	sam = distinct(input_df, a)
@@ -312,9 +309,9 @@ test_that("Only differential trancript abundance - no object",{
 			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
-	
+
 	# Treat
-	input_df %>% 
+	input_df %>%
 		identify_abundant(a, b, c, factor_of_interest = condition) %>%
 		test_differential_abundance(
 			~ condition,
@@ -329,7 +326,7 @@ test_that("Only differential trancript abundance - no object",{
 		filter(FDR<0.05) %>%
 		nrow %>%
 		expect_equal(169)
-	
+
 })
 
 test_that("Only differential trancript abundance - no object - with contrasts",{
@@ -390,7 +387,7 @@ test_that("Add differential trancript abundance - no object",{
 })
 
 test_that("Only differential trancript abundance voom - no object",{
-	
+
 	res =
 		test_differential_abundance(
 			input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
@@ -401,24 +398,24 @@ test_that("Only differential trancript abundance voom - no object",{
 			method = "limma_voom",
 			action="only"
 		)
-	
+
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-12.25012, -11.48490, -10.29393, -11.69070),
 		tolerance=1e-6
 	)
-	
+
 	expect_equal(
 		ncol(res),
 		7
 	)
-	
+
 	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
-	
+
 	# Continuous covariate
 	sam = distinct(input_df, a)
 	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
-	
+
 	res =
 		test_differential_abundance(
 			left_join(input_df , sam) %>% identify_abundant(a, b, c, factor_of_interest = condition_cont),
@@ -429,20 +426,20 @@ test_that("Only differential trancript abundance voom - no object",{
 			method = "limma_voom",
 			action="only"
 		)
-	
+
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-3.659127, -3.233295, -3.750860 ,-3.033059),
 		tolerance=1e-6
 	)
-	
+
 	expect_equal(
 		ncol(res),
 		7
 	)
-	
+
 	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
-	
+
 	# Continuous and discrete
 	res =
 		test_differential_abundance(
@@ -454,20 +451,20 @@ test_that("Only differential trancript abundance voom - no object",{
 			method = "limma_voom",
 			action="only"
 		)
-	
+
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-2.981563, -4.883692, -1.702294,  2.423231),
 		tolerance=1e-6
 	)
-	
+
 	expect_equal(
 		ncol(res),
 		7
 	)
-	
+
 	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
-	
+
 	# Just one covariate error
 	expect_error(
 		test_differential_abundance(
@@ -481,7 +478,7 @@ test_that("Only differential trancript abundance voom - no object",{
 		),
 		"Subsetting to non-estimable coefficients is not allowed"
 	)
-	
+
 	# Change scaling method
 	res =
 		test_differential_abundance(
@@ -497,7 +494,7 @@ test_that("Only differential trancript abundance voom - no object",{
 })
 
 test_that("Only differential trancript abundance - no object - with contrasts",{
-	
+
 	res =
 		test_differential_abundance(
 			input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
@@ -509,24 +506,24 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 			method = "limma_voom",
 			action="only"
 		)
-	
+
 	expect_equal(
 		unique(res$`logFC___conditionTRUE - conditionFALSE`)[1:4],
 		c(-12.25012, -11.48490 ,-10.29393, -11.69070),
 		tolerance=1e-6
 	)
-	
+
 	expect_equal(
 		ncol(res),
 		13
 	)
-	
+
 	expect_equal(	class(attr(res, "internals")$voom)[1], 	"MArrayLM"  )
-	
+
 })
 
 test_that("Voom with sample weights method",{
-	
+
 	res =
 		test_differential_abundance(
 			input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
@@ -537,13 +534,13 @@ test_that("Voom with sample weights method",{
 			method = "limma_voom_sample_weights",
 			action="only"
 		)
-	
+
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-10.357682, -11.624146, -12.121186, -9.287714),
 		tolerance=1e-6
 	)
-	
+
 	expect_equal(
 		ncol(res),
 		7
@@ -551,7 +548,7 @@ test_that("Voom with sample weights method",{
 })
 
 test_that("Voom with treat method",{
-	
+
 	input_df %>%
         identify_abundant(a, b, c, factor_of_interest = condition) %>%
 		test_differential_abundance(
@@ -566,7 +563,7 @@ test_that("Voom with treat method",{
 	    filter(adj.P.Val<0.05) %>%
 		nrow %>%
 		expect_equal(97)
-    
+
         # with multiple contrasts
     	res <-
     	input_df %>%
@@ -582,21 +579,21 @@ test_that("Voom with treat method",{
 			test_above_log2_fold_change = 1,
 			action="only"
 		)
-	    
-    	res %>%    
+
+    	res %>%
     	filter(`adj.P.Val___cell_typeb_cell-cell_typemonocyte` < 0.05) %>%
 		nrow %>%
 		expect_equal(293)
-    	
-    	res %>%    
+
+    	res %>%
     	filter(`adj.P.Val___cell_typeb_cell-cell_typet_cell`<0.05) %>%
 		nrow %>%
 		expect_equal(246)
-    
+
 })
 
 test_that("New method choice",{
-	
+
 	res =
 		test_differential_abundance(
 			input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
@@ -607,20 +604,20 @@ test_that("New method choice",{
 			method = "edgeR_quasi_likelihood",
 			action="only"
 		)
-	
+
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-11.583849, -12.192713,  -8.927257,  -7.779931),
 		tolerance=1e-6
 	)
-	
+
 	expect_equal(
 		ncol(res),
 		6
 	)
-	
+
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
-	
+
 	# Wrong method
 	expect_error(
 		test_differential_abundance(
@@ -637,25 +634,25 @@ test_that("New method choice",{
 })
 
 test_that("DESeq2 differential trancript abundance - no object",{
-	
-	res_deseq2 = 
+
+	res_deseq2 =
 		test_deseq2_df %>%
 		DESeq2::DESeq() %>%
 		DESeq2::results()
-	
-	res_tidybulk = 
+
+	res_tidybulk =
 		test_deseq2_df %>%
 		tidybulk %>%
 		 identify_abundant(factor_of_interest = condition) %>%
 		test_differential_abundance(~condition, method="DeSEQ2", action="get")
-	
+
 
 	expect_equal(
 		res_tidybulk %>% dplyr::slice(c(1, 3,4, 6)) %>% dplyr::pull(log2FoldChange),
-		res_deseq2[c(1, 3,4, 6),2], 
+		res_deseq2[c(1, 3,4, 6),2],
 		tolerance =0.005
 	)
-	
+
 	res =
 		test_differential_abundance(
 			input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
@@ -666,24 +663,24 @@ test_that("DESeq2 differential trancript abundance - no object",{
 			method = "deseq2",
 			action="only"
 		)
-	
+
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
 		c(3.449740, 2.459516, 2.433466, 1.951263),
 		tolerance=1e-6
 	)
-	
+
 	expect_equal(
 		ncol(res),
 		7
 	)
-	
+
 	expect_equal(	class(attr(res, "internals")$DESeq2)[1], 	"DESeqDataSet"  )
-	
+
 	# Continuous covariate
 	sam = distinct(input_df, a)
 	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
-	
+
 	res =
 		test_differential_abundance(
 			left_join(input_df , sam) %>% identify_abundant(a, b, c, factor_of_interest = condition_cont),
@@ -694,20 +691,20 @@ test_that("DESeq2 differential trancript abundance - no object",{
 			method = "deseq2",
 			action="only"
 		)
-	
+
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
 		c(-1.1906895, -0.4422231,  0.9656122, -0.3328515),
 		tolerance=1e-6
 	)
-	
+
 	expect_equal(
 		ncol(res),
 		7
 	)
-	
+
 	expect_equal(	class(attr(res, "internals")$DESeq2)[1], 	"DESeqDataSet"  )
-	
+
 	# Continuous and discrete
 	res =
 		test_differential_abundance(
@@ -719,20 +716,20 @@ test_that("DESeq2 differential trancript abundance - no object",{
 			method = "deseq2",
 			action="only"
 		)
-	
+
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
 		c(1.1110210, 3.0077779, 0.9024256, 4.7259792),
 		tolerance=1e-6
 	)
-	
+
 	expect_equal(
 		ncol(res),
 		7
 	)
-	
+
 	expect_equal(	class(attr(res, "internals")$DESeq2)[1], 	"DESeqDataSet"  )
-	
+
 	# Just one covariate error
 	expect_error(
 		test_differential_abundance(
@@ -746,7 +743,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 		),
 		"design has a single variable"
 	)
-	
+
 	# # Contrasts
 	# input_df %>%
 	# 	identify_abundant(a, b, c, factor_of_interest = condition) %>%
@@ -755,13 +752,13 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	# 		.sample = a,
 	# 		.transcript = b,
 	# 		.abundance = c,
-	# 		method = "deseq2", 
+	# 		method = "deseq2",
 	# 		.contrasts = "this_is - wrong",
 	# 		action="only"
 	# 	) %>%
 	# expect_error("for the moment, the .contrasts argument")
-	
-	deseq2_contrasts = 
+
+	deseq2_contrasts =
 		input_df %>%
 		identify_abundant(a, b, c, factor_of_interest = condition) %>%
 		test_differential_abundance(
@@ -769,12 +766,12 @@ test_that("DESeq2 differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			method = "deseq2", 
+			method = "deseq2",
 			.contrasts = list(c("condition", "TRUE", "FALSE")),
 			action="only"
-		) 
-	
-	edger_contrasts = 
+		)
+
+	edger_contrasts =
 		input_df %>%
 		identify_abundant(a, b, c, factor_of_interest = condition) %>%
 		test_differential_abundance(
@@ -784,39 +781,39 @@ test_that("DESeq2 differential trancript abundance - no object",{
 			.abundance = c,
 			.contrasts = "conditionTRUE - conditionFALSE",
 			action="only"
-		) 
-	
+		)
+
 	library(dplyr)
 	expect_gt(
 		(deseq2_contrasts %>% filter(b=="ABCB4") %>% pull(3)) *
 			(edger_contrasts %>% filter(b=="ABCB4") %>% pull(2)),
 		0
 	)
-	
+
 })
 
 test_that("test prefix",{
-	
+
 	library(DESeq2)
-	
+
 	df = input_df %>% tidybulk(a, b, c, ) %>% identify_abundant(factor_of_interest = condition)
-	
-	res_DeSEQ2 = 
+
+	res_DeSEQ2 =
 		df %>%
 		test_differential_abundance(~condition, method="DeSEQ2", action="only", prefix = "prefix_")
-	
-	res_voom = 
+
+	res_voom =
 		df %>%
 		test_differential_abundance(~condition, method="limma_voom", action="only", prefix = "prefix_")
-	
-	res_voom_sample_weights = 
+
+	res_voom_sample_weights =
 	    df %>%
 	    test_differential_abundance(~condition, method="limma_voom_sample_weights", action="only", prefix = "prefix_")
-	
-	res_edger = 
+
+	res_edger =
 		df %>%
 		test_differential_abundance(~condition, method="edgeR_likelihood_ratio", action="only", prefix = "prefix_")
-	
+
 	expect_gt(colnames(res_DeSEQ2) %>% grep("prefix_", .) %>% length, 0)
 	expect_gt(colnames(res_voom) %>% grep("prefix_", .) %>% length, 0)
 	expect_gt(colnames(res_voom_sample_weights) %>% grep("prefix_", .) %>% length, 0)
@@ -837,15 +834,15 @@ test_that("Get entrez from symbol - no object",{
 })
 
 # test_that("Get gene enrichment - no object",{
-# 
+#
 # 	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
 # 		message("Installing EGSEA needed for differential transcript abundance analyses")
 # 		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos = "https://cloud.r-project.org")
 # 		BiocManager::install("EGSEA")
 # 	}
-# 
+#
 # 	library(EGSEA)
-# 
+#
 # 	res =
 # 		test_gene_enrichment(
 # 			aggregate_duplicates(
@@ -864,17 +861,17 @@ test_that("Get entrez from symbol - no object",{
 # 			.abundance = c,
 # 			species="human"
 # 		)
-# 
+#
 # 	expect_equal(
 # 		res$pathway[1:4],
 # 		c("GNF2_HCK"    ,  "GSE10325_LUPUS_BCELL_VS_LUPUS_MYELOID_DN"   ,"Amino sugar and nucleotide sugar metabolism", "Phagosome"  )
 # 	)
-# 
+#
 # 	expect_equal(
 # 		ncol(res),
 # 		20
 # 	)
-# 
+#
 # })
 #
 
@@ -1046,7 +1043,7 @@ test_that("Add cluster lables based on Kmeans - no object",{
 })
 
 # test_that("Only cluster lables based on SNN - no object",{
-# 
+#
 # 	res =
 # 		cluster_elements(
 # 			input_df_breast,
@@ -1057,21 +1054,21 @@ test_that("Add cluster lables based on Kmeans - no object",{
 # 			resolution=0.8,
 # 			action="only"
 # 		)
-# 
+#
 # 	expect_equal(
 # 		typeof(res$`cluster SNN`),
 # 		"integer"
 # 	)
-# 
+#
 # 	expect_equal(
 # 		ncol(res),
 # 		2
 # 	)
-# 
+#
 # })
 
 # test_that("Get cluster lables based on SNN - no object",{
-# 
+#
 # 	res =
 # 		cluster_elements(
 # 			input_df_breast,
@@ -1082,12 +1079,12 @@ test_that("Add cluster lables based on Kmeans - no object",{
 # 			resolution=0.8,
 # 			action="get"
 # 		)
-# 
+#
 # 	expect_equal(
 # 		typeof(res$`cluster SNN`),
 # 		"integer"
 # 	)
-# 
+#
 # 	expect_equal(
 # 		ncol(res),
 # 		3
@@ -1096,11 +1093,11 @@ test_that("Add cluster lables based on Kmeans - no object",{
 # 		nrow(res),
 # 		251
 # 	)
-# 
+#
 # })
 
 # test_that("Add cluster lables based on SNN - no object",{
-# 
+#
 # 	res =
 # 		cluster_elements(
 # 			input_df_breast,
@@ -1111,17 +1108,17 @@ test_that("Add cluster lables based on Kmeans - no object",{
 # 			resolution=0.8,
 # 			action="add"
 # 		)
-# 
+#
 # 	expect_equal(
 # 		typeof(res$`cluster SNN`),
 # 		"integer"
 # 	)
-# 
+#
 # 	expect_equal(
 # 		ncol(res),
 # 		6
 # 	)
-# 
+#
 # })
 
 test_that("Only reduced dimensions MDS - no object",{
@@ -1241,7 +1238,7 @@ test_that("Only reduced dimensions PCA - no object",{
 	)
 
 	expect_equal(	class(attr(res, "internals")$PCA), 	"prcomp"  )
-	
+
 	# Duplicate genes/samples
 	expect_error(
 		reduce_dimensions(
@@ -1313,9 +1310,9 @@ test_that("Get reduced dimensions tSNE - no object",{
 	set.seed(132)
 
 	res =
-		input_df_breast %>% 
+		input_df_breast %>%
 		identify_abundant(a, b, c) %>%
-	
+
 		reduce_dimensions(
 			method="tSNE",
 			.abundance = c,
@@ -1359,9 +1356,9 @@ test_that("Add reduced dimensions tSNE - no object",{
 	set.seed(132)
 
 	res =
-		input_df_breast %>% 
+		input_df_breast %>%
 		identify_abundant(a, b, c) %>%
-		
+
 		reduce_dimensions(
 			method="tSNE",
 			.abundance = c,
@@ -1585,31 +1582,31 @@ test_that("Only symbol from ensambl - no object",{
 })
 
 test_that("Add description to symbol",{
-	
+
 	# Human
 	res =
 		describe_transcript(
 			input_df,
 			.transcript = b
 		)
-	
-	
+
+
 	expect_equal(
 		ncol(res),
 		7
 	)
-	
+
 	res =
 		describe_transcript(
 			input_df %>% tidybulk(a, b, c)
 		)
-	
-	
+
+
 	expect_equal(
 		ncol(res),
 		7
 	)
-	
+
 })
 
 test_that("Add symbol from ensambl - no object",{
@@ -1677,8 +1674,8 @@ test_that("Only cell type proportions - no object",{
 		ncol(res),
 		23
 	)
-	
-	
+
+
 	# # EPIC
 	# library(EPIC)
 	# res =
@@ -1690,13 +1687,13 @@ test_that("Only cell type proportions - no object",{
 	# 		method = "epic",
 	# 		action="only", cores=1
 	# 	)
-	# 
+	#
 	# expect_equal(
 	# 	as.numeric(res[1,2:5]),
 	# 	c(7.750225e-01, 2.199743e-01, 5.808702e-05, 1.944729e-06),
 	# 	tolerance=1e-3
 	# )
-	# 
+	#
 	# expect_equal(
 	# 	ncol(res),
 	# 	24
@@ -1758,7 +1755,7 @@ test_that("Add cell type proportions - no object",{
 })
 
 test_that("differential composition",{
-	
+
 	# Cibersort
 	test_differential_cellularity(
 			input_df,
@@ -1767,22 +1764,22 @@ test_that("differential composition",{
 			.transcript = b,
 			.abundance = c,
 			cores = 1
-		) %>% 
+		) %>%
 		pull(`estimate_(Intercept)`) %>%
 		.[[1]] %>%
 		as.integer %>%
 		expect_equal(	-2, 	tollerance =1e-3)
-	
+
 	# llsr
 	test_differential_cellularity(
 		input_df,
 		. ~ condition,
 		.sample = a,
 		.transcript = b,
-		.abundance = c, 
+		.abundance = c,
 		method="llsr",
 		cores = 1
-	) %>% 
+	) %>%
 		pull(`estimate_(Intercept)`) %>%
 		.[[1]] %>%
 		as.integer %>%
@@ -1811,13 +1808,13 @@ test_that("differential composition",{
 		97,  # 97 is the github action MacOS that has different value
 		112, # 112 is the github action UBUNTU that has different value
 		93 # 93 is the github action Windows that has different value
-	) %>% 
+	) %>%
 	expect_true()
-	
+
 })
 
 test_that("test_stratification_cellularity",{
-	
+
 	# Cibersort
 	input_df %>%
 		select(a, b, c) %>%
@@ -1837,7 +1834,7 @@ test_that("test_stratification_cellularity",{
 		pull(.low_cellularity_expected) %>%
 		.[[1]] %>%
 		expect_equal(3.35, tolerance  =1e-1)
-	
+
 	# llsr
 	input_df %>%
 		select(a, b, c) %>%
@@ -1868,12 +1865,12 @@ test_that("filter abundant - no object",{
 			.transcript = b,
 			.abundance = c
 		)
-	
+
 	expect_equal(
 		ncol(res1),
 		7
 	)
-	
+
 	res2 =
 		identify_abundant(
 			input_df,
@@ -1883,12 +1880,12 @@ test_that("filter abundant - no object",{
 			minimum_proportion = 0.5,
 			minimum_counts = 30
 		)
-	
+
 	expect_equal(
 		ncol(res2),
 		7
 	)
-	
+
 	expect_gt(
 		res1 %>% filter(.abundant) %>% nrow(),
 		res2 %>% filter(.abundant) %>% nrow()
@@ -1910,23 +1907,23 @@ test_that("filter abundant - no object",{
 })
 
 test_that("filter abundant with design - no object",{
-	
+
 	res =
 		identify_abundant(
 			input_df,
 			.sample = a,
 			.transcript = b,
-			.abundance = c, 
+			.abundance = c,
 			factor_of_interest = condition
 		)
-	
+
 	expect_equal(
 		ncol(res),
 		7
 	)
-	
 
-	
+
+
 })
 
 test_that("nest - no object",{
@@ -1989,16 +1986,16 @@ test_that("gene over representation",{
 
 
 test_that("bibliography",{
-	
+
 		tidybulk(
 			input_df,
 			.sample = a,
 			.transcript = b,
 			.abundance = c
-		) %>% 
+		) %>%
 		scale_abundance() %>%
 		get_bibliography()
-	
+
 })
 
 test_that("as_SummarizedExperiment",{
@@ -2007,6 +2004,6 @@ test_that("as_SummarizedExperiment",{
 		.sample = a,
 		.transcript = b,
 		.abundance = c
-	) 
-	
+	)
+
 })
