@@ -94,6 +94,9 @@ setMethod("tidybulk", "SummarizedExperiment", .tidybulk_se)
 #'
 setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 
+
+
+
 #' @importFrom magrittr multiply_by
 #' @importFrom magrittr divide_by
 #' @importFrom SummarizedExperiment assays
@@ -101,8 +104,16 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 #' @importFrom utils tail
 #'
 .scale_abundance_se = function(.data,
+                               .sample = NULL,
+                               .transcript = NULL,
+                               .abundance = NULL,
 															 method = "TMM",
-															 reference_sample = NULL) {
+															 reference_sample = NULL,
+															 .subset_for_scaling = NULL,
+															 action = NULL,
+
+															 # DEPRECATED
+															 reference_selection_function = NULL) {
 
 
 	# Check if package is installed, otherwise install
@@ -113,13 +124,31 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 		BiocManager::install("edgeR", ask = FALSE)
 	}
 
+  # DEPRECATION OF reference function
+  if (is_present(reference_selection_function) & !is.null(reference_selection_function)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.1.8", "tidybulk::scale_abundance(reference_selection_function = )", details = "The argument reference_selection_function is now deprecated please use reference_sample. By default the reference selection function is max()")
+
+  }
+
 	# Check that reference sample exists
 	if(!is.null(reference_sample) && !reference_sample %in% (.data %>% colnames))
 		stop("tidybulk says: your reference sample is not among the samples in your data frame")
 
+  .subset_for_scaling = enquo(.subset_for_scaling)
 
+	.data_filtered =
+	  filter_if_abundant_were_identified(.data) %>%
 
-	.data_filtered = filter_if_abundant_were_identified(.data)
+	  # Filter based on user condition
+	  when(
+	    !quo_is_null(.subset_for_scaling) ~ filter_genes_on_condition(., !!.subset_for_scaling),
+	    ~ (.)
+	  ) %>%
+
+	  # Check I have genes left
+	  when(nrow(.) == 0 ~ stop("tidybulk says: there are 0 genes that passes the filters (.abundant and/or .subset_for_scaling). Please check your filtering or your data."), ~ (.))
 
 	my_assay = assays(.data_filtered) %>% as.list() %>% .[1]
 	my_counts_filtered = my_assay[[1]]

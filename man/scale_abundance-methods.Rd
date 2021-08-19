@@ -17,6 +17,7 @@ scale_abundance(
   .abundance = NULL,
   method = "TMM",
   reference_sample = NULL,
+  .subset_for_scaling = NULL,
   action = "add",
   reference_selection_function = NULL
 )
@@ -28,6 +29,7 @@ scale_abundance(
   .abundance = NULL,
   method = "TMM",
   reference_sample = NULL,
+  .subset_for_scaling = NULL,
   action = "add",
   reference_selection_function = NULL
 )
@@ -39,6 +41,7 @@ scale_abundance(
   .abundance = NULL,
   method = "TMM",
   reference_sample = NULL,
+  .subset_for_scaling = NULL,
   action = "add",
   reference_selection_function = NULL
 )
@@ -50,13 +53,34 @@ scale_abundance(
   .abundance = NULL,
   method = "TMM",
   reference_sample = NULL,
+  .subset_for_scaling = NULL,
   action = "add",
   reference_selection_function = NULL
 )
 
-\S4method{scale_abundance}{SummarizedExperiment}(.data, method = "TMM", reference_sample = NULL)
+\S4method{scale_abundance}{SummarizedExperiment}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  method = "TMM",
+  reference_sample = NULL,
+  .subset_for_scaling = NULL,
+  action = NULL,
+  reference_selection_function = NULL
+)
 
-\S4method{scale_abundance}{RangedSummarizedExperiment}(.data, method = "TMM", reference_sample = NULL)
+\S4method{scale_abundance}{RangedSummarizedExperiment}(
+  .data,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  method = "TMM",
+  reference_sample = NULL,
+  .subset_for_scaling = NULL,
+  action = NULL,
+  reference_selection_function = NULL
+)
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
@@ -70,6 +94,8 @@ scale_abundance(
 \item{method}{A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
 \item{reference_sample}{A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.}
+
+\item{.subset_for_scaling}{A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example}
 
 \item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
 
