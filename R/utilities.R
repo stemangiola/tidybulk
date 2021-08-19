@@ -1642,3 +1642,18 @@ combineByRow <- function(m, fun = NULL) {
 
   m[ which(!is.na(m.rownames)),]
 }
+
+filter_genes_on_condition = function(.data, .subset_for_scaling){
+
+  .subset_for_scaling = enquo(.subset_for_scaling)
+
+  # Get genes from condition
+  my_genes =
+    rowData(.data) %>%
+    as_tibble(rownames=".feature") %>%
+    filter(!!.subset_for_scaling) %>%
+    pull(.feature)
+
+  .data[rownames(.data) %in% my_genes,]
+
+}

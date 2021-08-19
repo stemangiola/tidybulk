@@ -56,7 +56,7 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 
 test_that("tidybulk SummarizedExperiment normalisation",{
 
-	res = scale_abundance(se %>% identify_abundant())
+	res = se %>% identify_abundant() %>% scale_abundance()
 
 	expect_equal(
 		names(SummarizedExperiment::assays(res)),
@@ -64,6 +64,24 @@ test_that("tidybulk SummarizedExperiment normalisation",{
 	)
 
 })
+
+test_that("tidybulk SummarizedExperiment normalisation subset",{
+
+  res = se %>% identify_abundant() %>% scale_abundance(
+    .subset_for_scaling = .abundant & grepl("^E", .feature)
+  )
+
+  expect_equal(
+    unique(SummarizedExperiment::colData(res)$multiplier),
+    c(1.3648110, 1.5756592, 1.1651309, 2.1282288, 1.2110911, 0.9574359, 1.4434610, 1.4897840),
+    tolerance=1e-6
+  )
+
+})
+
+
+
+
 
 test_that("tidybulk SummarizedExperiment clustering",{
 

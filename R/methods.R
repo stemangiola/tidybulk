@@ -309,6 +309,7 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_sample A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.
+#' @param .subset_for_scaling A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example
 #' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
 #'
 #' @param reference_selection_function DEPRECATED. please use reference_sample.
@@ -346,6 +347,7 @@ setGeneric("scale_abundance", function(.data,
 																			 .abundance = NULL,
 																			 method = "TMM",
 																			 reference_sample = NULL,
+																			 .subset_for_scaling = NULL,
 																			 action = "add",
 
 																			 # DEPRECATED
@@ -359,6 +361,7 @@ setGeneric("scale_abundance", function(.data,
 														 .abundance = NULL,
 														 method = "TMM",
 														 reference_sample = NULL,
+														 .subset_for_scaling = NULL,
 														 action = "add",
 
 														 # DEPRECATED
@@ -372,6 +375,8 @@ setGeneric("scale_abundance", function(.data,
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
+
+	.subset_for_scaling = enquo(.subset_for_scaling)
 
 	# Set column name for value scaled
 	value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
@@ -405,6 +410,15 @@ setGeneric("scale_abundance", function(.data,
 				(.)
 			}
 		) %>%
+
+	  # filter based on user selection
+	  when(
+	   !quo_is_null(.subset_for_scaling) ~ filter(., !!.subset_for_scaling),
+	   ~ (.)
+	 ) %>%
+
+	  # Check I have genes left
+	  when(nrow(.) == 0 ~ stop("tidybulk says: there are 0 genes that passes the filters (.abundant and/or .subset_for_scaling). Please check your filtering or your data."), ~ (.)) %>%
 
 		get_scaled_counts_bulk(
 			.sample = !!.sample,
