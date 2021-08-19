@@ -456,7 +456,8 @@ keep_variable_transcripts_SE = function(.data,
 		# Check if log transform is needed
 		when(log_transform ~ log1p(.), ~ (.) )
 
-	s <- rowMeans((x - rowMeans(x)) ^ 2)
+
+	s <- rowMeans((x - rowMeans(x, na.rm=TRUE)) ^ 2, na.rm=TRUE)
 	o <- order(s, decreasing = TRUE)
 	x <- x[o[1L:top], , drop = FALSE]
 	variable_trancripts = rownames(x)
@@ -964,6 +965,7 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 																												 omit_contrast_in_colnames = FALSE,
 																												 prefix = "",
 																												 ...) {
+
 
 	# Check if contrasts are of the same form
 	if(
