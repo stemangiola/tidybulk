@@ -280,7 +280,7 @@ CIBERSORT(Y = data, X = reference, ...)</p>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># Subsetting for time efficiency</span></span>
 <span class='r-in'><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='filter-methods.html'>filter</a></span><span class='op'>(</span><span class='va'>sample</span><span class='op'>==</span><span class='st'>"SRR1740034"</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'>deconvolve_cellularity</span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>feature</span>, <span class='va'>count</span>, cores <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 527 x 28</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 527 × 28</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>    feature  sample     count Cell.type time  condition `B cells naive`</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span>               <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 1</span> ABCB4    SRR1740034  <span style='text-decoration: underline;'>1</span>035 b_cell    0 d   TRUE                0.620</span>
@@ -299,9 +299,7 @@ CIBERSORT(Y = data, X = reference, ...)</p>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   T cells follicular helper &lt;dbl&gt;, T cells regulatory (Tregs) &lt;dbl&gt;,</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   T cells gamma delta &lt;dbl&gt;, NK cells resting &lt;dbl&gt;,</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   NK cells activated &lt;dbl&gt;, Monocytes &lt;dbl&gt;, Macrophages M0 &lt;dbl&gt;,</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   Macrophages M1 &lt;dbl&gt;, Macrophages M2 &lt;dbl&gt;, Dendritic cells resting &lt;dbl&gt;,</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   Dendritic cells activated &lt;dbl&gt;, Mast cells resting &lt;dbl&gt;,</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   Mast cells activated &lt;dbl&gt;, Eosinophils &lt;dbl&gt;, Neutrophils &lt;dbl&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   Macrophages M1 &lt;dbl&gt;, Macrophages M2 &lt;dbl&gt;, …</span></span>
 <span class='r-in'></span>
 <span class='r-in'></span>
 </code></pre></div>

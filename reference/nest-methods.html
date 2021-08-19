@@ -217,7 +217,7 @@ standard tidyverse recycling rules).</p></td>
 <span class='r-in'></span>
 <span class='r-in'><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'>nest</span><span class='op'>(</span> data <span class='op'>=</span> <span class='op'>-</span><span class='va'>feature</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
 <span class='r-in'><span class='fu'>unnest</span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 2,635 x 6</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 2,635 × 6</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>    feature sample     count Cell.type         time  condition</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>             <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span>    </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 1</span> ABCB4   SRR1740034  <span style='text-decoration: underline;'>1</span>035 b_cell            0 d   TRUE     </span>
@@ -234,7 +234,7 @@ standard tidyverse recycling rules).</p></td>
 <span class='r-in'></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'>nest</span><span class='op'>(</span> data <span class='op'>=</span> <span class='op'>-</span><span class='va'>feature</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 527 x 2</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 527 × 2</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>    feature  data              </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;list&gt;</span>            </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 1</span> ABCB4    <span style='color: #949494;'>&lt;tidybulk [5 × 5]&gt;</span></span>
