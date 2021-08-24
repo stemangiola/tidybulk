@@ -103,7 +103,7 @@ remove_redundancy(
 
 \item{.abundance}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
 
-\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
+\item{method}{A character string. The method to use, correlation and reduced_dimensions are available. The latter eliminates one of the most proximar pairs of samples in PCA reduced dimensions.}
 
 \item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 

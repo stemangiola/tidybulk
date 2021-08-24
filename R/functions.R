@@ -757,6 +757,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param ... Additional arguments for DESeq2
 #'
 #' @return A tibble with edgeR results
 #'
@@ -769,7 +770,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 																											 method = "edgeR_quasi_likelihood",
 																											 scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
-																											 prefix = "") {
+																											 prefix = "",
+																											 ...) {
 
 	# Check if contrasts are of the same form
 	if(
@@ -837,7 +839,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 		# DESeq2
 		DESeq2::DESeqDataSet( design = .formula) %>%
-		DESeq2::DESeq()
+		DESeq2::DESeq(...)
 
 	# Read ft object
 	deseq2_object %>%
@@ -2317,32 +2319,35 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		ifelse_pipe(log_transform,
 								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
 		distinct() %>%
-		spread(!!.element,!!.abundance) %>%
-		drop_na() %>%
 
-		# check that there are non-NA genes for enough samples
-		ifelse2_pipe(# First condition
-			(.) %>% nrow == 0,
+# NO NEED OF RECTANGULAR
+# 		spread(!!.element,!!.abundance) %>%
+# 		drop_na() %>%
+#
+# 		# check that there are non-NA genes for enough samples
+# 		ifelse2_pipe(# First condition
+# 			(.) %>% nrow == 0,
+#
+# 			# Second condition
+# 			(.) %>% nrow < 100,
+#
+# 			# First function
+# 			~ stop(
+# 				"tidybulk says: In calculating correlation there is no gene that have non NA values is all samples"
+# 			),
+#
+# 			# Second function
+# 			~ {
+# 				message(
+# 					"tidybulk says: In calculating correlation there is < 100 genes (that have non NA values) is all samples.
+# The correlation calculation might not be reliable"
+# 				)
+# 				.x
+# 			}) %>%
+#
+# 		# Prepare the data frame
+# 		gather(!!.element,!!.abundance,-!!.feature) %>%
 
-			# Second condition
-			(.) %>% nrow < 100,
-
-			# First function
-			~ stop(
-				"tidybulk says: In calculating correlation there is no gene that have non NA values is all samples"
-			),
-
-			# Second function
-			~ {
-				message(
-					"tidybulk says: In calculating correlation there is < 100 genes (that have non NA values) is all samples.
-The correlation calculation might not be reliable"
-				)
-				.x
-			}) %>%
-
-		# Prepare the data frame
-		gather(!!.element,!!.abundance,-!!.feature) %>%
 		dplyr::rename(rc := !!.abundance,
 									sample := !!.element,
 									transcript := !!.feature) %>% # Is rename necessary?
@@ -2976,7 +2981,7 @@ keep_variable_transcripts = function(.data,
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = quo_name(.transcript))
 
-	s <- rowMeans((x - rowMeans(x)) ^ 2)
+	s <- rowMeans((x - rowMeans(x, na.rm = TRUE)) ^ 2, na.rm = TRUE)
 	o <- order(s, decreasing = TRUE)
 	x <- x[o[1L:top], , drop = FALSE]
 	variable_trancripts = rownames(x)
@@ -2984,7 +2989,7 @@ keep_variable_transcripts = function(.data,
 	.data %>%
 		filter(!!.transcript %in% variable_trancripts) %>%
 
-		# Add methods used
+		# Add methods used. The correlation code comes from there
 		memorise_methods_used(c("edger"))
 }
 

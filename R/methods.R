@@ -1104,7 +1104,7 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 #' @param .feature The name of the feature column (normally transcripts/genes)
 #' @param .abundance The name of the column including the numerical value the clustering is based on (normally transcript abundance)
 #'
-#' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
+#' @param method A character string. The method to use, correlation and reduced_dimensions are available. The latter eliminates one of the most proximar pairs of samples in PCA reduced dimensions.
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #' @param correlation_threshold A real number between 0 and 1. For correlation based calculation.
@@ -1226,7 +1226,7 @@ setGeneric("remove_redundancy", function(.data,
 		# Validate data frame
 		if(do_validate()) {
 		validation(.data, !!.element, !!.feature, !!.abundance)
-		warning_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
+		# warning_if_data_is_not_rectangular(.data, !!.element, !!.feature, !!.abundance)
 		}
 
 		remove_redundancy_elements_through_correlation(
@@ -2314,7 +2314,8 @@ such as batch effects (if applicable) in the formula.
 					test_above_log2_fold_change = test_above_log2_fold_change,
 					scaling_method = scaling_method,
 					omit_contrast_in_colnames = omit_contrast_in_colnames,
-					prefix = prefix
+					prefix = prefix,
+					...
 				),
 
 			# DESeq2
@@ -2328,7 +2329,8 @@ such as batch effects (if applicable) in the formula.
 				method = method,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
-				prefix = prefix
+				prefix = prefix,
+				...
 			),
 
 			# Else error
