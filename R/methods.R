@@ -3713,7 +3713,8 @@ setGeneric("impute_missing_abundance", function(.data,
 																				.formula,
 																				.sample = NULL,
 																				.transcript = NULL,
-																				.abundance = NULL)
+																				.abundance = NULL,
+																				suffix = "_imputed")
 	standardGeneric("impute_missing_abundance"))
 
 # Set internal
@@ -3721,7 +3722,8 @@ setGeneric("impute_missing_abundance", function(.data,
 															.formula,
 															.sample = NULL,
 															.transcript = NULL,
-															.abundance = NULL)
+															.abundance = NULL,
+															suffix = "_imputed")
 {
 	# Get column names
 	.sample = enquo(.sample)
@@ -3752,7 +3754,8 @@ setGeneric("impute_missing_abundance", function(.data,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			.abundance_scaled = !!.abundance_scaled) %>%
+			.abundance_scaled = !!.abundance_scaled,
+			suffix = suffix) %>%
 
 		# Reattach internals
 		reattach_internals(.data)
