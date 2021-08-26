@@ -1132,6 +1132,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 		reattach_internals(.data)
 }
 
+
 # Greater than
 gt = function(a, b){	a > b }
 
