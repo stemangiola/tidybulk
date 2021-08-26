@@ -150,9 +150,6 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 	  # Check I have genes left
 	  when(nrow(.) == 0 ~ stop("tidybulk says: there are 0 genes that passes the filters (.abundant and/or .subset_for_scaling). Please check your filtering or your data."), ~ (.))
 
-	# If not enough genes, warning
-	if(nrow(.data_filtered)<100) warning(warning_for_scaling_with_few_genes)
-
 	my_assay = assays(.data_filtered) %>% as.list() %>% .[1]
 
 	# Drop genes with NAs, as edgeR::calcNormFactors does not accept them
