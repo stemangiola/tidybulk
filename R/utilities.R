@@ -1132,7 +1132,6 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 		reattach_internals(.data)
 }
 
-
 # Greater than
 gt = function(a, b){	a > b }
 
@@ -1594,5 +1593,3 @@ fill_NA_matrix_with_factor_colwise = function(.data, factor){
     .[rn, cn]
 
 }
-
-
