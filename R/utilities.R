@@ -257,7 +257,7 @@ scale_design = function(df, .formula) {
 }
 
 get_tt_columns = function(.data){
-  if(.data %>% attr("internals") %>% is.list())
+  if(.data %>% attr("internals") %>% is.list() & "internals" %in% (.data %>% attr("internals") %>% names()))
     .data %>% attr("internals") %$% tt_columns
   else NULL
 }
