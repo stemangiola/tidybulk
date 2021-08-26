@@ -1215,6 +1215,15 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 		droplevels() %>%
 		select(!!.sample, !!.transcript, !!.abundance)
 
+	df.filt.spread =
+	  df.filt %>%
+	  tidyr::spread(!!.sample,!!.abundance) %>%
+	  tidyr::drop_na() %>%
+	  dplyr::select(-!!.transcript)
+
+	# If not enough genes, warning
+	if(nrow(df.filt.spread)<100) warning(warning_for_scaling_with_few_genes)
+
 	# scaled data set
 	nf =
 		tibble::tibble(
@@ -1223,10 +1232,7 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 
 			# scaled data frame
 			nf = edgeR::calcNormFactors(
-				df.filt %>%
-					tidyr::spread(!!.sample,!!.abundance) %>%
-					tidyr::drop_na() %>%
-					dplyr::select(-!!.transcript),
+			  df.filt.spread,
 				refColumn = which(reference == factor(levels(
 					df.filt %>% pull(!!.sample)
 				))),
@@ -1656,5 +1662,55 @@ filter_genes_on_condition = function(.data, .subset_for_scaling){
     pull(.feature)
 
   .data[rownames(.data) %in% my_genes,]
+
+}
+
+
+which_NA_matrix = function(.data){
+  is_na <- which(is.na(.data), arr.ind=TRUE)
+  which_is_NA = fill_matrix_with_FALSE(.data )
+  which_is_NA[is_na] <- TRUE
+  which_is_NA
+}
+
+fill_matrix_with_FALSE = function(.data){
+  .data[,] = FALSE
+  .data
+}
+
+rowMedians = function(.data, na.rm){
+  apply(.data, 1, median, na.rm=na.rm)
+}
+
+fill_NA_matrix_with_factor_colwise = function(.data, factor){
+
+  rn = rownames(.data)
+  cn = colnames(.data)
+
+  .data %>%
+    t %>%
+    split.data.frame(factor) %>%
+    map(~ t(.x)) %>%
+
+    # Fill
+    map(
+      ~ {
+        k <- which(is.na(.x), arr.ind=TRUE)
+        .x[k] <- rowMedians(.x, na.rm=TRUE)[k[,1]]
+        .x
+      }
+    ) %>%
+
+    # Add NA factors if any
+    when(
+      is.na(factor) %>% length() %>% gt(0) ~ (.) %>% c(list(.data[,is.na(factor)])),
+      ~ (.)
+    ) %>%
+
+    # Merge
+    reduce(cbind) %>%
+
+    # Reorder rows and column as it was
+    .[rn, cn]
 
 }
