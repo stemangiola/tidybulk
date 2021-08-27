@@ -432,6 +432,7 @@ add_class = function(var, name) {
 #' @keywords internal
 #'
 #' @importFrom rlang quo_is_symbol
+#' @importFrom rlang quo_is_symbolic
 #'
 #' @param .data A tibble
 #' @param .sample A character name of the sample column
@@ -451,7 +452,7 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
       .transcript =  get_tt_columns(.data)$.transcript
     else my_stop()
 
-    if( .abundance %>% quo_is_symbol() ) .abundance = .abundance
+    if( .abundance %>% quo_is_symbolic() ) .abundance = .abundance
     else if(".abundance" %in% (.data %>% get_tt_columns() %>% names))
       .abundance = get_tt_columns(.data)$.abundance
     else my_stop()
