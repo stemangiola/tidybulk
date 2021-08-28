@@ -16,11 +16,7 @@ impute_missing_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-<<<<<<< HEAD
   suffix = ""
-=======
-  suffix = "_imputed"
->>>>>>> update imputation and warning for scaling
 )
 
 \S4method{impute_missing_abundance}{spec_tbl_df}(
@@ -29,11 +25,7 @@ impute_missing_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-<<<<<<< HEAD
   suffix = ""
-=======
-  suffix = "_imputed"
->>>>>>> update imputation and warning for scaling
 )
 
 \S4method{impute_missing_abundance}{tbl_df}(
@@ -42,11 +34,7 @@ impute_missing_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-<<<<<<< HEAD
   suffix = ""
-=======
-  suffix = "_imputed"
->>>>>>> update imputation and warning for scaling
 )
 
 \S4method{impute_missing_abundance}{tidybulk}(
@@ -55,7 +43,6 @@ impute_missing_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-<<<<<<< HEAD
   suffix = ""
 )
 
@@ -76,14 +63,6 @@ impute_missing_abundance(
   .abundance = NULL,
   suffix = ""
 )
-=======
-  suffix = "_imputed"
-)
-
-\S4method{impute_missing_abundance}{SummarizedExperiment}(.data, .formula, suffix = "_imputed")
-
-\S4method{impute_missing_abundance}{RangedSummarizedExperiment}(.data, .formula, suffix = "_imputed")
->>>>>>> update imputation and warning for scaling
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
