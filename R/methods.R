@@ -3714,7 +3714,7 @@ setGeneric("impute_missing_abundance", function(.data,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL,
-																				suffix = "_imputed")
+																				suffix = "")
 	standardGeneric("impute_missing_abundance"))
 
 # Set internal
@@ -3723,7 +3723,7 @@ setGeneric("impute_missing_abundance", function(.data,
 															.sample = NULL,
 															.transcript = NULL,
 															.abundance = NULL,
-															suffix = "_imputed")
+															suffix = "")
 {
 	# Get column names
 	.sample = enquo(.sample)

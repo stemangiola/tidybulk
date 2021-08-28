@@ -1973,29 +1973,47 @@ setMethod("pivot_transcript",
 
 .impute_missing_abundance_se = function(.data,
 																				.formula,
-																				suffix = "_imputed") {
+																				.sample = NULL,
+																				.transcript = NULL,
+																				.abundance  = NULL,
+																				suffix = "") {
+
+  .abundance = enquo(.abundance)
+
+  .assay_to_impute =
+    .abundance %>%
+    when(
+      quo_is_symbolic(.) ~ assays(.data)[quo_names(.abundance)],
+      ~ assays(.data)
+    )
+
 
 
   # Split data by formula and impute
-
   imputed_dataframe =
     map2(
 
       # Capture assay names as we need to know if scaled is in the name
-      as.list(assays(.data)), names(assays(.data)),
+      as.list(.assay_to_impute), names(.assay_to_impute),
       ~ {
 
         # Pseudo-scale if not scaled
         if(!grepl("_scaled", .y)) library_size = colSums(.x, na.rm = TRUE)
         if(!grepl("_scaled", .y)) .x = .x / library_size
 
+        # Log
+        need_log = max(.x, na.rm=T) > 50
+        if(need_log) .x = log1p(.x)
+
         # Imputation
         .x = fill_NA_matrix_with_factor_colwise(
           .x,
-
           # I split according to the formula
           colData(.data)[,parse_formula(.formula)]
         )
+
+        # Exp back
+        if(need_log) .x = exp(.x)-1
 
         # Scale back if pseudoscaled
         if(!grepl("_scaled", .y)) .x = .x * library_size
@@ -2006,18 +2024,19 @@ setMethod("pivot_transcript",
     ) %>%
 
     # Add imputed to the name
-    setNames(sprintf("%s%s", names(assays(.data)), suffix)) %>%
+    setNames(sprintf("%s%s", names(.assay_to_impute), suffix))
+
+  .assays_name_to_port = names(assays(.data)) %>% setdiff(names(.assay_to_impute))
+
+  assays(.data) =
+    as.list(assays(.data))[.assays_name_to_port] %>%
+    c(imputed_dataframe ) %>%
 
     # Add .imputed column
-    c(list(.imputed =  which_NA_matrix(assays(.data)[[1]] )))
+    c(list(.imputed =  which_NA_matrix(.assay_to_impute[[1]] ))) %>%
 
-  # If no suffix overwrite
-  if(suffix == "") assays(.data) = imputed_dataframe
-
-  # If suffix append assays
-  else assays(.data) =
-        as.list(assays(.data)) %>%
-        c(imputed_dataframe )
+    # Make names unique
+    setNames(names(.) %>% make.unique())
 
 
   .data %>%
@@ -2026,6 +2045,8 @@ setMethod("pivot_transcript",
     reattach_internals(.data)
 
 }
+
+
 
 #' impute_missing_abundance
 #' @inheritParams impute_missing_abundance
