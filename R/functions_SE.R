@@ -384,6 +384,93 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 
 	}
 
+#' Get UMAP
+#'
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats setNames
+#' @importFrom utils install.packages
+#'
+#' @param .data A tibble
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param top An integer. How many top genes to select
+#' @param of_samples A boolean
+#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param calculate_for_pca_dimensions An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered
+#' @param ... Further parameters passed to the function uwot
+#'
+#' @return A tibble with additional columns
+#'
+get_reduced_dimensions_UMAP_bulk_SE <-
+  function(.data,
+           .dims = 2,
+           top = 500,
+           of_samples = TRUE,
+           log_transform = TRUE,
+           scale = NULL, # This is only a dummy argument for making it compatibble with PCA
+           calculate_for_pca_dimensions = 20,
+           ...) {
+    # Comply with CRAN NOTES
+    . = NULL
+
+    # To avoid dplyr complications
+
+    # Evaluate ...
+    arguments <- list(...)
+    # if (!"check_duplicates" %in% names(arguments))
+    #   arguments = arguments %>% c(check_duplicates = FALSE)
+    if (!"dims" %in% names(arguments))
+      arguments = arguments %>% c(n_components = .dims)
+    if (!"init" %in% names(arguments))
+      arguments = arguments %>% c(init = "spca")
+
+
+    # Check if package is installed, otherwise install
+    if (find.package("uwot", quiet = TRUE) %>% length %>% equals(0)) {
+      message("tidybulk says: Installing uwot")
+      install.packages("uwot", repos = "https://cloud.r-project.org")
+    }
+
+
+    # Calculate based on PCA
+    if(!is.null(calculate_for_pca_dimensions))
+      df_UMAP =
+      .data %>%
+
+      t() %>%
+
+      # Calculate principal components
+      prcomp(scale = scale) %$%
+
+      # Parse the PCA results to a tibble
+      x %>%
+      .[,1:calculate_for_pca_dimensions]
+
+    # Calculate based on all features
+    else
+      df_UMAP = .data
+
+    umap_obj = do.call(uwot::tumap, c(list(df_UMAP), arguments))
+
+    list(
+      raw_result = umap_obj,
+      result = umap_obj  %>%
+        as_tibble(.name_repair = "minimal") %>%
+        setNames(c("UMAP1", "UMAP2")) %>%
+
+        # add element name
+        dplyr::mutate(sample = !!.data %>% colnames) %>%
+        select(-sample)
+    )
+
+  }
 
 counts_scaled_exist_SE = function(.data){
 
