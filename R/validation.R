@@ -312,7 +312,7 @@ validate_signature = function(.data, reference, .transcript){
 			which %>%
 			length %>%
 			st(50))
-		stop(
+		warning(
 			"tidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes"
 		)
 
@@ -331,7 +331,7 @@ validate_signature_SE = function(.data, reference, .transcript){
 			which %>%
 			length %>%
 			st(50))
-		stop(
+	  warning(
 			"tidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes"
 		)
 
