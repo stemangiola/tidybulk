@@ -70,7 +70,8 @@ Suggests:
     functional,
     survminer,
     tidySummarizedExperiment,
-    markdown
+    markdown,
+    uwot
 VignetteBuilder: 
     knitr
 RdMacros:

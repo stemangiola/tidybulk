@@ -1380,6 +1380,35 @@ test_that("Add reduced dimensions tSNE - no object",{
 
 })
 
+test_that("Add reduced dimensions UMAP - no object",{
+
+  set.seed(132)
+
+  res =
+    input_df_breast %>%
+    identify_abundant(a, b, c) %>%
+
+    reduce_dimensions(
+      method="UMAP",
+      .abundance = c,
+      .element = a,
+      .feature = b,
+      action="add"
+    )
+
+  expect_equal(
+    typeof(res$`UMAP1`),
+    "double",
+    tolerance=1e-1
+  )
+
+  expect_equal(
+    ncol(res),
+    8
+  )
+
+})
+
 test_that("Only rotated dimensions - no object",{
 
 	res.pca =

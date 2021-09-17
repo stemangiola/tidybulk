@@ -533,25 +533,92 @@ test_that("Only reduced dimensions MDS - no object",{
 
 
 	res =
-		se_mini %>%
-		reduce_dimensions(
-			method = "MDS",
-			.abundance = c,
-			.element = a,
-			.feature = b
-		)
+	  breast_tcga_mini_SE %>%
+		reduce_dimensions(method = "MDS")
 
 	expect_equal(
-		res$`Dim1`,
-		c(1.4048441,  1.3933490, -2.0138120 , 0.8832354, -1.6676164),
+		res$`Dim1`[1:4],
+		c(-0.2723808836, -0.1105770207, -0.3034092668, -0.0064569358),
 		tolerance=10
 	)
 
 	expect_equal(
 		ncol(colData(res)),
-		5
+		3
 	)
 
 	expect_equal(	class(attr(res, "internals")$MDS[[1]])[1], 	"MDS"  )
+
+})
+
+test_that("Only reduced dimensions PCA - no object",{
+
+
+
+
+  res =
+    breast_tcga_mini_SE %>%
+    reduce_dimensions(  method = "PCA"  )
+
+  expect_equal(
+    res$`PC1`[1:4],
+    c(-8.5145575 ,  4.2451190 , -6.8991306 , -6.0787597 ),
+    tolerance=10
+  )
+
+  expect_equal(
+    ncol(colData(res)),
+    3
+  )
+
+  expect_equal(	class(attr(res, "internals")$PCA[[1]])[1], 	"numeric"  )
+
+})
+
+test_that("Only reduced dimensions tSNE - no object",{
+
+
+
+
+  res =
+    breast_tcga_mini_SE %>%
+    reduce_dimensions(  method = "tSNE"  )
+
+  expect_equal(
+    res$`tSNE1`[1:4],
+    c(-2.4677708, -0.3447403, -5.8059667,  1.9685007 ),
+    tolerance=10
+  )
+
+  expect_equal(
+    ncol(colData(res)),
+    3
+  )
+
+  expect_equal(	class(attr(res, "internals")$tSNE[[1]])[1], 	"integer"  )
+
+})
+
+test_that("Only reduced dimensions UMAP - no object",{
+
+
+
+
+  res =
+    breast_tcga_mini_SE %>%
+    reduce_dimensions(  method = "UMAP"  )
+
+  expect_equal(
+    res$`UMAP1`[1:4],
+    c(-1.9784263, -0.8536380, -0.6537955, -1.8840860 ),
+    tolerance=10
+  )
+
+  expect_equal(
+    ncol(colData(res)),
+    3
+  )
+
+  expect_equal(	class(attr(res, "internals")$UMAP[[1]])[1], 	"numeric"  )
 
 })
