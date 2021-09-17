@@ -874,6 +874,7 @@ setGeneric("reduce_dimensions", function(.data,
 			                                                                       top = top,
 			                                                                       of_samples = of_samples,
 			                                                                       log_transform = log_transform,
+			                                                                       scale = scale,
 			                                                                       ...
 			),
 			TRUE ~ 	stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\"")

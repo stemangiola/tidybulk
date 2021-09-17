@@ -1960,6 +1960,7 @@ get_reduced_dimensions_UMAP_bulk <-
            top = 500,
            of_samples = TRUE,
            log_transform = TRUE,
+           scale = TRUE,
            calculate_for_pca_dimensions = 20,
            ...) {
 

@@ -356,17 +356,16 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 
 		# Set perprexity to not be too high
 		if (!"perplexity" %in% names(arguments))
-			arguments = arguments %>% c(perplexity = ((
-				.data %>% distinct(!!.element) %>% nrow %>% sum(-1)
-			) / 3 / 2) %>% floor() %>% min(30))
+		  arguments = arguments %>% c(perplexity = ((
+		    .data %>% ncol() %>% sum(-1)
+		  ) / 3 / 2) %>% floor() %>% min(30))
 
 		# If not enough samples stop
 		if (arguments$perplexity <= 2)
 			stop("tidybulk says: You don't have enough samples to run tSNE")
 
 		# Calculate the most variable genes, from plotMDS Limma
-		tsne_obj =
-			do.call(Rtsne::Rtsne, c(list(t(.data)), arguments))
+		tsne_obj = do.call(Rtsne::Rtsne, c(list(t(.data)), arguments))
 
 
 
