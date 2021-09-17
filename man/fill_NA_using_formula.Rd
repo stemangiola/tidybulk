@@ -10,7 +10,8 @@ fill_NA_using_formula(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .abundance_scaled = NULL
+  .abundance_scaled = NUL,
+  suffix = "_imputed"
 )
 }
 \arguments{
