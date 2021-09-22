@@ -70,11 +70,6 @@ test_that("tidybulk SummarizedExperiment normalisation",{
       tolerance=1e-6
     )
 
-    expect_equal(
-      ncol(res),
-      3
-    )
-
 	res = se %>% identify_abundant() %>% scale_abundance()
 
 	expect_equal(
