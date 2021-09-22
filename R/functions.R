@@ -173,11 +173,14 @@ get_scaled_counts_bulk <- function(.data,
 																	 .transcript = NULL,
 																	 .abundance = NULL,
 																	 method = "TMM",
-																	 reference_sample = NULL) {
+																	 reference_sample = NULL,
+																	 .library_size = NULL) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+
+	.library_size = enquo(.library_size)
 
 	# Check if package is installed, otherwise install
 	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
@@ -187,15 +190,12 @@ get_scaled_counts_bulk <- function(.data,
 		BiocManager::install("edgeR", ask = FALSE)
 	}
 
-	# Reformat input data set
-	df <-
-		.data %>%
+	# Set factors
+	.data =
+	  .data %>%
+	  dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript)) %>%
+	  droplevels()
 
-		# Rename
-		dplyr::select(!!.sample,!!.transcript,!!.abundance) %>%
-
-		# Set samples and genes as factors
-		dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript))
 
 
 	# Get reference
@@ -205,7 +205,7 @@ get_scaled_counts_bulk <- function(.data,
 			!is.null(.) ~ (.),
 
 			# If not specified take most abundance sample
-			df %>%
+			.data %>%
 				group_by(!!.sample) %>%
 				summarise(sum = median(!!.abundance)) %>%
 				mutate(med = max(sum)) %>%
@@ -219,18 +219,19 @@ get_scaled_counts_bulk <- function(.data,
 
 	nf_obj <-
 		add_scaled_counts_bulk.calcNormFactor(
-			df,
+		  .data,
 			reference,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			method
+			method,
+			.library_size = !!.library_size
 		)
 
 	# Calculate normalization factors
 	nf_obj$nf %>%
 		dplyr::left_join(
-			df %>%
+		  .data %>%
 				group_by(!!.sample) %>%
 				summarise(tot = sum(!!.abundance, na.rm = TRUE)) %>%
 				ungroup() %>%

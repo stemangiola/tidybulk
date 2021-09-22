@@ -10,7 +10,8 @@ add_scaled_counts_bulk.calcNormFactor(
   .sample = sample,
   .transcript = transcript,
   .abundance = count,
-  method
+  method,
+  .library_size = NULL
 )
 }
 \arguments{

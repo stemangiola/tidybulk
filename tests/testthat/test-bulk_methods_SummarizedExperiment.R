@@ -56,11 +56,43 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 
 test_that("tidybulk SummarizedExperiment normalisation",{
 
+
+
+    res =
+      input_df %>%
+      as_SummarizedExperiment(a, b, c) %>%
+      identify_abundant() %>%
+      scale_abundance()
+
+    expect_equal(
+      unique(res$multiplier),
+      c(1.2994008, 1.1781297, 2.6996428, 0.9702628, 1.8290148),
+      tolerance=1e-6
+    )
+
+    expect_equal(
+      ncol(res),
+      3
+    )
+
 	res = se %>% identify_abundant() %>% scale_abundance()
 
 	expect_equal(
 		names(SummarizedExperiment::assays(res)),
 		c("counts" ,"counts_scaled")
+	)
+
+	res =
+	  input_df %>%
+	  mutate(library_size = 1) %>%
+	  as_SummarizedExperiment(a, b, c) %>%
+	  identify_abundant() %>%
+	  scale_abundance(.library_size = library_size)
+
+	expect_equal(
+	  unique(res$multiplier),
+	  c(0.9430586, 0.7528480, 4.0058575, 0.7110053, 3.6268934),
+	  tolerance=1e-6
 	)
 
 })

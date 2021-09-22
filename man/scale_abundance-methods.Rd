@@ -18,6 +18,7 @@ scale_abundance(
   method = "TMM",
   reference_sample = NULL,
   .subset_for_scaling = NULL,
+  .library_size = NULL,
   action = "add",
   reference_selection_function = NULL
 )
@@ -30,6 +31,7 @@ scale_abundance(
   method = "TMM",
   reference_sample = NULL,
   .subset_for_scaling = NULL,
+  .library_size = NULL,
   action = "add",
   reference_selection_function = NULL
 )
@@ -42,6 +44,7 @@ scale_abundance(
   method = "TMM",
   reference_sample = NULL,
   .subset_for_scaling = NULL,
+  .library_size = NULL,
   action = "add",
   reference_selection_function = NULL
 )
@@ -54,6 +57,7 @@ scale_abundance(
   method = "TMM",
   reference_sample = NULL,
   .subset_for_scaling = NULL,
+  .library_size = NULL,
   action = "add",
   reference_selection_function = NULL
 )
@@ -66,6 +70,7 @@ scale_abundance(
   method = "TMM",
   reference_sample = NULL,
   .subset_for_scaling = NULL,
+  .library_size = NULL,
   action = NULL,
   reference_selection_function = NULL
 )
@@ -78,6 +83,7 @@ scale_abundance(
   method = "TMM",
   reference_sample = NULL,
   .subset_for_scaling = NULL,
+  .library_size = NULL,
   action = NULL,
   reference_selection_function = NULL
 )
@@ -95,7 +101,9 @@ scale_abundance(
 
 \item{reference_sample}{A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.}
 
-\item{.subset_for_scaling}{A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example}
+\item{.subset_for_scaling}{A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset for calculating the scalling factor. For example, if house-keeping genes should be considered only.}
+
+\item{.library_size}{A column symbol. Force the library size, for calculating the scaling factors, instead of calculating it from the data. This is used for special cases, for example pseudobulk analyses of single-cell data.}
 
 \item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
 

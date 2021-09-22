@@ -110,6 +110,7 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 															 method = "TMM",
 															 reference_sample = NULL,
 															 .subset_for_scaling = NULL,
+															 .library_size = NULL,
 															 action = NULL,
 
 															 # DEPRECATED
@@ -137,6 +138,7 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 		stop("tidybulk says: your reference sample is not among the samples in your data frame")
 
   .subset_for_scaling = enquo(.subset_for_scaling)
+  .library_size = enquo(.library_size)
 
 	.data_filtered =
 	  filter_if_abundant_were_identified(.data) %>%
@@ -170,12 +172,21 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 				names()
 		)
 
+	# Force or not library size
+	lib.size =
+	  .data %>%
+	  when(
+	    !quo_is_null(.library_size) ~ colData(.data_filtered)[,quo_name(.library_size)] %>% setNames(rownames(colData(.data_filtered))),
+	    ~ NULL
+	  )
+
 	# Calculate TMM
 	nf <-
 		edgeR::calcNormFactors(
 			my_counts_filtered,
 			refColumn = reference,
-			method = method
+			method = method,
+			lib.size = lib.size
 		)
 
 	# Calculate multiplier

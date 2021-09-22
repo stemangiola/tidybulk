@@ -1201,23 +1201,31 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 																									.sample = `sample`,
 																									.transcript = `transcript`,
 																									.abundance = `count`,
-																									method) {
+																									method,
+																									.library_size = NULL) {
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 
+	.library_size = enquo(.library_size)
+
 	error_if_log_transformed(.data,!!.abundance)
 
+	# Force or not library size
+	lib.size =
+	  .data %>%
+	  when(
+	    !quo_is_null(.library_size) ~ distinct(., !!.sample, !!.library_size) %>% arrange(!!.sample) %>% pull(!!.library_size),
+	    ~ NULL
+	  )
+
 	# Get data frame for the highly transcribed transcripts
-	df.filt <-
-		.data %>%
-		# dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
-		droplevels() %>%
-		select(!!.sample, !!.transcript, !!.abundance)
+	df.filt <-	.data %>%	select(!!.sample, !!.transcript, !!.abundance)
 
 	# scaled data set
 	nf =
 		tibble::tibble(
+
 			# Sample factor
 			sample = factor(levels(df.filt %>% pull(!!.sample))),
 
@@ -1230,7 +1238,8 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 				refColumn = which(reference == factor(levels(
 					df.filt %>% pull(!!.sample)
 				))),
-				method = method
+				method = method,
+				lib.size = lib.size
 			)
 		) %>%
 

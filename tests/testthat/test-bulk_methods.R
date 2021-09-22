@@ -46,8 +46,9 @@ test_that("Test class identity of tt object",{
 test_that("Only scaled counts - no object",{
 
 	res =
-		scale_abundance(
-			input_df %>% identify_abundant(a, b, c),
+	  input_df %>%
+	  identify_abundant(a, b, c) %>%
+	  scale_abundance(
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
@@ -105,6 +106,29 @@ test_that("Only scaled counts - no object",{
 		),
 		"The factor of interest is continuous"
 	)
+
+
+	# Force library size
+
+	res =
+	  input_df %>%
+	  mutate(library_size = 1) %>%
+	  identify_abundant(a, b, c) %>%
+	  scale_abundance(
+	    .sample = a,
+	    .transcript = b,
+	    .abundance = c,
+	    action = "only", .library_size = library_size
+	  )
+
+	expect_equal(
+	  unique(res$multiplier),
+	  c(0.9430586, 0.7528480, 4.0058575, 0.7110053, 3.6268934),
+	  tolerance=1e-6
+	)
+
+
+
 
 })
 
