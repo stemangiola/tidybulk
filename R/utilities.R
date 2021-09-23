@@ -273,6 +273,8 @@ get_tt_columns = function(.data){
   else NULL
 }
 
+#' @importFrom rlang quo_is_symbol
+#'
 add_tt_columns = function(.data,
                           .sample,
                           .transcript,
@@ -864,6 +866,7 @@ fill_NA_with_row_median = function(.matrix){
 #' @noRd
 #'
 #' @importFrom magrittr equals
+#' @importFrom rlang quo_is_symbol
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 #' @param .horizontal The name of the column horizontally presented in the heatmap
@@ -1040,6 +1043,7 @@ quo_names <- function(v) {
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats median
+#' @importFrom rlang quo_is_symbol
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column

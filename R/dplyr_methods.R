@@ -33,25 +33,25 @@
 #' individual methods for extra arguments and differences in behaviour.
 #'
 #' The following methods are currently available in loaded packages:
-#' 
+#'
 #' @param .data A data frame, data frame extension (e.g. a tibble), or a
 #'   lazy data frame (e.g. from dbplyr or dtplyr). See *Methods*, below, for
 #'   more details.
 #' @param ... <[`tidy-eval`][dplyr_tidy_eval]> Variables, or functions or
 #'   variables. Use [desc()] to sort a variable in descending order.
 #' @param .by_group If TRUE, will sort first by grouping variable. Applies to grouped data frames only.
-#' 
+#'
 #' @return A tibble
 #' @family single table verbs
-#' 
+#'
 #' @rdname arrange-methods
 #' @name arrange
 #' @importFrom dplyr arrange
-#' 
+#'
 #' @examples
-#' `%>%` = magrittr::`%>%`
+#'
 #' arrange(mtcars, cyl, disp)
-#' 
+#'
 #' @export
 NULL
 
@@ -101,10 +101,10 @@ arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 #'   used instead.
 #' @return `bind_rows()` and `bind_cols()` return the same type as
 #'   the first input, either a data frame, `tbl_df`, or `grouped_df`.
-#'   
-#'   
+#'
+#'
 #' @examples
-#' `%>%` = magrittr::`%>%`
+#'
 #' one <- mtcars[1:4, ]
 #' two <- mtcars[11:14, ]
 #'
@@ -116,9 +116,9 @@ arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 NULL
 
 #' @rdname bind-methods
-#' 
+#'
 #' @inheritParams bind
-#' 
+#'
 #' @export
 #'
 bind_rows <- function(..., .id = NULL) {
@@ -134,9 +134,9 @@ bind_rows.default <-  function(..., .id = NULL)
 #' @importFrom rlang dots_values
 #' @importFrom rlang flatten_if
 #' @importFrom rlang is_spliced
-#' 
+#'
 #' @export
-#' 
+#'
 bind_rows.tidybulk <- function(..., .id = NULL)
 {
 
@@ -156,9 +156,9 @@ bind_rows.tidybulk <- function(..., .id = NULL)
 }
 
 #' @export
-#' 
+#'
 #' @inheritParams bind
-#' 
+#'
 #' @rdname bind-methods
 bind_cols <- function(..., .id = NULL) {
 	UseMethod("bind_cols")
@@ -173,9 +173,9 @@ bind_cols.default <-  function(..., .id = NULL)
 #' @importFrom rlang dots_values
 #' @importFrom rlang flatten_if
 #' @importFrom rlang is_spliced
-#' 
+#'
 #' @export
-#' 
+#'
 bind_cols.tidybulk <- function(..., .id = NULL)
 {
 
@@ -198,7 +198,7 @@ bind_cols.tidybulk <- function(..., .id = NULL)
 #' @rdname distinct-methods
 #' @name distinct
 #' @importFrom dplyr distinct
-#' 
+#'
 #' @examples
 #'
 #' tidybulk::se_mini %>% tidybulk() %>% distinct()
@@ -276,11 +276,11 @@ distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 #'
 #' The following methods are currently available in loaded packages:
 #' @seealso [filter_all()], [filter_if()] and [filter_at()].
-#' 
+#'
 #' @rdname filter-methods
 #' @name filter
 #' @importFrom dplyr filter
-#' 
+#'
 #' @export
 #' @examples
 #'
@@ -365,10 +365,10 @@ group_by.tidybulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_d
 #' @rdname ungroup-methods
 #' @name ungroup
 #' @importFrom dplyr ungroup
-#' 
+#'
 #' @param x A [tbl()]
 #' @param ... See dplyr
-#' 
+#'
 #' @export
 ungroup.tidybulk <- function (x, ...)
 {
@@ -591,15 +591,15 @@ mutate.nested_tidybulk <- function(.data, ...)
 	.data %>%
 		drop_class(c("nested_tidybulk", "tt")) %>%
 		dplyr::mutate(...) %>%
-		
+
 		# Attach attributes
 		reattach_internals(.data) %>%
-		
+
 		# Add class
 		add_class("tt") %>%
 		add_class("nested_tidybulk")
-	
-	
+
+
 }
 
 #' Rename columns
@@ -632,7 +632,7 @@ mutate.nested_tidybulk <- function(.data, ...)
 #' `%>%` = magrittr::`%>%`
 #' iris <- as_tibble(iris) # so it prints a little nicer
 #' rename(iris, petal_length = Petal.Length)
-#' 
+#'
 #' @rdname rename-methods
 #' @name rename
 #' @importFrom dplyr rename
@@ -685,7 +685,7 @@ rename.tidybulk <- function(.data, ...)
 #' `%>%` = magrittr::`%>%`
 #' df <- expand.grid(x = 1:3, y = 3:1)
 #' df_done <- df %>% rowwise() %>% do(i = seq(.$x, .$y))
-#' 
+#'
 #' @rdname rowwise-methods
 #' @name rowwise
 #' @importFrom dplyr rowwise

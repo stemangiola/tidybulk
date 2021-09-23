@@ -23,6 +23,6 @@ Get matrix from tibble
 
 library(dplyr)
 
-tidybulk::se_mini \%>\% tidybulk() \%>\% select(feature, count) \%>\% head \%>\% as_matrix(rownames=feature)
+tidybulk::se_mini |> tidybulk() |> select(feature, count) |> head() |> as_matrix(rownames=feature)
 
 }

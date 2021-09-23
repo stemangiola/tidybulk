@@ -3126,6 +3126,7 @@ tidybulk_to_SummarizedExperiment = function(.data,
 #' @importFrom stats as.formula
 #' @importFrom utils install.packages
 #' @importFrom tidyr complete
+#' @importFrom rlang quo_is_symbol
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, of the kind ~ factor_of_interest + batch
