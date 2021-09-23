@@ -2589,6 +2589,13 @@ run_llsr = function(mix, reference = X_cibersort) {
 	X <- (reference[markers, , drop = FALSE])
 	Y <- (mix[markers, , drop = FALSE])
 
+	X = as.matrix(X)
+	Y = as.matrix(Y)
+
+	X <- (X - mean(X)) / sd(X)
+	y <- apply(Y, 2, function(mc) (mc - mean(mc)) / sd(mc)  )
+	y <- (y - mean(y)) / sd(y)
+
 	results <- t(data.frame(lsfit(X, Y)$coefficients)[-1, , drop = FALSE])
 	results[results < 0] <- 0
 	results <- results / apply(results, 1, sum)
