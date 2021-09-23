@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -81,13 +81,13 @@
 
       
 
-      </header><script src="introduction_files/header-attrs-2.10/header-attrs.js"></script><div class="row">
+      </header><script src="introduction_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 data-toc-skip class="author">Stefano Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2021-08-24</h4>
+            <h4 data-toc-skip class="date">2021-09-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/master/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -531,18 +531,18 @@
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <pre><code>## # A tibble: 251 × 4
-##       tSNE1   tSNE2 sample                       Call 
-##       &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
-##  1  -8.86    10.7   TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  2   0.0728  -0.470 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  3   5.76     7.72  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  4   2.87    11.9   TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  5  -2.13    12.1   TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  6   4.98    -2.67  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  7  28.0    -12.3   TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  8   6.47    -8.35  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  9   6.41    -9.61  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-## 10 -16.8     -3.55  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##      tSNE1  tSNE2 sample                       Call 
+##      &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
+##  1 -10.0     4.71 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  2   3.91  -10.1  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  3  -8.45   14.1  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  4  -0.873   4.87 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  5  -4.34    3.97 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  6   3.61   -3.91 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  7  28.7   -12.2  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  8   6.31    9.24 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  9   4.90    8.95 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+## 10 -16.3    17.1  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ## # … with 241 more rows</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -986,13 +986,13 @@ We may want to test for differential transcription between sample-wise factors o
 ## other attached packages:
 ##  [1] tidySummarizedExperiment_1.2.0 SummarizedExperiment_1.22.0   
 ##  [3] Biobase_2.52.0                 GenomicRanges_1.44.0          
-##  [5] GenomeInfoDb_1.28.1            IRanges_2.26.0                
+##  [5] GenomeInfoDb_1.28.4            IRanges_2.26.0                
 ##  [7] S4Vectors_0.30.0               BiocGenerics_0.38.0           
-##  [9] MatrixGenerics_1.4.2           matrixStats_0.60.0            
-## [11] tidybulk_1.5.2                 ggrepel_0.9.1                 
+##  [9] MatrixGenerics_1.4.3           matrixStats_0.61.0            
+## [11] tidybulk_1.5.3                 ggrepel_0.9.1                 
 ## [13] ggplot2_3.3.5                  magrittr_2.0.1                
-## [15] tibble_3.1.3                   tidyr_1.1.3                   
-## [17] dplyr_1.0.7                    knitr_1.33                    
+## [15] tibble_3.1.4                   tidyr_1.1.3                   
+## [17] dplyr_1.0.7                    knitr_1.34                    
 ## [19] BiocStyle_2.20.2              
 ## 
 ## loaded via a namespace (and not attached):
@@ -1006,33 +1006,33 @@ We may want to test for differential transcription between sample-wise factors o
 ##  [22] BiocManager_1.30.16    readr_2.0.1            compiler_4.1.0        
 ##  [25] httr_1.4.2             backports_1.2.1        Matrix_1.3-4          
 ##  [28] fastmap_1.1.0          lazyeval_0.2.2         limma_3.48.3          
-##  [31] cli_3.0.1              org.Mm.eg.db_3.13.0    htmltools_0.5.1.1     
+##  [31] cli_3.0.1              org.Mm.eg.db_3.13.0    htmltools_0.5.2       
 ##  [34] tools_4.1.0            gtable_0.3.0           glue_1.4.2            
 ##  [37] GenomeInfoDbData_1.2.6 reshape2_1.4.4         Rcpp_1.0.7            
 ##  [40] jquerylib_0.1.4        pkgdown_1.6.1.9001     vctrs_0.3.8           
-##  [43] Biostrings_2.60.2      preprocessCore_1.54.0  nlme_3.1-152          
-##  [46] xfun_0.25              stringr_1.4.0          lifecycle_1.0.0       
-##  [49] XML_3.99-0.7           org.Hs.eg.db_3.13.0    edgeR_3.34.0          
+##  [43] Biostrings_2.60.2      preprocessCore_1.54.0  nlme_3.1-153          
+##  [46] xfun_0.26              stringr_1.4.0          lifecycle_1.0.0       
+##  [49] XML_3.99-0.8           org.Hs.eg.db_3.13.0    edgeR_3.34.1          
 ##  [52] zlibbioc_1.38.0        scales_1.1.1           ragg_1.1.3            
 ##  [55] hms_1.1.0              RColorBrewer_1.1-2     yaml_2.2.1            
 ##  [58] memoise_2.0.0          sass_0.4.0             reshape_0.8.8         
-##  [61] stringi_1.7.3          RSQLite_2.2.8          highr_0.9             
+##  [61] stringi_1.7.4          RSQLite_2.2.8          highr_0.9             
 ##  [64] genefilter_1.74.0      tokenizers_0.2.1       desc_1.3.0            
-##  [67] e1071_1.7-8            BiocParallel_1.26.2    rlang_0.4.11          
+##  [67] e1071_1.7-9            BiocParallel_1.26.2    rlang_0.4.11          
 ##  [70] pkgconfig_2.0.3        systemfonts_1.0.2      bitops_1.0-7          
 ##  [73] evaluate_0.14          lattice_0.20-44        purrr_0.3.4           
-##  [76] htmlwidgets_1.5.3      labeling_0.4.2         bit_4.0.4             
+##  [76] htmlwidgets_1.5.4      labeling_0.4.2         bit_4.0.4             
 ##  [79] tidyselect_1.1.1       GGally_2.1.2           plyr_1.8.6            
-##  [82] bookdown_0.23          R6_2.5.1               generics_0.1.0        
+##  [82] bookdown_0.24          R6_2.5.1               generics_0.1.0        
 ##  [85] DelayedArray_0.18.0    DBI_1.1.1              pillar_1.6.2          
-##  [88] withr_2.4.2            mgcv_1.8-36            survival_3.2-12       
-##  [91] KEGGREST_1.32.0        RCurl_1.98-1.4         janeaustenr_0.1.5     
+##  [88] withr_2.4.2            mgcv_1.8-36            survival_3.2-13       
+##  [91] KEGGREST_1.32.0        RCurl_1.98-1.5         janeaustenr_0.1.5     
 ##  [94] widyr_0.1.4            crayon_1.4.1           utf8_1.2.2            
-##  [97] plotly_4.9.4.1         tzdb_0.1.2             rmarkdown_2.10        
+##  [97] plotly_4.9.4.1         tzdb_0.1.2             rmarkdown_2.11        
 ## [100] locfit_1.5-9.4         grid_4.1.0             sva_3.40.0            
 ## [103] data.table_1.14.0      blob_1.2.2             digest_0.6.27         
 ## [106] xtable_1.8-4           textshaping_0.3.5      munsell_0.5.0         
-## [109] viridisLite_0.4.0      bslib_0.2.5.1</code></pre>
+## [109] viridisLite_0.4.0      bslib_0.3.0</code></pre>
 </div>
 </div>
   </div>
