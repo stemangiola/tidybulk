@@ -1,4 +1,3 @@
-# setOldClass("spec_tbl_df")
 setOldClass("tidybulk")
 
 #' Creates an annotated `tidybulk` tibble from a `tbl` or `SummarizedExperiment` object

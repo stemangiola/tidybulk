@@ -1,6 +1,7 @@
 #' Get K-mean clusters to a tibble
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -52,6 +53,7 @@ get_clusters_kmeans_bulk_SE <-
 #' Get SNN shared nearest neighbour clusters to a tibble
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -109,6 +111,7 @@ get_clusters_SNN_bulk_SE <-
 #' Get dimensionality information to a tibble using MDS
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -202,6 +205,7 @@ get_reduced_dimensions_MDS_bulk_SE <-
 #' Get principal component information to a tibble using PCA
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -303,6 +307,7 @@ we suggest to partition the dataset for sample clusters.
 #' Get principal component information to a tibble using tSNE
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -430,6 +435,7 @@ filter_if_abundant_were_identified = function(.data){
 #' Identify variable genes for dimensionality reduction
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @param .data A tibble
 #' @param .sample A character name of the sample column
@@ -470,6 +476,7 @@ keep_variable_transcripts_SE = function(.data,
 #' Drop redundant elements (e.g., samples) for which feature (e.g., genes) aboundances are correlated
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -550,6 +557,7 @@ The correlation calculation might not be reliable"
 #' Identifies the closest pairs in a MDS context and return one of them
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom stats setNames
 #' @importFrom stats dist
@@ -598,6 +606,7 @@ remove_redundancy_elements_though_reduced_dimensions_SE <-
 #' Get differential transcription information to a tibble using edgeR.
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -764,6 +773,7 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 #' Get differential transcription information to a tibble using voom.
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -937,6 +947,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' Get differential transcription information to a tibble using DESeq2
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -1067,6 +1078,10 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 
 }
 
+#'
+#' @keywords internal
+#' @noRd
+#'
 #' @importFrom stringr str_remove
 #' @importFrom stringr str_replace_all
 #'
