@@ -9,6 +9,7 @@ my_stop = function() {
 #' This is a generalisation of ifelse that accepts an object and return an objects
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -33,6 +34,7 @@ ifelse_pipe = function(.x, .p, .f1, .f2 = NULL) {
 #' This is a generalisation of ifelse that acceots an object and return an objects
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -72,6 +74,7 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
 #' Check whether a numeric vector has been log transformed
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @param x A numeric vector
 #' @param .abundance A character name of the transcript/gene abundance column
@@ -90,6 +93,7 @@ error_if_log_transformed <- function(x, .abundance) {
 #' Check whether there are duplicated genes/transcripts
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -132,6 +136,7 @@ error_if_duplicated_genes <- function(.data,
 #' Check whether there are NA counts
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -156,6 +161,7 @@ error_if_counts_is_na = function(.data, .abundance) {
 #' Check whether there are NA counts
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -192,6 +198,7 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
 #' .formula parser
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom stats terms
 #'
@@ -207,6 +214,9 @@ parse_formula <- function(fm) {
 }
 
 #' Formula parser with survival
+#'
+#' @keywords internal
+#' @noRd
 #'
 #' @param fm A formula
 #'
@@ -229,6 +239,7 @@ parse_formula_survival <- function(fm) {
 #' Scale design matrix
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom stats setNames
 #' @importFrom stats cov
@@ -349,6 +360,7 @@ memorise_methods_used = function(.data, .method, object_containing_methods = .da
 #' Add attribute to abject
 #'
 #' @keywords internal
+#' @noRd
 #'
 #'
 #' @param var A tibble
@@ -364,6 +376,7 @@ add_attr = function(var, attribute, name) {
 #' Drop attribute to abject
 #'
 #' @keywords internal
+#' @noRd
 #'
 #'
 #' @param var A tibble
@@ -378,13 +391,13 @@ drop_attr = function(var, name) {
 #' Remove class to abject
 #'
 #' @keywords internal
+#' @noRd
 #'
 #'
 #' @param var A tibble
 #' @param name A character name of the class
 #'
 #' @return A tibble with an additional attribute
-#' @keywords internal
 drop_class = function(var, name) {
   class(var) <- class(var)[!class(var)%in%name]
   var
@@ -393,6 +406,7 @@ drop_class = function(var, name) {
 #' From rlang deprecated
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @param x An array
 #' @param values An array
@@ -415,6 +429,7 @@ prepend = function (x, values, before = 1)
 #' Add class to abject
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @param var A tibble
 #' @param name A character name of the attribute
@@ -430,6 +445,7 @@ add_class = function(var, name) {
 #' Get column names either from user or from attributes
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom rlang quo_is_symbol
 #' @importFrom rlang quo_is_symbolic
@@ -464,6 +480,7 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
 #' Get column names either from user or from attributes
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -491,6 +508,7 @@ get_sample_counts = function(.data, .sample, .abundance){
 #' Get column names either from user or from attributes
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -512,6 +530,7 @@ get_sample = function(.data, .sample){
 #' Get column names either from user or from attributes
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -543,6 +562,7 @@ get_transcript = function(.data, .transcript){
 #' Get column names either from user or from attributes
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -571,6 +591,7 @@ get_sample_transcript = function(.data, .sample, .transcript){
 #' Get column names either from user or from attributes
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -594,6 +615,7 @@ get_sample = function(.data, .sample){
 #' Get column names either from user or from attributes
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -647,6 +669,7 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
 #' Get column names either from user or from attributes
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -694,6 +717,7 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
 #' Get column names either from user or from attributes
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -738,6 +762,7 @@ get_elements = function(.data, .element, of_samples = TRUE){
 #' Get column names either from user or from attributes
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom rlang quo_is_symbol
 #'
@@ -784,6 +809,7 @@ get_abundance_norm_if_exists = function(.data, .abundance){
 #' Sub function of remove_redundancy_elements_though_reduced_dimensions
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom stats dist
 #' @importFrom utils head
@@ -814,6 +840,7 @@ select_closest_pairs = function(df) {
 #' This function is needed for DE in case the matrix is not rectangular, but includes NA
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @param .matrix A matrix
 #'
@@ -829,21 +856,12 @@ fill_NA_with_row_median = function(.matrix){
     .matrix
 }
 
-# #' @importFrom magrittr %>%
-# #' @export
-# magrittr::`%>%`
 
-#' @importFrom tibble tibble
-#' @export
-tibble::tibble
-
-#' @importFrom tibble as_tibble
-#' @export
-tibble::as_tibble
 
 #' get_x_y_annotation_columns
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom magrittr equals
 #'
@@ -990,81 +1008,13 @@ get_specific_annotation_columns = function(.data, .col){
 
 }
 
-#' log10_reverse_trans
-#'
-#' `r lifecycle::badge("maturing")`
-#'
-#' @description it perform log scaling and reverse the axis. Useful to plot negative log probabilities. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
-#'
-#' @importFrom scales trans_new
-#' @importFrom scales log_breaks
-#'
-#' @return A scales object
-#'
-#' @examples
-#'
-#' library(ggplot2)
-#' library(tibble)
-#'
-#' tibble(pvalue = c(0.001, 0.05, 0.1), fold_change = 1:3) %>%
-#'  ggplot(aes(fold_change , pvalue)) +
-#'  geom_point() +
-#'  scale_y_continuous(trans = "log10_reverse")
-#'
-#' @export
-log10_reverse_trans <- function() {
-	trans <- function(x) -log10(x)
-	inv <- function(x) 10^(-x)
 
-	trans_new("log10_reverse", trans, inv, log_breaks(base = 10))
-}
-
-#' logit scale
-#'
-#' `r lifecycle::badge("maturing")`
-#'
-#' @description it perform logit scaling with right axis formatting. To not be used directly but with ggplot (e.g. scale_y_continuous(trans = "log10_reverse") )
-#'
-#' @importFrom scales label_scientific
-#' @importFrom scales extended_breaks
-#' @importFrom stats qlogis plogis
-#'
-#' @return A scales object
-#'
-#' @examples
-#'
-#' library(ggplot2)
-#' library(tibble)
-#'
-#' tibble(pvalue = c(0.001, 0.05, 0.1), fold_change = 1:3) %>%
-#'  ggplot(aes(fold_change , pvalue)) +
-#'  geom_point() +
-#'  scale_y_continuous(trans = "log10_reverse")
-#'
-#' @export
-logit_trans <- function(){
-
-
-	if (find.package("functional", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing functional needed for analyses")
-		install.packages("functional", repos = "https://cloud.r-project.org")
-	}
-
-	trans <- qlogis
-	inv <- plogis
-
-	trans_new("logit",
-						transform = trans,
-						inverse = inv,
-						breaks = functional::Compose(trans, extended_breaks(), inv),
-						format = label_scientific(digits = 2)
-	)
-}
 
 
 #' Convert array of quosure (e.g. c(col_a, col_b)) into character vector
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @importFrom rlang quo_name
 #' @importFrom rlang quo_squash
@@ -1083,6 +1033,7 @@ quo_names <- function(v) {
 #' Drop lowly transcribed genes for TMM normalization
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -1180,6 +1131,7 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 #' Calculate the norm factor with calcNormFactor from limma
 #'
 #' @keywords internal
+#' @noRd
 #'
 #' @import dplyr
 #' @import tidyr
@@ -1279,6 +1231,10 @@ do_validate = function(){
 
 }
 
+#'
+#' @keywords internal
+#' @noRd
+#'
 #' @importFrom stringr str_remove
 #' @importFrom stringr str_replace_all
 #'
@@ -1577,6 +1533,10 @@ rotation = function(m, d) {
 	) %>% as_matrix) %*% m)
 }
 
+#'
+#' @keywords internal
+#' @noRd
+#'
 #' @importFrom dplyr select
 #' @importFrom tibble as_tibble
 #' @importFrom tibble tibble
