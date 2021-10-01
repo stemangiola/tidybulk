@@ -132,7 +132,7 @@ mutate(fit =
 }
 \examples{
 
-df_entrez = tidybulk::se_mini \%>\% tidybulk() \%>\% as_tibble() \%>\% symbol_to_entrez( .transcript = feature, .sample = sample)
+df_entrez = tidybulk::se_mini |> tidybulk() |> as_tibble() |> symbol_to_entrez( .transcript = feature, .sample = sample)
 df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 df_entrez = mutate(df_entrez, do_test = feature \%in\% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 df_entrez  = df_entrez \%>\% test_differential_abundance(~ condition)
