@@ -52,7 +52,7 @@ The following methods are currently available in loaded packages:
 }
 
 \examples{
-`\%>\%` = magrittr::`\%>\%`
+
 arrange(mtcars, cyl, disp)
 
 }
