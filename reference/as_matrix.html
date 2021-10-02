@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.3</span>
       </span>
     </div>
 
@@ -132,7 +132,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get matrix from tibble</h1>
-    <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/functions.R'><code>R/functions.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/stemangiola/tidybulk/blob/master/R/methods.R'><code>R/methods.R</code></a></small>
     <div class="hidden name"><code>as_matrix.Rd</code></div>
     </div>
 
@@ -178,7 +178,7 @@
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span>     intersect, setdiff, setequal, union</span>
 <span class='r-in'></span>
-<span class='r-in'><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>feature</span>, <span class='va'>count</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='va'>head</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'>as_matrix</span><span class='op'>(</span>rownames<span class='op'>=</span><span class='va'>feature</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> |&gt; <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> |&gt; <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>feature</span>, <span class='va'>count</span><span class='op'>)</span> |&gt; <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='op'>)</span> |&gt; <span class='fu'>as_matrix</span><span class='op'>(</span>rownames<span class='op'>=</span><span class='va'>feature</span><span class='op'>)</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>        count</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> ABCB4   1035</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> ABCB9     45</span>
@@ -203,7 +203,7 @@
 </div>
 
 <div class="pkgdown">
-  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p></p>
 </div>
 
       </footer>

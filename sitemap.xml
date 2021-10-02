@@ -28,25 +28,7 @@
     <loc>/reference/X_cibersort.html</loc>
   </url>
   <url>
-    <loc>/reference/add_attr.html</loc>
-  </url>
-  <url>
-    <loc>/reference/add_class.html</loc>
-  </url>
-  <url>
-    <loc>/reference/add_scaled_counts_bulk.calcNormFactor.html</loc>
-  </url>
-  <url>
-    <loc>/reference/add_scaled_counts_bulk.get_low_expressed.html</loc>
-  </url>
-  <url>
     <loc>/reference/adjust_abundance-methods.html</loc>
-  </url>
-  <url>
-    <loc>/reference/aggregate_duplicated_transcripts_DT.html</loc>
-  </url>
-  <url>
-    <loc>/reference/aggregate_duplicated_transcripts_bulk.html</loc>
   </url>
   <url>
     <loc>/reference/aggregate_duplicates-methods.html</loc>
@@ -85,12 +67,6 @@
     <loc>/reference/counts_ensembl.html</loc>
   </url>
   <url>
-    <loc>/reference/create_tt_from_bam_sam_bulk.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_tt_from_tibble_bulk.html</loc>
-  </url>
-  <url>
     <loc>/reference/deconvolve_cellularity-methods.html</loc>
   </url>
   <url>
@@ -103,37 +79,10 @@
     <loc>/reference/dplyr-methods.html</loc>
   </url>
   <url>
-    <loc>/reference/drop_attr.html</loc>
-  </url>
-  <url>
-    <loc>/reference/drop_class.html</loc>
-  </url>
-  <url>
     <loc>/reference/ensembl_symbol_mapping.html</loc>
   </url>
   <url>
     <loc>/reference/ensembl_to_symbol-methods.html</loc>
-  </url>
-  <url>
-    <loc>/reference/error_if_counts_is_na.html</loc>
-  </url>
-  <url>
-    <loc>/reference/error_if_duplicated_genes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/error_if_log_transformed.html</loc>
-  </url>
-  <url>
-    <loc>/reference/error_if_wrong_input.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fill_NA_using_formula.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fill_NA_using_value.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fill_NA_with_row_median.html</loc>
   </url>
   <url>
     <loc>/reference/fill_missing_abundance-methods.html</loc>
@@ -145,109 +94,13 @@
     <loc>/reference/flybaseIDs.html</loc>
   </url>
   <url>
-    <loc>/reference/get_abundance_norm_if_exists.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_adjusted_counts_for_unwanted_variation_bulk.html</loc>
-  </url>
-  <url>
     <loc>/reference/get_bibliography-methods.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_cell_type_proportions.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_clusters_SNN_bulk.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_clusters_SNN_bulk_SE.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_clusters_kmeans_bulk.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_clusters_kmeans_bulk_SE.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_differential_transcript_abundance_bulk.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_differential_transcript_abundance_bulk_SE.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_differential_transcript_abundance_bulk_voom.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_differential_transcript_abundance_bulk_voom_SE.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_differential_transcript_abundance_deseq2.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_differential_transcript_abundance_deseq2_SE.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_elements.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_elements_features.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_elements_features_abundance.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_reduced_dimensions_MDS_bulk.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_reduced_dimensions_MDS_bulk_SE.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_reduced_dimensions_PCA_bulk.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_reduced_dimensions_PCA_bulk_SE.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_reduced_dimensions_TSNE_bulk.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_reduced_dimensions_TSNE_bulk_SE.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_rotated_dimensions.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_sample.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_sample_counts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_sample_transcript.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_sample_transcript_counts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_symbol_from_ensembl.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_transcript.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_x_y_annotation_columns.html</loc>
   </url>
   <url>
     <loc>/reference/group_by-methods.html</loc>
   </url>
   <url>
     <loc>/reference/identify_abundant-methods.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ifelse2_pipe.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ifelse_pipe.html</loc>
   </url>
   <url>
     <loc>/reference/impute_missing_abundance-methods.html</loc>
@@ -265,12 +118,6 @@
     <loc>/reference/keep_variable-methods.html</loc>
   </url>
   <url>
-    <loc>/reference/keep_variable_transcripts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/keep_variable_transcripts_SE.html</loc>
-  </url>
-  <url>
     <loc>/reference/log10_reverse_trans.html</loc>
   </url>
   <url>
@@ -283,12 +130,6 @@
     <loc>/reference/nest-methods.html</loc>
   </url>
   <url>
-    <loc>/reference/parse_formula.html</loc>
-  </url>
-  <url>
-    <loc>/reference/parse_formula_survival.html</loc>
-  </url>
-  <url>
     <loc>/reference/pipe.html</loc>
   </url>
   <url>
@@ -296,12 +137,6 @@
   </url>
   <url>
     <loc>/reference/pivot_transcript-methods.html</loc>
-  </url>
-  <url>
-    <loc>/reference/prepend.html</loc>
-  </url>
-  <url>
-    <loc>/reference/quo_names.html</loc>
   </url>
   <url>
     <loc>/reference/reduce_dimensions-methods.html</loc>
@@ -313,18 +148,6 @@
     <loc>/reference/remove_redundancy-methods.html</loc>
   </url>
   <url>
-    <loc>/reference/remove_redundancy_elements_though_reduced_dimensions.html</loc>
-  </url>
-  <url>
-    <loc>/reference/remove_redundancy_elements_though_reduced_dimensions_SE.html</loc>
-  </url>
-  <url>
-    <loc>/reference/remove_redundancy_elements_through_correlation.html</loc>
-  </url>
-  <url>
-    <loc>/reference/remove_redundancy_elements_through_correlation_SE.html</loc>
-  </url>
-  <url>
     <loc>/reference/rename-methods.html</loc>
   </url>
   <url>
@@ -334,25 +157,13 @@
     <loc>/reference/rowwise-methods.html</loc>
   </url>
   <url>
-    <loc>/reference/run_epic.html</loc>
-  </url>
-  <url>
-    <loc>/reference/run_llsr.html</loc>
-  </url>
-  <url>
     <loc>/reference/scale_abundance-methods.html</loc>
-  </url>
-  <url>
-    <loc>/reference/scale_design.html</loc>
   </url>
   <url>
     <loc>/reference/se.html</loc>
   </url>
   <url>
     <loc>/reference/se_mini.html</loc>
-  </url>
-  <url>
-    <loc>/reference/select_closest_pairs.html</loc>
   </url>
   <url>
     <loc>/reference/summarise-methods.html</loc>
@@ -370,13 +181,7 @@
     <loc>/reference/test_differential_cellularity-methods.html</loc>
   </url>
   <url>
-    <loc>/reference/test_differential_cellularity_.html</loc>
-  </url>
-  <url>
     <loc>/reference/test_gene_enrichment-methods.html</loc>
-  </url>
-  <url>
-    <loc>/reference/test_gene_enrichment_bulk_EGSEA.html</loc>
   </url>
   <url>
     <loc>/reference/test_gene_overrepresentation-methods.html</loc>
@@ -388,16 +193,10 @@
     <loc>/reference/test_stratification_cellularity-methods.html</loc>
   </url>
   <url>
-    <loc>/reference/test_stratification_cellularity_.html</loc>
-  </url>
-  <url>
     <loc>/reference/tidybulk-methods.html</loc>
   </url>
   <url>
     <loc>/reference/tidybulk_SAM_BAM-methods.html</loc>
-  </url>
-  <url>
-    <loc>/reference/tidybulk_to_SummarizedExperiment.html</loc>
   </url>
   <url>
     <loc>/reference/vignette_manuscript_signature_boxplot.html</loc>

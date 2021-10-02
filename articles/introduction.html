@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.3</span>
       </span>
     </div>
 
@@ -87,7 +87,7 @@
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 data-toc-skip class="author">Stefano Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2021-09-23</h4>
+            <h4 data-toc-skip class="date">2021-10-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/master/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -266,21 +266,21 @@
 <p>We will use a <code>SummarizedExperiment</code> object</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE</span></code></pre></div>
-<pre><code>## # A SummarizedExperiment-tibble abstraction: 408,624 × 8
-## [90m# Transcripts=8513 | Samples=48 | Assays=count[39m
+<pre><code>##  [38;5;246m# A SummarizedExperiment-tibble abstraction: 408,624 × 8 [39m
+##  [90m# Transcripts=8513 | Samples=48 | Assays=count [39m
 ##    feature  sample     count Cell.type time  condition batch factor_of_interest
-##    &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;fct&gt;     &lt;fct&gt; &lt;lgl&gt;     &lt;fct&gt; &lt;lgl&gt;             
-##  1 A1BG     SRR1740034   153 b_cell    0 d   TRUE      0     TRUE              
-##  2 A1BG-AS1 SRR1740034    83 b_cell    0 d   TRUE      0     TRUE              
-##  3 AAAS     SRR1740034   868 b_cell    0 d   TRUE      0     TRUE              
-##  4 AACS     SRR1740034   222 b_cell    0 d   TRUE      0     TRUE              
-##  5 AAGAB    SRR1740034   590 b_cell    0 d   TRUE      0     TRUE              
-##  6 AAMDC    SRR1740034    48 b_cell    0 d   TRUE      0     TRUE              
-##  7 AAMP     SRR1740034  1257 b_cell    0 d   TRUE      0     TRUE              
-##  8 AANAT    SRR1740034   284 b_cell    0 d   TRUE      0     TRUE              
-##  9 AAR2     SRR1740034   379 b_cell    0 d   TRUE      0     TRUE              
-## 10 AARS2    SRR1740034   685 b_cell    0 d   TRUE      0     TRUE              
-## # … with 40 more rows</code></pre>
+##     [3m [38;5;246m&lt;chr&gt; [39m [23m     [3m [38;5;246m&lt;chr&gt; [39m [23m       [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;fct&gt; [39m [23m      [3m [38;5;246m&lt;fct&gt; [39m [23m  [3m [38;5;246m&lt;lgl&gt; [39m [23m      [3m [38;5;246m&lt;fct&gt; [39m [23m  [3m [38;5;246m&lt;lgl&gt; [39m [23m             
+##  [38;5;250m 1 [39m A1BG     SRR1740034   153 b_cell    0 d   TRUE      0     TRUE              
+##  [38;5;250m 2 [39m A1BG-AS1 SRR1740034    83 b_cell    0 d   TRUE      0     TRUE              
+##  [38;5;250m 3 [39m AAAS     SRR1740034   868 b_cell    0 d   TRUE      0     TRUE              
+##  [38;5;250m 4 [39m AACS     SRR1740034   222 b_cell    0 d   TRUE      0     TRUE              
+##  [38;5;250m 5 [39m AAGAB    SRR1740034   590 b_cell    0 d   TRUE      0     TRUE              
+##  [38;5;250m 6 [39m AAMDC    SRR1740034    48 b_cell    0 d   TRUE      0     TRUE              
+##  [38;5;250m 7 [39m AAMP     SRR1740034   [4m1 [24m257 b_cell    0 d   TRUE      0     TRUE              
+##  [38;5;250m 8 [39m AANAT    SRR1740034   284 b_cell    0 d   TRUE      0     TRUE              
+##  [38;5;250m 9 [39m AAR2     SRR1740034   379 b_cell    0 d   TRUE      0     TRUE              
+##  [38;5;250m10 [39m AARS2    SRR1740034   685 b_cell    0 d   TRUE      0     TRUE              
+##  [38;5;246m# … with 40 more rows [39m</code></pre>
 <p>Loading <code>tidySummarizedExperiment</code> will automatically abstract this object as <code>tibble</code>, so we can display it and manipulate it with tidy tools. Although it looks different, and more tools (tidyverse) are available to us, this object is in fact a <code>SummarizedExperiment</code> object.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">counts_SE</span><span class="op">)</span></code></pre></div>
@@ -428,21 +428,21 @@
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span>  <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 48 × 14
+<pre><code>##  [38;5;246m# A tibble: 48 × 14 [39m
 ##      Dim1   Dim2   Dim3     Dim4    Dim5    Dim6 sample     Cell.type      time 
-##     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;fct&gt;          &lt;fct&gt;
-##  1 -1.46   0.220 -1.68   0.0553   0.0658 -0.126  SRR1740034 b_cell         0 d  
-##  2 -1.46   0.226 -1.71   0.0300   0.0454 -0.137  SRR1740035 b_cell         1 d  
-##  3 -1.44   0.193 -1.60   0.0890   0.0503 -0.121  SRR1740036 b_cell         3 d  
-##  4 -1.44   0.198 -1.67   0.0891   0.0543 -0.110  SRR1740037 b_cell         7 d  
-##  5  0.243 -1.42   0.182  0.00642 -0.503  -0.131  SRR1740038 dendritic_mye… 0 d  
-##  6  0.191 -1.42   0.195  0.0180  -0.457  -0.130  SRR1740039 dendritic_mye… 1 d  
-##  7  0.257 -1.42   0.152  0.0130  -0.582  -0.0927 SRR1740040 dendritic_mye… 3 d  
-##  8  0.162 -1.43   0.189  0.0232  -0.452  -0.109  SRR1740041 dendritic_mye… 7 d  
-##  9  0.516 -1.47   0.240 -0.251    0.457  -0.119  SRR1740042 monocyte       0 d  
-## 10  0.514 -1.41   0.231 -0.219    0.458  -0.131  SRR1740043 monocyte       1 d  
-## # … with 38 more rows, and 5 more variables: condition &lt;lgl&gt;, batch &lt;fct&gt;,
-## #   factor_of_interest &lt;lgl&gt;, TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;</code></pre>
+##      [3m [38;5;246m&lt;dbl&gt; [39m [23m   [3m [38;5;246m&lt;dbl&gt; [39m [23m   [3m [38;5;246m&lt;dbl&gt; [39m [23m     [3m [38;5;246m&lt;dbl&gt; [39m [23m    [3m [38;5;246m&lt;dbl&gt; [39m [23m    [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;chr&gt; [39m [23m       [3m [38;5;246m&lt;fct&gt; [39m [23m           [3m [38;5;246m&lt;fct&gt; [39m [23m
+##  [38;5;250m 1 [39m - [31m1 [39m [31m. [39m [31m46 [39m   0.220 - [31m1 [39m [31m. [39m [31m68 [39m   0.055 [4m3 [24m   0.065 [4m8 [24m - [31m0 [39m [31m. [39m [31m126 [39m  SRR1740034 b_cell         0 d  
+##  [38;5;250m 2 [39m - [31m1 [39m [31m. [39m [31m46 [39m   0.226 - [31m1 [39m [31m. [39m [31m71 [39m   0.030 [4m0 [24m   0.045 [4m4 [24m - [31m0 [39m [31m. [39m [31m137 [39m  SRR1740035 b_cell         1 d  
+##  [38;5;250m 3 [39m - [31m1 [39m [31m. [39m [31m44 [39m   0.193 - [31m1 [39m [31m. [39m [31m60 [39m   0.089 [4m0 [24m   0.050 [4m3 [24m - [31m0 [39m [31m. [39m [31m121 [39m  SRR1740036 b_cell         3 d  
+##  [38;5;250m 4 [39m - [31m1 [39m [31m. [39m [31m44 [39m   0.198 - [31m1 [39m [31m. [39m [31m67 [39m   0.089 [4m1 [24m   0.054 [4m3 [24m - [31m0 [39m [31m. [39m [31m110 [39m  SRR1740037 b_cell         7 d  
+##  [38;5;250m 5 [39m  0.243 - [31m1 [39m [31m. [39m [31m42 [39m   0.182  0.006 [4m4 [24m [4m2 [24m - [31m0 [39m [31m. [39m [31m503 [39m  - [31m0 [39m [31m. [39m [31m131 [39m  SRR1740038 dendritic_mye… 0 d  
+##  [38;5;250m 6 [39m  0.191 - [31m1 [39m [31m. [39m [31m42 [39m   0.195  0.018 [4m0 [24m  - [31m0 [39m [31m. [39m [31m457 [39m  - [31m0 [39m [31m. [39m [31m130 [39m  SRR1740039 dendritic_mye… 1 d  
+##  [38;5;250m 7 [39m  0.257 - [31m1 [39m [31m. [39m [31m42 [39m   0.152  0.013 [4m0 [24m  - [31m0 [39m [31m. [39m [31m582 [39m  - [31m0 [39m [31m. [39m [31m0 [39m [31m92 [4m7 [24m [39m SRR1740040 dendritic_mye… 3 d  
+##  [38;5;250m 8 [39m  0.162 - [31m1 [39m [31m. [39m [31m43 [39m   0.189  0.023 [4m2 [24m  - [31m0 [39m [31m. [39m [31m452 [39m  - [31m0 [39m [31m. [39m [31m109 [39m  SRR1740041 dendritic_mye… 7 d  
+##  [38;5;250m 9 [39m  0.516 - [31m1 [39m [31m. [39m [31m47 [39m   0.240 - [31m0 [39m [31m. [39m [31m251 [39m    0.457  - [31m0 [39m [31m. [39m [31m119 [39m  SRR1740042 monocyte       0 d  
+##  [38;5;250m10 [39m  0.514 - [31m1 [39m [31m. [39m [31m41 [39m   0.231 - [31m0 [39m [31m. [39m [31m219 [39m    0.458  - [31m0 [39m [31m. [39m [31m131 [39m  SRR1740043 monocyte       1 d  
+##  [38;5;246m# … with 38 more rows, and 5 more variables: condition &lt;lgl&gt;, batch &lt;fct&gt;, [39m
+##  [38;5;246m#   factor_of_interest &lt;lgl&gt;, TMM &lt;dbl&gt;, multiplier &lt;dbl&gt; [39m</code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -474,21 +474,21 @@
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"PC"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 48 × 14
+<pre><code>##  [38;5;246m# A tibble: 48 × 14 [39m
 ##        PC1   PC2    PC3     PC4    PC5   PC6 sample     Cell.type time  condition
-##      &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;fct&gt;     &lt;fct&gt; &lt;lgl&gt;    
-##  1 -12.6   -2.52 -14.9  -0.424  -0.592 -1.22 SRR1740034 b_cell    0 d   TRUE     
-##  2 -12.6   -2.57 -15.2  -0.140  -0.388 -1.30 SRR1740035 b_cell    1 d   TRUE     
-##  3 -12.6   -2.41 -14.5  -0.714  -0.344 -1.10 SRR1740036 b_cell    3 d   TRUE     
-##  4 -12.5   -2.34 -14.9  -0.816  -0.427 -1.00 SRR1740037 b_cell    7 d   TRUE     
-##  5   0.189 13.0    1.66 -0.0269  4.64  -1.35 SRR1740038 dendriti… 0 d   FALSE    
-##  6  -0.293 12.9    1.76 -0.0727  4.21  -1.28 SRR1740039 dendriti… 1 d   FALSE    
-##  7   0.407 13.0    1.42 -0.0529  5.37  -1.01 SRR1740040 dendriti… 3 d   FALSE    
-##  8  -0.620 13.0    1.73 -0.201   4.17  -1.07 SRR1740041 dendriti… 7 d   FALSE    
-##  9   2.56  13.5    2.32  2.03   -4.32  -1.22 SRR1740042 monocyte  0 d   FALSE    
-## 10   2.65  13.1    2.21  1.80   -4.29  -1.30 SRR1740043 monocyte  1 d   FALSE    
-## # … with 38 more rows, and 4 more variables: batch &lt;fct&gt;,
-## #   factor_of_interest &lt;lgl&gt;, TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;</code></pre>
+##       [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;dbl&gt; [39m [23m   [3m [38;5;246m&lt;dbl&gt; [39m [23m    [3m [38;5;246m&lt;dbl&gt; [39m [23m   [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;chr&gt; [39m [23m       [3m [38;5;246m&lt;fct&gt; [39m [23m      [3m [38;5;246m&lt;fct&gt; [39m [23m  [3m [38;5;246m&lt;lgl&gt; [39m [23m    
+##  [38;5;250m 1 [39m - [31m12 [39m [31m. [39m [31m6 [39m   - [31m2 [39m [31m. [39m [31m52 [39m - [31m14 [39m [31m. [39m [31m9 [39m  - [31m0 [39m [31m. [39m [31m424 [39m  - [31m0 [39m [31m. [39m [31m592 [39m - [31m1 [39m [31m. [39m [31m22 [39m SRR1740034 b_cell    0 d   TRUE     
+##  [38;5;250m 2 [39m - [31m12 [39m [31m. [39m [31m6 [39m   - [31m2 [39m [31m. [39m [31m57 [39m - [31m15 [39m [31m. [39m [31m2 [39m  - [31m0 [39m [31m. [39m [31m140 [39m  - [31m0 [39m [31m. [39m [31m388 [39m - [31m1 [39m [31m. [39m [31m30 [39m SRR1740035 b_cell    1 d   TRUE     
+##  [38;5;250m 3 [39m - [31m12 [39m [31m. [39m [31m6 [39m   - [31m2 [39m [31m. [39m [31m41 [39m - [31m14 [39m [31m. [39m [31m5 [39m  - [31m0 [39m [31m. [39m [31m714 [39m  - [31m0 [39m [31m. [39m [31m344 [39m - [31m1 [39m [31m. [39m [31m10 [39m SRR1740036 b_cell    3 d   TRUE     
+##  [38;5;250m 4 [39m - [31m12 [39m [31m. [39m [31m5 [39m   - [31m2 [39m [31m. [39m [31m34 [39m - [31m14 [39m [31m. [39m [31m9 [39m  - [31m0 [39m [31m. [39m [31m816 [39m  - [31m0 [39m [31m. [39m [31m427 [39m - [31m1 [39m [31m. [39m [31m00 [39m SRR1740037 b_cell    7 d   TRUE     
+##  [38;5;250m 5 [39m   0.189 13.0    1.66 - [31m0 [39m [31m. [39m [31m0 [39m [31m26 [4m9 [24m [39m  4.64  - [31m1 [39m [31m. [39m [31m35 [39m SRR1740038 dendriti… 0 d   FALSE    
+##  [38;5;250m 6 [39m  - [31m0 [39m [31m. [39m [31m293 [39m 12.9    1.76 - [31m0 [39m [31m. [39m [31m0 [39m [31m72 [4m7 [24m [39m  4.21  - [31m1 [39m [31m. [39m [31m28 [39m SRR1740039 dendriti… 1 d   FALSE    
+##  [38;5;250m 7 [39m   0.407 13.0    1.42 - [31m0 [39m [31m. [39m [31m0 [39m [31m52 [4m9 [24m [39m  5.37  - [31m1 [39m [31m. [39m [31m0 [39m [31m1 [39m SRR1740040 dendriti… 3 d   FALSE    
+##  [38;5;250m 8 [39m  - [31m0 [39m [31m. [39m [31m620 [39m 13.0    1.73 - [31m0 [39m [31m. [39m [31m201 [39m   4.17  - [31m1 [39m [31m. [39m [31m0 [39m [31m7 [39m SRR1740041 dendriti… 7 d   FALSE    
+##  [38;5;250m 9 [39m   2.56  13.5    2.32  2.03   - [31m4 [39m [31m. [39m [31m32 [39m  - [31m1 [39m [31m. [39m [31m22 [39m SRR1740042 monocyte  0 d   FALSE    
+##  [38;5;250m10 [39m   2.65  13.1    2.21  1.80   - [31m4 [39m [31m. [39m [31m29 [39m  - [31m1 [39m [31m. [39m [31m30 [39m SRR1740043 monocyte  1 d   FALSE    
+##  [38;5;246m# … with 38 more rows, and 4 more variables: batch &lt;fct&gt;, [39m
+##  [38;5;246m#   factor_of_interest &lt;lgl&gt;, TMM &lt;dbl&gt;, multiplier &lt;dbl&gt; [39m</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
      <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -530,20 +530,20 @@
 <code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
-<pre><code>## # A tibble: 251 × 4
-##      tSNE1  tSNE2 sample                       Call 
-##      &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                        &lt;fct&gt;
-##  1 -10.0     4.71 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  2   3.91  -10.1  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  3  -8.45   14.1  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  4  -0.873   4.87 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  5  -4.34    3.97 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  6   3.61   -3.91 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  7  28.7   -12.2  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  8   6.31    9.24 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  9   4.90    8.95 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-## 10 -16.3    17.1  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
-## # … with 241 more rows</code></pre>
+<pre><code>##  [38;5;246m# A tibble: 251 × 4 [39m
+##     tSNE1  tSNE2 sample                       Call 
+##      [3m [38;5;246m&lt;dbl&gt; [39m [23m   [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;chr&gt; [39m [23m                         [3m [38;5;246m&lt;fct&gt; [39m [23m
+##  [38;5;250m 1 [39m  11.3  - [31m11 [39m [31m. [39m [31m7 [39m  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  [38;5;250m 2 [39m  - [31m3 [39m [31m. [39m [31m24 [39m  - [31m1 [39m [31m. [39m [31m53 [39m TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  [38;5;250m 3 [39m  17.6   - [31m7 [39m [31m. [39m [31m0 [39m [31m1 [39m TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  [38;5;250m 4 [39m   4.55   4.20 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  [38;5;250m 5 [39m   7.62 - [31m10 [39m [31m. [39m [31m4 [39m  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  [38;5;250m 6 [39m  - [31m8 [39m [31m. [39m [31m28 [39m  10.9  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  [38;5;250m 7 [39m - [31m36 [39m [31m. [39m [31m2 [39m    4.64 TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  [38;5;250m 8 [39m   1.08  13.4  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  [38;5;250m 9 [39m   2.26  12.4  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+##  [38;5;250m10 [39m  26.9  - [31m10 [39m [31m. [39m [31m7 [39m  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##  [38;5;246m# … with 241 more rows [39m</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -920,20 +920,20 @@ We may want to test for differential transcription between sample-wise factors o
 <p>We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_ensembl</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/ensembl_to_symbol-methods.html">ensembl_to_symbol</a></span><span class="op">(</span><span class="va">ens</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 119 × 8
+<pre><code>##  [38;5;246m# A tibble: 119 × 8 [39m
 ##    ens    iso   `read count` sample cases_0_project… cases_0_samples… transcript
-##    &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;     
-##  1 ENSG0… 13             144 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-##  2 ENSG0… 13              72 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-##  3 ENSG0… 13               0 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-##  4 ENSG0… 13            1099 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-##  5 ENSG0… 13              11 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-##  6 ENSG0… 13               2 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-##  7 ENSG0… 13               3 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-##  8 ENSG0… 13            2678 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-##  9 ENSG0… 13             751 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-## 10 ENSG0… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-## # … with 109 more rows, and 1 more variable: ref_genome &lt;chr&gt;</code></pre>
+##     [3m [38;5;246m&lt;chr&gt; [39m [23m   [3m [38;5;246m&lt;chr&gt; [39m [23m         [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;chr&gt; [39m [23m   [3m [38;5;246m&lt;chr&gt; [39m [23m             [3m [38;5;246m&lt;chr&gt; [39m [23m             [3m [38;5;246m&lt;chr&gt; [39m [23m     
+##  [38;5;250m 1 [39m ENSG0… 13             144 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+##  [38;5;250m 2 [39m ENSG0… 13              72 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+##  [38;5;250m 3 [39m ENSG0… 13               0 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+##  [38;5;250m 4 [39m ENSG0… 13             [4m1 [24m099 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+##  [38;5;250m 5 [39m ENSG0… 13              11 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+##  [38;5;250m 6 [39m ENSG0… 13               2 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+##  [38;5;250m 7 [39m ENSG0… 13               3 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+##  [38;5;250m 8 [39m ENSG0… 13             [4m2 [24m678 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+##  [38;5;250m 9 [39m ENSG0… 13             751 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+##  [38;5;250m10 [39m ENSG0… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
+##  [38;5;246m# … with 109 more rows, and 1 more variable: ref_genome &lt;chr&gt; [39m</code></pre>
 </div>
 <div id="from-gene-symbol-to-gene-description-gene-name-in-full" class="section level2">
 <h2 class="hasAnchor">
@@ -943,30 +943,30 @@ We may want to test for differential transcription between sample-wise factors o
 <code class="sourceCode R"><span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
     <span class="fu"><a href="../reference/describe_transcript-methods.html">describe_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">feature</span>, <span class="va">description</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A SummarizedExperiment-tibble abstraction: 408,624 × 10
-## [90m# Transcripts=8513 | Samples=48 | Assays=count[39m
+<pre><code>##  [38;5;246m# A SummarizedExperiment-tibble abstraction: 408,624 × 10 [39m
+##  [90m# Transcripts=8513 | Samples=48 | Assays=count [39m
 ##    feature sample count Cell.type time  condition batch factor_of_inter…
-##    &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;fct&gt; &lt;lgl&gt;     &lt;fct&gt; &lt;lgl&gt;           
-##  1 A1BG    SRR17…   153 b_cell    0 d   TRUE      0     TRUE            
-##  2 A1BG-A… SRR17…    83 b_cell    0 d   TRUE      0     TRUE            
-##  3 AAAS    SRR17…   868 b_cell    0 d   TRUE      0     TRUE            
-##  4 AACS    SRR17…   222 b_cell    0 d   TRUE      0     TRUE            
-##  5 AAGAB   SRR17…   590 b_cell    0 d   TRUE      0     TRUE            
-##  6 AAMDC   SRR17…    48 b_cell    0 d   TRUE      0     TRUE            
-##  7 AAMP    SRR17…  1257 b_cell    0 d   TRUE      0     TRUE            
-##  8 AANAT   SRR17…   284 b_cell    0 d   TRUE      0     TRUE            
-##  9 AAR2    SRR17…   379 b_cell    0 d   TRUE      0     TRUE            
-## 10 AARS2   SRR17…   685 b_cell    0 d   TRUE      0     TRUE            
-## # … with 40 more rows, and 2 more variables: description &lt;chr&gt;, gene_name &lt;chr&gt;</code></pre>
+##     [3m [38;5;246m&lt;chr&gt; [39m [23m    [3m [38;5;246m&lt;chr&gt; [39m [23m   [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;fct&gt; [39m [23m      [3m [38;5;246m&lt;fct&gt; [39m [23m  [3m [38;5;246m&lt;lgl&gt; [39m [23m      [3m [38;5;246m&lt;fct&gt; [39m [23m  [3m [38;5;246m&lt;lgl&gt; [39m [23m           
+##  [38;5;250m 1 [39m A1BG    SRR17…   153 b_cell    0 d   TRUE      0     TRUE            
+##  [38;5;250m 2 [39m A1BG-A… SRR17…    83 b_cell    0 d   TRUE      0     TRUE            
+##  [38;5;250m 3 [39m AAAS    SRR17…   868 b_cell    0 d   TRUE      0     TRUE            
+##  [38;5;250m 4 [39m AACS    SRR17…   222 b_cell    0 d   TRUE      0     TRUE            
+##  [38;5;250m 5 [39m AAGAB   SRR17…   590 b_cell    0 d   TRUE      0     TRUE            
+##  [38;5;250m 6 [39m AAMDC   SRR17…    48 b_cell    0 d   TRUE      0     TRUE            
+##  [38;5;250m 7 [39m AAMP    SRR17…   [4m1 [24m257 b_cell    0 d   TRUE      0     TRUE            
+##  [38;5;250m 8 [39m AANAT   SRR17…   284 b_cell    0 d   TRUE      0     TRUE            
+##  [38;5;250m 9 [39m AAR2    SRR17…   379 b_cell    0 d   TRUE      0     TRUE            
+##  [38;5;250m10 [39m AARS2   SRR17…   685 b_cell    0 d   TRUE      0     TRUE            
+##  [38;5;246m# … with 40 more rows, and 2 more variables: description &lt;chr&gt;, gene_name &lt;chr&gt; [39m</code></pre>
 </div>
 <div id="appendix" class="section level2">
 <h2 class="hasAnchor">
 <a href="#appendix" class="anchor" aria-hidden="true"></a>Appendix</h2>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## R version 4.1.0 (2021-05-18)
+<pre><code>## R version 4.1.1 (2021-08-10)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 20.04.2 LTS
+## Running under: Ubuntu 20.04.3 LTS
 ## 
 ## Matrix products: default
 ## BLAS/LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.8.so
@@ -987,52 +987,52 @@ We may want to test for differential transcription between sample-wise factors o
 ##  [1] tidySummarizedExperiment_1.2.0 SummarizedExperiment_1.22.0   
 ##  [3] Biobase_2.52.0                 GenomicRanges_1.44.0          
 ##  [5] GenomeInfoDb_1.28.4            IRanges_2.26.0                
-##  [7] S4Vectors_0.30.0               BiocGenerics_0.38.0           
+##  [7] S4Vectors_0.30.1               BiocGenerics_0.38.0           
 ##  [9] MatrixGenerics_1.4.3           matrixStats_0.61.0            
 ## [11] tidybulk_1.5.3                 ggrepel_0.9.1                 
 ## [13] ggplot2_3.3.5                  magrittr_2.0.1                
-## [15] tibble_3.1.4                   tidyr_1.1.3                   
-## [17] dplyr_1.0.7                    knitr_1.34                    
+## [15] tibble_3.1.4                   tidyr_1.1.4                   
+## [17] dplyr_1.0.7                    knitr_1.36                    
 ## [19] BiocStyle_2.20.2              
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] Rtsne_0.15             colorspace_2.0-2       ellipsis_0.3.2        
-##   [4] class_7.3-19           rprojroot_2.0.2        XVector_0.32.0        
-##   [7] fs_1.5.0               tidytext_0.3.1         proxy_0.4-26          
-##  [10] farver_2.1.0           SnowballC_0.7.0        bit64_4.0.5           
-##  [13] AnnotationDbi_1.54.1   fansi_0.5.0            codetools_0.2-18      
-##  [16] splines_4.1.0          cachem_1.0.6           jsonlite_1.7.2        
-##  [19] broom_0.7.9            annotate_1.70.0        png_0.1-7             
-##  [22] BiocManager_1.30.16    readr_2.0.1            compiler_4.1.0        
-##  [25] httr_1.4.2             backports_1.2.1        Matrix_1.3-4          
-##  [28] fastmap_1.1.0          lazyeval_0.2.2         limma_3.48.3          
-##  [31] cli_3.0.1              org.Mm.eg.db_3.13.0    htmltools_0.5.2       
-##  [34] tools_4.1.0            gtable_0.3.0           glue_1.4.2            
-##  [37] GenomeInfoDbData_1.2.6 reshape2_1.4.4         Rcpp_1.0.7            
-##  [40] jquerylib_0.1.4        pkgdown_1.6.1.9001     vctrs_0.3.8           
-##  [43] Biostrings_2.60.2      preprocessCore_1.54.0  nlme_3.1-153          
-##  [46] xfun_0.26              stringr_1.4.0          lifecycle_1.0.0       
-##  [49] XML_3.99-0.8           org.Hs.eg.db_3.13.0    edgeR_3.34.1          
-##  [52] zlibbioc_1.38.0        scales_1.1.1           ragg_1.1.3            
-##  [55] hms_1.1.0              RColorBrewer_1.1-2     yaml_2.2.1            
-##  [58] memoise_2.0.0          sass_0.4.0             reshape_0.8.8         
-##  [61] stringi_1.7.4          RSQLite_2.2.8          highr_0.9             
-##  [64] genefilter_1.74.0      tokenizers_0.2.1       desc_1.3.0            
-##  [67] e1071_1.7-9            BiocParallel_1.26.2    rlang_0.4.11          
-##  [70] pkgconfig_2.0.3        systemfonts_1.0.2      bitops_1.0-7          
-##  [73] evaluate_0.14          lattice_0.20-44        purrr_0.3.4           
-##  [76] htmlwidgets_1.5.4      labeling_0.4.2         bit_4.0.4             
-##  [79] tidyselect_1.1.1       GGally_2.1.2           plyr_1.8.6            
-##  [82] bookdown_0.24          R6_2.5.1               generics_0.1.0        
-##  [85] DelayedArray_0.18.0    DBI_1.1.1              pillar_1.6.2          
-##  [88] withr_2.4.2            mgcv_1.8-36            survival_3.2-13       
-##  [91] KEGGREST_1.32.0        RCurl_1.98-1.5         janeaustenr_0.1.5     
-##  [94] widyr_0.1.4            crayon_1.4.1           utf8_1.2.2            
-##  [97] plotly_4.9.4.1         tzdb_0.1.2             rmarkdown_2.11        
-## [100] locfit_1.5-9.4         grid_4.1.0             sva_3.40.0            
-## [103] data.table_1.14.0      blob_1.2.2             digest_0.6.27         
-## [106] xtable_1.8-4           textshaping_0.3.5      munsell_0.5.0         
-## [109] viridisLite_0.4.0      bslib_0.3.0</code></pre>
+##   [1] Rtsne_0.15               colorspace_2.0-2         ellipsis_0.3.2          
+##   [4] class_7.3-19             rprojroot_2.0.2          XVector_0.32.0          
+##   [7] fs_1.5.0                 tidytext_0.3.1           proxy_0.4-26            
+##  [10] farver_2.1.0             SnowballC_0.7.0          bit64_4.0.5             
+##  [13] AnnotationDbi_1.54.1     fansi_0.5.0              codetools_0.2-18        
+##  [16] splines_4.1.1            cachem_1.0.6             jsonlite_1.7.2          
+##  [19] broom_0.7.9              annotate_1.70.0          png_0.1-7               
+##  [22] BiocManager_1.30.16      readr_2.0.2              compiler_4.1.1          
+##  [25] httr_1.4.2               backports_1.2.1          Matrix_1.3-4            
+##  [28] fastmap_1.1.0            lazyeval_0.2.2           limma_3.48.3            
+##  [31] cli_3.0.1                org.Mm.eg.db_3.13.0      htmltools_0.5.2         
+##  [34] tools_4.1.1              gtable_0.3.0             glue_1.4.2              
+##  [37] GenomeInfoDbData_1.2.6   reshape2_1.4.4           Rcpp_1.0.7              
+##  [40] jquerylib_0.1.4          pkgdown_1.9000.9000.9000 vctrs_0.3.8             
+##  [43] Biostrings_2.60.2        preprocessCore_1.54.0    nlme_3.1-153            
+##  [46] xfun_0.26                stringr_1.4.0            lifecycle_1.0.1         
+##  [49] XML_3.99-0.8             org.Hs.eg.db_3.13.0      edgeR_3.34.1            
+##  [52] zlibbioc_1.38.0          scales_1.1.1             ragg_1.1.3              
+##  [55] hms_1.1.1                RColorBrewer_1.1-2       yaml_2.2.1              
+##  [58] memoise_2.0.0            sass_0.4.0               reshape_0.8.8           
+##  [61] stringi_1.7.4            RSQLite_2.2.8            highr_0.9               
+##  [64] genefilter_1.74.0        tokenizers_0.2.1         desc_1.4.0              
+##  [67] e1071_1.7-9              BiocParallel_1.26.2      rlang_0.4.11            
+##  [70] pkgconfig_2.0.3          systemfonts_1.0.2        bitops_1.0-7            
+##  [73] evaluate_0.14            lattice_0.20-45          purrr_0.3.4             
+##  [76] htmlwidgets_1.5.4        labeling_0.4.2           bit_4.0.4               
+##  [79] tidyselect_1.1.1         GGally_2.1.2             plyr_1.8.6              
+##  [82] bookdown_0.24            R6_2.5.1                 generics_0.1.0          
+##  [85] DelayedArray_0.18.0      DBI_1.1.1                pillar_1.6.3            
+##  [88] withr_2.4.2              mgcv_1.8-37              survival_3.2-13         
+##  [91] KEGGREST_1.32.0          RCurl_1.98-1.5           janeaustenr_0.1.5       
+##  [94] widyr_0.1.4              crayon_1.4.1             utf8_1.2.2              
+##  [97] plotly_4.9.4.1           tzdb_0.1.2               rmarkdown_2.11          
+## [100] locfit_1.5-9.4           grid_4.1.1               sva_3.40.0              
+## [103] data.table_1.14.2        blob_1.2.2               digest_0.6.28           
+## [106] xtable_1.8-4             textshaping_0.3.5        munsell_0.5.0           
+## [109] viridisLite_0.4.0        bslib_0.3.0</code></pre>
 </div>
 </div>
   </div>
@@ -1054,7 +1054,7 @@ We may want to test for differential transcription between sample-wise factors o
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.6.1.9001.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.9000.9000.9000.</p>
 </div>
 
       </footer>

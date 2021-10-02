@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.3</span>
       </span>
     </div>
 
@@ -278,16 +278,16 @@ deconvolve_cellularity(
 <span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span></span>
 <span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyr.tidyverse.org'>tidyr</a></span><span class='op'>)</span></span>
 <span class='r-in'></span>
-<span class='r-in'><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
-<span class='r-in'>   <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> |&gt;</span>
+<span class='r-in'>   <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> |&gt;</span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># Add survival data</span></span>
-<span class='r-in'><span class='fu'><a href='nest-methods.html'>nest</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='op'>-</span><span class='va'>sample</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'><span class='fu'><a href='nest-methods.html'>nest</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='op'>-</span><span class='va'>sample</span><span class='op'>)</span> |&gt;</span>
 <span class='r-in'><span class='fu'><a href='mutate-methods.html'>mutate</a></span><span class='op'>(</span></span>
 <span class='r-in'>  days <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>10</span>, <span class='fl'>500</span>, <span class='fl'>1000</span>, <span class='fl'>2000</span><span class='op'>)</span>,</span>
 <span class='r-in'>  dead <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span></span>
 <span class='r-in'><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
-<span class='r-in'><span class='fu'><a href='nest-methods.html'>unnest</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'><span class='fu'><a href='nest-methods.html'>unnest</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span> |&gt;</span>
 <span class='r-in'><span class='fu'>test_stratification_cellularity</span><span class='op'>(</span></span>
 <span class='r-in'>  <span class='fu'>survival</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>days</span>, <span class='va'>dead</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>.</span>,</span>
 <span class='r-in'>  cores <span class='op'>=</span> <span class='fl'>1</span></span>
@@ -325,7 +325,7 @@ deconvolve_cellularity(
 </div>
 
 <div class="pkgdown">
-  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p></p>
 </div>
 
       </footer>

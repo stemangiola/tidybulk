@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.3</span>
       </span>
     </div>
 
@@ -266,7 +266,7 @@ This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the ba
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
-<span class='r-in'><span class='va'>df_entrez</span> <span class='op'>=</span> <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='symbol_to_entrez.html'>symbol_to_entrez</a></span><span class='op'>(</span> .transcript <span class='op'>=</span> <span class='va'>feature</span>, .sample <span class='op'>=</span> <span class='va'>sample</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>df_entrez</span> <span class='op'>=</span> <span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> |&gt; <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> |&gt; <span class='fu'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='op'>(</span><span class='op'>)</span> |&gt; <span class='fu'><a href='symbol_to_entrez.html'>symbol_to_entrez</a></span><span class='op'>(</span> .transcript <span class='op'>=</span> <span class='va'>feature</span>, .sample <span class='op'>=</span> <span class='va'>sample</span><span class='op'>)</span></span>
 <span class='r-msg co'><span class='r-pr'>#&gt;</span> 'select()' returned 1:many mapping between keys and columns</span>
 <span class='r-in'><span class='va'>df_entrez</span> <span class='op'>=</span> <span class='fu'><a href='aggregate_duplicates-methods.html'>aggregate_duplicates</a></span><span class='op'>(</span><span class='va'>df_entrez</span>, aggregation_function <span class='op'>=</span> <span class='va'>sum</span>, .sample <span class='op'>=</span> <span class='va'>sample</span>, .transcript <span class='op'>=</span> <span class='va'>entrez</span>, .abundance <span class='op'>=</span> <span class='va'>count</span><span class='op'>)</span></span>
 <span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>tidybulk says: for aggregation, factors and logical columns were converted to character</span>
@@ -315,7 +315,7 @@ This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the ba
 </div>
 
 <div class="pkgdown">
-  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p></p>
 </div>
 
       </footer>

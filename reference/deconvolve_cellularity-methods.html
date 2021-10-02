@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.3</span>
       </span>
     </div>
 
@@ -279,7 +279,7 @@ CIBERSORT(Y = data, X = reference, ...)</p>
 <span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># Subsetting for time efficiency</span></span>
-<span class='r-in'><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'><a href='filter-methods.html'>filter</a></span><span class='op'>(</span><span class='va'>sample</span><span class='op'>==</span><span class='st'>"SRR1740034"</span><span class='op'>)</span> <span class='op'><a href='pipe.html'>%&gt;%</a></span> <span class='fu'>deconvolve_cellularity</span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>feature</span>, <span class='va'>count</span>, cores <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>tidybulk</span><span class='fu'>::</span><span class='va'><a href='se_mini.html'>se_mini</a></span> |&gt; <span class='fu'><a href='tidybulk-methods.html'>tidybulk</a></span><span class='op'>(</span><span class='op'>)</span> |&gt;<span class='fu'><a href='filter-methods.html'>filter</a></span><span class='op'>(</span><span class='va'>sample</span><span class='op'>==</span><span class='st'>"SRR1740034"</span><span class='op'>)</span> |&gt; <span class='fu'>deconvolve_cellularity</span><span class='op'>(</span><span class='va'>sample</span>, <span class='va'>feature</span>, <span class='va'>count</span>, cores <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 527 × 28</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>    feature  sample     count Cell.type time  condition `B cells naive`</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span>               <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span></span>
@@ -318,7 +318,7 @@ CIBERSORT(Y = data, X = reference, ...)</p>
 </div>
 
 <div class="pkgdown">
-  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p></p>
 </div>
 
       </footer>
