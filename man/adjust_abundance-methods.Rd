@@ -128,8 +128,8 @@ cm$batch[colnames(cm) \%in\% c("SRR1740035", "SRR1740043")] = 1
 
 res =
  cm \%>\%
- tidybulk(sample, transcript, count) \%>\%
- identify_abundant() \%>\%
+ tidybulk(sample, transcript, count) |>
+ identify_abundant() |>
 	adjust_abundance(	~ condition + batch	)
 
 
