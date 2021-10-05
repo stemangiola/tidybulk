@@ -19,7 +19,7 @@
 
 \section{Changes in version 1.3.2, Bioconductor 3.13 Release}{
 \itemize{
-    \item Tidybulk now operates natively with SummarizedExperment data container, in a seamless way thanks to tidySummarisedExperiment 10.18129/B9.bioc.tidySummarizedExperiment     
+    \item Tidybulk now operates natively with SummarizedExperment data container, in a seamless way thanks to tidySummarisedExperiment 10.18129/B9.bioc.tidySummarizedExperiment
     \item Added robust edgeR as it outperforms many other methods as shown here doi.org/10.1093/nargab/lqab005
     \item Added test stratifiction cellularity, to easily calculate Kaplan-Meier curves
     \item Production of SummarizedExperiment from BAM or SAM files
@@ -28,4 +28,14 @@
     \item Vastly improved test_gene_enrichment
     \item Added test_gene_rank, based on GSEA
     \item Several bug fixes.
+}}
+
+\section{Changes in version 1.5.5, Bioconductor 3.14 Release}{
+\itemize{
+    \item Added user-defined gene set for gene rank test
+    \item Sped up aggregate_transcripts for large scale tibbles or SummarizedExperiment objects
+    \item Allow to pass additional arguments to DESeq2 implementation in test_differential_abundance
+    \item Allow scale_abundance with a user-defined subset of genes (e.g. house keeping genes)
+    \item Add UMAP to reduce_dimensions()
+    \item Several minor fixed, optimisations and documentation improvements
 }}
