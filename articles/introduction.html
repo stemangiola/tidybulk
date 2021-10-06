@@ -531,18 +531,18 @@
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <pre><code>##  [38;5;246m# A tibble: 251 × 4 [39m
-##     tSNE1   tSNE2 sample                       Call 
-##      [3m [38;5;246m&lt;dbl&gt; [39m [23m    [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;chr&gt; [39m [23m                         [3m [38;5;246m&lt;fct&gt; [39m [23m
-##  [38;5;250m 1 [39m  0.573  - [31m8 [39m [31m. [39m [31m94 [39m  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  [38;5;250m 2 [39m  4.68    1.97  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  [38;5;250m 3 [39m - [31m6 [39m [31m. [39m [31m94 [39m   - [31m1 [39m [31m. [39m [31m48 [39m  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  [38;5;250m 4 [39m - [31m4 [39m [31m. [39m [31m74 [39m    1.46  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  [38;5;250m 5 [39m - [31m0 [39m [31m. [39m [31m522 [39m  - [31m7 [39m [31m. [39m [31m0 [39m [31m2 [39m  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  [38;5;250m 6 [39m - [31m7 [39m [31m. [39m [31m93 [39m    0.847 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  [38;5;250m 7 [39m 20.1    19.2   TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  [38;5;250m 8 [39m - [31m7 [39m [31m. [39m [31m60 [39m    9.26  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  [38;5;250m 9 [39m - [31m7 [39m [31m. [39m [31m79 [39m    8.20  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-##  [38;5;250m10 [39m - [31m9 [39m [31m. [39m [31m22 [39m  - [31m18 [39m [31m. [39m [31m3 [39m   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##     tSNE1  tSNE2 sample                       Call 
+##      [3m [38;5;246m&lt;dbl&gt; [39m [23m   [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;chr&gt; [39m [23m                         [3m [38;5;246m&lt;fct&gt; [39m [23m
+##  [38;5;250m 1 [39m  11.7   - [31m2 [39m [31m. [39m [31m59 [39m TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  [38;5;250m 2 [39m  - [31m4 [39m [31m. [39m [31m36 [39m   3.67 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  [38;5;250m 3 [39m  12.7   - [31m7 [39m [31m. [39m [31m23 [39m TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  [38;5;250m 4 [39m   7.11  10.4  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  [38;5;250m 5 [39m   9.93   3.90 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  [38;5;250m 6 [39m  11.7   - [31m4 [39m [31m. [39m [31m94 [39m TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  [38;5;250m 7 [39m - [31m31 [39m [31m. [39m [31m9 [39m    6.11 TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  [38;5;250m 8 [39m   5.17  18.6  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  [38;5;250m 9 [39m   5.02  17.0  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+##  [38;5;250m10 [39m  19.6  - [31m15 [39m [31m. [39m [31m6 [39m  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ##  [38;5;246m# … with 241 more rows [39m</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
