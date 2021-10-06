@@ -1825,7 +1825,7 @@ we suggest to partition the dataset for sample clusters.
 
 	}
 
-#' Get principal component information to a tibble using tSNE
+#' Get tSNE
 #'
 #' @keywords internal
 #' @noRd
@@ -1938,6 +1938,130 @@ get_reduced_dimensions_TSNE_bulk <-
 			memorise_methods_used("rtsne")
 
 	}
+
+#' Get UMAP
+#'
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats setNames
+#' @importFrom utils install.packages
+#'
+#' @param .data A tibble
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param top An integer. How many top genes to select
+#' @param of_samples A boolean
+#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param calculate_for_pca_dimensions An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered
+#' @param ... Further parameters passed to the function uwot
+#'
+#' @return A tibble with additional columns
+#'
+get_reduced_dimensions_UMAP_bulk <-
+  function(.data,
+           .element = NULL,
+           .feature = NULL,
+
+           .abundance = NULL,
+           .dims = 2,
+           top = 500,
+           of_samples = TRUE,
+           log_transform = TRUE,
+           scale = TRUE,
+           calculate_for_pca_dimensions = 20,
+           ...) {
+
+    if(!is.null(calculate_for_pca_dimensions) & (
+      !is(calculate_for_pca_dimensions, "numeric") |
+      length(calculate_for_pca_dimensions) > 1
+    ))
+      stop("tidybulk says: the argument calculate_for_pca_dimensions should be NULL or an integer of size 1")
+
+    # Comply with CRAN NOTES
+    . = NULL
+
+    # Get column names
+    .element = enquo(.element)
+    .feature = enquo(.feature)
+    .abundance = enquo(.abundance)
+
+    # Evaluate ...
+    arguments <- list(...)
+    # if (!"check_duplicates" %in% names(arguments))
+    #   arguments = arguments %>% c(check_duplicates = FALSE)
+    if (!"dims" %in% names(arguments))
+      arguments = arguments %>% c(n_components = .dims)
+    if (!"init" %in% names(arguments))
+      arguments = arguments %>% c(init = "spca")
+
+    # Check if package is installed, otherwise install
+    if (find.package("uwot", quiet = TRUE) %>% length %>% equals(0)) {
+      message("tidybulk says: Installing uwot")
+      install.packages("uwot", repos = "https://cloud.r-project.org")
+    }
+
+    df_source =
+      .data %>%
+
+      # Filter NA symbol
+      filter(!!.feature %>% is.na %>% not()) %>%
+
+      # Prepare data frame
+      distinct(!!.feature,!!.element,!!.abundance) %>%
+
+      # Check if data rectangular
+      when(
+        check_if_data_rectangular(., !!.element,!!.feature,!!.abundance)  ~
+          eliminate_sparse_transcripts(., !!.feature),
+        ~ (.)
+      ) %>%
+
+      # Check if log transform is needed
+      when(log_transform    ~ dplyr::mutate(., !!.abundance := !!.abundance %>% log1p), ~ (.)) %>%
+
+      # Filter most variable genes
+      keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top)
+
+    # Calculate based on PCA
+    if(!is.null(calculate_for_pca_dimensions))
+      df_UMAP =
+      df_source %>%
+      reduce_dimensions(
+        !!.element,!!.feature,!!.abundance,
+        method="PCA",
+        .dims = calculate_for_pca_dimensions,
+        action="get",
+        scale = scale
+      ) %>%
+      suppressMessages() %>%
+      as_matrix(rownames = quo_name(.element))
+
+    # Calculate based on all features
+    else
+      df_UMAP =
+      df_source %>%
+      spread(!!.feature,!!.abundance) %>%
+      as_matrix(rownames = quo_name(.element))
+
+    do.call(uwot::tumap, c(list(df_UMAP), arguments)) %>%
+      as_tibble(.name_repair = "minimal") %>%
+      setNames(c("UMAP1", "UMAP2")) %>%
+
+      # add element name
+      dplyr::mutate(!!.element := df_UMAP %>% rownames) %>%
+      select(!!.element, everything()) %>%
+
+      # Attach attributes
+      reattach_internals(.data) %>%
+      memorise_methods_used("uwot")
+
+  }
 
 #' Get rotated dimensions of two principal components or MDS dimension of choice, of an angle
 #'

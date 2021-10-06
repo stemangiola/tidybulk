@@ -725,6 +725,23 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 #' Underlying method for tSNE:
 #' Rtsne::Rtsne(data, ...)
 #'
+#' Underlying method for UMAP:
+#'
+#'  df_source =
+#' .data %>%
+#'
+#'   # Filter NA symbol
+#'   filter(!!.feature %>% is.na %>% not()) %>%
+#'
+#'   # Prepare data frame
+#'   distinct(!!.feature,!!.element,!!.abundance) %>%
+#'
+#'   # Filter most variable genes
+#'   keep_variable_transcripts(top) %>%
+#'   reduce_dimensions(method="PCA",  .dims = calculate_for_pca_dimensions,  action="get" ) %>%
+#'   as_matrix(rownames = quo_name(.element)) %>%
+#'   uwot::tumap(...)
+#'
 #'
 #' @return A tbl object with additional columns for the reduced dimensions
 #'
@@ -814,7 +831,7 @@ setGeneric("reduce_dimensions", function(.data,
 		) %>%
 
 		when(
-			method == "MDS" ~ 	get_reduced_dimensions_MDS_bulk(.,
+			tolower(method) == tolower("MDS") ~ 	get_reduced_dimensions_MDS_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -824,7 +841,7 @@ setGeneric("reduce_dimensions", function(.data,
 				log_transform = log_transform,
 				...
 			),
-			method == "PCA" ~ 	get_reduced_dimensions_PCA_bulk(.,
+			tolower(method) == tolower("PCA") ~ 	get_reduced_dimensions_PCA_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -835,7 +852,7 @@ setGeneric("reduce_dimensions", function(.data,
 				scale = scale,
 				...
 			),
-			method == "tSNE" ~ 	get_reduced_dimensions_TSNE_bulk(.,
+			tolower(method) == tolower("tSNE") ~ 	get_reduced_dimensions_TSNE_bulk(.,
 				.abundance = !!.abundance,
 				.dims = .dims,
 				.element = !!.element,
@@ -844,6 +861,17 @@ setGeneric("reduce_dimensions", function(.data,
 				of_samples = of_samples,
 				log_transform = log_transform,
 				...
+			),
+			tolower(method) == tolower("UMAP") ~ 	get_reduced_dimensions_UMAP_bulk(.,
+			                                                                       .abundance = !!.abundance,
+			                                                                       .dims = .dims,
+			                                                                       .element = !!.element,
+			                                                                       .feature = !!.feature,
+			                                                                       top = top,
+			                                                                       of_samples = of_samples,
+			                                                                       log_transform = log_transform,
+			                                                                       scale = scale,
+			                                                                       ...
 			),
 			TRUE ~ 	stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\"")
 		)
