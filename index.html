@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.5</span>
       </span>
     </div>
 
@@ -275,7 +275,7 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE</span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble abstraction: 408,624 x 8</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    transcript sample     count Cell.type time  condition batch factor_of_intere…</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    transcript sample     count Cell.type time  condition batch factor_of_intereâ¦</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt; &lt;fct&gt;     &lt;fct&gt; &lt;lgl&gt;     &lt;fct&gt; &lt;lgl&gt;            </span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 A1BG       SRR1740034   153 b_cell    0 d   TRUE      0     TRUE             </span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 A1BG-AS1   SRR1740034    83 b_cell    0 d   TRUE      0     TRUE             </span></span>
@@ -287,7 +287,7 @@
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 AANAT      SRR1740034   284 b_cell    0 d   TRUE      0     TRUE             </span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 AAR2       SRR1740034   379 b_cell    0 d   TRUE      0     TRUE             </span></span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 AARS2      SRR1740034   685 b_cell    0 d   TRUE      0     TRUE             </span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 40 more rows</span></span></code></pre></div>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # â¦ with 40 more rows</span></span></code></pre></div>
 <p>Loading <code>tidySummarizedExperiment</code> will automatically abstract this object as <code>tibble</code>, so we can display it and manipulate it with tidy tools. Although it looks different, and more tools (tidyverse) are available to us, this object is in fact a <code>SummarizedExperiment</code> object.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">counts_SE</span><span class="op">)</span></code></pre></div>
@@ -436,17 +436,17 @@
 <div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 48 x 15</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="do">##      Dim1   Dim2   Dim3     Dim4    Dim5    Dim6 sample Cell.type time </span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="do">##     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 -1.46   0.220 -1.68  -0.0553   0.0658 -0.126  SRR17… b_cell    0 d  </span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 -1.46   0.226 -1.71  -0.0300   0.0454 -0.137  SRR17… b_cell    1 d  </span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 -1.44   0.193 -1.60  -0.0890   0.0503 -0.121  SRR17… b_cell    3 d  </span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 -1.44   0.198 -1.67  -0.0891   0.0543 -0.110  SRR17… b_cell    7 d  </span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5  0.243 -1.42   0.182 -0.00642 -0.503  -0.131  SRR17… dendriti… 0 d  </span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6  0.191 -1.42   0.195 -0.0180  -0.457  -0.130  SRR17… dendriti… 1 d  </span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7  0.257 -1.42   0.152 -0.0130  -0.582  -0.0927 SRR17… dendriti… 3 d  </span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8  0.162 -1.43   0.189 -0.0232  -0.452  -0.109  SRR17… dendriti… 7 d  </span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9  0.516 -1.47   0.240  0.251    0.457  -0.119  SRR17… monocyte  0 d  </span></span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10  0.514 -1.41   0.231  0.219    0.458  -0.131  SRR17… monocyte  1 d  </span></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 38 more rows, and 6 more variables: condition &lt;chr&gt;, batch &lt;chr&gt;,</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 -1.46   0.220 -1.68  -0.0553   0.0658 -0.126  SRR17â¦ b_cell    0 d  </span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 -1.46   0.226 -1.71  -0.0300   0.0454 -0.137  SRR17â¦ b_cell    1 d  </span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 -1.44   0.193 -1.60  -0.0890   0.0503 -0.121  SRR17â¦ b_cell    3 d  </span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 -1.44   0.198 -1.67  -0.0891   0.0543 -0.110  SRR17â¦ b_cell    7 d  </span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5  0.243 -1.42   0.182 -0.00642 -0.503  -0.131  SRR17â¦ dendritiâ¦ 0 d  </span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6  0.191 -1.42   0.195 -0.0180  -0.457  -0.130  SRR17â¦ dendritiâ¦ 1 d  </span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7  0.257 -1.42   0.152 -0.0130  -0.582  -0.0927 SRR17â¦ dendritiâ¦ 3 d  </span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8  0.162 -1.43   0.189 -0.0232  -0.452  -0.109  SRR17â¦ dendritiâ¦ 7 d  </span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9  0.516 -1.47   0.240  0.251    0.457  -0.119  SRR17â¦ monocyte  0 d  </span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10  0.514 -1.41   0.231  0.219    0.458  -0.131  SRR17â¦ monocyte  1 d  </span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # â¦ with 38 more rows, and 6 more variables: condition &lt;chr&gt;, batch &lt;chr&gt;,</span></span>
 <span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="do">## #   factor_of_interest &lt;chr&gt;, merged.transcripts &lt;dbl&gt;, TMM &lt;dbl&gt;,</span></span>
 <span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="do">## #   multiplier &lt;dbl&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
@@ -483,17 +483,17 @@
 <div class="sourceCode" id="cb22"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 48 x 16</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="do">##       PC1   PC2    PC3    PC4    PC5   PC6 sample Cell.type time  condition</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="do">##     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;    </span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 -32.7  -4.93 -37.5  -1.24   -1.47 -2.81 SRR17… b_cell    0 d   TRUE     </span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 -32.7  -5.05 -38.1  -0.672  -1.02 -3.06 SRR17… b_cell    1 d   TRUE     </span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 -32.2  -4.32 -35.8  -1.99   -1.12 -2.70 SRR17… b_cell    3 d   TRUE     </span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 -32.3  -4.43 -37.3  -1.99   -1.21 -2.45 SRR17… b_cell    7 d   TRUE     </span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5   5.44 31.8    4.08 -0.144  11.3  -2.94 SRR17… dendriti… 0 d   FALSE    </span></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6   4.28 31.7    4.35 -0.403  10.2  -2.91 SRR17… dendriti… 1 d   FALSE    </span></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7   5.74 31.7    3.40 -0.290  13.0  -2.07 SRR17… dendriti… 3 d   FALSE    </span></span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8   3.62 32.1    4.23 -0.519  10.1  -2.43 SRR17… dendriti… 7 d   FALSE    </span></span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9  11.5  32.8    5.37  5.60  -10.2  -2.66 SRR17… monocyte  0 d   FALSE    </span></span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10  11.5  31.6    5.16  4.90  -10.2  -2.92 SRR17… monocyte  1 d   FALSE    </span></span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 38 more rows, and 6 more variables: batch &lt;chr&gt;,</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 -32.7  -4.93 -37.5  -1.24   -1.47 -2.81 SRR17â¦ b_cell    0 d   TRUE     </span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 -32.7  -5.05 -38.1  -0.672  -1.02 -3.06 SRR17â¦ b_cell    1 d   TRUE     </span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 -32.2  -4.32 -35.8  -1.99   -1.12 -2.70 SRR17â¦ b_cell    3 d   TRUE     </span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 -32.3  -4.43 -37.3  -1.99   -1.21 -2.45 SRR17â¦ b_cell    7 d   TRUE     </span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5   5.44 31.8    4.08 -0.144  11.3  -2.94 SRR17â¦ dendritiâ¦ 0 d   FALSE    </span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6   4.28 31.7    4.35 -0.403  10.2  -2.91 SRR17â¦ dendritiâ¦ 1 d   FALSE    </span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7   5.74 31.7    3.40 -0.290  13.0  -2.07 SRR17â¦ dendritiâ¦ 3 d   FALSE    </span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8   3.62 32.1    4.23 -0.519  10.1  -2.43 SRR17â¦ dendritiâ¦ 7 d   FALSE    </span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9  11.5  32.8    5.37  5.60  -10.2  -2.66 SRR17â¦ monocyte  0 d   FALSE    </span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10  11.5  31.6    5.16  4.90  -10.2  -2.92 SRR17â¦ monocyte  1 d   FALSE    </span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # â¦ with 38 more rows, and 6 more variables: batch &lt;chr&gt;,</span></span>
 <span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="do">## #   factor_of_interest &lt;chr&gt;, merged.transcripts &lt;dbl&gt;, TMM &lt;dbl&gt;,</span></span>
 <span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="do">## #   multiplier &lt;dbl&gt;, sample.x &lt;chr&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
@@ -540,17 +540,17 @@
 <div class="sourceCode" id="cb27"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 251 x 5</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="do">##       tSNE1  tSNE2 sample                      Call  sample.x                   </span></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="do">##       &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                       &lt;fct&gt; &lt;chr&gt;                      </span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1   0.0536  10.8  TCGA-A1-A0SD-01A-11R-A115-… LumA  TCGA-A1-A0SD-01A-11R-A115-…</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2   7.00    -3.58 TCGA-A1-A0SF-01A-11R-A144-… LumA  TCGA-A1-A0SF-01A-11R-A144-…</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3  -4.30    18.1  TCGA-A1-A0SG-01A-11R-A144-… LumA  TCGA-A1-A0SG-01A-11R-A144-…</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4  -6.36     2.24 TCGA-A1-A0SH-01A-11R-A084-… LumA  TCGA-A1-A0SH-01A-11R-A084-…</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5  -9.99     2.99 TCGA-A1-A0SI-01A-11R-A144-… LumB  TCGA-A1-A0SI-01A-11R-A144-…</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6   0.273   -8.08 TCGA-A1-A0SJ-01A-11R-A084-… LumA  TCGA-A1-A0SJ-01A-11R-A084-…</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7   6.94   -27.9  TCGA-A1-A0SK-01A-12R-A084-… Basal TCGA-A1-A0SK-01A-12R-A084-…</span></span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 -11.8     -5.48 TCGA-A1-A0SM-01A-11R-A084-… LumA  TCGA-A1-A0SM-01A-11R-A084-…</span></span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 -10.1     -4.96 TCGA-A1-A0SN-01A-11R-A144-… LumB  TCGA-A1-A0SN-01A-11R-A144-…</span></span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10  -3.44    26.5  TCGA-A1-A0SQ-01A-21R-A144-… LumA  TCGA-A1-A0SQ-01A-21R-A144-…</span></span>
-<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 241 more rows</span></span></code></pre></div>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1   0.0536  10.8  TCGA-A1-A0SD-01A-11R-A115-â¦ LumA  TCGA-A1-A0SD-01A-11R-A115-â¦</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2   7.00    -3.58 TCGA-A1-A0SF-01A-11R-A144-â¦ LumA  TCGA-A1-A0SF-01A-11R-A144-â¦</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3  -4.30    18.1  TCGA-A1-A0SG-01A-11R-A144-â¦ LumA  TCGA-A1-A0SG-01A-11R-A144-â¦</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4  -6.36     2.24 TCGA-A1-A0SH-01A-11R-A084-â¦ LumA  TCGA-A1-A0SH-01A-11R-A084-â¦</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5  -9.99     2.99 TCGA-A1-A0SI-01A-11R-A144-â¦ LumB  TCGA-A1-A0SI-01A-11R-A144-â¦</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6   0.273   -8.08 TCGA-A1-A0SJ-01A-11R-A084-â¦ LumA  TCGA-A1-A0SJ-01A-11R-A084-â¦</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7   6.94   -27.9  TCGA-A1-A0SK-01A-12R-A084-â¦ Basal TCGA-A1-A0SK-01A-12R-A084-â¦</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 -11.8     -5.48 TCGA-A1-A0SM-01A-11R-A084-â¦ LumA  TCGA-A1-A0SM-01A-11R-A084-â¦</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 -10.1     -4.96 TCGA-A1-A0SN-01A-11R-A144-â¦ LumB  TCGA-A1-A0SN-01A-11R-A144-â¦</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10  -3.44    26.5  TCGA-A1-A0SQ-01A-21R-A144-â¦ LumA  TCGA-A1-A0SQ-01A-21R-A144-â¦</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # â¦ with 241 more rows</span></span></code></pre></div>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
@@ -701,7 +701,7 @@
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(‘CIBERSORT.R’)</span>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(âCIBERSORT.Râ)</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>count_m <span class="sc">%&gt;%</span> <span class="fu">write.table</span>(<span class="st">"mixture_file.txt"</span>)</span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">CIBERSORT</span>(</span>
 <span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sig_matrix_file.txt"</span>,</span>
@@ -740,19 +740,19 @@
 <code class="sourceCode R">    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="reference/test_differential_cellularity-methods.html">test_differential_cellularity</a></span><span class="op">(</span><span class="va">.</span> <span class="op">~</span> <span class="va">condition</span> <span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb42"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 22 x 7</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    .cell_type cell_type_propo… `estimate_(Inte… estimate_condit…</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    .cell_type cell_type_propoâ¦ `estimate_(Inteâ¦ estimate_conditâ¦</span></span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;      &lt;list&gt;                      &lt;dbl&gt;            &lt;dbl&gt;</span></span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 cibersort… &lt;tibble [48 × 8…            -2.97            2.33 </span></span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 cibersort… &lt;tibble [48 × 8…            -4.79            1.86 </span></span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 cibersort… &lt;tibble [48 × 8…            -5.44           -0.503</span></span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 cibersort… &lt;tibble [48 × 8…            -2.28            0.883</span></span>
-<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 cibersort… &lt;tibble [48 × 8…            -2.79           -0.637</span></span>
-<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 cibersort… &lt;tibble [48 × 8…            -2.60            0.320</span></span>
-<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 cibersort… &lt;tibble [48 × 8…            -3.72            2.14 </span></span>
-<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 cibersort… &lt;tibble [48 × 8…            -5.20           -0.251</span></span>
-<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 cibersort… &lt;tibble [48 × 8…            -4.80            1.75 </span></span>
-<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 cibersort… &lt;tibble [48 × 8…            -5.34           -0.219</span></span>
-<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 12 more rows, and 3 more variables: std.error_conditionTRUE &lt;dbl&gt;,</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 cibersortâ¦ &lt;tibble [48 Ã 8â¦            -2.97            2.33 </span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 cibersortâ¦ &lt;tibble [48 Ã 8â¦            -4.79            1.86 </span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 cibersortâ¦ &lt;tibble [48 Ã 8â¦            -5.44           -0.503</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 cibersortâ¦ &lt;tibble [48 Ã 8â¦            -2.28            0.883</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 cibersortâ¦ &lt;tibble [48 Ã 8â¦            -2.79           -0.637</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 cibersortâ¦ &lt;tibble [48 Ã 8â¦            -2.60            0.320</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 cibersortâ¦ &lt;tibble [48 Ã 8â¦            -3.72            2.14 </span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 cibersortâ¦ &lt;tibble [48 Ã 8â¦            -5.20           -0.251</span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 cibersortâ¦ &lt;tibble [48 Ã 8â¦            -4.80            1.75 </span></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 cibersortâ¦ &lt;tibble [48 Ã 8â¦            -5.34           -0.219</span></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # â¦ with 12 more rows, and 3 more variables: std.error_conditionTRUE &lt;dbl&gt;,</span></span>
 <span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a><span class="do">## #   statistic_conditionTRUE &lt;dbl&gt;, p.value_conditionTRUE &lt;dbl&gt;</span></span></code></pre></div>
 <p>We can also perform regression analysis with censored data (coxph).</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
@@ -771,19 +771,19 @@
 <span class="va">counts_SE_survival</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="reference/test_differential_cellularity-methods.html">test_differential_cellularity</a></span><span class="op">(</span><span class="fu">survival</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">dead</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb44"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 22 x 6</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    .cell_type            cell_type_proport… estimate std.error statistic p.value</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    .cell_type            cell_type_proportâ¦ estimate std.error statistic p.value</span></span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;                 &lt;list&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 cibersort.B.cells.na… &lt;tibble [48 × 9]&gt;     2.05      0.568     3.61  3.03e-4</span></span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 cibersort.B.cells.me… &lt;tibble [48 × 9]&gt;     0.721     0.303     2.38  1.72e-2</span></span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 cibersort.Plasma.cel… &lt;tibble [48 × 9]&gt;    -0.954     0.504    -1.89  5.83e-2</span></span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 cibersort.T.cells.CD8 &lt;tibble [48 × 9]&gt;     0.496     0.783     0.633 5.27e-1</span></span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 cibersort.T.cells.CD… &lt;tibble [48 × 9]&gt;     1.19      0.468     2.54  1.12e-2</span></span>
-<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 cibersort.T.cells.CD… &lt;tibble [48 × 9]&gt;     0.506     0.500     1.01  3.11e-1</span></span>
-<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 cibersort.T.cells.CD… &lt;tibble [48 × 9]&gt;    -0.156     0.416    -0.374 7.09e-1</span></span>
-<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 cibersort.T.cells.fo… &lt;tibble [48 × 9]&gt;     1.60      0.614     2.60  9.33e-3</span></span>
-<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 cibersort.T.cells.re… &lt;tibble [48 × 9]&gt;     0.183     0.405     0.451 6.52e-1</span></span>
-<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 cibersort.T.cells.ga… &lt;tibble [48 × 9]&gt;     1.01      0.955     1.05  2.92e-1</span></span>
-<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 12 more rows</span></span></code></pre></div>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 cibersort.B.cells.naâ¦ &lt;tibble [48 Ã 9]&gt;     2.05      0.568     3.61  3.03e-4</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 cibersort.B.cells.meâ¦ &lt;tibble [48 Ã 9]&gt;     0.721     0.303     2.38  1.72e-2</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 cibersort.Plasma.celâ¦ &lt;tibble [48 Ã 9]&gt;    -0.954     0.504    -1.89  5.83e-2</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 cibersort.T.cells.CD8 &lt;tibble [48 Ã 9]&gt;     0.496     0.783     0.633 5.27e-1</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 cibersort.T.cells.CDâ¦ &lt;tibble [48 Ã 9]&gt;     1.19      0.468     2.54  1.12e-2</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 cibersort.T.cells.CDâ¦ &lt;tibble [48 Ã 9]&gt;     0.506     0.500     1.01  3.11e-1</span></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 cibersort.T.cells.CDâ¦ &lt;tibble [48 Ã 9]&gt;    -0.156     0.416    -0.374 7.09e-1</span></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 cibersort.T.cells.foâ¦ &lt;tibble [48 Ã 9]&gt;     1.60      0.614     2.60  9.33e-3</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 cibersort.T.cells.reâ¦ &lt;tibble [48 Ã 9]&gt;     0.183     0.405     0.451 6.52e-1</span></span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 cibersort.T.cells.gaâ¦ &lt;tibble [48 Ã 9]&gt;     1.01      0.955     1.05  2.92e-1</span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # â¦ with 12 more rows</span></span></code></pre></div>
 <p>We can also perform test of Kaplan-Meier curves.</p>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_stratified</span> <span class="op">=</span> 
@@ -797,19 +797,19 @@
 
 <span class="va">counts_stratified</span></code></pre></div>
 <div class="sourceCode" id="cb46"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 22 x 6</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    .cell_type   cell_type_propor… .low_cellularit… .high_cellulari… pvalue plot </span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    .cell_type   cell_type_proporâ¦ .low_cellularitâ¦ .high_cellulariâ¦ pvalue plot </span></span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;        &lt;list&gt;                       &lt;dbl&gt;            &lt;dbl&gt;  &lt;dbl&gt; &lt;lis&gt;</span></span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 cibersort.B… &lt;tibble [48 × 9]&gt;             14.9            13.1   0.245 &lt;ggs…</span></span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 cibersort.B… &lt;tibble [48 × 9]&gt;             20.9             7.07  0.178 &lt;ggs…</span></span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 cibersort.P… &lt;tibble [48 × 9]&gt;             13.8            14.2   0.210 &lt;ggs…</span></span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 cibersort.T… &lt;tibble [48 × 9]&gt;             12.5            15.5   0.554 &lt;ggs…</span></span>
-<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 cibersort.T… &lt;tibble [48 × 9]&gt;             13.8            14.2   0.931 &lt;ggs…</span></span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 cibersort.T… &lt;tibble [48 × 9]&gt;             12.5            15.5   0.327 &lt;ggs…</span></span>
-<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 cibersort.T… &lt;tibble [48 × 9]&gt;             12.9            15.1   0.417 &lt;ggs…</span></span>
-<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 cibersort.T… &lt;tibble [48 × 9]&gt;             21.5             6.53  0.828 &lt;ggs…</span></span>
-<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 cibersort.T… &lt;tibble [48 × 9]&gt;             14.6            13.4   0.312 &lt;ggs…</span></span>
-<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 cibersort.T… &lt;tibble [48 × 9]&gt;             25.3             2.73  0.399 &lt;ggs…</span></span>
-<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 12 more rows</span></span></code></pre></div>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 cibersort.Bâ¦ &lt;tibble [48 Ã 9]&gt;             14.9            13.1   0.245 &lt;ggsâ¦</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 cibersort.Bâ¦ &lt;tibble [48 Ã 9]&gt;             20.9             7.07  0.178 &lt;ggsâ¦</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 cibersort.Pâ¦ &lt;tibble [48 Ã 9]&gt;             13.8            14.2   0.210 &lt;ggsâ¦</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 cibersort.Tâ¦ &lt;tibble [48 Ã 9]&gt;             12.5            15.5   0.554 &lt;ggsâ¦</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 cibersort.Tâ¦ &lt;tibble [48 Ã 9]&gt;             13.8            14.2   0.931 &lt;ggsâ¦</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 cibersort.Tâ¦ &lt;tibble [48 Ã 9]&gt;             12.5            15.5   0.327 &lt;ggsâ¦</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 cibersort.Tâ¦ &lt;tibble [48 Ã 9]&gt;             12.9            15.1   0.417 &lt;ggsâ¦</span></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 cibersort.Tâ¦ &lt;tibble [48 Ã 9]&gt;             21.5             6.53  0.828 &lt;ggsâ¦</span></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 cibersort.Tâ¦ &lt;tibble [48 Ã 9]&gt;             14.6            13.4   0.312 &lt;ggsâ¦</span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 cibersort.Tâ¦ &lt;tibble [48 Ã 9]&gt;             25.3             2.73  0.399 &lt;ggsâ¦</span></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # â¦ with 12 more rows</span></span></code></pre></div>
 <p>Plot Kaplan-Meier curves</p>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_stratified</span><span class="op">$</span><span class="va">plot</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></code></pre></div>
@@ -890,17 +890,17 @@
 <div class="sourceCode" id="cb54"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 251 x 6</span></span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="do">##       tSNE1  tSNE2 sample                Call  sample.x              cluster_SNN</span></span>
 <span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="do">##       &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                 &lt;fct&gt; &lt;chr&gt;                 &lt;fct&gt;      </span></span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1   0.0536  10.8  TCGA-A1-A0SD-01A-11R… LumA  TCGA-A1-A0SD-01A-11R… 0          </span></span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2   7.00    -3.58 TCGA-A1-A0SF-01A-11R… LumA  TCGA-A1-A0SF-01A-11R… 1          </span></span>
-<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3  -4.30    18.1  TCGA-A1-A0SG-01A-11R… LumA  TCGA-A1-A0SG-01A-11R… 0          </span></span>
-<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4  -6.36     2.24 TCGA-A1-A0SH-01A-11R… LumA  TCGA-A1-A0SH-01A-11R… 3          </span></span>
-<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5  -9.99     2.99 TCGA-A1-A0SI-01A-11R… LumB  TCGA-A1-A0SI-01A-11R… 3          </span></span>
-<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6   0.273   -8.08 TCGA-A1-A0SJ-01A-11R… LumA  TCGA-A1-A0SJ-01A-11R… 0          </span></span>
-<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7   6.94   -27.9  TCGA-A1-A0SK-01A-12R… Basal TCGA-A1-A0SK-01A-12R… 1          </span></span>
-<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 -11.8     -5.48 TCGA-A1-A0SM-01A-11R… LumA  TCGA-A1-A0SM-01A-11R… 3          </span></span>
-<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 -10.1     -4.96 TCGA-A1-A0SN-01A-11R… LumB  TCGA-A1-A0SN-01A-11R… 3          </span></span>
-<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10  -3.44    26.5  TCGA-A1-A0SQ-01A-21R… LumA  TCGA-A1-A0SQ-01A-21R… 0          </span></span>
-<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 241 more rows</span></span></code></pre></div>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1   0.0536  10.8  TCGA-A1-A0SD-01A-11Râ¦ LumA  TCGA-A1-A0SD-01A-11Râ¦ 0          </span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2   7.00    -3.58 TCGA-A1-A0SF-01A-11Râ¦ LumA  TCGA-A1-A0SF-01A-11Râ¦ 1          </span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3  -4.30    18.1  TCGA-A1-A0SG-01A-11Râ¦ LumA  TCGA-A1-A0SG-01A-11Râ¦ 0          </span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4  -6.36     2.24 TCGA-A1-A0SH-01A-11Râ¦ LumA  TCGA-A1-A0SH-01A-11Râ¦ 3          </span></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5  -9.99     2.99 TCGA-A1-A0SI-01A-11Râ¦ LumB  TCGA-A1-A0SI-01A-11Râ¦ 3          </span></span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6   0.273   -8.08 TCGA-A1-A0SJ-01A-11Râ¦ LumA  TCGA-A1-A0SJ-01A-11Râ¦ 0          </span></span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7   6.94   -27.9  TCGA-A1-A0SK-01A-12Râ¦ Basal TCGA-A1-A0SK-01A-12Râ¦ 1          </span></span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 -11.8     -5.48 TCGA-A1-A0SM-01A-11Râ¦ LumA  TCGA-A1-A0SM-01A-11Râ¦ 3          </span></span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 -10.1     -4.96 TCGA-A1-A0SN-01A-11Râ¦ LumB  TCGA-A1-A0SN-01A-11Râ¦ 3          </span></span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10  -3.44    26.5  TCGA-A1-A0SQ-01A-21Râ¦ LumA  TCGA-A1-A0SQ-01A-21Râ¦ 0          </span></span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # â¦ with 241 more rows</span></span></code></pre></div>
 <div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
@@ -919,17 +919,17 @@
 <div class="sourceCode" id="cb57"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble abstraction: 125,500 x 16</span></span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    transcript sample  count count_scaled Call  sample.x  tSNE1 tSNE2 cluster_SNN</span></span>
 <span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;      &lt;chr&gt;   &lt;int&gt;        &lt;int&gt; &lt;fct&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;      </span></span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 ENSG00000… TCGA-…  22114        22114 LumA  TCGA-A1… 0.0536  10.8 0          </span></span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 ENSG00000… TCGA-… 128257       128257 LumA  TCGA-A1… 0.0536  10.8 0          </span></span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 ENSG00000… TCGA-…  23971        23971 LumA  TCGA-A1… 0.0536  10.8 0          </span></span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 ENSG00000… TCGA-…  22518        22518 LumA  TCGA-A1… 0.0536  10.8 0          </span></span>
-<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 ENSG00000… TCGA-…  23250        23250 LumA  TCGA-A1… 0.0536  10.8 0          </span></span>
-<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 ENSG00000… TCGA-…  30039        30039 LumA  TCGA-A1… 0.0536  10.8 0          </span></span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 ENSG00000… TCGA-…  32987        32987 LumA  TCGA-A1… 0.0536  10.8 0          </span></span>
-<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 ENSG00000… TCGA-…  42292        42292 LumA  TCGA-A1… 0.0536  10.8 0          </span></span>
-<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 ENSG00000… TCGA-…  12417        12417 LumA  TCGA-A1… 0.0536  10.8 0          </span></span>
-<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 ENSG00000… TCGA-…  40820        40820 LumA  TCGA-A1… 0.0536  10.8 0          </span></span>
-<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 40 more rows, and 7 more variables: factor_of_interest &lt;lgl&gt;,</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 ENSG00000â¦ TCGA-â¦  22114        22114 LumA  TCGA-A1â¦ 0.0536  10.8 0          </span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 ENSG00000â¦ TCGA-â¦ 128257       128257 LumA  TCGA-A1â¦ 0.0536  10.8 0          </span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 ENSG00000â¦ TCGA-â¦  23971        23971 LumA  TCGA-A1â¦ 0.0536  10.8 0          </span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 ENSG00000â¦ TCGA-â¦  22518        22518 LumA  TCGA-A1â¦ 0.0536  10.8 0          </span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 ENSG00000â¦ TCGA-â¦  23250        23250 LumA  TCGA-A1â¦ 0.0536  10.8 0          </span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 ENSG00000â¦ TCGA-â¦  30039        30039 LumA  TCGA-A1â¦ 0.0536  10.8 0          </span></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 ENSG00000â¦ TCGA-â¦  32987        32987 LumA  TCGA-A1â¦ 0.0536  10.8 0          </span></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 ENSG00000â¦ TCGA-â¦  42292        42292 LumA  TCGA-A1â¦ 0.0536  10.8 0          </span></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 ENSG00000â¦ TCGA-â¦  12417        12417 LumA  TCGA-A1â¦ 0.0536  10.8 0          </span></span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 ENSG00000â¦ TCGA-â¦  40820        40820 LumA  TCGA-A1â¦ 0.0536  10.8 0          </span></span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # â¦ with 40 more rows, and 7 more variables: factor_of_interest &lt;lgl&gt;,</span></span>
 <span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a><span class="do">## #   .abundant &lt;lgl&gt;, logFC &lt;dbl&gt;, logCPM &lt;dbl&gt;, F &lt;dbl&gt;, PValue &lt;dbl&gt;,</span></span>
 <span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a><span class="do">## #   FDR &lt;dbl&gt;</span></span></code></pre></div>
 </div>
@@ -938,7 +938,7 @@
 <a href="#drop-redundant-transcripts" class="anchor" aria-hidden="true"></a>Drop <code>redundant</code> transcripts</h2>
 <p>We may want to remove redundant elements from the original data set (e.g., samples or transcripts), for example if we want to define cell-type specific signatures with low sample redundancy. <code>remove_redundancy</code> takes as arguments a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and returns a tibble with redundant elements removed (e.g., samples). Two redundancy estimation approaches are supported:</p>
 <ul>
-<li>removal of highly correlated clusters of elements (keeping a representative) with method=“correlation”</li>
+<li>removal of highly correlated clusters of elements (keeping a representative) with method=âcorrelationâ</li>
 <li>removal of most proximal element pairs in a reduced dimensional space.</li>
 </ul>
 <p><strong>Approach 1</strong></p>
@@ -1028,19 +1028,19 @@
 <div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_ensembl</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/ensembl_to_symbol-methods.html">ensembl_to_symbol</a></span><span class="op">(</span><span class="va">ens</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb65"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 119 x 8</span></span>
-<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    ens   iso   `read count` sample cases_0_project… cases_0_samples… transcript</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    ens   iso   `read count` sample cases_0_projectâ¦ cases_0_samplesâ¦ transcript</span></span>
 <span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;     </span></span>
-<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 ENSG… 13             144 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 ENSG… 13              72 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 ENSG… 13               0 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 ENSG… 13            1099 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 ENSG… 13              11 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 ENSG… 13               2 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 ENSG… 13               3 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 ENSG… 13            2678 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 ENSG… 13             751 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 109 more rows, and 1 more variable: ref_genome &lt;chr&gt;</span></span></code></pre></div>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 ENSGâ¦ 13             144 TARGEâ¦ Acute Myeloid Lâ¦ Primary Blood Dâ¦ TSPAN6    </span></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 ENSGâ¦ 13              72 TARGEâ¦ Acute Myeloid Lâ¦ Primary Blood Dâ¦ TSPAN6    </span></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 ENSGâ¦ 13               0 TARGEâ¦ Acute Myeloid Lâ¦ Primary Blood Dâ¦ TSPAN6    </span></span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 ENSGâ¦ 13            1099 TARGEâ¦ Acute Myeloid Lâ¦ Primary Blood Dâ¦ TSPAN6    </span></span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 ENSGâ¦ 13              11 TARGEâ¦ Acute Myeloid Lâ¦ Primary Blood Dâ¦ TSPAN6    </span></span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 ENSGâ¦ 13               2 TARGEâ¦ Acute Myeloid Lâ¦ Primary Blood Dâ¦ TSPAN6    </span></span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 ENSGâ¦ 13               3 TARGEâ¦ Acute Myeloid Lâ¦ Primary Blood Dâ¦ TSPAN6    </span></span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 ENSGâ¦ 13            2678 TARGEâ¦ Acute Myeloid Lâ¦ Primary Blood Dâ¦ TSPAN6    </span></span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 ENSGâ¦ 13             751 TARGEâ¦ Acute Myeloid Lâ¦ Primary Blood Dâ¦ TSPAN6    </span></span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 ENSGâ¦ 13               1 TARGEâ¦ Acute Myeloid Lâ¦ Primary Blood Dâ¦ TSPAN6    </span></span>
+<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # â¦ with 109 more rows, and 1 more variable: ref_genome &lt;chr&gt;</span></span></code></pre></div>
 </div>
 <div id="from-gene-symbol-to-gene-description-gene-name-in-full" class="section level2">
 <h2 class="hasAnchor">
@@ -1049,19 +1049,19 @@
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/describe_transcript-methods.html">describe_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">select</span><span class="op">(</span><span class="va">transcript</span>, <span class="va">description</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb67"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble abstraction: 408,624 x 9</span></span>
-<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    transcript sample count Cell.type time  condition batch factor_of_inter…</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    transcript sample count Cell.type time  condition batch factor_of_interâ¦</span></span>
 <span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;      &lt;chr&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;fct&gt; &lt;lgl&gt;     &lt;fct&gt; &lt;lgl&gt;           </span></span>
-<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 A1BG       SRR17…   153 b_cell    0 d   TRUE      0     TRUE            </span></span>
-<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 A1BG-AS1   SRR17…    83 b_cell    0 d   TRUE      0     TRUE            </span></span>
-<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 AAAS       SRR17…   868 b_cell    0 d   TRUE      0     TRUE            </span></span>
-<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 AACS       SRR17…   222 b_cell    0 d   TRUE      0     TRUE            </span></span>
-<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 AAGAB      SRR17…   590 b_cell    0 d   TRUE      0     TRUE            </span></span>
-<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 AAMDC      SRR17…    48 b_cell    0 d   TRUE      0     TRUE            </span></span>
-<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 AAMP       SRR17…  1257 b_cell    0 d   TRUE      0     TRUE            </span></span>
-<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 AANAT      SRR17…   284 b_cell    0 d   TRUE      0     TRUE            </span></span>
-<span id="cb67-12"><a href="#cb67-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 AAR2       SRR17…   379 b_cell    0 d   TRUE      0     TRUE            </span></span>
-<span id="cb67-13"><a href="#cb67-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 AARS2      SRR17…   685 b_cell    0 d   TRUE      0     TRUE            </span></span>
-<span id="cb67-14"><a href="#cb67-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 40 more rows, and 1 more variable: description &lt;chr&gt;</span></span></code></pre></div>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 A1BG       SRR17â¦   153 b_cell    0 d   TRUE      0     TRUE            </span></span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 A1BG-AS1   SRR17â¦    83 b_cell    0 d   TRUE      0     TRUE            </span></span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 AAAS       SRR17â¦   868 b_cell    0 d   TRUE      0     TRUE            </span></span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 AACS       SRR17â¦   222 b_cell    0 d   TRUE      0     TRUE            </span></span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 AAGAB      SRR17â¦   590 b_cell    0 d   TRUE      0     TRUE            </span></span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 AAMDC      SRR17â¦    48 b_cell    0 d   TRUE      0     TRUE            </span></span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 AAMP       SRR17â¦  1257 b_cell    0 d   TRUE      0     TRUE            </span></span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 AANAT      SRR17â¦   284 b_cell    0 d   TRUE      0     TRUE            </span></span>
+<span id="cb67-12"><a href="#cb67-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 AAR2       SRR17â¦   379 b_cell    0 d   TRUE      0     TRUE            </span></span>
+<span id="cb67-13"><a href="#cb67-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 AARS2      SRR17â¦   685 b_cell    0 d   TRUE      0     TRUE            </span></span>
+<span id="cb67-14"><a href="#cb67-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # â¦ with 40 more rows, and 1 more variable: description &lt;chr&gt;</span></span></code></pre></div>
 </div>
 </div>
 

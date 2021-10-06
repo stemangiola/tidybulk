@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.5</span>
       </span>
     </div>
 
@@ -81,13 +81,13 @@
 
       
 
-      </header><script src="introduction_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 data-toc-skip class="author">Stefano Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2021-10-02</h4>
+            <h4 data-toc-skip class="date">2021-10-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/master/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -531,18 +531,18 @@
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <pre><code>##  [38;5;246m# A tibble: 251 × 4 [39m
-##     tSNE1  tSNE2 sample                       Call 
-##      [3m [38;5;246m&lt;dbl&gt; [39m [23m   [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;chr&gt; [39m [23m                         [3m [38;5;246m&lt;fct&gt; [39m [23m
-##  [38;5;250m 1 [39m  11.3  - [31m11 [39m [31m. [39m [31m7 [39m  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-##  [38;5;250m 2 [39m  - [31m3 [39m [31m. [39m [31m24 [39m  - [31m1 [39m [31m. [39m [31m53 [39m TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-##  [38;5;250m 3 [39m  17.6   - [31m7 [39m [31m. [39m [31m0 [39m [31m1 [39m TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-##  [38;5;250m 4 [39m   4.55   4.20 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-##  [38;5;250m 5 [39m   7.62 - [31m10 [39m [31m. [39m [31m4 [39m  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-##  [38;5;250m 6 [39m  - [31m8 [39m [31m. [39m [31m28 [39m  10.9  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-##  [38;5;250m 7 [39m - [31m36 [39m [31m. [39m [31m2 [39m    4.64 TCGA-A1-A0SK-01A-12R-A084-07 Basal
-##  [38;5;250m 8 [39m   1.08  13.4  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-##  [38;5;250m 9 [39m   2.26  12.4  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-##  [38;5;250m10 [39m  26.9  - [31m10 [39m [31m. [39m [31m7 [39m  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+##     tSNE1   tSNE2 sample                       Call 
+##      [3m [38;5;246m&lt;dbl&gt; [39m [23m    [3m [38;5;246m&lt;dbl&gt; [39m [23m  [3m [38;5;246m&lt;chr&gt; [39m [23m                         [3m [38;5;246m&lt;fct&gt; [39m [23m
+##  [38;5;250m 1 [39m  0.573  - [31m8 [39m [31m. [39m [31m94 [39m  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+##  [38;5;250m 2 [39m  4.68    1.97  TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+##  [38;5;250m 3 [39m - [31m6 [39m [31m. [39m [31m94 [39m   - [31m1 [39m [31m. [39m [31m48 [39m  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+##  [38;5;250m 4 [39m - [31m4 [39m [31m. [39m [31m74 [39m    1.46  TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+##  [38;5;250m 5 [39m - [31m0 [39m [31m. [39m [31m522 [39m  - [31m7 [39m [31m. [39m [31m0 [39m [31m2 [39m  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+##  [38;5;250m 6 [39m - [31m7 [39m [31m. [39m [31m93 [39m    0.847 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+##  [38;5;250m 7 [39m 20.1    19.2   TCGA-A1-A0SK-01A-12R-A084-07 Basal
+##  [38;5;250m 8 [39m - [31m7 [39m [31m. [39m [31m60 [39m    9.26  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+##  [38;5;250m 9 [39m - [31m7 [39m [31m. [39m [31m79 [39m    8.20  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+##  [38;5;250m10 [39m - [31m9 [39m [31m. [39m [31m22 [39m  - [31m18 [39m [31m. [39m [31m3 [39m   TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
 ##  [38;5;246m# … with 241 more rows [39m</code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -987,18 +987,18 @@ We may want to test for differential transcription between sample-wise factors o
 ##  [1] tidySummarizedExperiment_1.2.0 SummarizedExperiment_1.22.0   
 ##  [3] Biobase_2.52.0                 GenomicRanges_1.44.0          
 ##  [5] GenomeInfoDb_1.28.4            IRanges_2.26.0                
-##  [7] S4Vectors_0.30.1               BiocGenerics_0.38.0           
+##  [7] S4Vectors_0.30.2               BiocGenerics_0.38.0           
 ##  [9] MatrixGenerics_1.4.3           matrixStats_0.61.0            
-## [11] tidybulk_1.5.3                 ggrepel_0.9.1                 
+## [11] tidybulk_1.5.5                 ggrepel_0.9.1                 
 ## [13] ggplot2_3.3.5                  magrittr_2.0.1                
-## [15] tibble_3.1.4                   tidyr_1.1.4                   
+## [15] tibble_3.1.5                   tidyr_1.1.4                   
 ## [17] dplyr_1.0.7                    knitr_1.36                    
 ## [19] BiocStyle_2.20.2              
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] Rtsne_0.15               colorspace_2.0-2         ellipsis_0.3.2          
 ##   [4] class_7.3-19             rprojroot_2.0.2          XVector_0.32.0          
-##   [7] fs_1.5.0                 tidytext_0.3.1           proxy_0.4-26            
+##   [7] fs_1.5.0                 tidytext_0.3.2           proxy_0.4-26            
 ##  [10] farver_2.1.0             SnowballC_0.7.0          bit64_4.0.5             
 ##  [13] AnnotationDbi_1.54.1     fansi_0.5.0              codetools_0.2-18        
 ##  [16] splines_4.1.1            cachem_1.0.6             jsonlite_1.7.2          
@@ -1016,9 +1016,9 @@ We may want to test for differential transcription between sample-wise factors o
 ##  [52] zlibbioc_1.38.0          scales_1.1.1             ragg_1.1.3              
 ##  [55] hms_1.1.1                RColorBrewer_1.1-2       yaml_2.2.1              
 ##  [58] memoise_2.0.0            sass_0.4.0               reshape_0.8.8           
-##  [61] stringi_1.7.4            RSQLite_2.2.8            highr_0.9               
+##  [61] stringi_1.7.5            RSQLite_2.2.8            highr_0.9               
 ##  [64] genefilter_1.74.0        tokenizers_0.2.1         desc_1.4.0              
-##  [67] e1071_1.7-9              BiocParallel_1.26.2      rlang_0.4.11            
+##  [67] e1071_1.7-9              BiocParallel_1.26.2      rlang_0.99.0.9000       
 ##  [70] pkgconfig_2.0.3          systemfonts_1.0.2        bitops_1.0-7            
 ##  [73] evaluate_0.14            lattice_0.20-45          purrr_0.3.4             
 ##  [76] htmlwidgets_1.5.4        labeling_0.4.2           bit_4.0.4               
