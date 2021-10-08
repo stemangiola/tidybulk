@@ -179,14 +179,14 @@ Underlying method for UMAP:
 
 
 counts.MDS =
- tidybulk::se_mini \%>\%
- identify_abundant() \%>\%
+ tidybulk::se_mini |>
+ identify_abundant() |>
  reduce_dimensions( method="MDS", .dims = 3)
 
 
 counts.PCA =
- tidybulk::se_mini \%>\%
- identify_abundant() \%>\%
+ tidybulk::se_mini |>
+ identify_abundant() |>
  reduce_dimensions(method="PCA", .dims = 3)
 
 

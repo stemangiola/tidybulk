@@ -139,8 +139,8 @@ remove_redundancy() takes as input A `tbl` (with at least three columns for samp
 \examples{
 
 
- tidybulk::se_mini \%>\%
- identify_abundant() \%>\%
+ tidybulk::se_mini |>
+ identify_abundant() |>
    remove_redundancy(
 	   .element = sample,
 	   .feature = transcript,
@@ -149,8 +149,8 @@ remove_redundancy() takes as input A `tbl` (with at least three columns for samp
 	   	)
 
 counts.MDS =
- tidybulk::se_mini \%>\%
- identify_abundant() \%>\%
+ tidybulk::se_mini |>
+ identify_abundant() |>
   reduce_dimensions( method="MDS", .dims = 3)
 
 remove_redundancy(
