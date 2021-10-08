@@ -2602,7 +2602,7 @@ get_symbol_from_ensembl <-
 #' @return A data frame
 #'
 #'
-run_llsr = function(mix, reference = X_cibersort) {
+run_llsr = function(mix, reference = X_cibersort,  intercept= TRUE) {
 	# Get common markers
 	markers = intersect(rownames(mix), rownames(reference))
 
@@ -2613,10 +2613,13 @@ run_llsr = function(mix, reference = X_cibersort) {
 	Y = as.matrix(Y)
 
 	X <- (X - mean(X)) / sd(X)
-	y <- apply(Y, 2, function(mc) (mc - mean(mc)) / sd(mc)  )
-	y <- (y - mean(y)) / sd(y)
+	Y <- apply(Y, 2, function(mc) (mc - mean(mc)) / sd(mc)  )
+	# Y <- (Y - mean(y)) / sd(Y)
 
-	results <- t(data.frame(lsfit(X, Y)$coefficients)[-1, , drop = FALSE])
+	if(intercept)
+	  results <- t(data.frame(lsfit(X, Y)$coefficients)[-1, , drop = FALSE])
+	else
+	  results <- t(data.frame(lsfit(X, Y, intercept=FALSE)$coefficients))
 	results[results < 0] <- 0
 	results <- results / apply(results, 1, sum)
 	rownames(results) = colnames(Y)
@@ -2778,7 +2781,7 @@ get_cell_type_proportions = function(.data,
 				validate_signature(.data, reference, !!.transcript)
 
 				(.) %>%
-				run_llsr(reference) %>%
+				run_llsr(reference, ...) %>%
 				as_tibble(rownames = quo_name(.sample))
 			},
 

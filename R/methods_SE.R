@@ -955,7 +955,7 @@ setMethod("aggregate_duplicates",
 				validate_signature_SE(.data, reference, !!.transcript)
 
 				(.) %>%
-					run_llsr(reference) %>%
+					run_llsr(reference, ...) %>%
 					as_tibble(rownames = quo_name(.sample))
 			},
 
