@@ -176,7 +176,7 @@ doPerm <- function(perm, X, Y, cores = 3){
 #'
 #' @keywords internal
 #'
-my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
+my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = NULL){
 
 
   #read in data
@@ -195,7 +195,8 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
   P <- perm #number of permutations
 
   #anti-log if max < 50 in mixture file
-  if(max(Y) < 50) {Y <- 2^Y}
+  if(is.null(exp_transform)) exp_transform = max(Y) < 50
+  if(exp_transform) {Y <- 2^Y}
 
   #quantile normalization of mixture file
 
