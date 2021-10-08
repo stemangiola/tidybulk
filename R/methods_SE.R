@@ -948,7 +948,7 @@ setMethod("aggregate_duplicates",
 				# Validate reference
 				validate_signature_SE(.data, reference, !!.transcript)
 
-				do.call(my_CIBERSORT, list(Y = ., X = reference) %>% c(dots_args)) %$%
+				do.call(my_CIBERSORT, list(Y = ., X = reference, QN=FALSE) %>% c(dots_args)) %$%
 					proportions %>%
 					as_tibble(rownames = quo_name(.sample)) %>%
 					select(-`P-value`,-Correlation,-RMSE)
@@ -1013,7 +1013,7 @@ setMethod("aggregate_duplicates",
 	colData(.data) = colData(.data) %>% cbind(
 		my_proportions %>%
 			as_matrix(rownames = "sample") %>%
-			.[rownames(colData(.data)),]
+		  .[match(rownames(colData(.data)), rownames(.)),]
 		)
 
 	.data %>%

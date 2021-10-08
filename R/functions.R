@@ -2975,7 +2975,7 @@ get_cell_type_proportions = function(.data,
 				# Validate reference
 				validate_signature(.data, reference, !!.transcript)
 
-				do.call(my_CIBERSORT, list(Y = ., X = reference) %>% c(dots_args)) %$%
+				do.call(my_CIBERSORT, list(Y = ., X = reference, QN=FALSE) %>% c(dots_args)) %$%
 				proportions %>%
 				as_tibble(rownames = quo_name(.sample)) %>%
 				select(-`P-value`,-Correlation,-RMSE)
