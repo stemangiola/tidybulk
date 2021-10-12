@@ -3719,8 +3719,7 @@ setGeneric("impute_missing_abundance", function(.data,
 	# Validate data frame
 	if(do_validate())  validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	.data_processed =
-		fill_NA_using_formula(
+	fill_NA_using_formula(
 			.data,
 			.formula,
 			.sample = !!.sample,
