@@ -185,7 +185,7 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 
 	expect_equal(
 		as.numeric(as.data.frame(res@colData[1, 4:7])),
-		c( 0.6221895, 0.2380869, 0.0000000, 0.0000000),
+		c( 0.6196622 ,0.2525598, 0.0000000, 0.0000000),
 		tolerance=1e-3
 	)
 

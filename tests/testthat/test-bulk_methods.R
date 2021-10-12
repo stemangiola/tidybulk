@@ -1644,7 +1644,7 @@ test_that("Only cell type proportions - no object",{
 
 	expect_equal(
 		as.numeric(res[1,2:5]),
-		c(0.6223514, 0.2378625, 0.0000000 ,0.0000000),
+		c(0.6196622, 0.2525598, 0.0000000, 0.0000000),
 		tolerance=1e-3
 	)
 
@@ -1661,7 +1661,7 @@ test_that("Only cell type proportions - no object",{
 			.transcript = b,
 			.abundance = c,
 			method = "llsr",
-			action="only", cores=1
+			action="only"
 		)
 
 	expect_equal(
@@ -1698,59 +1698,6 @@ test_that("Only cell type proportions - no object",{
 	# 	ncol(res),
 	# 	24
 	# )
-
-})
-
-test_that("Get cell type proportions - no object",{
-
-	res =
-		deconvolve_cellularity(
-			input_df,
-			.sample = a,
-			.transcript = b,
-			.abundance = c,
-			action="get", cores=1
-		)
-
-	expect_equal(
-		as.numeric(res[1,7:10]),
-		c(0.00000000 ,0.00000000, 0.00000000, 0.05134045),
-		tolerance=1e-3
-	)
-
-	expect_equal(
-		ncol(res),
-		26
-	)
-	expect_equal(
-		nrow(res),
-		5
-	)
-
-})
-
-
-test_that("Add cell type proportions - no object",{
-
-	res =
-		deconvolve_cellularity(
-			input_df,
-			.sample = a,
-			.transcript = b,
-			.abundance = c,
-			action="add", cores=1
-		)
-
-	expect_equal(
-		as.numeric(res[1,7:10]),
-		c(0.6223514, 0.2378625, 0.0000000 ,0.0000000),
-		tolerance=1e-3
-	)
-
-	expect_equal(
-		ncol(res),
-		28
-	)
 
 })
 
