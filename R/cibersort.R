@@ -176,7 +176,7 @@ doPerm <- function(perm, X, Y, cores = 3){
 #'
 #' @keywords internal
 #'
-my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = NULL){
+my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE){
 
 
   #read in data
