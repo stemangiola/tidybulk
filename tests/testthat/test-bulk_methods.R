@@ -1955,7 +1955,7 @@ test_that("impute missing - no object",{
 			.abundance = c
 		)
 
-	expect_equal(	dplyr::pull(filter(res, b=="TNFRSF4" & a == "SRR1740034"), c),	6	)
+	expect_equal(	dplyr::pull(filter(res, b=="ABCB4" & a == "SRR1740034"), c),	505.2176	)
 
 	expect_equal(	ncol(res),	ncol(input_df)	)
 

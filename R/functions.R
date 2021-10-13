@@ -3193,6 +3193,7 @@ fill_NA_using_formula = function(.data,
 	# Sample-wise columns
 	sample_col = .data %>% get_specific_annotation_columns(!!.sample) %>% outersect(col_formula)
 
+	need_log = .data %>% pull(!!.abundance) %>%  max(na.rm=T) > 50
 
 	# Create NAs for missing sample/transcript pair
  .data_completed =
@@ -3224,7 +3225,8 @@ fill_NA_using_formula = function(.data,
    mutate(!!as.symbol(imputed_column) := !!.abundance) %>%
    when(
      quo_is_symbol(.abundance_scaled) ~ .x %>%
-       mutate(!!as.symbol(imputed_column_scaled) := !!.abundance_scaled)
+       mutate(!!as.symbol(imputed_column_scaled) := !!.abundance_scaled),
+     ~ (.)
    )
 
  .data_FIXED =
@@ -3240,11 +3242,45 @@ fill_NA_using_formula = function(.data,
 		left_join(.data %>% pivot_transcript(!!.transcript), by = quo_name(.transcript))
 	)
 
+
  # Clean environment
  rm(.data_completed)
  gc()
 
- .data_FIXED %>%
+
+ ~ {
+
+   # Pseudo-scale if not scaled
+   if(!grepl("_scaled", .y)) library_size = colSums(.x, na.rm = TRUE)
+   if(!grepl("_scaled", .y)) .x = .x / library_size
+
+   # Log
+   need_log = max(.x, na.rm=T) > 50
+   if(need_log) .x = log1p(.x)
+
+   # Imputation
+   .x = fill_NA_matrix_with_factor_colwise(
+     .x,
+     # I split according to the formula
+     colData(.data)[,parse_formula(.formula)]
+   )
+
+   # Exp back
+   if(need_log) .x = exp(.x)-1
+
+   # Scale back if pseudoscaled
+   if(!grepl("_scaled", .y)) .x = .x * library_size
+
+   # Return
+   .x
+ }
+
+ .data_FIXED =
+   .data_FIXED %>%
+
+   when( need_log ~ mutate(., !!.abundance := log1p(!!.abundance)), ~ (.)   ) %>%
+   when( need_log & quo_is_symbol(.abundance_scaled) ~ mutate(., !!.abundance_scaled := log1p(!!.abundance_scaled)), ~ (.)   ) %>%
+
 
 	# Group by covariate
 	nest(cov_data = -c(col_formula, !!.transcript)) %>%
@@ -3253,7 +3289,8 @@ fill_NA_using_formula = function(.data,
 											mutate(
 											  !!as.symbol(imputed_column) := ifelse(
 													!!.abundance %>% is.na,
-													median(!!.abundance, na.rm = TRUE),!!.abundance
+													median(!!.abundance, na.rm = TRUE),
+													!!.abundance
 												)
 											) %>%
 
@@ -3263,7 +3300,8 @@ fill_NA_using_formula = function(.data,
 												~ .x %>% mutate(
 												  !!as.symbol(imputed_column_scaled) := ifelse(
 														!!.abundance_scaled %>% is.na,
-														median(!!.abundance_scaled, na.rm = TRUE),!!.abundance_scaled
+														median(!!.abundance_scaled, na.rm = TRUE),
+														!!.abundance_scaled
 													)
 												)
 											) %>%
@@ -3271,7 +3309,10 @@ fill_NA_using_formula = function(.data,
 											# Through warning if group of size 1
 											ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
 	)) %>%
-	unnest(cov_data)
+	unnest(cov_data) %>%
+   when( need_log ~ mutate(., !!.abundance := exp(!!.abundance)-1), ~ (.)   ) %>%
+   when( need_log & quo_is_symbol(.abundance_scaled) ~ mutate(., !!.abundance_scaled := exp(!!.abundance_scaled)-1), ~ (.)   )
+
 
 	.data_OK %>%
 		bind_rows(.data_FIXED) %>%
