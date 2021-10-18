@@ -3078,6 +3078,7 @@ setMethod("test_gene_enrichment",
 #' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 #' df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #'
+#' \dontrun{
 #' 	test_gene_overrepresentation(
 #' 		df_entrez,
 #' 		.sample = sample,
@@ -3086,7 +3087,7 @@ setMethod("test_gene_enrichment",
 #' 		species="Homo sapiens",
 #'    gene_sets =c("C2")
 #' 	)
-#'
+#' }
 #'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
