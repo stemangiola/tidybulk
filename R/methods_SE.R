@@ -1408,6 +1408,7 @@ setMethod("keep_abundant",
 
 
 #' @importFrom lifecycle deprecate_warn
+#' @importFrom stringr str_replace
 .test_gene_enrichment_SE = 		function(.data,
 																			.formula,
 																			.sample = NULL,
@@ -1853,6 +1854,8 @@ setMethod("test_gene_rank",
 #' @docType methods
 #' @rdname test_gene_rank-methods
 #'
+#' @importFrom stringr str_replace
+#'
 #' @return A `RangedSummarizedExperiment` object
 setMethod("test_gene_rank",
 					"RangedSummarizedExperiment",
@@ -1897,6 +1900,9 @@ setMethod("pivot_sample",
 #'
 #' @docType methods
 #' @rdname pivot_sample-methods
+#'
+#' @importFrom stringr str_replace
+#'
 #'
 #' @return A consistent object (to the input)
 setMethod("pivot_sample",
@@ -2057,6 +2063,9 @@ setMethod("impute_missing_abundance",
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
 #'
+#' @importFrom stringr str_replace
+#'
+#'
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("impute_missing_abundance",
@@ -2216,6 +2225,7 @@ setMethod(
 )
 
 # Set internal
+#' @importFrom stringr str_replace
 .test_stratification_cellularity_SE = 		function(.data,
 																							.formula,
 																							.sample = NULL,
