@@ -2014,25 +2014,25 @@ test_that("gene over representation",{
 })
 
 
-test_that("bibliography",{
-
-		tidybulk(
-			input_df,
-			.sample = a,
-			.transcript = b,
-			.abundance = c
-		) %>%
-		scale_abundance() %>%
-		get_bibliography()
-
-})
-
-test_that("as_SummarizedExperiment",{
-	input_df %>%
-	as_SummarizedExperiment(
-		.sample = a,
-		.transcript = b,
-		.abundance = c
-	)
-
-})
+# test_that("bibliography",{
+#
+# 		tidybulk(
+# 			input_df,
+# 			.sample = a,
+# 			.transcript = b,
+# 			.abundance = c
+# 		) %>%
+# 		scale_abundance() %>%
+# 		get_bibliography()
+#
+# })
+#
+# test_that("as_SummarizedExperiment",{
+# 	input_df %>%
+# 	as_SummarizedExperiment(
+# 		.sample = a,
+# 		.transcript = b,
+# 		.abundance = c
+# 	)
+#
+# })
