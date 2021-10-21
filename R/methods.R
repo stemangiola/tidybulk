@@ -3247,6 +3247,7 @@ setMethod("test_gene_overrepresentation",
 #' df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #' df_entrez  = df_entrez %>% test_differential_abundance(~ condition)
 #'
+#' \dontrun{
 #'	test_gene_rank(
 #'		df_entrez,
 #' 		.sample = sample,
@@ -3255,7 +3256,7 @@ setMethod("test_gene_overrepresentation",
 #'    gene_sets =c("C2"),
 #'  .arrange_desc = logFC
 #' 	)
-#'
+#' }
 #'
 #' @docType methods
 #' @rdname test_gene_rank-methods
