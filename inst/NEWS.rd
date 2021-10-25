@@ -34,8 +34,8 @@
 \itemize{
     \item Added user-defined gene set for gene rank test
     \item Sped up aggregate_transcripts for large scale tibbles or SummarizedExperiment objects
-    \item Allow to pass additional arguments to DESeq2 implementation in test_differential_abundance
-    \item Allow scale_abundance with a user-defined subset of genes (e.g. house keeping genes)
+    \item Allow passing additional arguments to DESeq2 method in test_differential_abundance
+    \item Allow scale_abundance to run with a user-defined subset of genes (e.g. housekeeping genes)
     \item Add UMAP to reduce_dimensions()
-    \item Several minor fixed, optimisations and documentation improvements
+    \item Several minor fixes, optimisations and documentation improvements
 }}
