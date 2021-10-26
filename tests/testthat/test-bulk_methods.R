@@ -1318,8 +1318,10 @@ test_that("Get reduced dimensions tSNE - no object",{
 			.abundance = c,
 			.element = a,
 			.feature = b,
-			action="get"
-		)
+			action="get",
+			verbose=FALSE
+		) %>%
+	  suppressMessages()
 
 	expect_equal(
 		typeof(res$`tSNE1`),
@@ -1343,39 +1345,10 @@ test_that("Get reduced dimensions tSNE - no object",{
 			method = "tSNE",
 			.abundance = c,
 			.element = a,
-			.feature = b, action="get"
+			.feature = b, action="get",
+			verbose=FALSE
 		),
 		"include duplicated sample/gene pairs"
-	)
-
-})
-
-
-test_that("Add reduced dimensions tSNE - no object",{
-
-	set.seed(132)
-
-	res =
-		input_df_breast %>%
-		identify_abundant(a, b, c) %>%
-
-		reduce_dimensions(
-			method="tSNE",
-			.abundance = c,
-			.element = a,
-			.feature = b,
-			action="add"
-		)
-
-	expect_equal(
-		typeof(res$`tSNE1`),
-		"double",
-		tolerance=1e-1
-	)
-
-	expect_equal(
-		ncol(res),
-		8
 	)
 
 })
