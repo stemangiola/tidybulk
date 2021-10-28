@@ -8,7 +8,7 @@ tidybulk - part of tidyTranscriptomics
 status](https://github.com/stemangiola/tidybulk/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/stemangiola/tidybulk/actions)
 <!-- badges: end -->
 
-**Brings transcriptomics to the tidyverse\!**
+**Brings transcriptomics to the tidyverse!**
 
 The code is released under the version 3 of the GNU General Public
 License.
@@ -20,17 +20,17 @@ website:
 
 Please have a look also to
 
-  - [tidySummarizedExperiment](https://github.com/stemangiola/tidySummarizedExperiment)
+-   [tidySummarizedExperiment](https://github.com/stemangiola/tidySummarizedExperiment)
     for bulk data tidy representation
-  - [tidySingleCellExperiment](https://github.com/stemangiola/tidySingleCellExperiment)
+-   [tidySingleCellExperiment](https://github.com/stemangiola/tidySingleCellExperiment)
     for single-cell data tidy representation
-  - [tidyseurat](https://github.com/stemangiola/tidyseurat) for
+-   [tidyseurat](https://github.com/stemangiola/tidyseurat) for
     single-cell data tidy representation
-  - [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for
+-   [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for
     heatmaps produced with tidy principles analysis and manipulation
-  - [nanny](https://github.com/stemangiola/nanny) for tidy high-level
+-   [nanny](https://github.com/stemangiola/nanny) for tidy high-level
     data analysis and manipulation
-  - [tidygate](https://github.com/stemangiola/tidygate) for adding
+-   [tidygate](https://github.com/stemangiola/tidygate) for adding
     custom gate information to your tibble
 
 <!---
@@ -43,37 +43,36 @@ Please have a look also to
 
 ## Functions/utilities available
 
-| Function                          | Description                                                                  |
-| --------------------------------- | ---------------------------------------------------------------------------- |
-| `identify_abundant`               | identify the abundant genes                                                  |
-| `aggregate_duplicates`            | Aggregate abundance and annotation of duplicated transcripts in a robust way |
-| `scale_abundance`                 | Scale (normalise) abundance for RNA sequencing depth                         |
-| `reduce_dimensions`               | Perform dimensionality reduction (PCA, MDS, tSNE)                            |
-| `cluster_elements`                | Labels elements with cluster identity (kmeans, SNN)                          |
-| `remove_redundancy`               | Filter out elements with highly correlated features                          |
-| `adjust_abundance`                | Remove known unwanted variation (Combat)                                     |
-| `test_differential_abundance`     | Differential transcript abundance testing (DE)                               |
-| `deconvolve_cellularity`          | Estimated tissue composition (Cibersort or llsr)                             |
-| `test_differential_cellularity`   | Differential cell-type abundance testing                                     |
-| `test_stratification_cellularity` | Estimate Kaplan-Meier survival differences                                   |
-| `keep_variable`                   | Filter for top variable features                                             |
-| `keep_abundant`                   | Filter out lowly abundant transcripts                                        |
-| `test_gene_enrichment`            | Gene enrichment analyses (EGSEA)                                             |
-| `test_gene_overrepresentation`    | Gene enrichment on list of transcript names (no rank)                        |
+| Function                            | Description                                                                        |
+|-------------------------------------|------------------------------------------------------------------------------------|
+| `aggregate_duplicates`              | Aggregate abundance and annotation of duplicated transcripts in a robust way       |
+| `identify_abundant` `keep_abundant` | identify or keep the abundant genes                                                |
+| `keep_variable`                     | Filter for top variable features                                                   |
+| `scale_abundance`                   | Scale (normalise) abundance for RNA sequencing depth                               |
+| `reduce_dimensions`                 | Perform dimensionality reduction (PCA, MDS, tSNE, UMAP)                            |
+| `cluster_elements`                  | Labels elements with cluster identity (kmeans, SNN)                                |
+| `remove_redundancy`                 | Filter out elements with highly correlated features                                |
+| `adjust_abundance`                  | Remove known unwanted variation (Combat)                                           |
+| `test_differential_abundance`       | Differential transcript abundance testing (DESeq2, edgeR, voom)                    |
+| `deconvolve_cellularity`            | Estimated tissue composition (Cibersort, llsr, epic, xCell, mcp_counter, quantiseq |
+| `test_differential_cellularity`     | Differential cell-type abundance testing                                           |
+| `test_stratification_cellularity`   | Estimate Kaplan-Meier survival differences                                         |
+| `test_gene_enrichment`              | Gene enrichment analyses (EGSEA)                                                   |
+| `test_gene_overrepresentation`      | Gene enrichment on list of transcript names (no rank)                              |
+| `test_gene_rank`                    | Gene enrichment on list of transcript (GSEA)                                       |
+| `impute_missing_abundance`          | Impute abundance for missing data points using sample groupings                    |
 
-| Utilities                  | Description                                                     |
-| -------------------------- | --------------------------------------------------------------- |
-| `get_bibliography`         | Get the bibliography of your workflow                           |
-| `tidybulk`                 | add tidybulk attributes to a tibble object                      |
-| `tidybulk_SAM_BAM`         | Convert SAM BAM files into tidybulk tibble                      |
-| `pivot_sample`             | Select sample-wise columns/information                          |
-| `pivot_transcript`         | Select transcript-wise columns/information                      |
-| `rotate_dimensions`        | Rotate two dimensions of a degree                               |
-| `ensembl_to_symbol`        | Add gene symbol from ensembl IDs                                |
-| `symbol_to_entrez`         | Add entrez ID from gene symbol                                  |
-| `describe_transcript`      | Add gene description from gene symbol                           |
-| `impute_missing_abundance` | Impute abundance for missing data points using sample groupings |
-| `fill_missing_abundance`   | Fill abundance for missing data points using an arbitrary value |
+| Utilities             | Description                                |
+|-----------------------|--------------------------------------------|
+| `get_bibliography`    | Get the bibliography of your workflow      |
+| `tidybulk`            | add tidybulk attributes to a tibble object |
+| `tidybulk_SAM_BAM`    | Convert SAM BAM files into tidybulk tibble |
+| `pivot_sample`        | Select sample-wise columns/information     |
+| `pivot_transcript`    | Select transcript-wise columns/information |
+| `rotate_dimensions`   | Rotate two dimensions of a degree          |
+| `ensembl_to_symbol`   | Add gene symbol from ensembl IDs           |
+| `symbol_to_entrez`    | Add entrez ID from gene symbol             |
+| `describe_transcript` | Add gene description from gene symbol      |
 
 All functions are directly compatibble with `SummarizedExperiment`
 object.
@@ -152,7 +151,7 @@ factors and boolean are appended as characters.
 
 TidyTranscriptomics
 
-``` r yellow
+``` r
 counts_SE.aggr = counts_SE %>% aggregate_duplicates()
 ```
 
@@ -265,9 +264,9 @@ x <- x[o[1L:top],,drop=FALSE]
 
 norm_counts.table = norm_counts.table[rownames(x)]
 
-norm_counts.table$cell_type = tidybulk::counts[
+norm_counts.table$cell_type = tibble_counts[
     match(
-        tidybulk::counts$sample,
+        tibble_counts$sample,
         rownames(norm_counts.table)
     ),
     "Cell.type"
@@ -316,8 +315,8 @@ cmds = cmds %$%
     cmdscale.out %>%
     setNames(sprintf("Dim%s", 1:6))
 
-cmds$cell_type = tidybulk::counts[
-    match(tidybulk::counts$sample, rownames(cmds)),
+cmds$cell_type = tibble_counts[
+    match(tibble_counts$sample, rownames(cmds)),
     "Cell.type"
 ]
 ```
@@ -458,8 +457,8 @@ tsne = Rtsne::Rtsne(
     perplexity=10,
         pca_scale =TRUE
 )$Y
-tsne$cell_type = tidybulk::counts[
-    match(tidybulk::counts$sample, rownames(tsne)),
+tsne$cell_type = tibble_counts[
+    match(tibble_counts$sample, rownames(tsne)),
     "Cell.type"
 ]
 ```
@@ -724,8 +723,8 @@ results <- CIBERSORT(
     "mixture_file.txt",
     perm=100, QN=TRUE
 )
-results$cell_type = tidybulk::counts[
-    match(tidybulk::counts$sample, rownames(results)),
+results$cell_type = tibble_counts[
+    match(tibble_counts$sample, rownames(results)),
     "Cell.type"
 ]
 ```
@@ -890,8 +889,8 @@ count_m_log = log(count_m + 1)
 k = kmeans(count_m_log, iter.max = 1000, ...)
 cluster = k$cluster
 
-cluster$cell_type = tidybulk::counts[
-    match(tidybulk::counts$sample, rownames(cluster)),
+cluster$cell_type = tibble_counts[
+    match(tibble_counts$sample, rownames(cluster)),
     c("Cell.type", "Dim1", "Dim2")
 ]
 ```
@@ -915,6 +914,10 @@ plot.
 ![](man/figures/plot_cluster-1.png)<!-- -->
 
 **SNN**
+
+Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used
+in this method. We are trying to solve this issue. At the moment this
+option in unaviable.
 
 <div class="column-left">
 
@@ -947,8 +950,8 @@ snn = FindNeighbors(snn)
 snn = FindClusters(snn, method = "igraph", ...)
 snn = snn[["seurat_clusters"]]
 
-snn$cell_type = tidybulk::counts[
-    match(tidybulk::counts$sample, rownames(snn)),
+snn$cell_type = tibble_counts[
+    match(tibble_counts$sample, rownames(snn)),
     c("Cell.type", "Dim1", "Dim2")
 ]
 ```
@@ -963,34 +966,14 @@ snn$cell_type = tidybulk::counts[
 counts_SE.norm.SNN %>%
     pivot_sample() %>%
     select(contains("tSNE"), everything()) 
-```
 
-    ## # A tibble: 251 x 6
-    ##       tSNE1  tSNE2 sample                Call  sample.x              cluster_SNN
-    ##       <dbl>  <dbl> <chr>                 <fct> <chr>                 <fct>      
-    ##  1   0.0536  10.8  TCGA-A1-A0SD-01A-11R… LumA  TCGA-A1-A0SD-01A-11R… 0          
-    ##  2   7.00    -3.58 TCGA-A1-A0SF-01A-11R… LumA  TCGA-A1-A0SF-01A-11R… 1          
-    ##  3  -4.30    18.1  TCGA-A1-A0SG-01A-11R… LumA  TCGA-A1-A0SG-01A-11R… 0          
-    ##  4  -6.36     2.24 TCGA-A1-A0SH-01A-11R… LumA  TCGA-A1-A0SH-01A-11R… 3          
-    ##  5  -9.99     2.99 TCGA-A1-A0SI-01A-11R… LumB  TCGA-A1-A0SI-01A-11R… 3          
-    ##  6   0.273   -8.08 TCGA-A1-A0SJ-01A-11R… LumA  TCGA-A1-A0SJ-01A-11R… 0          
-    ##  7   6.94   -27.9  TCGA-A1-A0SK-01A-12R… Basal TCGA-A1-A0SK-01A-12R… 1          
-    ##  8 -11.8     -5.48 TCGA-A1-A0SM-01A-11R… LumA  TCGA-A1-A0SM-01A-11R… 3          
-    ##  9 -10.1     -4.96 TCGA-A1-A0SN-01A-11R… LumB  TCGA-A1-A0SN-01A-11R… 3          
-    ## 10  -3.44    26.5  TCGA-A1-A0SQ-01A-21R… LumA  TCGA-A1-A0SQ-01A-21R… 0          
-    ## # … with 241 more rows
-
-``` r
 counts_SE.norm.SNN %>%
     pivot_sample() %>%
     gather(source, Call, c("cluster_SNN", "Call")) %>%
     distinct() %>%
     ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
-```
 
-![](man/figures/SNN_plot-1.png)<!-- -->
 
-``` r
 # Do differential transcription between clusters
 counts_SE.norm.SNN %>%
     mutate(factor_of_interest = `cluster_SNN` == 3) %>%
@@ -999,23 +982,6 @@ counts_SE.norm.SNN %>%
     action="get"
    )
 ```
-
-    ## # A tibble abstraction: 125,500 x 16
-    ##    transcript sample  count count_scaled Call  sample.x  tSNE1 tSNE2 cluster_SNN
-    ##    <chr>      <chr>   <int>        <int> <fct> <chr>     <dbl> <dbl> <fct>      
-    ##  1 ENSG00000… TCGA-…  22114        22114 LumA  TCGA-A1… 0.0536  10.8 0          
-    ##  2 ENSG00000… TCGA-… 128257       128257 LumA  TCGA-A1… 0.0536  10.8 0          
-    ##  3 ENSG00000… TCGA-…  23971        23971 LumA  TCGA-A1… 0.0536  10.8 0          
-    ##  4 ENSG00000… TCGA-…  22518        22518 LumA  TCGA-A1… 0.0536  10.8 0          
-    ##  5 ENSG00000… TCGA-…  23250        23250 LumA  TCGA-A1… 0.0536  10.8 0          
-    ##  6 ENSG00000… TCGA-…  30039        30039 LumA  TCGA-A1… 0.0536  10.8 0          
-    ##  7 ENSG00000… TCGA-…  32987        32987 LumA  TCGA-A1… 0.0536  10.8 0          
-    ##  8 ENSG00000… TCGA-…  42292        42292 LumA  TCGA-A1… 0.0536  10.8 0          
-    ##  9 ENSG00000… TCGA-…  12417        12417 LumA  TCGA-A1… 0.0536  10.8 0          
-    ## 10 ENSG00000… TCGA-…  40820        40820 LumA  TCGA-A1… 0.0536  10.8 0          
-    ## # … with 40 more rows, and 7 more variables: factor_of_interest <lgl>,
-    ## #   .abundant <lgl>, logFC <dbl>, logCPM <dbl>, F <dbl>, PValue <dbl>,
-    ## #   FDR <dbl>
 
 ## Drop `redundant` transcripts
 
@@ -1027,9 +993,9 @@ symbols; for `sample`, `transcript` and `count`) and returns a tibble
 with redundant elements removed (e.g., samples). Two redundancy
 estimation approaches are supported:
 
-  - removal of highly correlated clusters of elements (keeping a
+-   removal of highly correlated clusters of elements (keeping a
     representative) with method=“correlation”
-  - removal of most proximal element pairs in a reduced dimensional
+-   removal of most proximal element pairs in a reduced dimensional
     space.
 
 **Approach 1**
