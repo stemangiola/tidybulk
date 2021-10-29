@@ -45,21 +45,22 @@ gate information to your tibble
 
 Function | Description
 ------------ | -------------
-`identify_abundant` | identify the abundant genes
 `aggregate_duplicates` | Aggregate abundance and annotation of duplicated transcripts in a robust way
+`identify_abundant` `keep_abundant` | identify or keep the abundant genes
+`keep_variable` | Filter for top variable features
 `scale_abundance` | Scale (normalise) abundance for RNA sequencing depth
-`reduce_dimensions` | Perform dimensionality reduction (PCA, MDS, tSNE)
+`reduce_dimensions` | Perform dimensionality reduction (PCA, MDS, tSNE, UMAP)
 `cluster_elements` | Labels elements with cluster identity (kmeans, SNN)
 `remove_redundancy` | Filter out elements with highly correlated features
 `adjust_abundance` | Remove known unwanted variation (Combat)
-`test_differential_abundance` | Differential transcript abundance testing (DE) 
-`deconvolve_cellularity` | Estimated tissue composition (Cibersort or llsr)
+`test_differential_abundance` | Differential transcript abundance testing (DESeq2, edgeR, voom) 
+`deconvolve_cellularity` | Estimated tissue composition (Cibersort, llsr, epic, xCell, mcp_counter, quantiseq
 `test_differential_cellularity` | Differential cell-type abundance testing
 `test_stratification_cellularity` | Estimate Kaplan-Meier survival differences
-`keep_variable` | Filter for top variable features
-`keep_abundant` | Filter out lowly abundant transcripts
 `test_gene_enrichment` | Gene enrichment analyses (EGSEA)
 `test_gene_overrepresentation` | Gene enrichment on list of transcript names (no rank)
+`test_gene_rank` | Gene enrichment on list of transcript (GSEA)
+`impute_missing_abundance` | Impute abundance for missing data points using sample groupings 
 
 
 Utilities | Description
@@ -73,8 +74,6 @@ Utilities | Description
 `ensembl_to_symbol` | Add gene symbol from ensembl IDs
 `symbol_to_entrez` | Add entrez ID from gene symbol
 `describe_transcript` | Add gene description from gene symbol
-`impute_missing_abundance` | Impute abundance for missing data points using sample groupings 
-`fill_missing_abundance` | Fill abundance for missing data points using an arbitrary value
 
 All functions are directly compatibble with `SummarizedExperiment` object.
 
