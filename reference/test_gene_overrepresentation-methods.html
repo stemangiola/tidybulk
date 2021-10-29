@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.1</span>
       </span>
     </div>
 
@@ -191,6 +191,7 @@ This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the ba
 <span class="r-msg co"><span class="r-pr">#&gt;</span> factorfactorfactorfactorlogical</span>
 <span class="r-in"><span class="va">df_entrez</span> <span class="op">=</span> <span class="fu"><a href="mutate-methods.html">mutate</a></span><span class="op">(</span><span class="va">df_entrez</span>, do_test <span class="op">=</span> <span class="va">feature</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TNFRSF4"</span>, <span class="st">"PLCH2"</span>, <span class="st">"PADI4"</span>, <span class="st">"PAX7"</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"></span>
+<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
 <span class="r-in">  <span class="fu">test_gene_overrepresentation</span><span class="op">(</span></span>
 <span class="r-in">    <span class="va">df_entrez</span>,</span>
 <span class="r-in">    .sample <span class="op">=</span> <span class="va">sample</span>,</span>
@@ -199,22 +200,7 @@ This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the ba
 <span class="r-in">    species<span class="op">=</span><span class="st">"Homo sapiens"</span>,</span>
 <span class="r-in">   gene_sets <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"C2"</span><span class="op">)</span></span>
 <span class="r-in">  <span class="op">)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 60 × 10</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    gs_cat ID       Description  GeneRatio BgRatio  pvalue p.adjust  qvalue Count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> C2     HOFFMAN… HOFFMAN_CLO… 1/4       10/216… 0.001<span style="text-decoration: underline;">84</span>   0.039<span style="text-decoration: underline;">1</span> 0.009<span style="text-decoration: underline;">61</span>     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> C2     PEDRIOL… PEDRIOLI_MI… 2/4       412/21… 0.002<span style="text-decoration: underline;">10</span>   0.039<span style="text-decoration: underline;">1</span> 0.009<span style="text-decoration: underline;">61</span>     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> C2     LIM_MAM… LIM_MAMMARY… 1/4       14/216… 0.002<span style="text-decoration: underline;">58</span>   0.039<span style="text-decoration: underline;">1</span> 0.009<span style="text-decoration: underline;">61</span>     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> C2     GAVIN_I… GAVIN_IL2_R… 1/4       19/216… 0.003<span style="text-decoration: underline;">50</span>   0.039<span style="text-decoration: underline;">1</span> 0.009<span style="text-decoration: underline;">61</span>     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> C2     MYLLYKA… MYLLYKANGAS… 1/4       19/216… 0.003<span style="text-decoration: underline;">50</span>   0.039<span style="text-decoration: underline;">1</span> 0.009<span style="text-decoration: underline;">61</span>     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> C2     REACTOM… REACTOME_SY… 1/4       26/216… 0.004<span style="text-decoration: underline;">79</span>   0.039<span style="text-decoration: underline;">1</span> 0.009<span style="text-decoration: underline;">61</span>     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> C2     REACTOM… REACTOME_TN… 1/4       29/216… 0.005<span style="text-decoration: underline;">34</span>   0.039<span style="text-decoration: underline;">1</span> 0.009<span style="text-decoration: underline;">61</span>     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> C2     PEPPER_… PEPPER_CHRO… 1/4       32/216… 0.005<span style="text-decoration: underline;">89</span>   0.039<span style="text-decoration: underline;">1</span> 0.009<span style="text-decoration: underline;">61</span>     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> C2     VALK_AM… VALK_AML_CL… 1/4       34/216… 0.006<span style="text-decoration: underline;">25</span>   0.039<span style="text-decoration: underline;">1</span> 0.009<span style="text-decoration: underline;">61</span>     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> C2     JAERVIN… JAERVINEN_A… 1/4       40/216… 0.007<span style="text-decoration: underline;">35</span>   0.039<span style="text-decoration: underline;">1</span> 0.009<span style="text-decoration: underline;">61</span>     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 50 more rows, and 1 more variable: entrez &lt;list&gt;</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span class="op">}</span></span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
