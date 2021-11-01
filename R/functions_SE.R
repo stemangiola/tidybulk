@@ -1101,7 +1101,7 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 
 	# Return
 	list(
-		reslt_raw = deseq2_object,
+		result_raw = deseq2_object,
 		result =
 			# Read ft object
 			deseq2_object %>%
