@@ -87,7 +87,7 @@
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 data-toc-skip class="author">Stefano Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2021-10-29</h4>
+            <h4 data-toc-skip class="date">2021-11-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -529,16 +529,16 @@
 <pre><code><span class="co">## <span style="color: #949494;"># A tibble: 251 × 4</span></span>
 <span class="co">##     tSNE1  tSNE2 sample                       Call </span>
 <span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span>   9.33  -<span style="color: #BB0000;">3.47</span> TCGA-A1-A0SD-01A-11R-A115-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span>  -<span style="color: #BB0000;">3.24</span>  -<span style="color: #BB0000;">2.42</span> TCGA-A1-A0SF-01A-11R-A144-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span>  10.8    8.79 TCGA-A1-A0SG-01A-11R-A144-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span>   2.80   7.47 TCGA-A1-A0SH-01A-11R-A084-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span>   5.53  -<span style="color: #BB0000;">2.29</span> TCGA-A1-A0SI-01A-11R-A144-07 LumB </span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span>  10.4    7.16 TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">27.5</span>    9.52 TCGA-A1-A0SK-01A-12R-A084-07 Basal</span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span>   1.48  14.9  TCGA-A1-A0SM-01A-11R-A084-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span>   2.23  13.9  TCGA-A1-A0SN-01A-11R-A144-07 LumB </span>
-<span class="co">## <span style="color: #BCBCBC;">10</span>  14.6  -<span style="color: #BB0000;">14.8</span>  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 1</span>   3.48  11.4  TCGA-A1-A0SD-01A-11R-A115-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 2</span>   3.03  -<span style="color: #BB0000;">5.73</span> TCGA-A1-A0SF-01A-11R-A144-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 3</span>  -<span style="color: #BB0000;">1.20</span>   1.37 TCGA-A1-A0SG-01A-11R-A144-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 4</span>  -<span style="color: #BB0000;">7.81</span>   4.97 TCGA-A1-A0SH-01A-11R-A084-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 5</span> -<span style="color: #BB0000;">13.4</span>   -<span style="color: #BB0000;">6.07</span> TCGA-A1-A0SI-01A-11R-A144-07 LumB </span>
+<span class="co">## <span style="color: #BCBCBC;"> 6</span>   7.61  -<span style="color: #BB0000;">6.91</span> TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 7</span>   6.38 -<span style="color: #BB0000;">30.9</span>  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span>
+<span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">9.62</span>   1.53 TCGA-A1-A0SM-01A-11R-A084-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 9</span> -<span style="color: #BB0000;">11.2</span>    1.08 TCGA-A1-A0SN-01A-11R-A144-07 LumB </span>
+<span class="co">## <span style="color: #BCBCBC;">10</span>  15.0   18.4  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span>
 <span class="co">## <span style="color: #949494;"># … with 241 more rows</span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -993,7 +993,7 @@ We may want to test for differential transcription between sample-wise factors o
 <span class="co">##  [10] farver_2.1.0             SnowballC_0.7.0          bit64_4.0.5             </span>
 <span class="co">##  [13] AnnotationDbi_1.54.1     fansi_0.5.0              codetools_0.2-18        </span>
 <span class="co">##  [16] splines_4.1.1            cachem_1.0.6             jsonlite_1.7.2          </span>
-<span class="co">##  [19] broom_0.7.9              annotate_1.70.0          png_0.1-7               </span>
+<span class="co">##  [19] broom_0.7.10             annotate_1.70.0          png_0.1-7               </span>
 <span class="co">##  [22] BiocManager_1.30.16      readr_2.0.2              compiler_4.1.1          </span>
 <span class="co">##  [25] httr_1.4.2               backports_1.3.0          Matrix_1.3-4            </span>
 <span class="co">##  [28] fastmap_1.1.0            lazyeval_0.2.2           limma_3.48.3            </span>
@@ -1004,7 +1004,7 @@ We may want to test for differential transcription between sample-wise factors o
 <span class="co">##  [43] Biostrings_2.60.2        preprocessCore_1.54.0    nlme_3.1-153            </span>
 <span class="co">##  [46] xfun_0.27                stringr_1.4.0            lifecycle_1.0.1         </span>
 <span class="co">##  [49] XML_3.99-0.8             org.Hs.eg.db_3.13.0      edgeR_3.34.1            </span>
-<span class="co">##  [52] zlibbioc_1.38.0          scales_1.1.1             ragg_1.1.3              </span>
+<span class="co">##  [52] zlibbioc_1.38.0          scales_1.1.1             ragg_1.2.0              </span>
 <span class="co">##  [55] hms_1.1.1                RColorBrewer_1.1-2       yaml_2.2.1              </span>
 <span class="co">##  [58] memoise_2.0.0            sass_0.4.0               reshape_0.8.8           </span>
 <span class="co">##  [61] stringi_1.7.5            RSQLite_2.2.8            highr_0.9               </span>
@@ -1018,7 +1018,7 @@ We may want to test for differential transcription between sample-wise factors o
 <span class="co">##  [85] DelayedArray_0.18.0      DBI_1.1.1                pillar_1.6.4            </span>
 <span class="co">##  [88] withr_2.4.2              mgcv_1.8-38              survival_3.2-13         </span>
 <span class="co">##  [91] KEGGREST_1.32.0          RCurl_1.98-1.5           janeaustenr_0.1.5       </span>
-<span class="co">##  [94] widyr_0.1.4              crayon_1.4.1             utf8_1.2.2              </span>
+<span class="co">##  [94] widyr_0.1.4              crayon_1.4.2             utf8_1.2.2              </span>
 <span class="co">##  [97] plotly_4.10.0            tzdb_0.2.0               rmarkdown_2.11          </span>
 <span class="co">## [100] locfit_1.5-9.4           grid_4.1.1               sva_3.40.0              </span>
 <span class="co">## [103] data.table_1.14.2        blob_1.2.2               digest_0.6.28           </span>
