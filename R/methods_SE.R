@@ -175,7 +175,8 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 		edgeR::calcNormFactors(
 			my_counts_filtered,
 			refColumn = reference,
-			method = method
+			method = method,
+			lib.size = colSums(my_counts_filtered)
 		)
 
 	# Calculate multiplier

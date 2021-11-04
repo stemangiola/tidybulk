@@ -1171,6 +1171,12 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 		droplevels() %>%
 		select(!!.sample, !!.transcript, !!.abundance)
 
+	my_counts_filtered =
+	  df.filt %>%
+	  tidyr::spread(!!.sample,!!.abundance) %>%
+	  tidyr::drop_na() %>%
+	  dplyr::select(-!!.transcript)
+
 	# scaled data set
 	nf =
 		tibble::tibble(
@@ -1179,14 +1185,12 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 
 			# scaled data frame
 			nf = edgeR::calcNormFactors(
-				df.filt %>%
-					tidyr::spread(!!.sample,!!.abundance) %>%
-					tidyr::drop_na() %>%
-					dplyr::select(-!!.transcript),
+			  my_counts_filtered,
 				refColumn = which(reference == factor(levels(
 					df.filt %>% pull(!!.sample)
 				))),
-				method = method
+				method = method,
+				lib.size = colSums(my_counts_filtered)
 			)
 		) %>%
 
