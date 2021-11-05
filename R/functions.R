@@ -363,6 +363,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
+#' @importFrom rlang inform
 #'
 #'
 #' @param .data A tibble
@@ -604,9 +605,9 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		attach_to_internals(edgeR_object, "edgeR") %>%
 		# Communicate the attribute added
 		{
-			message(
-				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$edgeR`"
-			)
+
+		  rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$edgeR`", .frequency_id = "Access DE results edgeR",  .frequency = "once")
+
 			(.)
 		}
 }
@@ -624,7 +625,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
-#'
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, referring only to numeric variables
@@ -812,9 +813,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		attach_to_internals(voom_object, "voom") %>%
 		# Communicate the attribute added
 		{
-			message(
-				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$voom`"
-			)
+		  rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$voom`", .frequency_id = "Access DE results voom",  .frequency = "once")
+
 			(.)
 		}
 }
@@ -832,7 +832,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
-#'
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, referring only to numeric variables
@@ -993,9 +993,9 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 		# Communicate the attribute added
 		{
-			message(
-				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$DESeq2`"
-			)
+
+		  rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$DESeq2`", .frequency_id = "Access DE results deseq2",  .frequency = "once")
+
 			(.)
 		}
 }
@@ -1661,6 +1661,7 @@ get_clusters_SNN_bulk <-
 #' @importFrom purrr map_dfr
 #' @importFrom rlang :=
 #' @importFrom stats setNames
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1757,7 +1758,9 @@ get_reduced_dimensions_MDS_bulk <-
 			attach_to_internals(mds_object, "MDS") %>%
 			# Communicate the attribute added
 			{
-				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$MDS`")
+
+			  rlang::inform("tidybulk says: to access the raw results do `attr(..., \"internals\")$MDS`", .frequency_id = "Access MDS results",  .frequency = "once")
+
 				(.)
 			}
 	}
@@ -1774,6 +1777,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @importFrom stats prcomp
 #' @importFrom utils capture.output
 #' @importFrom magrittr divide_by
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1900,7 +1904,8 @@ we suggest to partition the dataset for sample clusters.
 			attach_to_internals(prcomp_obj, "PCA") %>%
 			# Communicate the attribute added
 			{
-				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$PCA`")
+			  rlang::inform("tidybulk says: to access the raw results do `attr(..., \"internals\")$PCA`", .frequency_id = "Access PCA results",  .frequency = "once")
+
 				(.)
 			}
 
