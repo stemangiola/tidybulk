@@ -170,6 +170,9 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 				names()
 		)
 
+	# Communicate the reference if chosen by default
+	if(is.null(reference_sample)) message(sprintf("tidybulk says: the sample with largest library size %s was chosen as reference for scaling", reference))
+
 	# Calculate TMM
 	nf <-
 		edgeR::calcNormFactors(
