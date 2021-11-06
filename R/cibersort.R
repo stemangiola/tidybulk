@@ -173,6 +173,7 @@ doPerm <- function(perm, X, Y, cores = 3){
 }
 
 #' @importFrom stats sd
+#' @importFrom utils install.packages
 #'
 #' @keywords internal
 #'
@@ -224,13 +225,19 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
     ))
   Y=Y[,colSums(Y)>0]
 
+  # Check if package is installed, otherwise install
+  if (find.package("matrixStats", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing matrixStats needed for cibersort")
+    install.packages("matrixStats", repos = "https://cloud.r-project.org")
+  }
+
   # Eliminate sd == 0
-  if(length(which(colSds(Y)==0))>0)
+  if(length(which(matrixStats::colSds(Y)==0))>0)
     warning(sprintf(
       "tidybulk says: the samples %s were ignored for decovolution as they have standard deviation of 0 for the deconvolution signature genes",
-      colnames(Y)[colSds(Y)==0] %>% paste(collapse = ", ")
+      colnames(Y)[matrixStats::colSds(Y)==0] %>% paste(collapse = ", ")
     ))
-  Y = Y[,colSds(Y)>0]
+  Y = Y[,matrixStats::colSds(Y)>0]
 
   #standardize sig matrix
   X <- (X - mean(X)) / sd(as.vector(X))

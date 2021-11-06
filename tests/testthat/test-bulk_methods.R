@@ -1724,8 +1724,7 @@ test_that("differential composition",{
 		.sample = a,
 		.transcript = b,
 		.abundance = c,
-		method="llsr",
-		cores = 1
+		method="llsr"
 	) %>%
 		pull(`estimate_(Intercept)`) %>%
 		.[[1]] %>%
@@ -1796,7 +1795,7 @@ test_that("test_stratification_cellularity",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			cores = 1, method = "llsr"
+			method = "llsr"
 		) %>%
 		pull(.low_cellularity_expected) %>%
 		.[[1]] %>%
