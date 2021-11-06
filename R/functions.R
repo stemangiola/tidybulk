@@ -146,6 +146,85 @@ create_tt_from_bam_sam_bulk <-
 			# add_class("tidybulk")
 	}
 
+#' Calculate the norm factor with calcNormFactor from limma
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats setNames
+#'
+#' @param .data A tibble
+#' @param reference A reference matrix, not sure if used anymore
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A string character. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#'
+#'
+#' @return A list including the filtered data frame and the normalization factors
+add_scaled_counts_bulk.calcNormFactor <- function(.data,
+                                                  reference = NULL,
+                                                  .sample = `sample`,
+                                                  .transcript = `transcript`,
+                                                  .abundance = `count`,
+                                                  method) {
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+
+  error_if_log_transformed(.data,!!.abundance)
+
+  # Get data frame for the highly transcribed transcripts
+  df.filt <-
+    .data %>%
+    # dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
+    droplevels() %>%
+    select(!!.sample, !!.transcript, !!.abundance)
+
+  # scaled data set
+  nf =
+    tibble::tibble(
+      # Sample factor
+      sample = factor(levels(df.filt %>% pull(!!.sample))),
+
+      # scaled data frame
+      nf = edgeR::calcNormFactors(
+        df.filt %>%
+          tidyr::spread(!!.sample,!!.abundance) %>%
+          tidyr::drop_na() %>%
+          dplyr::select(-!!.transcript),
+        refColumn = which(reference == factor(levels(
+          df.filt %>% pull(!!.sample)
+        ))),
+        method = method
+      )
+    ) %>%
+
+    setNames(c(quo_name(.sample), "nf")) %>%
+
+    # Add the statistics about the number of genes filtered
+    dplyr::left_join(
+      df.filt %>%
+        dplyr::group_by(!!.sample) %>%
+        dplyr::summarise(tot_filt = sum(!!.abundance, na.rm = TRUE)) %>%
+        dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))),
+      by = quo_name(.sample)
+    )
+
+  # Return
+  list(
+    # gene_to_exclude = gene_to_exclude,
+    nf = nf
+  ) %>%
+
+    # Attach attributes
+    reattach_internals(.data)
+}
+
 #' Get a tibble with scaled counts using TMM
 #'
 #' @keywords internal
@@ -218,6 +297,8 @@ get_scaled_counts_bulk <- function(.data,
 				as.character()
 		)
 
+	# Communicate the reference if chosen by default
+  if(is.null(reference_sample)) message(sprintf("tidybulk says: the sample with largest library size %s was chosen as reference for scaling", reference))
 
 	nf_obj <-
 		add_scaled_counts_bulk.calcNormFactor(
@@ -282,6 +363,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
+#' @importFrom rlang inform
 #'
 #'
 #' @param .data A tibble
@@ -523,9 +605,9 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		attach_to_internals(edgeR_object, "edgeR") %>%
 		# Communicate the attribute added
 		{
-			message(
-				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$edgeR`"
-			)
+
+		  rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$edgeR`", .frequency_id = "Access DE results edgeR",  .frequency = "once")
+
 			(.)
 		}
 }
@@ -543,7 +625,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
-#'
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, referring only to numeric variables
@@ -731,9 +813,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		attach_to_internals(voom_object, "voom") %>%
 		# Communicate the attribute added
 		{
-			message(
-				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$voom`"
-			)
+		  rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$voom`", .frequency_id = "Access DE results voom",  .frequency = "once")
+
 			(.)
 		}
 }
@@ -751,7 +832,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
-#'
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, referring only to numeric variables
@@ -912,9 +993,9 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 		# Communicate the attribute added
 		{
-			message(
-				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$DESeq2`"
-			)
+
+		  rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$DESeq2`", .frequency_id = "Access DE results deseq2",  .frequency = "once")
+
 			(.)
 		}
 }
@@ -1580,6 +1661,7 @@ get_clusters_SNN_bulk <-
 #' @importFrom purrr map_dfr
 #' @importFrom rlang :=
 #' @importFrom stats setNames
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1676,7 +1758,9 @@ get_reduced_dimensions_MDS_bulk <-
 			attach_to_internals(mds_object, "MDS") %>%
 			# Communicate the attribute added
 			{
-				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$MDS`")
+
+			  rlang::inform("tidybulk says: to access the raw results do `attr(..., \"internals\")$MDS`", .frequency_id = "Access MDS results",  .frequency = "once")
+
 				(.)
 			}
 	}
@@ -1693,6 +1777,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @importFrom stats prcomp
 #' @importFrom utils capture.output
 #' @importFrom magrittr divide_by
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1819,7 +1904,8 @@ we suggest to partition the dataset for sample clusters.
 			attach_to_internals(prcomp_obj, "PCA") %>%
 			# Communicate the attribute added
 			{
-				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$PCA`")
+			  rlang::inform("tidybulk says: to access the raw results do `attr(..., \"internals\")$PCA`", .frequency_id = "Access PCA results",  .frequency = "once")
+
 				(.)
 			}
 

@@ -170,6 +170,9 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 				names()
 		)
 
+	# Communicate the reference if chosen by default
+	if(is.null(reference_sample)) message(sprintf("tidybulk says: the sample with largest library size %s was chosen as reference for scaling", reference))
+
 	# Calculate TMM
 	nf <-
 		edgeR::calcNormFactors(
@@ -311,6 +314,8 @@ setMethod("cluster_elements",
 #' cluster_elements
 #' @inheritParams cluster_elements
 #'
+#' @importFrom rlang inform
+#'
 #' @docType methods
 #' @rdname cluster_elements-methods
 #'
@@ -394,7 +399,9 @@ setMethod("cluster_elements",
 
 		# Communicate the attribute added
 		{
-			message(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method))
+
+		  rlang::inform(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access %s results", method),  .frequency = "once")
+
 			(.)
 		}
 
@@ -1031,6 +1038,8 @@ setMethod("deconvolve_cellularity",
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
 #'
+#' @importFrom rlang inform
+#'
 #' @docType methods
 #' @rdname deconvolve_cellularity-methods
 #'
@@ -1152,9 +1161,8 @@ such as batch effects (if applicable) in the formula.
 
 		# Communicate the attribute added
 		{
-			message(
-				sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s`", method)
-			)
+		  rlang::inform(sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access DE results %s", method),  .frequency = "once")
+
 			(.)
 		}
 
