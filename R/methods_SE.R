@@ -355,10 +355,11 @@ setMethod("cluster_elements",
 	my_reduction_function  =
 		method %>%
 		when(
-			(.) == "MDS" ~ get_reduced_dimensions_MDS_bulk_SE,
-			(.) == "PCA" ~ get_reduced_dimensions_PCA_bulk_SE,
-			(.) == "tSNE" ~ get_reduced_dimensions_TSNE_bulk_SE,
-			~ stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\"")
+			tolower(.) == tolower("MDS") ~ get_reduced_dimensions_MDS_bulk_SE,
+			tolower(.) == tolower("PCA") ~ get_reduced_dimensions_PCA_bulk_SE,
+			tolower(.) == tolower("tSNE") ~ get_reduced_dimensions_TSNE_bulk_SE,
+			tolower(.) == tolower("UMAP") ~ get_reduced_dimensions_UMAP_bulk_SE,
+			~ stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\", or \"UMAP\" ")
 		)
 
 	# Both dataframe and raw result object are returned
@@ -383,10 +384,11 @@ setMethod("cluster_elements",
 
 		# Add bibliography
 		when(
-			method == "MDS" ~ memorise_methods_used(., "limma"),
-			method == "PCA" ~ memorise_methods_used(., "stats"),
-			method == "tSNE" ~ memorise_methods_used(., "rtsne"),
-			~ stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
+		  tolower(method) == tolower("MDS") ~ memorise_methods_used(., "limma"),
+			tolower(method) == tolower("PCA") ~ memorise_methods_used(., "stats"),
+			tolower(method) == tolower("tSNE") ~ memorise_methods_used(., "rtsne"),
+			tolower(method) == tolower("UMAP") ~ memorise_methods_used(., "uwot"),
+			~ stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\", or \"UMAP\" ")
 		) %>%
 
 		# Attach edgeR for keep variable filtering

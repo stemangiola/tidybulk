@@ -211,14 +211,14 @@ DESeq2::results()
 
  # edgeR
 
- tidybulk::se_mini \%>\%
- identify_abundant() \%>\%
+ tidybulk::se_mini |>
+ identify_abundant() |>
 	test_differential_abundance( ~ condition )
 
 	# The function `test_differential_abundance` operates with contrasts too
 
- tidybulk::se_mini \%>\%
- identify_abundant() \%>\%
+ tidybulk::se_mini |>
+ identify_abundant() |>
  test_differential_abundance(
 	    ~ 0 + condition,
 	    .contrasts = c( "conditionTRUE - conditionFALSE")
@@ -229,14 +229,14 @@ DESeq2::results()
 my_se_mini = tidybulk::se_mini
 my_se_mini$condition  = factor(my_se_mini$condition)
 
-my_se_mini  \%>\%
- identify_abundant() \%>\%
+my_se_mini  |>
+ identify_abundant() |>
 	test_differential_abundance( ~ condition, method="deseq2" )
 
 	# The function `test_differential_abundance` operates with contrasts too
 
- my_se_mini \%>\%
- identify_abundant() \%>\%
+ my_se_mini |>
+ identify_abundant() |>
  test_differential_abundance(
 	    ~ 0 + condition,
 	    .contrasts = list(c("condition", "TRUE", "FALSE")),

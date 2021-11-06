@@ -1,14 +1,14 @@
 change_reserved_column_names = function(.data){
-	
+
 	.data %>%
-		
+
 		setNames(
-			colnames(.) %>% 
-				str_replace("^feature$", "feature.x") %>% 
-				str_replace("^sample$", "sample.x") %>% 
+			colnames(.) %>%
+				str_replace("^feature$", "feature.x") %>%
+				str_replace("^sample$", "sample.x") %>%
 				str_replace("^coordinate$", "coordinate.x")
-		) 
-	
+		)
+
 }
 
 #' @importFrom dplyr select
@@ -17,72 +17,73 @@ change_reserved_column_names = function(.data){
 #' @importFrom tibble tibble
 #' @importFrom SummarizedExperiment rowRanges
 #' @importFrom tibble rowid_to_column
-#' 
+#'
+#' @keywords internal
 #' @noRd
 get_special_datasets <- function(SummarizedExperiment_object) {
-	
+
 	SummarizedExperiment_object %>%
 		rowRanges() %>%
-		when( 
+		when(
 			# If no ranges
 			as.data.frame(.) %>%
 				nrow() %>%
 				equals(0) ~ tibble(),
-			
+
 			# If it is a range list (multiple rows per feature)
-			class(.) %>% equals("CompressedGRangesList") ~ 
+			class(.) %>% equals("CompressedGRangesList") ~
 				tibble::as_tibble(.) %>%
 				eliminate_GRanges_metadata_columns_also_present_in_Rowdata(SummarizedExperiment_object) %>%
 				nest(coordinate = -group_name) %>%
 				rename(feature = group_name),
-			
+
 			# If standard GRanges (one feature per line)
 			~ {
-				transcript_column = 
-					rowRanges(SummarizedExperiment_object) %>% 
-					as.data.frame() %>% 
+				transcript_column =
+					rowRanges(SummarizedExperiment_object) %>%
+					as.data.frame() %>%
 					lapply(function(x) rownames(SummarizedExperiment_object)[1] %in% x) %>%
 					unlist() %>%
 					which() %>%
-					names() 
-				
-				
+					names()
+
+
 				# Just rename
 				(.) %>%
-					
-					# If transcript_column exists all good 
+
+					# If transcript_column exists all good
 					when(
 						!is.null(transcript_column) ~  tibble::as_tibble(.) %>%
 							eliminate_GRanges_metadata_columns_also_present_in_Rowdata(SummarizedExperiment_object) %>%
 							rename(feature := !!transcript_column) ,
-						
+
 						# If transcript_column is NULL add numeric column
 						~ tibble::as_tibble(.) %>%
 							eliminate_GRanges_metadata_columns_also_present_in_Rowdata(SummarizedExperiment_object) %>%
 							rowid_to_column(var = "feature") %>%
 							mutate(feature = as.character(feature))
 					) %>%
-					
+
 					# Always nest
 					nest(coordinate = -feature)
-				
+
 			}
 		) %>%
 		list()
-	
+
 }
 
 change_reserved_column_names = function(.data){
-	
+
 	.data %>%
-		
+
 		setNames(
-			colnames(.) %>% 
-				str_replace("^feature$", "feature.x") %>% 
-				str_replace("^sample$", "sample.x") %>% 
+			colnames(.) %>%
+				str_replace("^feature$", "feature.x") %>%
+				str_replace("^sample$", "sample.x") %>%
 				str_replace("^coordinate$", "coordinate.x")
-		) 
-	
+		)
+
 }
 
 #' @importFrom tidyr gather
@@ -91,7 +92,8 @@ change_reserved_column_names = function(.data){
 #' @importFrom tibble as_tibble
 #' @importFrom purrr reduce
 #' @importFrom SummarizedExperiment assays
-#' 
+#'
+#' @keywords internal
 #' @noRd
 get_count_datasets <- function(SummarizedExperiment_object) {
 	map2(
@@ -99,14 +101,14 @@ get_count_datasets <- function(SummarizedExperiment_object) {
 		names(assays(SummarizedExperiment_object)),
 		~ .x %>%
 			tibble::as_tibble(rownames = "feature", .name_repair = "minimal") %>%
-			
+
 			# If the matrix does not have sample names, fix column names
 			when(colnames(.x) %>% is.null() ~ setNames(., c(
-				"feature",  seq_len(ncol(.x)) 
+				"feature",  seq_len(ncol(.x))
 			)),
 			~ (.)
 			) %>%
-			
+
 			gather(sample, count,-feature) %>%
 			rename(!!.y := count)
 	) %>%

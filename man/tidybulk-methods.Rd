@@ -54,9 +54,6 @@ arguments are stored as metadata. They can be extracted as attr(<object>, "inter
 }
 \examples{
 
-
-
-
 my_tt =  tidybulk(tidybulk::se_mini)
 
 

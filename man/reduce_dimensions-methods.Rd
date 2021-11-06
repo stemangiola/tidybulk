@@ -156,20 +156,37 @@ limma::plotMDS(ndim = .dims, plot = FALSE, top = top)
 
 Underlying method for tSNE:
 Rtsne::Rtsne(data, ...)
+
+Underlying method for UMAP:
+
+ df_source =
+.data %>%
+
+  # Filter NA symbol
+  filter(!!.feature %>% is.na %>% not()) %>%
+
+  # Prepare data frame
+  distinct(!!.feature,!!.element,!!.abundance) %>%
+
+  # Filter most variable genes
+  keep_variable_transcripts(top) %>%
+  reduce_dimensions(method="PCA",  .dims = calculate_for_pca_dimensions,  action="get" ) %>%
+  as_matrix(rownames = quo_name(.element)) %>%
+  uwot::tumap(...)
 }
 \examples{
 
 
 
 counts.MDS =
- tidybulk::se_mini \%>\%
- identify_abundant() \%>\%
+ tidybulk::se_mini |>
+ identify_abundant() |>
  reduce_dimensions( method="MDS", .dims = 3)
 
 
 counts.PCA =
- tidybulk::se_mini \%>\%
- identify_abundant() \%>\%
+ tidybulk::se_mini |>
+ identify_abundant() |>
  reduce_dimensions(method="PCA", .dims = 3)
 
 

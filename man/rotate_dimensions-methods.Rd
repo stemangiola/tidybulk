@@ -136,8 +136,8 @@ Underlying custom method:
 \examples{
 
 counts.MDS =
- tidybulk::se_mini \%>\%
- identify_abundant() \%>\%
+ tidybulk::se_mini |>
+ identify_abundant() |>
  reduce_dimensions( method="MDS", .dims = 3)
 
 counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
