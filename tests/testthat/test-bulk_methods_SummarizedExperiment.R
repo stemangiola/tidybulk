@@ -381,8 +381,7 @@ test_that("differential composition",{
 	se_mini %>%
 	test_differential_cellularity(
 		. ~ condition,
-		method="llsr",
-		cores = 1
+		method="llsr"
 	) %>%
 		pull(`estimate_(Intercept)`) %>%
 		.[[1]] %>%
@@ -407,9 +406,9 @@ test_that("differential composition",{
 		.[[1]] %>%
 		#expect_equal(97)
 		round() %in% c(
-			97,  # 97 is the github action MacOS that has different value
-			112, # 112 is the github action UBUNTU that has different value
-			93 # 93 is the github action Windows that has different value
+			26,  # 97 is the github action MacOS that has different value
+			26, # 112 is the github action UBUNTU that has different value
+			26 # 93 is the github action Windows that has different value
 		) %>%
 		expect_true()
 
@@ -449,7 +448,7 @@ test_that("test_stratification_cellularity",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			cores = 1, method = "llsr"
+			method = "llsr"
 		) %>%
 		pull(.low_cellularity_expected) %>%
 		.[[1]] %>%
