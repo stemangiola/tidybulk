@@ -74,6 +74,8 @@ impute_missing_abundance(
 \item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{suffix}{A character string. This is added to the imputed count column names. If empty the count column are overwritten}
 }
 \value{
 A consistent object (to the input) non-sparse abundance

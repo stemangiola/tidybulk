@@ -3681,6 +3681,7 @@ setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param suffix A character string. This is added to the imputed count column names. If empty the count column are overwritten
 #'
 #' @details This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 #'
