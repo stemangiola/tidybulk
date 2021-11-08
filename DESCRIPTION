@@ -72,7 +72,8 @@ Suggests:
     tidySummarizedExperiment,
     markdown,
     uwot,
-    matrixStats
+    matrixStats,
+    igraph
 VignetteBuilder: 
     knitr
 RdMacros:
