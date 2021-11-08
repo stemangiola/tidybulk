@@ -3685,6 +3685,7 @@ setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param suffix A character string. This is added to the imputed count column names. If empty the count column are overwritten
 #'
 #' @details This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 #'
@@ -3713,7 +3714,8 @@ setGeneric("impute_missing_abundance", function(.data,
 																				.formula,
 																				.sample = NULL,
 																				.transcript = NULL,
-																				.abundance = NULL)
+																				.abundance = NULL,
+																				suffix = "")
 	standardGeneric("impute_missing_abundance"))
 
 # Set internal
@@ -3721,7 +3723,8 @@ setGeneric("impute_missing_abundance", function(.data,
 															.formula,
 															.sample = NULL,
 															.transcript = NULL,
-															.abundance = NULL)
+															.abundance = NULL,
+															suffix = "")
 {
 	# Get column names
 	.sample = enquo(.sample)
@@ -3745,14 +3748,14 @@ setGeneric("impute_missing_abundance", function(.data,
 	# Validate data frame
 	if(do_validate())  validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	.data_processed =
-		fill_NA_using_formula(
+	fill_NA_using_formula(
 			.data,
 			.formula,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			.abundance_scaled = !!.abundance_scaled) %>%
+			.abundance_scaled = !!.abundance_scaled,
+			suffix = suffix) %>%
 
 		# Reattach internals
 		reattach_internals(.data)

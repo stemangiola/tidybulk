@@ -172,37 +172,43 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
                                                   .transcript = `transcript`,
                                                   .abundance = `count`,
                                                   method) {
-  .sample = enquo(.sample)
-  .transcript = enquo(.transcript)
-  .abundance = enquo(.abundance)
+ 	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
 
-  error_if_log_transformed(.data,!!.abundance)
+	error_if_log_transformed(.data,!!.abundance)
 
-  # Get data frame for the highly transcribed transcripts
-  df.filt <-
-    .data %>%
-    # dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
-    droplevels() %>%
-    select(!!.sample, !!.transcript, !!.abundance)
+	# Get data frame for the highly transcribed transcripts
+	df.filt <-
+		.data %>%
+		# dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
+		droplevels() %>%
+		select(!!.sample, !!.transcript, !!.abundance)
 
-  # scaled data set
-  nf =
-    tibble::tibble(
-      # Sample factor
-      sample = factor(levels(df.filt %>% pull(!!.sample))),
+	df.filt.spread =
+	  df.filt %>%
+	  tidyr::spread(!!.sample,!!.abundance) %>%
+	  tidyr::drop_na() %>%
+	  dplyr::select(-!!.transcript)
 
-      # scaled data frame
-      nf = edgeR::calcNormFactors(
-        df.filt %>%
-          tidyr::spread(!!.sample,!!.abundance) %>%
-          tidyr::drop_na() %>%
-          dplyr::select(-!!.transcript),
-        refColumn = which(reference == factor(levels(
-          df.filt %>% pull(!!.sample)
-        ))),
-        method = method
-      )
-    ) %>%
+	# If not enough genes, warning
+	if(nrow(df.filt.spread)<100) warning(warning_for_scaling_with_few_genes)
+
+	# scaled data set
+	nf =
+		tibble::tibble(
+			# Sample factor
+			sample = factor(levels(df.filt %>% pull(!!.sample))),
+
+			# scaled data frame
+			nf = edgeR::calcNormFactors(
+			  df.filt.spread,
+				refColumn = which(reference == factor(levels(
+					df.filt %>% pull(!!.sample)
+				))),
+				method = method
+			)
+		) %>%
 
     setNames(c(quo_name(.sample), "nf")) %>%
 
@@ -3364,7 +3370,8 @@ fill_NA_using_formula = function(.data,
 																 .sample = NULL,
 																 .transcript = NULL,
 																 .abundance = NULL,
-																 .abundance_scaled = NULL){
+																 .abundance_scaled = NUL,
+																 suffix = "_imputed"){
 
 	# Get column names
 	.sample = enquo(.sample)
@@ -3382,9 +3389,9 @@ fill_NA_using_formula = function(.data,
 	# Sample-wise columns
 	sample_col = .data %>% get_specific_annotation_columns(!!.sample) %>% outersect(col_formula)
 
+	need_log = .data %>% pull(!!.abundance) %>%  max(na.rm=TRUE) > 50
 
 	# Create NAs for missing sample/transcript pair
-
  .data_completed =
 		.data %>%
 
@@ -3393,9 +3400,30 @@ fill_NA_using_formula = function(.data,
  		mutate(ct_data = map(ct_data, ~ .x %>% droplevels() %>% complete(!!as.symbol(quo_name(.sample)), !!.transcript) )) %>%
  		unnest(ct_data)
 
+ # For non scaled counts create a pseudo scale based on library size, then calculate imputed and scale back
+ abundance_is_int = .data %>% slice(1) %>% pull(!!.abundance) %>% class() %>% equals("integer")
+ .data =
+   .data %>%
+   group_by(!!.sample) %>%
+   mutate(library_size__ = sum(!!.abundance)) %>%
+   ungroup() %>%
+   mutate(!!.abundance := !!.abundance / library_size__)
+
+ imputed_column = sprintf("%s%s", quo_name(.abundance), suffix )
+ imputed_column_scaled = sprintf("%s%s", quo_name(.abundance_scaled), suffix )
+
+ # Divide the dataset
  .data_OK =
  	.data %>%
- 	anti_join(.data_completed %>% filter(!!.abundance %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula))
+ 	anti_join(.data_completed %>% filter(!!.abundance %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula)) %>%
+
+   # Add the imputed column
+   mutate(!!as.symbol(imputed_column) := !!.abundance) %>%
+   when(
+     quo_is_symbol(.abundance_scaled) ~ .x %>%
+       mutate(!!as.symbol(imputed_column_scaled) := !!.abundance_scaled),
+     ~ (.)
+   )
 
  .data_FIXED =
  .data %>%
@@ -3406,18 +3434,57 @@ fill_NA_using_formula = function(.data,
 	.data_completed %>%
 		filter(!!.abundance %>% is.na) %>%
 		select(!!.sample, !!.transcript) %>%
-		left_join(.data %>% pivot_sample(!!.sample)) %>%
-		left_join(.data %>% pivot_transcript(!!.transcript))
-	) %>%
+		left_join(.data %>% pivot_sample(!!.sample), by = quo_name(.sample)) %>%
+		left_join(.data %>% pivot_transcript(!!.transcript), by = quo_name(.transcript))
+	)
+
+
+ # Clean environment
+ rm(.data_completed)
+
+ ~ {
+
+   # Pseudo-scale if not scaled
+   if(!grepl("_scaled", .y)) library_size = colSums(.x, na.rm = TRUE)
+   if(!grepl("_scaled", .y)) .x = .x / library_size
+
+   # Log
+   need_log = max(.x, na.rm=TRUE) > 50
+   if(need_log) .x = log1p(.x)
+
+   # Imputation
+   .x = fill_NA_matrix_with_factor_colwise(
+     .x,
+     # I split according to the formula
+     colData(.data)[,parse_formula(.formula)]
+   )
+
+   # Exp back
+   if(need_log) .x = exp(.x)-1
+
+   # Scale back if pseudoscaled
+   if(!grepl("_scaled", .y)) .x = .x * library_size
+
+   # Return
+   .x
+ }
+
+ .data_FIXED =
+   .data_FIXED %>%
+
+   when( need_log ~ mutate(., !!.abundance := log1p(!!.abundance)), ~ (.)   ) %>%
+   when( need_log & quo_is_symbol(.abundance_scaled) ~ mutate(., !!.abundance_scaled := log1p(!!.abundance_scaled)), ~ (.)   ) %>%
+
 
 	# Group by covariate
 	nest(cov_data = -c(col_formula, !!.transcript)) %>%
 	mutate(cov_data = map(cov_data, ~
 											.x %>%
 											mutate(
-												!!.abundance := ifelse(
+											  !!as.symbol(imputed_column) := ifelse(
 													!!.abundance %>% is.na,
-													median(!!.abundance, na.rm = TRUE),!!.abundance
+													median(!!.abundance, na.rm = TRUE),
+													!!.abundance
 												)
 											) %>%
 
@@ -3425,9 +3492,10 @@ fill_NA_using_formula = function(.data,
 											ifelse_pipe(
 												quo_is_symbol(.abundance_scaled),
 												~ .x %>% mutate(
-													!!.abundance_scaled := ifelse(
+												  !!as.symbol(imputed_column_scaled) := ifelse(
 														!!.abundance_scaled %>% is.na,
-														median(!!.abundance_scaled, na.rm = TRUE),!!.abundance_scaled
+														median(!!.abundance_scaled, na.rm = TRUE),
+														!!.abundance_scaled
 													)
 												)
 											) %>%
@@ -3435,10 +3503,18 @@ fill_NA_using_formula = function(.data,
 											# Through warning if group of size 1
 											ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
 	)) %>%
-	unnest(cov_data)
+	unnest(cov_data) %>%
+   when( need_log ~ mutate(., !!.abundance := exp(!!.abundance)-1), ~ (.)   ) %>%
+   when( need_log & quo_is_symbol(.abundance_scaled) ~ mutate(., !!.abundance_scaled := exp(!!.abundance_scaled)-1), ~ (.)   )
+
 
 	.data_OK %>%
 		bind_rows(.data_FIXED) %>%
+
+	  # Scale back the pseudoscaling
+	  mutate(!!.abundance := !!.abundance * library_size__) %>%
+	  select(-library_size__) %>%
+	  when(abundance_is_int ~ mutate(., !!.abundance := as.integer(!!.abundance)), ~ (.)) %>%
 
 		# Reattach internals
 		reattach_internals(.data)
@@ -3480,6 +3556,9 @@ fill_NA_using_value = function(.data,
 	.element = enquo(.sample)
 	.feature = enquo(.transcript)
 	.value = enquo(.abundance)
+
+	# Scale based on library size
+
 
 	# Create NAs for missing element/feature pair
 	df_to_impute =

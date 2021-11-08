@@ -15,7 +15,8 @@ impute_missing_abundance(
   .formula,
   .sample = NULL,
   .transcript = NULL,
-  .abundance = NULL
+  .abundance = NULL,
+  suffix = ""
 )
 
 \S4method{impute_missing_abundance}{spec_tbl_df}(
@@ -23,7 +24,8 @@ impute_missing_abundance(
   .formula,
   .sample = NULL,
   .transcript = NULL,
-  .abundance = NULL
+  .abundance = NULL,
+  suffix = ""
 )
 
 \S4method{impute_missing_abundance}{tbl_df}(
@@ -31,7 +33,8 @@ impute_missing_abundance(
   .formula,
   .sample = NULL,
   .transcript = NULL,
-  .abundance = NULL
+  .abundance = NULL,
+  suffix = ""
 )
 
 \S4method{impute_missing_abundance}{tidybulk}(
@@ -39,12 +42,27 @@ impute_missing_abundance(
   .formula,
   .sample = NULL,
   .transcript = NULL,
-  .abundance = NULL
+  .abundance = NULL,
+  suffix = ""
 )
 
-\S4method{impute_missing_abundance}{SummarizedExperiment}(.data, .formula)
+\S4method{impute_missing_abundance}{SummarizedExperiment}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  suffix = ""
+)
 
-\S4method{impute_missing_abundance}{RangedSummarizedExperiment}(.data, .formula)
+\S4method{impute_missing_abundance}{RangedSummarizedExperiment}(
+  .data,
+  .formula,
+  .sample = NULL,
+  .transcript = NULL,
+  .abundance = NULL,
+  suffix = ""
+)
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
@@ -56,6 +74,8 @@ impute_missing_abundance(
 \item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{suffix}{A character string. This is added to the imputed count column names. If empty the count column are overwritten}
 }
 \value{
 A consistent object (to the input) non-sparse abundance

@@ -152,8 +152,13 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 	  when(nrow(.) == 0 ~ stop("tidybulk says: there are 0 genes that passes the filters (.abundant and/or .subset_for_scaling). Please check your filtering or your data."), ~ (.))
 
 	my_assay = assays(.data_filtered) %>% as.list() %>% .[1]
-	my_counts_filtered = my_assay[[1]]
-	library_size_filtered = my_counts_filtered %>% colSums()
+
+	# Drop genes with NAs, as edgeR::calcNormFactors does not accept them
+	my_counts_filtered = my_assay[[1]] %>% na.omit()
+	library_size_filtered = my_counts_filtered %>% colSums(na.rm  = TRUE)
+
+	# If not enough genes, warning
+	if(nrow(my_counts_filtered)<100) warning(warning_for_scaling_with_few_genes)
 
 	# Set column name for value scaled
 	value_scaled = my_assay %>% names() %>% paste0(scaled_string)
@@ -1326,7 +1331,8 @@ setMethod("keep_variable",
 		edgeR::filterByExpr(
 			min.count = minimum_counts,
 			group = string_factor_of_interest,
-			min.prop = minimum_proportion
+			min.prop = minimum_proportion,
+			lib.size = colSums(., na.rm=TRUE)
 		) %>%
 		not() %>%
 		which %>%
@@ -1973,88 +1979,79 @@ setMethod("pivot_transcript",
 
 
 .impute_missing_abundance_se = function(.data,
-																				.formula) {
+																				.formula,
+																				.sample = NULL,
+																				.transcript = NULL,
+																				.abundance  = NULL,
+																				suffix = "") {
+
+  .abundance = enquo(.abundance)
+
+  .assay_to_impute =
+    .abundance %>%
+    when(
+      quo_is_symbolic(.) ~ assays(.data)[quo_names(.abundance)],
+      ~ assays(.data)
+    )
 
 
+  # Split data by formula and impute
+  imputed_dataframe =
+    map2(
 
+      # Capture assay names as we need to know if scaled is in the name
+      as.list(.assay_to_impute), names(.assay_to_impute),
+      ~ {
 
+        # Pseudo-scale if not scaled
+        if(!grepl("_scaled", .y)) library_size = colSums(.x, na.rm = TRUE)
+        if(!grepl("_scaled", .y)) .x = .x / library_size
 
-	col_formula =
-		colData(.data) %>%
-		as_tibble() %>%
-		select(parse_formula(.formula)) %>%
-		distinct() %>%
-		select_if(function(x) is.character(x) | is.logical(x) | is.factor(x)) %>%
-		colnames
+        # Log
+        need_log = max(.x, na.rm=T) > 50
+        if(need_log) .x = log1p(.x)
 
-	# Create NAs for missing sample/transcript pair
-	assays(.data) =
-		assays(.data) %>%
-		as.list() %>%
-		map(~{
-			.my_data =
-				.x %>%
-				as.matrix() %>%
-				as_tibble(rownames = "transcript") %>%
-				gather(sample, abundance, -transcript) %>%
+        # Imputation
+        .x = fill_NA_matrix_with_factor_colwise(
+          .x,
+          # I split according to the formula
+          colData(.data)[,parse_formula(.formula)]
+        )
 
-				# Attach annotation
-				left_join(
-					colData(.data) %>%
-						as_tibble(rownames="sample") %>%
-						select(sample, col_formula),
-					by="sample"
-				)
+        # Exp back
+        if(need_log) .x = exp(.x)-1
 
-			# Data used for filtering
-			NA_data =
-				.my_data %>%
-				filter(abundance %>% is.na) %>%
-				select( transcript, col_formula) %>%
-				distinct()
+        # Scale back if pseudoscaled
+        if(!grepl("_scaled", .y)) .x = .x * library_size
 
-			# If no missing just return the same matrix
-			if(nrow(NA_data) == 0) return(.x)
+        # Return
+        .x
+      }
+    ) %>%
 
-			.data_OK =
-				.my_data %>%
-				anti_join(NA_data, by = c("transcript", col_formula))
+    # Add imputed to the name
+    setNames(sprintf("%s%s", names(.assay_to_impute), suffix))
 
+  .assays_name_to_port = names(assays(.data)) %>% setdiff(names(.assay_to_impute))
 
-			.data_FIXED =
-				.my_data %>%
-				inner_join(NA_data, by = c("transcript", col_formula)) %>%
+  assays(.data) =
+    as.list(assays(.data))[.assays_name_to_port] %>%
+    c(imputed_dataframe ) %>%
 
-				# Group by covariate
-				nest(cov_data = -c(col_formula, transcript)) %>%
-				mutate(cov_data = map(cov_data, ~
-																.x %>%
-																mutate(abundance =
-																			 	case_when(
-																			 		is.na(abundance) ~ median(abundance, na.rm=TRUE),
-																			 		TRUE ~ abundance
-																			 	)
-																) %>%
+    # Add .imputed column
+    c(list(.imputed =  which_NA_matrix(.assay_to_impute[[1]] ))) %>%
 
-																# Through warning if group of size 1
-																when(
-																	nrow(.) %>% st(2) ~ warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."),
-																	~ (.)
-																)
-				)) %>%
-				unnest(cov_data)
+    # Make names unique
+    setNames(names(.) %>% make.unique())
 
-			.data_OK %>%
-				bind_rows(.data_FIXED) %>%
-				select(-col_formula) %>%
-				spread(sample, abundance) %>%
-				as_matrix(rownames = transcript)
+  .data %>%
 
-		})
-
-	.data
+    # Reattach internals
+    reattach_internals(.data)
 
 }
+
+
 
 #' impute_missing_abundance
 #' @inheritParams impute_missing_abundance
