@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.2</span>
       </span>
     </div>
 
@@ -87,7 +87,7 @@
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 data-toc-skip class="author">Stefano Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2021-11-04</h4>
+            <h4 data-toc-skip class="date">2021-11-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -527,18 +527,18 @@
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <pre><code><span class="co">## <span style="color: #949494;"># A tibble: 251 × 4</span></span>
-<span class="co">##      tSNE1 tSNE2 sample                       Call </span>
-<span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span>  11.6   -<span style="color: #BB0000;">1.97</span> TCGA-A1-A0SD-01A-11R-A115-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span>  -<span style="color: #BB0000;">6.96</span>  11.6  TCGA-A1-A0SF-01A-11R-A144-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span>   8.78   2.96 TCGA-A1-A0SG-01A-11R-A144-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span>   3.03  -<span style="color: #BB0000;">4.04</span> TCGA-A1-A0SH-01A-11R-A084-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span>  10.4   -<span style="color: #BB0000;">4.14</span> TCGA-A1-A0SI-01A-11R-A144-07 LumB </span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span>   3.30   8.69 TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">39.0</span>    5.17 TCGA-A1-A0SK-01A-12R-A084-07 Basal</span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">1.26</span>  -<span style="color: #BB0000;">1.15</span> TCGA-A1-A0SM-01A-11R-A084-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span>  -<span style="color: #BB0000;">0.945</span>  1.09 TCGA-A1-A0SN-01A-11R-A144-07 LumB </span>
-<span class="co">## <span style="color: #BCBCBC;">10</span>  27.5   -<span style="color: #BB0000;">4.25</span> TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span>
+<span class="co">##      tSNE1   tSNE2 sample                       Call </span>
+<span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 1</span>   7.76   -<span style="color: #BB0000;">9.10</span>  TCGA-A1-A0SD-01A-11R-A115-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 2</span>  -<span style="color: #BB0000;">8.39</span>    7.23  TCGA-A1-A0SF-01A-11R-A144-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 3</span>   5.40   -<span style="color: #BB0000;">0.927</span> TCGA-A1-A0SG-01A-11R-A144-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 4</span>  11.1     2.53  TCGA-A1-A0SH-01A-11R-A084-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 5</span>   6.87   -<span style="color: #BB0000;">6.41</span>  TCGA-A1-A0SI-01A-11R-A144-07 LumB </span>
+<span class="co">## <span style="color: #BCBCBC;"> 6</span>   0.724  12.8   TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">32.8</span>    16.6   TCGA-A1-A0SK-01A-12R-A084-07 Basal</span>
+<span class="co">## <span style="color: #BCBCBC;"> 8</span>  10.3    10.5   TCGA-A1-A0SM-01A-11R-A084-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 9</span>  10.0     8.97  TCGA-A1-A0SN-01A-11R-A144-07 LumB </span>
+<span class="co">## <span style="color: #BCBCBC;">10</span>  18.0   -<span style="color: #BB0000;">17.0</span>   TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span>
 <span class="co">## <span style="color: #949494;"># … with 241 more rows</span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -980,7 +980,7 @@ We may want to test for differential transcription between sample-wise factors o
 <span class="co">##  [5] GenomeInfoDb_1.28.4            IRanges_2.26.0                </span>
 <span class="co">##  [7] S4Vectors_0.30.2               BiocGenerics_0.38.0           </span>
 <span class="co">##  [9] MatrixGenerics_1.4.3           matrixStats_0.61.0            </span>
-<span class="co">## [11] tidybulk_1.6.1                 ggrepel_0.9.1                 </span>
+<span class="co">## [11] tidybulk_1.6.2                 ggrepel_0.9.1                 </span>
 <span class="co">## [13] ggplot2_3.3.5                  magrittr_2.0.1                </span>
 <span class="co">## [15] tibble_3.1.5                   tidyr_1.1.4                   </span>
 <span class="co">## [17] dplyr_1.0.7                    knitr_1.36                    </span>
@@ -1002,14 +1002,14 @@ We may want to test for differential transcription between sample-wise factors o
 <span class="co">##  [37] GenomeInfoDbData_1.2.6   reshape2_1.4.4           Rcpp_1.0.7              </span>
 <span class="co">##  [40] jquerylib_0.1.4          pkgdown_1.9000.9000.9000 vctrs_0.3.8             </span>
 <span class="co">##  [43] Biostrings_2.60.2        preprocessCore_1.54.0    nlme_3.1-153            </span>
-<span class="co">##  [46] xfun_0.27                stringr_1.4.0            lifecycle_1.0.1         </span>
+<span class="co">##  [46] xfun_0.28                stringr_1.4.0            lifecycle_1.0.1         </span>
 <span class="co">##  [49] XML_3.99-0.8             org.Hs.eg.db_3.13.0      edgeR_3.34.1            </span>
 <span class="co">##  [52] zlibbioc_1.38.0          scales_1.1.1             ragg_1.2.0              </span>
 <span class="co">##  [55] hms_1.1.1                RColorBrewer_1.1-2       yaml_2.2.1              </span>
 <span class="co">##  [58] memoise_2.0.0            sass_0.4.0               reshape_0.8.8           </span>
 <span class="co">##  [61] stringi_1.7.5            RSQLite_2.2.8            highr_0.9               </span>
 <span class="co">##  [64] genefilter_1.74.1        tokenizers_0.2.1         desc_1.4.0              </span>
-<span class="co">##  [67] e1071_1.7-9              BiocParallel_1.26.2      rlang_0.99.0.9000       </span>
+<span class="co">##  [67] e1071_1.7-9              BiocParallel_1.26.2      rlang_0.4.12            </span>
 <span class="co">##  [70] pkgconfig_2.0.3          systemfonts_1.0.3        bitops_1.0-7            </span>
 <span class="co">##  [73] evaluate_0.14            lattice_0.20-45          purrr_0.3.4             </span>
 <span class="co">##  [76] htmlwidgets_1.5.4        labeling_0.4.2           bit_4.0.4               </span>

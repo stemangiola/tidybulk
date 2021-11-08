@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.2</span>
       </span>
     </div>
 
@@ -73,7 +73,8 @@
   <span class="va">.formula</span>,
   .sample <span class="op">=</span> <span class="cn">NULL</span>,
   .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>
+  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
+  suffix <span class="op">=</span> <span class="st">""</span>
 <span class="op">)</span>
 
 <span class="co"># S4 method for spec_tbl_df</span>
@@ -82,7 +83,8 @@
   <span class="va">.formula</span>,
   .sample <span class="op">=</span> <span class="cn">NULL</span>,
   .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>
+  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
+  suffix <span class="op">=</span> <span class="st">""</span>
 <span class="op">)</span>
 
 <span class="co"># S4 method for tbl_df</span>
@@ -91,7 +93,8 @@
   <span class="va">.formula</span>,
   .sample <span class="op">=</span> <span class="cn">NULL</span>,
   .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>
+  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
+  suffix <span class="op">=</span> <span class="st">""</span>
 <span class="op">)</span>
 
 <span class="co"># S4 method for tidybulk</span>
@@ -100,14 +103,29 @@
   <span class="va">.formula</span>,
   .sample <span class="op">=</span> <span class="cn">NULL</span>,
   .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>
+  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
+  suffix <span class="op">=</span> <span class="st">""</span>
 <span class="op">)</span>
 
 <span class="co"># S4 method for SummarizedExperiment</span>
-<span class="fu">impute_missing_abundance</span><span class="op">(</span><span class="va">.data</span>, <span class="va">.formula</span><span class="op">)</span>
+<span class="fu">impute_missing_abundance</span><span class="op">(</span>
+  <span class="va">.data</span>,
+  <span class="va">.formula</span>,
+  .sample <span class="op">=</span> <span class="cn">NULL</span>,
+  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
+  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
+  suffix <span class="op">=</span> <span class="st">""</span>
+<span class="op">)</span>
 
 <span class="co"># S4 method for RangedSummarizedExperiment</span>
-<span class="fu">impute_missing_abundance</span><span class="op">(</span><span class="va">.data</span>, <span class="va">.formula</span><span class="op">)</span></code></pre></div>
+<span class="fu">impute_missing_abundance</span><span class="op">(</span>
+  <span class="va">.data</span>,
+  <span class="va">.formula</span>,
+  .sample <span class="op">=</span> <span class="cn">NULL</span>,
+  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
+  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
+  suffix <span class="op">=</span> <span class="st">""</span>
+<span class="op">)</span></code></pre></div>
 
     <div id="ref-sections">
     <div id="arguments">
@@ -122,6 +140,8 @@
 <dd><p>The name of the transcript/gene column</p></dd>
 <dt>.abundance</dt>
 <dd><p>The name of the transcript/gene abundance column</p></dd>
+<dt>suffix</dt>
+<dd><p>A character string. This is added to the imputed count column names. If empty the count column are overwritten</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
