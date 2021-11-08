@@ -2076,6 +2076,9 @@ setMethod("impute_missing_abundance",
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
 #'
+#' @importFrom stringr str_replace
+#'
+#'
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("impute_missing_abundance",
