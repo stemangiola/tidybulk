@@ -30,9 +30,9 @@
 
 
 # Core algorithm of Cibersort
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 #' @importFrom parallel mclapply
 #' @importFrom stats cor
 #'
@@ -65,8 +65,8 @@ CoreAlg <- function(X, y, cores = 3){
 
   #Execute In a parallel way the SVM
   if(cores>1){
-    if(Sys.info()['sysname'] == 'Windows') out <- parallel::mclapply(1:svn_itor, res, mc.cores=1) 
-    else out <-  parallel::mclapply(1:svn_itor, res, mc.cores=cores) 
+    if(Sys.info()['sysname'] == 'Windows') out <- parallel::mclapply(1:svn_itor, res, mc.cores=1)
+    else out <-  parallel::mclapply(1:svn_itor, res, mc.cores=cores)
   }
   else out <-  lapply(1:svn_itor, res)
 
@@ -139,7 +139,7 @@ CoreAlg <- function(X, y, cores = 3){
 }
 
 #' @importFrom stats sd
-#' 
+#'
 #' @keywords internal
 #'
 doPerm <- function(perm, X, Y, cores = 3){
@@ -173,10 +173,11 @@ doPerm <- function(perm, X, Y, cores = 3){
 }
 
 #' @importFrom stats sd
-#' 
+#' @importFrom utils install.packages
+#'
 #' @keywords internal
-#' 
-my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
+#'
+my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE){
 
 
   #read in data
@@ -195,7 +196,8 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
   P <- perm #number of permutations
 
   #anti-log if max < 50 in mixture file
-  if(max(Y) < 50) {Y <- 2^Y}
+  if(is.null(exp_transform)) exp_transform = max(Y) < 50
+  if(exp_transform) {Y <- 2^Y}
 
   #quantile normalization of mixture file
 
@@ -214,6 +216,28 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3){
   Y <- Y[YintX,,drop=FALSE]
   XintY <- Xgns %in% row.names(Y)
   X <- X[XintY,,drop=FALSE]
+
+  # Eliminate empty samples
+  if(length(which(colSums(Y)==0))>0)
+    warning(sprintf(
+      "tidybulk says: the samples %s were ignored for decovolution as they have 0 counts for the deconvolution signature genes",
+      colnames(Y)[colSums(Y)==0] %>% paste(collapse = ", ")
+    ))
+  Y=Y[,colSums(Y)>0, drop=FALSE]
+
+  # Check if package is installed, otherwise install
+  if (find.package("matrixStats", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing matrixStats needed for cibersort")
+    install.packages("matrixStats", repos = "https://cloud.r-project.org")
+  }
+
+  # Eliminate sd == 0
+  if(length(which(matrixStats::colSds(Y)==0))>0)
+    warning(sprintf(
+      "tidybulk says: the samples %s were ignored for decovolution as they have standard deviation of 0 for the deconvolution signature genes",
+      colnames(Y)[matrixStats::colSds(Y)==0] %>% paste(collapse = ", ")
+    ))
+  Y = Y[,matrixStats::colSds(Y)>0,drop=FALSE]
 
   #standardize sig matrix
   X <- (X - mean(X)) / sd(as.vector(X))

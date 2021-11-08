@@ -268,7 +268,7 @@ scale_design = function(df, .formula) {
 }
 
 get_tt_columns = function(.data){
-  if(.data %>% attr("internals") %>% is.list())
+  if(.data %>% attr("internals") %>% is.list() ) #& "internals" %in% (.data %>% attr("internals") %>% names()))
     .data %>% attr("internals") %$% tt_columns
   else NULL
 }
@@ -1132,85 +1132,6 @@ add_scaled_counts_bulk.get_low_expressed <- function(.data,
 		reattach_internals(.data)
 }
 
-#' Calculate the norm factor with calcNormFactor from limma
-#'
-#' @keywords internal
-#' @noRd
-#'
-#' @import dplyr
-#' @import tidyr
-#' @import tibble
-#' @importFrom rlang :=
-#' @importFrom stats setNames
-#'
-#' @param .data A tibble
-#' @param reference A reference matrix, not sure if used anymore
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
-#' @param method A string character. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#'
-#'
-#' @return A list including the filtered data frame and the normalization factors
-add_scaled_counts_bulk.calcNormFactor <- function(.data,
-																									reference = NULL,
-																									.sample = `sample`,
-																									.transcript = `transcript`,
-																									.abundance = `count`,
-																									method) {
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
-
-	error_if_log_transformed(.data,!!.abundance)
-
-	# Get data frame for the highly transcribed transcripts
-	df.filt <-
-		.data %>%
-		# dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
-		droplevels() %>%
-		select(!!.sample, !!.transcript, !!.abundance)
-
-	# scaled data set
-	nf =
-		tibble::tibble(
-			# Sample factor
-			sample = factor(levels(df.filt %>% pull(!!.sample))),
-
-			# scaled data frame
-			nf = edgeR::calcNormFactors(
-				df.filt %>%
-					tidyr::spread(!!.sample,!!.abundance) %>%
-					tidyr::drop_na() %>%
-					dplyr::select(-!!.transcript),
-				refColumn = which(reference == factor(levels(
-					df.filt %>% pull(!!.sample)
-				))),
-				method = method
-			)
-		) %>%
-
-		setNames(c(quo_name(.sample), "nf")) %>%
-
-		# Add the statistics about the number of genes filtered
-		dplyr::left_join(
-			df.filt %>%
-				dplyr::group_by(!!.sample) %>%
-				dplyr::summarise(tot_filt = sum(!!.abundance, na.rm = TRUE)) %>%
-				dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))),
-			by = quo_name(.sample)
-		)
-
-	# Return
-	list(
-		# gene_to_exclude = gene_to_exclude,
-		nf = nf
-	) %>%
-
-		# Attach attributes
-		reattach_internals(.data)
-}
-
 # Greater than
 gt = function(a, b){	a > b }
 
@@ -1620,5 +1541,55 @@ filter_genes_on_condition = function(.data, .subset_for_scaling){
     pull(.feature)
 
   .data[rownames(.data) %in% my_genes,]
+
+}
+
+
+which_NA_matrix = function(.data){
+  is_na <- which(is.na(.data), arr.ind=TRUE)
+  which_is_NA = fill_matrix_with_FALSE(.data )
+  which_is_NA[is_na] <- TRUE
+  which_is_NA
+}
+
+fill_matrix_with_FALSE = function(.data){
+  .data[,] = FALSE
+  .data
+}
+
+rowMedians = function(.data, na.rm){
+  apply(.data, 1, median, na.rm=na.rm)
+}
+
+fill_NA_matrix_with_factor_colwise = function(.data, factor){
+
+  rn = rownames(.data)
+  cn = colnames(.data)
+
+  .data %>%
+    t %>%
+    split.data.frame(factor) %>%
+    map(~ t(.x)) %>%
+
+    # Fill
+    map(
+      ~ {
+        k <- which(is.na(.x), arr.ind=TRUE)
+        .x[k] <- rowMedians(.x, na.rm=TRUE)[k[,1]]
+        .x
+      }
+    ) %>%
+
+    # Add NA factors if any
+    when(
+      is.na(factor) %>% length() %>% gt(0) ~ (.) %>% c(list(.data[,is.na(factor)])),
+      ~ (.)
+    ) %>%
+
+    # Merge
+    reduce(cbind) %>%
+
+    # Reorder rows and column as it was
+    .[rn, cn]
 
 }

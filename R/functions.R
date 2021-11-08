@@ -146,6 +146,91 @@ create_tt_from_bam_sam_bulk <-
 			# add_class("tidybulk")
 	}
 
+#' Calculate the norm factor with calcNormFactor from limma
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats setNames
+#'
+#' @param .data A tibble
+#' @param reference A reference matrix, not sure if used anymore
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A string character. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#'
+#'
+#' @return A list including the filtered data frame and the normalization factors
+add_scaled_counts_bulk.calcNormFactor <- function(.data,
+                                                  reference = NULL,
+                                                  .sample = `sample`,
+                                                  .transcript = `transcript`,
+                                                  .abundance = `count`,
+                                                  method) {
+ 	.sample = enquo(.sample)
+	.transcript = enquo(.transcript)
+	.abundance = enquo(.abundance)
+
+	error_if_log_transformed(.data,!!.abundance)
+
+	# Get data frame for the highly transcribed transcripts
+	df.filt <-
+		.data %>%
+		# dplyr::filter(!(!!.transcript %in% gene_to_exclude)) %>%
+		droplevels() %>%
+		select(!!.sample, !!.transcript, !!.abundance)
+
+	df.filt.spread =
+	  df.filt %>%
+	  tidyr::spread(!!.sample,!!.abundance) %>%
+	  tidyr::drop_na() %>%
+	  dplyr::select(-!!.transcript)
+
+	# If not enough genes, warning
+	if(nrow(df.filt.spread)<100) warning(warning_for_scaling_with_few_genes)
+
+	# scaled data set
+	nf =
+		tibble::tibble(
+			# Sample factor
+			sample = factor(levels(df.filt %>% pull(!!.sample))),
+
+			# scaled data frame
+			nf = edgeR::calcNormFactors(
+			  df.filt.spread,
+				refColumn = which(reference == factor(levels(
+					df.filt %>% pull(!!.sample)
+				))),
+				method = method
+			)
+		) %>%
+
+    setNames(c(quo_name(.sample), "nf")) %>%
+
+    # Add the statistics about the number of genes filtered
+    dplyr::left_join(
+      df.filt %>%
+        dplyr::group_by(!!.sample) %>%
+        dplyr::summarise(tot_filt = sum(!!.abundance, na.rm = TRUE)) %>%
+        dplyr::mutate(!!.sample := as.factor(as.character(!!.sample))),
+      by = quo_name(.sample)
+    )
+
+  # Return
+  list(
+    # gene_to_exclude = gene_to_exclude,
+    nf = nf
+  ) %>%
+
+    # Attach attributes
+    reattach_internals(.data)
+}
+
 #' Get a tibble with scaled counts using TMM
 #'
 #' @keywords internal
@@ -218,6 +303,8 @@ get_scaled_counts_bulk <- function(.data,
 				as.character()
 		)
 
+	# Communicate the reference if chosen by default
+  if(is.null(reference_sample)) message(sprintf("tidybulk says: the sample with largest library size %s was chosen as reference for scaling", reference))
 
 	nf_obj <-
 		add_scaled_counts_bulk.calcNormFactor(
@@ -282,6 +369,7 @@ get_scaled_counts_bulk <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
+#' @importFrom rlang inform
 #'
 #'
 #' @param .data A tibble
@@ -523,9 +611,9 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		attach_to_internals(edgeR_object, "edgeR") %>%
 		# Communicate the attribute added
 		{
-			message(
-				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$edgeR`"
-			)
+
+		  rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$edgeR`", .frequency_id = "Access DE results edgeR",  .frequency = "once")
+
 			(.)
 		}
 }
@@ -543,7 +631,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
-#'
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, referring only to numeric variables
@@ -731,9 +819,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		attach_to_internals(voom_object, "voom") %>%
 		# Communicate the attribute added
 		{
-			message(
-				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$voom`"
-			)
+		  rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$voom`", .frequency_id = "Access DE results voom",  .frequency = "once")
+
 			(.)
 		}
 }
@@ -751,7 +838,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
-#'
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, referring only to numeric variables
@@ -912,9 +999,9 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 
 		# Communicate the attribute added
 		{
-			message(
-				"tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$DESeq2`"
-			)
+
+		  rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$DESeq2`", .frequency_id = "Access DE results deseq2",  .frequency = "once")
+
 			(.)
 		}
 }
@@ -1580,6 +1667,7 @@ get_clusters_SNN_bulk <-
 #' @importFrom purrr map_dfr
 #' @importFrom rlang :=
 #' @importFrom stats setNames
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1676,7 +1764,9 @@ get_reduced_dimensions_MDS_bulk <-
 			attach_to_internals(mds_object, "MDS") %>%
 			# Communicate the attribute added
 			{
-				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$MDS`")
+
+			  rlang::inform("tidybulk says: to access the raw results do `attr(..., \"internals\")$MDS`", .frequency_id = "Access MDS results",  .frequency = "once")
+
 				(.)
 			}
 	}
@@ -1693,6 +1783,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @importFrom stats prcomp
 #' @importFrom utils capture.output
 #' @importFrom magrittr divide_by
+#' @importFrom rlang inform
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1819,7 +1910,8 @@ we suggest to partition the dataset for sample clusters.
 			attach_to_internals(prcomp_obj, "PCA") %>%
 			# Communicate the attribute added
 			{
-				message("tidybulk says: to access the raw results do `attr(..., \"internals\")$PCA`")
+			  rlang::inform("tidybulk says: to access the raw results do `attr(..., \"internals\")$PCA`", .frequency_id = "Access PCA results",  .frequency = "once")
+
 				(.)
 			}
 
@@ -2726,7 +2818,7 @@ get_symbol_from_ensembl <-
 #' @return A data frame
 #'
 #'
-run_llsr = function(mix, reference = X_cibersort) {
+run_llsr = function(mix, reference = X_cibersort,  intercept= TRUE) {
 	# Get common markers
 	markers = intersect(rownames(mix), rownames(reference))
 
@@ -2737,10 +2829,13 @@ run_llsr = function(mix, reference = X_cibersort) {
 	Y = as.matrix(Y)
 
 	X <- (X - mean(X)) / sd(X)
-	y <- apply(Y, 2, function(mc) (mc - mean(mc)) / sd(mc)  )
-	y <- (y - mean(y)) / sd(y)
+	Y <- apply(Y, 2, function(mc) (mc - mean(mc)) / sd(mc)  )
+	# Y <- (Y - mean(y)) / sd(Y)
 
-	results <- t(data.frame(lsfit(X, Y)$coefficients)[-1, , drop = FALSE])
+	if(intercept)
+	  results <- t(data.frame(lsfit(X, Y)$coefficients)[-1, , drop = FALSE])
+	else
+	  results <- t(data.frame(lsfit(X, Y, intercept=FALSE)$coefficients))
 	results[results < 0] <- 0
 	results <- results / apply(results, 1, sum)
 	rownames(results) = colnames(Y)
@@ -2886,7 +2981,7 @@ get_cell_type_proportions = function(.data,
 				# Validate reference
 				validate_signature(.data, reference, !!.transcript)
 
-				do.call(my_CIBERSORT, list(Y = ., X = reference) %>% c(dots_args)) %$%
+				do.call(my_CIBERSORT, list(Y = ., X = reference, QN=FALSE) %>% c(dots_args)) %$%
 				proportions %>%
 				as_tibble(rownames = quo_name(.sample)) %>%
 				select(-`P-value`,-Correlation,-RMSE)
@@ -2902,7 +2997,7 @@ get_cell_type_proportions = function(.data,
 				validate_signature(.data, reference, !!.transcript)
 
 				(.) %>%
-				run_llsr(reference) %>%
+				run_llsr(reference, ...) %>%
 				as_tibble(rownames = quo_name(.sample))
 			},
 
@@ -3275,7 +3370,8 @@ fill_NA_using_formula = function(.data,
 																 .sample = NULL,
 																 .transcript = NULL,
 																 .abundance = NULL,
-																 .abundance_scaled = NULL){
+																 .abundance_scaled = NUL,
+																 suffix = "_imputed"){
 
 	# Get column names
 	.sample = enquo(.sample)
@@ -3293,9 +3389,9 @@ fill_NA_using_formula = function(.data,
 	# Sample-wise columns
 	sample_col = .data %>% get_specific_annotation_columns(!!.sample) %>% outersect(col_formula)
 
+	need_log = .data %>% pull(!!.abundance) %>%  max(na.rm=TRUE) > 50
 
 	# Create NAs for missing sample/transcript pair
-
  .data_completed =
 		.data %>%
 
@@ -3304,9 +3400,30 @@ fill_NA_using_formula = function(.data,
  		mutate(ct_data = map(ct_data, ~ .x %>% droplevels() %>% complete(!!as.symbol(quo_name(.sample)), !!.transcript) )) %>%
  		unnest(ct_data)
 
+ # For non scaled counts create a pseudo scale based on library size, then calculate imputed and scale back
+ abundance_is_int = .data %>% slice(1) %>% pull(!!.abundance) %>% class() %>% equals("integer")
+ .data =
+   .data %>%
+   group_by(!!.sample) %>%
+   mutate(library_size__ = sum(!!.abundance)) %>%
+   ungroup() %>%
+   mutate(!!.abundance := !!.abundance / library_size__)
+
+ imputed_column = sprintf("%s%s", quo_name(.abundance), suffix )
+ imputed_column_scaled = sprintf("%s%s", quo_name(.abundance_scaled), suffix )
+
+ # Divide the dataset
  .data_OK =
  	.data %>%
- 	anti_join(.data_completed %>% filter(!!.abundance %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula))
+ 	anti_join(.data_completed %>% filter(!!.abundance %>% is.na) %>% select( !!.transcript, col_formula) %>% distinct(), by = c(quo_name(.transcript), col_formula)) %>%
+
+   # Add the imputed column
+   mutate(!!as.symbol(imputed_column) := !!.abundance) %>%
+   when(
+     quo_is_symbol(.abundance_scaled) ~ .x %>%
+       mutate(!!as.symbol(imputed_column_scaled) := !!.abundance_scaled),
+     ~ (.)
+   )
 
  .data_FIXED =
  .data %>%
@@ -3317,18 +3434,57 @@ fill_NA_using_formula = function(.data,
 	.data_completed %>%
 		filter(!!.abundance %>% is.na) %>%
 		select(!!.sample, !!.transcript) %>%
-		left_join(.data %>% pivot_sample(!!.sample)) %>%
-		left_join(.data %>% pivot_transcript(!!.transcript))
-	) %>%
+		left_join(.data %>% pivot_sample(!!.sample), by = quo_name(.sample)) %>%
+		left_join(.data %>% pivot_transcript(!!.transcript), by = quo_name(.transcript))
+	)
+
+
+ # Clean environment
+ rm(.data_completed)
+
+ ~ {
+
+   # Pseudo-scale if not scaled
+   if(!grepl("_scaled", .y)) library_size = colSums(.x, na.rm = TRUE)
+   if(!grepl("_scaled", .y)) .x = .x / library_size
+
+   # Log
+   need_log = max(.x, na.rm=TRUE) > 50
+   if(need_log) .x = log1p(.x)
+
+   # Imputation
+   .x = fill_NA_matrix_with_factor_colwise(
+     .x,
+     # I split according to the formula
+     colData(.data)[,parse_formula(.formula)]
+   )
+
+   # Exp back
+   if(need_log) .x = exp(.x)-1
+
+   # Scale back if pseudoscaled
+   if(!grepl("_scaled", .y)) .x = .x * library_size
+
+   # Return
+   .x
+ }
+
+ .data_FIXED =
+   .data_FIXED %>%
+
+   when( need_log ~ mutate(., !!.abundance := log1p(!!.abundance)), ~ (.)   ) %>%
+   when( need_log & quo_is_symbol(.abundance_scaled) ~ mutate(., !!.abundance_scaled := log1p(!!.abundance_scaled)), ~ (.)   ) %>%
+
 
 	# Group by covariate
 	nest(cov_data = -c(col_formula, !!.transcript)) %>%
 	mutate(cov_data = map(cov_data, ~
 											.x %>%
 											mutate(
-												!!.abundance := ifelse(
+											  !!as.symbol(imputed_column) := ifelse(
 													!!.abundance %>% is.na,
-													median(!!.abundance, na.rm = TRUE),!!.abundance
+													median(!!.abundance, na.rm = TRUE),
+													!!.abundance
 												)
 											) %>%
 
@@ -3336,9 +3492,10 @@ fill_NA_using_formula = function(.data,
 											ifelse_pipe(
 												quo_is_symbol(.abundance_scaled),
 												~ .x %>% mutate(
-													!!.abundance_scaled := ifelse(
+												  !!as.symbol(imputed_column_scaled) := ifelse(
 														!!.abundance_scaled %>% is.na,
-														median(!!.abundance_scaled, na.rm = TRUE),!!.abundance_scaled
+														median(!!.abundance_scaled, na.rm = TRUE),
+														!!.abundance_scaled
 													)
 												)
 											) %>%
@@ -3346,10 +3503,18 @@ fill_NA_using_formula = function(.data,
 											# Through warning if group of size 1
 											ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
 	)) %>%
-	unnest(cov_data)
+	unnest(cov_data) %>%
+   when( need_log ~ mutate(., !!.abundance := exp(!!.abundance)-1), ~ (.)   ) %>%
+   when( need_log & quo_is_symbol(.abundance_scaled) ~ mutate(., !!.abundance_scaled := exp(!!.abundance_scaled)-1), ~ (.)   )
+
 
 	.data_OK %>%
 		bind_rows(.data_FIXED) %>%
+
+	  # Scale back the pseudoscaling
+	  mutate(!!.abundance := !!.abundance * library_size__) %>%
+	  select(-library_size__) %>%
+	  when(abundance_is_int ~ mutate(., !!.abundance := as.integer(!!.abundance)), ~ (.)) %>%
 
 		# Reattach internals
 		reattach_internals(.data)
@@ -3391,6 +3556,9 @@ fill_NA_using_value = function(.data,
 	.element = enquo(.sample)
 	.feature = enquo(.transcript)
 	.value = enquo(.abundance)
+
+	# Scale based on library size
+
 
 	# Create NAs for missing element/feature pair
 	df_to_impute =
