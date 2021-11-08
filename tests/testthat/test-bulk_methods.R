@@ -1751,13 +1751,13 @@ test_that("differential composition",{
 	) %>%
 	pull(estimate) %>%
 	.[[1]] %>%
-	#expect_equal(97)
-	round() %in% c(
-		26,  # 97 is the github action MacOS that has different value
-		26, # 112 is the github action UBUNTU that has different value
-		26 # 93 is the github action Windows that has different value
-	) %>%
-	expect_true()
+	expect_equal(26.2662279, tolerance = 1)
+	# round() %in% c(
+	# 	26,  # 97 is the github action MacOS that has different value
+	# 	26, # 112 is the github action UBUNTU that has different value
+	# 	26 # 93 is the github action Windows that has different value
+	# ) %>%
+	# expect_true()
 
 })
 
