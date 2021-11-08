@@ -3386,7 +3386,7 @@ fill_NA_using_formula = function(.data,
 	# Sample-wise columns
 	sample_col = .data %>% get_specific_annotation_columns(!!.sample) %>% outersect(col_formula)
 
-	need_log = .data %>% pull(!!.abundance) %>%  max(na.rm=T) > 50
+	need_log = .data %>% pull(!!.abundance) %>%  max(na.rm=TRUE) > 50
 
 	# Create NAs for missing sample/transcript pair
  .data_completed =
@@ -3438,8 +3438,6 @@ fill_NA_using_formula = function(.data,
 
  # Clean environment
  rm(.data_completed)
- gc()
-
 
  ~ {
 
@@ -3448,7 +3446,7 @@ fill_NA_using_formula = function(.data,
    if(!grepl("_scaled", .y)) .x = .x / library_size
 
    # Log
-   need_log = max(.x, na.rm=T) > 50
+   need_log = max(.x, na.rm=TRUE) > 50
    if(need_log) .x = log1p(.x)
 
    # Imputation
