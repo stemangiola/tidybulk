@@ -102,6 +102,7 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 #' @importFrom SummarizedExperiment assays
 #' @importFrom SummarizedExperiment colData
 #' @importFrom utils tail
+#' @importFrom stats na.omit
 #'
 .scale_abundance_se = function(.data,
                                .sample = NULL,
