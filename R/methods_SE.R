@@ -102,6 +102,7 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 #' @importFrom SummarizedExperiment assays
 #' @importFrom SummarizedExperiment colData
 #' @importFrom utils tail
+#' @importFrom stats na.omit
 #'
 .scale_abundance_se = function(.data,
                                .sample = NULL,
@@ -948,7 +949,7 @@ setMethod("aggregate_duplicates",
 				# Validate reference
 				validate_signature_SE(.data, reference, !!.transcript)
 
-				do.call(my_CIBERSORT, list(Y = ., X = reference) %>% c(dots_args)) %$%
+				do.call(my_CIBERSORT, list(Y = ., X = reference, QN=FALSE) %>% c(dots_args)) %$%
 					proportions %>%
 					as_tibble(rownames = quo_name(.sample)) %>%
 					select(-`P-value`,-Correlation,-RMSE)
@@ -964,7 +965,7 @@ setMethod("aggregate_duplicates",
 				validate_signature_SE(.data, reference, !!.transcript)
 
 				(.) %>%
-					run_llsr(reference) %>%
+					run_llsr(reference, ...) %>%
 					as_tibble(rownames = quo_name(.sample))
 			},
 
@@ -1013,7 +1014,7 @@ setMethod("aggregate_duplicates",
 	colData(.data) = colData(.data) %>% cbind(
 		my_proportions %>%
 			as_matrix(rownames = "sample") %>%
-			.[rownames(colData(.data)),]
+		  .[match(rownames(colData(.data)), rownames(.)),]
 		)
 
 	.data %>%
@@ -1418,6 +1419,7 @@ setMethod("keep_abundant",
 
 
 #' @importFrom lifecycle deprecate_warn
+#' @importFrom stringr str_replace
 .test_gene_enrichment_SE = 		function(.data,
 																			.formula,
 																			.sample = NULL,
@@ -1863,6 +1865,8 @@ setMethod("test_gene_rank",
 #' @docType methods
 #' @rdname test_gene_rank-methods
 #'
+#' @importFrom stringr str_replace
+#'
 #' @return A `RangedSummarizedExperiment` object
 setMethod("test_gene_rank",
 					"RangedSummarizedExperiment",
@@ -1907,6 +1911,9 @@ setMethod("pivot_sample",
 #'
 #' @docType methods
 #' @rdname pivot_sample-methods
+#'
+#' @importFrom stringr str_replace
+#'
 #'
 #' @return A consistent object (to the input)
 setMethod("pivot_sample",
@@ -2055,6 +2062,9 @@ setMethod("pivot_transcript",
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
 #'
+#' @importFrom stringr str_replace
+#'
+#'
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("impute_missing_abundance",
@@ -2066,6 +2076,9 @@ setMethod("impute_missing_abundance",
 #'
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
+#'
+#' @importFrom stringr str_replace
+#'
 #'
 #' @return A `SummarizedExperiment` object
 #'
@@ -2226,6 +2239,7 @@ setMethod(
 )
 
 # Set internal
+#' @importFrom stringr str_replace
 .test_stratification_cellularity_SE = 		function(.data,
 																							.formula,
 																							.sample = NULL,
