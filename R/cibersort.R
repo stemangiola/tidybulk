@@ -223,7 +223,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
       "tidybulk says: the samples %s were ignored for decovolution as they have 0 counts for the deconvolution signature genes",
       colnames(Y)[colSums(Y)==0] %>% paste(collapse = ", ")
     ))
-  Y=Y[,colSums(Y)>0]
+  Y=Y[,colSums(Y)>0, drop=FALSE]
 
   # Check if package is installed, otherwise install
   if (find.package("matrixStats", quiet = TRUE) %>% length %>% equals(0)) {
@@ -237,7 +237,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
       "tidybulk says: the samples %s were ignored for decovolution as they have standard deviation of 0 for the deconvolution signature genes",
       colnames(Y)[matrixStats::colSds(Y)==0] %>% paste(collapse = ", ")
     ))
-  Y = Y[,matrixStats::colSds(Y)>0]
+  Y = Y[,matrixStats::colSds(Y)>0,drop=FALSE]
 
   #standardize sig matrix
   X <- (X - mean(X)) / sd(as.vector(X))
