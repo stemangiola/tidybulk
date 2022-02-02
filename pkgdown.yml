@@ -1,10 +1,10 @@
-pandoc: 2.11.4
-pkgdown: 1.9000.9000.9000
-pkgdown_sha: 8122179c440692487eda000d6542d7734a37d36d
+pandoc: 2.14.0.3
+pkgdown: 2.0.2.9000
+pkgdown_sha: ae7363faac9040a473a54fb3d770decdfb8dfec1
 articles:
   comparison_with_base_R: comparison_with_base_R.html
   introduction: introduction.html
   manuscript_differential_transcript_abundance: manuscript_differential_transcript_abundance.html
   manuscript_transcriptional_signatures: manuscript_transcriptional_signatures.html
-last_built: 2021-11-08T08:34Z
+last_built: 2022-02-02T17:06Z
 

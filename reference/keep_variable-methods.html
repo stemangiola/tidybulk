@@ -68,7 +68,8 @@
     <p>keep_variable() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">keep_variable</span><span class="op">(</span>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">keep_variable</span><span class="op">(</span>
   <span class="va">.data</span>,
   .sample <span class="op">=</span> <span class="cn">NULL</span>,
   .transcript <span class="op">=</span> <span class="cn">NULL</span>,
@@ -112,8 +113,8 @@
 
 <span class="co"># S4 method for RangedSummarizedExperiment</span>
 <span class="fu">keep_variable</span><span class="op">(</span><span class="va">.data</span>, top <span class="op">=</span> <span class="fl">500</span>, log_transform <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.data</dt>
@@ -148,11 +149,10 @@ A `SummarizedExperiment` object</p>
     <p>`r lifecycle::badge("maturing")`</p>
 <p>At the moment this function uses edgeR <a href="https://doi.org/10.1093/bioinformatics/btp616" class="external-link">https://doi.org/10.1093/bioinformatics/btp616</a></p>
     </div>
-    </div>
 
-    <div id="examples">
+    <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in">  <span class="fu">keep_variable</span><span class="op">(</span></span>
@@ -185,7 +185,7 @@ A `SummarizedExperiment` object</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.9000.</p>
 </div>
 
       </footer></div>

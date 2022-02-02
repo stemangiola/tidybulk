@@ -68,7 +68,8 @@
     <p>deconvolve_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with the estimated cell type abundance for each sample</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">deconvolve_cellularity</span><span class="op">(</span>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">deconvolve_cellularity</span><span class="op">(</span>
   <span class="va">.data</span>,
   .sample <span class="op">=</span> <span class="cn">NULL</span>,
   .transcript <span class="op">=</span> <span class="cn">NULL</span>,
@@ -144,8 +145,8 @@
   action <span class="op">=</span> <span class="st">"add"</span>,
   <span class="va">...</span>
 <span class="op">)</span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.data</dt>
@@ -184,11 +185,10 @@ A `SummarizedExperiment` object</p>
 <p>Underlying method:
 CIBERSORT(Y = data, X = reference, ...)</p>
     </div>
-    </div>
 
-    <div id="examples">
+    <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Subsetting for time efficiency</span></span>
@@ -206,13 +206,13 @@ CIBERSORT(Y = data, X = reference, ...)</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ADAMTS3  SRR1740034     0 b_cell    0 d   TRUE                0.620</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ADRB2    SRR1740034   298 b_cell    0 d   TRUE                0.620</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> AIF1     SRR1740034     8 b_cell    0 d   TRUE                0.620</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 517 more rows, and 21 more variables: B cells memory &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Plasma cells &lt;dbl&gt;, T cells CD8 &lt;dbl&gt;, T cells CD4 naive &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   T cells CD4 memory resting &lt;dbl&gt;, T cells CD4 memory activated &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   T cells follicular helper &lt;dbl&gt;, T cells regulatory (Tregs) &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   T cells gamma delta &lt;dbl&gt;, NK cells resting &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   NK cells activated &lt;dbl&gt;, Monocytes &lt;dbl&gt;, Macrophages M0 &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Macrophages M1 &lt;dbl&gt;, Macrophages M2 &lt;dbl&gt;, …</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 517 more rows, and 21 more variables: `B cells memory` &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `Plasma cells` &lt;dbl&gt;, `T cells CD8` &lt;dbl&gt;, `T cells CD4 naive` &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `T cells CD4 memory resting` &lt;dbl&gt;, `T cells CD4 memory activated` &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `T cells follicular helper` &lt;dbl&gt;, `T cells regulatory (Tregs)` &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `T cells gamma delta` &lt;dbl&gt;, `NK cells resting` &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `NK cells activated` &lt;dbl&gt;, Monocytes &lt;dbl&gt;, `Macrophages M0` &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `Macrophages M1` &lt;dbl&gt;, `Macrophages M2` &lt;dbl&gt;, …</span></span>
 <span class="r-in"></span>
 <span class="r-in"></span>
 </code></pre></div>
@@ -229,7 +229,7 @@ CIBERSORT(Y = data, X = reference, ...)</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.9000.</p>
 </div>
 
       </footer></div>

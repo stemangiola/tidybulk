@@ -87,7 +87,7 @@
       <h1 data-toc-skip>Overview of the tidybulk package</h1>
                         <h4 data-toc-skip class="author">Stefano Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2021-11-08</h4>
+            <h4 data-toc-skip class="date">2022-02-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -116,13 +116,13 @@
 }
 </style>
 <p><strong>Brings transcriptomics to the tidyverse</strong></p>
-<div class="section level1">
-<h1 id="section">
-<img src="inst/new_SE_usage-01.png" width="800px"><a class="anchor" aria-label="anchor" href="#section"></a>
-</h1>
 <div class="section level2">
-<h2 id="functionsutilities-available">Functions/utilities available<a class="anchor" aria-label="anchor" href="#functionsutilities-available"></a>
+<h2 id="section">
+<img src="inst/new_SE_usage-01.png" width="800px"><a class="anchor" aria-label="anchor" href="#section"></a>
 </h2>
+<div class="section level3">
+<h3 id="functionsutilities-available">Functions/utilities available<a class="anchor" aria-label="anchor" href="#functionsutilities-available"></a>
+</h3>
 <table class="table">
 <colgroup>
 <col width="48%">
@@ -249,26 +249,26 @@
 </table>
 <p>All functions are directly compatibble with <code>SummarizedExperiment</code> object.</p>
 </div>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
+<div class="section level3">
+<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h3>
 <p>From Bioconductor</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"tidybulk"</span><span class="op">)</span></code></pre></div>
 <p>From Github</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"stemangiola/tidybulk"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"stemangiola/tidybulk"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div class="section level1">
-<h1 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
-</h1>
+<div class="section level2">
+<h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
+</h2>
 <p>We will use a <code>SummarizedExperiment</code> object</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE</span></code></pre></div>
 <pre><code><span class="co">## <span style="color: #949494;"># A SummarizedExperiment-tibble abstraction: 408,624 × 8</span></span>
 <span class="co">## <span style="color: #555555;"># Transcripts=8513 | Samples=48 | Assays=count</span></span>
-<span class="co">##    feature  sample     count Cell.type time  condition batch factor_of_interest</span>
+<span class="co">##    .feature .sample    count Cell.type time  condition batch factor_of_interest</span>
 <span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>             </span>
 <span class="co">## <span style="color: #BCBCBC;"> 1</span> A1BG     SRR1740034   153 b_cell    0 d   TRUE      0     TRUE              </span>
 <span class="co">## <span style="color: #BCBCBC;"> 2</span> A1BG-AS1 SRR1740034    83 b_cell    0 d   TRUE      0     TRUE              </span>
@@ -287,16 +287,16 @@
 <pre><code><span class="co">## [1] "SummarizedExperiment"</span>
 <span class="co">## attr(,"package")</span>
 <span class="co">## [1] "SummarizedExperiment"</span></code></pre>
-<div class="section level2">
-<h2 id="get-the-bibliography-of-your-workflow">Get the bibliography of your workflow<a class="anchor" aria-label="anchor" href="#get-the-bibliography-of-your-workflow"></a>
-</h2>
+<div class="section level3">
+<h3 id="get-the-bibliography-of-your-workflow">Get the bibliography of your workflow<a class="anchor" aria-label="anchor" href="#get-the-bibliography-of-your-workflow"></a>
+</h3>
 <p>First of all, you can cite all articles utilised within your workflow automatically from any tidybulk tibble</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>   <span class="fu"><a href="../reference/get_bibliography-methods.html">get_bibliography</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="aggregate-duplicated-transcripts">Aggregate duplicated <code>transcripts</code><a class="anchor" aria-label="anchor" href="#aggregate-duplicated-transcripts"></a>
-</h2>
+<div class="section level3">
+<h3 id="aggregate-duplicated-transcripts">Aggregate duplicated <code>transcripts</code><a class="anchor" aria-label="anchor" href="#aggregate-duplicated-transcripts"></a>
+</h3>
 <p>tidybulk provide the <code>aggregate_duplicates</code> function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. <code>aggregate_duplicates</code> takes a tibble and column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) as arguments and returns a tibble with transcripts with the same name aggregated. All the rest of the columns are appended, and factors and boolean are appended as characters.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
@@ -323,9 +323,9 @@
 
 </div>
 </div>
-<div class="section level2">
-<h2 id="scale-counts">Scale <code>counts</code><a class="anchor" aria-label="anchor" href="#scale-counts"></a>
-</h2>
+<div class="section level3">
+<h3 id="scale-counts">Scale <code>counts</code><a class="anchor" aria-label="anchor" href="#scale-counts"></a>
+</h3>
 <p>We may want to compensate for sequencing depth, scaling the transcript abundance (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). <code>scale_abundance</code> takes a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and a method as arguments and returns a tibble with additional columns with scaled data as <code>&lt;NAME OF COUNT COLUMN&gt;_scaled</code>.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
@@ -355,9 +355,9 @@
     <span class="va">my_theme</span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_normalise-1.png" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="filter-variable-transcripts">Filter <code>variable transcripts</code><a class="anchor" aria-label="anchor" href="#filter-variable-transcripts"></a>
-</h2>
+<div class="section level3">
+<h3 id="filter-variable-transcripts">Filter <code>variable transcripts</code><a class="anchor" aria-label="anchor" href="#filter-variable-transcripts"></a>
+</h3>
 <p>We may want to identify and filter variable transcripts.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
@@ -389,9 +389,9 @@
 
 </div>
 </div>
-<div class="section level2">
-<h2 id="reduce-dimensions">Reduce <code>dimensions</code><a class="anchor" aria-label="anchor" href="#reduce-dimensions"></a>
-</h2>
+<div class="section level3">
+<h3 id="reduce-dimensions">Reduce <code>dimensions</code><a class="anchor" aria-label="anchor" href="#reduce-dimensions"></a>
+</h3>
 <p>We may want to reduce the dimensions of our data, for example using PCA or MDS algorithms. <code>reduce_dimensions</code> takes a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and a method (e.g., MDS or PCA) as arguments and returns a tibble with additional columns for the reduced dimensions.</p>
 <p><strong>MDS</strong> (Robinson et al., 10.1093/bioinformatics/btp616)</p>
 <div class="column-left">
@@ -471,18 +471,18 @@
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"PC"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## <span style="color: #949494;"># A tibble: 48 × 14</span></span>
-<span class="co">##        PC1   PC2    PC3     PC4    PC5   PC6 sample  Cell.type   time  condition</span>
-<span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    </span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.52</span> -<span style="color: #BB0000;">14.9</span>  -<span style="color: #BB0000;">0.424</span>  -<span style="color: #BB0000;">0.592</span> -<span style="color: #BB0000;">1.22</span> SRR174… b_cell      0 d   TRUE     </span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.57</span> -<span style="color: #BB0000;">15.2</span>  -<span style="color: #BB0000;">0.140</span>  -<span style="color: #BB0000;">0.388</span> -<span style="color: #BB0000;">1.30</span> SRR174… b_cell      1 d   TRUE     </span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.41</span> -<span style="color: #BB0000;">14.5</span>  -<span style="color: #BB0000;">0.714</span>  -<span style="color: #BB0000;">0.344</span> -<span style="color: #BB0000;">1.10</span> SRR174… b_cell      3 d   TRUE     </span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span> -<span style="color: #BB0000;">12.5</span>   -<span style="color: #BB0000;">2.34</span> -<span style="color: #BB0000;">14.9</span>  -<span style="color: #BB0000;">0.816</span>  -<span style="color: #BB0000;">0.427</span> -<span style="color: #BB0000;">1.00</span> SRR174… b_cell      7 d   TRUE     </span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span>   0.189 13.0    1.66 -<span style="color: #BB0000;">0.026</span><span style="color: #BB0000; text-decoration: underline;">9</span>  4.64  -<span style="color: #BB0000;">1.35</span> SRR174… dendritic_… 0 d   FALSE    </span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span>  -<span style="color: #BB0000;">0.293</span> 12.9    1.76 -<span style="color: #BB0000;">0.072</span><span style="color: #BB0000; text-decoration: underline;">7</span>  4.21  -<span style="color: #BB0000;">1.28</span> SRR174… dendritic_… 1 d   FALSE    </span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span>   0.407 13.0    1.42 -<span style="color: #BB0000;">0.052</span><span style="color: #BB0000; text-decoration: underline;">9</span>  5.37  -<span style="color: #BB0000;">1.01</span> SRR174… dendritic_… 3 d   FALSE    </span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">0.620</span> 13.0    1.73 -<span style="color: #BB0000;">0.201</span>   4.17  -<span style="color: #BB0000;">1.07</span> SRR174… dendritic_… 7 d   FALSE    </span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span>   2.56  13.5    2.32  2.03   -<span style="color: #BB0000;">4.32</span>  -<span style="color: #BB0000;">1.22</span> SRR174… monocyte    0 d   FALSE    </span>
-<span class="co">## <span style="color: #BCBCBC;">10</span>   2.65  13.1    2.21  1.80   -<span style="color: #BB0000;">4.29</span>  -<span style="color: #BB0000;">1.30</span> SRR174… monocyte    1 d   FALSE    </span>
+<span class="co">##        PC1   PC2    PC3     PC4    PC5   PC6 sample    Cell.type time  condition</span>
+<span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    </span>
+<span class="co">## <span style="color: #BCBCBC;"> 1</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.52</span> -<span style="color: #BB0000;">14.9</span>  -<span style="color: #BB0000;">0.424</span>  -<span style="color: #BB0000;">0.592</span> -<span style="color: #BB0000;">1.22</span> SRR17400… b_cell    0 d   TRUE     </span>
+<span class="co">## <span style="color: #BCBCBC;"> 2</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.57</span> -<span style="color: #BB0000;">15.2</span>  -<span style="color: #BB0000;">0.140</span>  -<span style="color: #BB0000;">0.388</span> -<span style="color: #BB0000;">1.30</span> SRR17400… b_cell    1 d   TRUE     </span>
+<span class="co">## <span style="color: #BCBCBC;"> 3</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.41</span> -<span style="color: #BB0000;">14.5</span>  -<span style="color: #BB0000;">0.714</span>  -<span style="color: #BB0000;">0.344</span> -<span style="color: #BB0000;">1.10</span> SRR17400… b_cell    3 d   TRUE     </span>
+<span class="co">## <span style="color: #BCBCBC;"> 4</span> -<span style="color: #BB0000;">12.5</span>   -<span style="color: #BB0000;">2.34</span> -<span style="color: #BB0000;">14.9</span>  -<span style="color: #BB0000;">0.816</span>  -<span style="color: #BB0000;">0.427</span> -<span style="color: #BB0000;">1.00</span> SRR17400… b_cell    7 d   TRUE     </span>
+<span class="co">## <span style="color: #BCBCBC;"> 5</span>   0.189 13.0    1.66 -<span style="color: #BB0000;">0.026</span><span style="color: #BB0000; text-decoration: underline;">9</span>  4.64  -<span style="color: #BB0000;">1.35</span> SRR17400… dendriti… 0 d   FALSE    </span>
+<span class="co">## <span style="color: #BCBCBC;"> 6</span>  -<span style="color: #BB0000;">0.293</span> 12.9    1.76 -<span style="color: #BB0000;">0.072</span><span style="color: #BB0000; text-decoration: underline;">7</span>  4.21  -<span style="color: #BB0000;">1.28</span> SRR17400… dendriti… 1 d   FALSE    </span>
+<span class="co">## <span style="color: #BCBCBC;"> 7</span>   0.407 13.0    1.42 -<span style="color: #BB0000;">0.052</span><span style="color: #BB0000; text-decoration: underline;">9</span>  5.37  -<span style="color: #BB0000;">1.01</span> SRR17400… dendriti… 3 d   FALSE    </span>
+<span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">0.620</span> 13.0    1.73 -<span style="color: #BB0000;">0.201</span>   4.17  -<span style="color: #BB0000;">1.07</span> SRR17400… dendriti… 7 d   FALSE    </span>
+<span class="co">## <span style="color: #BCBCBC;"> 9</span>   2.56  13.5    2.32  2.03   -<span style="color: #BB0000;">4.32</span>  -<span style="color: #BB0000;">1.22</span> SRR17400… monocyte  0 d   FALSE    </span>
+<span class="co">## <span style="color: #BCBCBC;">10</span>   2.65  13.1    2.21  1.80   -<span style="color: #BB0000;">4.29</span>  -<span style="color: #BB0000;">1.30</span> SRR17400… monocyte  1 d   FALSE    </span>
 <span class="co">## <span style="color: #949494;"># … with 38 more rows, and 4 more variables: batch &lt;fct&gt;,</span></span>
 <span class="co">## <span style="color: #949494;">#   factor_of_interest &lt;lgl&gt;, TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
@@ -527,18 +527,18 @@
     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <pre><code><span class="co">## <span style="color: #949494;"># A tibble: 251 × 4</span></span>
-<span class="co">##      tSNE1   tSNE2 sample                       Call </span>
-<span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span>   7.76   -<span style="color: #BB0000;">9.10</span>  TCGA-A1-A0SD-01A-11R-A115-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span>  -<span style="color: #BB0000;">8.39</span>    7.23  TCGA-A1-A0SF-01A-11R-A144-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span>   5.40   -<span style="color: #BB0000;">0.927</span> TCGA-A1-A0SG-01A-11R-A144-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span>  11.1     2.53  TCGA-A1-A0SH-01A-11R-A084-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span>   6.87   -<span style="color: #BB0000;">6.41</span>  TCGA-A1-A0SI-01A-11R-A144-07 LumB </span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span>   0.724  12.8   TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">32.8</span>    16.6   TCGA-A1-A0SK-01A-12R-A084-07 Basal</span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span>  10.3    10.5   TCGA-A1-A0SM-01A-11R-A084-07 LumA </span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span>  10.0     8.97  TCGA-A1-A0SN-01A-11R-A144-07 LumB </span>
-<span class="co">## <span style="color: #BCBCBC;">10</span>  18.0   -<span style="color: #BB0000;">17.0</span>   TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span>
+<span class="co">##      tSNE1  tSNE2 sample                       Call </span>
+<span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 1</span>  -<span style="color: #BB0000;">6.19</span>   10.1  TCGA-A1-A0SD-01A-11R-A115-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 2</span>   7.84    1.13 TCGA-A1-A0SF-01A-11R-A144-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 3</span> -<span style="color: #BB0000;">13.2</span>     9.10 TCGA-A1-A0SG-01A-11R-A144-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 4</span>  -<span style="color: #BB0000;">7.42</span>   -<span style="color: #BB0000;">1.04</span> TCGA-A1-A0SH-01A-11R-A084-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 5</span>   1.64  -<span style="color: #BB0000;">14.1</span>  TCGA-A1-A0SI-01A-11R-A144-07 LumB </span>
+<span class="co">## <span style="color: #BCBCBC;"> 6</span>   0.946  -<span style="color: #BB0000;">7.38</span> TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 7</span>   8.10  -<span style="color: #BB0000;">36.9</span>  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span>
+<span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">5.45</span>   -<span style="color: #BB0000;">3.80</span> TCGA-A1-A0SM-01A-11R-A084-07 LumA </span>
+<span class="co">## <span style="color: #BCBCBC;"> 9</span>  -<span style="color: #BB0000;">5.08</span>   -<span style="color: #BB0000;">5.92</span> TCGA-A1-A0SN-01A-11R-A144-07 LumB </span>
+<span class="co">## <span style="color: #BCBCBC;">10</span> -<span style="color: #BB0000;">19.5</span>    15.8  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span>
 <span class="co">## <span style="color: #949494;"># … with 241 more rows</span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -546,9 +546,9 @@
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color<span class="op">=</span><span class="va">Call</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="va">my_theme</span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="rotate-dimensions">Rotate <code>dimensions</code><a class="anchor" aria-label="anchor" href="#rotate-dimensions"></a>
-</h2>
+<div class="section level3">
+<h3 id="rotate-dimensions">Rotate <code>dimensions</code><a class="anchor" aria-label="anchor" href="#rotate-dimensions"></a>
+</h3>
 We may want to rotate the reduced dimensions (or any two numeric columns really) of our data, of a set angle. <code>rotate_dimensions</code> takes a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and an angle as arguments and returns a tibble with additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as <code>&lt;NAME OF DIMENSION&gt; rotated &lt;ANGLE&gt;</code> by default, or as specified in the input arguments.
 <div class="column-left">
 <p>TidyTranscriptomics</p>
@@ -592,9 +592,9 @@ We may want to rotate the reduced dimensions (or any two numeric columns really)
   <span class="va">my_theme</span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_rotate_2-1.png" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="test-differential-abundance">Test <code>differential abundance</code><a class="anchor" aria-label="anchor" href="#test-differential-abundance"></a>
-</h2>
+<div class="section level3">
+<h3 id="test-differential-abundance">Test <code>differential abundance</code><a class="anchor" aria-label="anchor" href="#test-differential-abundance"></a>
+</h3>
 We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). <code>test_differential_abundance</code> takes a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g., log fold change, p-value and false discovery rate).
 <div class="column-left">
 <p>TidyTranscriptomics</p>
@@ -633,9 +633,9 @@ We may want to test for differential transcription between sample-wise factors o
         action<span class="op">=</span><span class="st">"get"</span>
     <span class="op">)</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="adjust-counts">Adjust <code>counts</code><a class="anchor" aria-label="anchor" href="#adjust-counts"></a>
-</h2>
+<div class="section level3">
+<h3 id="adjust-counts">Adjust <code>counts</code><a class="anchor" aria-label="anchor" href="#adjust-counts"></a>
+</h3>
 <p>We may want to adjust <code>counts</code> for (known) unwanted variation. <code>adjust_abundance</code> takes as arguments a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and a formula representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation, and returns a tibble with additional columns for the adjusted counts as <code>&lt;COUNT COLUMN&gt;_adjusted</code>. At the moment just an unwanted covariated is allowed at a time.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
@@ -673,9 +673,9 @@ We may want to test for differential transcription between sample-wise factors o
 
 </div>
 </div>
-<div class="section level2">
-<h2 id="deconvolve-cell-type-composition">Deconvolve <code>Cell type composition</code><a class="anchor" aria-label="anchor" href="#deconvolve-cell-type-composition"></a>
-</h2>
+<div class="section level3">
+<h3 id="deconvolve-cell-type-composition">Deconvolve <code>Cell type composition</code><a class="anchor" aria-label="anchor" href="#deconvolve-cell-type-composition"></a>
+</h3>
 <p>We may want to infer the cell type composition of our samples (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337). <code>deconvolve_cellularity</code> takes as arguments a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and returns a tibble with additional columns for the adjusted cell type proportions.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
@@ -717,9 +717,9 @@ We may want to test for differential transcription between sample-wise factors o
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, aspect.ratio<span class="op">=</span><span class="fl">1</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_cibersort-1.png" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="test-differential-cell-type-abundance">Test differential cell-type abundance<a class="anchor" aria-label="anchor" href="#test-differential-cell-type-abundance"></a>
-</h2>
+<div class="section level3">
+<h3 id="test-differential-cell-type-abundance">Test differential cell-type abundance<a class="anchor" aria-label="anchor" href="#test-differential-cell-type-abundance"></a>
+</h3>
 <p>We can also perform a statistical test on the differential cell-type abundance across conditions</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R">    <span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -729,9 +729,9 @@ We may want to test for differential transcription between sample-wise factors o
 <code class="sourceCode R">    <span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="../reference/test_differential_cellularity-methods.html">test_differential_cellularity</a></span><span class="op">(</span><span class="fu">survival</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">dead</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="cluster-samples">Cluster <code>samples</code><a class="anchor" aria-label="anchor" href="#cluster-samples"></a>
-</h2>
+<div class="section level3">
+<h3 id="cluster-samples">Cluster <code>samples</code><a class="anchor" aria-label="anchor" href="#cluster-samples"></a>
+</h3>
 <p>We may want to cluster our data (e.g., using k-means sample-wise). <code>cluster_elements</code> takes as arguments a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and returns a tibble with additional columns for the cluster annotation. At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.</p>
 <p><strong>k-means</strong></p>
 <div class="column-left">
@@ -777,7 +777,7 @@ We may want to test for differential transcription between sample-wise factors o
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span>
 
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">count_m</span><span class="op">)</span>
+<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">count_m</span><span class="op">)</span>
 <span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">ScaleData</a></span><span class="op">(</span>
     <span class="va">snn</span>, display.progress <span class="op">=</span> <span class="cn">TRUE</span>,
     num.cores<span class="op">=</span><span class="fl">4</span>, do.par <span class="op">=</span> <span class="cn">TRUE</span>
@@ -817,9 +817,9 @@ We may want to test for differential transcription between sample-wise factors o
     action<span class="op">=</span><span class="st">"get"</span>
    <span class="op">)</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="drop-redundant-transcripts">Drop <code>redundant</code> transcripts<a class="anchor" aria-label="anchor" href="#drop-redundant-transcripts"></a>
-</h2>
+<div class="section level3">
+<h3 id="drop-redundant-transcripts">Drop <code>redundant</code> transcripts<a class="anchor" aria-label="anchor" href="#drop-redundant-transcripts"></a>
+</h3>
 <p>We may want to remove redundant elements from the original data set (e.g., samples or transcripts), for example if we want to define cell-type specific signatures with low sample redundancy. <code>remove_redundancy</code> takes as arguments a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and returns a tibble with redundant elements removed (e.g., samples). Two redundancy estimation approaches are supported:</p>
 <ul>
 <li>removal of highly correlated clusters of elements (keeping a representative) with method=“correlation”</li>
@@ -886,14 +886,14 @@ We may want to test for differential transcription between sample-wise factors o
   <span class="va">my_theme</span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_drop2-1.png" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="other-useful-wrappers">Other useful wrappers<a class="anchor" aria-label="anchor" href="#other-useful-wrappers"></a>
-</h2>
+<div class="section level3">
+<h3 id="other-useful-wrappers">Other useful wrappers<a class="anchor" aria-label="anchor" href="#other-useful-wrappers"></a>
+</h3>
 <p>The above wrapper streamline the most common processing of bulk RNA sequencing data. Other useful wrappers are listed above.</p>
 </div>
-<div class="section level2">
-<h2 id="from-bamsam-to-tibble-of-gene-counts">From BAM/SAM to tibble of gene counts<a class="anchor" aria-label="anchor" href="#from-bamsam-to-tibble-of-gene-counts"></a>
-</h2>
+<div class="section level3">
+<h3 id="from-bamsam-to-tibble-of-gene-counts">From BAM/SAM to tibble of gene counts<a class="anchor" aria-label="anchor" href="#from-bamsam-to-tibble-of-gene-counts"></a>
+</h3>
 <p>We can calculate gene counts (using FeatureCounts; Liao Y et al., 10.1093/nar/gkz114) from a list of BAM/SAM files and format them into a tidy structure (similar to counts).</p>
 <div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts</span> <span class="op">=</span> <span class="fu"><a href="../reference/tidybulk_SAM_BAM-methods.html">tidybulk_SAM_BAM</a></span><span class="op">(</span>
@@ -905,9 +905,9 @@ We may want to test for differential transcription between sample-wise factors o
     useMetaFeatures <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="from-ensembl-ids-to-gene-symbol-ids">From ensembl IDs to gene symbol IDs<a class="anchor" aria-label="anchor" href="#from-ensembl-ids-to-gene-symbol-ids"></a>
-</h2>
+<div class="section level3">
+<h3 id="from-ensembl-ids-to-gene-symbol-ids">From ensembl IDs to gene symbol IDs<a class="anchor" aria-label="anchor" href="#from-ensembl-ids-to-gene-symbol-ids"></a>
+</h3>
 <p>We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_ensembl</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/ensembl_to_symbol-methods.html">ensembl_to_symbol</a></span><span class="op">(</span><span class="va">ens</span><span class="op">)</span></code></pre></div>
@@ -926,9 +926,9 @@ We may want to test for differential transcription between sample-wise factors o
 <span class="co">## <span style="color: #BCBCBC;">10</span> ENSG0… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span>
 <span class="co">## <span style="color: #949494;"># … with 109 more rows, and 1 more variable: ref_genome &lt;chr&gt;</span></span></code></pre>
 </div>
-<div class="section level2">
-<h2 id="from-gene-symbol-to-gene-description-gene-name-in-full">From gene symbol to gene description (gene name in full)<a class="anchor" aria-label="anchor" href="#from-gene-symbol-to-gene-description-gene-name-in-full"></a>
-</h2>
+<div class="section level3">
+<h3 id="from-gene-symbol-to-gene-description-gene-name-in-full">From gene symbol to gene description (gene name in full)<a class="anchor" aria-label="anchor" href="#from-gene-symbol-to-gene-description-gene-name-in-full"></a>
+</h3>
 <p>We can add gene full name (and in future description) from symbol identifiers. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
@@ -950,12 +950,12 @@ We may want to test for differential transcription between sample-wise factors o
 <span class="co">## <span style="color: #BCBCBC;">10</span> AARS2   SRR17…   685 b_cell    0 d   TRUE      0     TRUE            </span>
 <span class="co">## <span style="color: #949494;"># … with 40 more rows, and 2 more variables: description &lt;chr&gt;, gene_name &lt;chr&gt;</span></span></code></pre>
 </div>
-<div class="section level2">
-<h2 id="appendix">Appendix<a class="anchor" aria-label="anchor" href="#appendix"></a>
-</h2>
+<div class="section level3">
+<h3 id="appendix">Appendix<a class="anchor" aria-label="anchor" href="#appendix"></a>
+</h3>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## R version 4.1.1 (2021-08-10)</span>
+<pre><code><span class="co">## R version 4.1.2 (2021-11-01)</span>
 <span class="co">## Platform: x86_64-pc-linux-gnu (64-bit)</span>
 <span class="co">## Running under: Ubuntu 20.04.3 LTS</span>
 <span class="co">## </span>
@@ -971,59 +971,59 @@ We may want to test for differential transcription between sample-wise factors o
 <span class="co">## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       </span>
 <span class="co">## </span>
 <span class="co">## attached base packages:</span>
-<span class="co">## [1] parallel  stats4    stats     graphics  grDevices utils     datasets </span>
-<span class="co">## [8] methods   base     </span>
+<span class="co">## [1] stats4    stats     graphics  grDevices utils     datasets  methods  </span>
+<span class="co">## [8] base     </span>
 <span class="co">## </span>
 <span class="co">## other attached packages:</span>
-<span class="co">##  [1] tidySummarizedExperiment_1.2.0 SummarizedExperiment_1.22.0   </span>
-<span class="co">##  [3] Biobase_2.52.0                 GenomicRanges_1.44.0          </span>
-<span class="co">##  [5] GenomeInfoDb_1.28.4            IRanges_2.26.0                </span>
-<span class="co">##  [7] S4Vectors_0.30.2               BiocGenerics_0.38.0           </span>
-<span class="co">##  [9] MatrixGenerics_1.4.3           matrixStats_0.61.0            </span>
+<span class="co">##  [1] tidySummarizedExperiment_1.4.1 SummarizedExperiment_1.24.0   </span>
+<span class="co">##  [3] Biobase_2.54.0                 GenomicRanges_1.46.1          </span>
+<span class="co">##  [5] GenomeInfoDb_1.30.1            IRanges_2.28.0                </span>
+<span class="co">##  [7] S4Vectors_0.32.3               BiocGenerics_0.40.0           </span>
+<span class="co">##  [9] MatrixGenerics_1.6.0           matrixStats_0.61.0            </span>
 <span class="co">## [11] tidybulk_1.6.2                 ggrepel_0.9.1                 </span>
-<span class="co">## [13] ggplot2_3.3.5                  magrittr_2.0.1                </span>
-<span class="co">## [15] tibble_3.1.5                   tidyr_1.1.4                   </span>
-<span class="co">## [17] dplyr_1.0.7                    knitr_1.36                    </span>
-<span class="co">## [19] BiocStyle_2.20.2              </span>
+<span class="co">## [13] ggplot2_3.3.5                  magrittr_2.0.2                </span>
+<span class="co">## [15] tibble_3.1.6                   tidyr_1.1.4                   </span>
+<span class="co">## [17] dplyr_1.0.7                    knitr_1.37                    </span>
+<span class="co">## [19] BiocStyle_2.22.0              </span>
 <span class="co">## </span>
 <span class="co">## loaded via a namespace (and not attached):</span>
-<span class="co">##   [1] Rtsne_0.15               colorspace_2.0-2         ellipsis_0.3.2          </span>
-<span class="co">##   [4] class_7.3-19             rprojroot_2.0.2          XVector_0.32.0          </span>
-<span class="co">##   [7] fs_1.5.0                 tidytext_0.3.2           proxy_0.4-26            </span>
-<span class="co">##  [10] farver_2.1.0             SnowballC_0.7.0          bit64_4.0.5             </span>
-<span class="co">##  [13] AnnotationDbi_1.54.1     fansi_0.5.0              codetools_0.2-18        </span>
-<span class="co">##  [16] splines_4.1.1            cachem_1.0.6             jsonlite_1.7.2          </span>
-<span class="co">##  [19] broom_0.7.10             annotate_1.70.0          png_0.1-7               </span>
-<span class="co">##  [22] BiocManager_1.30.16      readr_2.0.2              compiler_4.1.1          </span>
-<span class="co">##  [25] httr_1.4.2               backports_1.3.0          Matrix_1.3-4            </span>
-<span class="co">##  [28] fastmap_1.1.0            lazyeval_0.2.2           limma_3.48.3            </span>
-<span class="co">##  [31] cli_3.1.0                org.Mm.eg.db_3.13.0      htmltools_0.5.2         </span>
-<span class="co">##  [34] tools_4.1.1              gtable_0.3.0             glue_1.4.2              </span>
-<span class="co">##  [37] GenomeInfoDbData_1.2.6   reshape2_1.4.4           Rcpp_1.0.7              </span>
-<span class="co">##  [40] jquerylib_0.1.4          pkgdown_1.9000.9000.9000 vctrs_0.3.8             </span>
-<span class="co">##  [43] Biostrings_2.60.2        preprocessCore_1.54.0    nlme_3.1-153            </span>
-<span class="co">##  [46] xfun_0.28                stringr_1.4.0            lifecycle_1.0.1         </span>
-<span class="co">##  [49] XML_3.99-0.8             org.Hs.eg.db_3.13.0      edgeR_3.34.1            </span>
-<span class="co">##  [52] zlibbioc_1.38.0          scales_1.1.1             ragg_1.2.0              </span>
-<span class="co">##  [55] hms_1.1.1                RColorBrewer_1.1-2       yaml_2.2.1              </span>
-<span class="co">##  [58] memoise_2.0.0            sass_0.4.0               reshape_0.8.8           </span>
-<span class="co">##  [61] stringi_1.7.5            RSQLite_2.2.8            highr_0.9               </span>
-<span class="co">##  [64] genefilter_1.74.1        tokenizers_0.2.1         desc_1.4.0              </span>
-<span class="co">##  [67] e1071_1.7-9              BiocParallel_1.26.2      rlang_0.4.12            </span>
-<span class="co">##  [70] pkgconfig_2.0.3          systemfonts_1.0.3        bitops_1.0-7            </span>
-<span class="co">##  [73] evaluate_0.14            lattice_0.20-45          purrr_0.3.4             </span>
-<span class="co">##  [76] htmlwidgets_1.5.4        labeling_0.4.2           bit_4.0.4               </span>
-<span class="co">##  [79] tidyselect_1.1.1         GGally_2.1.2             plyr_1.8.6              </span>
-<span class="co">##  [82] bookdown_0.24            R6_2.5.1                 generics_0.1.1          </span>
-<span class="co">##  [85] DelayedArray_0.18.0      DBI_1.1.1                pillar_1.6.4            </span>
-<span class="co">##  [88] withr_2.4.2              mgcv_1.8-38              survival_3.2-13         </span>
-<span class="co">##  [91] KEGGREST_1.32.0          RCurl_1.98-1.5           janeaustenr_0.1.5       </span>
-<span class="co">##  [94] widyr_0.1.4              crayon_1.4.2             utf8_1.2.2              </span>
-<span class="co">##  [97] plotly_4.10.0            tzdb_0.2.0               rmarkdown_2.11          </span>
-<span class="co">## [100] locfit_1.5-9.4           grid_4.1.1               sva_3.40.0              </span>
-<span class="co">## [103] data.table_1.14.2        blob_1.2.2               digest_0.6.28           </span>
-<span class="co">## [106] xtable_1.8-4             textshaping_0.3.6        munsell_0.5.0           </span>
-<span class="co">## [109] viridisLite_0.4.0        bslib_0.3.1</span></code></pre>
+<span class="co">##   [1] Rtsne_0.15             colorspace_2.0-2       ellipsis_0.3.2        </span>
+<span class="co">##   [4] class_7.3-20           rprojroot_2.0.2        XVector_0.34.0        </span>
+<span class="co">##   [7] fs_1.5.2               tidytext_0.3.2         proxy_0.4-26          </span>
+<span class="co">##  [10] farver_2.1.0           SnowballC_0.7.0        bit64_4.0.5           </span>
+<span class="co">##  [13] AnnotationDbi_1.56.2   fansi_1.0.2            codetools_0.2-18      </span>
+<span class="co">##  [16] splines_4.1.2          cachem_1.0.6           jsonlite_1.7.3        </span>
+<span class="co">##  [19] broom_0.7.12           annotate_1.72.0        png_0.1-7             </span>
+<span class="co">##  [22] BiocManager_1.30.16    readr_2.1.2            compiler_4.1.2        </span>
+<span class="co">##  [25] httr_1.4.2             backports_1.4.1        Matrix_1.4-0          </span>
+<span class="co">##  [28] fastmap_1.1.0          lazyeval_0.2.2         limma_3.50.0          </span>
+<span class="co">##  [31] cli_3.1.1              org.Mm.eg.db_3.14.0    htmltools_0.5.2       </span>
+<span class="co">##  [34] tools_4.1.2            gtable_0.3.0           glue_1.6.1            </span>
+<span class="co">##  [37] GenomeInfoDbData_1.2.7 reshape2_1.4.4         Rcpp_1.0.8            </span>
+<span class="co">##  [40] jquerylib_0.1.4        pkgdown_2.0.2.9000     vctrs_0.3.8           </span>
+<span class="co">##  [43] Biostrings_2.62.0      preprocessCore_1.56.0  nlme_3.1-155          </span>
+<span class="co">##  [46] xfun_0.29              stringr_1.4.0          lifecycle_1.0.1       </span>
+<span class="co">##  [49] XML_3.99-0.8           org.Hs.eg.db_3.14.0    edgeR_3.36.0          </span>
+<span class="co">##  [52] zlibbioc_1.40.0        scales_1.1.1           ragg_1.2.1            </span>
+<span class="co">##  [55] hms_1.1.1              parallel_4.1.2         RColorBrewer_1.1-2    </span>
+<span class="co">##  [58] yaml_2.2.2             memoise_2.0.1          sass_0.4.0            </span>
+<span class="co">##  [61] reshape_0.8.8          stringi_1.7.6          RSQLite_2.2.9         </span>
+<span class="co">##  [64] highr_0.9              genefilter_1.76.0      tokenizers_0.2.1      </span>
+<span class="co">##  [67] desc_1.4.0             e1071_1.7-9            BiocParallel_1.28.3   </span>
+<span class="co">##  [70] rlang_1.0.0            pkgconfig_2.0.3        systemfonts_1.0.3     </span>
+<span class="co">##  [73] bitops_1.0-7           evaluate_0.14          lattice_0.20-45       </span>
+<span class="co">##  [76] purrr_0.3.4            htmlwidgets_1.5.4      labeling_0.4.2        </span>
+<span class="co">##  [79] bit_4.0.4              tidyselect_1.1.1       GGally_2.1.2          </span>
+<span class="co">##  [82] plyr_1.8.6             bookdown_0.24          R6_2.5.1              </span>
+<span class="co">##  [85] generics_0.1.2         DelayedArray_0.20.0    DBI_1.1.2             </span>
+<span class="co">##  [88] pillar_1.6.5           withr_2.4.3            mgcv_1.8-38           </span>
+<span class="co">##  [91] survival_3.2-13        KEGGREST_1.34.0        RCurl_1.98-1.5        </span>
+<span class="co">##  [94] janeaustenr_0.1.5      widyr_0.1.4            crayon_1.4.2          </span>
+<span class="co">##  [97] utf8_1.2.2             plotly_4.10.0          tzdb_0.2.0            </span>
+<span class="co">## [100] rmarkdown_2.11         locfit_1.5-9.4         grid_4.1.2            </span>
+<span class="co">## [103] sva_3.42.0             data.table_1.14.2      blob_1.2.2            </span>
+<span class="co">## [106] digest_0.6.29          xtable_1.8-4           textshaping_0.3.6     </span>
+<span class="co">## [109] munsell_0.5.0          viridisLite_0.4.0      bslib_0.3.1</span></code></pre>
 </div>
 </div>
   </div>
@@ -1045,7 +1045,7 @@ We may want to test for differential transcription between sample-wise factors o
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.9000.</p>
 </div>
 
       </footer>

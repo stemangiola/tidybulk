@@ -68,7 +68,8 @@
     <p>test_differential_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">test_differential_cellularity</span><span class="op">(</span>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">test_differential_cellularity</span><span class="op">(</span>
   <span class="va">.data</span>,
   <span class="va">.formula</span>,
   .sample <span class="op">=</span> <span class="cn">NULL</span>,
@@ -144,8 +145,8 @@
   significance_threshold <span class="op">=</span> <span class="fl">0.05</span>,
   <span class="va">...</span>
 <span class="op">)</span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.data</dt>
@@ -203,11 +204,10 @@ deconvolve_cellularity(
 	mutate(.proportion_0_corrected = .proportion_0_corrected  <!-- %&gt;% boot::logit()) %&gt;% -->
 	survival::coxph(.my_formula, .)</p>
     </div>
-    </div>
 
-    <div id="examples">
+    <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"> <span class="co"># Regular regression</span></span>
 <span class="r-in">  <span class="fu">test_differential_cellularity</span><span class="op">(</span></span>
 <span class="r-in">   <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> ,</span>
@@ -215,18 +215,18 @@ deconvolve_cellularity(
 <span class="r-in">      cores <span class="op">=</span> <span class="fl">1</span></span>
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 22 × 7</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    .cell_type           cell_type_proport… `estimate_(Interc… estimate_conditio…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cibersort.B.cells.n… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>                -<span style="color: #BB0000;">2.37</span>              1.54 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> cibersort.B.cells.m… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>                -<span style="color: #BB0000;">2.75</span>              0.821</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cibersort.Plasma.ce… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>                <span style="color: #BB0000;">NA</span>                <span style="color: #BB0000;">NA</span>    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cibersort.T.cells.C… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>                <span style="color: #BB0000;">NA</span>                <span style="color: #BB0000;">NA</span>    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cibersort.T.cells.C… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>                <span style="color: #BB0000;">NA</span>                <span style="color: #BB0000;">NA</span>    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cibersort.T.cells.C… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>                -<span style="color: #BB0000;">3.81</span>              1.93 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cibersort.T.cells.C… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>                <span style="color: #BB0000;">NA</span>                <span style="color: #BB0000;">NA</span>    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cibersort.T.cells.f… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>                -<span style="color: #BB0000;">6.01</span>              0.678</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cibersort.T.cells.r… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>                <span style="color: #BB0000;">NA</span>                <span style="color: #BB0000;">NA</span>    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cibersort.T.cells.g… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>                <span style="color: #BB0000;">NA</span>                <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    .cell_type                 cell_type_propo… `estimate_(Int…` estimate_condit…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cibersort.B.cells.naive    <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>            -<span style="color: #BB0000;">2.37</span>            1.54 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> cibersort.B.cells.memory   <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>            -<span style="color: #BB0000;">2.75</span>            0.821</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cibersort.Plasma.cells     <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>            <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cibersort.T.cells.CD8      <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>            <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cibersort.T.cells.CD4.nai… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>            <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cibersort.T.cells.CD4.mem… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>            -<span style="color: #BB0000;">3.81</span>            1.93 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cibersort.T.cells.CD4.mem… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>            <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cibersort.T.cells.follicu… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>            -<span style="color: #BB0000;">6.01</span>            0.678</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cibersort.T.cells.regulat… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>            <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cibersort.T.cells.gamma.d… <span style="color: #949494;">&lt;tibble [5 × 6]&gt;</span>            <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 12 more rows, and 3 more variables: std.error_conditionTRUE &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   statistic_conditionTRUE &lt;dbl&gt;, p.value_conditionTRUE &lt;dbl&gt;</span></span>
 <span class="r-in"></span>
@@ -252,18 +252,18 @@ deconvolve_cellularity(
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Ran out of iterations and did not converge</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 22 × 6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    .cell_type           cell_type_proport… estimate std.error  statistic p.value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> B cells naive        <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>     -<span style="color: #BB0000;">0.616</span>     <span style="text-decoration: underline;">3</span>148.   -<span style="color: #BB0000;">1.96</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span>   1.00 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> B cells memory       <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>   -<span style="color: #BB0000;">100.</span>        <span style="text-decoration: underline;">2</span>796.   -<span style="color: #BB0000;">3.58</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span>   0.971</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Plasma cells         <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>      0            0   <span style="color: #BB0000;">NaN</span>   <span style="color: #949494;"> </span>   <span style="color: #BB0000;">NaN</span>    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> T cells CD8          <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>    118.        <span style="text-decoration: underline;">4</span>318.    2.74<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span>   0.978</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> T cells CD4 naive    <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>   -<span style="color: #BB0000;">164.</span>        <span style="text-decoration: underline;">3</span>555.   -<span style="color: #BB0000;">4.61</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span>   0.963</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> T cells CD4 memory … <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>     -<span style="color: #BB0000;">1.93</span>      <span style="text-decoration: underline;">2</span>430.   -<span style="color: #BB0000;">7.96</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span>   0.999</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> T cells CD4 memory … <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>      0.935    <span style="text-decoration: underline;">13</span>450.    6.95<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span>   1.00 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> T cells follicular … <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>     13.3       <span style="text-decoration: underline;">5</span>004.    2.67<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span>   0.998</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> T cells regulatory … <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>   -<span style="color: #BB0000;">302.</span>       <span style="text-decoration: underline;">49</span>862.   -<span style="color: #BB0000;">6.07</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span>   0.995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> T cells gamma delta  <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>      0            0   <span style="color: #BB0000;">NaN</span>   <span style="color: #949494;"> </span>   <span style="color: #BB0000;">NaN</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    .cell_type              cell_type_propo… estimate std.error statistic p.value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> B cells naive           <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>   -<span style="color: #BB0000;">0.616</span>     <span style="text-decoration: underline;">3</span>148.  -<span style="color: #BB0000;">1.96</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span>   1.00 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> B cells memory          <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span> -<span style="color: #BB0000;">100.</span>        <span style="text-decoration: underline;">2</span>796.  -<span style="color: #BB0000;">3.58</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span>   0.971</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Plasma cells            <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>    0            0  <span style="color: #BB0000;">NaN</span>   <span style="color: #949494;"> </span>   <span style="color: #BB0000;">NaN</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> T cells CD8             <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>  118.        <span style="text-decoration: underline;">4</span>318.   2.74<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span>   0.978</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> T cells CD4 naive       <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span> -<span style="color: #BB0000;">164.</span>        <span style="text-decoration: underline;">3</span>555.  -<span style="color: #BB0000;">4.61</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span>   0.963</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> T cells CD4 memory res… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>   -<span style="color: #BB0000;">1.93</span>      <span style="text-decoration: underline;">2</span>430.  -<span style="color: #BB0000;">7.96</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span>   0.999</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> T cells CD4 memory act… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>    0.935    <span style="text-decoration: underline;">13</span>450.   6.95<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span>   1.00 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> T cells follicular hel… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>   13.3       <span style="text-decoration: underline;">5</span>004.   2.67<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span>   0.998</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> T cells regulatory (Tr… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span> -<span style="color: #BB0000;">302.</span>       <span style="text-decoration: underline;">49</span>862.  -<span style="color: #BB0000;">6.07</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span>   0.995</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> T cells gamma delta     <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>    0            0  <span style="color: #BB0000;">NaN</span>   <span style="color: #949494;"> </span>   <span style="color: #BB0000;">NaN</span>    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 12 more rows</span></span>
 <span class="r-in"></span>
 <span class="r-in"></span>
@@ -282,7 +282,7 @@ deconvolve_cellularity(
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.9000.</p>
 </div>
 
       </footer></div>

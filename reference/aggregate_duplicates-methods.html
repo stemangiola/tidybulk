@@ -68,7 +68,8 @@
     <p>aggregate_duplicates() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with aggregated transcripts that were duplicated.</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">aggregate_duplicates</span><span class="op">(</span>
+    <div id="ref-usage">
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">aggregate_duplicates</span><span class="op">(</span>
   <span class="va">.data</span>,
   .sample <span class="op">=</span> <span class="cn">NULL</span>,
   .transcript <span class="op">=</span> <span class="cn">NULL</span>,
@@ -126,8 +127,8 @@
   aggregation_function <span class="op">=</span> <span class="va">sum</span>,
   keep_integer <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span></code></pre></div>
+    </div>
 
-    <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.data</dt>
@@ -167,11 +168,10 @@ For example, we often have to convert ensembl symbols to gene/transcript symbol,
 		group_by(!!.sample,!!.transcript) <!-- %&gt;% -->
 		dplyr::mutate(!!.abundance := !!.abundance <!-- %&gt;% aggregation_function()) --></p>
     </div>
-    </div>
 
-    <div id="examples">
+    <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"><span class="co"># Create a aggregation column</span></span>
 <span class="r-in"><span class="va">se_mini</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span></span>
 <span class="r-in"><span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">se_mini</span> <span class="op">)</span><span class="op">$</span><span class="va">gene_name</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">se_mini</span> <span class="op">)</span></span>
@@ -204,7 +204,7 @@ For example, we often have to convert ensembl symbols to gene/transcript symbol,
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.9000.</p>
 </div>
 
       </footer></div>
