@@ -3078,6 +3078,7 @@ setMethod("test_gene_enrichment",
 #' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 #' df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #'
+#' \dontrun{
 #' 	test_gene_overrepresentation(
 #' 		df_entrez,
 #' 		.sample = sample,
@@ -3086,7 +3087,7 @@ setMethod("test_gene_enrichment",
 #' 		species="Homo sapiens",
 #'    gene_sets =c("C2")
 #' 	)
-#'
+#' }
 #'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
@@ -3241,10 +3242,13 @@ setMethod("test_gene_overrepresentation",
 #'
 #' @examples
 #'
+#' \dontrun{
+#'
 #' df_entrez = tidybulk::se_mini |> tidybulk() |> as_tibble() |> symbol_to_entrez( .transcript = feature, .sample = sample)
 #' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
 #' df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #' df_entrez  = df_entrez %>% test_differential_abundance(~ condition)
+#'
 #'
 #'	test_gene_rank(
 #'		df_entrez,
@@ -3254,7 +3258,7 @@ setMethod("test_gene_overrepresentation",
 #'    gene_sets =c("C2"),
 #'  .arrange_desc = logFC
 #' 	)
-#'
+#' }
 #'
 #' @docType methods
 #' @rdname test_gene_rank-methods
@@ -3681,6 +3685,7 @@ setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param suffix A character string. This is added to the imputed count column names. If empty the count column are overwritten
 #'
 #' @details This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 #'
@@ -3743,8 +3748,7 @@ setGeneric("impute_missing_abundance", function(.data,
 	# Validate data frame
 	if(do_validate())  validation(.data, !!.sample, !!.transcript, !!.abundance)
 
-	.data_processed =
-		fill_NA_using_formula(
+	fill_NA_using_formula(
 			.data,
 			.formula,
 			.sample = !!.sample,

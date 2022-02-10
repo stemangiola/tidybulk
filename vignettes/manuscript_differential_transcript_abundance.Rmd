@@ -176,7 +176,7 @@ tt_test %>%
 
 ```
 
-```{r}
+```{r eval=FALSE}
 tt_test %>%
     
     # Select top genes and reshape data
@@ -198,7 +198,7 @@ tt_test %>%
 
 ```
 
-```{r}
+```{r eval=FALSE}
 # Heatmap
 tt_test %>%
 		as_tibble() %>%

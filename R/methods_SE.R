@@ -102,6 +102,7 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 #' @importFrom SummarizedExperiment assays
 #' @importFrom SummarizedExperiment colData
 #' @importFrom utils tail
+#' @importFrom stats na.omit
 #'
 .scale_abundance_se = function(.data,
                                .sample = NULL,
@@ -174,6 +175,9 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 				tail(1) %>%
 				names()
 		)
+
+	# Communicate the reference if chosen by default
+	if(is.null(reference_sample)) message(sprintf("tidybulk says: the sample with largest library size %s was chosen as reference for scaling", reference))
 
 	# Calculate TMM
 	nf <-
@@ -316,6 +320,8 @@ setMethod("cluster_elements",
 #' cluster_elements
 #' @inheritParams cluster_elements
 #'
+#' @importFrom rlang inform
+#'
 #' @docType methods
 #' @rdname cluster_elements-methods
 #'
@@ -399,7 +405,9 @@ setMethod("cluster_elements",
 
 		# Communicate the attribute added
 		{
-			message(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method))
+
+		  rlang::inform(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access %s results", method),  .frequency = "once")
+
 			(.)
 		}
 
@@ -1036,6 +1044,8 @@ setMethod("deconvolve_cellularity",
 #' deconvolve_cellularity
 #' @inheritParams deconvolve_cellularity
 #'
+#' @importFrom rlang inform
+#'
 #' @docType methods
 #' @rdname deconvolve_cellularity-methods
 #'
@@ -1157,9 +1167,8 @@ such as batch effects (if applicable) in the formula.
 
 		# Communicate the attribute added
 		{
-			message(
-				sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s`", method)
-			)
+		  rlang::inform(sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access DE results %s", method),  .frequency = "once")
+
 			(.)
 		}
 
@@ -1416,6 +1425,7 @@ setMethod("keep_abundant",
 
 
 #' @importFrom lifecycle deprecate_warn
+#' @importFrom stringr str_replace
 .test_gene_enrichment_SE = 		function(.data,
 																			.formula,
 																			.sample = NULL,
@@ -1861,6 +1871,8 @@ setMethod("test_gene_rank",
 #' @docType methods
 #' @rdname test_gene_rank-methods
 #'
+#' @importFrom stringr str_replace
+#'
 #' @return A `RangedSummarizedExperiment` object
 setMethod("test_gene_rank",
 					"RangedSummarizedExperiment",
@@ -1905,6 +1917,9 @@ setMethod("pivot_sample",
 #'
 #' @docType methods
 #' @rdname pivot_sample-methods
+#'
+#' @importFrom stringr str_replace
+#'
 #'
 #' @return A consistent object (to the input)
 setMethod("pivot_sample",
@@ -1980,7 +1995,6 @@ setMethod("pivot_transcript",
     )
 
 
-
   # Split data by formula and impute
   imputed_dataframe =
     map2(
@@ -2030,7 +2044,6 @@ setMethod("pivot_transcript",
     # Make names unique
     setNames(names(.) %>% make.unique())
 
-
   .data %>%
 
     # Reattach internals
@@ -2046,6 +2059,9 @@ setMethod("pivot_transcript",
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
 #'
+#' @importFrom stringr str_replace
+#'
+#'
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("impute_missing_abundance",
@@ -2057,6 +2073,9 @@ setMethod("impute_missing_abundance",
 #'
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
+#'
+#' @importFrom stringr str_replace
+#'
 #'
 #' @return A `SummarizedExperiment` object
 #'
@@ -2217,6 +2236,7 @@ setMethod(
 )
 
 # Set internal
+#' @importFrom stringr str_replace
 .test_stratification_cellularity_SE = 		function(.data,
 																							.formula,
 																							.sample = NULL,
