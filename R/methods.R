@@ -4224,7 +4224,7 @@ setMethod("get_bibliography",
 #' @importFrom rlang quo_is_null
 #'
 #' @param tbl A tibble
-#' @param rownames A character string of the rownames
+#' @param rownames The column name of the input tibble that will become the rownames of the output matrix
 #' @param do_check A boolean
 #'
 #' @return A matrix
