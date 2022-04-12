@@ -3686,6 +3686,7 @@ setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param suffix A character string. This is added to the imputed count column names. If empty the count column are overwritten
+#' @param force_scaling A boolean. In case a abundance-containing column is not scaled (columns with _scale suffix), setting force_scaling = TRUE will result in a scaling by library size, to compensating for a possible difference in sequencing depth.
 #'
 #' @details This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 #'
@@ -3715,7 +3716,8 @@ setGeneric("impute_missing_abundance", function(.data,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL,
-																				suffix = "")
+																				suffix = "",
+																				force_scaling = FALSE)
 	standardGeneric("impute_missing_abundance"))
 
 # Set internal
@@ -3724,7 +3726,8 @@ setGeneric("impute_missing_abundance", function(.data,
 															.sample = NULL,
 															.transcript = NULL,
 															.abundance = NULL,
-															suffix = "")
+															suffix = "",
+															force_scaling = FALSE)
 {
 	# Get column names
 	.sample = enquo(.sample)
@@ -3755,7 +3758,8 @@ setGeneric("impute_missing_abundance", function(.data,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
 			.abundance_scaled = !!.abundance_scaled,
-			suffix = suffix) %>%
+			suffix = suffix,
+			force_scaling = force_scaling) %>%
 
 		# Reattach internals
 		reattach_internals(.data)
