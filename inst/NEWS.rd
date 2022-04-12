@@ -40,7 +40,7 @@
     \item Several minor fixes, optimisations and documentation improvements
 }}
 
-\section{Changes in version 1.6.3, Bioconductor 3.15 Release}{
+\section{Changes in version 1.7.3, Bioconductor 3.15 Release}{
 \itemize{
     \item Improve imputation and other features for sparse counts
     \item Cibersort deconvolution, check 0 counts
