@@ -16,7 +16,8 @@ impute_missing_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  suffix = ""
+  suffix = "",
+  force_scaling = FALSE
 )
 
 \S4method{impute_missing_abundance}{spec_tbl_df}(
@@ -25,7 +26,8 @@ impute_missing_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  suffix = ""
+  suffix = "",
+  force_scaling = FALSE
 )
 
 \S4method{impute_missing_abundance}{tbl_df}(
@@ -34,7 +36,8 @@ impute_missing_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  suffix = ""
+  suffix = "",
+  force_scaling = FALSE
 )
 
 \S4method{impute_missing_abundance}{tidybulk}(
@@ -43,7 +46,8 @@ impute_missing_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  suffix = ""
+  suffix = "",
+  force_scaling = FALSE
 )
 
 \S4method{impute_missing_abundance}{SummarizedExperiment}(
@@ -52,7 +56,8 @@ impute_missing_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  suffix = ""
+  suffix = "",
+  force_scaling = FALSE
 )
 
 \S4method{impute_missing_abundance}{RangedSummarizedExperiment}(
@@ -61,7 +66,8 @@ impute_missing_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  suffix = ""
+  suffix = "",
+  force_scaling = FALSE
 )
 }
 \arguments{
@@ -76,6 +82,8 @@ impute_missing_abundance(
 \item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{suffix}{A character string. This is added to the imputed count column names. If empty the count column are overwritten}
+
+\item{force_scaling}{A boolean. In case a abundance-containing column is not scaled (columns with _scale suffix), setting force_scaling = TRUE will result in a scaling by library size, to compensating for a possible difference in sequencing depth.}
 }
 \value{
 A consistent object (to the input) non-sparse abundance

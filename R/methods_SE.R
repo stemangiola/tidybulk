@@ -1983,7 +1983,8 @@ setMethod("pivot_transcript",
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance  = NULL,
-																				suffix = "") {
+																				suffix = "",
+																				force_scaling = FALSE) {
 
   .abundance = enquo(.abundance)
 
@@ -2004,8 +2005,11 @@ setMethod("pivot_transcript",
       ~ {
 
         # Pseudo-scale if not scaled
-        if(!grepl("_scaled", .y)) library_size = colSums(.x, na.rm = TRUE)
-        if(!grepl("_scaled", .y)) .x = .x / library_size
+        if(!grepl("_scaled", .y) & force_scaling) {
+            library_size = colSums(.x, na.rm = TRUE)
+           .x = .x / library_size
+        }
+        else message(sprintf("tidybulk says: %s appears not to be scaled for sequencing depth (missing _scaled suffix; if you think this column is idependent of sequencing depth ignore this message), therefore the imputation can produce non meaningful results if sequencing depth for samples are highly variable. If you use force_scaling = TRUE library size will be used for eliminatig some sequencig depth effect before imputation", .y))
 
         # Log
         need_log = max(.x, na.rm=T) > 50
@@ -2022,7 +2026,7 @@ setMethod("pivot_transcript",
         if(need_log) .x = exp(.x)-1
 
         # Scale back if pseudoscaled
-        if(!grepl("_scaled", .y)) .x = .x * library_size
+        if(!grepl("_scaled", .y) & force_scaling) .x = .x * library_size
 
         # Return
         .x

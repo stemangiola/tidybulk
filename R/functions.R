@@ -2412,26 +2412,26 @@ aggregate_duplicated_transcripts_DT =
     . = NULL
 
     # Get column names
-    .sample = enquo(.sample)
-    .transcript = enquo(.transcript)
-    .abundance = enquo(.abundance)
+    .sample_ = enquo(.sample)
+    .transcript_ = enquo(.transcript)
+    .abundance_ = enquo(.abundance)
 
     #
     #         data.table::setDT(.data)
     #
     #         input_df[,.(c = sum(c)), by=c("a", "b")] %>% #Sum the raw_counts of duplicated rows
-    #       tidybulk::scale_abundance(.sample = sample, .abundance = abundance, .transcript = transcript)
+    #       tidybulk::scale_abundance(.sample_ = sample, .abundance_ = abundance, .transcript_ = transcript)
 
-    if(.data %>% filter(is.na(!!.transcript)) %>% nrow() %>% gt(0)){
-      warning(sprintf("tidybulk says: some of your %s are NAs. Those will be eliminated to correctly aggregate the duplicates", quo_name(.transcript)))
-      .data = .data %>% filter(!is.na(!!.transcript))
+    if(.data %>% filter(is.na(!!.transcript_)) %>% nrow() %>% gt(0)){
+      warning(sprintf("tidybulk says: some of your %s are NAs. Those will be eliminated to correctly aggregate the duplicates", quo_name(.transcript_)))
+      .data = .data %>% filter(!is.na(!!.transcript_))
     }
     # Select which are the numerical columns
     numerical_columns =
       .data %>%
       ungroup() %>%
       select_if(is.numeric) %>%
-      select(-!!.abundance) %>%
+      select(-!!.abundance_) %>%
 
       # If scaled add the column to the exclusion
       ifelse_pipe((
@@ -2445,7 +2445,7 @@ aggregate_duplicated_transcripts_DT =
       colnames()
 
     aggregate_count_columns =
-      quo_name(.abundance) %>%
+      quo_name(.abundance_) %>%
       when(
         ".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
           quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)  ~
@@ -2453,7 +2453,7 @@ aggregate_duplicated_transcripts_DT =
         ~ (.)
       )
 
-    pasted_strings___ = stringi::stri_c(pull(.data,quo_name(.transcript)), pull(.data,quo_name(.sample)), sep = "_")
+    pasted_strings___ = stringi::stri_c(pull(.data,quo_name(.transcript_)), pull(.data,quo_name(.sample_)), sep = "_")
     #.data = .data %>% mutate(pasted_strings___ = pasted_strings___)
     duplicates = pasted_strings___%in%pasted_strings___[which(duplicated(pasted_strings___))]
 
@@ -2462,7 +2462,7 @@ aggregate_duplicated_transcripts_DT =
 
     dup_counts =
       dup%>%
-      group_by(!!.sample,!!.transcript) %>%
+      group_by(!!.sample_,!!.transcript_) %>%
       dplyr::summarise(
         across(aggregate_count_columns, ~ .x %>% aggregation_function()),
         merged_transcripts = n()
@@ -2476,7 +2476,7 @@ aggregate_duplicated_transcripts_DT =
       left_join(
         dup[!duplicated(dup_pasted_strings___),] %>%
           select(-aggregate_count_columns)
-        )
+      )
 
     .data %>%
       filter(!duplicates) %>%
@@ -3371,7 +3371,8 @@ fill_NA_using_formula = function(.data,
 																 .transcript = NULL,
 																 .abundance = NULL,
 																 .abundance_scaled = NUL,
-																 suffix = "_imputed"){
+																 suffix = "",
+																 force_scaling = FALSE){
 
 	# Get column names
 	.sample = enquo(.sample)
@@ -3445,8 +3446,12 @@ fill_NA_using_formula = function(.data,
  ~ {
 
    # Pseudo-scale if not scaled
-   if(!grepl("_scaled", .y)) library_size = colSums(.x, na.rm = TRUE)
-   if(!grepl("_scaled", .y)) .x = .x / library_size
+   if(!grepl("_scaled", .y) & force_scaling) {
+     library_size = colSums(.x, na.rm = TRUE)
+     .x = .x / library_size
+   }
+   else message(sprintf("tidybulk says: %s appears not to be scaled for sequencing depth (missing _scaled suffix; if you think this column is idependent of sequencing depth ignore this message), therefore the imputation can produce non meaningful results if sequencing depth for samples are highly variable. If you use force_scaling = TRUE library size will be used for eliminatig some sequencig depth effect before imputation", .y))
+
 
    # Log
    need_log = max(.x, na.rm=TRUE) > 50
@@ -3463,7 +3468,7 @@ fill_NA_using_formula = function(.data,
    if(need_log) .x = exp(.x)-1
 
    # Scale back if pseudoscaled
-   if(!grepl("_scaled", .y)) .x = .x * library_size
+   if(!grepl("_scaled", .y) & force_scaling) .x = .x * library_size
 
    # Return
    .x
