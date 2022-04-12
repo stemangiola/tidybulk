@@ -3371,7 +3371,8 @@ fill_NA_using_formula = function(.data,
 																 .transcript = NULL,
 																 .abundance = NULL,
 																 .abundance_scaled = NUL,
-																 suffix = "_imputed"){
+																 suffix = "",
+																 force_scaling = FALSE){
 
 	# Get column names
 	.sample = enquo(.sample)
@@ -3445,8 +3446,12 @@ fill_NA_using_formula = function(.data,
  ~ {
 
    # Pseudo-scale if not scaled
-   if(!grepl("_scaled", .y)) library_size = colSums(.x, na.rm = TRUE)
-   if(!grepl("_scaled", .y)) .x = .x / library_size
+   if(!grepl("_scaled", .y) & force_scaling) {
+     library_size = colSums(.x, na.rm = TRUE)
+     .x = .x / library_size
+   }
+   else message(sprintf("tidybulk says: %s appears not to be scaled for sequencing depth (missing _scaled suffix; if you think this column is idependent of sequencing depth ignore this message), therefore the imputation can produce non meaningful results if sequencing depth for samples are highly variable. If you use force_scaling = TRUE library size will be used for eliminatig some sequencig depth effect before imputation", .y))
+
 
    # Log
    need_log = max(.x, na.rm=TRUE) > 50
@@ -3463,7 +3468,7 @@ fill_NA_using_formula = function(.data,
    if(need_log) .x = exp(.x)-1
 
    # Scale back if pseudoscaled
-   if(!grepl("_scaled", .y)) .x = .x * library_size
+   if(!grepl("_scaled", .y) & force_scaling) .x = .x * library_size
 
    # Return
    .x
