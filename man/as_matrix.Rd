@@ -9,7 +9,7 @@ as_matrix(tbl, rownames = NULL, do_check = TRUE)
 \arguments{
 \item{tbl}{A tibble}
 
-\item{rownames}{A character string of the rownames}
+\item{rownames}{The column name of the input tibble that will become the rownames of the output matrix}
 
 \item{do_check}{A boolean}
 }
