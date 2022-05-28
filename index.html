@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
       </span>
     </div>
 
@@ -92,8 +92,7 @@
 <!-- badges: start -->
 
 <p><strong>Brings transcriptomics to the tidyverse!</strong></p>
-<p>The code is released under the version 3 of the GNU General Public
-License.</p>
+<p>The code is released under the version 3 of the GNU General Public License.</p>
 </div>
 <div class="section level1">
 <h1 id="section">
@@ -103,24 +102,17 @@ License.</p>
 <p>Please have a look also to</p>
 <ul>
 <li>
-<a href="https://github.com/stemangiola/tidySummarizedExperiment" class="external-link">tidySummarizedExperiment</a>
-for bulk data tidy representation</li>
+<a href="https://github.com/stemangiola/tidySummarizedExperiment" class="external-link">tidySummarizedExperiment</a> for bulk data tidy representation</li>
 <li>
-<a href="https://github.com/stemangiola/tidySingleCellExperiment" class="external-link">tidySingleCellExperiment</a>
-for single-cell data tidy representation</li>
+<a href="https://github.com/stemangiola/tidySingleCellExperiment" class="external-link">tidySingleCellExperiment</a> for single-cell data tidy representation</li>
 <li>
-<a href="https://github.com/stemangiola/tidyseurat" class="external-link">tidyseurat</a>
-for single-cell data tidy representation</li>
+<a href="https://github.com/stemangiola/tidyseurat" class="external-link">tidyseurat</a> for single-cell data tidy representation</li>
 <li>
-<a href="https://github.com/stemangiola/tidyHeatmap" class="external-link">tidyHeatmap</a>
-for heatmaps produced with tidy principles analysis and
-manipulation</li>
+<a href="https://github.com/stemangiola/tidyHeatmap" class="external-link">tidyHeatmap</a> for heatmaps produced with tidy principles analysis and manipulation</li>
 <li>
-<a href="https://github.com/stemangiola/nanny" class="external-link">nanny</a> for tidy
-high-level data analysis and manipulation</li>
+<a href="https://github.com/stemangiola/nanny" class="external-link">nanny</a> for tidy high-level data analysis and manipulation</li>
 <li>
-<a href="https://github.com/stemangiola/tidygate" class="external-link">tidygate</a> for
-adding custom gate information to your tibble</li>
+<a href="https://github.com/stemangiola/tidygate" class="external-link">tidygate</a> for adding custom gate information to your tibble</li>
 </ul>
 <!---
 
@@ -147,8 +139,7 @@ adding custom gate information to your tibble</li>
 <tbody>
 <tr class="odd">
 <td><code>aggregate_duplicates</code></td>
-<td>Aggregate abundance and annotation of duplicated transcripts in a
-robust way</td>
+<td>Aggregate abundance and annotation of duplicated transcripts in a robust way</td>
 </tr>
 <tr class="even">
 <td>
@@ -186,8 +177,7 @@ robust way</td>
 </tr>
 <tr class="even">
 <td><code>deconvolve_cellularity</code></td>
-<td>Estimated tissue composition (Cibersort, llsr, epic, xCell,
-mcp_counter, quantiseq</td>
+<td>Estimated tissue composition (Cibersort, llsr, epic, xCell, mcp_counter, quantiseq</td>
 </tr>
 <tr class="odd">
 <td><code>test_differential_cellularity</code></td>
@@ -259,8 +249,7 @@ mcp_counter, quantiseq</td>
 </tr>
 </tbody>
 </table>
-<p>All functions are directly compatibble with
-<code>SummarizedExperiment</code> object.</p>
+<p>All functions are directly compatibble with <code>SummarizedExperiment</code> object.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -293,11 +282,7 @@ mcp_counter, quantiseq</td>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 AAR2       SRR1740034   379 b_cell    0 d   TRUE      0     TRUE             </span></span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 AARS2      SRR1740034   685 b_cell    0 d   TRUE      0     TRUE             </span></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 40 more rows</span></span></code></pre></div>
-<p>Loading <code>tidySummarizedExperiment</code> will automatically
-abstract this object as <code>tibble</code>, so we can display it and
-manipulate it with tidy tools. Although it looks different, and more
-tools (tidyverse) are available to us, this object is in fact a
-<code>SummarizedExperiment</code> object.</p>
+<p>Loading <code>tidySummarizedExperiment</code> will automatically abstract this object as <code>tibble</code>, so we can display it and manipulate it with tidy tools. Although it looks different, and more tools (tidyverse) are available to us, this object is in fact a <code>SummarizedExperiment</code> object.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">counts_SE</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] "SummarizedExperiment"</span></span>
@@ -306,8 +291,7 @@ tools (tidyverse) are available to us, this object is in fact a
 <div class="section level2">
 <h2 id="get-the-bibliography-of-your-workflow">Get the bibliography of your workflow<a class="anchor" aria-label="anchor" href="#get-the-bibliography-of-your-workflow"></a>
 </h2>
-<p>First of all, you can cite all articles utilised within your workflow
-automatically from any tidybulk tibble</p>
+<p>First of all, you can cite all articles utilised within your workflow automatically from any tidybulk tibble</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>   <span class="fu"><a href="reference/get_bibliography-methods.html">get_bibliography</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
@@ -315,15 +299,7 @@ automatically from any tidybulk tibble</p>
 <h2 id="aggregate-duplicated-transcripts">Aggregate duplicated <code>transcripts</code>
 <a class="anchor" aria-label="anchor" href="#aggregate-duplicated-transcripts"></a>
 </h2>
-<p>tidybulk provide the <code>aggregate_duplicates</code> function to
-aggregate duplicated transcripts (e.g., isoforms, ensembl). For example,
-we often have to convert ensembl symbols to gene/transcript symbol, but
-in doing so we have to deal with duplicates.
-<code>aggregate_duplicates</code> takes a tibble and column names (as
-symbols; for <code>sample</code>, <code>transcript</code> and
-<code>count</code>) as arguments and returns a tibble with transcripts
-with the same name aggregated. All the rest of the columns are appended,
-and factors and boolean are appended as characters.</p>
+<p>tidybulk provide the <code>aggregate_duplicates</code> function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. <code>aggregate_duplicates</code> takes a tibble and column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) as arguments and returns a tibble with transcripts with the same name aggregated. All the rest of the columns are appended, and factors and boolean are appended as characters.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -352,13 +328,7 @@ and factors and boolean are appended as characters.</p>
 <h2 id="scale-counts">Scale <code>counts</code>
 <a class="anchor" aria-label="anchor" href="#scale-counts"></a>
 </h2>
-<p>We may want to compensate for sequencing depth, scaling the
-transcript abundance (e.g., with TMM algorithm, Robinson and Oshlack
-doi.org/10.1186/gb-2010-11-3-r25). <code>scale_abundance</code> takes a
-tibble, column names (as symbols; for <code>sample</code>,
-<code>transcript</code> and <code>count</code>) and a method as
-arguments and returns a tibble with additional columns with scaled data
-as <code>&lt;NAME OF COUNT COLUMN&gt;_scaled</code>.</p>
+<p>We may want to compensate for sequencing depth, scaling the transcript abundance (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). <code>scale_abundance</code> takes a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and a method as arguments and returns a tibble with additional columns with scaled data as <code>&lt;NAME OF COUNT COLUMN&gt;_scaled</code>.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -378,9 +348,7 @@ as <code>&lt;NAME OF COUNT COLUMN&gt;_scaled</code>.</p>
 <div style="clear:both;">
 
 </div>
-<p>We can easily plot the scaled density to check the scaling outcome.
-On the x axis we have the log scaled counts, on the y axes we have the
-density, data is grouped by sample and coloured by cell type.</p>
+<p>We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span><span class="va">count_scaled</span> <span class="op">+</span> <span class="fl">1</span>, group<span class="op">=</span><span class="va">sample</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
@@ -428,14 +396,8 @@ density, data is grouped by sample and coloured by cell type.</p>
 <h2 id="reduce-dimensions">Reduce <code>dimensions</code>
 <a class="anchor" aria-label="anchor" href="#reduce-dimensions"></a>
 </h2>
-<p>We may want to reduce the dimensions of our data, for example using
-PCA or MDS algorithms. <code>reduce_dimensions</code> takes a tibble,
-column names (as symbols; for <code>sample</code>,
-<code>transcript</code> and <code>count</code>) and a method (e.g., MDS
-or PCA) as arguments and returns a tibble with additional columns for
-the reduced dimensions.</p>
-<p><strong>MDS</strong> (Robinson et al.,
-10.1093/bioinformatics/btp616)</p>
+<p>We may want to reduce the dimensions of our data, for example using PCA or MDS algorithms. <code>reduce_dimensions</code> takes a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and a method (e.g., MDS or PCA) as arguments and returns a tibble with additional columns for the reduced dimensions.</p>
+<p><strong>MDS</strong> (Robinson et al., 10.1093/bioinformatics/btp616)</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -463,8 +425,7 @@ the reduced dimensions.</p>
 <div style="clear:both;">
 
 </div>
-<p>On the x and y axes axis we have the reduced dimensions 1 to 3, data
-is coloured by cell type.</p>
+<p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span>  <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 48 x 15</span></span>
@@ -511,8 +472,7 @@ is coloured by cell type.</p>
 <div style="clear:both;">
 
 </div>
-<p>On the x and y axes axis we have the reduced dimensions 1 to 3, data
-is coloured by cell type.</p>
+<p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"PC"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 48 x 16</span></span>
@@ -596,15 +556,7 @@ is coloured by cell type.</p>
 <h2 id="rotate-dimensions">Rotate <code>dimensions</code>
 <a class="anchor" aria-label="anchor" href="#rotate-dimensions"></a>
 </h2>
-<p>We may want to rotate the reduced dimensions (or any two numeric
-columns really) of our data, of a set angle.
-<code>rotate_dimensions</code> takes a tibble, column names (as symbols;
-for <code>sample</code>, <code>transcript</code> and <code>count</code>)
-and an angle as arguments and returns a tibble with additional columns
-for the rotated dimensions. The rotated dimensions will be added to the
-original data set as
-<code>&lt;NAME OF DIMENSION&gt; rotated &lt;ANGLE&gt;</code> by default,
-or as specified in the input arguments.</p>
+<p>We may want to rotate the reduced dimensions (or any two numeric columns really) of our data, of a set angle. <code>rotate_dimensions</code> takes a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and an angle as arguments and returns a tibble with additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as <code>&lt;NAME OF DIMENSION&gt; rotated &lt;ANGLE&gt;</code> by default, or as specified in the input arguments.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
@@ -631,17 +583,14 @@ or as specified in the input arguments.</p>
 <div style="clear:both;">
 
 </div>
-<p><strong>Original</strong> On the x and y axes axis we have the first
-two reduced dimensions, data is coloured by cell type.</p>
+<p><strong>Original</strong> On the x and y axes axis we have the first two reduced dimensions, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span> <span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="va">my_theme</span></code></pre></div>
 <p><img src="reference/figures/plot_rotate_1-1.png"><!-- --></p>
-<p><strong>Rotated</strong> On the x and y axes axis we have the first
-two reduced dimensions rotated of 45 degrees, data is coloured by cell
-type.</p>
+<p><strong>Rotated</strong> On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
@@ -654,14 +603,7 @@ type.</p>
 <h2 id="test-differential-abundance">Test <code>differential abundance</code>
 <a class="anchor" aria-label="anchor" href="#test-differential-abundance"></a>
 </h2>
-<p>We may want to test for differential transcription between
-sample-wise factors of interest (e.g., with edgeR).
-<code>test_differential_abundance</code> takes a tibble, column names
-(as symbols; for <code>sample</code>, <code>transcript</code> and
-<code>count</code>) and a formula representing the desired linear model
-as arguments and returns a tibble with additional columns for the
-statistics from the hypothesis test (e.g., log fold change, p-value and
-false discovery rate).</p>
+<p>We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). <code>test_differential_abundance</code> takes a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g., log fold change, p-value and false discovery rate).</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
@@ -688,9 +630,7 @@ false discovery rate).</p>
 <div style="clear:both;">
 
 </div>
-<p>The functon <code>test_differential_abundance</code> operated with
-contrasts too. The constrasts hve the name of the design matrix
-(generally <name_column_covariate><values_of_covariate>)</values_of_covariate></name_column_covariate></p>
+<p>The functon <code>test_differential_abundance</code> operated with contrasts too. The constrasts hve the name of the design matrix (generally <name_column_covariate><values_of_covariate>)</values_of_covariate></name_column_covariate></p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.de</span> <span class="op">=</span>
     <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
@@ -705,15 +645,7 @@ contrasts too. The constrasts hve the name of the design matrix
 <h2 id="adjust-counts">Adjust <code>counts</code>
 <a class="anchor" aria-label="anchor" href="#adjust-counts"></a>
 </h2>
-<p>We may want to adjust <code>counts</code> for (known) unwanted
-variation. <code>adjust_abundance</code> takes as arguments a tibble,
-column names (as symbols; for <code>sample</code>,
-<code>transcript</code> and <code>count</code>) and a formula
-representing the desired linear model where the first covariate is the
-factor of interest and the second covariate is the unwanted variation,
-and returns a tibble with additional columns for the adjusted counts as
-<code>&lt;COUNT COLUMN&gt;_adjusted</code>. At the moment just an
-unwanted covariated is allowed at a time.</p>
+<p>We may want to adjust <code>counts</code> for (known) unwanted variation. <code>adjust_abundance</code> takes as arguments a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and a formula representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation, and returns a tibble with additional columns for the adjusted counts as <code>&lt;COUNT COLUMN&gt;_adjusted</code>. At the moment just an unwanted covariated is allowed at a time.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
@@ -754,12 +686,7 @@ unwanted covariated is allowed at a time.</p>
 <h2 id="deconvolve-cell-type-composition">Deconvolve <code>Cell type composition</code>
 <a class="anchor" aria-label="anchor" href="#deconvolve-cell-type-composition"></a>
 </h2>
-<p>We may want to infer the cell type composition of our samples (with
-the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337).
-<code>deconvolve_cellularity</code> takes as arguments a tibble, column
-names (as symbols; for <code>sample</code>, <code>transcript</code> and
-<code>count</code>) and returns a tibble with additional columns for the
-adjusted cell type proportions.</p>
+<p>We may want to infer the cell type composition of our samples (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337). <code>deconvolve_cellularity</code> takes as arguments a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and returns a tibble with additional columns for the adjusted cell type proportions.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
@@ -784,12 +711,7 @@ adjusted cell type proportions.</p>
 <div style="clear:both;">
 
 </div>
-<p>With the new annotated data frame, we can plot the distributions of
-cell types across samples, and compare them with the nominal cell type
-labels to check for the purity of isolation. On the x axis we have the
-cell types inferred by Cibersort, on the y axis we have the inferred
-proportions. The data is facetted and coloured by nominal cell types
-(annotation given by the researcher after FACS sorting).</p>
+<p>With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is facetted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.cibersort</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu">pivot_longer</span><span class="op">(</span>
@@ -808,8 +730,7 @@ proportions. The data is facetted and coloured by nominal cell types
 <div class="section level2">
 <h2 id="test-differential-cell-type-abundance">Test differential cell-type abundance<a class="anchor" aria-label="anchor" href="#test-differential-cell-type-abundance"></a>
 </h2>
-<p>We can also perform a statistical test on the differential cell-type
-abundance across conditions</p>
+<p>We can also perform a statistical test on the differential cell-type abundance across conditions</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R">    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="reference/test_differential_cellularity-methods.html">test_differential_cellularity</a></span><span class="op">(</span><span class="va">.</span> <span class="op">~</span> <span class="va">condition</span> <span class="op">)</span></code></pre></div>
@@ -828,8 +749,7 @@ abundance across conditions</p>
 <span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 cibersort… &lt;tibble [48 × 8…            -5.34           -0.219</span></span>
 <span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 12 more rows, and 3 more variables: std.error_conditionTRUE &lt;dbl&gt;,</span></span>
 <span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a><span class="do">## #   statistic_conditionTRUE &lt;dbl&gt;, p.value_conditionTRUE &lt;dbl&gt;</span></span></code></pre></div>
-<p>We can also perform regression analysis with censored data
-(coxph).</p>
+<p>We can also perform regression analysis with censored data (coxph).</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R">    <span class="co"># Add survival data</span>
 
@@ -894,12 +814,7 @@ abundance across conditions</p>
 <h2 id="cluster-samples">Cluster <code>samples</code>
 <a class="anchor" aria-label="anchor" href="#cluster-samples"></a>
 </h2>
-<p>We may want to cluster our data (e.g., using k-means sample-wise).
-<code>cluster_elements</code> takes as arguments a tibble, column names
-(as symbols; for <code>sample</code>, <code>transcript</code> and
-<code>count</code>) and returns a tibble with additional columns for the
-cluster annotation. At the moment only k-means clustering is supported,
-the plan is to introduce more clustering methods.</p>
+<p>We may want to cluster our data (e.g., using k-means sample-wise). <code>cluster_elements</code> takes as arguments a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and returns a tibble with additional columns for the cluster annotation. At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.</p>
 <p><strong>k-means</strong></p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
@@ -923,8 +838,7 @@ the plan is to introduce more clustering methods.</p>
 <div style="clear:both;">
 
 </div>
-<p>We can add cluster annotation to the MDS dimension reduced data set
-and plot.</p>
+<p>We can add cluster annotation to the MDS dimension reduced data set and plot.</p>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"> <span class="va">counts_SE.norm.cluster</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`cluster_kmeans`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
@@ -932,9 +846,7 @@ and plot.</p>
   <span class="va">my_theme</span></code></pre></div>
 <p><img src="reference/figures/plot_cluster-1.png"><!-- --></p>
 <p><strong>SNN</strong></p>
-<p>Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors
-used in this method. We are trying to solve this issue. At the moment
-this option in unaviable.</p>
+<p>Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
@@ -990,18 +902,10 @@ this option in unaviable.</p>
 <div class="section level2">
 <h2 id="drop-redundant-transcripts">Drop <code>redundant</code> transcripts<a class="anchor" aria-label="anchor" href="#drop-redundant-transcripts"></a>
 </h2>
-<p>We may want to remove redundant elements from the original data set
-(e.g., samples or transcripts), for example if we want to define
-cell-type specific signatures with low sample redundancy.
-<code>remove_redundancy</code> takes as arguments a tibble, column names
-(as symbols; for <code>sample</code>, <code>transcript</code> and
-<code>count</code>) and returns a tibble with redundant elements removed
-(e.g., samples). Two redundancy estimation approaches are supported:</p>
+<p>We may want to remove redundant elements from the original data set (e.g., samples or transcripts), for example if we want to define cell-type specific signatures with low sample redundancy. <code>remove_redundancy</code> takes as arguments a tibble, column names (as symbols; for <code>sample</code>, <code>transcript</code> and <code>count</code>) and returns a tibble with redundant elements removed (e.g., samples). Two redundancy estimation approaches are supported:</p>
 <ul>
-<li>removal of highly correlated clusters of elements (keeping a
-representative) with method=“correlation”</li>
-<li>removal of most proximal element pairs in a reduced dimensional
-space.</li>
+<li>removal of highly correlated clusters of elements (keeping a representative) with method=“correlation”</li>
+<li>removal of most proximal element pairs in a reduced dimensional space.</li>
 </ul>
 <p><strong>Approach 1</strong></p>
 <div class="column-left">
@@ -1038,8 +942,7 @@ space.</li>
 <div style="clear:both;">
 
 </div>
-<p>We can visualise how the reduced redundancy with the reduced
-dimentions look like</p>
+<p>We can visualise how the reduced redundancy with the reduced dimentions look like</p>
 <div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.non_redundant</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
@@ -1056,8 +959,7 @@ dimentions look like</p>
     Dim_a_column <span class="op">=</span> <span class="va">`Dim1`</span>,
     Dim_b_column <span class="op">=</span> <span class="va">`Dim2`</span>
   <span class="op">)</span></code></pre></div>
-<p>We can visualise MDS reduced dimensions of the samples with the
-closest pair removed.</p>
+<p>We can visualise MDS reduced dimensions of the samples with the closest pair removed.</p>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE.norm.non_redundant</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
@@ -1069,15 +971,12 @@ closest pair removed.</p>
 <div class="section level2">
 <h2 id="other-useful-wrappers">Other useful wrappers<a class="anchor" aria-label="anchor" href="#other-useful-wrappers"></a>
 </h2>
-<p>The above wrapper streamline the most common processing of bulk RNA
-sequencing data. Other useful wrappers are listed above.</p>
+<p>The above wrapper streamline the most common processing of bulk RNA sequencing data. Other useful wrappers are listed above.</p>
 </div>
 <div class="section level2">
 <h2 id="from-bamsam-to-tibble-of-gene-counts">From BAM/SAM to tibble of gene counts<a class="anchor" aria-label="anchor" href="#from-bamsam-to-tibble-of-gene-counts"></a>
 </h2>
-<p>We can calculate gene counts (using FeatureCounts; Liao Y et al.,
-10.1093/nar/gkz114) from a list of BAM/SAM files and format them into a
-tidy structure (similar to counts).</p>
+<p>We can calculate gene counts (using FeatureCounts; Liao Y et al., 10.1093/nar/gkz114) from a list of BAM/SAM files and format them into a tidy structure (similar to counts).</p>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts</span> <span class="op">=</span> <span class="fu"><a href="reference/tidybulk_SAM_BAM-methods.html">tidybulk_SAM_BAM</a></span><span class="op">(</span>
     <span class="va">file_names</span>,
@@ -1091,9 +990,7 @@ tidy structure (similar to counts).</p>
 <div class="section level2">
 <h2 id="from-ensembl-ids-to-gene-symbol-ids">From ensembl IDs to gene symbol IDs<a class="anchor" aria-label="anchor" href="#from-ensembl-ids-to-gene-symbol-ids"></a>
 </h2>
-<p>We can add gene symbols from ensembl identifiers. This is useful
-since different resources use ensembl IDs while others use gene symbol
-IDs. This currently works for human and mouse.</p>
+<p>We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_ensembl</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/ensembl_to_symbol-methods.html">ensembl_to_symbol</a></span><span class="op">(</span><span class="va">ens</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb62"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 119 x 8</span></span>
@@ -1114,8 +1011,7 @@ IDs. This currently works for human and mouse.</p>
 <div class="section level2">
 <h2 id="from-gene-symbol-to-gene-description-gene-name-in-full">From gene symbol to gene description (gene name in full)<a class="anchor" aria-label="anchor" href="#from-gene-symbol-to-gene-description-gene-name-in-full"></a>
 </h2>
-<p>We can add gene full name (and in future description) from symbol
-identifiers. This currently works for human and mouse.</p>
+<p>We can add gene full name (and in future description) from symbol identifiers. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/describe_transcript-methods.html">describe_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">select</span><span class="op">(</span><span class="va">transcript</span>, <span class="va">description</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb64"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble abstraction: 408,624 x 9</span></span>
@@ -1189,8 +1085,7 @@ identifiers. This currently works for human and mouse.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.9000.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
