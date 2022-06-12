@@ -153,6 +153,7 @@ setGeneric("as_SummarizedExperiment", function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("S4Vectors", ask = FALSE)
 	}
+
 	# If present get the scaled abundance
 	.abundance_scaled =
 		.data %>%

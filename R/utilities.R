@@ -905,12 +905,11 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
     map(
       ~
         .x %>%
-        ifelse_pipe(
+        when(
           .data %>%
             distinct(!!.horizontal, !!as.symbol(.x)) %>%
             nrow %>%
-            equals(n_x),
-          ~ .x,
+            equals(n_x) ~ .x,
           ~ NULL
         )
     ) %>%
