@@ -1494,7 +1494,7 @@ combineByRow <- function(m, fun = NULL) {
   # Shown here
   #https://stackoverflow.com/questions/8139301/aggregate-rows-in-a-large-matrix-by-rowname
 
-  m <- m[ order(rownames(m)), ]
+  m <- m[ order(rownames(m)), ,drop=FALSE]
 
   ## keep track of previous row name
   prev <- rownames(m)[1]
@@ -1517,7 +1517,7 @@ combineByRow <- function(m, fun = NULL) {
     ## combine all rows and mark invalid rows
     if (prev != curr || is.na(curr)) {
       if (i.start < i.end) {
-        m[i.start,] <- apply(m[i.start:i.end,], 2, fun)
+        m[i.start,,drop=FALSE] <- apply(m[i.start:i.end,,drop=FALSE], 2, fun)
         m.rownames[(1+i.start):i.end] <- NA
       }
 
@@ -1528,7 +1528,7 @@ combineByRow <- function(m, fun = NULL) {
     }
   }
 
-  m[ which(!is.na(m.rownames)),]
+  m[ which(!is.na(m.rownames)),,drop=FALSE]
 }
 
 filter_genes_on_condition = function(.data, .subset_for_scaling){
@@ -1594,4 +1594,8 @@ fill_NA_matrix_with_factor_colwise = function(.data, factor){
     # Reorder rows and column as it was
     .[rn, cn]
 
+}
+
+select_non_standard_column_class = function(.x){
+  !is.numeric(.x) & !is.character(.x) & !is.factor(.x) & !is.logical(.x)
 }

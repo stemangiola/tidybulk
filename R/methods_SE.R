@@ -789,6 +789,23 @@ setMethod("adjust_abundance",
 
   feature_column_name = ".feature"
 
+  # Non standard column classes
+  non_standard_columns =
+    .data %>%
+    rowData() %>%
+    as_tibble() %>%
+    select_if(select_non_standard_column_class) %>%
+    colnames()
+
+  # GRanges
+  columns_to_collapse =
+    .data %>%
+    rowData() %>%
+    colnames() %>%
+    outersect(non_standard_columns) %>%
+    setdiff(quo_name(.transcript)) %>%
+    c(feature_column_name)
+
   # Row data
   new_row_data =
     .data %>%
@@ -796,14 +813,19 @@ setMethod("adjust_abundance",
     as_tibble(rownames = feature_column_name) %>%
     group_by(!!as.symbol(quo_name(.transcript))) %>%
     summarise(
-      across(everything(), ~ .x %>% collapse_function()),
-      merged.transcripts = n()
+      across(columns_to_collapse, ~ .x %>% collapse_function()),
+      across(non_standard_columns, ~ .x[1]),
+      merged_transcripts = n()
     ) %>%
     arrange(!!as.symbol(feature_column_name)) %>%
-    as.data.frame()
+    as.data.frame() %>%
+    {
+      .x = (.)
+      rownames(.x) = .x[,feature_column_name]
+      .x = .x %>% select(-feature_column_name)
+      .x
+    }
 
-  rownames(new_row_data) = new_row_data[,feature_column_name]
-  new_row_data = new_row_data %>% select(-feature_column_name)
 
   # Counts
   new_count_data =
@@ -816,49 +838,91 @@ setMethod("adjust_abundance",
         if(is_data_frame) .x = .x %>% as.matrix()
         rownames(.x) = rowData(.data)[,quo_name(.transcript)]
         .x =  combineByRow(.x, aggregation_function)
-        rownames(.x) = new_row_data[match(rownames(.x), new_row_data[,quo_name(.transcript)]),] %>% rownames()
-        .x = .x[match(rownames(new_row_data), rownames(.x)),]
+        rownames(.x) = new_row_data[match(rownames(.x), new_row_data[,quo_name(.transcript)]),,drop=FALSE] %>% rownames()
+        .x = .x[match(rownames(new_row_data), rownames(.x)),,drop=FALSE]
         if(is_data_frame) .x = .x %>% as.data.frame()
         .x
       }
     )
 
-  # GRanges
-  columns_to_collapse = .data %>% rowData() %>% colnames() %>% setdiff(quo_name(.transcript)) %>% c(feature_column_name)
+
+
+
 
   rr = rowRanges(.data)
 
-  if(!is.null(rr))
+  # Gene ID dataset
+  gene_id_dataset =
+    rowData(.data) %>%
+    as.data.frame() %>%
+    select(!!as.symbol(quo_name(.transcript)))
+
+
+
+
+  if(!is.null(rr)){
+
     new_range_data =
       rr %>%
       as_tibble() %>%
+
       # Add names
       when(
         is(rr, "CompressedGRangesList") ~ mutate(., !!as.symbol(feature_column_name) := group_name),
-        ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAME)
-      ) %>%
-      left_join(
-        rowData(.data) %>%
-          as.data.frame() %>%
-          select(!!as.symbol(quo_name(.transcript))) %>%
-          as_tibble(rownames =feature_column_name),
-            by = feature_column_name
-      ) %>%
+        .hasSlot(rr@ranges, "NAME") ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAME),
+        .hasSlot(rr@ranges, "NAMES") ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAMES),
+        ~ stop("tidybulk says: I don't know how to aggregate the GRanges, as the slot ranges@NAMES, or range@NAME do not exist")
+      )
+
+    # Through warning if there are logicals of factor in the data frame
+    # because they cannot be merged if they are not unique
+    if (length(non_standard_columns)>0 & new_range_data %>%  pull(!!as.symbol(feature_column_name)) %>% duplicated() %>% which() %>% length() %>% gt(0) ) {
+      warning(paste(capture.output({
+        cat(crayon::blue("tidybulk says: If duplicates exist from the following columns, only the first instance was taken (lossy behaviour), as aggregating those classes with concatenation is not possible.\n"))
+        print(.data %>% select(non_standard_columns))
+      }), collapse = "\n"))
+    }
+
+
+
+    new_range_data = new_range_data %>%
+
+      # I have to use this trick because rowRanges() and rowData() share @elementMetadata
+      select(-one_of(colnames(gene_id_dataset))) %>%
+      suppressWarnings() %>%
+
+      # Join rowData
+      left_join(gene_id_dataset  %>% as_tibble(rownames =feature_column_name),  by = feature_column_name) %>%
       group_by(!!as.symbol(quo_name(.transcript))) %>%
       mutate(
         across(columns_to_collapse, ~ .x %>% collapse_function()),
-        merged.transcripts = n()
+        across(non_standard_columns, ~ .x[1]),
+        merged_transcripts = n()
       ) %>%
+      distinct() %>%
       arrange(!!as.symbol(feature_column_name)) %>%
 
       select(-one_of("group_name", "group")) %>%
       suppressWarnings() %>%
 
-      makeGRangesListFromDataFrame( split.field = feature_column_name,
-                                    keep.extra.columns = TRUE) %>%
+      as.data.frame() %>%
+      # Add back rownames
+      {
+        .x = (.)
+        rownames(.x) = .x %>% pull(!!as.symbol(feature_column_name))
+        .x
+      }
 
-      .[match(rownames(new_count_data[[1]]), names(.))]
+    if(is(rr, "CompressedGRangesList"))  new_range_data = makeGRangesListFromDataFrame(
+      new_range_data,
+      split.field = feature_column_name,
+      keep.extra.columns = TRUE
+    )
+    else if(is(rr, "GRanges")) new_range_data = makeGRangesFromDataFrame(new_range_data, keep.extra.columns = TRUE)
+    else stop("tidybulk says: riowRanges should be either GRanges or CompressedGRangesList. Or am I missing something?")
 
+    new_range_data = new_range_data %>%  .[match(rownames(new_count_data[[1]]), names(.))]
+  }
 
   # Build the object
   .data_collapsed =

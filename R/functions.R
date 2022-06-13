@@ -2330,7 +2330,8 @@ aggregate_duplicated_transcripts_bulk =
 		# Non standard column classes
 		non_standard_columns =
 		  .data %>%
-		  select(
+		  select_if(select_non_standard_column_class) %>%
+		  select_if(
 		    -!!numerical_columns,
 		    -columns_to_be_converted,
 		    -group_cols(),
