@@ -2247,6 +2247,8 @@ get_rotated_dimensions =
 #' @importFrom dplyr bind_rows
 #' @importFrom magrittr %$%
 #' @importFrom rlang :=
+#' @importFrom tidyr replace_na
+#' @importFrom dplyr across
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2291,14 +2293,6 @@ aggregate_duplicated_transcripts_bulk =
 			ret
 		}
 
-		# Through warning if there are logicals of factor in the data frame
-		# because they cannot be merged if they are not unique
-		if ((lapply(.data, class) %>% unlist %in% c("logical", "factor")) %>% any) {
-			warning("tidybulk says: for aggregation, factors and logical columns were converted to character")
-			message("Converted to characters")
-			message(lapply(.data, class) %>% unlist %>% `[` (. %in% c("logical", "factor") %>% which))
-		}
-
 		# Select which are the numerical columns
 		numerical_columns =
 			.data %>%
@@ -2315,8 +2309,59 @@ aggregate_duplicated_transcripts_bulk =
 			~ .x %>% select(-!!(
 				.data %>% get_tt_columns() %$% .abundance_scaled
 			)))	%>%
-			colnames() %>%
-			c("n_aggr")
+			colnames()
+
+		# Columns to be converted
+		columns_to_be_converted =
+		  .data %>%
+		  select_if(function(.x) is.logical(.x) | is.factor(.x)) %>%
+		  colnames()
+
+		# Count column to be aggregated
+		aggregate_count_columns =
+		  quo_name(.abundance) %>%
+		  when(
+		    ".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
+		      quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)  ~
+		      (.) %>% c(.data %>% get_tt_columns() %$% .abundance_scaled),
+		    ~ (.)
+		  )
+
+		# Non standard column classes
+		non_standard_columns =
+		  .data %>%
+		  select(
+		    -!!numerical_columns,
+		    -columns_to_be_converted,
+		    -group_cols(),
+		    -aggregate_count_columns,
+		  ) %>%
+		  colnames()
+
+		# Count duplicates
+		count_duplicates =
+		  .data %>%
+		  count(!!.sample,!!.transcript, name = "n_aggr")
+
+		# Convert to character
+
+		# Through warning if there are logicals of factor in the data frame
+		# because they cannot be merged if they are not unique
+		if (length(columns_to_be_converted)>0 & filter(count_duplicates, n_aggr>1) %>% nrow() %>% gt(0)) {
+		  warning(paste(capture.output({
+		    cat(crayon::blue("tidybulk says: The following columns were converted to characters, as aggregating those classes with concatenation is not possible.\n"))
+		    print(.data %>% select(columns_to_be_converted))
+		  }), collapse = "\n"))
+		}
+
+		# Through warning if there are logicals of factor in the data frame
+		# because they cannot be merged if they are not unique
+		if (length(non_standard_columns)>0 & filter(count_duplicates, n_aggr>1) %>% nrow() %>% gt(0)) {
+		  warning(paste(capture.output({
+		    cat(crayon::blue("tidybulk says: If duplicates exist from the following columns, only the first instance was taken (lossy behaviour), as aggregating those classes with concatenation is not possible.\n"))
+		    print(.data %>% select(non_standard_columns))
+		  }), collapse = "\n"))
+		}
 
 		# aggregates read .data over samples, concatenates other character columns, and averages other numeric columns
 		.data %>%
@@ -2326,8 +2371,7 @@ aggregate_duplicated_transcripts_bulk =
 			mutate_if(is.logical, as.character) %>%
 
 			# Add the number of duplicates for each gene
-			dplyr::left_join((.) %>% count(!!.sample,!!.transcript, name = "n_aggr"),
-											 by = c(quo_name(.sample), quo_name(.transcript))) %>%
+			dplyr::left_join(count_duplicates,	 by = c(quo_name(.sample), quo_name(.transcript))) %>%
 
 			# Anonymous function - binds the unique and the reduced genes,
 			# in the way we have to reduce redundancy just for the duplicated genes
@@ -2337,40 +2381,25 @@ aggregate_duplicated_transcripts_bulk =
 				dplyr::bind_rows(
 					# Unique symbols
 					(.) %>%
-						filter(n_aggr == 1),
+						filter(n_aggr == 1) %>%
+					  select(-n_aggr),
 
 					# Duplicated symbols
 					(.) %>%
 						filter(n_aggr > 1) %>%
+					  select(-n_aggr) %>%
 						group_by(!!.sample,!!.transcript) %>%
-						dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
 
-						# If scaled abundance exists aggregate that as well
-						ifelse_pipe((
-							".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
-								# .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% not() &&
-								quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)
-						),
-						~ {
-							.abundance_scaled = .data %>% get_tt_columns() %$% .abundance_scaled
-							.x %>% dplyr::mutate(!!.abundance_scaled := !!.abundance_scaled %>% aggregation_function())
-						}) %>%
+					  dplyr::summarise(
+					    across(aggregate_count_columns, ~ .x %>% aggregation_function()),
+					    across(where(is.character), ~ paste3(unique(.x), collapse = ", ")),
+					    across(non_standard_columns, ~ unique(.x)[1]),
+					    merged_transcripts = n()
+					  )
 
-						mutate_at(vars(numerical_columns), mean) %>%
-						mutate_at(
-							vars(
-								-group_cols(),
-								-contains(quo_name(.abundance)),
-								-!!numerical_columns
-							),
-							list( ~ paste3(unique(.), collapse = ", "))
-						) %>%
-						distinct()
-				)
+				) %>%
+			    replace_na(list(merged_transcripts = 1))
 			} %>%
-
-			# Rename column of number of duplicates for each gene
-			rename(merged_transcripts = n_aggr) %>%
 
 			# Attach attributes
 			reattach_internals(.data)
