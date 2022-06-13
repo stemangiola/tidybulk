@@ -876,7 +876,7 @@ setMethod("adjust_abundance",
 
     # Through warning if there are logicals of factor in the data frame
     # because they cannot be merged if they are not unique
-    if (length(non_standard_columns)>0 & new_range_data %>%  pull(!!as.symbol(feature_column_name)) %>% duplicated() %>% which() %>% length() %>% gt(0) ) {
+    if (length(non_standard_columns)>0 & new_range_data %>%  pull(!!.transcript) %>% duplicated() %>% which() %>% length() %>% gt(0) ) {
       warning(paste(capture.output({
         cat(crayon::blue("tidybulk says: If duplicates exist from the following columns, only the first instance was taken (lossy behaviour), as aggregating those classes with concatenation is not possible.\n"))
         print(.data %>% select(non_standard_columns))
