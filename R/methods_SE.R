@@ -805,6 +805,10 @@ setMethod("adjust_abundance",
     outersect(non_standard_columns) %>%
     setdiff(quo_name(.transcript)) %>%
     c(feature_column_name)
+    # when(
+    #   !is.null(rownames(.data)) ~ c(., feature_column_name),
+    #   ~ (.)
+    # )
 
   # Row data
   new_row_data =
@@ -826,6 +830,11 @@ setMethod("adjust_abundance",
       .x
     }
 
+  # If no duplicate exit
+  if(!nrow(new_row_data)<nrow(rowData(.data))){
+    message(sprintf("tidybulk says: your object does not have duplicates along the %s column. The input dataset is returned.", quo_name(.transcript)))
+    return(.data)
+  }
 
   # Counts
   new_count_data =
@@ -836,26 +845,23 @@ setMethod("adjust_abundance",
       ~ {
         is_data_frame = .x %>% is("data.frame")
         if(is_data_frame) .x = .x %>% as.matrix()
+
+        # Gove duplicated rownames
         rownames(.x) = rowData(.data)[,quo_name(.transcript)]
+
+        # Combine
         .x =  combineByRow(.x, aggregation_function)
-        rownames(.x) = new_row_data[match(rownames(.x), new_row_data[,quo_name(.transcript)]),,drop=FALSE] %>% rownames()
-        .x = .x[match(rownames(new_row_data), rownames(.x)),,drop=FALSE]
+        .x = .x[match(new_row_data[,quo_name(.transcript)], rownames(.x)),,drop=FALSE]
+        rownames(.x) = rownames(new_row_data)
+
         if(is_data_frame) .x = .x %>% as.data.frame()
         .x
       }
     )
 
 
-
-
-
   rr = rowRanges(.data)
 
-  # Gene ID dataset
-  gene_id_dataset =
-    rowData(.data) %>%
-    as.data.frame() %>%
-    select(!!as.symbol(quo_name(.transcript)))
 
 
 
@@ -864,15 +870,15 @@ setMethod("adjust_abundance",
 
     new_range_data =
       rr %>%
-      as_tibble() %>%
+      as_tibble()
 
-      # Add names
-      when(
-        is(rr, "CompressedGRangesList") ~ mutate(., !!as.symbol(feature_column_name) := group_name),
-        .hasSlot(rr@ranges, "NAME") ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAME),
-        .hasSlot(rr@ranges, "NAMES") ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAMES),
-        ~ stop("tidybulk says: I don't know how to aggregate the GRanges, as the slot ranges@NAMES, or range@NAME do not exist")
-      )
+      # # Add names
+      # when(
+      #   is(rr, "CompressedGRangesList") ~ mutate(., !!as.symbol(feature_column_name) := group_name),
+      #   .hasSlot(rr@ranges, "NAME") ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAME),
+      #   .hasSlot(rr@ranges, "NAMES") ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAMES),
+      #   ~ stop("tidybulk says: I don't know how to aggregate the GRanges, as the slot ranges@NAMES, or range@NAME do not exist")
+      # )
 
     # Through warning if there are logicals of factor in the data frame
     # because they cannot be merged if they are not unique
@@ -888,40 +894,55 @@ setMethod("adjust_abundance",
     new_range_data = new_range_data %>%
 
       # I have to use this trick because rowRanges() and rowData() share @elementMetadata
-      select(-one_of(colnames(gene_id_dataset))) %>%
-      suppressWarnings() %>%
+      select(-one_of(colnames(new_row_data) %>% outersect(quo_name(.transcript)))) %>%
+      suppressWarnings()
 
-      # Join rowData
-      left_join(gene_id_dataset  %>% as_tibble(rownames =feature_column_name),  by = feature_column_name) %>%
-      group_by(!!as.symbol(quo_name(.transcript))) %>%
-      mutate(
-        across(columns_to_collapse, ~ .x %>% collapse_function()),
-        across(non_standard_columns, ~ .x[1]),
-        merged_transcripts = n()
-      ) %>%
-      distinct() %>%
-      arrange(!!as.symbol(feature_column_name)) %>%
+    # %>%
+    #
+    #   # Join rowData - I DON'T KNOW IF ALWAYS ROWRANGES INCLUDE 100% OF ROWDATA
+    #   bind_cols(gene_id_dataset) %>%
+    #   group_by(!!as.symbol(quo_name(.transcript))) %>%
+    #
+    #   # If I have rownames add them
+    #   when(
+    #     !is.null(rownames(.data)) ~ rowid_to_column(.),
+    #     ~ (.)
+    #   ) %>%
+    #
+    #   mutate(
+    #     across(columns_to_collapse, ~ .x %>% collapse_function()),
+    #     across(non_standard_columns, ~ .x[1]),
+    #     merged_transcripts = n()
+    #   ) %>%
+    #   distinct() %>%
+    #   #arrange(!!as.symbol(feature_column_name)) %>%
+    #
+    #   select(-one_of("group_name", "group")) %>%
+    #   suppressWarnings() %>%
+    #
+    #   as.data.frame() %>%
+    #   # Add back rownames
+    #   {
+    #     .x = (.)
+    #     rownames(.x) = .x %>% pull(!!as.symbol(feature_column_name))
+    #     .x
+    #   }
 
-      select(-one_of("group_name", "group")) %>%
-      suppressWarnings() %>%
+    #if(is(rr, "CompressedGRangesList") | nrow(new_row_data)<nrow(rowData(.data))) {
+      new_range_data = makeGRangesListFromDataFrame(
+        new_range_data,
+        split.field = quo_name(.transcript),
+        keep.extra.columns = TRUE
+      )
 
-      as.data.frame() %>%
-      # Add back rownames
-      {
-        .x = (.)
-        rownames(.x) = .x %>% pull(!!as.symbol(feature_column_name))
-        .x
-      }
+      # Give back rownames
+      new_range_data = new_range_data %>%  .[match(new_row_data[,quo_name(.transcript)], names(.))]
+      names(new_range_data) = rownames(new_row_data)
+    #}
+    # else if(is(rr, "GRanges")) new_range_data = makeGRangesFromDataFrame(new_range_data, keep.extra.columns = TRUE)
+    # else stop("tidybulk says: riowRanges should be either GRanges or CompressedGRangesList. Or am I missing something?")
 
-    if(is(rr, "CompressedGRangesList"))  new_range_data = makeGRangesListFromDataFrame(
-      new_range_data,
-      split.field = feature_column_name,
-      keep.extra.columns = TRUE
-    )
-    else if(is(rr, "GRanges")) new_range_data = makeGRangesFromDataFrame(new_range_data, keep.extra.columns = TRUE)
-    else stop("tidybulk says: riowRanges should be either GRanges or CompressedGRangesList. Or am I missing something?")
 
-    new_range_data = new_range_data %>%  .[match(rownames(new_count_data[[1]]), names(.))]
   }
 
   # Build the object

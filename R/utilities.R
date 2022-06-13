@@ -1517,7 +1517,7 @@ combineByRow <- function(m, fun = NULL) {
     ## combine all rows and mark invalid rows
     if (prev != curr || is.na(curr)) {
       if (i.start < i.end) {
-        m[i.start,,drop=FALSE] <- apply(m[i.start:i.end,,drop=FALSE], 2, fun)
+        m[i.start,] <- apply(m[i.start:i.end,,drop=FALSE], 2, fun)
         m.rownames[(1+i.start):i.end] <- NA
       }
 
