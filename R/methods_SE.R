@@ -50,7 +50,7 @@
 		# Convert to tibble
 		tibble::as_tibble(rownames=feature_column_name)
 
-	count_info <- get_count_datasets(.data)
+	count_info <- get_count_datasets(.data, feature_column_name, sample_column_name)
 
 	# Return
 	count_info %>%

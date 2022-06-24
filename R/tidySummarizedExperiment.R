@@ -95,22 +95,24 @@ change_reserved_column_names = function(.data){
 #'
 #' @keywords internal
 #' @noRd
-get_count_datasets <- function(SummarizedExperiment_object) {
+get_count_datasets <- function(SummarizedExperiment_object, feature_column_name, sample_column_name) {
+
+
 	map2(
 		assays(SummarizedExperiment_object) %>% as.list(),
 		names(assays(SummarizedExperiment_object)),
 		~ .x %>%
-			tibble::as_tibble(rownames = "feature", .name_repair = "minimal") %>%
+			tibble::as_tibble(rownames = feature_column_name, .name_repair = "minimal") %>%
 
 			# If the matrix does not have sample names, fix column names
 			when(colnames(.x) %>% is.null() ~ setNames(., c(
-				"feature",  seq_len(ncol(.x))
+			  feature_column_name,  seq_len(ncol(.x))
 			)),
 			~ (.)
 			) %>%
 
-			gather(sample, count,-feature) %>%
+			gather(!!as.symbol(sample_column_name), count,-!!as.symbol(feature_column_name)) %>%
 			rename(!!.y := count)
 	) %>%
-		reduce(left_join, by = c("feature", "sample"))
+		reduce(left_join, by = c(feature_column_name, sample_column_name))
 }
