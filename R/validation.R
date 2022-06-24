@@ -307,7 +307,7 @@ validate_signature = function(.data, reference, .transcript){
 
 	.transcript = enquo(.transcript)
 
-	overlapping_genes = (.data %>%     pull(!!.transcript) %in% rownames(reference) %>%  which
+	overlapping_genes = .data %>%     pull(!!.transcript) %in% rownames(reference) %>%  which
 
 	if(length(overlapping_genes) == 0  )
 	  stop(sprintf(
