@@ -901,19 +901,30 @@ setMethod("aggregate_duplicates",
 
 
 
-
+#' @importFrom rlang quo_is_symbol
 .deconvolve_cellularity_se = function(.data,
 																			reference = X_cibersort,
 																			method = "cibersort",
 																			prefix = "",
 																			...) {
 
+  .transcript = enquo(.transcript)
+
 	my_assay =
 		.data %>%
 
 		assays() %>%
 		as.list() %>%
-		.[[get_assay_scaled_if_exists_SE(.data)]]
+		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
+
+	  # Change row names
+	  when(quo_is_symbol(.transcript) ~ {
+  	    .x = (.)
+  	    rownames(.x) = .data %>% pivot_transcript() %>% pull(!!.transcript)
+  	    .x
+  	  },
+  	  ~ (.)
+	  )
 
 	# Get the dots arguments
 	dots_args = rlang::dots_list(...)
@@ -952,7 +963,7 @@ setMethod("aggregate_duplicates",
 				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
 
 				# Validate reference
-				validate_signature_SE(.data, reference, !!.transcript)
+				validate_signature_SE(., reference)
 
 				do.call(my_CIBERSORT, list(Y = ., X = reference, QN=FALSE) %>% c(dots_args)) %$%
 					proportions %>%
@@ -967,7 +978,7 @@ setMethod("aggregate_duplicates",
 				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
 
 				# Validate reference
-				validate_signature_SE(.data, reference, !!.transcript)
+				validate_signature_SE(., reference)
 
 				(.) %>%
 					run_llsr(reference, ...) %>%
