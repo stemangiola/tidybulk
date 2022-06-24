@@ -187,43 +187,84 @@
     <h2>Arguments</h2>
     <dl><dt>.data</dt>
 <dd><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></dd>
+
+
 <dt>.formula</dt>
 <dd><p>A formula representing the desired linear model. If there is more than one factor, they should be in the order factor of interest + additional factors.</p></dd>
+
+
 <dt>.sample</dt>
 <dd><p>The name of the sample column</p></dd>
+
+
 <dt>.transcript</dt>
 <dd><p>The name of the transcript/gene column</p></dd>
+
+
 <dt>.abundance</dt>
 <dd><p>The name of the transcript/gene abundance column</p></dd>
+
+
 <dt>.contrasts</dt>
 <dd><p>This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)</p></dd>
+
+
 <dt>method</dt>
 <dd><p>A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights"</p></dd>
+
+
 <dt>test_above_log2_fold_change</dt>
 <dd><p>A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero <a href="https://pubmed.ncbi.nlm.nih.gov/19176553" class="external-link">https://pubmed.ncbi.nlm.nih.gov/19176553</a>.</p></dd>
+
+
 <dt>scaling_method</dt>
 <dd><p>A character string. The scaling method passed to the back-end functions: edgeR and limma-voom (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile"). Setting the parameter to \"none\" will skip the compensation for sequencing-depth for the method edgeR or limma-voom.</p></dd>
+
+
 <dt>omit_contrast_in_colnames</dt>
 <dd><p>If just one contrast is specified you can choose to omit the contrast label in the colnames.</p></dd>
+
+
 <dt>prefix</dt>
 <dd><p>A character string. The prefix you would like to add to the result columns. It is useful if you want to compare several methods.</p></dd>
+
+
 <dt>action</dt>
 <dd><p>A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to some of the internal functions. Currently, it is needed just for internal debug.</p></dd>
+
+
 <dt>significance_threshold</dt>
 <dd><p>DEPRECATED - A real between 0 and 1 (usually 0.05).</p></dd>
+
+
 <dt>fill_missing_values</dt>
 <dd><p>DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
-A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-A `SummarizedExperiment` object
-A `SummarizedExperiment` object</p>
+    
+
+<p>A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).</p>
+
+
+<p>A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).</p>
+
+
+<p>A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
+
+
+<p>A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
+
+
+<p>A `SummarizedExperiment` object</p>
+
+
+<p>A `SummarizedExperiment` object</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -388,7 +429,7 @@ DESeq2::results()</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -145,26 +145,47 @@
     <h2>Arguments</h2>
     <dl><dt>.data</dt>
 <dd><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></dd>
+
+
 <dt>.formula</dt>
 <dd><p>A formula representing the desired linear model. The formula can be of two forms: multivariable (recommended) or univariable Respectively: \"factor_of_interest ~ .\" or \". ~ factor_of_interest\". The dot represents cell-type proportions, and it is mandatory. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ .\"</p></dd>
+
+
 <dt>.sample</dt>
 <dd><p>The name of the sample column</p></dd>
+
+
 <dt>.transcript</dt>
 <dd><p>The name of the transcript/gene column</p></dd>
+
+
 <dt>.abundance</dt>
 <dd><p>The name of the transcript/gene abundance column</p></dd>
+
+
 <dt>method</dt>
 <dd><p>A string character. Either \"cibersort\", \"epic\" or \"llsr\". The regression method will be chosen based on being multivariable: lm or cox-regression (both on logit-transformed proportions); or univariable: beta or cox-regression (on logit-transformed proportions). See .formula for multi- or univariable choice.</p></dd>
+
+
 <dt>reference</dt>
 <dd><p>A data frame. The transcript/cell_type data frame of integer transcript abundance</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further parameters passed to the method deconvolve_cellularity</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
+    
+
+<p>A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
+
+
+<p>A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
+
+
+<p>A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -238,7 +259,7 @@ deconvolve_cellularity(
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -163,35 +163,68 @@
     <h2>Arguments</h2>
     <dl><dt>.data</dt>
 <dd><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></dd>
+
+
 <dt>.element</dt>
 <dd><p>The name of the element column (normally samples).</p></dd>
+
+
 <dt>.feature</dt>
 <dd><p>The name of the feature column (normally transcripts/genes)</p></dd>
+
+
 <dt>.abundance</dt>
 <dd><p>The name of the column including the numerical value the clustering is based on (normally transcript abundance)</p></dd>
+
+
 <dt>method</dt>
 <dd><p>A character string. The method to use, correlation and reduced_dimensions are available. The latter eliminates one of the most proximar pairs of samples in PCA reduced dimensions.</p></dd>
+
+
 <dt>of_samples</dt>
 <dd><p>A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column</p></dd>
+
+
 <dt>correlation_threshold</dt>
 <dd><p>A real number between 0 and 1. For correlation based calculation.</p></dd>
+
+
 <dt>top</dt>
 <dd><p>An integer. How many top genes to select for correlation based method</p></dd>
+
+
 <dt>log_transform</dt>
 <dd><p>A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
+
+
 <dt>Dim_a_column</dt>
 <dd><p>A character string. For reduced_dimension based calculation. The column of one principal component</p></dd>
+
+
 <dt>Dim_b_column</dt>
 <dd><p>A character string. For reduced_dimension based calculation. The column of another principal component</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A tbl object with with dropped redundant elements (e.g., samples).
-A tbl object with with dropped redundant elements (e.g., samples).
-A tbl object with with dropped redundant elements (e.g., samples).
-A tbl object with with dropped redundant elements (e.g., samples).
-A `SummarizedExperiment` object
-A `SummarizedExperiment` object</p>
+    
+
+<p>A tbl object with with dropped redundant elements (e.g., samples).</p>
+
+
+<p>A tbl object with with dropped redundant elements (e.g., samples).</p>
+
+
+<p>A tbl object with with dropped redundant elements (e.g., samples).</p>
+
+
+<p>A tbl object with with dropped redundant elements (e.g., samples).</p>
+
+
+<p>A `SummarizedExperiment` object</p>
+
+
+<p>A `SummarizedExperiment` object</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -260,7 +293,7 @@ A `SummarizedExperiment` object</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

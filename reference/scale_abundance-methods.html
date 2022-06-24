@@ -151,31 +151,60 @@
     <h2>Arguments</h2>
     <dl><dt>.data</dt>
 <dd><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></dd>
+
+
 <dt>.sample</dt>
 <dd><p>The name of the sample column</p></dd>
+
+
 <dt>.transcript</dt>
 <dd><p>The name of the transcript/gene column</p></dd>
+
+
 <dt>.abundance</dt>
 <dd><p>The name of the transcript/gene abundance column</p></dd>
+
+
 <dt>method</dt>
 <dd><p>A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")</p></dd>
+
+
 <dt>reference_sample</dt>
 <dd><p>A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.</p></dd>
+
+
 <dt>.subset_for_scaling</dt>
 <dd><p>A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example</p></dd>
+
+
 <dt>action</dt>
 <dd><p>A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.</p></dd>
+
+
 <dt>reference_selection_function</dt>
 <dd><p>DEPRECATED. please use reference_sample.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A tbl object with additional columns with scaled data as `&lt;NAME OF COUNT COLUMN&gt;_scaled`
-A tbl object with additional columns with scaled data as `&lt;NAME OF COUNT COLUMN&gt;_scaled`
-A tbl object with additional columns with scaled data as `&lt;NAME OF COUNT COLUMN&gt;_scaled`
-A tbl object with additional columns with scaled data as `&lt;NAME OF COUNT COLUMN&gt;_scaled`
-A `SummarizedExperiment` object
-A `SummarizedExperiment` object</p>
+    
+
+<p>A tbl object with additional columns with scaled data as `&lt;NAME OF COUNT COLUMN&gt;_scaled`</p>
+
+
+<p>A tbl object with additional columns with scaled data as `&lt;NAME OF COUNT COLUMN&gt;_scaled`</p>
+
+
+<p>A tbl object with additional columns with scaled data as `&lt;NAME OF COUNT COLUMN&gt;_scaled`</p>
+
+
+<p>A tbl object with additional columns with scaled data as `&lt;NAME OF COUNT COLUMN&gt;_scaled`</p>
+
+
+<p>A `SummarizedExperiment` object</p>
+
+
+<p>A `SummarizedExperiment` object</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -223,7 +252,7 @@ edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))<
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

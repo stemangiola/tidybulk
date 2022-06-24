@@ -75,11 +75,15 @@ nest"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathja
     <h2>Arguments</h2>
     <dl><dt>data</dt>
 <dd><p>A tbl. (See tidyr)</p></dd>
+
+
 <dt>cols</dt>
 <dd><p>&lt;[`tidy-select`][tidyr_tidy_select]&gt; Columns to unnest.
 If you `unnest()` multiple columns, parallel entries must be of
 compatibble sizes, i.e. they're either equal or length 1 (following the
 standard tidyverse recycling rules).</p></dd>
+
+
 <dt>names_sep</dt>
 <dd><p>If `NULL`, the default, the names will be left
   as is. In `nest()`, inner names will come from the former outer names;
@@ -89,29 +93,52 @@ standard tidyverse recycling rules).</p></dd>
   outer and the inner column names, separated by `names_sep`. In `unnest()`,
   the new inner names will have the outer names (+ `names_sep`) automatically
   stripped. This makes `names_sep` roughly symmetric between nesting and unnesting.</p></dd>
+
+
 <dt>keep_empty</dt>
 <dd><p>See tidyr::unnest</p></dd>
+
+
 <dt>names_repair</dt>
 <dd><p>See tidyr::unnest</p></dd>
+
+
 <dt>ptype</dt>
 <dd><p>See tidyr::unnest</p></dd>
+
+
 <dt>.drop</dt>
 <dd><p>See tidyr::unnest</p></dd>
+
+
 <dt>.id</dt>
 <dd><p>tidyr::unnest</p></dd>
+
+
 <dt>.sep</dt>
 <dd><p>tidyr::unnest</p></dd>
+
+
 <dt>.preserve</dt>
 <dd><p>See tidyr::unnest</p></dd>
+
+
 <dt>.data</dt>
 <dd><p>A tbl. (See tidyr)</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Name-variable pairs of the form new_col = c(col1, col2, col3) (See tidyr)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A tidySummarizedExperiment objector a tibble depending on input
-A tt object</p>
+    
+
+<p>A tidySummarizedExperiment objector a tibble depending on input</p>
+
+
+<p>A tt object</p>
     </div>
 
     <div id="ref-examples">
@@ -167,7 +194,7 @@ A tt object</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

@@ -79,6 +79,8 @@ Variables can be removed by setting their value to `NULL`.</p>
     <h2>Arguments</h2>
     <dl><dt>.data</dt>
 <dd><p>A tbl. (See dplyr)</p></dd>
+
+
 <dt>...</dt>
 <dd><p>&lt;[`tidy-eval`][dplyr_tidy_eval]&gt; Name-value pairs.
   The name gives the name of the column in the output.</p>
@@ -88,19 +90,30 @@ Variables can be removed by setting their value to `NULL`.</p>
     if ungrouped).
   * `NULL`, to remove the column.
   * A data frame or tibble, to create multiple columns in the output.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An object of the same type as `.data`.
-For `mutate()`:
-* Rows are not affected.
+    
+
+<p>An object of the same type as `.data`.</p>
+
+
+<p>For `mutate()`:</p>
+
+
+<p>* Rows are not affected.
 * Existing columns will be preserved unless explicitly modified.
 * New columns will be added to the right of existing columns.
 * Columns given value `NULL` will be removed
 * Groups will be recomputed if a grouping variable is mutated.
-* Data frame attributes are preserved.
-For `transmute()`:
-* Rows are not affected.
+* Data frame attributes are preserved.</p>
+
+
+<p>For `transmute()`:</p>
+
+
+<p>* Rows are not affected.
 * Apart from grouping variables, existing columns will be remove unless
   explicitly kept.
 * Column order matches order of expressions.
@@ -188,7 +201,7 @@ individual methods for extra arguments and differences in behaviour.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

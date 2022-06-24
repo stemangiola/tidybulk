@@ -1,10 +1,10 @@
 pandoc: 2.17.1.1
-pkgdown: 2.0.3
+pkgdown: 2.0.4
 pkgdown_sha: ~
 articles:
   comparison_with_base_R: comparison_with_base_R.html
   introduction: introduction.html
   manuscript_differential_transcript_abundance: manuscript_differential_transcript_abundance.html
   manuscript_transcriptional_signatures: manuscript_transcriptional_signatures.html
-last_built: 2022-05-28T23:50Z
+last_built: 2022-06-24T06:00Z
 

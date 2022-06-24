@@ -83,6 +83,8 @@ for each of the summary statistics that you have specified.</p>
     <h2>Arguments</h2>
     <dl><dt>.data</dt>
 <dd><p>A tbl. (See dplyr)</p></dd>
+
+
 <dt>...</dt>
 <dd><p>&lt;[`tidy-eval`][dplyr_tidy_eval]&gt; Name-value pairs of summary
   functions. The name will be the name of the variable in the result.</p>
@@ -90,11 +92,16 @@ for each of the summary statistics that you have specified.</p>
 <p>* A vector of length 1, e.g. `min(x)`, `n()`, or `sum(is.na(y))`.
   * A vector of length `n`, e.g. `quantile()`.
   * A data frame, to add multiple columns from a single expression.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An object _usually_ of the same type as `.data`.
-* The rows come from the underlying `group_keys()`.
+    
+
+<p>An object _usually_ of the same type as `.data`.</p>
+
+
+<p>* The rows come from the underlying `group_keys()`.
 * The columns are a combination of the grouping keys and the summary
   expressions that you provide.
 * If `x` is grouped by more than one variable, the output will be another
@@ -173,7 +180,7 @@ individual methods for extra arguments and differences in behaviour.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

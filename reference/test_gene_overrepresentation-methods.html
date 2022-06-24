@@ -139,27 +139,52 @@
     <h2>Arguments</h2>
     <dl><dt>.data</dt>
 <dd><p>A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))</p></dd>
+
+
 <dt>.entrez</dt>
 <dd><p>The ENTREZ ID of the transcripts/genes</p></dd>
+
+
 <dt>.do_test</dt>
 <dd><p>A boolean column name symbol. It indicates the transcript to check</p></dd>
+
+
 <dt>species</dt>
 <dd><p>A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")</p></dd>
+
+
 <dt>.sample</dt>
 <dd><p>The name of the sample column</p></dd>
+
+
 <dt>gene_sets</dt>
 <dd><p>A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.</p></dd>
+
+
 <dt>gene_set</dt>
 <dd><p>DEPRECATED. Use gene_sets instead.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A consistent object (to the input)
-A `spec_tbl_df` object
-A `tbl_df` object
-A `tidybulk` object
-A `SummarizedExperiment` object
-A `RangedSummarizedExperiment` object</p>
+    
+
+<p>A consistent object (to the input)</p>
+
+
+<p>A `spec_tbl_df` object</p>
+
+
+<p>A `tbl_df` object</p>
+
+
+<p>A `tidybulk` object</p>
+
+
+<p>A `SummarizedExperiment` object</p>
+
+
+<p>A `RangedSummarizedExperiment` object</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -216,7 +241,7 @@ This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the ba
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
