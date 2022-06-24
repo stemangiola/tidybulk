@@ -47,7 +47,7 @@ create_tt_from_tibble_bulk = function(.data,
 #' @importFrom purrr reduce
 #'
 #' @param file_names A character vector
-#' @param genome A character string
+#' @param genome A character string specifying an in-built annotation used for read summarization. It has four possible values including "mm10", "mm9", "hg38" and "hg19"
 #' @param ... Further parameters passed to the function Rsubread::featureCounts
 #'
 #' @return A tibble of gene counts
