@@ -83,22 +83,22 @@ create_tt_from_bam_sam_bulk <-
 			# Anonymous function
 			# input: edgeR::DGEList object
 			# output: edgeR::DGEList object with added transcript symbol
-			when(
-				"annot.ext" %in% (rlang::dots_list(...) %>% names) %>% not() ~ {
-					dge <- (.)
-					dge$genes$symbol <-
-						AnnotationDbi::mapIds(
-							org.Hs.eg.db::org.Hs.eg.db,
-							keys = as.character(dge$genes$GeneID),
-							column = "SYMBOL",
-							keytype = "ENTREZID",
-							multiVals = "first"
-						)
-
-					dge
-				},
-				~ (.)
-			) %>%
+			# when(
+			# 	"annot.ext" %in% (rlang::dots_list(...) %>% names) %>% not() ~ {
+			# 		dge <- (.)
+			# 		dge$genes$symbol <-
+			# 			AnnotationDbi::mapIds(
+			# 				org.Hs.eg.db::org.Hs.eg.db,
+			# 				keys = as.character(dge$genes$GeneID),
+			# 				column = "SYMBOL",
+			# 				keytype = "ENTREZID",
+			# 				multiVals = "first"
+			# 			)
+			#
+			# 		dge
+			# 	},
+			# 	~ (.)
+			# ) %>%
 
 			# Anonymous function
 			# input: annotated edgeR::DGEList object
