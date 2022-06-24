@@ -1595,3 +1595,10 @@ fill_NA_matrix_with_factor_colwise = function(.data, factor){
     .[rn, cn]
 
 }
+
+get_special_column_name_symbol = function(name){
+  list(name = name, symbol = as.symbol(name))
+}
+
+feature__ =  get_special_column_name_symbol(".feature")
+sample__ = get_special_column_name_symbol(".sample")
