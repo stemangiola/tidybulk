@@ -17,6 +17,9 @@
 	.abundance = enquo(.abundance)
 	.abundance_scaled = enquo(.abundance_scaled)
 
+	feature_column_name = ".feature"
+	sample_column_name = ".sample"
+
 	# Set scaled col names
 	norm_col =
 		SummarizedExperiment::assays(.data)[1] %>% names %>% paste0(scaled_string) %>%
@@ -31,7 +34,7 @@
 		change_reserved_column_names() %>%
 
 		# Convert to tibble
-		tibble::as_tibble(rownames="sample")
+		tibble::as_tibble(rownames=sample_column_name)
 
 
 	range_info <-
@@ -45,20 +48,20 @@
 		change_reserved_column_names() %>%
 
 		# Convert to tibble
-		tibble::as_tibble(rownames="feature")
+		tibble::as_tibble(rownames=feature_column_name)
 
 	count_info <- get_count_datasets(.data)
 
 	# Return
 	count_info %>%
-	left_join(sample_info, by="sample") %>%
-	left_join(gene_info, by="feature") %>%
+	left_join(sample_info, by=sample_column_name) %>%
+	left_join(gene_info, by=feature_column_name) %>%
 	when(nrow(range_info) > 0 ~ (.) %>% left_join(range_info) %>% suppressMessages(), ~ (.)) %>%
 
 	mutate_if(is.character, as.factor) %>%
 	tidybulk(
-		sample,
-		feature,
+		!!as.symbol(sample_column_name),
+		!!as.symbol(feature_column_name),
 		!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
 		!!norm_col # scaled counts if any
 	)
