@@ -15,7 +15,7 @@ test_that("tidybulk SummarizedExperiment conversion",{
 
 	expect_equal(	nrow(res),	800	)
 
-	expect_equal(	ncol(res),	21	)
+	expect_equal(	ncol(res),	13	)
 
 	res = res %>% tidybulk:::tidybulk_to_SummarizedExperiment()
 
@@ -33,19 +33,19 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 
 	res2 = tidybulk(se) %>% identify_abundant() %>% scale_abundance()
 
-	res %>% distinct(sample, multiplier) %>% pull(multiplier)
-	res2 %>% distinct(sample, multiplier) %>% pull(multiplier)
+	res %>% distinct(.sample, multiplier) %>% pull(multiplier)
+	res2 %>% distinct(.sample, multiplier) %>% pull(multiplier)
 
 
 	expect_equal(
-		res %>% distinct(sample, multiplier) %>% pull(multiplier),
-		res2 %>% distinct(sample, multiplier) %>% pull(multiplier) %>% as.numeric(),
+		res %>% distinct(.sample, multiplier) %>% pull(multiplier),
+		res2 %>% distinct(.sample, multiplier) %>% pull(multiplier) %>% as.numeric(),
 		tolerance=1e-3
 	)
 
 	expect_equal(	nrow(res),	800	)
 
-	expect_equal(	ncol(res),	25	)
+	expect_equal(	ncol(res),	17	)
 
 
 	res = rlang::quo_name(attr(res, "internals")$tt_columns[[4]])

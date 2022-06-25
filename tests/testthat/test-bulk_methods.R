@@ -1913,14 +1913,14 @@ test_that("pivot",{
 
 test_that("gene over representation",{
 
-	df_entrez =  se_mini %>% tidybulk() %>% as_tibble() %>% symbol_to_entrez(.transcript = feature, .sample = sample)
-	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
-	df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+	df_entrez =  se_mini %>% tidybulk() %>% as_tibble() %>% symbol_to_entrez(.transcript = .feature, .sample = .sample)
+	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = .sample, .transcript = entrez, .abundance = count)
+	df_entrez = mutate(df_entrez, do_test = .feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 
 	res =
 		test_gene_overrepresentation(
 			df_entrez,
-			.sample = sample,
+			.sample = .sample,
 			.entrez = entrez,
 			.do_test = do_test,
 			species="Homo sapiens"
