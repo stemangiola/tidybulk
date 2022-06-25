@@ -44,7 +44,10 @@ This is useful since different resources use ensembl IDs while others use gene s
 
 library(dplyr)
 
-tidybulk::counts_SE |> tidybulk() |> as_tibble() |> ensembl_to_symbol(feature)
+# This function was designed for data.frame
+# Convert from SummarizedExperiment for this example. It is NOT reccomended.
+
+tidybulk::counts_SE |> tidybulk() |> as_tibble() |> ensembl_to_symbol(.feature)
 
 
 

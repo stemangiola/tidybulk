@@ -24,41 +24,12 @@
 								~ as.symbol(.x),
 								~ NULL)
 
-	sample_info <-
-		colData(.data) %>%
+	.as_tibble_optimised(.data) %>%
 
-		# If reserved column names are present add .x
-		change_reserved_column_names() %>%
-
-		# Convert to tibble
-		tibble::as_tibble(rownames="sample")
-
-
-	range_info <-
-		 get_special_datasets(.data) %>%
-			reduce(left_join, by="coordinate")
-
-	gene_info <-
-		rowData(.data) %>%
-
-		# If reserved column names are present add .x
-		change_reserved_column_names() %>%
-
-		# Convert to tibble
-		tibble::as_tibble(rownames="feature")
-
-	count_info <- get_count_datasets(.data)
-
-	# Return
-	count_info %>%
-	left_join(sample_info, by="sample") %>%
-	left_join(gene_info, by="feature") %>%
-	when(nrow(range_info) > 0 ~ (.) %>% left_join(range_info) %>% suppressMessages(), ~ (.)) %>%
-
-	mutate_if(is.character, as.factor) %>%
+	# mutate_if(is.character, as.factor) %>%
 	tidybulk(
-		sample,
-		feature,
+		!!as.symbol(sample__$name),
+		!!as.symbol(feature__$name),
 		!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
 		!!norm_col # scaled counts if any
 	)
@@ -787,23 +758,22 @@ setMethod("adjust_abundance",
 
   collapse_function = function(x){ x %>% unique() %>% paste(collapse = "___")	}
 
-  feature_column_name = ".feature"
 
   # Row data
   new_row_data =
     .data %>%
     rowData() %>%
-    as_tibble(rownames = feature_column_name) %>%
+    as_tibble(rownames = feature__$name) %>%
     group_by(!!as.symbol(quo_name(.transcript))) %>%
     summarise(
       across(everything(), ~ .x %>% collapse_function()),
       merged.transcripts = n()
     ) %>%
-    arrange(!!as.symbol(feature_column_name)) %>%
+    arrange(!!as.symbol(feature__$name)) %>%
     as.data.frame()
 
-  rownames(new_row_data) = new_row_data[,feature_column_name]
-  new_row_data = new_row_data %>% select(-feature_column_name)
+  rownames(new_row_data) = new_row_data[,feature__$name]
+  new_row_data = new_row_data %>% select(-feature__$name)
 
   # Counts
   new_count_data =
@@ -824,7 +794,7 @@ setMethod("adjust_abundance",
     )
 
   # GRanges
-  columns_to_collapse = .data %>% rowData() %>% colnames() %>% setdiff(quo_name(.transcript)) %>% c(feature_column_name)
+  columns_to_collapse = .data %>% rowData() %>% colnames() %>% setdiff(quo_name(.transcript)) %>% c(feature__$name)
 
   rr = rowRanges(.data)
 
@@ -834,27 +804,27 @@ setMethod("adjust_abundance",
       as_tibble() %>%
       # Add names
       when(
-        is(rr, "CompressedGRangesList") ~ mutate(., !!as.symbol(feature_column_name) := group_name),
-        ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAME)
+        is(rr, "CompressedGRangesList") ~ mutate(., !!as.symbol(feature__$name) := group_name),
+        ~ mutate(., !!as.symbol(feature__$name) := rr@ranges@NAME)
       ) %>%
       left_join(
         rowData(.data) %>%
           as.data.frame() %>%
           select(!!as.symbol(quo_name(.transcript))) %>%
-          as_tibble(rownames =feature_column_name),
-            by = feature_column_name
+          as_tibble(rownames =feature__$name),
+            by = feature__$name
       ) %>%
       group_by(!!as.symbol(quo_name(.transcript))) %>%
       mutate(
         across(columns_to_collapse, ~ .x %>% collapse_function()),
         merged.transcripts = n()
       ) %>%
-      arrange(!!as.symbol(feature_column_name)) %>%
+      arrange(!!as.symbol(feature__$name)) %>%
 
       select(-one_of("group_name", "group")) %>%
       suppressWarnings() %>%
 
-      makeGRangesListFromDataFrame( split.field = feature_column_name,
+      makeGRangesListFromDataFrame( split.field = feature__$name,
                                     keep.extra.columns = TRUE) %>%
 
       .[match(rownames(new_count_data[[1]]), names(.))]
@@ -1894,7 +1864,7 @@ setMethod("test_gene_rank",
 		) %>%
 
 		# Convert to tibble
-		tibble::as_tibble(rownames="sample")
+		tibble::as_tibble(rownames=sample__$name)
 
 
 
@@ -1934,7 +1904,7 @@ setMethod("pivot_sample",
 
 	range_info <-
 		get_special_datasets(.data) %>%
-		reduce(left_join, by="feature")
+		reduce(left_join, by=feature__$name)
 
 	gene_info <-
 		rowData(.data) %>%
@@ -1946,11 +1916,11 @@ setMethod("pivot_sample",
 		) %>%
 
 		# Convert to tibble
-		tibble::as_tibble(rownames="feature")
+		tibble::as_tibble(rownames=feature__$name)
 
 	gene_info %>%
 		when(
-			nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by="feature"),
+			nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by=feature__$name),
 			~ (.)
 		)
 }
