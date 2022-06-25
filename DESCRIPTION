@@ -32,7 +32,8 @@ Imports:
     scales,
     SummarizedExperiment,
     GenomicRanges,
-    methods
+    methods,
+    S4Vectors
 Suggests:
     BiocStyle,
     testthat,
@@ -53,7 +54,6 @@ Suggests:
     Seurat,
     KernSmooth,
     Rtsne,
-    S4Vectors,
     ggplot2,
     widyr,
     clusterProfiler,
