@@ -860,25 +860,16 @@ setMethod("adjust_abundance",
     )
 
 
-  rr = rowRanges(.data)
-
-
-
-
-
-  if(!is.null(rr)){
+  if(!is.null(rowRanges(.data))){
 
     new_range_data =
-      rr %>%
+      rowRanges(.data) %>%
       as_tibble()
 
-      # # Add names
-      # when(
-      #   is(rr, "CompressedGRangesList") ~ mutate(., !!as.symbol(feature_column_name) := group_name),
-      #   .hasSlot(rr@ranges, "NAME") ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAME),
-      #   .hasSlot(rr@ranges, "NAMES") ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAMES),
-      #   ~ stop("tidybulk says: I don't know how to aggregate the GRanges, as the slot ranges@NAMES, or range@NAME do not exist")
-      # )
+    # If GRangesList & and .transcript is not there add .transcript
+    if(is(rowRanges(.data), "CompressedGRangesList") & !quo_name(.transcript) %in% colnames(new_range_data)){
+      new_range_data %>% left_join(). <<<<<
+    }
 
     # Through warning if there are logicals of factor in the data frame
     # because they cannot be merged if they are not unique
@@ -927,7 +918,7 @@ setMethod("adjust_abundance",
     #     rownames(.x) = .x %>% pull(!!as.symbol(feature_column_name))
     #     .x
     #   }
-
+browser()
     #if(is(rr, "CompressedGRangesList") | nrow(new_row_data)<nrow(rowData(.data))) {
       new_range_data = makeGRangesListFromDataFrame(
         new_range_data,
@@ -952,7 +943,7 @@ setMethod("adjust_abundance",
       colData = colData(.data)
     )
 
-  if(!is.null(rr)) rowRanges(.data_collapsed) = new_range_data
+  if(!is.null(rowRanges(.data))) rowRanges(.data_collapsed) = new_range_data
 
   rowData(.data_collapsed) = new_row_data
 
