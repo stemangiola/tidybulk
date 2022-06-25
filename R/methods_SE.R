@@ -24,38 +24,9 @@
 								~ as.symbol(.x),
 								~ NULL)
 
-	sample_info <-
-		colData(.data) %>%
+	.as_tibble_optimised(.data) %>%
 
-		# If reserved column names are present add .x
-		change_reserved_column_names() %>%
-
-		# Convert to tibble
-		tibble::as_tibble(rownames=sample__$name)
-
-
-	range_info <-
-		 get_special_datasets(.data) %>%
-			reduce(left_join, by="coordinate")
-
-	gene_info <-
-		rowData(.data) %>%
-
-		# If reserved column names are present add .x
-		change_reserved_column_names() %>%
-
-		# Convert to tibble
-		tibble::as_tibble(rownames=feature__$name)
-
-	count_info <- get_count_datasets(.data, feature__$name, sample__$name)
-
-	# Return
-	count_info %>%
-	left_join(sample_info, by=sample__$name) %>%
-	left_join(gene_info, by=feature__$name) %>%
-	when(nrow(range_info) > 0 ~ (.) %>% left_join(range_info) %>% suppressMessages(), ~ (.)) %>%
-
-	mutate_if(is.character, as.factor) %>%
+	# mutate_if(is.character, as.factor) %>%
 	tidybulk(
 		!!as.symbol(sample__$name),
 		!!as.symbol(feature__$name),
