@@ -3,7 +3,7 @@ context('Bulk methods SummarizedExperiment')
 data("se_mini")
 data("breast_tcga_mini_SE")
 
-input_df =  setNames(se_mini %>% tidybulk() %>% as_tibble(), c( "b","a",  "c", "Cell type",  "time" , "condition"))
+input_df =  setNames(se_mini %>% tidybulk() %>% as_tibble(), c( "b","a",  "c", "Cell type",  "time" , "condition", "days",  "dead", "entrez"))
 
 input_df_breast = setNames( breast_tcga_mini_SE %>% tidybulk() %>% as_tibble(), c( "b", "a","c", "c norm", "call" ))
 
@@ -43,14 +43,14 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 		tolerance=1e-3
 	)
 
-	expect_equal(	nrow(res),	800	)
+	expect_equal(	nrow(res),	2635	)
 
-	expect_equal(	ncol(res),	17	)
+	expect_equal(	ncol(res),	11	)
 
 
 	res = rlang::quo_name(attr(res, "internals")$tt_columns[[4]])
 
-	expect_equal( res,	"counts_scaled"	)
+	expect_equal( res,	"count_scaled"	)
 
 })
 
@@ -60,7 +60,7 @@ test_that("tidybulk SummarizedExperiment normalisation",{
 
 	expect_equal(
 		names(SummarizedExperiment::assays(res)),
-		c("counts" ,"counts_scaled")
+		c("count" ,"count_scaled")
 	)
 
 })
@@ -73,7 +73,7 @@ test_that("tidybulk SummarizedExperiment normalisation subset",{
 
   expect_equal(
     unique(SummarizedExperiment::colData(res)$multiplier),
-    c(1.3648110, 1.5756592, 1.1651309, 2.1282288, 1.2110911, 0.9574359, 1.4434610, 1.4897840),
+    c(4.008727 ,  3.953872  , 8.971316 ,  2.245514  ,10.658455 ),
     tolerance=1e-6
   )
 
@@ -139,7 +139,7 @@ test_that("Drop redundant correlated - SummarizedExperiment",{
 
 	expect_equal(
 		nrow(res),
-		100
+		527
 	)
 
 })
@@ -174,7 +174,7 @@ test_that("Aggregate duplicated transcript - SummarizedExperiment",{
     se %>%
 		aggregate_duplicates(	.transcript = bla )
 
-	expect_equal(	dim(res),	c( 99,   8  )	)
+	expect_equal(	dim(res),	c( 527,   5  )	)
 
 
 })
@@ -185,7 +185,7 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 
 	expect_equal(
 		as.numeric(as.data.frame(res@colData[1, 4:7])),
-		c( 0.6196622 ,0.2525598, 0.0000000, 0.0000000),
+		c( 1.0000000 ,1.0000000, 0.6196622, 0.2525598),
 		tolerance=1e-3
 	)
 
@@ -327,7 +327,7 @@ test_that("filter abundant - SummarizedExperiment",{
 
 	res =		keep_abundant(		se	)
 
-	expect_equal(		nrow(res),		23	)
+	expect_equal(		nrow(res),		182	)
 
 })
 
@@ -498,16 +498,15 @@ test_that("test_stratification_cellularity",{
 
 test_that("pivot",{
 
-	expect_equal(	ncol(pivot_sample(se_mini)	), 4)
+	expect_equal(	ncol(pivot_sample(se_mini)	), 6)
 
-	expect_equal(	ncol(pivot_transcript(se_mini)	), 1)
+	expect_equal(	ncol(pivot_transcript(se_mini)	), 2)
 
 })
 
 test_that("gene over representation",{
 
-	df_entrez = symbol_to_entrez(input_df, .transcript = b, .sample = a)
-	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = a, .transcript = entrez, .abundance = c)
+	df_entrez = aggregate_duplicates(input_df, aggregation_function = sum, .sample = a, .transcript = entrez, .abundance = c)
 	df_entrez = mutate(df_entrez, do_test = b %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 
 	res =
@@ -527,9 +526,6 @@ test_that("gene over representation",{
 
 
 test_that("Only reduced dimensions MDS - no object",{
-
-
-
 
 	res =
 	  breast_tcga_mini_SE %>%
@@ -621,3 +617,4 @@ test_that("Only reduced dimensions UMAP - no object",{
   expect_equal(	class(attr(res, "internals")$UMAP[[1]])[1], 	"numeric"  )
 
 })
+

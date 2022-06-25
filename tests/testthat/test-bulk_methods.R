@@ -3,7 +3,7 @@ context('Bulk methods')
 data("se_mini")
 data("breast_tcga_mini_SE")
 
-input_df = se_mini %>% tidybulk() %>% as_tibble() %>% setNames(c("b","a",  "c", "Cell type", "time" , "condition"))
+input_df = se_mini %>% tidybulk() %>% as_tibble() %>% setNames(c("b","a",  "c", "Cell type", "time" , "condition", "days",  "dead", "entrez"))
 
 input_df_breast =   breast_tcga_mini_SE %>% tidybulk() %>% as_tibble() %>% setNames(c( "b","a", "c", "c norm", "call"))
 
@@ -128,7 +128,7 @@ test_that("Adding scaled counts - no object",{
 
 	expect_equal(
 		ncol(res),
-		10
+		13
 	)
 
 })
@@ -379,7 +379,7 @@ test_that("Add differential trancript abundance - no object",{
 
 	expect_equal(
 		ncol(res),
-		12
+		15
 	)
 
 	expect_equal(	class(attr(res, "internals")$edgeR)[1], 	"DGEGLM"  )
@@ -824,7 +824,9 @@ test_that("test prefix",{
 test_that("Get entrez from symbol - no object",{
 
 	res =
-		symbol_to_entrez(input_df, .transcript = b, .sample = a)
+	  input_df %>%
+	  select(-entrez) %>%
+	  symbol_to_entrez(.transcript = b, .sample = a)
 
 	expect_equal(
 		res$entrez[1:4],
@@ -928,7 +930,7 @@ test_that("Get adjusted counts - no object",{
 
 	expect_equal(
 		ncol(res),
-		7
+		9
 	)
 
 })
@@ -957,7 +959,7 @@ test_that("Add adjusted counts - no object",{
 
 	expect_equal(
 		ncol(res),
-		9
+		12
 	)
 
 })
@@ -1008,7 +1010,7 @@ test_that("Get cluster lables based on Kmeans - no object",{
 
 	expect_equal(
 		ncol(res),
-		5
+		7
 	)
 	expect_equal(
 		nrow(res),
@@ -1037,7 +1039,7 @@ test_that("Add cluster lables based on Kmeans - no object",{
 
 	expect_equal(
 		ncol(res),
-		7
+		10
 	)
 
 })
@@ -1179,7 +1181,7 @@ test_that("Get reduced dimensions MDS - no object",{
 
 	expect_equal(
 		ncol(res),
-		6
+		8
 	)
 	expect_equal(
 		nrow(res),
@@ -1208,7 +1210,7 @@ test_that("Add reduced dimensions MDS - no object",{
 
 	expect_equal(
 		ncol(res),
-		9
+		12
 	)
 
 	expect_equal(	class(attr(res, "internals")$MDS[[1]])[1], 	"MDS"  )
@@ -1271,7 +1273,7 @@ test_that("Get reduced dimensions PCA - no object",{
 
 	expect_equal(
 		ncol(res),
-		6
+		8
 	)
 
 	expect_equal(	class(attr(res, "internals")$PCA), 	"prcomp"  )
@@ -1298,7 +1300,7 @@ test_that("Add reduced dimensions PCA - no object",{
 
 	expect_equal(
 		ncol(res),
-		9
+		12
 	)
 
 	expect_equal(	class(attr(res, "internals")$PCA), 	"prcomp"  )
@@ -1447,7 +1449,7 @@ test_that("Get rotated dimensions - no object",{
 
 	expect_equal(
 		ncol(res),
-		8
+		10
 	)
 	expect_equal(
 		nrow(res),
@@ -1486,7 +1488,7 @@ test_that("Add rotated dimensions - no object",{
 
 	expect_equal(
 		ncol(res),
-		11
+		14
 	)
 
 })
@@ -1508,7 +1510,7 @@ test_that("Aggregate duplicated transcript - no object",{
 
 	expect_equal(
 		ncol(res),
-		7
+		10
 	)
 
 })
@@ -1531,7 +1533,7 @@ test_that("Drop redundant correlated - no object",{
 
 	expect_equal(
 		ncol(res),
-		6
+		9
 	)
 
 })
@@ -1606,7 +1608,7 @@ test_that("Add description to symbol",{
 
 	expect_equal(
 		ncol(res),
-		7
+		10
 	)
 
 })
@@ -1816,7 +1818,7 @@ test_that("filter abundant - no object",{
 
 	expect_equal(
 		ncol(res1),
-		7
+		10
 	)
 
 	res2 =
@@ -1831,7 +1833,7 @@ test_that("filter abundant - no object",{
 
 	expect_equal(
 		ncol(res2),
-		7
+		10
 	)
 
 	expect_gt(
@@ -1849,7 +1851,7 @@ test_that("filter abundant - no object",{
 
 	expect_equal(
 		ncol(res),
-		7
+		10
 	)
 
 })
@@ -1867,7 +1869,7 @@ test_that("filter abundant with design - no object",{
 
 	expect_equal(
 		ncol(res),
-		7
+		10
 	)
 
 
@@ -1882,13 +1884,13 @@ test_that("nest - no object",{
 
 test_that("pivot",{
 
-	expect_equal(	ncol(pivot_sample(tidybulk(input_df, a, b, c))),	4	)
+	expect_equal(	ncol(pivot_sample(tidybulk(input_df, a, b, c))),	6	)
 
-	expect_equal(	ncol(pivot_sample(input_df, a)),	4	)
+	expect_equal(	ncol(pivot_sample(input_df, a)),	6	)
 
-	expect_equal(	ncol(pivot_transcript(tidybulk(input_df, a, b, c))),	1	)
+	expect_equal(	ncol(pivot_transcript(tidybulk(input_df, a, b, c))),	2	)
 
-	expect_equal(	ncol(pivot_transcript(input_df, b)),	1	)
+	expect_equal(	ncol(pivot_transcript(input_df, b)),	2	)
 
 })
 
@@ -1913,7 +1915,7 @@ test_that("pivot",{
 
 test_that("gene over representation",{
 
-	df_entrez =  se_mini %>% tidybulk() %>% as_tibble() %>% symbol_to_entrez(.transcript = .feature, .sample = .sample)
+	df_entrez =  se_mini %>% tidybulk() %>% as_tibble()
 	df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = .sample, .transcript = entrez, .abundance = count)
 	df_entrez = mutate(df_entrez, do_test = .feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 
