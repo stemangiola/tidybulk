@@ -1597,7 +1597,7 @@ test_that("Add description to symbol",{
 
 	expect_equal(
 		ncol(res),
-		7
+		10
 	)
 
 	res =
