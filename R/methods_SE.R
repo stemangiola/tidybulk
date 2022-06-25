@@ -1061,7 +1061,7 @@ setMethod(
 #' @importFrom rlang inform
 .test_differential_abundance_se = function(.data,
 																					 .formula,
-																					 .contrasts = NULL,
+																					 contrasts = NULL,
 																					 method = "edgeR_quasi_likelihood",
 																					 test_above_log2_fold_change = NULL,
 																					 scaling_method = "TMM",
@@ -1069,6 +1069,15 @@ setMethod(
 																					 prefix = "",
 																					 ...)
 {
+
+  # DEPRECATION OF .constrasts
+  if (is_present(.contrasts) & !is.null(.contrasts)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+
+    contrasts = .contrasts
+  }
 
 	# Clearly state what counts are used
   # Clearly state what counts are used
@@ -1098,7 +1107,7 @@ such as batch effects (if applicable) in the formula.
 				get_differential_transcript_abundance_bulk_SE(
 					.,
 					.formula,
-					.contrasts = .contrasts,
+					.contrasts = contrasts,
 					colData(.data),
 					method = method,
 					test_above_log2_fold_change = test_above_log2_fold_change,
@@ -1112,7 +1121,7 @@ such as batch effects (if applicable) in the formula.
 			grepl("voom", method) ~ get_differential_transcript_abundance_bulk_voom_SE(
 				.,
 				.formula,
-				.contrasts = .contrasts,
+				.contrasts = contrasts,
 				colData(.data),
 				method = method,
 				test_above_log2_fold_change = test_above_log2_fold_change,
@@ -1125,7 +1134,7 @@ such as batch effects (if applicable) in the formula.
 			tolower(method)=="deseq2" ~ get_differential_transcript_abundance_deseq2_SE(
 				.,
 				.formula,
-				.contrasts = .contrasts,
+				.contrasts = contrasts,
 				method = method,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
@@ -1431,13 +1440,15 @@ setMethod("keep_abundant",
 																			.sample = NULL,
 																			.entrez,
 																			.abundance = NULL,
-																			.contrasts = NULL,
+																			contrasts = NULL,
 																			methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																			gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 																			species,
 																			cores = 10,
 
-																			method = NULL # DEPRECATED
+																			# DEPRECATED
+																			method = NULL,
+																			.contrasts = NULL
 																		)	{
 
 	# DEPRECATION OF reference function
@@ -1447,6 +1458,15 @@ setMethod("keep_abundant",
 		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", details = "The argument method is now deprecated please use methods")
 		methods = method
 	}
+
+  # DEPRECATION OF .constrasts
+  if (is_present(.contrasts) & !is.null(.contrasts)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+
+    contrasts = .contrasts
+  }
 
 	.entrez = enquo(.entrez)
 
@@ -1495,7 +1515,7 @@ setMethod("keep_abundant",
 	)
 
 	my_contrasts =
-		.contrasts %>%
+		contrasts %>%
 		when(
 			length(.) > 0 ~ limma::makeContrasts(contrasts = ., levels = design),
 			~ NULL

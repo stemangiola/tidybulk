@@ -302,7 +302,7 @@ test_that("Voom with treat method",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			.contrasts = c("Cell.typeb_cell-Cell.typemonocyte", "Cell.typeb_cell-Cell.typet_cell"),
+			contrasts = c("Cell.typeb_cell-Cell.typemonocyte", "Cell.typeb_cell-Cell.typet_cell"),
 			method = "limma_voom",
 			test_above_log2_fold_change = 1,
 			action="only"

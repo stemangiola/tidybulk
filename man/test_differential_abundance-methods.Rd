@@ -16,7 +16,7 @@ test_differential_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
@@ -25,7 +25,8 @@ test_differential_abundance(
   action = "add",
   ...,
   significance_threshold = NULL,
-  fill_missing_values = NULL
+  fill_missing_values = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_differential_abundance}{spec_tbl_df}(
@@ -34,7 +35,7 @@ test_differential_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
@@ -43,7 +44,8 @@ test_differential_abundance(
   action = "add",
   ...,
   significance_threshold = NULL,
-  fill_missing_values = NULL
+  fill_missing_values = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_differential_abundance}{tbl_df}(
@@ -52,7 +54,7 @@ test_differential_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
@@ -61,7 +63,8 @@ test_differential_abundance(
   action = "add",
   ...,
   significance_threshold = NULL,
-  fill_missing_values = NULL
+  fill_missing_values = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_differential_abundance}{tidybulk}(
@@ -70,7 +73,7 @@ test_differential_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
@@ -79,7 +82,8 @@ test_differential_abundance(
   action = "add",
   ...,
   significance_threshold = NULL,
-  fill_missing_values = NULL
+  fill_missing_values = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_differential_abundance}{SummarizedExperiment}(
@@ -88,7 +92,7 @@ test_differential_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
@@ -97,7 +101,8 @@ test_differential_abundance(
   action = "add",
   ...,
   significance_threshold = NULL,
-  fill_missing_values = NULL
+  fill_missing_values = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_differential_abundance}{RangedSummarizedExperiment}(
@@ -106,7 +111,7 @@ test_differential_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
@@ -115,7 +120,8 @@ test_differential_abundance(
   action = "add",
   ...,
   significance_threshold = NULL,
-  fill_missing_values = NULL
+  fill_missing_values = NULL,
+  .contrasts = NULL
 )
 }
 \arguments{
@@ -129,7 +135,7 @@ test_differential_abundance(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{.contrasts}{This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
+\item{contrasts}{This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
 \item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights"}
 
@@ -148,6 +154,8 @@ test_differential_abundance(
 \item{significance_threshold}{DEPRECATED - A real between 0 and 1 (usually 0.05).}
 
 \item{fill_missing_values}{DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
+
+\item{.contrasts}{DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 }
 \value{
 A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
@@ -221,7 +229,7 @@ DESeq2::results()
  identify_abundant() |>
  test_differential_abundance(
 	    ~ 0 + condition,
-	    .contrasts = c( "conditionTRUE - conditionFALSE")
+	    contrasts = c( "conditionTRUE - conditionFALSE")
  )
 
  # DESeq2 - equivalent for limma-voom
@@ -239,7 +247,7 @@ my_se_mini  |>
  identify_abundant() |>
  test_differential_abundance(
 	    ~ 0 + condition,
-	    .contrasts = list(c("condition", "TRUE", "FALSE")),
+	    contrasts = list(c("condition", "TRUE", "FALSE")),
 	    method="deseq2"
  )
 
