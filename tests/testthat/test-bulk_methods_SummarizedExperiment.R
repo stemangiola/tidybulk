@@ -184,8 +184,8 @@ test_that("Add cell type proportions - SummarizedExperiment",{
   res =		deconvolve_cellularity(se_mini, cores=1	)
 
   expect_equal(
-    as.numeric(as.data.frame(res@colData[1, 4:7])),
-    c( 1.0000000, 1.0000000, 0.6196622, 0.2525598),
+    as.numeric(as.data.frame(res@colData[1, 6:9])),
+    c(  0.619662   ,     0.25256  ,          0    ,       0),
     tolerance=1e-3
   )
 
