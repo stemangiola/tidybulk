@@ -21,8 +21,7 @@ Get matrix from tibble
 }
 \examples{
 
-library(dplyr)
 
-tidybulk::se_mini |> tidybulk() |> select(feature, count) |> head() |> as_matrix(rownames=feature)
+tibble(.feature = "CD3G", count=1) |> as_matrix(rownames=.feature)
 
 }
