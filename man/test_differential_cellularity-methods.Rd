@@ -153,19 +153,8 @@ deconvolve_cellularity(
 	)
 
 	# Cox regression - multiple
-	library(dplyr)
-	library(tidyr)
 
 tidybulk::se_mini |>
-   tidybulk() |>
-
-	# Add survival data
-	nest(data = -sample) |>
-	mutate(
-		days = c(1, 10, 500, 1000, 2000),
-		dead = c(1, 1, 1, 0, 1)
-	) \%>\%
-	unnest(data) |>
 
 	# Test
 	test_differential_cellularity(

@@ -1460,36 +1460,6 @@ rotation = function(m, d) {
 	) %>% as_matrix) %*% m)
 }
 
-#'
-#' @keywords internal
-#' @noRd
-#'
-#' @importFrom dplyr select
-#' @importFrom tibble as_tibble
-#' @importFrom tibble tibble
-get_special_datasets <- function(SummarizedExperiment_object) {
-	if (
-		"RangedSummarizedExperiment" %in% .class2(SummarizedExperiment_object) &
-
-		rowRanges(SummarizedExperiment_object) %>%
-		as.data.frame() %>%
-		nrow() %>%
-		gt(0)
-	) {
-		rowRanges(SummarizedExperiment_object) %>%
-			as.data.frame() %>%
-
-			# Take off rowData columns as there is a recursive anomaly within gene ranges
-			suppressWarnings(
-				select(-one_of(colnames(rowData(SummarizedExperiment_object))))
-			) %>%
-			tibble::as_tibble(rownames="feature") %>%
-			list()
-	} else {
-		tibble() %>% list()
-	}
-}
-
 combineByRow <- function(m, fun = NULL) {
   # Shown here
   #https://stackoverflow.com/questions/8139301/aggregate-rows-in-a-large-matrix-by-rowname
@@ -1599,3 +1569,11 @@ fill_NA_matrix_with_factor_colwise = function(.data, factor){
 select_non_standard_column_class = function(.x){
   !is.numeric(.x) & !is.character(.x) & !is.factor(.x) & !is.logical(.x)
 }
+
+get_special_column_name_symbol = function(name){
+  list(name = name, symbol = as.symbol(name))
+}
+
+feature__ =  get_special_column_name_symbol(".feature")
+sample__ = get_special_column_name_symbol(".sample")
+

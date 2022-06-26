@@ -3451,8 +3451,7 @@ fill_NA_using_formula = function(.data,
    # Add the imputed column
    mutate(!!as.symbol(imputed_column) := !!.abundance) %>%
    when(
-     quo_is_symbol(.abundance_scaled) ~ .x %>%
-       mutate(!!as.symbol(imputed_column_scaled) := !!.abundance_scaled),
+     quo_is_symbol(.abundance_scaled) ~ mutate(., !!as.symbol(imputed_column_scaled) := !!.abundance_scaled),
      ~ (.)
    )
 

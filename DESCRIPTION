@@ -1,7 +1,7 @@
 Type: Package
 Package: tidybulk
 Title: Brings transcriptomics to the tidyverse 
-Version: 1.6.2
+Version: 1.7.3
 Authors@R: c(person("Stefano", "Mangiola", email = "mangiolastefano@gmail.com",
                   role = c("aut", "cre")),
             person("Maria", "Doyle", email = "Maria.Doyle@petermac.org",
@@ -32,7 +32,8 @@ Imports:
     scales,
     SummarizedExperiment,
     GenomicRanges,
-    methods
+    methods,
+    S4Vectors
 Suggests:
     BiocStyle,
     testthat,
@@ -53,7 +54,6 @@ Suggests:
     Seurat,
     KernSmooth,
     Rtsne,
-    S4Vectors,
     ggplot2,
     widyr,
     clusterProfiler,

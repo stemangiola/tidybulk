@@ -24,41 +24,12 @@
 								~ as.symbol(.x),
 								~ NULL)
 
-	sample_info <-
-		colData(.data) %>%
+	.as_tibble_optimised(.data) %>%
 
-		# If reserved column names are present add .x
-		change_reserved_column_names() %>%
-
-		# Convert to tibble
-		tibble::as_tibble(rownames="sample")
-
-
-	range_info <-
-		 get_special_datasets(.data) %>%
-			reduce(left_join, by="coordinate")
-
-	gene_info <-
-		rowData(.data) %>%
-
-		# If reserved column names are present add .x
-		change_reserved_column_names() %>%
-
-		# Convert to tibble
-		tibble::as_tibble(rownames="feature")
-
-	count_info <- get_count_datasets(.data)
-
-	# Return
-	count_info %>%
-	left_join(sample_info, by="sample") %>%
-	left_join(gene_info, by="feature") %>%
-	when(nrow(range_info) > 0 ~ (.) %>% left_join(range_info) %>% suppressMessages(), ~ (.)) %>%
-
-	mutate_if(is.character, as.factor) %>%
+	# mutate_if(is.character, as.factor) %>%
 	tidybulk(
-		sample,
-		feature,
+		!!as.symbol(sample__$name),
+		!!as.symbol(feature__$name),
 		!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
 		!!norm_col # scaled counts if any
 	)
@@ -787,7 +758,6 @@ setMethod("adjust_abundance",
 
   collapse_function = function(x){ x %>% unique() %>% paste(collapse = "___")	}
 
-  feature_column_name = ".feature"
 
   # Non standard column classes
   non_standard_columns =
@@ -814,19 +784,20 @@ setMethod("adjust_abundance",
   new_row_data =
     .data %>%
     rowData() %>%
-    as_tibble(rownames = feature_column_name) %>%
+    as_tibble(rownames = feature__$name) %>%
     group_by(!!as.symbol(quo_name(.transcript))) %>%
     summarise(
       across(columns_to_collapse, ~ .x %>% collapse_function()),
       across(non_standard_columns, ~ .x[1]),
       merged_transcripts = n()
     ) %>%
-    arrange(!!as.symbol(feature_column_name)) %>%
+
+    arrange(!!as.symbol(feature__$name)) %>%
     as.data.frame() %>%
     {
       .x = (.)
-      rownames(.x) = .x[,feature_column_name]
-      .x = .x %>% select(-feature_column_name)
+      rownames(.x) = .x[,feature__$name]
+      .x = .x %>% select(-feature__$name)
       .x
     }
 
@@ -863,6 +834,7 @@ setMethod("adjust_abundance",
   if(!is.null(rowRanges(.data))){
 
     new_range_data =
+
       rowRanges(.data) %>%
       as_tibble()
 
@@ -879,6 +851,7 @@ setMethod("adjust_abundance",
         print(.data %>% select(non_standard_columns))
       }), collapse = "\n"))
     }
+
 
 
 
@@ -1970,7 +1943,7 @@ setMethod("test_gene_rank",
 		) %>%
 
 		# Convert to tibble
-		tibble::as_tibble(rownames="sample")
+		tibble::as_tibble(rownames=sample__$name)
 
 
 
@@ -2010,7 +1983,7 @@ setMethod("pivot_sample",
 
 	range_info <-
 		get_special_datasets(.data) %>%
-		reduce(left_join, by="feature")
+		reduce(left_join, by=feature__$name)
 
 	gene_info <-
 		rowData(.data) %>%
@@ -2022,11 +1995,11 @@ setMethod("pivot_sample",
 		) %>%
 
 		# Convert to tibble
-		tibble::as_tibble(rownames="feature")
+		tibble::as_tibble(rownames=feature__$name)
 
 	gene_info %>%
 		when(
-			nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by="feature"),
+			nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by=feature__$name),
 			~ (.)
 		)
 }
