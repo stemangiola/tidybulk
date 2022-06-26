@@ -81,7 +81,8 @@ remove_redundancy(
   top = Inf,
   transform = identity,
   Dim_a_column = NULL,
-  Dim_b_column = NULL
+  Dim_b_column = NULL,
+  log_transform = NULL
 )
 
 \S4method{remove_redundancy}{RangedSummarizedExperiment}(
@@ -95,7 +96,8 @@ remove_redundancy(
   top = Inf,
   transform = identity,
   Dim_a_column = NULL,
-  Dim_b_column = NULL
+  Dim_b_column = NULL,
+  log_transform = NULL
 )
 }
 \arguments{
