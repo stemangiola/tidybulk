@@ -1,3 +1,5 @@
+# Public code https://rdrr.io/github/IOBR/IOBR/src/R/CIBERSORT.R
+
 # CIBERSORT R script v1.03 (last updated 07-10-2015)
 # Note: Signature matrix construction is not currently available; use java version for full functionality.
 # Author: Aaron M. Newman, Stanford University (amnewman@stanford.edu)
@@ -172,6 +174,34 @@ doPerm <- function(perm, X, Y, cores = 3){
   newList <- list("dist" = dist)
 }
 
+# MADE BY STEFANO TO ALLOW PARALLELISM
+call_core = function(itor, Y, X, P, pval, CoreAlg){
+  ##################################
+  ## Analyze the first mixed sample
+  ##################################
+
+  y <- Y[,itor]
+
+  #standardize mixture
+  y <- (y - mean(y)) / sd(y)
+
+  #run SVR core algorithm
+  result <- CoreAlg(X, y, cores = 1)
+
+  #get results
+  w <- result$w
+  mix_r <- result$mix_r
+  mix_rmse <- result$mix_rmse
+
+  #calculate p-value
+  if(P > 0) {pval <- 1 - (which.min(abs(nulldist - mix_r)) / length(nulldist))}
+
+  #print output
+  c(colnames(Y)[itor],w,pval,mix_r,mix_rmse)
+
+}
+
+
 #' @importFrom stats sd
 #' @importFrom utils install.packages
 #'
@@ -248,45 +278,37 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
   #empirical null distribution of correlation coefficients
   if(P > 0) {nulldist <- sort(doPerm(P, X, Y, cores = cores)$dist)}
 
-  #print(nulldist)
 
   header <- c('Mixture',colnames(X),"P-value","Correlation","RMSE")
-  #print(header)
 
   output <- matrix()
   itor <- 1
   mix <- dim(Y)[2]
   pval <- 9999
 
-  #iterate through mix
-  while(itor <= mix){
+  # If not Windows
+  if(Sys.info()['sysname'] == 'Windows')
+  {
+    while(itor <= mix){
 
-    ##################################
-    ## Analyze the first mixed sample
-    ##################################
+      ##################################
+      ## Analyze the first mixed sample
+      ##################################
 
-    y <- Y[,itor]
 
-    #standardize mixture
-    y <- (y - mean(y)) / sd(y)
+      out <- call_core(itor, Y, X, P, pval, CoreAlg)
+      if(itor == 1) {output <- out}
+      else {output <- rbind(output, out)}
+      itor <- itor + 1
 
-    #run SVR core algorithm
-    result <- CoreAlg(X, y, cores = cores)
+    }
 
-    #get results
-    w <- result$w
-    mix_r <- result$mix_r
-    mix_rmse <- result$mix_rmse
+  }
 
-    #calculate p-value
-    if(P > 0) {pval <- 1 - (which.min(abs(nulldist - mix_r)) / length(nulldist))}
-
-    #print output
-    out <- c(colnames(Y)[itor],w,pval,mix_r,mix_rmse)
-    if(itor == 1) {output <- out}
-    else {output <- rbind(output, out)}
-
-    itor <- itor + 1
+  # If Linux of Mac
+  else {
+    output <- parallel::mclapply(1:mix, call_core, Y, X, P, pval, CoreAlg, mc.cores=cores)
+    output= matrix(unlist(output), nrow=length(output), byrow=TRUE)
 
   }
 
