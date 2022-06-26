@@ -16,13 +16,14 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
     "kegg_metabolism", "kegg_signaling"),
   species,
   cores = 10,
-  method = NULL
+  method = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_gene_enrichment}{spec_tbl_df}(
@@ -31,13 +32,14 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
     "kegg_metabolism", "kegg_signaling"),
   species,
   cores = 10,
-  method = NULL
+  method = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_gene_enrichment}{tbl_df}(
@@ -46,13 +48,14 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
     "kegg_metabolism", "kegg_signaling"),
   species,
   cores = 10,
-  method = NULL
+  method = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_gene_enrichment}{tidybulk}(
@@ -61,13 +64,14 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
     "kegg_metabolism", "kegg_signaling"),
   species,
   cores = 10,
-  method = NULL
+  method = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_gene_enrichment}{SummarizedExperiment}(
@@ -76,13 +80,14 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
     "kegg_metabolism", "kegg_signaling"),
   species,
   cores = 10,
-  method = NULL
+  method = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_gene_enrichment}{RangedSummarizedExperiment}(
@@ -91,13 +96,14 @@ test_gene_enrichment(
   .sample = NULL,
   .entrez,
   .abundance = NULL,
-  .contrasts = NULL,
+  contrasts = NULL,
   methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
   gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
     "kegg_metabolism", "kegg_signaling"),
   species,
   cores = 10,
-  method = NULL
+  method = NULL,
+  .contrasts = NULL
 )
 }
 \arguments{
@@ -111,7 +117,7 @@ test_gene_enrichment(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{.contrasts}{= NULL,}
+\item{contrasts}{This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
 \item{methods}{A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.}
 
@@ -122,6 +128,8 @@ test_gene_enrichment(
 \item{cores}{An integer. The number of cores available}
 
 \item{method}{DEPRECATED. Please use methods.}
+
+\item{.contrasts}{DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 }
 \value{
 A consistent object (to the input)

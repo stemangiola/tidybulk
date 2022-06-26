@@ -2118,7 +2118,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .contrasts This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param contrasts This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights"
 #' @param test_above_log2_fold_change A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
 #' @param scaling_method A character string. The scaling method passed to the back-end functions: edgeR and limma-voom (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile"). Setting the parameter to \"none\" will skip the compensation for sequencing-depth for the method edgeR or limma-voom.
@@ -2127,6 +2127,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param significance_threshold DEPRECATED - A real between 0 and 1 (usually 0.05).
 #' @param fill_missing_values DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
+#' @param .contrasts DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param ... Further arguments passed to some of the internal functions. Currently, it is needed just for internal debug.
 #'
 #'
@@ -2189,7 +2190,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'  identify_abundant() |>
 #'  test_differential_abundance(
 #' 	    ~ 0 + condition,
-#' 	    .contrasts = c( "conditionTRUE - conditionFALSE")
+#' 	    contrasts = c( "conditionTRUE - conditionFALSE")
 #'  )
 #'
 #'  # DESeq2 - equivalent for limma-voom
@@ -2207,7 +2208,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'  identify_abundant() |>
 #'  test_differential_abundance(
 #' 	    ~ 0 + condition,
-#' 	    .contrasts = list(c("condition", "TRUE", "FALSE")),
+#' 	    contrasts = list(c("condition", "TRUE", "FALSE")),
 #' 	    method="deseq2"
 #'  )
 #'
@@ -2220,7 +2221,7 @@ setGeneric("test_differential_abundance", function(.data,
 																									 .sample = NULL,
 																									 .transcript = NULL,
 																									 .abundance = NULL,
-																									 .contrasts = NULL,
+																									 contrasts = NULL,
 																									 method = "edgeR_quasi_likelihood",
 																									 test_above_log2_fold_change = NULL,
 																									 scaling_method = "TMM",
@@ -2231,7 +2232,8 @@ setGeneric("test_differential_abundance", function(.data,
 
 																									 # DEPRECATED
 																									 significance_threshold = NULL,
-																									 fill_missing_values = NULL
+																									 fill_missing_values = NULL,
+																									 .contrasts = NULL
 																									)
 					 standardGeneric("test_differential_abundance"))
 
@@ -2242,7 +2244,7 @@ setGeneric("test_differential_abundance", function(.data,
 																					.sample = NULL,
 																					.transcript = NULL,
 																					.abundance = NULL,
-																					.contrasts = NULL,
+																					contrasts = NULL,
 																					method = "edgeR_quasi_likelihood",
 																					test_above_log2_fold_change = NULL,
 																					scaling_method = "TMM",
@@ -2254,7 +2256,8 @@ setGeneric("test_differential_abundance", function(.data,
 
 																					# DEPRECATED
 																					significance_threshold = NULL,
-																					fill_missing_values = NULL
+																					fill_missing_values = NULL,
+																					.contrasts = NULL
 																				)
 {
 	# Get column names
@@ -2280,6 +2283,15 @@ setGeneric("test_differential_abundance", function(.data,
 		# Signal the deprecation to the user
 		deprecate_warn("1.1.7", "tidybulk::test_differential_abundance(fill_missing_values = )", details = "The argument fill_missing_values is now deprecated, you will receive a warning/error instead. Please use externally the methods fill_missing_abundance or impute_missing_abundance instead.")
 
+	}
+
+	# DEPRECATION OF .constrasts
+	if (is_present(.contrasts) & !is.null(.contrasts)) {
+
+	  # Signal the deprecation to the user
+	  deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+
+	  contrasts = .contrasts
 	}
 
 	# Clearly state what counts are used
@@ -2322,7 +2334,7 @@ such as batch effects (if applicable) in the formula.
 				.sample = !!.sample,
 				.transcript = !!.transcript,
 				.abundance = !!.abundance,
-				.contrasts = .contrasts,
+				.contrasts = contrasts,
 				method = method,
 				test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
@@ -2338,7 +2350,7 @@ such as batch effects (if applicable) in the formula.
 					.sample = !!.sample,
 					.transcript = !!.transcript,
 					.abundance = !!.abundance,
-					.contrasts = .contrasts,
+					.contrasts = contrasts,
 					method = method,
 					test_above_log2_fold_change = test_above_log2_fold_change,
 					scaling_method = scaling_method,
@@ -2354,7 +2366,7 @@ such as batch effects (if applicable) in the formula.
 				.sample = !!.sample,
 				.transcript = !!.transcript,
 				.abundance = !!.abundance,
-				.contrasts = .contrasts,
+				.contrasts = contrasts,
 				method = method,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
@@ -2372,10 +2384,6 @@ such as batch effects (if applicable) in the formula.
 		.data %>%
 			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
 
-			# # Arrange
-			# ifelse_pipe(.contrasts %>% is.null,
-			# 						~ .x %>% arrange(FDR))	%>%
-
 			# Attach attributes
 			reattach_internals(.data_processed)
 
@@ -2386,17 +2394,8 @@ such as batch effects (if applicable) in the formula.
 
 			# Selecting the right columns
 			pivot_transcript(!!.transcript) %>%
-			# select(
-			# 	!!.transcript,
-			# 	get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$vertical_cols
-			# ) %>%
-			# distinct() %>%
 
 			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
-
-			# # Arrange
-			# ifelse_pipe(.contrasts %>% is.null,
-			# 						~ .x %>% arrange(FDR))	%>%
 
 			# Attach attributes
 			reattach_internals(.data_processed)
@@ -2837,13 +2836,14 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @param .sample The name of the sample column
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .contrasts = NULL,
+#' @param contrasts This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param methods A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
 #' @param gene_sets A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.
 #' @param species A character. It can be human, mouse or rat.
 #' @param cores An integer. The number of cores available
 #'
 #' @param method DEPRECATED. Please use methods.
+#' @param .contrasts DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #'
 #' @details This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 #'
@@ -2917,13 +2917,15 @@ setGeneric("test_gene_enrichment", function(.data,
 																							 .sample = NULL,
 																							 .entrez,
 																							 .abundance = NULL,
-																							 .contrasts = NULL,
+																							 contrasts = NULL,
 																							 methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																							 gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 																							 species,
 																							 cores = 10,
 
-																						method = NULL # DEPRECATED
+																							 # DEPRECATED
+																						method = NULL,
+																						.contrasts = NULL
 																						)
 	standardGeneric("test_gene_enrichment"))
 
@@ -2934,13 +2936,15 @@ setGeneric("test_gene_enrichment", function(.data,
 																			.sample = NULL,
 																			.entrez,
 																			.abundance = NULL,
-																			.contrasts = NULL,
+																			contrasts = NULL,
 																	    methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																			gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 																			species,
 																			cores = 10,
 
-																	 method = NULL # DEPRECATED
+																			# DEPRECATED
+																	 method = NULL,
+																	 .contrasts = NULL
 																	 )	{
 
 	# DEPRECATION OF reference function
@@ -2950,6 +2954,15 @@ setGeneric("test_gene_enrichment", function(.data,
 		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", details = "The argument method is now deprecated please use methods")
 		methods = method
 	}
+
+  # DEPRECATION OF .constrasts
+  if (is_present(.contrasts) & !is.null(.contrasts)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+
+    contrasts = .contrasts
+  }
 
 	# Make col names
 	.sample = enquo(.sample)
@@ -2993,7 +3006,7 @@ setGeneric("test_gene_enrichment", function(.data,
 			.sample = !!.sample,
 			.entrez = !!.entrez,
 			.abundance = !!.abundance,
-			.contrasts = .contrasts,
+			.contrasts = contrasts,
 			methods = methods,
 			gene_sets = gene_sets,
 			species = species,

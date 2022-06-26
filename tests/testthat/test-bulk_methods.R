@@ -338,7 +338,7 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			.contrasts = c( "conditionTRUE - conditionFALSE",  "conditionFALSE - conditionTRUE"),
+			contrasts = c( "conditionTRUE - conditionFALSE",  "conditionFALSE - conditionTRUE"),
 			method = "edgeR_likelihood_ratio",
 			action="only"
 		)
@@ -502,7 +502,7 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			.contrasts = c( "conditionTRUE - conditionFALSE",  "conditionFALSE - conditionTRUE"),
+			contrasts = c( "conditionTRUE - conditionFALSE",  "conditionFALSE - conditionTRUE"),
 			method = "limma_voom",
 			action="only"
 		)
@@ -574,7 +574,7 @@ test_that("Voom with treat method",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			.contrasts = c("cell_typeb_cell-cell_typemonocyte", "cell_typeb_cell-cell_typet_cell"),
+			contrasts = c("cell_typeb_cell-cell_typemonocyte", "cell_typeb_cell-cell_typet_cell"),
 			method = "limma_voom",
 			test_above_log2_fold_change = 1,
 			action="only"
@@ -753,10 +753,10 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	# 		.transcript = b,
 	# 		.abundance = c,
 	# 		method = "deseq2",
-	# 		.contrasts = "this_is - wrong",
+	# 		contrasts = "this_is - wrong",
 	# 		action="only"
 	# 	) %>%
-	# expect_error("for the moment, the .contrasts argument")
+	# expect_error("for the moment, the contrasts argument")
 
 	deseq2_contrasts =
 		input_df %>%
@@ -767,7 +767,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 			.transcript = b,
 			.abundance = c,
 			method = "deseq2",
-			.contrasts = list(c("condition", "TRUE", "FALSE")),
+			contrasts = list(c("condition", "TRUE", "FALSE")),
 			action="only"
 		)
 
@@ -779,7 +779,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
-			.contrasts = "conditionTRUE - conditionFALSE",
+			contrasts = "conditionTRUE - conditionFALSE",
 			action="only"
 		)
 
