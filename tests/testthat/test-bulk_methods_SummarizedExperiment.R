@@ -165,14 +165,25 @@ test_that("Get adjusted counts - SummarizedExperiment",{
 
 test_that("Aggregate duplicated transcript - SummarizedExperiment",{
 
-  rowData(se)$bla = rownames(se)
+  se = tidybulk::se
+  SummarizedExperiment::rowData(se)$bla =
+    rownames(se) %>% purrr::map_chr(~ {
+    if(.x  %in% c("LRG_239", "LRG_405")) "BLAAA"
+    else .x
+  })
 
 
   rowData(se)$bla = if_else(rowData(se)$bla  %in% c("LRG_239", "LRG_405"), "BLAAA", rowData(se)$bla )
 
-  res =
-    se %>%
-    aggregate_duplicates(	.transcript = bla )
+  res =  aggregate_duplicates(se,	.transcript = bla )
+
+
+  expect_equal(
+    as.data.frame(rowRanges(se["ENSG00000272397","SRR1039508"])) %>%
+      mutate_if(is.factor, as.character),
+    as.data.frame(rowRanges(res["ENSG00000272397","SRR1039508"]))%>%
+      mutate_if(is.factor, as.character),
+  )
 
   expect_equal(	dim(res),	c( 99,   8  )	)
 

@@ -57,3 +57,8 @@
 #'
 #'
 "counts_SE"
+
+#' Needed for tests tximeta_summarizeToGene_object, It is SummarizedExperiment from tximeta
+#'
+#'
+"tximeta_summarizeToGene_object"

@@ -33,7 +33,8 @@ Imports:
     SummarizedExperiment,
     GenomicRanges,
     methods,
-    S4Vectors
+    S4Vectors,
+    crayon
 Suggests:
     BiocStyle,
     testthat,
