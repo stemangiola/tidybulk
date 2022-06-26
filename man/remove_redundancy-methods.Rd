@@ -19,9 +19,10 @@ remove_redundancy(
   of_samples = TRUE,
   correlation_threshold = 0.9,
   top = Inf,
-  log_transform = FALSE,
+  transform = identity,
   Dim_a_column,
-  Dim_b_column
+  Dim_b_column,
+  log_transform = NULL
 )
 
 \S4method{remove_redundancy}{spec_tbl_df}(
@@ -33,9 +34,10 @@ remove_redundancy(
   of_samples = TRUE,
   correlation_threshold = 0.9,
   top = Inf,
-  log_transform = FALSE,
+  transform = identity,
   Dim_a_column = NULL,
-  Dim_b_column = NULL
+  Dim_b_column = NULL,
+  log_transform = NULL
 )
 
 \S4method{remove_redundancy}{tbl_df}(
@@ -47,9 +49,10 @@ remove_redundancy(
   of_samples = TRUE,
   correlation_threshold = 0.9,
   top = Inf,
-  log_transform = FALSE,
+  transform = identity,
   Dim_a_column = NULL,
-  Dim_b_column = NULL
+  Dim_b_column = NULL,
+  log_transform = NULL
 )
 
 \S4method{remove_redundancy}{tidybulk}(
@@ -61,9 +64,10 @@ remove_redundancy(
   of_samples = TRUE,
   correlation_threshold = 0.9,
   top = Inf,
-  log_transform = FALSE,
+  transform = identity,
   Dim_a_column = NULL,
-  Dim_b_column = NULL
+  Dim_b_column = NULL,
+  log_transform = NULL
 )
 
 \S4method{remove_redundancy}{SummarizedExperiment}(
@@ -75,7 +79,7 @@ remove_redundancy(
   of_samples = TRUE,
   correlation_threshold = 0.9,
   top = Inf,
-  log_transform = FALSE,
+  transform = identity,
   Dim_a_column = NULL,
   Dim_b_column = NULL
 )
@@ -89,7 +93,7 @@ remove_redundancy(
   of_samples = TRUE,
   correlation_threshold = 0.9,
   top = Inf,
-  log_transform = FALSE,
+  transform = identity,
   Dim_a_column = NULL,
   Dim_b_column = NULL
 )
@@ -111,11 +115,13 @@ remove_redundancy(
 
 \item{top}{An integer. How many top genes to select for correlation based method}
 
-\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
 
 \item{Dim_a_column}{A character string. For reduced_dimension based calculation. The column of one principal component}
 
 \item{Dim_b_column}{A character string. For reduced_dimension based calculation. The column of another principal component}
+
+\item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A tbl object with with dropped redundant elements (e.g., samples).
