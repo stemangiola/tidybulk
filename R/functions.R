@@ -1536,7 +1536,7 @@ get_clusters_kmeans_bulk <-
 					 .feature = NULL,
 					 .abundance = NULL,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 ...) {
 		# Check if centers is in dots
 		dots_args = rlang::dots_list(...)
@@ -1553,9 +1553,9 @@ get_clusters_kmeans_bulk <-
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
-			# Check if log transform is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
+			# Apply (log by default) transformation
+		  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 			# Prepare data frame for return
 			spread(!!.feature,!!.abundance) %>%
@@ -1603,7 +1603,7 @@ get_clusters_SNN_bulk <-
 					 .feature = NULL,
 					 .abundance,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 ...) {
 		# Get column names
 		.element = enquo(.element)
@@ -1631,7 +1631,8 @@ get_clusters_SNN_bulk <-
 			distinct(!!.element,!!.feature,!!.abundance) %>%
 
 			# Check if log tranfrom is needed
-			#ifelse_pipe(log_transform, ~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
+		  # dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 			# Prepare data frame for return
 			spread(!!.element,!!.abundance)
@@ -1689,7 +1690,7 @@ get_reduced_dimensions_MDS_bulk <-
 					 .dims = 2,
 					 top = 500,
 					 of_samples = TRUE,
-					 log_transform = TRUE) {
+					 transform = log1p) {
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -1714,9 +1715,9 @@ get_reduced_dimensions_MDS_bulk <-
 
 					distinct(!!.feature,!!.element,!!.abundance) %>%
 
-					# Check if log transform is needed
-					ifelse_pipe(log_transform,
-											~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
+					# Apply (log by default) transformation
+				  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 					# Stop any column is not if not numeric or integer
 					ifelse_pipe(
@@ -1808,7 +1809,7 @@ get_reduced_dimensions_PCA_bulk <-
 					 .dims = 2,
 					 top = 500,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 scale = FALSE,
 					 ...) {
 		# Comply with CRAN NOTES
@@ -1831,9 +1832,9 @@ get_reduced_dimensions_PCA_bulk <-
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
-			# Check if log transform is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
+			# Apply (log by default) transformation
+		  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
@@ -1950,7 +1951,7 @@ get_reduced_dimensions_TSNE_bulk <-
 					 .dims = 2,
 					 top = 500,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 ...) {
 		# Comply with CRAN NOTES
 		. = NULL
@@ -2004,9 +2005,9 @@ get_reduced_dimensions_TSNE_bulk <-
 				~ .x %>% eliminate_sparse_transcripts(!!.feature)
 			) %>%
 
-			# Check if log transform is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p)) %>%
+			# Apply (log by default) transformation
+		  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 			# Filter most variable genes
 			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
@@ -2064,7 +2065,7 @@ get_reduced_dimensions_UMAP_bulk <-
            .dims = 2,
            top = 500,
            of_samples = TRUE,
-           log_transform = TRUE,
+           transform = log1p,
            scale = TRUE,
            calculate_for_pca_dimensions = 20,
            ...) {
@@ -2114,8 +2115,8 @@ get_reduced_dimensions_UMAP_bulk <-
         ~ (.)
       ) %>%
 
-      # Check if log transform is needed
-      when(log_transform    ~ dplyr::mutate(., !!.abundance := !!.abundance %>% log1p), ~ (.)) %>%
+      # Apply (log by default) transformation
+      dplyr::mutate(., !!.abundance := transform(!!.abundance)) %>%
 
       # Filter most variable genes
       keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top)
@@ -2515,7 +2516,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 																													 correlation_threshold = 0.9,
 																													 top = Inf,
 																													 of_samples = TRUE,
-																													 log_transform = FALSE) {
+																													 transform = identity) {
 	# Comply with CRAN NOTES
 	. = NULL
 
@@ -2548,9 +2549,9 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		# Filter variable genes
 		keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top = top) %>%
 
-		# Check if log transform is needed
-		ifelse_pipe(log_transform,
-								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+		# Apply (log by default) transformation
+	  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 		distinct() %>%
 
 # NO NEED OF RECTANGULAR
@@ -3079,7 +3080,8 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 																														.sample = NULL,
 																														.transcript = NULL,
 																														.abundance = NULL,
-																														log_transform = TRUE,
+																														transform = transform,
+																														inverse_transform = inverse_transform,
 																														...) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -3108,9 +3110,9 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 					 one_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
-		# Check if log transform is needed
-		ifelse_pipe(log_transform,
-								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p()))
+		# Apply (log by default) transformation
+	  dplyr::mutate(!!.abundance := transform(!!.abundance))
+
 
 
 	# Create design matrix
@@ -3167,13 +3169,11 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		gather(!!.sample,!!.abundance,-!!.transcript) %>%
 
 		# Reverse-Log transform if transformed in the first place
-		ifelse_pipe(
-			log_transform,
-			~ .x %>%
-				dplyr::mutate(!!.abundance := !!.abundance %>% exp %>% `-`(1)) %>%
-				dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0,!!.abundance)) %>%
-				dplyr::mutate(!!.abundance := !!.abundance %>% as.integer)
-		) %>%
+	  dplyr::mutate(!!.abundance := inverse_transform(!!.abundance)) %>%
+
+	  # In case the inverse tranform produces negative counts
+	  dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0,!!.abundance)) %>%
+	  dplyr::mutate(!!.abundance := !!.abundance %>% as.integer) %>%
 
 		# Reset column names
 		dplyr::rename(!!value_adjusted := !!.abundance)  %>%
@@ -3202,7 +3202,7 @@ keep_variable_transcripts = function(.data,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
 																			 top = 500,
-																			 log_transform = TRUE) {
+																			 transform = log1p) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -3225,8 +3225,8 @@ keep_variable_transcripts = function(.data,
 		distinct(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Check if logtansform is needed
-		ifelse_pipe(log_transform,
-								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+	  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = quo_name(.transcript))

@@ -515,9 +515,11 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 #'
 #' @param method A character string. The cluster algorithm to use, at the moment k-means is the only algorithm included.
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function kmeans
+#'
+#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details identifies clusters in the data, normally of samples.
 #' This function returns a tibble with additional columns for the cluster annotation.
@@ -554,9 +556,14 @@ setGeneric("cluster_elements", function(.data,
 																				.abundance = NULL,
 																				method,
 																				of_samples = TRUE,
-																				log_transform = TRUE,
+																				transform = log1p,
+
 																				action = "add",
-																				...)
+																				...,
+
+																				# DEPRECATED
+																				log_transform = NULL
+                                      )
 	standardGeneric("cluster_elements"))
 
 # Set internal
@@ -566,10 +573,26 @@ setGeneric("cluster_elements", function(.data,
 															 .abundance = NULL,
 															 method ,
 															 of_samples = TRUE,
-															 log_transform = TRUE,
+															 transform = log1p,
+
 															 action = "add",
-															 ...)
+															 ...,
+
+															 # DEPRECATED
+															 log_transform = NULL
+
+															 )
 {
+
+  # DEPRECATION OF log_transform
+  if (is_present(log_transform) & !is.null(log_transform)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
+
+    if(log_transform == TRUE) transform = log1p
+  }
+
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
@@ -609,7 +632,7 @@ setGeneric("cluster_elements", function(.data,
 				.element = !!.element,
 				.feature = !!.feature,
 				of_samples = of_samples,
-				log_transform = log_transform,
+				transform = transform,
 				...
 			),
 			method == "SNN" ~ stop("tidybulk says: Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable."),
@@ -618,7 +641,7 @@ setGeneric("cluster_elements", function(.data,
 			# 	.element = !!.element,
 			# 	.feature = !!.feature,
 			# 	of_samples = of_samples,
-			# 	log_transform = log_transform,
+			# 	transform = transform,
 			# 	...
 			# ),
 			TRUE ~ 		stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
@@ -708,10 +731,12 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 #' @param top An integer. How many top genes to select for dimensionality reduction
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param .dims An integer. The number of dimensions your are interested in (e.g., 4 for returning the first four principal components).
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param scale A boolean for method="PCA", this will be passed to the `prcomp` function. It is not included in the ... argument because although the default for `prcomp` if FALSE, it is advisable to set it as TRUE.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"
+#'
+#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details This function reduces the dimensions of the transcript abundances.
 #' It can use multi-dimensional scaling (MDS; DOI.org/10.1186/gb-2010-11-3-r25),
@@ -778,10 +803,15 @@ setGeneric("reduce_dimensions", function(.data,
 
 																				 top = 500,
 																				 of_samples = TRUE,
-																				 log_transform = TRUE,
+																				 transform = log1p,
 																				 scale = TRUE,
 																				 action = "add",
-																				 ...)
+																				 ...,
+
+																				 # DEPRECATED
+																				 log_transform = NULL
+
+                                      )
 					 standardGeneric("reduce_dimensions"))
 
 # Set internal
@@ -794,11 +824,26 @@ setGeneric("reduce_dimensions", function(.data,
 
 																top = 500,
 																of_samples = TRUE,
-																log_transform = TRUE,
+																transform = log1p,
 																scale = TRUE,
 																action = "add",
-																...)
+																...,
+
+																# DEPRECATED
+																log_transform = NULL
+
+																)
 {
+
+  # DEPRECATION OF log_transform
+  if (is_present(log_transform) & !is.null(log_transform)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
+
+    if(log_transform == TRUE) transform = log1p
+  }
+
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
@@ -839,7 +884,7 @@ setGeneric("reduce_dimensions", function(.data,
 				.feature = !!.feature,
 				top = top,
 				of_samples = of_samples,
-				log_transform = log_transform,
+				transform = transform,
 				...
 			),
 			tolower(method) == tolower("PCA") ~ 	get_reduced_dimensions_PCA_bulk(.,
@@ -849,7 +894,7 @@ setGeneric("reduce_dimensions", function(.data,
 				.feature = !!.feature,
 				top = top,
 				of_samples = of_samples,
-				log_transform = log_transform,
+				transform = transform,
 				scale = scale,
 				...
 			),
@@ -860,7 +905,7 @@ setGeneric("reduce_dimensions", function(.data,
 				.feature = !!.feature,
 				top = top,
 				of_samples = of_samples,
-				log_transform = log_transform,
+				transform = transform,
 				...
 			),
 			tolower(method) == tolower("UMAP") ~ 	get_reduced_dimensions_UMAP_bulk(.,
@@ -870,7 +915,7 @@ setGeneric("reduce_dimensions", function(.data,
 			                                                                       .feature = !!.feature,
 			                                                                       top = top,
 			                                                                       of_samples = of_samples,
-			                                                                       log_transform = log_transform,
+			                                                                       transform = transform,
 			                                                                       scale = scale,
 			                                                                       ...
 			),
@@ -1131,12 +1176,13 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 #'
 #' @param method A character string. The method to use, correlation and reduced_dimensions are available. The latter eliminates one of the most proximar pairs of samples in PCA reduced dimensions.
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param correlation_threshold A real number between 0 and 1. For correlation based calculation.
 #' @param top An integer. How many top genes to select for correlation based method
 #' @param Dim_a_column A character string. For reduced_dimension based calculation. The column of one principal component
 #' @param Dim_b_column A character string. For reduced_dimension based calculation. The column of another principal component
 #'
+#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details This function removes redundant elements from the original data set (e.g., samples or transcripts).
 #' For example, if we want to define cell-type specific signatures with low sample redundancy.
@@ -1214,10 +1260,13 @@ setGeneric("remove_redundancy", function(.data,
 
 																				 correlation_threshold = 0.9,
 																				 top = Inf,
-																				 log_transform = FALSE,
-
+																				 transform = identity,
 																				 Dim_a_column,
-																				 Dim_b_column)
+																				 Dim_b_column,
+
+																				 # DEPRECATED
+																				 log_transform = NULL
+																				 )
 					 standardGeneric("remove_redundancy"))
 
 # Set internal
@@ -1229,15 +1278,27 @@ setGeneric("remove_redundancy", function(.data,
 
 																of_samples = TRUE,
 
-
-
 																correlation_threshold = 0.9,
 																top = Inf,
-																log_transform = FALSE,
+																transform = identity,
 
 																Dim_a_column = NULL,
-																Dim_b_column = NULL)
+																Dim_b_column = NULL,
+
+																# DEPRECATED
+																log_transform = NULL
+)
 {
+
+  # DEPRECATION OF log_transform
+  if (is_present(log_transform) & !is.null(log_transform)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
+
+    if(log_transform == TRUE) transform = log1p
+  }
+
 	# Make col names
 	.abundance = enquo(.abundance)
 	.element = enquo(.element)
@@ -1262,7 +1323,7 @@ setGeneric("remove_redundancy", function(.data,
 			correlation_threshold = correlation_threshold,
 			top = top,
 			of_samples = of_samples,
-			log_transform = log_transform
+			transform = transform
 		)
 	}
 	else if (method == "reduced_dimensions") {
@@ -1330,9 +1391,12 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #'
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param inverse_transform A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function sva::ComBat
+#'
+#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details This function adjusts the abundance for (known) unwanted variation.
 #' At the moment just an unwanted covariate is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
@@ -1368,21 +1432,44 @@ setGeneric("adjust_abundance", function(.data,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL,
-																				log_transform = TRUE,
+																				transform = log1p,
+																				inverse_transform = expm1,
+
 																				action = "add",
-																				...)
+																				...,
+
+																				# DEPRECATED
+																				log_transform = NULL
+																				)
 	standardGeneric("adjust_abundance"))
 
 # Set internal
 .adjust_abundance = 	function(.data,
-															.formula,
-															.sample = NULL,
-															.transcript = NULL,
-															.abundance = NULL,
-															log_transform = TRUE,
-															action = "add",
-															...)
+                              .formula,
+                              .sample = NULL,
+                              .transcript = NULL,
+                              .abundance = NULL,
+                              transform = log1p,
+                              inverse_transform = expm1,
+                              action = "add",
+                              ...,
+
+                              # DEPRECATED
+                              log_transform = NULL)
 {
+
+  # DEPRECATION OF log_transform
+  if (is_present(log_transform) & !is.null(log_transform)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
+
+    if(log_transform == TRUE){
+      transform = log1p
+      inverse_transform = expm1
+    }
+  }
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -1419,7 +1506,8 @@ setGeneric("adjust_abundance", function(.data,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			log_transform = log_transform,
+			transform = transform,
+			inverse_transform = inverse_transform,
 			...
 		)
 
@@ -2462,7 +2550,9 @@ setMethod("test_differential_abundance",
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param top Integer. Number of top transcript to consider
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#'
+#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details At the moment this function uses edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}
 #'
@@ -2495,7 +2585,11 @@ setGeneric("keep_variable", function(.data,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
 																			 top = 500,
-																			 log_transform = TRUE)
+																			 transform = log1p,
+
+																			 # DEPRECATED
+																			 log_transform = TRUE
+																			 )
 	standardGeneric("keep_variable"))
 
 # Set internal
@@ -2504,8 +2598,21 @@ setGeneric("keep_variable", function(.data,
 															.transcript = NULL,
 															.abundance = NULL,
 															top = 500,
-															log_transform = TRUE)
+															transform = log1p,
+
+															# DEPRECATED
+															log_transform = NULL)
 {
+
+  # DEPRECATION OF log_transform
+  if (is_present(log_transform) & !is.null(log_transform)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
+
+    if(log_transform == TRUE) transform = log1p
+  }
+
 	# Make col names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2523,7 +2630,7 @@ setGeneric("keep_variable", function(.data,
 		.transcript = !!.transcript,
 		.abundance = !!.abundance,
 		top = top,
-		log_transform = log_transform
+		transform = transform
 	)
 }
 
