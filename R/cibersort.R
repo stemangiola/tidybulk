@@ -189,9 +189,9 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
   ###################################
   ## This is needed to make the two tables consistent in gene
   ###################################
-
-  X <- X[order(rownames(X)),,drop=FALSE]
-  Y <- Y[order(rownames(Y)),,drop=FALSE]
+  common_genes = intersect(rownames(X), rownames(Y))
+  X <- X[common_genes,,drop=FALSE]
+  Y <- Y[common_genes,,drop=FALSE]
 
   P <- perm #number of permutations
 
