@@ -774,9 +774,9 @@ setMethod("adjust_abundance",
     colnames() %>%
     outersect(non_standard_columns) %>%
     setdiff(quo_name(.transcript)) %>%
-    c(feature_column_name)
+    c(feature__$name)
     # when(
-    #   !is.null(rownames(.data)) ~ c(., feature_column_name),
+    #   !is.null(rownames(.data)) ~ c(., feature__$name),
     #   ~ (.)
     # )
 
@@ -830,17 +830,20 @@ setMethod("adjust_abundance",
       }
     )
 
-
   if(!is.null(rowRanges(.data))){
 
-    new_range_data =
-
-      rowRanges(.data) %>%
-      as_tibble()
+    new_range_data = rowRanges(.data) %>% as_tibble()
 
     # If GRangesList & and .transcript is not there add .transcript
     if(is(rowRanges(.data), "CompressedGRangesList") & !quo_name(.transcript) %in% colnames(new_range_data)){
-      new_range_data %>% left_join(). <<<<<
+
+      new_range_data =
+        new_range_data %>% left_join(
+        rowData(.data)[,quo_name(.transcript),drop=FALSE] %>%
+          as_tibble(rownames = feature__$name) ,
+        by=c("group_name" = feature__$name)
+      ) %>%
+        select(-group_name, -group)
     }
 
     # Through warning if there are logicals of factor in the data frame
@@ -848,12 +851,9 @@ setMethod("adjust_abundance",
     if (length(non_standard_columns)>0 & new_range_data %>%  pull(!!.transcript) %>% duplicated() %>% which() %>% length() %>% gt(0) ) {
       warning(paste(capture.output({
         cat(crayon::blue("tidybulk says: If duplicates exist from the following columns, only the first instance was taken (lossy behaviour), as aggregating those classes with concatenation is not possible.\n"))
-        print(.data %>% select(non_standard_columns))
+        print(rowData(.data)[1,non_standard_columns,drop=FALSE])
       }), collapse = "\n"))
     }
-
-
-
 
     new_range_data = new_range_data %>%
 
@@ -861,39 +861,9 @@ setMethod("adjust_abundance",
       select(-one_of(colnames(new_row_data) %>% outersect(quo_name(.transcript)))) %>%
       suppressWarnings()
 
-    # %>%
-    #
-    #   # Join rowData - I DON'T KNOW IF ALWAYS ROWRANGES INCLUDE 100% OF ROWDATA
-    #   bind_cols(gene_id_dataset) %>%
-    #   group_by(!!as.symbol(quo_name(.transcript))) %>%
-    #
-    #   # If I have rownames add them
-    #   when(
-    #     !is.null(rownames(.data)) ~ rowid_to_column(.),
-    #     ~ (.)
-    #   ) %>%
-    #
-    #   mutate(
-    #     across(columns_to_collapse, ~ .x %>% collapse_function()),
-    #     across(non_standard_columns, ~ .x[1]),
-    #     merged_transcripts = n()
-    #   ) %>%
-    #   distinct() %>%
-    #   #arrange(!!as.symbol(feature_column_name)) %>%
-    #
-    #   select(-one_of("group_name", "group")) %>%
-    #   suppressWarnings() %>%
-    #
-    #   as.data.frame() %>%
-    #   # Add back rownames
-    #   {
-    #     .x = (.)
-    #     rownames(.x) = .x %>% pull(!!as.symbol(feature_column_name))
-    #     .x
-    #   }
-browser()
+
     #if(is(rr, "CompressedGRangesList") | nrow(new_row_data)<nrow(rowData(.data))) {
-      new_range_data = makeGRangesListFromDataFrame(
+    new_range_data = makeGRangesListFromDataFrame(
         new_range_data,
         split.field = quo_name(.transcript),
         keep.extra.columns = TRUE
@@ -901,11 +871,10 @@ browser()
 
       # Give back rownames
       new_range_data = new_range_data %>%  .[match(new_row_data[,quo_name(.transcript)], names(.))]
-      names(new_range_data) = rownames(new_row_data)
+      #names(new_range_data) = rownames(new_row_data)
     #}
     # else if(is(rr, "GRanges")) new_range_data = makeGRangesFromDataFrame(new_range_data, keep.extra.columns = TRUE)
     # else stop("tidybulk says: riowRanges should be either GRanges or CompressedGRangesList. Or am I missing something?")
-
 
   }
 
