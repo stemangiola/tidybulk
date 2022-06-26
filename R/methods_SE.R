@@ -515,7 +515,10 @@ setMethod("rotate_dimensions",
 																 transform = identity,
 
 																 Dim_a_column = NULL,
-																 Dim_b_column = NULL) {
+																 Dim_b_column = NULL,
+
+																 # DEPRECATED
+																 log_transform = NULL) {
 
 
 	Dim_a_column = enquo(Dim_a_column)

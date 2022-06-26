@@ -1256,8 +1256,6 @@ setGeneric("remove_redundancy", function(.data,
 
 																				 of_samples = TRUE,
 
-
-
 																				 correlation_threshold = 0.9,
 																				 top = Inf,
 																				 transform = identity,
