@@ -16,9 +16,11 @@ adjust_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  log_transform = TRUE,
+  transform = log1p,
+  inverse_transform = expm1,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{adjust_abundance}{spec_tbl_df}(
@@ -27,9 +29,11 @@ adjust_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  log_transform = TRUE,
+  transform = log1p,
+  inverse_transform = expm1,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{adjust_abundance}{tbl_df}(
@@ -38,9 +42,11 @@ adjust_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  log_transform = TRUE,
+  transform = log1p,
+  inverse_transform = expm1,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{adjust_abundance}{tidybulk}(
@@ -49,9 +55,11 @@ adjust_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  log_transform = TRUE,
+  transform = log1p,
+  inverse_transform = expm1,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{adjust_abundance}{SummarizedExperiment}(
@@ -60,9 +68,11 @@ adjust_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  log_transform = TRUE,
+  transform = log1p,
+  inverse_transform = expm1,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{adjust_abundance}{RangedSummarizedExperiment}(
@@ -71,9 +81,11 @@ adjust_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  log_transform = TRUE,
+  transform = log1p,
+  inverse_transform = expm1,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 }
 \arguments{
@@ -87,11 +99,15 @@ adjust_abundance(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
+
+\item{inverse_transform}{A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.}
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function sva::ComBat}
+
+\item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`

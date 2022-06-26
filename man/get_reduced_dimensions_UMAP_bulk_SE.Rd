@@ -9,7 +9,7 @@ get_reduced_dimensions_UMAP_bulk_SE(
   .dims = 2,
   top = 500,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   scale = NULL,
   calculate_for_pca_dimensions = 20,
   ...
@@ -24,7 +24,7 @@ get_reduced_dimensions_UMAP_bulk_SE(
 
 \item{of_samples}{A boolean}
 
-\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
 
 \item{calculate_for_pca_dimensions}{An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered}
 
