@@ -16,6 +16,7 @@ keep_variable(
   .transcript = NULL,
   .abundance = NULL,
   top = 500,
+  transform = log1p,
   log_transform = TRUE
 )
 
@@ -25,7 +26,8 @@ keep_variable(
   .transcript = NULL,
   .abundance = NULL,
   top = 500,
-  log_transform = TRUE
+  transform = log1p,
+  log_transform = NULL
 )
 
 \S4method{keep_variable}{tbl_df}(
@@ -34,7 +36,8 @@ keep_variable(
   .transcript = NULL,
   .abundance = NULL,
   top = 500,
-  log_transform = TRUE
+  transform = log1p,
+  log_transform = NULL
 )
 
 \S4method{keep_variable}{tidybulk}(
@@ -43,12 +46,13 @@ keep_variable(
   .transcript = NULL,
   .abundance = NULL,
   top = 500,
-  log_transform = TRUE
+  transform = log1p,
+  log_transform = NULL
 )
 
-\S4method{keep_variable}{SummarizedExperiment}(.data, top = 500, log_transform = TRUE)
+\S4method{keep_variable}{SummarizedExperiment}(.data, top = 500, transform = log1p)
 
-\S4method{keep_variable}{RangedSummarizedExperiment}(.data, top = 500, log_transform = TRUE)
+\S4method{keep_variable}{RangedSummarizedExperiment}(.data, top = 500, transform = log1p)
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
@@ -61,7 +65,9 @@ keep_variable(
 
 \item{top}{Integer. Number of top transcript to consider}
 
-\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
+
+\item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).

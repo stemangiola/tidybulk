@@ -228,7 +228,7 @@ setMethod("scale_abundance",
 .cluster_elements_se = function(.data,
 																method ,
 																of_samples = TRUE,
-																log_transform = TRUE,
+																transform = log1p,
 																...) {
 
 	my_assay =
@@ -251,7 +251,7 @@ setMethod("scale_abundance",
 		my_cluster_function(
 			my_assay,
 			of_samples = of_samples,
-			log_transform = log_transform,
+			transform = transform,
 			...
 		) %>%
 		as.character() %>%
@@ -309,7 +309,7 @@ setMethod("cluster_elements",
 																 .dims = 2,
 																 top = 500,
 																 of_samples = TRUE,
-																 log_transform = TRUE,
+																 transform = log1p,
 																 scale = TRUE,
 																 ...) {
 
@@ -324,10 +324,10 @@ setMethod("cluster_elements",
 		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 
 		# Filter most variable genes
-		keep_variable_transcripts_SE(top = top, log_transform = log_transform) %>%
+		keep_variable_transcripts_SE(top = top, transform = transform) %>%
 
 		# Check if log transform is needed
-		when(log_transform ~ log1p(.), ~ (.) )
+		transform()
 
 	my_reduction_function  =
 		method %>%
@@ -346,7 +346,7 @@ setMethod("cluster_elements",
 			.dims = .dims,
 			top = top,
 			of_samples = of_samples,
-			log_transform = log_transform,
+			transform = transform,
 			scale=scale,
 			...
 		)
@@ -512,7 +512,7 @@ setMethod("rotate_dimensions",
 																 of_samples = TRUE,
 																 correlation_threshold = 0.9,
 																 top = Inf,
-																 log_transform = FALSE,
+																 transform = identity,
 
 																 Dim_a_column = NULL,
 																 Dim_b_column = NULL) {
@@ -545,10 +545,10 @@ setMethod("rotate_dimensions",
 					.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 
 					# Filter most variable genes
-					keep_variable_transcripts_SE(top = top, log_transform = log_transform) %>%
+					keep_variable_transcripts_SE(top = top, transform = transform) %>%
 
 					# Check if log transform is needed
-					when(log_transform ~ log1p(.), ~ (.) )
+					transform()
 
 				# Get correlated elements
 				remove_redundancy_elements_through_correlation_SE(
@@ -621,7 +621,8 @@ setMethod("remove_redundancy",
 
 .adjust_abundance_se = function(.data,
 																.formula,
-																log_transform = TRUE,
+																transform = log1p,
+																inverse_transform = expm1,
 																...) {
 
 	# Check if package is installed, otherwise install
@@ -666,7 +667,7 @@ setMethod("remove_redundancy",
 		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 
 		# Check if log transform is needed
-		when(log_transform ~ log1p(.), ~ (.))
+	  transform()
 
 
 	# Set column name for value scaled
@@ -687,7 +688,7 @@ setMethod("remove_redundancy",
 								...)  %>%
 
 		# Check if log transform needs to be reverted
-		when(log_transform ~ expm1(.), ~ (.))
+	  inverse_transform()
 
 
 	# Add the assay
@@ -1198,7 +1199,7 @@ setMethod(
 
 .keep_variable_se = function(.data,
 														 top = 500,
-														 log_transform = TRUE)
+														 transform = log1p)
 {
 
 
@@ -1213,7 +1214,7 @@ setMethod(
 		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 
 		# Filter most variable genes
-		keep_variable_transcripts_SE(top = top, log_transform = log_transform) %>%
+		keep_variable_transcripts_SE(top = top, transform = transform) %>%
 
 		# Take gene names
 		rownames()
