@@ -239,7 +239,9 @@ jobs:
               dir('check', 'tar.gz$', full.names = TRUE),
               `quit-with-status` = TRUE,
               `no-check-R-ver` = TRUE,
-              `no-check-bioc-help` = TRUE
+              `no-check-bioc-help` = TRUE,
+              `no-check-library-calls` = TRUE,
+              `no-check-coding-practices` = TRUE
           )
         shell: Rscript {0}
 
@@ -274,4 +276,3 @@ jobs:
         with:
           name: ${{ runner.os }}-biocversion-RELEASE_3_15-r-4.2-results
           path: check
-          
