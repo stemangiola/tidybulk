@@ -186,8 +186,10 @@ dge %>%
 \examples{
 \dontrun{
 
-df_entrez = tidybulk::se_mini |> tidybulk() |> as_tibble() |> symbol_to_entrez( .transcript = feature, .sample = sample)
-df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+library(SummarizedExperiment)
+se = tidybulk::se_mini
+rowData( se)$entrez = rownames(se )
+df_entrez = aggregate_duplicates(se,.transcript = entrez )
 
 library("EGSEA")
 
