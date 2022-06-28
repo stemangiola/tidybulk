@@ -131,7 +131,7 @@ CIBERSORT(Y = data, X = reference, ...)
 library(dplyr)
 
 # Subsetting for time efficiency
-tidybulk::se_mini |> tidybulk() |>filter(sample=="SRR1740034") |> deconvolve_cellularity(sample, feature, count, cores = 1)
+tidybulk::se_mini |> deconvolve_cellularity(cores = 1)
 
 
 }

@@ -14,7 +14,7 @@
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param ... Further parameters passed to the function kmeans
 #'
 #' @return A tibble with additional columns
@@ -23,7 +23,7 @@
 get_clusters_kmeans_bulk_SE <-
 	function(.data,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 ...) {
 
 		# Check if centers is in dots
@@ -34,7 +34,7 @@ get_clusters_kmeans_bulk_SE <-
 		.data %>%
 
 			# Check if log transform is needed
-			when(log_transform ~ log1p(.), ~ (.) ) %>%
+			transform() %>%
 
 			# Decide if of samples or transcripts
 			when(
@@ -66,7 +66,7 @@ get_clusters_kmeans_bulk_SE <-
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param ... Further parameters passed to the function kmeans
 #'
 #' @return A tibble with additional columns
@@ -74,7 +74,7 @@ get_clusters_kmeans_bulk_SE <-
 get_clusters_SNN_bulk_SE <-
 	function(.data,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 ...) {
 
 
@@ -127,7 +127,7 @@ get_clusters_SNN_bulk_SE <-
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param scale A boolean
 #'
 #' @return A tibble with additional columns
@@ -138,7 +138,7 @@ get_reduced_dimensions_MDS_bulk_SE <-
 					 .dims = 2,
 					 top = 500,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 scale = NULL # This is only a dummy argument for making it compatibble with PCA
 					) {
 		# Comply with CRAN NOTES
@@ -222,7 +222,7 @@ get_reduced_dimensions_MDS_bulk_SE <-
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param scale A boolean
 #' @param ... Further parameters passed to the function prcomp
 #'
@@ -234,7 +234,7 @@ get_reduced_dimensions_PCA_bulk_SE <-
 					 .dims = 2,
 					 top = 500,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 scale = FALSE,
 					 ...) {
 		# Comply with CRAN NOTES
@@ -323,7 +323,7 @@ we suggest to partition the dataset for sample clusters.
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param scale A boolean
 #' @param ... Further parameters passed to the function Rtsne
 #'
@@ -334,7 +334,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 					 .dims = 2,
 					 top = 500,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 scale = NULL, # This is only a dummy argument for making it compatibble with PCA
 					 ...) {
 		# Comply with CRAN NOTES
@@ -406,7 +406,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param calculate_for_pca_dimensions An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered
 #' @param ... Further parameters passed to the function uwot
 #'
@@ -417,7 +417,7 @@ get_reduced_dimensions_UMAP_bulk_SE <-
            .dims = 2,
            top = 500,
            of_samples = TRUE,
-           log_transform = TRUE,
+           transform = log1p,
            scale = NULL, # This is only a dummy argument for making it compatibble with PCA
            calculate_for_pca_dimensions = 20,
            ...) {
@@ -528,13 +528,13 @@ filter_if_abundant_were_identified = function(.data){
 #' @param .transcript A character name of the transcript/gene column
 #' @param .abundance A character name of the read count column
 #' @param top An integer. How many top genes to select
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #'
 #' @return A tibble filtered genes
 #'
 keep_variable_transcripts_SE = function(.data,
 																		 top = 500,
-																		 log_transform = TRUE) {
+																		 transform = log1p) {
 
 
 	# Manage Inf
@@ -546,7 +546,7 @@ keep_variable_transcripts_SE = function(.data,
 		.data %>%
 
 		# Check if log transform is needed
-		when(log_transform ~ log1p(.), ~ (.) )
+		transform()
 
 
 	s <- rowMeans((x - rowMeans(x, na.rm=TRUE)) ^ 2, na.rm=TRUE)

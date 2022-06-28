@@ -307,33 +307,38 @@ validate_signature = function(.data, reference, .transcript){
 
 	.transcript = enquo(.transcript)
 
-	if ((.data %>%
-			 pull(!!.transcript) %in% (reference %>% rownames)) %>%
-			which %>%
-			length %>%
-			st(50))
-		warning(
-			"tidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes"
-		)
+	overlapping_genes = .data %>%     pull(!!.transcript) %in% rownames(reference) %>%  which
+
+	if(length(overlapping_genes) == 0  )
+	  stop(sprintf(
+	    "\ntidybulk says: You have NO genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
+	  ))
+
+	if ( length(overlapping_genes) %>%	st(50) )
+	  warning(sprintf(
+	    "\ntidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
+	  ))
 
 	# Check if rownames exist
 	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% not() %>% any)
-		stop("tidybulk says: your reference has non-numeric/integer columns.")
+	  stop("tidybulk says: your reference has non-numeric/integer columns.")
+
 
 }
 
-validate_signature_SE = function(.data, reference, .transcript){
+validate_signature_SE = function(assay, reference){
 
-	.transcript = enquo(.transcript)
+  overlapping_genes = (rownames(assay)  %in% rownames(reference)) %>%  which
 
-	if ((.data %>%
-			 rownames %in% (reference %>% rownames)) %>%
-			which %>%
-			length %>%
-			st(50))
-	  warning(
-			"tidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes"
-		)
+  if(length(overlapping_genes) == 0  )
+    stop(sprintf(
+      "\ntidybulk says: You have NO genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
+    ))
+
+	if ( length(overlapping_genes) %>%	st(50) )
+	  warning(sprintf(
+			"\ntidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
+		))
 
 	# Check if rownames exist
 	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% not() %>% any)

@@ -47,7 +47,7 @@ create_tt_from_tibble_bulk = function(.data,
 #' @importFrom purrr reduce
 #'
 #' @param file_names A character vector
-#' @param genome A character string
+#' @param genome A character string specifying an in-built annotation used for read summarization. It has four possible values including "mm10", "mm9", "hg38" and "hg19"
 #' @param ... Further parameters passed to the function Rsubread::featureCounts
 #'
 #' @return A tibble of gene counts
@@ -83,22 +83,22 @@ create_tt_from_bam_sam_bulk <-
 			# Anonymous function
 			# input: edgeR::DGEList object
 			# output: edgeR::DGEList object with added transcript symbol
-			when(
-				"annot.ext" %in% (rlang::dots_list(...) %>% names) %>% not() ~ {
-					dge <- (.)
-					dge$genes$symbol <-
-						AnnotationDbi::mapIds(
-							org.Hs.eg.db::org.Hs.eg.db,
-							keys = as.character(dge$genes$GeneID),
-							column = "SYMBOL",
-							keytype = "ENTREZID",
-							multiVals = "first"
-						)
-
-					dge
-				},
-				~ (.)
-			) %>%
+			# when(
+			# 	"annot.ext" %in% (rlang::dots_list(...) %>% names) %>% not() ~ {
+			# 		dge <- (.)
+			# 		dge$genes$symbol <-
+			# 			AnnotationDbi::mapIds(
+			# 				org.Hs.eg.db::org.Hs.eg.db,
+			# 				keys = as.character(dge$genes$GeneID),
+			# 				column = "SYMBOL",
+			# 				keytype = "ENTREZID",
+			# 				multiVals = "first"
+			# 			)
+			#
+			# 		dge
+			# 	},
+			# 	~ (.)
+			# ) %>%
 
 			# Anonymous function
 			# input: annotated edgeR::DGEList object
@@ -1536,7 +1536,7 @@ get_clusters_kmeans_bulk <-
 					 .feature = NULL,
 					 .abundance = NULL,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 ...) {
 		# Check if centers is in dots
 		dots_args = rlang::dots_list(...)
@@ -1553,9 +1553,9 @@ get_clusters_kmeans_bulk <-
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
-			# Check if log transform is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
+			# Apply (log by default) transformation
+		  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 			# Prepare data frame for return
 			spread(!!.feature,!!.abundance) %>%
@@ -1603,7 +1603,7 @@ get_clusters_SNN_bulk <-
 					 .feature = NULL,
 					 .abundance,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 ...) {
 		# Get column names
 		.element = enquo(.element)
@@ -1631,7 +1631,8 @@ get_clusters_SNN_bulk <-
 			distinct(!!.element,!!.feature,!!.abundance) %>%
 
 			# Check if log tranfrom is needed
-			#ifelse_pipe(log_transform, ~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>%  `+`(1) %>%  log())) %>%
+		  # dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 			# Prepare data frame for return
 			spread(!!.element,!!.abundance)
@@ -1689,7 +1690,7 @@ get_reduced_dimensions_MDS_bulk <-
 					 .dims = 2,
 					 top = 500,
 					 of_samples = TRUE,
-					 log_transform = TRUE) {
+					 transform = log1p) {
 		# Comply with CRAN NOTES
 		. = NULL
 
@@ -1714,9 +1715,9 @@ get_reduced_dimensions_MDS_bulk <-
 
 					distinct(!!.feature,!!.element,!!.abundance) %>%
 
-					# Check if log transform is needed
-					ifelse_pipe(log_transform,
-											~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
+					# Apply (log by default) transformation
+				  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 					# Stop any column is not if not numeric or integer
 					ifelse_pipe(
@@ -1808,7 +1809,7 @@ get_reduced_dimensions_PCA_bulk <-
 					 .dims = 2,
 					 top = 500,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 scale = FALSE,
 					 ...) {
 		# Comply with CRAN NOTES
@@ -1831,9 +1832,9 @@ get_reduced_dimensions_PCA_bulk <-
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.abundance) %>%
 
-			# Check if log transform is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p())) %>%
+			# Apply (log by default) transformation
+		  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
@@ -1950,7 +1951,7 @@ get_reduced_dimensions_TSNE_bulk <-
 					 .dims = 2,
 					 top = 500,
 					 of_samples = TRUE,
-					 log_transform = TRUE,
+					 transform = log1p,
 					 ...) {
 		# Comply with CRAN NOTES
 		. = NULL
@@ -2004,9 +2005,9 @@ get_reduced_dimensions_TSNE_bulk <-
 				~ .x %>% eliminate_sparse_transcripts(!!.feature)
 			) %>%
 
-			# Check if log transform is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p)) %>%
+			# Apply (log by default) transformation
+		  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 			# Filter most variable genes
 			keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top) %>%
@@ -2064,7 +2065,7 @@ get_reduced_dimensions_UMAP_bulk <-
            .dims = 2,
            top = 500,
            of_samples = TRUE,
-           log_transform = TRUE,
+           transform = log1p,
            scale = TRUE,
            calculate_for_pca_dimensions = 20,
            ...) {
@@ -2114,8 +2115,8 @@ get_reduced_dimensions_UMAP_bulk <-
         ~ (.)
       ) %>%
 
-      # Check if log transform is needed
-      when(log_transform    ~ dplyr::mutate(., !!.abundance := !!.abundance %>% log1p), ~ (.)) %>%
+      # Apply (log by default) transformation
+      dplyr::mutate(., !!.abundance := transform(!!.abundance)) %>%
 
       # Filter most variable genes
       keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top)
@@ -2247,6 +2248,8 @@ get_rotated_dimensions =
 #' @importFrom dplyr bind_rows
 #' @importFrom magrittr %$%
 #' @importFrom rlang :=
+#' @importFrom tidyr replace_na
+#' @importFrom dplyr across
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2291,14 +2294,6 @@ aggregate_duplicated_transcripts_bulk =
 			ret
 		}
 
-		# Through warning if there are logicals of factor in the data frame
-		# because they cannot be merged if they are not unique
-		if ((lapply(.data, class) %>% unlist %in% c("logical", "factor")) %>% any) {
-			warning("tidybulk says: for aggregation, factors and logical columns were converted to character")
-			message("Converted to characters")
-			message(lapply(.data, class) %>% unlist %>% `[` (. %in% c("logical", "factor") %>% which))
-		}
-
 		# Select which are the numerical columns
 		numerical_columns =
 			.data %>%
@@ -2315,8 +2310,60 @@ aggregate_duplicated_transcripts_bulk =
 			~ .x %>% select(-!!(
 				.data %>% get_tt_columns() %$% .abundance_scaled
 			)))	%>%
-			colnames() %>%
-			c("n_aggr")
+			colnames()
+
+		# Columns to be converted
+		columns_to_be_converted =
+		  .data %>%
+		  select_if(function(.x) is.logical(.x) | is.factor(.x)) %>%
+		  colnames()
+
+		# Count column to be aggregated
+		aggregate_count_columns =
+		  quo_name(.abundance) %>%
+		  when(
+		    ".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
+		      quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)  ~
+		      (.) %>% c(.data %>% get_tt_columns() %$% .abundance_scaled),
+		    ~ (.)
+		  )
+
+		# Non standard column classes
+		non_standard_columns =
+		  .data %>%
+		  select(
+		    -!!numerical_columns,
+		    -columns_to_be_converted,
+		    -group_cols(),
+		    -aggregate_count_columns,
+		  ) %>%
+		  select_if(select_non_standard_column_class) %>%
+		  colnames()
+
+		# Count duplicates
+		count_duplicates =
+		  .data %>%
+		  count(!!.sample,!!.transcript, name = "n_aggr")
+
+		# Convert to character
+
+		# Through warning if there are logicals of factor in the data frame
+		# because they cannot be merged if they are not unique
+		if (length(columns_to_be_converted)>0 & filter(count_duplicates, n_aggr>1) %>% nrow() %>% gt(0)) {
+		  warning(paste(capture.output({
+		    cat(crayon::blue("tidybulk says: The following columns were converted to characters, as aggregating those classes with concatenation is not possible.\n"))
+		    print(.data %>% select(columns_to_be_converted))
+		  }), collapse = "\n"))
+		}
+
+		# Through warning if there are logicals of factor in the data frame
+		# because they cannot be merged if they are not unique
+		if (length(non_standard_columns)>0 & filter(count_duplicates, n_aggr>1) %>% nrow() %>% gt(0)) {
+		  warning(paste(capture.output({
+		    cat(crayon::blue("tidybulk says: If duplicates exist from the following columns, only the first instance was taken (lossy behaviour), as aggregating those classes with concatenation is not possible.\n"))
+		    print(.data %>% select(non_standard_columns))
+		  }), collapse = "\n"))
+		}
 
 		# aggregates read .data over samples, concatenates other character columns, and averages other numeric columns
 		.data %>%
@@ -2326,8 +2373,7 @@ aggregate_duplicated_transcripts_bulk =
 			mutate_if(is.logical, as.character) %>%
 
 			# Add the number of duplicates for each gene
-			dplyr::left_join((.) %>% count(!!.sample,!!.transcript, name = "n_aggr"),
-											 by = c(quo_name(.sample), quo_name(.transcript))) %>%
+			dplyr::left_join(count_duplicates,	 by = c(quo_name(.sample), quo_name(.transcript))) %>%
 
 			# Anonymous function - binds the unique and the reduced genes,
 			# in the way we have to reduce redundancy just for the duplicated genes
@@ -2337,40 +2383,25 @@ aggregate_duplicated_transcripts_bulk =
 				dplyr::bind_rows(
 					# Unique symbols
 					(.) %>%
-						filter(n_aggr == 1),
+						filter(n_aggr == 1) %>%
+					  select(-n_aggr),
 
 					# Duplicated symbols
 					(.) %>%
 						filter(n_aggr > 1) %>%
+					  select(-n_aggr) %>%
 						group_by(!!.sample,!!.transcript) %>%
-						dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function()) %>%
 
-						# If scaled abundance exists aggregate that as well
-						ifelse_pipe((
-							".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
-								# .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% not() &&
-								quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)
-						),
-						~ {
-							.abundance_scaled = .data %>% get_tt_columns() %$% .abundance_scaled
-							.x %>% dplyr::mutate(!!.abundance_scaled := !!.abundance_scaled %>% aggregation_function())
-						}) %>%
+					  dplyr::summarise(
+					    across(aggregate_count_columns, ~ .x %>% aggregation_function()),
+					    across(where(is.character), ~ paste3(unique(.x), collapse = ", ")),
+					    across(non_standard_columns, ~ unique(.x)[1]),
+					    merged_transcripts = n()
+					  )
 
-						mutate_at(vars(numerical_columns), mean) %>%
-						mutate_at(
-							vars(
-								-group_cols(),
-								-contains(quo_name(.abundance)),
-								-!!numerical_columns
-							),
-							list( ~ paste3(unique(.), collapse = ", "))
-						) %>%
-						distinct()
-				)
+				) %>%
+			    replace_na(list(merged_transcripts = 1))
 			} %>%
-
-			# Rename column of number of duplicates for each gene
-			rename(merged_transcripts = n_aggr) %>%
 
 			# Attach attributes
 			reattach_internals(.data)
@@ -2515,7 +2546,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 																													 correlation_threshold = 0.9,
 																													 top = Inf,
 																													 of_samples = TRUE,
-																													 log_transform = FALSE) {
+																													 transform = identity) {
 	# Comply with CRAN NOTES
 	. = NULL
 
@@ -2548,9 +2579,9 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		# Filter variable genes
 		keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top = top) %>%
 
-		# Check if log transform is needed
-		ifelse_pipe(log_transform,
-								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+		# Apply (log by default) transformation
+	  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 		distinct() %>%
 
 # NO NEED OF RECTANGULAR
@@ -3079,7 +3110,8 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 																														.sample = NULL,
 																														.transcript = NULL,
 																														.abundance = NULL,
-																														log_transform = TRUE,
+																														transform = transform,
+																														inverse_transform = inverse_transform,
 																														...) {
 	# Get column names
 	.sample = enquo(.sample)
@@ -3108,9 +3140,9 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 					 one_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
-		# Check if log transform is needed
-		ifelse_pipe(log_transform,
-								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% log1p()))
+		# Apply (log by default) transformation
+	  dplyr::mutate(!!.abundance := transform(!!.abundance))
+
 
 
 	# Create design matrix
@@ -3167,13 +3199,11 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		gather(!!.sample,!!.abundance,-!!.transcript) %>%
 
 		# Reverse-Log transform if transformed in the first place
-		ifelse_pipe(
-			log_transform,
-			~ .x %>%
-				dplyr::mutate(!!.abundance := !!.abundance %>% exp %>% `-`(1)) %>%
-				dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0,!!.abundance)) %>%
-				dplyr::mutate(!!.abundance := !!.abundance %>% as.integer)
-		) %>%
+	  dplyr::mutate(!!.abundance := inverse_transform(!!.abundance)) %>%
+
+	  # In case the inverse tranform produces negative counts
+	  dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0,!!.abundance)) %>%
+	  dplyr::mutate(!!.abundance := !!.abundance %>% as.integer) %>%
 
 		# Reset column names
 		dplyr::rename(!!value_adjusted := !!.abundance)  %>%
@@ -3202,7 +3232,7 @@ keep_variable_transcripts = function(.data,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
 																			 top = 500,
-																			 log_transform = TRUE) {
+																			 transform = log1p) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -3225,8 +3255,8 @@ keep_variable_transcripts = function(.data,
 		distinct(!!.sample,!!.transcript,!!.abundance) %>%
 
 		# Check if logtansform is needed
-		ifelse_pipe(log_transform,
-								~ .x %>% dplyr::mutate(!!.abundance := !!.abundance %>% `+`(1) %>%  log())) %>%
+	  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
+
 
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = quo_name(.transcript))
