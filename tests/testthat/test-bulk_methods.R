@@ -1298,6 +1298,11 @@ test_that("Add reduced dimensions PCA - no object",{
 			action="add"
 		)
 
+	res |>
+	  pull(PC1) |>
+	  magrittr::extract2(1) |>
+	  expect_equal(-7.214337, tolerance = 0.01)
+
 	expect_equal(
 		typeof(res$`PC1`),
 		"double"
@@ -1329,6 +1334,11 @@ test_that("Get reduced dimensions tSNE - no object",{
 			verbose=FALSE
 		) |>
 	  suppressMessages()
+
+	res |>
+	  pull(tSNE1) |>
+	  magrittr::extract2(1) |>
+	  expect_equal(2.432608, tolerance = 0.01)
 
 	expect_equal(
 		typeof(res$`tSNE1`),
@@ -1378,16 +1388,12 @@ test_that("Add reduced dimensions UMAP - no object",{
       action="add"
     )
 
-  expect_equal(
-    typeof(res$`UMAP1`),
-    "double",
-    tolerance=1e-1
-  )
+  res |>
+    pull(UMAP1) |>
+    magrittr::extract2(1) |>
+    expect_equal(-2.12, tolerance = 0.01)
 
-  expect_equal(
-    ncol(res),
-    8
-  )
+  expect_equal(ncol(res), 8)
 
 })
 
@@ -1821,12 +1827,9 @@ test_that("filter abundant - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c
-		)
-
-	expect_equal(
-		ncol(res1),
-		10
-	)
+		)  |>
+	  filter(.abundant) |>
+	  nrow()
 
 	res2 =
 		identify_abundant(
@@ -1836,48 +1839,40 @@ test_that("filter abundant - no object",{
 			.abundance = c,
 			minimum_proportion = 0.5,
 			minimum_counts = 30
-		)
+		) |>
+	  filter(.abundant) |>
+	  nrow()
 
-	expect_equal(
-		ncol(res2),
-		10
-	)
+  expect_equal(res1, 910)
+  expect_equal(res2, 625)
 
-	expect_gt(
-		res1 |> filter(.abundant) |> nrow(),
-		res2 |> filter(.abundant) |> nrow()
-	)
+	expect_gt(res1 ,res2 	)
 
-	res =
+
 		keep_abundant(
 			input_df,
 			.sample = a,
 			.transcript = b,
 			.abundance = c
-		)
+		) |>
+	  nrow() |>
 
-	expect_equal(
-		ncol(res),
-		10
-	)
+	expect_equal(910	)
 
 })
 
 test_that("filter abundant with design - no object",{
 
-	res =
 		identify_abundant(
 			input_df,
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
 			factor_of_interest = condition
-		)
-
-	expect_equal(
-		ncol(res),
-		10
-	)
+		) |>
+    filter(.abundant) |>
+    nrow() |>
+	expect_equal(1965)
 
 
 
@@ -1935,7 +1930,10 @@ test_that("gene over representation",{
 			species="Homo sapiens"
 		)
 
-	expect_equal(	ncol(res),	10	)
+	res |>
+	  pull(pvalue) |>
+	  magrittr::extract2(1) |>
+	  expect_equal(0.0004572092, tolerance = 0.0001	)
 
 
 
