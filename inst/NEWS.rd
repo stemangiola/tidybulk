@@ -47,3 +47,13 @@
     \item Improve missing abundance with force scaling
     \item Other small fixes and messaging
 }}
+
+\section{Changes in version 1.7.4, Bioconductor 3.16 Dev}{
+\itemize{
+    \item Improved deconvolution robustness for SummarizedExperiment, edge cases
+    \item Allow mapping of tidybulk_SAM_BAM to non-human genomes
+    \item Adopt the vocabulary .feature, .sample, for conversion between SummarizedExperiment and tibble, similarly to tidySummarizedExperiment
+    \item Deprecate .contrasts argument if favour of contrasts (with no dot)
+    \item Make aggregate_duplicates more robust for tibble and SummarizedExperiment inputs
+    \item Deprecate log_tranform argument for all methods for a more generic tranform argument that accepts arbitrary functions
+}}
