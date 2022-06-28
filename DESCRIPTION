@@ -74,7 +74,8 @@ Suggests:
     markdown,
     uwot,
     matrixStats,
-    igraph
+    igraph,
+    EGSEA
 VignetteBuilder: 
     knitr
 RdMacros:
