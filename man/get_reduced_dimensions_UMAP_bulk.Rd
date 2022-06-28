@@ -12,7 +12,7 @@ get_reduced_dimensions_UMAP_bulk(
   .dims = 2,
   top = 500,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   scale = TRUE,
   calculate_for_pca_dimensions = 20,
   ...
@@ -33,11 +33,11 @@ get_reduced_dimensions_UMAP_bulk(
 
 \item{of_samples}{A boolean}
 
-\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
-
 \item{calculate_for_pca_dimensions}{An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered}
 
 \item{...}{Further parameters passed to the function uwot}
+
+\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A tibble with additional columns

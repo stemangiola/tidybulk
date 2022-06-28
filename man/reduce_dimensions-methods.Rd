@@ -19,10 +19,11 @@ reduce_dimensions(
   .dims = 2,
   top = 500,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   scale = TRUE,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{reduce_dimensions}{spec_tbl_df}(
@@ -34,10 +35,11 @@ reduce_dimensions(
   .dims = 2,
   top = 500,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   scale = TRUE,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{reduce_dimensions}{tbl_df}(
@@ -49,10 +51,11 @@ reduce_dimensions(
   .dims = 2,
   top = 500,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   scale = TRUE,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{reduce_dimensions}{tidybulk}(
@@ -64,10 +67,11 @@ reduce_dimensions(
   .dims = 2,
   top = 500,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   scale = TRUE,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{reduce_dimensions}{SummarizedExperiment}(
@@ -79,10 +83,11 @@ reduce_dimensions(
   .dims = 2,
   top = 500,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   scale = TRUE,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{reduce_dimensions}{RangedSummarizedExperiment}(
@@ -94,10 +99,11 @@ reduce_dimensions(
   .dims = 2,
   top = 500,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   scale = TRUE,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 }
 \arguments{
@@ -117,13 +123,15 @@ reduce_dimensions(
 
 \item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 
-\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
 
 \item{scale}{A boolean for method="PCA", this will be passed to the `prcomp` function. It is not included in the ... argument because although the default for `prcomp` if FALSE, it is advisable to set it as TRUE.}
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"}
+
+\item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A tbl object with additional columns for the reduced dimensions
