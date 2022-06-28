@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -69,7 +69,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">symbol_to_entrez</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span>, .sample <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">symbol_to_entrez</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span>, .sample <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -95,24 +95,27 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> |&gt; <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> |&gt; <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> |&gt; <span class="fu">symbol_to_entrez</span><span class="op">(</span>.transcript <span class="op">=</span> <span class="va">feature</span>, .sample <span class="op">=</span> <span class="va">sample</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># This function was designed for data.frame</span></span></span>
+<span class="r-in"><span><span class="co"># Convert from SummarizedExperiment for this example. It is NOT reccomended.</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> <span class="op">|&gt;</span> <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">symbol_to_entrez</span><span class="op">(</span>.transcript <span class="op">=</span> <span class="va">.feature</span>, .sample <span class="op">=</span> <span class="va">.sample</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'select()' returned 1:many mapping between keys and columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2,635 × 7</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    feature  sample     count Cell.type time  condition entrez</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ABCB4    SRR1740034  <span style="text-decoration: underline;">1</span>035 b_cell    0 d   TRUE      5244  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ABCB9    SRR1740034    45 b_cell    0 d   TRUE      23457 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ACAP1    SRR1740034  <span style="text-decoration: underline;">7</span>151 b_cell    0 d   TRUE      9744  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ACHE     SRR1740034     2 b_cell    0 d   TRUE      43    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ACP5     SRR1740034  <span style="text-decoration: underline;">2</span>278 b_cell    0 d   TRUE      54    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ADAM28   SRR1740034 <span style="text-decoration: underline;">11</span>156 b_cell    0 d   TRUE      10863 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ADAMDEC1 SRR1740034    72 b_cell    0 d   TRUE      27299 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ADAMTS3  SRR1740034     0 b_cell    0 d   TRUE      9508  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ADRB2    SRR1740034   298 b_cell    0 d   TRUE      154   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> AIF1     SRR1740034     8 b_cell    0 d   TRUE      199   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 2,625 more rows</span></span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2,635 × 10</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    .feature .sample    count Cell.type time  condition  days  dead entrez.x</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ABCB4    SRR1740034  <span style="text-decoration: underline;">1</span>035 b_cell    0 d   TRUE          1     1 5244    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ABCB9    SRR1740034    45 b_cell    0 d   TRUE          1     1 23457   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ACAP1    SRR1740034  <span style="text-decoration: underline;">7</span>151 b_cell    0 d   TRUE          1     1 9744    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ACHE     SRR1740034     2 b_cell    0 d   TRUE          1     1 43      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ACP5     SRR1740034  <span style="text-decoration: underline;">2</span>278 b_cell    0 d   TRUE          1     1 54      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ADAM28   SRR1740034 <span style="text-decoration: underline;">11</span>156 b_cell    0 d   TRUE          1     1 10863   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ADAMDEC1 SRR1740034    72 b_cell    0 d   TRUE          1     1 27299   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ADAMTS3  SRR1740034     0 b_cell    0 d   TRUE          1     1 9508    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ADRB2    SRR1740034   298 b_cell    0 d   TRUE          1     1 154     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> AIF1     SRR1740034     8 b_cell    0 d   TRUE          1     1 199     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 2,625 more rows, and 1 more variable: entrez.y &lt;chr&gt;</span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

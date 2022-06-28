@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -69,100 +69,106 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">reduce_dimensions</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  .dims <span class="op">=</span> <span class="fl">2</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  scale <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for spec_tbl_df</span>
-<span class="fu">reduce_dimensions</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  .dims <span class="op">=</span> <span class="fl">2</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  scale <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tbl_df</span>
-<span class="fu">reduce_dimensions</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  .dims <span class="op">=</span> <span class="fl">2</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  scale <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tidybulk</span>
-<span class="fu">reduce_dimensions</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  .dims <span class="op">=</span> <span class="fl">2</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  scale <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for SummarizedExperiment</span>
-<span class="fu">reduce_dimensions</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  .dims <span class="op">=</span> <span class="fl">2</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  scale <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for RangedSummarizedExperiment</span>
-<span class="fu">reduce_dimensions</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  .dims <span class="op">=</span> <span class="fl">2</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  scale <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">reduce_dimensions</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  .dims <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for spec_tbl_df</span></span>
+<span><span class="fu">reduce_dimensions</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  .dims <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tbl_df</span></span>
+<span><span class="fu">reduce_dimensions</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  .dims <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tidybulk</span></span>
+<span><span class="fu">reduce_dimensions</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  .dims <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for SummarizedExperiment</span></span>
+<span><span class="fu">reduce_dimensions</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  .dims <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for RangedSummarizedExperiment</span></span>
+<span><span class="fu">reduce_dimensions</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  .dims <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -199,8 +205,8 @@
 <dd><p>A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column</p></dd>
 
 
-<dt>log_transform</dt>
-<dd><p>A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
+<dt>transform</dt>
+<dd><p>A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity</p></dd>
 
 
 <dt>scale</dt>
@@ -213,6 +219,10 @@
 
 <dt>...</dt>
 <dd><p>Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"</p></dd>
+
+
+<dt>log_transform</dt>
+<dd><p>DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -264,23 +274,23 @@ Rtsne::Rtsne(data, ...)</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">counts.MDS</span> <span class="op">=</span></span>
-<span class="r-in"> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> |&gt;</span>
-<span class="r-in"> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> |&gt;</span>
-<span class="r-in"> <span class="fu">reduce_dimensions</span><span class="op">(</span> method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">counts.MDS</span> <span class="op">=</span></span></span>
+<span class="r-in"><span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span> <span class="fu">reduce_dimensions</span><span class="op">(</span> method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No group or design set. Assuming all samples belong to one group.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting the 182 most variable genes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> tidybulk says: to access the raw results do `attr(..., "internals")$MDS`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This message is displayed once per session.</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">counts.PCA</span> <span class="op">=</span></span>
-<span class="r-in"> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> |&gt;</span>
-<span class="r-in"> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> |&gt;</span>
-<span class="r-in"> <span class="fu">reduce_dimensions</span><span class="op">(</span>method<span class="op">=</span><span class="st">"PCA"</span>, .dims <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">counts.PCA</span> <span class="op">=</span></span></span>
+<span class="r-in"><span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span> <span class="fu">reduce_dimensions</span><span class="op">(</span>method<span class="op">=</span><span class="st">"PCA"</span>, .dims <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No group or design set. Assuming all samples belong to one group.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting the 182 most variable genes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Fraction of variance explained by the selected principal components</span>
@@ -292,9 +302,9 @@ Rtsne::Rtsne(data, ...)</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>                 0.085<span style="text-decoration: underline;">2</span>     3</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> tidybulk says: to access the raw results do `attr(..., "internals")$PCA`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This message is displayed once per session.</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

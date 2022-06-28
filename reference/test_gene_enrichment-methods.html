@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -69,100 +69,106 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">test_gene_enrichment</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">.entrez</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  .contrasts <span class="op">=</span> <span class="cn">NULL</span>,
-  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,
-  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,
-    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,
-  <span class="va">species</span>,
-  cores <span class="op">=</span> <span class="fl">10</span>,
-  method <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for spec_tbl_df</span>
-<span class="fu">test_gene_enrichment</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">.entrez</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  .contrasts <span class="op">=</span> <span class="cn">NULL</span>,
-  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,
-  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,
-    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,
-  <span class="va">species</span>,
-  cores <span class="op">=</span> <span class="fl">10</span>,
-  method <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tbl_df</span>
-<span class="fu">test_gene_enrichment</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">.entrez</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  .contrasts <span class="op">=</span> <span class="cn">NULL</span>,
-  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,
-  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,
-    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,
-  <span class="va">species</span>,
-  cores <span class="op">=</span> <span class="fl">10</span>,
-  method <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tidybulk</span>
-<span class="fu">test_gene_enrichment</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">.entrez</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  .contrasts <span class="op">=</span> <span class="cn">NULL</span>,
-  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,
-  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,
-    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,
-  <span class="va">species</span>,
-  cores <span class="op">=</span> <span class="fl">10</span>,
-  method <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for SummarizedExperiment</span>
-<span class="fu">test_gene_enrichment</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">.entrez</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  .contrasts <span class="op">=</span> <span class="cn">NULL</span>,
-  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,
-  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,
-    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,
-  <span class="va">species</span>,
-  cores <span class="op">=</span> <span class="fl">10</span>,
-  method <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for RangedSummarizedExperiment</span>
-<span class="fu">test_gene_enrichment</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">.entrez</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  .contrasts <span class="op">=</span> <span class="cn">NULL</span>,
-  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,
-  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,
-    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,
-  <span class="va">species</span>,
-  cores <span class="op">=</span> <span class="fl">10</span>,
-  method <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">test_gene_enrichment</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  contrasts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,</span>
+<span>    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .contrasts <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for spec_tbl_df</span></span>
+<span><span class="fu">test_gene_enrichment</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  contrasts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,</span>
+<span>    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .contrasts <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tbl_df</span></span>
+<span><span class="fu">test_gene_enrichment</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  contrasts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,</span>
+<span>    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .contrasts <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tidybulk</span></span>
+<span><span class="fu">test_gene_enrichment</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  contrasts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,</span>
+<span>    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .contrasts <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for SummarizedExperiment</span></span>
+<span><span class="fu">test_gene_enrichment</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  contrasts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,</span>
+<span>    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .contrasts <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for RangedSummarizedExperiment</span></span>
+<span><span class="fu">test_gene_enrichment</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  contrasts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"camera"</span>, <span class="st">"roast"</span>, <span class="st">"safe"</span>, <span class="st">"gage"</span>, <span class="st">"padog"</span>, <span class="st">"globaltest"</span>, <span class="st">"ora"</span><span class="op">)</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>,</span>
+<span>    <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .contrasts <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -187,8 +193,8 @@
 <dd><p>The name of the transcript/gene abundance column</p></dd>
 
 
-<dt>.contrasts</dt>
-<dd><p>= NULL,</p></dd>
+<dt>contrasts</dt>
+<dd><p>This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)</p></dd>
 
 
 <dt>methods</dt>
@@ -209,6 +215,10 @@
 
 <dt>method</dt>
 <dd><p>DEPRECATED. Please use methods.</p></dd>
+
+
+<dt>.contrasts</dt>
+<dd><p>DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -265,27 +275,29 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">df_entrez</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> |&gt; <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> |&gt; <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> |&gt; <span class="fu"><a href="symbol_to_entrez.html">symbol_to_entrez</a></span><span class="op">(</span> .transcript <span class="op">=</span> <span class="va">feature</span>, .sample <span class="op">=</span> <span class="va">sample</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">df_entrez</span> <span class="op">=</span> <span class="fu"><a href="aggregate_duplicates-methods.html">aggregate_duplicates</a></span><span class="op">(</span><span class="va">df_entrez</span>, aggregation_function <span class="op">=</span> <span class="va">sum</span>, .sample <span class="op">=</span> <span class="va">sample</span>, .transcript <span class="op">=</span> <span class="va">entrez</span>, .abundance <span class="op">=</span> <span class="va">count</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"EGSEA"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu">test_gene_enrichment</span><span class="op">(</span></span>
-<span class="r-in">    <span class="va">df_entrez</span>,</span>
-<span class="r-in">    <span class="op">~</span> <span class="va">condition</span>,</span>
-<span class="r-in">    .sample <span class="op">=</span> <span class="va">sample</span>,</span>
-<span class="r-in">    .entrez <span class="op">=</span> <span class="va">entrez</span>,</span>
-<span class="r-in">    .abundance <span class="op">=</span> <span class="va">count</span>,</span>
-<span class="r-in">         methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"roast"</span> , <span class="st">"safe"</span>, <span class="st">"gage"</span>  ,  <span class="st">"padog"</span> , <span class="st">"globaltest"</span>, <span class="st">"ora"</span> <span class="op">)</span>,</span>
-<span class="r-in">         gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>, <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,</span>
-<span class="r-in">    species<span class="op">=</span><span class="st">"human"</span>,</span>
-<span class="r-in">    cores <span class="op">=</span> <span class="fl">2</span></span>
-<span class="r-in">  <span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">se</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span> <span class="va">se</span><span class="op">)</span><span class="op">$</span><span class="va">entrez</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">se</span> <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df_entrez</span> <span class="op">=</span> <span class="fu"><a href="aggregate_duplicates-methods.html">aggregate_duplicates</a></span><span class="op">(</span><span class="va">se</span>,.transcript <span class="op">=</span> <span class="va">entrez</span> <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"EGSEA"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu">test_gene_enrichment</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">df_entrez</span>,</span></span>
+<span class="r-in"><span>    <span class="op">~</span> <span class="va">condition</span>,</span></span>
+<span class="r-in"><span>    .sample <span class="op">=</span> <span class="va">sample</span>,</span></span>
+<span class="r-in"><span>    .entrez <span class="op">=</span> <span class="va">entrez</span>,</span></span>
+<span class="r-in"><span>    .abundance <span class="op">=</span> <span class="va">count</span>,</span></span>
+<span class="r-in"><span>         methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"roast"</span> , <span class="st">"safe"</span>, <span class="st">"gage"</span>  ,  <span class="st">"padog"</span> , <span class="st">"globaltest"</span>, <span class="st">"ora"</span> <span class="op">)</span>,</span></span>
+<span class="r-in"><span>         gene_sets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>, <span class="st">"c3"</span>, <span class="st">"c4"</span>, <span class="st">"c5"</span>, <span class="st">"c6"</span>, <span class="st">"c7"</span>, <span class="st">"kegg_disease"</span>, <span class="st">"kegg_metabolism"</span>, <span class="st">"kegg_signaling"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    species<span class="op">=</span><span class="st">"human"</span>,</span></span>
+<span class="r-in"><span>    cores <span class="op">=</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

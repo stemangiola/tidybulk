@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -69,94 +69,100 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">remove_redundancy</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,
-  top <span class="op">=</span> <span class="cn">Inf</span>,
-  log_transform <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">Dim_a_column</span>,
-  <span class="va">Dim_b_column</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for spec_tbl_df</span>
-<span class="fu">remove_redundancy</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,
-  top <span class="op">=</span> <span class="cn">Inf</span>,
-  log_transform <span class="op">=</span> <span class="cn">FALSE</span>,
-  Dim_a_column <span class="op">=</span> <span class="cn">NULL</span>,
-  Dim_b_column <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tbl_df</span>
-<span class="fu">remove_redundancy</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,
-  top <span class="op">=</span> <span class="cn">Inf</span>,
-  log_transform <span class="op">=</span> <span class="cn">FALSE</span>,
-  Dim_a_column <span class="op">=</span> <span class="cn">NULL</span>,
-  Dim_b_column <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tidybulk</span>
-<span class="fu">remove_redundancy</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,
-  top <span class="op">=</span> <span class="cn">Inf</span>,
-  log_transform <span class="op">=</span> <span class="cn">FALSE</span>,
-  Dim_a_column <span class="op">=</span> <span class="cn">NULL</span>,
-  Dim_b_column <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for SummarizedExperiment</span>
-<span class="fu">remove_redundancy</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,
-  top <span class="op">=</span> <span class="cn">Inf</span>,
-  log_transform <span class="op">=</span> <span class="cn">FALSE</span>,
-  Dim_a_column <span class="op">=</span> <span class="cn">NULL</span>,
-  Dim_b_column <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for RangedSummarizedExperiment</span>
-<span class="fu">remove_redundancy</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">method</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,
-  top <span class="op">=</span> <span class="cn">Inf</span>,
-  log_transform <span class="op">=</span> <span class="cn">FALSE</span>,
-  Dim_a_column <span class="op">=</span> <span class="cn">NULL</span>,
-  Dim_b_column <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">remove_redundancy</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  top <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">identity</span>,</span>
+<span>  <span class="va">Dim_a_column</span>,</span>
+<span>  <span class="va">Dim_b_column</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for spec_tbl_df</span></span>
+<span><span class="fu">remove_redundancy</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  top <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">identity</span>,</span>
+<span>  Dim_a_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  Dim_b_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tbl_df</span></span>
+<span><span class="fu">remove_redundancy</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  top <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">identity</span>,</span>
+<span>  Dim_a_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  Dim_b_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tidybulk</span></span>
+<span><span class="fu">remove_redundancy</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  top <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">identity</span>,</span>
+<span>  Dim_a_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  Dim_b_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for SummarizedExperiment</span></span>
+<span><span class="fu">remove_redundancy</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  top <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">identity</span>,</span>
+<span>  Dim_a_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  Dim_b_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for RangedSummarizedExperiment</span></span>
+<span><span class="fu">remove_redundancy</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">method</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  correlation_threshold <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  top <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">identity</span>,</span>
+<span>  Dim_a_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  Dim_b_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -193,8 +199,8 @@
 <dd><p>An integer. How many top genes to select for correlation based method</p></dd>
 
 
-<dt>log_transform</dt>
-<dd><p>A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
+<dt>transform</dt>
+<dd><p>A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity</p></dd>
 
 
 <dt>Dim_a_column</dt>
@@ -203,6 +209,10 @@
 
 <dt>Dim_b_column</dt>
 <dd><p>A character string. For reduced_dimension based calculation. The column of another principal component</p></dd>
+
+
+<dt>log_transform</dt>
+<dd><p>DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -235,16 +245,16 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> |&gt;</span>
-<span class="r-in"> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> |&gt;</span>
-<span class="r-in">   <span class="fu">remove_redundancy</span><span class="op">(</span></span>
-<span class="r-in">     .element <span class="op">=</span> <span class="va">sample</span>,</span>
-<span class="r-in">     .feature <span class="op">=</span> <span class="va">transcript</span>,</span>
-<span class="r-in">       .abundance <span class="op">=</span>  <span class="va">count</span>,</span>
-<span class="r-in">       method <span class="op">=</span> <span class="st">"correlation"</span></span>
-<span class="r-in">       <span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>   <span class="fu">remove_redundancy</span><span class="op">(</span></span></span>
+<span class="r-in"><span>     .element <span class="op">=</span> <span class="va">sample</span>,</span></span>
+<span class="r-in"><span>     .feature <span class="op">=</span> <span class="va">transcript</span>,</span></span>
+<span class="r-in"><span>       .abundance <span class="op">=</span>  <span class="va">count</span>,</span></span>
+<span class="r-in"><span>       method <span class="op">=</span> <span class="st">"correlation"</span></span></span>
+<span class="r-in"><span>       <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No group or design set. Assuming all samples belong to one group.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting the 182 most variable genes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: SummarizedExperiment </span>
@@ -252,33 +262,33 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): count</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(1): .abundant</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(2): entrez .abundant</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colnames(4): SRR1740035 SRR1740043 SRR1740058 SRR1740067</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(3): Cell.type time condition</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">counts.MDS</span> <span class="op">=</span></span>
-<span class="r-in"> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> |&gt;</span>
-<span class="r-in"> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> |&gt;</span>
-<span class="r-in">  <span class="fu"><a href="reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span> method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(5): Cell.type time condition days dead</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">counts.MDS</span> <span class="op">=</span></span></span>
+<span class="r-in"><span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span> method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No group or design set. Assuming all samples belong to one group.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting the 182 most variable genes</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">remove_redundancy</span><span class="op">(</span></span>
-<span class="r-in">  <span class="va">counts.MDS</span>,</span>
-<span class="r-in">  Dim_a_column <span class="op">=</span> <span class="va">`Dim1`</span>,</span>
-<span class="r-in">  Dim_b_column <span class="op">=</span> <span class="va">`Dim2`</span>,</span>
-<span class="r-in">  .element <span class="op">=</span> <span class="va">sample</span>,</span>
-<span class="r-in">  method <span class="op">=</span> <span class="st">"reduced_dimensions"</span></span>
-<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">remove_redundancy</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">counts.MDS</span>,</span></span>
+<span class="r-in"><span>  Dim_a_column <span class="op">=</span> <span class="va">`Dim1`</span>,</span></span>
+<span class="r-in"><span>  Dim_b_column <span class="op">=</span> <span class="va">`Dim2`</span>,</span></span>
+<span class="r-in"><span>  .element <span class="op">=</span> <span class="va">sample</span>,</span></span>
+<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"reduced_dimensions"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: SummarizedExperiment </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dim: 527 3 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): count</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(1): .abundant</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(2): entrez .abundant</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colnames(3): SRR1740035 SRR1740058 SRR1740067</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(6): Cell.type time ... Dim2 Dim3</span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(8): Cell.type time ... Dim2 Dim3</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

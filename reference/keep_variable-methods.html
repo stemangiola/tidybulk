@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -69,50 +69,54 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">keep_variable</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for spec_tbl_df</span>
-<span class="fu">keep_variable</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tbl_df</span>
-<span class="fu">keep_variable</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tidybulk</span>
-<span class="fu">keep_variable</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for SummarizedExperiment</span>
-<span class="fu">keep_variable</span><span class="op">(</span><span class="va">.data</span>, top <span class="op">=</span> <span class="fl">500</span>, log_transform <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="co"># S4 method for RangedSummarizedExperiment</span>
-<span class="fu">keep_variable</span><span class="op">(</span><span class="va">.data</span>, top <span class="op">=</span> <span class="fl">500</span>, log_transform <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">keep_variable</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .transcript <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for spec_tbl_df</span></span>
+<span><span class="fu">keep_variable</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .transcript <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tbl_df</span></span>
+<span><span class="fu">keep_variable</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .transcript <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tidybulk</span></span>
+<span><span class="fu">keep_variable</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .transcript <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for SummarizedExperiment</span></span>
+<span><span class="fu">keep_variable</span><span class="op">(</span><span class="va">.data</span>, top <span class="op">=</span> <span class="fl">500</span>, transform <span class="op">=</span> <span class="va">log1p</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for RangedSummarizedExperiment</span></span>
+<span><span class="fu">keep_variable</span><span class="op">(</span><span class="va">.data</span>, top <span class="op">=</span> <span class="fl">500</span>, transform <span class="op">=</span> <span class="va">log1p</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -137,8 +141,12 @@
 <dd><p>Integer. Number of top transcript to consider</p></dd>
 
 
+<dt>transform</dt>
+<dd><p>A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity</p></dd>
+
+
 <dt>log_transform</dt>
-<dd><p>A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
+<dd><p>DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -177,13 +185,13 @@ variable_trancripts = rownames(x)</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu">keep_variable</span><span class="op">(</span></span>
-<span class="r-in">  <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span>,</span>
-<span class="r-in">      top <span class="op">=</span> <span class="fl">500</span></span>
-<span class="r-in">  <span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu">keep_variable</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span>,</span></span>
+<span class="r-in"><span>      top <span class="op">=</span> <span class="fl">500</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting the 500 most variable genes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: SummarizedExperiment </span>
@@ -191,11 +199,11 @@ variable_trancripts = rownames(x)</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): count</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rownames(500): IGKC TCL1A ... ATXN8OS CCL13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(1): entrez</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(3): Cell.type time condition</span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(5): Cell.type time condition days dead</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

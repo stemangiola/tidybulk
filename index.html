@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -256,10 +256,10 @@
 </h2>
 <p>From Bioconductor</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"tidybulk"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"tidybulk"</span><span class="op">)</span></span></code></pre></div>
 <p>From Github</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"stemangiola/tidybulk"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"stemangiola/tidybulk"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level1">
@@ -267,7 +267,7 @@
 </h1>
 <p>We will use a <code>SummarizedExperiment</code> object</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble abstraction: 408,624 x 8</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    transcript sample     count Cell.type time  condition batch factor_of_intere…</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt; &lt;fct&gt;     &lt;fct&gt; &lt;lgl&gt;     &lt;fct&gt; &lt;lgl&gt;            </span></span>
@@ -284,7 +284,7 @@
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 40 more rows</span></span></code></pre></div>
 <p>Loading <code>tidySummarizedExperiment</code> will automatically abstract this object as <code>tibble</code>, so we can display it and manipulate it with tidy tools. Although it looks different, and more tools (tidyverse) are available to us, this object is in fact a <code>SummarizedExperiment</code> object.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">counts_SE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">counts_SE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] "SummarizedExperiment"</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="do">## attr(,"package")</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] "SummarizedExperiment"</span></span></code></pre></div>
@@ -293,7 +293,7 @@
 </h2>
 <p>First of all, you can cite all articles utilised within your workflow automatically from any tidybulk tibble</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>   <span class="fu"><a href="reference/get_bibliography-methods.html">get_bibliography</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>   <span class="fu"><a href="reference/get_bibliography-methods.html">get_bibliography</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="aggregate-duplicated-transcripts">Aggregate duplicated <code>transcripts</code>
@@ -303,22 +303,22 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.aggr</span> <span class="op">=</span> <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/aggregate_duplicates-methods.html">aggregate_duplicates</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.aggr</span> <span class="op">=</span> <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/aggregate_duplicates-methods.html">aggregate_duplicates</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">temp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
-    symbol <span class="op">=</span> <span class="va">dge_list</span><span class="op">$</span><span class="va">genes</span><span class="op">$</span><span class="va">symbol</span>,
-    <span class="va">dge_list</span><span class="op">$</span><span class="va">counts</span>
-<span class="op">)</span>
-<span class="va">dge_list.nr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/by.html" class="external-link">by</a></span><span class="op">(</span><span class="va">temp</span>, <span class="va">temp</span><span class="op">$</span><span class="va">symbol</span>,
-    <span class="kw">function</span><span class="op">(</span><span class="va">df</span><span class="op">)</span>
-        <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span>
-            <span class="fu">matrixStats</span><span class="fu">:::</span><span class="fu">colSums</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va">dge_list.nr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">"rbind"</span>, <span class="va">dge_list.nr</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dge_list.nr</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dge_list</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">temp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    symbol <span class="op">=</span> <span class="va">dge_list</span><span class="op">$</span><span class="va">genes</span><span class="op">$</span><span class="va">symbol</span>,</span>
+<span>    <span class="va">dge_list</span><span class="op">$</span><span class="va">counts</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">dge_list.nr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/by.html" class="external-link">by</a></span><span class="op">(</span><span class="va">temp</span>, <span class="va">temp</span><span class="op">$</span><span class="va">symbol</span>,</span>
+<span>    <span class="kw">function</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span>        <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span></span>
+<span>            <span class="fu">matrixStats</span><span class="fu">:::</span><span class="fu">colSums</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">dge_list.nr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">"rbind"</span>, <span class="va">dge_list.nr</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dge_list.nr</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dge_list</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -332,7 +332,7 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm</span> <span class="op">=</span> <span class="va">counts_SE.aggr</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">condition</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/scale_abundance-methods.html">scale_abundance</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm</span> <span class="op">=</span> <span class="va">counts_SE.aggr</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">condition</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/scale_abundance-methods.html">scale_abundance</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -350,11 +350,11 @@
 </div>
 <p>We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span><span class="va">count_scaled</span> <span class="op">+</span> <span class="fl">1</span>, group<span class="op">=</span><span class="va">sample</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu">geom_density</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu">scale_x_log10</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-    <span class="va">my_theme</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span><span class="va">count_scaled</span> <span class="op">+</span> <span class="fl">1</span>, group<span class="op">=</span><span class="va">sample</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_density</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">scale_x_log10</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="va">my_theme</span></span></code></pre></div>
 <p><img src="reference/figures/plot_normalise-1.png"><!-- --></p>
 </div>
 <div class="section level2">
@@ -365,28 +365,28 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.variable</span> <span class="op">=</span> <span class="va">counts_SE.norm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/keep_variable-methods.html">keep_variable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.variable</span> <span class="op">=</span> <span class="va">counts_SE.norm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/keep_variable-methods.html">keep_variable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/edgeR" class="external-link">edgeR</a></span><span class="op">)</span>
-
-<span class="va">x</span> <span class="op">=</span> <span class="va">norm_counts.table</span>
-
-<span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="op">(</span><span class="va">x</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>
-<span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">s</span>,decreasing<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">o</span><span class="op">[</span><span class="fl">1L</span><span class="op">:</span><span class="va">top</span><span class="op">]</span>,,drop<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span>
-
-<span class="va">norm_counts.table</span> <span class="op">=</span> <span class="va">norm_counts.table</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span>
-
-<span class="va">norm_counts.table</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span>
-        <span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>,
-        <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">norm_counts.table</span><span class="op">)</span>
-    <span class="op">)</span>,
-    <span class="st">"Cell.type"</span>
-<span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/edgeR" class="external-link">edgeR</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">x</span> <span class="op">=</span> <span class="va">norm_counts.table</span></span>
+<span></span>
+<span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="op">(</span><span class="va">x</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">s</span>,decreasing<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">o</span><span class="op">[</span><span class="fl">1L</span><span class="op">:</span><span class="va">top</span><span class="op">]</span>,,drop<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">norm_counts.table</span> <span class="op">=</span> <span class="va">norm_counts.table</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">norm_counts.table</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span></span>
+<span>        <span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>,</span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">norm_counts.table</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="st">"Cell.type"</span></span>
+<span><span class="op">]</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -401,33 +401,33 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.MDS</span> <span class="op">=</span>
-  <span class="va">counts_SE.norm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS</span> <span class="op">=</span></span>
+<span>  <span class="va">counts_SE.norm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/limma" class="external-link">limma</a></span><span class="op">)</span>
-
-<span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
-<span class="va">cmds</span> <span class="op">=</span> <span class="fu">limma</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/limma/man/plotMDS.html" class="external-link">plotMDS</a></span><span class="op">(</span>ndim <span class="op">=</span> <span class="va">.dims</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="va">cmds</span> <span class="op">=</span> <span class="va">cmds</span> <span class="op">%$%</span> 
-    <span class="va">cmdscale.out</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Dim%s"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">cmds</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">cmds</span><span class="op">)</span><span class="op">)</span>,
-    <span class="st">"Cell.type"</span>
-<span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/limma" class="external-link">limma</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">cmds</span> <span class="op">=</span> <span class="fu">limma</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/limma/man/plotMDS.html" class="external-link">plotMDS</a></span><span class="op">(</span>ndim <span class="op">=</span> <span class="va">.dims</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cmds</span> <span class="op">=</span> <span class="va">cmds</span> <span class="op">%$%</span> </span>
+<span>    <span class="va">cmdscale.out</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Dim%s"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cmds</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">cmds</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="st">"Cell.type"</span></span>
+<span><span class="op">]</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
 
 </div>
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span>  <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span>  <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 48 x 15</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="do">##      Dim1   Dim2   Dim3     Dim4    Dim5    Dim6 sample Cell.type time </span></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="do">##     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;</span></span>
@@ -445,36 +445,36 @@
 <span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="do">## #   factor_of_interest &lt;chr&gt;, merged.transcripts &lt;dbl&gt;, TMM &lt;dbl&gt;,</span></span>
 <span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="do">## #   multiplier &lt;dbl&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-  <span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html" class="external-link">ggpairs</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="fl">10</span><span class="op">:</span><span class="fl">15</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>colour<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html" class="external-link">ggpairs</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="fl">10</span><span class="op">:</span><span class="fl">15</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>colour<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/plot_mds-1.png"><!-- --></p>
 <p><strong>PCA</strong></p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.PCA</span> <span class="op">=</span>
-  <span class="va">counts_SE.norm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"PCA"</span>, .dims <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.PCA</span> <span class="op">=</span></span>
+<span>  <span class="va">counts_SE.norm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"PCA"</span>, .dims <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
-<span class="va">pc</span> <span class="op">=</span> <span class="va">count_m_log</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">variance</span> <span class="op">=</span> <span class="va">pc</span><span class="op">$</span><span class="va">sdev</span><span class="op">^</span><span class="fl">2</span>
-<span class="va">variance</span> <span class="op">=</span> <span class="op">(</span><span class="va">variance</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">variance</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>
-<span class="va">pc</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pc</span><span class="op">)</span><span class="op">)</span>,
-    <span class="st">"Cell.type"</span>
-<span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">pc</span> <span class="op">=</span> <span class="va">count_m_log</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">variance</span> <span class="op">=</span> <span class="va">pc</span><span class="op">$</span><span class="va">sdev</span><span class="op">^</span><span class="fl">2</span></span>
+<span><span class="va">variance</span> <span class="op">=</span> <span class="op">(</span><span class="va">variance</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">variance</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span>
+<span><span class="va">pc</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pc</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="st">"Cell.type"</span></span>
+<span><span class="op">]</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
 
 </div>
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"PC"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"PC"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 48 x 16</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="do">##       PC1   PC2    PC3    PC4    PC5   PC6 sample Cell.type time  condition</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="do">##     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;    </span></span>
@@ -492,46 +492,46 @@
 <span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="do">## #   factor_of_interest &lt;chr&gt;, merged.transcripts &lt;dbl&gt;, TMM &lt;dbl&gt;,</span></span>
 <span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="do">## #   multiplier &lt;dbl&gt;, sample.x &lt;chr&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-     <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-  <span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html" class="external-link">ggpairs</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="fl">11</span><span class="op">:</span><span class="fl">13</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>colour<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>     <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html" class="external-link">ggpairs</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="fl">11</span><span class="op">:</span><span class="fl">13</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>colour<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/plot_pca-1.png"><!-- --></p>
 <p><strong>tSNE</strong></p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op">=</span>
-    <span class="va">breast_tcga_mini_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>
-        method <span class="op">=</span> <span class="st">"tSNE"</span>,
-        perplexity<span class="op">=</span><span class="fl">10</span>,
-        pca_scale <span class="op">=</span><span class="cn">TRUE</span>
-    <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op">=</span></span>
+<span>    <span class="va">breast_tcga_mini_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span></span>
+<span>        method <span class="op">=</span> <span class="st">"tSNE"</span>,</span>
+<span>        perplexity<span class="op">=</span><span class="fl">10</span>,</span>
+<span>        pca_scale <span class="op">=</span><span class="cn">TRUE</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
-
-<span class="va">tsne</span> <span class="op">=</span> <span class="fu">Rtsne</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Rtsne/man/Rtsne.html" class="external-link">Rtsne</a></span><span class="op">(</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">count_m_log</span><span class="op">)</span>,
-    perplexity<span class="op">=</span><span class="fl">10</span>,
-        pca_scale <span class="op">=</span><span class="cn">TRUE</span>
-<span class="op">)</span><span class="op">$</span><span class="va">Y</span>
-<span class="va">tsne</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">tsne</span><span class="op">)</span><span class="op">)</span>,
-    <span class="st">"Cell.type"</span>
-<span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tsne</span> <span class="op">=</span> <span class="fu">Rtsne</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Rtsne/man/Rtsne.html" class="external-link">Rtsne</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">count_m_log</span><span class="op">)</span>,</span>
+<span>    perplexity<span class="op">=</span><span class="fl">10</span>,</span>
+<span>        pca_scale <span class="op">=</span><span class="cn">TRUE</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">Y</span></span>
+<span><span class="va">tsne</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">tsne</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="st">"Cell.type"</span></span>
+<span><span class="op">]</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
 
 </div>
 <p>Plot</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <div class="sourceCode" id="cb28"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 251 x 5</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="do">##       tSNE1  tSNE2 sample                      Call  sample.x                   </span></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="do">##       &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                       &lt;fct&gt; &lt;chr&gt;                      </span></span>
@@ -547,9 +547,9 @@
 <span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10  -3.44    26.5  TCGA-A1-A0SQ-01A-21R-A144-… LumA  TCGA-A1-A0SQ-01A-21R-A144-…</span></span>
 <span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 241 more rows</span></span></code></pre></div>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color<span class="op">=</span><span class="va">Call</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="va">my_theme</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color<span class="op">=</span><span class="va">Call</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="va">my_theme</span></span></code></pre></div>
 <p><img src="reference/figures/unnamed-chunk-12-1.png"><!-- --></p>
 </div>
 <div class="section level2">
@@ -560,43 +560,43 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op">=</span>
-  <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/rotate_dimensions-methods.html">rotate_dimensions</a></span><span class="op">(</span><span class="va">`Dim1`</span>, <span class="va">`Dim2`</span>, rotation_degrees <span class="op">=</span> <span class="fl">45</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op">=</span></span>
+<span>  <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/rotate_dimensions-methods.html">rotate_dimensions</a></span><span class="op">(</span><span class="va">`Dim1`</span>, <span class="va">`Dim2`</span>, rotation_degrees <span class="op">=</span> <span class="fl">45</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">rotation</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">m</span>, <span class="va">d</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">r</span> <span class="op">=</span> <span class="va">d</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">/</span> <span class="fl">180</span>
-    <span class="op">(</span><span class="op">(</span><span class="fu"><a href="reference/bind-methods.html">bind_rows</a></span><span class="op">(</span>
-        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>`1` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>, `2` <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span>,
-        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>`1` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>, `2` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span>
-    <span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="va">as_matrix</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">m</span><span class="op">)</span>
-<span class="op">}</span>
-<span class="va">mds_r</span> <span class="op">=</span> <span class="va">pca</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">rotation</span><span class="op">(</span><span class="va">rotation_degrees</span><span class="op">)</span>
-<span class="va">mds_r</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">mds_r</span><span class="op">)</span><span class="op">)</span>,
-    <span class="st">"Cell.type"</span>
-<span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">rotation</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">m</span>, <span class="va">d</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">r</span> <span class="op">=</span> <span class="va">d</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">/</span> <span class="fl">180</span></span>
+<span>    <span class="op">(</span><span class="op">(</span><span class="fu"><a href="reference/bind-methods.html">bind_rows</a></span><span class="op">(</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>`1` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>, `2` <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>`1` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>, `2` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="va">as_matrix</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">m</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">mds_r</span> <span class="op">=</span> <span class="va">pca</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">rotation</span><span class="op">(</span><span class="va">rotation_degrees</span><span class="op">)</span></span>
+<span><span class="va">mds_r</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">mds_r</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="st">"Cell.type"</span></span>
+<span><span class="op">]</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
 
 </div>
 <p><strong>Original</strong> On the x and y axes axis we have the first two reduced dimensions, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span> <span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="va">my_theme</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span> <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">my_theme</span></span></code></pre></div>
 <p><img src="reference/figures/plot_rotate_1-1.png"><!-- --></p>
 <p><strong>Rotated</strong> On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1_rotated_45`</span>, y<span class="op">=</span><span class="va">`Dim2_rotated_45`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span> <span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="va">my_theme</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1_rotated_45`</span>, y<span class="op">=</span><span class="va">`Dim2_rotated_45`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span> <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">my_theme</span></span></code></pre></div>
 <p><img src="reference/figures/plot_rotate_2-1.png"><!-- --></p>
 </div>
 <div class="section level2">
@@ -607,39 +607,39 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.de</span> <span class="op">=</span>
-    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">condition</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span>
-<span class="va">counts_SE.de</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.de</span> <span class="op">=</span></span>
+<span>    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">condition</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span></span>
+<span><span class="va">counts_SE.de</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/edgeR" class="external-link">edgeR</a></span><span class="op">)</span>
-
-<span class="va">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span>counts<span class="op">=</span><span class="va">counts_m</span>,group<span class="op">=</span><span class="va">group</span><span class="op">)</span>
-<span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/filterByExpr.html" class="external-link">filterByExpr</a></span><span class="op">(</span><span class="va">dgList</span><span class="op">)</span>
-<span class="va">dgList</span> <span class="op">&lt;-</span> <span class="va">dgList</span><span class="op">[</span><span class="va">keep</span>,,keep.lib.sizes<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span>
-<span class="va">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">calcNormFactors</a></span><span class="op">(</span><span class="va">dgList</span><span class="op">)</span>
-<span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="va">group</span><span class="op">)</span>
-<span class="va">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/estimateDisp.html" class="external-link">estimateDisp</a></span><span class="op">(</span><span class="va">dgList</span>,<span class="va">design</span><span class="op">)</span>
-<span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/glmQLFTest.html" class="external-link">glmQLFit</a></span><span class="op">(</span><span class="va">dgList</span>,<span class="va">design</span><span class="op">)</span>
-<span class="va">qlf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/glmQLFTest.html" class="external-link">glmQLFTest</a></span><span class="op">(</span><span class="va">fit</span>,coef<span class="op">=</span><span class="fl">2</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/topTags.html" class="external-link">topTags</a></span><span class="op">(</span><span class="va">qlf</span>, n<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/edgeR" class="external-link">edgeR</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html" class="external-link">DGEList</a></span><span class="op">(</span>counts<span class="op">=</span><span class="va">counts_m</span>,group<span class="op">=</span><span class="va">group</span><span class="op">)</span></span>
+<span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/filterByExpr.html" class="external-link">filterByExpr</a></span><span class="op">(</span><span class="va">dgList</span><span class="op">)</span></span>
+<span><span class="va">dgList</span> <span class="op">&lt;-</span> <span class="va">dgList</span><span class="op">[</span><span class="va">keep</span>,,keep.lib.sizes<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="va">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html" class="external-link">calcNormFactors</a></span><span class="op">(</span><span class="va">dgList</span><span class="op">)</span></span>
+<span><span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="va">group</span><span class="op">)</span></span>
+<span><span class="va">dgList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/estimateDisp.html" class="external-link">estimateDisp</a></span><span class="op">(</span><span class="va">dgList</span>,<span class="va">design</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/glmQLFTest.html" class="external-link">glmQLFit</a></span><span class="op">(</span><span class="va">dgList</span>,<span class="va">design</span><span class="op">)</span></span>
+<span><span class="va">qlf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/glmQLFTest.html" class="external-link">glmQLFTest</a></span><span class="op">(</span><span class="va">fit</span>,coef<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/topTags.html" class="external-link">topTags</a></span><span class="op">(</span><span class="va">qlf</span>, n<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
 
 </div>
 <p>The functon <code>test_differential_abundance</code> operated with contrasts too. The constrasts hve the name of the design matrix (generally <name_column_covariate><values_of_covariate>)</values_of_covariate></name_column_covariate></p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.de</span> <span class="op">=</span>
-    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">condition</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span>
-        <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">condition</span>,                  
-        .contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"conditionTRUE - conditionFALSE"</span><span class="op">)</span>,
-        action<span class="op">=</span><span class="st">"get"</span>
-    <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.de</span> <span class="op">=</span></span>
+<span>    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">condition</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span></span>
+<span>        <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">condition</span>,                  </span>
+<span>        .contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"conditionTRUE - conditionFALSE"</span><span class="op">)</span>,</span>
+<span>        action<span class="op">=</span><span class="st">"get"</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="adjust-counts">Adjust <code>counts</code>
@@ -649,34 +649,34 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.adj</span> <span class="op">=</span>
-    <span class="va">counts_SE.norm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/adjust_abundance-methods.html">adjust_abundance</a></span><span class="op">(</span>    <span class="op">~</span> <span class="va">factor_of_interest</span> <span class="op">+</span> <span class="va">batch</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.adj</span> <span class="op">=</span></span>
+<span>    <span class="va">counts_SE.norm</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/adjust_abundance-methods.html">adjust_abundance</a></span><span class="op">(</span>    <span class="op">~</span> <span class="va">factor_of_interest</span> <span class="op">+</span> <span class="va">batch</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">sva</span><span class="op">)</span>
-
-<span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
-
-<span class="va">design</span> <span class="op">=</span>
-        <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span>
-            object <span class="op">=</span> <span class="op">~</span> <span class="va">factor_of_interest</span> <span class="op">+</span> <span class="va">batch</span>,
-            data <span class="op">=</span> <span class="va">annotation</span>
-        <span class="op">)</span>
-
-<span class="va">count_m_log.sva</span> <span class="op">=</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/sva/man/ComBat.html" class="external-link">ComBat</a></span><span class="op">(</span>
-            batch <span class="op">=</span> <span class="va">design</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,
-            mod <span class="op">=</span> <span class="va">design</span>,
-            <span class="va">...</span>
-        <span class="op">)</span>
-
-<span class="va">count_m_log.sva</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">count_m_log.sva</span><span class="op">)</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span>
-<span class="va">count_m_log.sva</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">count_m_log.sva</span><span class="op">)</span><span class="op">)</span>,
-    <span class="st">"Cell.type"</span>
-<span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">sva</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">design</span> <span class="op">=</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span></span>
+<span>            object <span class="op">=</span> <span class="op">~</span> <span class="va">factor_of_interest</span> <span class="op">+</span> <span class="va">batch</span>,</span>
+<span>            data <span class="op">=</span> <span class="va">annotation</span></span>
+<span>        <span class="op">)</span></span>
+<span></span>
+<span><span class="va">count_m_log.sva</span> <span class="op">=</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/sva/man/ComBat.html" class="external-link">ComBat</a></span><span class="op">(</span></span>
+<span>            batch <span class="op">=</span> <span class="va">design</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,</span>
+<span>            mod <span class="op">=</span> <span class="va">design</span>,</span>
+<span>            <span class="va">...</span></span>
+<span>        <span class="op">)</span></span>
+<span></span>
+<span><span class="va">count_m_log.sva</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">count_m_log.sva</span><span class="op">)</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">count_m_log.sva</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">count_m_log.sva</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="st">"Cell.type"</span></span>
+<span><span class="op">]</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
 
@@ -690,9 +690,9 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.cibersort</span> <span class="op">=</span>
-    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/deconvolve_cellularity-methods.html">deconvolve_cellularity</a></span><span class="op">(</span>action<span class="op">=</span><span class="st">"get"</span>, cores<span class="op">=</span><span class="fl">1</span>, prefix <span class="op">=</span> <span class="st">"cibersort__"</span><span class="op">)</span> </code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.cibersort</span> <span class="op">=</span></span>
+<span>    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/deconvolve_cellularity-methods.html">deconvolve_cellularity</a></span><span class="op">(</span>action<span class="op">=</span><span class="st">"get"</span>, cores<span class="op">=</span><span class="fl">1</span>, prefix <span class="op">=</span> <span class="st">"cibersort__"</span><span class="op">)</span> </span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -713,18 +713,18 @@
 </div>
 <p>With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is facetted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.cibersort</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">pivot_longer</span><span class="op">(</span>
-        names_to<span class="op">=</span> <span class="st">"Cell_type_inferred"</span>, 
-        values_to <span class="op">=</span> <span class="st">"proportion"</span>, 
-        names_prefix <span class="op">=</span><span class="st">"cibersort__"</span>, 
-        cols<span class="op">=</span><span class="fu">contains</span><span class="op">(</span><span class="st">"cibersort__"</span><span class="op">)</span>
-    <span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Cell_type_inferred`</span>, y<span class="op">=</span><span class="va">proportion</span>, fill<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_boxplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span><span class="va">`Cell.type`</span><span class="op">)</span> <span class="op">+</span>
-  <span class="va">my_theme</span> <span class="op">+</span>
-  <span class="fu">theme</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, aspect.ratio<span class="op">=</span><span class="fl">1</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.cibersort</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">pivot_longer</span><span class="op">(</span></span>
+<span>        names_to<span class="op">=</span> <span class="st">"Cell_type_inferred"</span>, </span>
+<span>        values_to <span class="op">=</span> <span class="st">"proportion"</span>, </span>
+<span>        names_prefix <span class="op">=</span><span class="st">"cibersort__"</span>, </span>
+<span>        cols<span class="op">=</span><span class="fu">contains</span><span class="op">(</span><span class="st">"cibersort__"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Cell_type_inferred`</span>, y<span class="op">=</span><span class="va">proportion</span>, fill<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_boxplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span><span class="va">`Cell.type`</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">my_theme</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, aspect.ratio<span class="op">=</span><span class="fl">1</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/plot_cibersort-1.png"><!-- --></p>
 </div>
 <div class="section level2">
@@ -732,8 +732,8 @@
 </h2>
 <p>We can also perform a statistical test on the differential cell-type abundance across conditions</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
-<code class="sourceCode R">    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/test_differential_cellularity-methods.html">test_differential_cellularity</a></span><span class="op">(</span><span class="va">.</span> <span class="op">~</span> <span class="va">condition</span> <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span>    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/test_differential_cellularity-methods.html">test_differential_cellularity</a></span><span class="op">(</span><span class="va">.</span> <span class="op">~</span> <span class="va">condition</span> <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb43"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 22 x 7</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    .cell_type cell_type_propo… `estimate_(Inte… estimate_condit…</span></span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;      &lt;list&gt;                      &lt;dbl&gt;            &lt;dbl&gt;</span></span>
@@ -751,20 +751,20 @@
 <span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a><span class="do">## #   statistic_conditionTRUE &lt;dbl&gt;, p.value_conditionTRUE &lt;dbl&gt;</span></span></code></pre></div>
 <p>We can also perform regression analysis with censored data (coxph).</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
-<code class="sourceCode R">    <span class="co"># Add survival data</span>
-
-<span class="va">counts_SE_survival</span> <span class="op">=</span> 
-    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/nest-methods.html">nest</a></span><span class="op">(</span>data <span class="op">=</span> <span class="op">-</span><span class="va">sample</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-        <span class="fu"><a href="reference/mutate-methods.html">mutate</a></span><span class="op">(</span>
-            days <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>, size <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,
-            dead <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>, size <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-        <span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/nest-methods.html">unnest</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> 
-
-<span class="co"># Test</span>
-<span class="va">counts_SE_survival</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/test_differential_cellularity-methods.html">test_differential_cellularity</a></span><span class="op">(</span><span class="fu">survival</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">dead</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span>    <span class="co"># Add survival data</span></span>
+<span></span>
+<span><span class="va">counts_SE_survival</span> <span class="op">=</span> </span>
+<span>    <span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/nest-methods.html">nest</a></span><span class="op">(</span>data <span class="op">=</span> <span class="op">-</span><span class="va">sample</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>        <span class="fu"><a href="reference/mutate-methods.html">mutate</a></span><span class="op">(</span></span>
+<span>            days <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>, size <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            dead <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>, size <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>        <span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/nest-methods.html">unnest</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="co"># Test</span></span>
+<span><span class="va">counts_SE_survival</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/test_differential_cellularity-methods.html">test_differential_cellularity</a></span><span class="op">(</span><span class="fu">survival</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">dead</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb45"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 22 x 6</span></span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    .cell_type            cell_type_proport… estimate std.error statistic p.value</span></span>
 <span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;                 &lt;list&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;</span></span>
@@ -781,16 +781,16 @@
 <span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 12 more rows</span></span></code></pre></div>
 <p>We can also perform test of Kaplan-Meier curves.</p>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_stratified</span> <span class="op">=</span> 
-    <span class="va">counts_SE_survival</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-
-    <span class="co"># Test</span>
-    <span class="fu"><a href="reference/test_stratification_cellularity-methods.html">test_stratification_cellularity</a></span><span class="op">(</span>
-        <span class="fu">survival</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">dead</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>,
-        <span class="va">sample</span>, <span class="va">transcript</span>, <span class="va">count</span>
-    <span class="op">)</span>
-
-<span class="va">counts_stratified</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_stratified</span> <span class="op">=</span> </span>
+<span>    <span class="va">counts_SE_survival</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span></span>
+<span>    <span class="co"># Test</span></span>
+<span>    <span class="fu"><a href="reference/test_stratification_cellularity-methods.html">test_stratification_cellularity</a></span><span class="op">(</span></span>
+<span>        <span class="fu">survival</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">dead</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>,</span>
+<span>        <span class="va">sample</span>, <span class="va">transcript</span>, <span class="va">count</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span><span class="va">counts_stratified</span></span></code></pre></div>
 <div class="sourceCode" id="cb47"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 22 x 6</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    .cell_type   cell_type_propor… .low_cellularit… .high_cellulari… pvalue plot </span></span>
 <span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;        &lt;list&gt;                       &lt;dbl&gt;            &lt;dbl&gt;  &lt;dbl&gt; &lt;lis&gt;</span></span>
@@ -807,7 +807,7 @@
 <span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 12 more rows</span></span></code></pre></div>
 <p>Plot Kaplan-Meier curves</p>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_stratified</span><span class="op">$</span><span class="va">plot</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_stratified</span><span class="op">$</span><span class="va">plot</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <p><img src="reference/figures/unnamed-chunk-17-1.png"><!-- --></p>
 </div>
 <div class="section level2">
@@ -819,85 +819,85 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.cluster</span> <span class="op">=</span> <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="reference/cluster_elements-methods.html">cluster_elements</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"kmeans"</span>, centers <span class="op">=</span> <span class="fl">2</span>, action<span class="op">=</span><span class="st">"get"</span> <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.cluster</span> <span class="op">=</span> <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/cluster_elements-methods.html">cluster_elements</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"kmeans"</span>, centers <span class="op">=</span> <span class="fl">2</span>, action<span class="op">=</span><span class="st">"get"</span> <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
-
-<span class="va">k</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/kmeans.html" class="external-link">kmeans</a></span><span class="op">(</span><span class="va">count_m_log</span>, iter.max <span class="op">=</span> <span class="fl">1000</span>, <span class="va">...</span><span class="op">)</span>
-<span class="va">cluster</span> <span class="op">=</span> <span class="va">k</span><span class="op">$</span><span class="va">cluster</span>
-
-<span class="va">cluster</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">cluster</span><span class="op">)</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cell.type"</span>, <span class="st">"Dim1"</span>, <span class="st">"Dim2"</span><span class="op">)</span>
-<span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">k</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/kmeans.html" class="external-link">kmeans</a></span><span class="op">(</span><span class="va">count_m_log</span>, iter.max <span class="op">=</span> <span class="fl">1000</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="va">cluster</span> <span class="op">=</span> <span class="va">k</span><span class="op">$</span><span class="va">cluster</span></span>
+<span></span>
+<span><span class="va">cluster</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">cluster</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cell.type"</span>, <span class="st">"Dim1"</span>, <span class="st">"Dim2"</span><span class="op">)</span></span>
+<span><span class="op">]</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
 
 </div>
 <p>We can add cluster annotation to the MDS dimension reduced data set and plot.</p>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
-<code class="sourceCode R"> <span class="va">counts_SE.norm.cluster</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`cluster_kmeans`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="va">my_theme</span></code></pre></div>
+<code class="sourceCode R"><span> <span class="va">counts_SE.norm.cluster</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`cluster_kmeans`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">my_theme</span></span></code></pre></div>
 <p><img src="reference/figures/plot_cluster-1.png"><!-- --></p>
 <p><strong>SNN</strong></p>
 <p>Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.SNN</span> <span class="op">=</span>
-    <span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/cluster_elements-methods.html">cluster_elements</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"SNN"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.SNN</span> <span class="op">=</span></span>
+<span>    <span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/cluster_elements-methods.html">cluster_elements</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"SNN"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span>
-
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">count_m</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">ScaleData</a></span><span class="op">(</span>
-    <span class="va">snn</span>, display.progress <span class="op">=</span> <span class="cn">TRUE</span>,
-    num.cores<span class="op">=</span><span class="fl">4</span>, do.par <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html" class="external-link">RunPCA</a></span><span class="op">(</span><span class="va">snn</span>, npcs <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html" class="external-link">FindNeighbors</a></span><span class="op">(</span><span class="va">snn</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html" class="external-link">FindClusters</a></span><span class="op">(</span><span class="va">snn</span>, method <span class="op">=</span> <span class="st">"igraph"</span>, <span class="va">...</span><span class="op">)</span>
-<span class="va">snn</span> <span class="op">=</span> <span class="va">snn</span><span class="op">[[</span><span class="st">"seurat_clusters"</span><span class="op">]</span><span class="op">]</span>
-
-<span class="va">snn</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">snn</span><span class="op">)</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cell.type"</span>, <span class="st">"Dim1"</span>, <span class="st">"Dim2"</span><span class="op">)</span>
-<span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">count_m</span><span class="op">)</span></span>
+<span><span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">ScaleData</a></span><span class="op">(</span></span>
+<span>    <span class="va">snn</span>, display.progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    num.cores<span class="op">=</span><span class="fl">4</span>, do.par <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span></span>
+<span><span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">snn</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span></span>
+<span><span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html" class="external-link">RunPCA</a></span><span class="op">(</span><span class="va">snn</span>, npcs <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
+<span><span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html" class="external-link">FindNeighbors</a></span><span class="op">(</span><span class="va">snn</span><span class="op">)</span></span>
+<span><span class="va">snn</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html" class="external-link">FindClusters</a></span><span class="op">(</span><span class="va">snn</span>, method <span class="op">=</span> <span class="st">"igraph"</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="va">snn</span> <span class="op">=</span> <span class="va">snn</span><span class="op">[[</span><span class="st">"seurat_clusters"</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">snn</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">snn</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cell.type"</span>, <span class="st">"Dim1"</span>, <span class="st">"Dim2"</span><span class="op">)</span></span>
+<span><span class="op">]</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
 
 </div>
 <div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> 
-
-<span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">gather</span><span class="op">(</span><span class="va">source</span>, <span class="va">Call</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cluster_SNN"</span>, <span class="st">"Call"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color<span class="op">=</span><span class="va">Call</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">facet_grid</span><span class="op">(</span><span class="op">~</span><span class="va">source</span><span class="op">)</span> <span class="op">+</span> <span class="va">my_theme</span>
-
-
-<span class="co"># Do differential transcription between clusters</span>
-<span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/mutate-methods.html">mutate</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">`cluster_SNN`</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span>
-    <span class="op">~</span> <span class="va">factor_of_interest</span>,
-    action<span class="op">=</span><span class="st">"get"</span>
-   <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">gather</span><span class="op">(</span><span class="va">source</span>, <span class="va">Call</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cluster_SNN"</span>, <span class="st">"Call"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color<span class="op">=</span><span class="va">Call</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">facet_grid</span><span class="op">(</span><span class="op">~</span><span class="va">source</span><span class="op">)</span> <span class="op">+</span> <span class="va">my_theme</span></span>
+<span></span>
+<span></span>
+<span><span class="co"># Do differential transcription between clusters</span></span>
+<span><span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/mutate-methods.html">mutate</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">`cluster_SNN`</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span></span>
+<span>    <span class="op">~</span> <span class="va">factor_of_interest</span>,</span>
+<span>    action<span class="op">=</span><span class="st">"get"</span></span>
+<span>   <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="drop-redundant-transcripts">Drop <code>redundant</code> transcripts<a class="anchor" aria-label="anchor" href="#drop-redundant-transcripts"></a>
@@ -911,61 +911,61 @@
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.non_redundant</span> <span class="op">=</span>
-    <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="reference/remove_redundancy-methods.html">remove_redundancy</a></span><span class="op">(</span>    method <span class="op">=</span> <span class="st">"correlation"</span> <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.non_redundant</span> <span class="op">=</span></span>
+<span>    <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/remove_redundancy-methods.html">remove_redundancy</a></span><span class="op">(</span>    method <span class="op">=</span> <span class="st">"correlation"</span> <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dgrtwo/widyr" class="external-link">widyr</a></span><span class="op">)</span>
-
-<span class="va">.data.correlated</span> <span class="op">=</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/widyr/man/pairwise_cor.html" class="external-link">pairwise_cor</a></span><span class="op">(</span>
-        <span class="va">counts</span>,
-        <span class="va">sample</span>,
-        <span class="va">transcript</span>,
-        <span class="va">rc</span>,
-        sort <span class="op">=</span> <span class="cn">TRUE</span>,
-        diag <span class="op">=</span> <span class="cn">FALSE</span>,
-        upper <span class="op">=</span> <span class="cn">FALSE</span>
-    <span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/filter-methods.html">filter</a></span><span class="op">(</span><span class="va">correlation</span> <span class="op">&gt;</span> <span class="va">correlation_threshold</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">item1</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/rename-methods.html">rename</a></span><span class="op">(</span><span class="op">!</span><span class="op">!</span><span class="va">.element</span> <span class="op">:=</span> <span class="va">item1</span><span class="op">)</span>
-
-<span class="co"># Return non redudant data frame</span>
-<span class="va">counts</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">anti_join</span><span class="op">(</span><span class="va">.data.correlated</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">spread</span><span class="op">(</span><span class="va">sample</span>, <span class="va">rc</span>, <span class="op">-</span> <span class="va">transcript</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/dplyr-methods.html">left_join</a></span><span class="op">(</span><span class="va">annotation</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dgrtwo/widyr" class="external-link">widyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">.data.correlated</span> <span class="op">=</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/widyr/man/pairwise_cor.html" class="external-link">pairwise_cor</a></span><span class="op">(</span></span>
+<span>        <span class="va">counts</span>,</span>
+<span>        <span class="va">sample</span>,</span>
+<span>        <span class="va">transcript</span>,</span>
+<span>        <span class="va">rc</span>,</span>
+<span>        sort <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>        diag <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>        upper <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/filter-methods.html">filter</a></span><span class="op">(</span><span class="va">correlation</span> <span class="op">&gt;</span> <span class="va">correlation_threshold</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">item1</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/rename-methods.html">rename</a></span><span class="op">(</span><span class="op">!</span><span class="op">!</span><span class="va">.element</span> <span class="op">:=</span> <span class="va">item1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Return non redudant data frame</span></span>
+<span><span class="va">counts</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">anti_join</span><span class="op">(</span><span class="va">.data.correlated</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">spread</span><span class="op">(</span><span class="va">sample</span>, <span class="va">rc</span>, <span class="op">-</span> <span class="va">transcript</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/dplyr-methods.html">left_join</a></span><span class="op">(</span><span class="va">annotation</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
 
 </div>
 <p>We can visualise how the reduced redundancy with the reduced dimentions look like</p>
 <div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.non_redundant</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="va">my_theme</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.non_redundant</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">my_theme</span></span></code></pre></div>
 <p><img src="reference/figures/plot_drop-1.png"><!-- --></p>
 <p><strong>Approach 2</strong></p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.non_redundant</span> <span class="op">=</span>
-    <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="reference/remove_redundancy-methods.html">remove_redundancy</a></span><span class="op">(</span>
-    method <span class="op">=</span> <span class="st">"reduced_dimensions"</span>,
-    Dim_a_column <span class="op">=</span> <span class="va">`Dim1`</span>,
-    Dim_b_column <span class="op">=</span> <span class="va">`Dim2`</span>
-  <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.non_redundant</span> <span class="op">=</span></span>
+<span>    <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/remove_redundancy-methods.html">remove_redundancy</a></span><span class="op">(</span></span>
+<span>    method <span class="op">=</span> <span class="st">"reduced_dimensions"</span>,</span>
+<span>    Dim_a_column <span class="op">=</span> <span class="va">`Dim1`</span>,</span>
+<span>    Dim_b_column <span class="op">=</span> <span class="va">`Dim2`</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 <p>We can visualise MDS reduced dimensions of the samples with the closest pair removed.</p>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE.norm.non_redundant</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="va">my_theme</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.non_redundant</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">my_theme</span></span></code></pre></div>
 <p><img src="reference/figures/plot_drop2-1.png"><!-- --></p>
 </div>
 <div class="section level2">
@@ -978,21 +978,21 @@
 </h2>
 <p>We can calculate gene counts (using FeatureCounts; Liao Y et al., 10.1093/nar/gkz114) from a list of BAM/SAM files and format them into a tidy structure (similar to counts).</p>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts</span> <span class="op">=</span> <span class="fu"><a href="reference/tidybulk_SAM_BAM-methods.html">tidybulk_SAM_BAM</a></span><span class="op">(</span>
-    <span class="va">file_names</span>,
-    genome <span class="op">=</span> <span class="st">"hg38"</span>,
-    isPairedEnd <span class="op">=</span> <span class="cn">TRUE</span>,
-    requireBothEndsMapped <span class="op">=</span> <span class="cn">TRUE</span>,
-    checkFragLength <span class="op">=</span> <span class="cn">FALSE</span>,
-    useMetaFeatures <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts</span> <span class="op">=</span> <span class="fu"><a href="reference/tidybulk_SAM_BAM-methods.html">tidybulk_SAM_BAM</a></span><span class="op">(</span></span>
+<span>    <span class="va">file_names</span>,</span>
+<span>    genome <span class="op">=</span> <span class="st">"hg38"</span>,</span>
+<span>    isPairedEnd <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    requireBothEndsMapped <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    checkFragLength <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    useMetaFeatures <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="from-ensembl-ids-to-gene-symbol-ids">From ensembl IDs to gene symbol IDs<a class="anchor" aria-label="anchor" href="#from-ensembl-ids-to-gene-symbol-ids"></a>
 </h2>
 <p>We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_ensembl</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/ensembl_to_symbol-methods.html">ensembl_to_symbol</a></span><span class="op">(</span><span class="va">ens</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_ensembl</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/ensembl_to_symbol-methods.html">ensembl_to_symbol</a></span><span class="op">(</span><span class="va">ens</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb62"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 119 x 8</span></span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    ens   iso   `read count` sample cases_0_project… cases_0_samples… transcript</span></span>
 <span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;     </span></span>
@@ -1013,7 +1013,7 @@
 </h2>
 <p>We can add gene full name (and in future description) from symbol identifiers. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/describe_transcript-methods.html">describe_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">select</span><span class="op">(</span><span class="va">transcript</span>, <span class="va">description</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/describe_transcript-methods.html">describe_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">select</span><span class="op">(</span><span class="va">transcript</span>, <span class="va">description</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb64"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble abstraction: 408,624 x 9</span></span>
 <span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    transcript sample count Cell.type time  condition batch factor_of_inter…</span></span>
 <span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;      &lt;chr&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;fct&gt; &lt;lgl&gt;     &lt;fct&gt; &lt;lgl&gt;           </span></span>

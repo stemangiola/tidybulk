@@ -19,7 +19,7 @@ data frames into one."><!-- mathjax --><script src="https://cdnjs.cloudflare.com
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -73,9 +73,9 @@ data frames into one.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">bind_rows</span><span class="op">(</span><span class="va">...</span>, .id <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="fu">bind_cols</span><span class="op">(</span><span class="va">...</span>, .id <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bind_rows</span><span class="op">(</span><span class="va">...</span>, .id <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">bind_cols</span><span class="op">(</span><span class="va">...</span>, .id <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -116,12 +116,12 @@ appears in any of the inputs.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="va">one</span> <span class="op">&lt;-</span> <span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="op">]</span></span>
-<span class="r-in"><span class="va">two</span> <span class="op">&lt;-</span> <span class="va">mtcars</span><span class="op">[</span><span class="fl">11</span><span class="op">:</span><span class="fl">14</span>, <span class="op">]</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># You can supply data frames as arguments:</span></span>
-<span class="r-in"><span class="fu">bind_rows</span><span class="op">(</span><span class="va">one</span>, <span class="va">two</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">two</span> <span class="op">&lt;-</span> <span class="va">mtcars</span><span class="op">[</span><span class="fl">11</span><span class="op">:</span><span class="fl">14</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># You can supply data frames as arguments:</span></span></span>
+<span class="r-in"><span><span class="fu">bind_rows</span><span class="op">(</span><span class="va">one</span>, <span class="va">two</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 mpg cyl  disp  hp drat    wt  qsec vs am gear carb</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Mazda RX4      21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Mazda RX4 Wag  21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4</span>
@@ -131,7 +131,7 @@ appears in any of the inputs.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Merc 450SE     16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Merc 450SL     17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Merc 450SLC    15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

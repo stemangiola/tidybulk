@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -69,16 +69,16 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_reduced_dimensions_UMAP_bulk_SE</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .dims <span class="op">=</span> <span class="fl">2</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  scale <span class="op">=</span> <span class="cn">NULL</span>,
-  calculate_for_pca_dimensions <span class="op">=</span> <span class="fl">20</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_reduced_dimensions_UMAP_bulk_SE</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .dims <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  scale <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  calculate_for_pca_dimensions <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -99,8 +99,8 @@
 <dd><p>A boolean</p></dd>
 
 
-<dt>log_transform</dt>
-<dd><p>A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
+<dt>transform</dt>
+<dd><p>A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity</p></dd>
 
 
 <dt>calculate_for_pca_dimensions</dt>

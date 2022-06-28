@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -69,25 +69,25 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span>
-
-<span class="co"># S4 method for tbl</span>
-<span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span>
-
-<span class="co"># S4 method for tbl_df</span>
-<span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span>
-
-<span class="co"># S4 method for spec_tbl_df</span>
-<span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span>
-
-<span class="co"># S4 method for tidybulk</span>
-<span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span>
-
-<span class="co"># S4 method for SummarizedExperiment</span>
-<span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span>
-
-<span class="co"># S4 method for RangedSummarizedExperiment</span>
-<span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tbl</span></span>
+<span><span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tbl_df</span></span>
+<span><span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for spec_tbl_df</span></span>
+<span><span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tidybulk</span></span>
+<span><span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for SummarizedExperiment</span></span>
+<span><span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for RangedSummarizedExperiment</span></span>
+<span><span class="fu">get_bibliography</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -116,11 +116,9 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="co"># Define tidybulk tibble</span></span>
-<span class="r-in"><span class="va">df</span> <span class="op">=</span> <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">get_bibliography</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">get_bibliography</span><span class="op">(</span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @Article{tidybulk,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   title = {tidybulk: an R tidy framework for modular transcriptomic data analysis},</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   author = {Stefano Mangiola and Ramyar Molania and Ruining Dong and Maria A. Doyle &amp; Anthony T. Papenfuss},</span>
@@ -139,18 +137,9 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>   pages={1686},</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   year={2019}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 	}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> @article{wickham2019welcome,</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   title={Welcome to the Tidyverse},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   author={Wickham, Hadley and Averick, Mara and Bryan, Jennifer and Chang, Winston and McGowan, Lucy D'Agostino and Francois, Romain and Grolemund, Garrett and Hayes, Alex and Henry, Lionel and Hester, Jim and others},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   journal={Journal of Open Source Software},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   volume={4},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   number={43},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   pages={1686},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   year={2019}</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	}</span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -69,76 +69,88 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">adjust_abundance</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for spec_tbl_df</span>
-<span class="fu">adjust_abundance</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tbl_df</span>
-<span class="fu">adjust_abundance</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tidybulk</span>
-<span class="fu">adjust_abundance</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for SummarizedExperiment</span>
-<span class="fu">adjust_abundance</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for RangedSummarizedExperiment</span>
-<span class="fu">adjust_abundance</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.formula</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  .transcript <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  action <span class="op">=</span> <span class="st">"add"</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">adjust_abundance</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .transcript <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  inverse_transform <span class="op">=</span> <span class="va">expm1</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for spec_tbl_df</span></span>
+<span><span class="fu">adjust_abundance</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .transcript <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  inverse_transform <span class="op">=</span> <span class="va">expm1</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tbl_df</span></span>
+<span><span class="fu">adjust_abundance</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .transcript <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  inverse_transform <span class="op">=</span> <span class="va">expm1</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tidybulk</span></span>
+<span><span class="fu">adjust_abundance</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .transcript <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  inverse_transform <span class="op">=</span> <span class="va">expm1</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for SummarizedExperiment</span></span>
+<span><span class="fu">adjust_abundance</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .transcript <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  inverse_transform <span class="op">=</span> <span class="va">expm1</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for RangedSummarizedExperiment</span></span>
+<span><span class="fu">adjust_abundance</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.formula</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .transcript <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  inverse_transform <span class="op">=</span> <span class="va">expm1</span>,</span>
+<span>  action <span class="op">=</span> <span class="st">"add"</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  log_transform <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -163,8 +175,12 @@
 <dd><p>The name of the transcript/gene abundance column</p></dd>
 
 
-<dt>log_transform</dt>
-<dd><p>A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
+<dt>transform</dt>
+<dd><p>A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity</p></dd>
+
+
+<dt>inverse_transform</dt>
+<dd><p>A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.</p></dd>
 
 
 <dt>action</dt>
@@ -173,6 +189,10 @@
 
 <dt>...</dt>
 <dd><p>Further parameters passed to the function sva::ComBat</p></dd>
+
+
+<dt>log_transform</dt>
+<dd><p>DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -207,18 +227,16 @@ At the moment just an unwanted covariate is allowed at a time using Combat (DOI:
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">cm</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span></span>
-<span class="r-in"><span class="va">cm</span><span class="op">$</span><span class="va">batch</span> <span class="op">=</span> <span class="fl">0</span></span>
-<span class="r-in"><span class="va">cm</span><span class="op">$</span><span class="va">batch</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">cm</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SRR1740035"</span>, <span class="st">"SRR1740043"</span><span class="op">)</span><span class="op">]</span> <span class="op">=</span> <span class="fl">1</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">res</span> <span class="op">=</span></span>
-<span class="r-in"> <span class="va">cm</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
-<span class="r-in"> <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">transcript</span>, <span class="va">count</span><span class="op">)</span> |&gt;</span>
-<span class="r-in"> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> |&gt;</span>
-<span class="r-in">  <span class="fu">adjust_abundance</span><span class="op">(</span>  <span class="op">~</span> <span class="va">condition</span> <span class="op">+</span> <span class="va">batch</span>  <span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">cm</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span></span></span>
+<span class="r-in"><span><span class="va">cm</span><span class="op">$</span><span class="va">batch</span> <span class="op">=</span> <span class="fl">0</span></span></span>
+<span class="r-in"><span><span class="va">cm</span><span class="op">$</span><span class="va">batch</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">cm</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SRR1740035"</span>, <span class="st">"SRR1740043"</span><span class="op">)</span><span class="op">]</span> <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span> <span class="va">cm</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">adjust_abundance</span><span class="op">(</span>  <span class="op">~</span> <span class="va">condition</span> <span class="op">+</span> <span class="va">batch</span>  <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No group or design set. Assuming all samples belong to one group.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Found2batches</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Adjusting for1covariate(s) or covariate level(s)</span>
@@ -226,8 +244,16 @@ At the moment just an unwanted covariate is allowed at a time using Combat (DOI:
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Fitting L/S model and finding priors</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Finding parametric adjustments</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Adjusting the Data</span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class: SummarizedExperiment </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 527 5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> assays(2): count count_adjusted</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(2): entrez .abundant</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(6): Cell.type time ... dead batch</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

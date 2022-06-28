@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -104,25 +104,25 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">`%&gt;%`</span> <span class="op">=</span> <span class="fu">magrittr</span><span class="fu">::</span><span class="va">`%&gt;%`</span></span>
-<span class="r-in"><span class="va">annotation</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="counts_SE.html">counts_SE</a></span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">sample</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="mutate-methods.html">mutate</a></span><span class="op">(</span>source <span class="op">=</span> <span class="st">"AU"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="counts_SE.html">counts_SE</a></span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">left_join</span><span class="op">(</span><span class="va">annotation</span><span class="op">)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Joining, by = "sample"</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">`%&gt;%`</span> <span class="op">=</span> <span class="fu">magrittr</span><span class="fu">::</span><span class="va">`%&gt;%`</span></span></span>
+<span class="r-in"><span><span class="va">annotation</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="counts_SE.html">counts_SE</a></span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">.sample</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="mutate-methods.html">mutate</a></span><span class="op">(</span>source <span class="op">=</span> <span class="st">"AU"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="counts_SE.html">counts_SE</a></span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">left_join</span><span class="op">(</span><span class="va">annotation</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Joining, by = ".sample"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 408,624 × 9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    feature  sample count Cell.type time  condition batch factor_of_inter… source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> A1BG     SRR17…   153 b_cell    0 d   TRUE      0     TRUE             AU    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> A1BG-AS1 SRR17…    83 b_cell    0 d   TRUE      0     TRUE             AU    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> AAAS     SRR17…   868 b_cell    0 d   TRUE      0     TRUE             AU    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> AACS     SRR17…   222 b_cell    0 d   TRUE      0     TRUE             AU    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> AAGAB    SRR17…   590 b_cell    0 d   TRUE      0     TRUE             AU    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> AAMDC    SRR17…    48 b_cell    0 d   TRUE      0     TRUE             AU    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> AAMP     SRR17…  <span style="text-decoration: underline;">1</span>257 b_cell    0 d   TRUE      0     TRUE             AU    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> AANAT    SRR17…   284 b_cell    0 d   TRUE      0     TRUE             AU    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> AAR2     SRR17…   379 b_cell    0 d   TRUE      0     TRUE             AU    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> AARS2    SRR17…   685 b_cell    0 d   TRUE      0     TRUE             AU    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 408,614 more rows</span></span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    .feature .sample    count Cell.type time  condition batch factor_of_interest</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> A1BG     SRR1740034   153 b_cell    0 d   TRUE      0     TRUE              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> A1BG-AS1 SRR1740034    83 b_cell    0 d   TRUE      0     TRUE              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> AAAS     SRR1740034   868 b_cell    0 d   TRUE      0     TRUE              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> AACS     SRR1740034   222 b_cell    0 d   TRUE      0     TRUE              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> AAGAB    SRR1740034   590 b_cell    0 d   TRUE      0     TRUE              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> AAMDC    SRR1740034    48 b_cell    0 d   TRUE      0     TRUE              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> AAMP     SRR1740034  <span style="text-decoration: underline;">1</span>257 b_cell    0 d   TRUE      0     TRUE              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> AANAT    SRR1740034   284 b_cell    0 d   TRUE      0     TRUE              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> AAR2     SRR1740034   379 b_cell    0 d   TRUE      0     TRUE              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> AARS2    SRR1740034   685 b_cell    0 d   TRUE      0     TRUE              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 408,614 more rows, and 1 more variable: source &lt;chr&gt;</span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

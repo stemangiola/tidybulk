@@ -23,7 +23,7 @@ describe_transcript"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/a
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -81,24 +81,24 @@ describe_transcript"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/a
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="co"># S4 method for spec_tbl_df</span>
-<span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="co"># S4 method for tbl_df</span>
-<span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="co"># S4 method for tidybulk</span>
-<span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="fu">.describe_transcript_SE</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="co"># S4 method for SummarizedExperiment</span>
-<span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="co"># S4 method for RangedSummarizedExperiment</span>
-<span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for spec_tbl_df</span></span>
+<span><span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tbl_df</span></span>
+<span><span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tidybulk</span></span>
+<span><span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">.describe_transcript_SE</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for SummarizedExperiment</span></span>
+<span><span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for RangedSummarizedExperiment</span></span>
+<span><span class="fu">describe_transcript</span><span class="op">(</span><span class="va">.data</span>, .transcript <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -138,17 +138,17 @@ describe_transcript"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/a
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="fu">describe_transcript</span><span class="op">(</span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">describe_transcript</span><span class="op">(</span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: SummarizedExperiment </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dim: 527 5 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): count</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(1): description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(2): entrez description</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(3): Cell.type time condition</span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(5): Cell.type time condition days dead</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

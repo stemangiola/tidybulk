@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -69,70 +69,70 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">test_gene_overrepresentation</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.entrez</span>,
-  <span class="va">.do_test</span>,
-  <span class="va">species</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_set <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for spec_tbl_df</span>
-<span class="fu">test_gene_overrepresentation</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.entrez</span>,
-  <span class="va">.do_test</span>,
-  <span class="va">species</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_set <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tbl_df</span>
-<span class="fu">test_gene_overrepresentation</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.entrez</span>,
-  <span class="va">.do_test</span>,
-  <span class="va">species</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_set <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for tidybulk</span>
-<span class="fu">test_gene_overrepresentation</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.entrez</span>,
-  <span class="va">.do_test</span>,
-  <span class="va">species</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_set <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for SummarizedExperiment</span>
-<span class="fu">test_gene_overrepresentation</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.entrez</span>,
-  <span class="va">.do_test</span>,
-  <span class="va">species</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_set <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for RangedSummarizedExperiment</span>
-<span class="fu">test_gene_overrepresentation</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  <span class="va">.entrez</span>,
-  <span class="va">.do_test</span>,
-  <span class="va">species</span>,
-  .sample <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,
-  gene_set <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">test_gene_overrepresentation</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  <span class="va">.do_test</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_set <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for spec_tbl_df</span></span>
+<span><span class="fu">test_gene_overrepresentation</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  <span class="va">.do_test</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_set <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tbl_df</span></span>
+<span><span class="fu">test_gene_overrepresentation</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  <span class="va">.do_test</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_set <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for tidybulk</span></span>
+<span><span class="fu">test_gene_overrepresentation</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  <span class="va">.do_test</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_set <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for SummarizedExperiment</span></span>
+<span><span class="fu">test_gene_overrepresentation</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  <span class="va">.do_test</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_set <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for RangedSummarizedExperiment</span></span>
+<span><span class="fu">test_gene_overrepresentation</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.entrez</span>,</span>
+<span>  <span class="va">.do_test</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  .sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_sets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gene_set <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -207,26 +207,21 @@ This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the ba
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="va">df_entrez</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> |&gt; <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> |&gt; <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> |&gt; <span class="fu"><a href="symbol_to_entrez.html">symbol_to_entrez</a></span><span class="op">(</span> .transcript <span class="op">=</span> <span class="va">feature</span>, .sample <span class="op">=</span> <span class="va">sample</span><span class="op">)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'select()' returned 1:many mapping between keys and columns</span>
-<span class="r-in"><span class="va">df_entrez</span> <span class="op">=</span> <span class="fu"><a href="aggregate_duplicates-methods.html">aggregate_duplicates</a></span><span class="op">(</span><span class="va">df_entrez</span>, aggregation_function <span class="op">=</span> <span class="va">sum</span>, .sample <span class="op">=</span> <span class="va">sample</span>, .transcript <span class="op">=</span> <span class="va">entrez</span>, .abundance <span class="op">=</span> <span class="va">count</span><span class="op">)</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>tidybulk says: for aggregation, factors and logical columns were converted to character</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Converted to characters</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> factorfactorfactorfactorlogical</span>
-<span class="r-in"><span class="va">df_entrez</span> <span class="op">=</span> <span class="fu"><a href="mutate-methods.html">mutate</a></span><span class="op">(</span><span class="va">df_entrez</span>, do_test <span class="op">=</span> <span class="va">feature</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TNFRSF4"</span>, <span class="st">"PLCH2"</span>, <span class="st">"PADI4"</span>, <span class="st">"PAX7"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu">test_gene_overrepresentation</span><span class="op">(</span></span>
-<span class="r-in">    <span class="va">df_entrez</span>,</span>
-<span class="r-in">    .sample <span class="op">=</span> <span class="va">sample</span>,</span>
-<span class="r-in">    .entrez <span class="op">=</span> <span class="va">entrez</span>,</span>
-<span class="r-in">    .do_test <span class="op">=</span> <span class="va">do_test</span>,</span>
-<span class="r-in">    species<span class="op">=</span><span class="st">"Homo sapiens"</span>,</span>
-<span class="r-in">   gene_sets <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"C2"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#se_mini = aggregate_duplicates(tidybulk::se_mini, .transcript = entrez)</span></span></span>
+<span class="r-in"><span><span class="co">#df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">test_gene_overrepresentation</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">df_entrez</span>,</span></span>
+<span class="r-in"><span>    .sample <span class="op">=</span> <span class="va">sample</span>,</span></span>
+<span class="r-in"><span>    .entrez <span class="op">=</span> <span class="va">entrez</span>,</span></span>
+<span class="r-in"><span>    .do_test <span class="op">=</span> <span class="va">do_test</span>,</span></span>
+<span class="r-in"><span>    species<span class="op">=</span><span class="st">"Homo sapiens"</span>,</span></span>
+<span class="r-in"><span>   gene_sets <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"C2"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

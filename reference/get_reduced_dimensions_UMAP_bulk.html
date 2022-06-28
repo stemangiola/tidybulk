@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
       </span>
     </div>
 
@@ -69,19 +69,19 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_reduced_dimensions_UMAP_bulk</span><span class="op">(</span>
-  <span class="va">.data</span>,
-  .element <span class="op">=</span> <span class="cn">NULL</span>,
-  .feature <span class="op">=</span> <span class="cn">NULL</span>,
-  .abundance <span class="op">=</span> <span class="cn">NULL</span>,
-  .dims <span class="op">=</span> <span class="fl">2</span>,
-  top <span class="op">=</span> <span class="fl">500</span>,
-  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,
-  log_transform <span class="op">=</span> <span class="cn">TRUE</span>,
-  scale <span class="op">=</span> <span class="cn">TRUE</span>,
-  calculate_for_pca_dimensions <span class="op">=</span> <span class="fl">20</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_reduced_dimensions_UMAP_bulk</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  .element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .feature <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .abundance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .dims <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  top <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  of_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  transform <span class="op">=</span> <span class="va">log1p</span>,</span>
+<span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  calculate_for_pca_dimensions <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -114,16 +114,16 @@
 <dd><p>A boolean</p></dd>
 
 
-<dt>log_transform</dt>
-<dd><p>A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
-
-
 <dt>calculate_for_pca_dimensions</dt>
 <dd><p>An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered</p></dd>
 
 
 <dt>...</dt>
 <dd><p>Further parameters passed to the function uwot</p></dd>
+
+
+<dt>log_transform</dt>
+<dd><p>A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)</p></dd>
 
 </dl></div>
     <div id="value">
