@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.1</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
                         <h4 data-toc-skip class="author">Stefano
 Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2022-06-28</h4>
+            <h4 data-toc-skip class="date">2022-07-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -559,18 +559,18 @@ is coloured by cell type.</p>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 251 × 4</span></span></span>
-<span><span class="co">##    tSNE1  tSNE2 .sample                      Call </span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> -<span style="color: #BB0000;">4.28</span>  -<span style="color: #BB0000;">9.63</span> TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> -<span style="color: #BB0000;">1.91</span>   7.70 TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> -<span style="color: #BB0000;">1.83</span> -<span style="color: #BB0000;">16.2</span>  TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>  4.80  -<span style="color: #BB0000;">8.84</span> TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> -<span style="color: #BB0000;">6.60</span>  -<span style="color: #BB0000;">7.72</span> TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  8.70   4.35 TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> 20.9   25.7  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> 13.0   -<span style="color: #BB0000;">5.49</span> TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> 12.4   -<span style="color: #BB0000;">6.61</span> TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> -<span style="color: #BB0000;">9.09</span> -<span style="color: #BB0000;">20.0</span>  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
+<span><span class="co">##      tSNE1  tSNE2 .sample                      Call </span></span>
+<span><span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>   8.63    1.06 TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>  -<span style="color: #BB0000;">6.33</span>    9.04 TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>  14.2     5.72 TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>  -<span style="color: #BB0000;">2.47</span>  -<span style="color: #BB0000;">13.4</span>  TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>  -<span style="color: #BB0000;">5.11</span>  -<span style="color: #BB0000;">12.3</span>  TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  12.7     2.89 TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">36.3</span>    -<span style="color: #BB0000;">6.18</span> TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">0.713</span> -<span style="color: #BB0000;">11.5</span>  TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>   0.996 -<span style="color: #BB0000;">11.0</span>  TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>  21.4    10.9  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
 <span><span class="co">## <span style="color: #949494;"># … with 241 more rows</span></span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -1076,7 +1076,7 @@ identifiers. This currently works for human and mouse.</p>
 <span><span class="co">##  [5] GenomeInfoDb_1.32.2            IRanges_2.30.0                </span></span>
 <span><span class="co">##  [7] S4Vectors_0.34.0               BiocGenerics_0.42.0           </span></span>
 <span><span class="co">##  [9] MatrixGenerics_1.8.1           matrixStats_0.62.0            </span></span>
-<span><span class="co">## [11] tidybulk_1.7.4                 ggrepel_0.9.1                 </span></span>
+<span><span class="co">## [11] tidybulk_1.9.1                 ggrepel_0.9.1                 </span></span>
 <span><span class="co">## [13] ggplot2_3.3.6                  magrittr_2.0.3                </span></span>
 <span><span class="co">## [15] tibble_3.1.7                   tidyr_1.2.0                   </span></span>
 <span><span class="co">## [17] dplyr_1.0.9                    knitr_1.39                    </span></span>
@@ -1106,7 +1106,7 @@ identifiers. This currently works for human and mouse.</p>
 <span><span class="co">##  [61] sass_0.4.1             reshape_0.8.9          stringi_1.7.6         </span></span>
 <span><span class="co">##  [64] RSQLite_2.2.14         highr_0.9              genefilter_1.78.0     </span></span>
 <span><span class="co">##  [67] tokenizers_0.2.1       desc_1.4.1             e1071_1.7-11          </span></span>
-<span><span class="co">##  [70] BiocParallel_1.30.3    rlang_1.0.2            pkgconfig_2.0.3       </span></span>
+<span><span class="co">##  [70] BiocParallel_1.30.3    rlang_1.0.3            pkgconfig_2.0.3       </span></span>
 <span><span class="co">##  [73] systemfonts_1.0.4      bitops_1.0-7           evaluate_0.15         </span></span>
 <span><span class="co">##  [76] lattice_0.20-45        purrr_0.3.4            htmlwidgets_1.5.4     </span></span>
 <span><span class="co">##  [79] labeling_0.4.2         bit_4.0.4              tidyselect_1.1.2      </span></span>
