@@ -2917,6 +2917,9 @@ run_epic = function(mix, reference = NULL) {
 			)
 	} else { Y <- mix }
 
+  # Check if it is not matrix or data.frame, for example DelayedMatrix
+  if(!is(Y, "matrix") & !is(Y, "data.frame"))
+    Y = as.matrix(Y)
 
 	results <- EPIC(Y, reference = reference)$cellFractions %>% data.frame()
 	#results[results < 0] <- 0

@@ -931,6 +931,7 @@ setMethod("aggregate_duplicates",
 																			...) {
 
   .transcript = enquo(.transcript)
+  .sample = s_(.data)$symbol
 
 	my_assay =
 		.data %>%
@@ -1043,7 +1044,7 @@ setMethod("aggregate_duplicates",
 
 		# Parse results and return
 		setNames(c(
-			"sample",
+			quo_name(.sample),
 			(.) %>% select(-1) %>% colnames() %>% sprintf("%s%s", prefix, .)
 
 		))
@@ -1051,7 +1052,7 @@ setMethod("aggregate_duplicates",
 	# Att proportions
 	colData(.data) = colData(.data) %>% cbind(
 		my_proportions %>%
-			as_matrix(rownames = "sample") %>%
+			as_matrix(rownames = .sample) %>%
 		  .[match(rownames(colData(.data)), rownames(.)),]
 		)
 
