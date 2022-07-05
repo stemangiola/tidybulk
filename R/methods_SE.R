@@ -825,6 +825,9 @@ setMethod("adjust_abundance",
         rownames(.x) = rowData(.data)[,quo_name(.transcript)]
 
         # Combine
+        if(rownames(.x) |> is.na() |> which() |> length() |> gt(0))
+          stop(sprintf("tidybulk says: you have some %s that are NAs", quo_name(.transcript)))
+
         .x =  combineByRow(.x, aggregation_function)
         .x = .x[match(new_row_data[,quo_name(.transcript)], rownames(.x)),,drop=FALSE]
         rownames(.x) = rownames(new_row_data)
