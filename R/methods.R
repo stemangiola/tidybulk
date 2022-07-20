@@ -175,28 +175,56 @@ setGeneric("as_SummarizedExperiment", function(.data,
 	feature_cols = col_direction$vertical_cols
 	counts_cols = col_direction$counts_cols
 
-	colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% arrange(!!.sample) %>% {
-		S4Vectors::DataFrame((.) %>% select(-!!.sample),
-												 row.names = (.) %>% pull(!!.sample))
+	colData =
+	  .data %>%
+	  select(!!.sample, sample_cols) %>%
+	  distinct() %>%
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!sample__$name, !!.sample, remove = FALSE, sep = "___") |>
+
+	  arrange(!!sample__$symbol) %>% {
+		S4Vectors::DataFrame(
+		  (.) %>% select(-!!sample__$symbol),
+		  row.names = (.) %>% pull(!!sample__$symbol)
+		)
 	}
 
-	rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% arrange(!!.transcript) %>% {
-		S4Vectors::DataFrame((.) %>% select(-!!.transcript),
-												 row.names = (.) %>% pull(!!.transcript))
+	rowData =
+	  .data %>%
+	  select(!!.transcript, feature_cols) %>%
+	  distinct() %>%
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!feature__$name, !!.transcript, remove = FALSE, sep = "___") |>
+
+	  arrange(!!feature__$symbol) %>% {
+		S4Vectors::DataFrame(
+		  (.) %>% select(-!!feature__$symbol),
+		  row.names = (.) %>% pull(!!feature__$symbol)
+		)
 	}
 
 	my_assays =
 		.data %>%
-		select(!!.sample,
-					 !!.transcript,
-					 !!.abundance,
-					 !!.abundance_scaled,
-					 counts_cols) %>%
-		distinct() %>%
-		pivot_longer( cols=-c(!!.transcript,!!.sample), names_to="assay", values_to= ".a") %>%
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!sample__$name, !!.sample, remove = FALSE, sep = "___") |>
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!feature__$name, !!.transcript, remove = FALSE, sep = "___") |>
+
+	  select(!!sample__$symbol,
+	         !!feature__$symbol,
+	         !!.abundance,
+	         !!.abundance_scaled,
+	         counts_cols) %>%
+	  distinct() %>%
+
+		pivot_longer( cols=-c(!!feature__$symbol,!!sample__$symbol), names_to="assay", values_to= ".a") %>%
 		nest(`data` = -`assay`) %>%
 		mutate(`data` = `data` %>%  map(
-			~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))
+			~ .x %>% spread(!!sample__$symbol, .a) %>% as_matrix(rownames = feature__$name)
 		))
 
 	# Build the object

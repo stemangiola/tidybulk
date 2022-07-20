@@ -463,17 +463,17 @@ add_class = function(var, name) {
 #' @return A list of column enquo or error
 get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance){
 
-    if( .sample %>% quo_is_symbol() ) .sample = .sample
+    if( quo_is_symbolic(.sample) ) .sample = .sample
     else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
       .sample =  get_tt_columns(.data)$.sample
     else my_stop()
 
-    if( .transcript %>% quo_is_symbol() ) .transcript = .transcript
+    if( quo_is_symbolic(.transcript) ) .transcript = .transcript
     else if(".transcript" %in% (.data %>% get_tt_columns() %>% names))
       .transcript =  get_tt_columns(.data)$.transcript
     else my_stop()
 
-    if( .abundance %>% quo_is_symbolic() ) .abundance = .abundance
+    if(  quo_is_symbolic(.abundance) ) .abundance = .abundance
     else if(".abundance" %in% (.data %>% get_tt_columns() %>% names))
       .abundance = get_tt_columns(.data)$.abundance
     else my_stop()
@@ -894,8 +894,8 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
   .abundance_scaled = enquo(.abundance_scaled)
 
   # x-annotation df
-  n_x = .data %>% distinct(!!.horizontal) %>% nrow
-  n_y = .data %>% distinct(!!.vertical) %>% nrow
+  n_x = .data %>% select(!!.horizontal) |> distinct() |> nrow()
+  n_y = .data %>% select(!!.vertical) |> distinct() |> nrow()
 
   # Sample wise columns
   horizontal_cols=
@@ -907,8 +907,9 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
         .x %>%
         when(
           .data %>%
-            distinct(!!.horizontal, !!as.symbol(.x)) %>%
-            nrow %>%
+            select(!!.horizontal, !!as.symbol(.x)) %>%
+            distinct() |>
+            nrow() %>%
             equals(n_x) ~ .x,
           ~ NULL
         )
@@ -928,8 +929,9 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
         .x %>%
         ifelse_pipe(
           .data %>%
-            distinct(!!.vertical, !!as.symbol(.x)) %>%
-            nrow %>%
+            select(!!.vertical, !!as.symbol(.x)) |>
+            distinct() |>
+            nrow() %>%
             equals(n_y),
           ~ .x,
           ~ NULL
@@ -963,8 +965,9 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
         .x %>%
         ifelse_pipe(
           .data %>%
-            distinct(!!.vertical, !!.horizontal, !!as.symbol(.x)) %>%
-            nrow %>%
+            select(!!.vertical, !!.horizontal, !!as.symbol(.x)) %>%
+            distinct() |>
+            nrow() %>%
             equals(n_x * n_y),
           ~ .x,
           ~ NULL
