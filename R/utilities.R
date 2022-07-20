@@ -1577,3 +1577,16 @@ get_special_column_name_symbol = function(name){
 feature__ =  get_special_column_name_symbol(".feature")
 sample__ = get_special_column_name_symbol(".sample")
 
+
+is_filer_columns_in_column_selection = function(.data, ...){
+
+  # columns = enquos(columns)
+  tryCatch({
+    .data |>
+      slice(0) |>
+      dplyr::filter(..., .preserve=.preserve)
+
+    TRUE
+  },
+  error = function(e) FALSE)
+}
