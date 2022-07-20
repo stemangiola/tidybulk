@@ -18,7 +18,7 @@ nest"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathja
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.2</span>
       </span>
     </div>
 
@@ -149,19 +149,20 @@ standard tidyverse recycling rules).</p></dd>
 <span class="r-in"><span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">nest</span><span class="op">(</span> data <span class="op">=</span> <span class="op">-</span><span class="va">.feature</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span><span class="fu">unnest</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2,635 × 9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    .feature .sample    count Cell.type        time  condition  days  dead entrez</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ABCB4    SRR1740034  <span style="text-decoration: underline;">1</span>035 b_cell           0 d   TRUE          1     1 5244  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ABCB4    SRR1740035  <span style="text-decoration: underline;">1</span>123 b_cell           1 d   TRUE         10     1 5244  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ABCB4    SRR1740043     5 monocyte         1 d   FALSE       500     1 5244  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ABCB4    SRR1740058    10 t_cell           0 d   TRUE       <span style="text-decoration: underline;">1</span>000     0 5244  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ABCB4    SRR1740067    94 dendritic_myelo… 1 d   FALSE      <span style="text-decoration: underline;">2</span>000     1 5244  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ABCB9    SRR1740034    45 b_cell           0 d   TRUE          1     1 23457 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ABCB9    SRR1740035    53 b_cell           1 d   TRUE         10     1 23457 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ABCB9    SRR1740043     7 monocyte         1 d   FALSE       500     1 23457 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ABCB9    SRR1740058   118 t_cell           0 d   TRUE       <span style="text-decoration: underline;">1</span>000     0 23457 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ABCB9    SRR1740067    10 dendritic_myelo… 1 d   FALSE      <span style="text-decoration: underline;">2</span>000     1 23457 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 2,625 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    .feature .sample    count Cell.type         time  condit…¹  days  dead entrez</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ABCB4    SRR1740034  <span style="text-decoration: underline;">1</span>035 b_cell            0 d   TRUE         1     1 5244  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ABCB4    SRR1740035  <span style="text-decoration: underline;">1</span>123 b_cell            1 d   TRUE        10     1 5244  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ABCB4    SRR1740043     5 monocyte          1 d   FALSE      500     1 5244  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ABCB4    SRR1740058    10 t_cell            0 d   TRUE      <span style="text-decoration: underline;">1</span>000     0 5244  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ABCB4    SRR1740067    94 dendritic_myeloid 1 d   FALSE     <span style="text-decoration: underline;">2</span>000     1 5244  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ABCB9    SRR1740034    45 b_cell            0 d   TRUE         1     1 23457 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ABCB9    SRR1740035    53 b_cell            1 d   TRUE        10     1 23457 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ABCB9    SRR1740043     7 monocyte          1 d   FALSE      500     1 23457 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ABCB9    SRR1740058   118 t_cell            0 d   TRUE      <span style="text-decoration: underline;">1</span>000     0 23457 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ABCB9    SRR1740067    10 dendritic_myeloid 1 d   FALSE     <span style="text-decoration: underline;">2</span>000     1 23457 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 2,625 more rows, and abbreviated variable name ¹​condition</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="tidybulk-methods.html">tidybulk</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">nest</span><span class="op">(</span> data <span class="op">=</span> <span class="op">-</span><span class="va">.feature</span><span class="op">)</span></span></span>
@@ -179,6 +180,7 @@ standard tidyverse recycling rules).</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ADRB2    <span style="color: #949494;">&lt;tidybulk [5 × 8]&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> AIF1     <span style="color: #949494;">&lt;tidybulk [5 × 8]&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 517 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -194,7 +196,7 @@ standard tidyverse recycling rules).</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

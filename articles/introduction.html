@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.2</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
                         <h4 data-toc-skip class="author">Stefano
 Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2022-07-01</h4>
+            <h4 data-toc-skip class="date">2022-07-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -283,7 +283,8 @@ robust way</td>
 <span><span class="co">## <span style="color: #BCBCBC;"> 8</span> AANAT    SRR1740034   284 b_cell    0 d   TRUE      0     TRUE              </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span> AAR2     SRR1740034   379 b_cell    0 d   TRUE      0     TRUE              </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span> AARS2    SRR1740034   685 b_cell    0 d   TRUE      0     TRUE              </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 40 more rows</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #949494;"># … with 40 more rows</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre>
 <p>Loading <code>tidySummarizedExperiment</code> will automatically
 abstract this object as <code>tibble</code>, so we can display it and
 manipulate it with tidy tools. Although it looks different, and more
@@ -456,20 +457,22 @@ is coloured by cell type.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span>  <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 48 × 14</span></span></span>
-<span><span class="co">##      Dim1   Dim2   Dim3     Dim4    Dim5    Dim6 .sample    Cell.type      time </span></span>
-<span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> -<span style="color: #BB0000;">1.46</span>   0.220 -<span style="color: #BB0000;">1.68</span>   0.055<span style="text-decoration: underline;">3</span>   0.065<span style="text-decoration: underline;">8</span> -<span style="color: #BB0000;">0.126</span>  SRR1740034 b_cell         0 d  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> -<span style="color: #BB0000;">1.46</span>   0.226 -<span style="color: #BB0000;">1.71</span>   0.030<span style="text-decoration: underline;">0</span>   0.045<span style="text-decoration: underline;">4</span> -<span style="color: #BB0000;">0.137</span>  SRR1740035 b_cell         1 d  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> -<span style="color: #BB0000;">1.44</span>   0.193 -<span style="color: #BB0000;">1.60</span>   0.089<span style="text-decoration: underline;">0</span>   0.050<span style="text-decoration: underline;">3</span> -<span style="color: #BB0000;">0.121</span>  SRR1740036 b_cell         3 d  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> -<span style="color: #BB0000;">1.44</span>   0.198 -<span style="color: #BB0000;">1.67</span>   0.089<span style="text-decoration: underline;">1</span>   0.054<span style="text-decoration: underline;">3</span> -<span style="color: #BB0000;">0.110</span>  SRR1740037 b_cell         7 d  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>  0.243 -<span style="color: #BB0000;">1.42</span>   0.182  0.006<span style="text-decoration: underline;">42</span> -<span style="color: #BB0000;">0.503</span>  -<span style="color: #BB0000;">0.131</span>  SRR1740038 dendritic_mye… 0 d  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  0.191 -<span style="color: #BB0000;">1.42</span>   0.195  0.018<span style="text-decoration: underline;">0</span>  -<span style="color: #BB0000;">0.457</span>  -<span style="color: #BB0000;">0.130</span>  SRR1740039 dendritic_mye… 1 d  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>  0.257 -<span style="color: #BB0000;">1.42</span>   0.152  0.013<span style="text-decoration: underline;">0</span>  -<span style="color: #BB0000;">0.582</span>  -<span style="color: #BB0000;">0.092</span><span style="color: #BB0000; text-decoration: underline;">7</span> SRR1740040 dendritic_mye… 3 d  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  0.162 -<span style="color: #BB0000;">1.43</span>   0.189  0.023<span style="text-decoration: underline;">2</span>  -<span style="color: #BB0000;">0.452</span>  -<span style="color: #BB0000;">0.109</span>  SRR1740041 dendritic_mye… 7 d  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>  0.516 -<span style="color: #BB0000;">1.47</span>   0.240 -<span style="color: #BB0000;">0.251</span>    0.457  -<span style="color: #BB0000;">0.119</span>  SRR1740042 monocyte       0 d  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>  0.514 -<span style="color: #BB0000;">1.41</span>   0.231 -<span style="color: #BB0000;">0.219</span>    0.458  -<span style="color: #BB0000;">0.131</span>  SRR1740043 monocyte       1 d  </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 38 more rows, and 5 more variables: condition &lt;lgl&gt;, batch &lt;fct&gt;,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   factor_of_interest &lt;lgl&gt;, TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;</span></span></span></code></pre>
+<span><span class="co">##      Dim1   Dim2   Dim3     Dim4    Dim5    Dim6 .sample   Cell.…¹ time  condi…²</span></span>
+<span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> -<span style="color: #BB0000;">1.46</span>   0.220 -<span style="color: #BB0000;">1.68</span>   0.055<span style="text-decoration: underline;">3</span>   0.065<span style="text-decoration: underline;">8</span> -<span style="color: #BB0000;">0.126</span>  SRR17400… b_cell  0 d   TRUE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> -<span style="color: #BB0000;">1.46</span>   0.226 -<span style="color: #BB0000;">1.71</span>   0.030<span style="text-decoration: underline;">0</span>   0.045<span style="text-decoration: underline;">4</span> -<span style="color: #BB0000;">0.137</span>  SRR17400… b_cell  1 d   TRUE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> -<span style="color: #BB0000;">1.44</span>   0.193 -<span style="color: #BB0000;">1.60</span>   0.089<span style="text-decoration: underline;">0</span>   0.050<span style="text-decoration: underline;">3</span> -<span style="color: #BB0000;">0.121</span>  SRR17400… b_cell  3 d   TRUE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> -<span style="color: #BB0000;">1.44</span>   0.198 -<span style="color: #BB0000;">1.67</span>   0.089<span style="text-decoration: underline;">1</span>   0.054<span style="text-decoration: underline;">3</span> -<span style="color: #BB0000;">0.110</span>  SRR17400… b_cell  7 d   TRUE   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>  0.243 -<span style="color: #BB0000;">1.42</span>   0.182  0.006<span style="text-decoration: underline;">42</span> -<span style="color: #BB0000;">0.503</span>  -<span style="color: #BB0000;">0.131</span>  SRR17400… dendri… 0 d   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  0.191 -<span style="color: #BB0000;">1.42</span>   0.195  0.018<span style="text-decoration: underline;">0</span>  -<span style="color: #BB0000;">0.457</span>  -<span style="color: #BB0000;">0.130</span>  SRR17400… dendri… 1 d   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>  0.257 -<span style="color: #BB0000;">1.42</span>   0.152  0.013<span style="text-decoration: underline;">0</span>  -<span style="color: #BB0000;">0.582</span>  -<span style="color: #BB0000;">0.092</span><span style="color: #BB0000; text-decoration: underline;">7</span> SRR17400… dendri… 3 d   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  0.162 -<span style="color: #BB0000;">1.43</span>   0.189  0.023<span style="text-decoration: underline;">2</span>  -<span style="color: #BB0000;">0.452</span>  -<span style="color: #BB0000;">0.109</span>  SRR17400… dendri… 7 d   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>  0.516 -<span style="color: #BB0000;">1.47</span>   0.240 -<span style="color: #BB0000;">0.251</span>    0.457  -<span style="color: #BB0000;">0.119</span>  SRR17400… monocy… 0 d   FALSE  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>  0.514 -<span style="color: #BB0000;">1.41</span>   0.231 -<span style="color: #BB0000;">0.219</span>    0.458  -<span style="color: #BB0000;">0.131</span>  SRR17400… monocy… 1 d   FALSE  </span></span>
+<span><span class="co">## <span style="color: #949494;"># … with 38 more rows, 4 more variables: batch &lt;fct&gt;, factor_of_interest &lt;lgl&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;, and abbreviated variable names ¹​Cell.type,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   ²​condition</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names</span></span></span></code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -503,20 +506,21 @@ is coloured by cell type.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"PC"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 48 × 14</span></span></span>
-<span><span class="co">##        PC1   PC2    PC3     PC4    PC5   PC6 .sample   Cell.type time  condition</span></span>
-<span><span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.52</span> -<span style="color: #BB0000;">14.9</span>  -<span style="color: #BB0000;">0.424</span>  -<span style="color: #BB0000;">0.592</span> -<span style="color: #BB0000;">1.22</span> SRR17400… b_cell    0 d   TRUE     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.57</span> -<span style="color: #BB0000;">15.2</span>  -<span style="color: #BB0000;">0.140</span>  -<span style="color: #BB0000;">0.388</span> -<span style="color: #BB0000;">1.30</span> SRR17400… b_cell    1 d   TRUE     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.41</span> -<span style="color: #BB0000;">14.5</span>  -<span style="color: #BB0000;">0.714</span>  -<span style="color: #BB0000;">0.344</span> -<span style="color: #BB0000;">1.10</span> SRR17400… b_cell    3 d   TRUE     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> -<span style="color: #BB0000;">12.5</span>   -<span style="color: #BB0000;">2.34</span> -<span style="color: #BB0000;">14.9</span>  -<span style="color: #BB0000;">0.816</span>  -<span style="color: #BB0000;">0.427</span> -<span style="color: #BB0000;">1.00</span> SRR17400… b_cell    7 d   TRUE     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>   0.189 13.0    1.66 -<span style="color: #BB0000;">0.026</span><span style="color: #BB0000; text-decoration: underline;">9</span>  4.64  -<span style="color: #BB0000;">1.35</span> SRR17400… dendriti… 0 d   FALSE    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  -<span style="color: #BB0000;">0.293</span> 12.9    1.76 -<span style="color: #BB0000;">0.072</span><span style="color: #BB0000; text-decoration: underline;">7</span>  4.21  -<span style="color: #BB0000;">1.28</span> SRR17400… dendriti… 1 d   FALSE    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>   0.407 13.0    1.42 -<span style="color: #BB0000;">0.052</span><span style="color: #BB0000; text-decoration: underline;">9</span>  5.37  -<span style="color: #BB0000;">1.01</span> SRR17400… dendriti… 3 d   FALSE    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">0.620</span> 13.0    1.73 -<span style="color: #BB0000;">0.201</span>   4.17  -<span style="color: #BB0000;">1.07</span> SRR17400… dendriti… 7 d   FALSE    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>   2.56  13.5    2.32  2.03   -<span style="color: #BB0000;">4.32</span>  -<span style="color: #BB0000;">1.22</span> SRR17400… monocyte  0 d   FALSE    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>   2.65  13.1    2.21  1.80   -<span style="color: #BB0000;">4.29</span>  -<span style="color: #BB0000;">1.30</span> SRR17400… monocyte  1 d   FALSE    </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 38 more rows, and 4 more variables: batch &lt;fct&gt;,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   factor_of_interest &lt;lgl&gt;, TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;</span></span></span></code></pre>
+<span><span class="co">##        PC1   PC2    PC3     PC4    PC5   PC6 .sample Cell.…¹ time  condi…² batch</span></span>
+<span><span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.52</span> -<span style="color: #BB0000;">14.9</span>  -<span style="color: #BB0000;">0.424</span>  -<span style="color: #BB0000;">0.592</span> -<span style="color: #BB0000;">1.22</span> SRR174… b_cell  0 d   TRUE    0    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.57</span> -<span style="color: #BB0000;">15.2</span>  -<span style="color: #BB0000;">0.140</span>  -<span style="color: #BB0000;">0.388</span> -<span style="color: #BB0000;">1.30</span> SRR174… b_cell  1 d   TRUE    1    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> -<span style="color: #BB0000;">12.6</span>   -<span style="color: #BB0000;">2.41</span> -<span style="color: #BB0000;">14.5</span>  -<span style="color: #BB0000;">0.714</span>  -<span style="color: #BB0000;">0.344</span> -<span style="color: #BB0000;">1.10</span> SRR174… b_cell  3 d   TRUE    1    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> -<span style="color: #BB0000;">12.5</span>   -<span style="color: #BB0000;">2.34</span> -<span style="color: #BB0000;">14.9</span>  -<span style="color: #BB0000;">0.816</span>  -<span style="color: #BB0000;">0.427</span> -<span style="color: #BB0000;">1.00</span> SRR174… b_cell  7 d   TRUE    1    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>   0.189 13.0    1.66 -<span style="color: #BB0000;">0.026</span><span style="color: #BB0000; text-decoration: underline;">9</span>  4.64  -<span style="color: #BB0000;">1.35</span> SRR174… dendri… 0 d   FALSE   0    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  -<span style="color: #BB0000;">0.293</span> 12.9    1.76 -<span style="color: #BB0000;">0.072</span><span style="color: #BB0000; text-decoration: underline;">7</span>  4.21  -<span style="color: #BB0000;">1.28</span> SRR174… dendri… 1 d   FALSE   0    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>   0.407 13.0    1.42 -<span style="color: #BB0000;">0.052</span><span style="color: #BB0000; text-decoration: underline;">9</span>  5.37  -<span style="color: #BB0000;">1.01</span> SRR174… dendri… 3 d   FALSE   1    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">0.620</span> 13.0    1.73 -<span style="color: #BB0000;">0.201</span>   4.17  -<span style="color: #BB0000;">1.07</span> SRR174… dendri… 7 d   FALSE   0    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>   2.56  13.5    2.32  2.03   -<span style="color: #BB0000;">4.32</span>  -<span style="color: #BB0000;">1.22</span> SRR174… monocy… 0 d   FALSE   1    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>   2.65  13.1    2.21  1.80   -<span style="color: #BB0000;">4.29</span>  -<span style="color: #BB0000;">1.30</span> SRR174… monocy… 1 d   FALSE   1    </span></span>
+<span><span class="co">## <span style="color: #949494;"># … with 38 more rows, 3 more variables: factor_of_interest &lt;lgl&gt;, TMM &lt;dbl&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   multiplier &lt;dbl&gt;, and abbreviated variable names ¹​Cell.type, ²​condition</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names</span></span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -559,19 +563,20 @@ is coloured by cell type.</p>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 251 × 4</span></span></span>
-<span><span class="co">##      tSNE1  tSNE2 .sample                      Call </span></span>
-<span><span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>   8.63    1.06 TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>  -<span style="color: #BB0000;">6.33</span>    9.04 TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>  14.2     5.72 TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>  -<span style="color: #BB0000;">2.47</span>  -<span style="color: #BB0000;">13.4</span>  TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>  -<span style="color: #BB0000;">5.11</span>  -<span style="color: #BB0000;">12.3</span>  TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  12.7     2.89 TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">36.3</span>    -<span style="color: #BB0000;">6.18</span> TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">0.713</span> -<span style="color: #BB0000;">11.5</span>  TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>   0.996 -<span style="color: #BB0000;">11.0</span>  TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>  21.4    10.9  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 241 more rows</span></span></span></code></pre>
+<span><span class="co">##       tSNE1  tSNE2 .sample                      Call </span></span>
+<span><span class="co">##       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>   6.37    -<span style="color: #BB0000;">5.12</span> TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>  -<span style="color: #BB0000;">3.08</span>     9.38 TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>   6.16   -<span style="color: #BB0000;">11.1</span>  TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>  -<span style="color: #BB0000;">1.64</span>    -<span style="color: #BB0000;">3.36</span> TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>   3.26    -<span style="color: #BB0000;">2.60</span> TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  -<span style="color: #BB0000;">0.020</span><span style="color: #BB0000; text-decoration: underline;">2</span>  -<span style="color: #BB0000;">9.44</span> TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">29.6</span>     10.0  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">4.93</span>    -<span style="color: #BB0000;">3.29</span> TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>  -<span style="color: #BB0000;">6.11</span>    -<span style="color: #BB0000;">4.32</span> TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>  17.7     -<span style="color: #BB0000;">1.07</span> TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #949494;"># … with 241 more rows</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -1006,19 +1011,22 @@ IDs. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_ensembl</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/ensembl_to_symbol-methods.html">ensembl_to_symbol</a></span><span class="op">(</span><span class="va">ens</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 119 × 8</span></span></span>
-<span><span class="co">##    ens    iso   `read count` sample cases_0_project… cases_0_samples… transcript</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> ENSG0… 13             144 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> ENSG0… 13              72 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> ENSG0… 13               0 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> ENSG0… 13            <span style="text-decoration: underline;">1</span>099 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> ENSG0… 13              11 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> ENSG0… 13               2 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> ENSG0… 13               3 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> ENSG0… 13            <span style="text-decoration: underline;">2</span>678 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> ENSG0… 13             751 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> ENSG0… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 109 more rows, and 1 more variable: ref_genome &lt;chr&gt;</span></span></span></code></pre>
+<span><span class="co">##    ens             iso   `read count` sample     cases…¹ cases…² trans…³ ref_g…⁴</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> ENSG00000000003 13             144 TARGET-20… Acute … Primar… TSPAN6  hg38   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> ENSG00000000003 13              72 TARGET-20… Acute … Primar… TSPAN6  hg38   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> ENSG00000000003 13               0 TARGET-20… Acute … Primar… TSPAN6  hg38   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> ENSG00000000003 13            <span style="text-decoration: underline;">1</span>099 TARGET-20… Acute … Primar… TSPAN6  hg38   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> ENSG00000000003 13              11 TARGET-20… Acute … Primar… TSPAN6  hg38   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> ENSG00000000003 13               2 TARGET-20… Acute … Primar… TSPAN6  hg38   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> ENSG00000000003 13               3 TARGET-20… Acute … Primar… TSPAN6  hg38   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> ENSG00000000003 13            <span style="text-decoration: underline;">2</span>678 TARGET-20… Acute … Primar… TSPAN6  hg38   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> ENSG00000000003 13             751 TARGET-20… Acute … Primar… TSPAN6  hg38   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> ENSG00000000003 13               1 TARGET-20… Acute … Primar… TSPAN6  hg38   </span></span>
+<span><span class="co">## <span style="color: #949494;"># … with 109 more rows, and abbreviated variable names</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   ¹​cases_0_project_disease_type, ²​cases_0_samples_0_sample_type, ³​transcript,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   ⁴​ref_genome</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="from-gene-symbol-to-gene-description-gene-name-in-full">From gene symbol to gene description (gene name in full)<a class="anchor" aria-label="anchor" href="#from-gene-symbol-to-gene-description-gene-name-in-full"></a>
@@ -1031,19 +1039,21 @@ identifiers. This currently works for human and mouse.</p>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">feature</span>, <span class="va">description</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A SummarizedExperiment-tibble abstraction: 408,624 × 48</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># </span><span style="color: #555555;">Features=8513 | Samples=48 | Assays=count</span></span></span>
-<span><span class="co">##    feature  sample     count Cell.type time  condition batch factor_of_interest</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>             </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> A1BG     SRR1740034   153 b_cell    0 d   TRUE      0     TRUE              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> A1BG-AS1 SRR1740034    83 b_cell    0 d   TRUE      0     TRUE              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> AAAS     SRR1740034   868 b_cell    0 d   TRUE      0     TRUE              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> AACS     SRR1740034   222 b_cell    0 d   TRUE      0     TRUE              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> AAGAB    SRR1740034   590 b_cell    0 d   TRUE      0     TRUE              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> AAMDC    SRR1740034    48 b_cell    0 d   TRUE      0     TRUE              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> AAMP     SRR1740034  <span style="text-decoration: underline;">1</span>257 b_cell    0 d   TRUE      0     TRUE              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> AANAT    SRR1740034   284 b_cell    0 d   TRUE      0     TRUE              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> AAR2     SRR1740034   379 b_cell    0 d   TRUE      0     TRUE              </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> AARS2    SRR1740034   685 b_cell    0 d   TRUE      0     TRUE              </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 40 more rows, and 2 more variables: description &lt;chr&gt;, gene_name &lt;chr&gt;</span></span></span></code></pre>
+<span><span class="co">##    feature  sample     count Cell.…¹ time  condi…² batch facto…³ descr…⁴ gene_…⁵</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> A1BG     SRR1740034   153 b_cell  0 d   TRUE    0     TRUE    alpha-… A1BG   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> A1BG-AS1 SRR1740034    83 b_cell  0 d   TRUE    0     TRUE    A1BG a… A1BG-A…</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> AAAS     SRR1740034   868 b_cell  0 d   TRUE    0     TRUE    aladin… AAAS   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> AACS     SRR1740034   222 b_cell  0 d   TRUE    0     TRUE    acetoa… AACS   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> AAGAB    SRR1740034   590 b_cell  0 d   TRUE    0     TRUE    alpha … AAGAB  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> AAMDC    SRR1740034    48 b_cell  0 d   TRUE    0     TRUE    adipog… AAMDC  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> AAMP     SRR1740034  <span style="text-decoration: underline;">1</span>257 b_cell  0 d   TRUE    0     TRUE    angio … AAMP   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> AANAT    SRR1740034   284 b_cell  0 d   TRUE    0     TRUE    aralky… AANAT  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> AAR2     SRR1740034   379 b_cell  0 d   TRUE    0     TRUE    AAR2 s… AAR2   </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> AARS2    SRR1740034   685 b_cell  0 d   TRUE    0     TRUE    alanyl… AARS2  </span></span>
+<span><span class="co">## <span style="color: #949494;"># … with 40 more rows, and abbreviated variable names ¹​Cell.type, ²​condition,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   ³​factor_of_interest, ⁴​description, ⁵​gene_name</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="appendix">Appendix<a class="anchor" aria-label="anchor" href="#appendix"></a>
@@ -1076,7 +1086,7 @@ identifiers. This currently works for human and mouse.</p>
 <span><span class="co">##  [5] GenomeInfoDb_1.32.2            IRanges_2.30.0                </span></span>
 <span><span class="co">##  [7] S4Vectors_0.34.0               BiocGenerics_0.42.0           </span></span>
 <span><span class="co">##  [9] MatrixGenerics_1.8.1           matrixStats_0.62.0            </span></span>
-<span><span class="co">## [11] tidybulk_1.9.1                 ggrepel_0.9.1                 </span></span>
+<span><span class="co">## [11] tidybulk_1.9.2                 ggrepel_0.9.1                 </span></span>
 <span><span class="co">## [13] ggplot2_3.3.6                  magrittr_2.0.3                </span></span>
 <span><span class="co">## [15] tibble_3.1.7                   tidyr_1.2.0                   </span></span>
 <span><span class="co">## [17] dplyr_1.0.9                    knitr_1.39                    </span></span>
@@ -1086,41 +1096,41 @@ identifiers. This currently works for human and mouse.</p>
 <span><span class="co">##   [1] Rtsne_0.16             colorspace_2.0-3       ellipsis_0.3.2        </span></span>
 <span><span class="co">##   [4] class_7.3-20           rprojroot_2.0.3        XVector_0.36.0        </span></span>
 <span><span class="co">##   [7] fs_1.5.2               tidytext_0.3.3         proxy_0.4-27          </span></span>
-<span><span class="co">##  [10] farver_2.1.0           SnowballC_0.7.0        bit64_4.0.5           </span></span>
+<span><span class="co">##  [10] farver_2.1.1           SnowballC_0.7.0        bit64_4.0.5           </span></span>
 <span><span class="co">##  [13] AnnotationDbi_1.58.0   fansi_1.0.3            codetools_0.2-18      </span></span>
 <span><span class="co">##  [16] splines_4.2.0          cachem_1.0.6           jsonlite_1.8.0        </span></span>
-<span><span class="co">##  [19] broom_0.8.0            annotate_1.74.0        png_0.1-7             </span></span>
+<span><span class="co">##  [19] broom_1.0.0            annotate_1.74.0        png_0.1-7             </span></span>
 <span><span class="co">##  [22] BiocManager_1.30.18    readr_2.1.2            compiler_4.2.0        </span></span>
 <span><span class="co">##  [25] httr_1.4.3             backports_1.4.1        assertthat_0.2.1      </span></span>
 <span><span class="co">##  [28] Matrix_1.4-1           fastmap_1.1.0          lazyeval_0.2.2        </span></span>
 <span><span class="co">##  [31] limma_3.52.2           cli_3.3.0              org.Mm.eg.db_3.15.0   </span></span>
-<span><span class="co">##  [34] htmltools_0.5.2        tools_4.2.0            gtable_0.3.0          </span></span>
+<span><span class="co">##  [34] htmltools_0.5.3        tools_4.2.0            gtable_0.3.0          </span></span>
 <span><span class="co">##  [37] glue_1.6.2             GenomeInfoDbData_1.2.8 reshape2_1.4.4        </span></span>
-<span><span class="co">##  [40] Rcpp_1.0.8.3           jquerylib_0.1.4        pkgdown_2.0.5         </span></span>
+<span><span class="co">##  [40] Rcpp_1.0.9             jquerylib_0.1.4        pkgdown_2.0.6         </span></span>
 <span><span class="co">##  [43] vctrs_0.4.1            Biostrings_2.64.0      preprocessCore_1.58.0 </span></span>
 <span><span class="co">##  [46] nlme_3.1-158           xfun_0.31              stringr_1.4.0         </span></span>
 <span><span class="co">##  [49] lifecycle_1.0.1        XML_3.99-0.10          org.Hs.eg.db_3.15.0   </span></span>
 <span><span class="co">##  [52] edgeR_3.38.1           zlibbioc_1.42.0        scales_1.2.0          </span></span>
 <span><span class="co">##  [55] ragg_1.2.2             hms_1.1.1              parallel_4.2.0        </span></span>
 <span><span class="co">##  [58] RColorBrewer_1.1-3     yaml_2.3.5             memoise_2.0.1         </span></span>
-<span><span class="co">##  [61] sass_0.4.1             reshape_0.8.9          stringi_1.7.6         </span></span>
-<span><span class="co">##  [64] RSQLite_2.2.14         highr_0.9              genefilter_1.78.0     </span></span>
+<span><span class="co">##  [61] sass_0.4.2             reshape_0.8.9          stringi_1.7.8         </span></span>
+<span><span class="co">##  [64] RSQLite_2.2.15         highr_0.9              genefilter_1.78.0     </span></span>
 <span><span class="co">##  [67] tokenizers_0.2.1       desc_1.4.1             e1071_1.7-11          </span></span>
-<span><span class="co">##  [70] BiocParallel_1.30.3    rlang_1.0.3            pkgconfig_2.0.3       </span></span>
+<span><span class="co">##  [70] BiocParallel_1.30.3    rlang_1.0.4            pkgconfig_2.0.3       </span></span>
 <span><span class="co">##  [73] systemfonts_1.0.4      bitops_1.0-7           evaluate_0.15         </span></span>
 <span><span class="co">##  [76] lattice_0.20-45        purrr_0.3.4            htmlwidgets_1.5.4     </span></span>
 <span><span class="co">##  [79] labeling_0.4.2         bit_4.0.4              tidyselect_1.1.2      </span></span>
 <span><span class="co">##  [82] GGally_2.1.2           plyr_1.8.7             bookdown_0.27         </span></span>
-<span><span class="co">##  [85] R6_2.5.1               generics_0.1.2         DelayedArray_0.22.0   </span></span>
-<span><span class="co">##  [88] DBI_1.1.3              pillar_1.7.0           withr_2.5.0           </span></span>
-<span><span class="co">##  [91] mgcv_1.8-40            survival_3.3-1         KEGGREST_1.36.2       </span></span>
+<span><span class="co">##  [85] R6_2.5.1               generics_0.1.3         DelayedArray_0.22.0   </span></span>
+<span><span class="co">##  [88] DBI_1.1.3              pillar_1.8.0           withr_2.5.0           </span></span>
+<span><span class="co">##  [91] mgcv_1.8-40            survival_3.3-1         KEGGREST_1.36.3       </span></span>
 <span><span class="co">##  [94] RCurl_1.98-1.7         janeaustenr_0.1.5      widyr_0.1.4           </span></span>
 <span><span class="co">##  [97] crayon_1.5.1           utf8_1.2.2             plotly_4.10.0         </span></span>
-<span><span class="co">## [100] tzdb_0.3.0             rmarkdown_2.14         locfit_1.5-9.5        </span></span>
+<span><span class="co">## [100] tzdb_0.3.0             rmarkdown_2.14         locfit_1.5-9.6        </span></span>
 <span><span class="co">## [103] grid_4.2.0             sva_3.44.0             data.table_1.14.2     </span></span>
 <span><span class="co">## [106] blob_1.2.3             digest_0.6.29          xtable_1.8-4          </span></span>
 <span><span class="co">## [109] textshaping_0.3.6      munsell_0.5.0          viridisLite_0.4.0     </span></span>
-<span><span class="co">## [112] bslib_0.3.1</span></span></code></pre>
+<span><span class="co">## [112] bslib_0.4.0</span></span></code></pre>
 </div>
 </div>
   </div>
@@ -1142,7 +1152,7 @@ identifiers. This currently works for human and mouse.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

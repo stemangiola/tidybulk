@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.2</span>
       </span>
     </div>
 
@@ -220,19 +220,21 @@ deconvolve_cellularity(
 <span class="r-in"><span>  cores <span class="op">=</span> <span class="fl">1</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 22 × 6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    .cell_type         cell_type_propo… .low_cellularit… .high_cellulari…  pvalue</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cibersort.B.cells… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>             3.35            0.65   0.038<span style="text-decoration: underline;">9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> cibersort.B.cells… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>             3.35            0.65   0.038<span style="text-decoration: underline;">9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cibersort.Plasma.… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>            <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cibersort.T.cells… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>             3.22            0.783  0.299 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cibersort.T.cells… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>             2.43            1.57   0.502 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cibersort.T.cells… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>             2.77            1.23   0.782 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cibersort.T.cells… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>             3.8             0.2    0.045<span style="text-decoration: underline;">5</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cibersort.T.cells… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>             3.35            0.65   0.038<span style="text-decoration: underline;">9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cibersort.T.cells… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>             3.22            0.783  0.774 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cibersort.T.cells… <span style="color: #949494;">&lt;tibble [5 × 7]&gt;</span>            <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 12 more rows, and 1 more variable: plot &lt;list&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    .cell_type                        cell_t…¹ .low_…² .high…³  pvalue plot      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cibersort.B.cells.naive           &lt;tibble&gt;    3.35   0.65   0.038<span style="text-decoration: underline;">9</span> &lt;ggsrvplt&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> cibersort.B.cells.memory          &lt;tibble&gt;    3.35   0.65   0.038<span style="text-decoration: underline;">9</span> &lt;ggsrvplt&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cibersort.Plasma.cells            &lt;tibble&gt;   <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #949494;">&lt;NULL&gt;</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cibersort.T.cells.CD8             &lt;tibble&gt;    3.22   0.783  0.299  &lt;ggsrvplt&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cibersort.T.cells.CD4.naive       &lt;tibble&gt;    2.43   1.57   0.502  &lt;ggsrvplt&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cibersort.T.cells.CD4.memory.res… &lt;tibble&gt;    2.77   1.23   0.782  &lt;ggsrvplt&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cibersort.T.cells.CD4.memory.act… &lt;tibble&gt;    3.8    0.2    0.045<span style="text-decoration: underline;">5</span> &lt;ggsrvplt&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cibersort.T.cells.follicular.hel… &lt;tibble&gt;    3.35   0.65   0.038<span style="text-decoration: underline;">9</span> &lt;ggsrvplt&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cibersort.T.cells.regulatory..Tr… &lt;tibble&gt;    3.22   0.783  0.774  &lt;ggsrvplt&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cibersort.T.cells.gamma.delta     &lt;tibble&gt;   <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #949494;">&lt;NULL&gt;</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 12 more rows, and abbreviated variable names ¹​cell_type_proportions,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ²​.low_cellularity_expected, ³​.high_cellularity_expected</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
@@ -250,7 +252,7 @@ deconvolve_cellularity(
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
