@@ -825,6 +825,9 @@ setMethod("adjust_abundance",
         rownames(.x) = rowData(.data)[,quo_name(.transcript)]
 
         # Combine
+        if(rownames(.x) |> is.na() |> which() |> length() |> gt(0))
+          stop(sprintf("tidybulk says: you have some %s that are NAs", quo_name(.transcript)))
+
         .x =  combineByRow(.x, aggregation_function)
         .x = .x[match(new_row_data[,quo_name(.transcript)], rownames(.x)),,drop=FALSE]
         rownames(.x) = rownames(new_row_data)
@@ -931,6 +934,7 @@ setMethod("aggregate_duplicates",
 																			...) {
 
   .transcript = enquo(.transcript)
+  .sample = s_(.data)$symbol
 
 	my_assay =
 		.data %>%
@@ -1043,7 +1047,7 @@ setMethod("aggregate_duplicates",
 
 		# Parse results and return
 		setNames(c(
-			"sample",
+			quo_name(.sample),
 			(.) %>% select(-1) %>% colnames() %>% sprintf("%s%s", prefix, .)
 
 		))
@@ -1051,7 +1055,7 @@ setMethod("aggregate_duplicates",
 	# Att proportions
 	colData(.data) = colData(.data) %>% cbind(
 		my_proportions %>%
-			as_matrix(rownames = "sample") %>%
+			as_matrix(rownames = .sample) %>%
 		  .[match(rownames(colData(.data)), rownames(.)),]
 		)
 

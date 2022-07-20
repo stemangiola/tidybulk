@@ -175,28 +175,56 @@ setGeneric("as_SummarizedExperiment", function(.data,
 	feature_cols = col_direction$vertical_cols
 	counts_cols = col_direction$counts_cols
 
-	colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% arrange(!!.sample) %>% {
-		S4Vectors::DataFrame((.) %>% select(-!!.sample),
-												 row.names = (.) %>% pull(!!.sample))
+	colData =
+	  .data %>%
+	  select(!!.sample, sample_cols) %>%
+	  distinct() %>%
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!sample__$name, !!.sample, remove = FALSE, sep = "___") |>
+
+	  arrange(!!sample__$symbol) %>% {
+		S4Vectors::DataFrame(
+		  (.) %>% select(-!!sample__$symbol),
+		  row.names = (.) %>% pull(!!sample__$symbol)
+		)
 	}
 
-	rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% arrange(!!.transcript) %>% {
-		S4Vectors::DataFrame((.) %>% select(-!!.transcript),
-												 row.names = (.) %>% pull(!!.transcript))
+	rowData =
+	  .data %>%
+	  select(!!.transcript, feature_cols) %>%
+	  distinct() %>%
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!feature__$name, !!.transcript, remove = FALSE, sep = "___") |>
+
+	  arrange(!!feature__$symbol) %>% {
+		S4Vectors::DataFrame(
+		  (.) %>% select(-!!feature__$symbol),
+		  row.names = (.) %>% pull(!!feature__$symbol)
+		)
 	}
 
 	my_assays =
 		.data %>%
-		select(!!.sample,
-					 !!.transcript,
-					 !!.abundance,
-					 !!.abundance_scaled,
-					 counts_cols) %>%
-		distinct() %>%
-		pivot_longer( cols=-c(!!.transcript,!!.sample), names_to="assay", values_to= ".a") %>%
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!sample__$name, !!.sample, remove = FALSE, sep = "___") |>
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!feature__$name, !!.transcript, remove = FALSE, sep = "___") |>
+
+	  select(!!sample__$symbol,
+	         !!feature__$symbol,
+	         !!.abundance,
+	         !!.abundance_scaled,
+	         counts_cols) %>%
+	  distinct() %>%
+
+		pivot_longer( cols=-c(!!feature__$symbol,!!sample__$symbol), names_to="assay", values_to= ".a") %>%
 		nest(`data` = -`assay`) %>%
 		mutate(`data` = `data` %>%  map(
-			~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))
+			~ .x %>% spread(!!sample__$symbol, .a) %>% as_matrix(rownames = feature__$name)
 		))
 
 	# Build the object
@@ -1737,7 +1765,7 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param reference A data frame. A rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.
+#' @param reference A data frame. The methods cibersort and llsr can accept a custom rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. For exampler tidybulk::X_cibersort. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.
 #' @param method A character string. The method to be used. At the moment Cibersort (default), epic and llsr (linear least squares regression) are available.
 #' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
