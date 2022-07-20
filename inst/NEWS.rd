@@ -57,3 +57,10 @@
     \item Make aggregate_duplicates more robust for tibble and SummarizedExperiment inputs
     \item Deprecate log_tranform argument for all methods for a more generic tranform argument that accepts arbitrary functions
 }}
+
+\section{Changes in version 1.9.2, Bioconductor 3.16 Dev}{
+\itemize{
+    \item Improve aggregate_duplicates for tibble and SummarizedExperiment
+    \item Fix epic deconvolution when using DelayedMatrix
+    \item Allow as_SummarizedExperiment with multiple columns identifiers for .sample and .feature
+}}
