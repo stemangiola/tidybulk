@@ -1940,6 +1940,17 @@ test_that("gene over representation",{
 
 })
 
+test_that("as_SummarizedExperiment",{
+  input_df |>
+    as_SummarizedExperiment(
+      .sample = c(a, condition),
+      .transcript = c(b, entrez),
+      .abundance = c
+    ) |>
+    nrow() |>
+    expect_equal(527)
+
+})
 
 # test_that("bibliography",{
 #
@@ -1954,12 +1965,4 @@ test_that("gene over representation",{
 #
 # })
 #
-# test_that("as_SummarizedExperiment",{
-# 	input_df |>
-# 	as_SummarizedExperiment(
-# 		.sample = a,
-# 		.transcript = b,
-# 		.abundance = c
-# 	)
-#
-# })
+
