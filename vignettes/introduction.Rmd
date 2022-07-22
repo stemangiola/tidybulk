@@ -37,7 +37,7 @@ vignette: >
 **Brings transcriptomics to the tidyverse**
 
 ```{r, echo=FALSE, out.width = "800px"}
-knitr::include_graphics("../inst/vignettes/new_SE_usage-01.png")
+knitr::include_graphics("../man/figures/new_SE_usage-01.png")
 ```
 
 
