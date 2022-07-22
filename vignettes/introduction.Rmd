@@ -36,7 +36,9 @@ vignette: >
 
 **Brings transcriptomics to the tidyverse**
 
-#  <img src="inst/new_SE_usage-01.png" width="800px" />
+```{r, echo=FALSE, out.width = "800px"}
+knitr::include_graphics("../inst/vignettes/new_SE_usage-01.png")
+```
 
 
 ## Functions/utilities available
@@ -149,8 +151,7 @@ tidybulk provide the `aggregate_duplicates` function to aggregate duplicated tra
 <div class="column-left">
 TidyTranscriptomics
 ```{r aggregate, message=FALSE, warning=FALSE, results='hide', class.source='yellow'}
-rowData(counts_SE)$gene_name = rownames(counts_SE)
-counts_SE.aggr = counts_SE %>% aggregate_duplicates(.transcript = gene_name)
+counts_SE.aggr = counts_SE %>% aggregate_duplicates()
 ```
 </div>
 <div class="column-right">
@@ -290,7 +291,7 @@ counts_SE.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
 
 counts_SE.norm.MDS %>%
 	pivot_sample() %>%
-  GGally::ggpairs(columns = 6:(6+5), ggplot2::aes(colour=`Cell.type`))
+  GGally::ggpairs(columns = 10:15, ggplot2::aes(colour=`Cell.type`))
 
 
 ```
