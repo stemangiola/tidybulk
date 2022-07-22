@@ -4,7 +4,6 @@ data("se_mini")
 data("breast_tcga_mini_SE")
 
 input_df =  setNames(se_mini %>% tidybulk() %>% as_tibble(), c( "b","a",  "c", "Cell type",  "time" , "condition", "days",  "dead", "entrez"))
-
 input_df_breast = setNames( breast_tcga_mini_SE %>% tidybulk() %>% as_tibble(), c( "b", "a","c", "c norm", "call" ))
 
 test_that("tidybulk SummarizedExperiment conversion",{
