@@ -926,7 +926,7 @@ setMethod("aggregate_duplicates",
 
 
 
-#' @importFrom rlang quo_is_symbol
+#' @importFrom rlang quo_is_symbolic
 .deconvolve_cellularity_se = function(.data,
 																			reference = X_cibersort,
 																			method = "cibersort",
@@ -944,7 +944,7 @@ setMethod("aggregate_duplicates",
 		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 
 	  # Change row names
-	  when(quo_is_symbol(.transcript) ~ {
+	  when(quo_is_symbolic(.transcript) ~ {
   	    .x = (.)
   	    rownames(.x) = .data %>% pivot_transcript() %>% pull(!!.transcript)
   	    .x
@@ -1294,6 +1294,8 @@ setMethod("keep_variable",
 #' keep_variable
 #' @inheritParams keep_variable
 #'
+#' @importFrom purrr map_chr
+#'
 #' @docType methods
 #' @rdname keep_variable-methods
 #'
@@ -1319,10 +1321,10 @@ setMethod("keep_variable",
 	# Check factor_of_interest
 	if(
 		!is.null(factor_of_interest) &&
-		quo_is_symbol(factor_of_interest) &&
-		(quo_name(factor_of_interest) %in% colnames(colData(.data)) %>% not())
+		quo_is_symbolic(factor_of_interest) &&
+		(quo_names(factor_of_interest) %in% colnames(colData(.data)) |> all() %>% not())
 	)
-		stop(sprintf("tidybulk says: the column %s is not present in colData", quo_name(factor_of_interest)))
+		stop(sprintf("tidybulk says: the column %s is not present in colData", quo_names(factor_of_interest)))
 
 	if (minimum_counts < 0)
 		stop("The parameter minimum_counts must be > 0")
@@ -1343,16 +1345,22 @@ setMethod("keep_variable",
 
 		factor_of_interest %>%
 		when(
-			quo_is_symbol(factor_of_interest) &&
+			quo_is_symbolic(factor_of_interest) &&
 				(
-					colData(.data)[, quo_name(factor_of_interest)] %>%
-						class %in% c("numeric", "integer", "double")) ~
+					colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
+					  as_tibble() |>
+						map_chr(~class(.x)) %in% c("numeric", "integer", "double") |>
+					  any()
+				) ~
 				{
-					message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
+					message("tidybulk says: The factor(s) of interest include continuous variable (e.g., integer,numeric, double). The data will be filtered without grouping.")
 					NULL
 				},
-			quo_is_symbol(factor_of_interest) ~
-				colData(.data)[, quo_name(factor_of_interest)],
+			quo_is_symbolic(factor_of_interest) ~
+				colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
+			  as_tibble() |>
+			  unite("factor_of_interest") |>
+			  pull(factor_of_interest),
 			~ NULL
 		)
 
