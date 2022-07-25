@@ -36,7 +36,9 @@ vignette: >
 
 **Brings transcriptomics to the tidyverse**
 
-#  <img src="inst/new_SE_usage-01.png" width="800px" />
+```{r, echo=FALSE, out.width = "800px"}
+knitr::include_graphics("../man/figures/new_SE_usage-01.png")
+```
 
 
 ## Functions/utilities available

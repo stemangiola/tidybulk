@@ -15,7 +15,9 @@ knitr::opts_chunk$set( fig.path = "man/figures/")
 
 The code is released under the version 3 of the GNU General Public License.
 
-#  <img src="inst/logo.png" height="139px" width="120px" />
+```{r, echo=FALSE, out.height = "139px", out.width = "120px"}
+knitr::include_graphics("man/figures/logo.png")
+```
   
 website: [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
 
@@ -38,7 +40,9 @@ gate information to your tibble
 
 -->
 
-#  <img src="inst/new_SE_usage-01.png" width="800px" />
+```{r, echo=FALSE, out.width = "800px"}
+knitr::include_graphics("man/figures/new_SE_usage-01.png")
+```
 
 
 ## Functions/utilities available
