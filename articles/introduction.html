@@ -6,6 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Overview of the tidybulk package • tidybulk</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -13,6 +19,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Overview of the tidybulk package">
 <meta property="og:description" content="tidybulk">
+<meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -88,7 +95,7 @@
                         <h4 data-toc-skip class="author">Stefano
 Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2022-07-20</h4>
+            <h4 data-toc-skip class="date">2022-07-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -117,10 +124,7 @@ Mangiola</h4>
 }
 </style>
 <p><strong>Brings transcriptomics to the tidyverse</strong></p>
-<div class="section level2">
-<h2 id="section">
-<img src="inst/new_SE_usage-01.png" width="800px"><a class="anchor" aria-label="anchor" href="#section"></a>
-</h2>
+<p><img src="../reference/figures/new_SE_usage-01.png" width="800px"></p>
 <div class="section level3">
 <h3 id="functionsutilities-available">Functions/utilities available<a class="anchor" aria-label="anchor" href="#functionsutilities-available"></a>
 </h3>
@@ -261,7 +265,6 @@ robust way</td>
 <p>From Github</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"stemangiola/tidybulk"</span><span class="op">)</span></span></code></pre></div>
-</div>
 </div>
 <div class="section level2">
 <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
@@ -563,25 +566,25 @@ is coloured by cell type.</p>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 251 × 4</span></span></span>
-<span><span class="co">##      tSNE1   tSNE2 .sample                      Call </span></span>
-<span><span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>  10.5    -<span style="color: #BB0000;">4.72</span>  TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>   3.53   11.9   TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>   3.29  -<span style="color: #BB0000;">11.4</span>   TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>   0.349  -<span style="color: #BB0000;">3.27</span>  TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>   4.43   -<span style="color: #BB0000;">3.61</span>  TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  -<span style="color: #BB0000;">2.53</span>    8.99  TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">34.7</span>     9.18  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">3.75</span>   -<span style="color: #BB0000;">0.191</span> TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>  -<span style="color: #BB0000;">5.55</span>   -<span style="color: #BB0000;">0.955</span> TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>   6.74  -<span style="color: #BB0000;">18.3</span>   TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
+<span><span class="co">##     tSNE1  tSNE2 .sample                      Call </span></span>
+<span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>   2.18 -<span style="color: #BB0000;">16.3</span>  TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>  12.2    3.05 TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>   2.64 -<span style="color: #BB0000;">25.2</span>  TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>   8.92 -<span style="color: #BB0000;">11.7</span>  TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>   5.41 -<span style="color: #BB0000;">12.9</span>  TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>   2.95   3.63 TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>   3.34  39.7  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">2.62</span>   7.81 TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>  -<span style="color: #BB0000;">3.54</span>   9.19 TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> -<span style="color: #BB0000;">13.6</span>  -<span style="color: #BB0000;">24.9</span>  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
 <span><span class="co">## <span style="color: #949494;"># … with 241 more rows</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color<span class="op">=</span><span class="va">Call</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="va">my_theme</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="rotate-dimensions">Rotate <code>dimensions</code><a class="anchor" aria-label="anchor" href="#rotate-dimensions"></a>
@@ -1088,7 +1091,7 @@ identifiers. This currently works for human and mouse.</p>
 <span><span class="co">##  [9] MatrixGenerics_1.8.1           matrixStats_0.62.0            </span></span>
 <span><span class="co">## [11] tidybulk_1.9.2                 ggrepel_0.9.1                 </span></span>
 <span><span class="co">## [13] ggplot2_3.3.6                  magrittr_2.0.3                </span></span>
-<span><span class="co">## [15] tibble_3.1.7                   tidyr_1.2.0                   </span></span>
+<span><span class="co">## [15] tibble_3.1.8                   tidyr_1.2.0                   </span></span>
 <span><span class="co">## [17] dplyr_1.0.9                    knitr_1.39                    </span></span>
 <span><span class="co">## [19] BiocStyle_2.24.0              </span></span>
 <span><span class="co">## </span></span>
