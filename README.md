@@ -13,7 +13,7 @@ status](https://github.com/stemangiola/tidybulk/workflows/R-CMD-check-bioc/badge
 The code is released under the version 3 of the GNU General Public
 License.
 
-# <img src="inst/logo.png" height="139px" width="120px" />
+<img src="man/figures/logo.png" width="120px" height="139px" />
 
 website:
 [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
@@ -39,7 +39,7 @@ Please have a look also to
 
 -->
 
-# <img src="inst/new_SE_usage-01.png" width="800px" />
+<img src="man/figures/new_SE_usage-01.png" width="800px" />
 
 ## Functions/utilities available
 
@@ -99,20 +99,22 @@ We will use a `SummarizedExperiment` object
 counts_SE
 ```
 
-    ## # A tibble abstraction: 408,624 x 8
-    ##    transcript sample     count Cell.type time  condition batch factor_of_intere…
-    ##    <chr>      <chr>      <dbl> <fct>     <fct> <lgl>     <fct> <lgl>            
-    ##  1 A1BG       SRR1740034   153 b_cell    0 d   TRUE      0     TRUE             
-    ##  2 A1BG-AS1   SRR1740034    83 b_cell    0 d   TRUE      0     TRUE             
-    ##  3 AAAS       SRR1740034   868 b_cell    0 d   TRUE      0     TRUE             
-    ##  4 AACS       SRR1740034   222 b_cell    0 d   TRUE      0     TRUE             
-    ##  5 AAGAB      SRR1740034   590 b_cell    0 d   TRUE      0     TRUE             
-    ##  6 AAMDC      SRR1740034    48 b_cell    0 d   TRUE      0     TRUE             
-    ##  7 AAMP       SRR1740034  1257 b_cell    0 d   TRUE      0     TRUE             
-    ##  8 AANAT      SRR1740034   284 b_cell    0 d   TRUE      0     TRUE             
-    ##  9 AAR2       SRR1740034   379 b_cell    0 d   TRUE      0     TRUE             
-    ## 10 AARS2      SRR1740034   685 b_cell    0 d   TRUE      0     TRUE             
+    ## # A SummarizedExperiment-tibble abstraction: 408,624 × 48
+    ## # [90mFeatures=8513 | Samples=48 | Assays=count[0m
+    ##    .feature .sample    count Cell.type time  condition batch factor_of_interest
+    ##    <chr>    <chr>      <dbl> <fct>     <fct> <lgl>     <fct> <lgl>             
+    ##  1 A1BG     SRR1740034   153 b_cell    0 d   TRUE      0     TRUE              
+    ##  2 A1BG-AS1 SRR1740034    83 b_cell    0 d   TRUE      0     TRUE              
+    ##  3 AAAS     SRR1740034   868 b_cell    0 d   TRUE      0     TRUE              
+    ##  4 AACS     SRR1740034   222 b_cell    0 d   TRUE      0     TRUE              
+    ##  5 AAGAB    SRR1740034   590 b_cell    0 d   TRUE      0     TRUE              
+    ##  6 AAMDC    SRR1740034    48 b_cell    0 d   TRUE      0     TRUE              
+    ##  7 AAMP     SRR1740034  1257 b_cell    0 d   TRUE      0     TRUE              
+    ##  8 AANAT    SRR1740034   284 b_cell    0 d   TRUE      0     TRUE              
+    ##  9 AAR2     SRR1740034   379 b_cell    0 d   TRUE      0     TRUE              
+    ## 10 AARS2    SRR1740034   685 b_cell    0 d   TRUE      0     TRUE              
     ## # … with 40 more rows
+    ## # ℹ Use `print(n = ...)` to see more rows
 
 Loading `tidySummarizedExperiment` will automatically abstract this
 object as `tibble`, so we can display it and manipulate it with tidy
@@ -152,7 +154,8 @@ factors and boolean are appended as characters.
 TidyTranscriptomics
 
 ``` r
-counts_SE.aggr = counts_SE %>% aggregate_duplicates()
+rowData(counts_SE)$gene_name = rownames(counts_SE)
+counts_SE.aggr = counts_SE %>% aggregate_duplicates(.transcript = gene_name)
 ```
 
 </div>
@@ -334,27 +337,28 @@ coloured by cell type.
 counts_SE.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
 ```
 
-    ## # A tibble: 48 x 15
-    ##      Dim1   Dim2   Dim3     Dim4    Dim5    Dim6 sample Cell.type time 
-    ##     <dbl>  <dbl>  <dbl>    <dbl>   <dbl>   <dbl> <chr>  <chr>     <chr>
-    ##  1 -1.46   0.220 -1.68  -0.0553   0.0658 -0.126  SRR17… b_cell    0 d  
-    ##  2 -1.46   0.226 -1.71  -0.0300   0.0454 -0.137  SRR17… b_cell    1 d  
-    ##  3 -1.44   0.193 -1.60  -0.0890   0.0503 -0.121  SRR17… b_cell    3 d  
-    ##  4 -1.44   0.198 -1.67  -0.0891   0.0543 -0.110  SRR17… b_cell    7 d  
-    ##  5  0.243 -1.42   0.182 -0.00642 -0.503  -0.131  SRR17… dendriti… 0 d  
-    ##  6  0.191 -1.42   0.195 -0.0180  -0.457  -0.130  SRR17… dendriti… 1 d  
-    ##  7  0.257 -1.42   0.152 -0.0130  -0.582  -0.0927 SRR17… dendriti… 3 d  
-    ##  8  0.162 -1.43   0.189 -0.0232  -0.452  -0.109  SRR17… dendriti… 7 d  
-    ##  9  0.516 -1.47   0.240  0.251    0.457  -0.119  SRR17… monocyte  0 d  
-    ## 10  0.514 -1.41   0.231  0.219    0.458  -0.131  SRR17… monocyte  1 d  
-    ## # … with 38 more rows, and 6 more variables: condition <chr>, batch <chr>,
-    ## #   factor_of_interest <chr>, merged.transcripts <dbl>, TMM <dbl>,
-    ## #   multiplier <dbl>
+    ## # A tibble: 48 × 14
+    ##      Dim1   Dim2   Dim3     Dim4    Dim5    Dim6 .sample   Cell.…¹ time  condi…²
+    ##     <dbl>  <dbl>  <dbl>    <dbl>   <dbl>   <dbl> <chr>     <fct>   <fct> <lgl>  
+    ##  1 -1.46   0.220 -1.68   0.0553   0.0658 -0.126  SRR17400… b_cell  0 d   TRUE   
+    ##  2 -1.46   0.226 -1.71   0.0300   0.0454 -0.137  SRR17400… b_cell  1 d   TRUE   
+    ##  3 -1.44   0.193 -1.60   0.0890   0.0503 -0.121  SRR17400… b_cell  3 d   TRUE   
+    ##  4 -1.44   0.198 -1.67   0.0891   0.0543 -0.110  SRR17400… b_cell  7 d   TRUE   
+    ##  5  0.243 -1.42   0.182  0.00642 -0.503  -0.131  SRR17400… dendri… 0 d   FALSE  
+    ##  6  0.191 -1.42   0.195  0.0180  -0.457  -0.130  SRR17400… dendri… 1 d   FALSE  
+    ##  7  0.257 -1.42   0.152  0.0130  -0.582  -0.0927 SRR17400… dendri… 3 d   FALSE  
+    ##  8  0.162 -1.43   0.189  0.0232  -0.452  -0.109  SRR17400… dendri… 7 d   FALSE  
+    ##  9  0.516 -1.47   0.240 -0.251    0.457  -0.119  SRR17400… monocy… 0 d   FALSE  
+    ## 10  0.514 -1.41   0.231 -0.219    0.458  -0.131  SRR17400… monocy… 1 d   FALSE  
+    ## # … with 38 more rows, 4 more variables: batch <fct>, factor_of_interest <lgl>,
+    ## #   TMM <dbl>, multiplier <dbl>, and abbreviated variable names ¹​Cell.type,
+    ## #   ²​condition
+    ## # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
 
 ``` r
 counts_SE.norm.MDS %>%
     pivot_sample() %>%
-  GGally::ggpairs(columns = 10:15, ggplot2::aes(colour=`Cell.type`))
+  GGally::ggpairs(columns = 6:(6+5), ggplot2::aes(colour=`Cell.type`))
 ```
 
 ![](man/figures/plot_mds-1.png)<!-- -->
@@ -401,22 +405,22 @@ coloured by cell type.
 counts_SE.norm.PCA %>% pivot_sample() %>% select(contains("PC"), everything())
 ```
 
-    ## # A tibble: 48 x 16
-    ##       PC1   PC2    PC3    PC4    PC5   PC6 sample Cell.type time  condition
-    ##     <dbl> <dbl>  <dbl>  <dbl>  <dbl> <dbl> <chr>  <chr>     <chr> <chr>    
-    ##  1 -32.7  -4.93 -37.5  -1.24   -1.47 -2.81 SRR17… b_cell    0 d   TRUE     
-    ##  2 -32.7  -5.05 -38.1  -0.672  -1.02 -3.06 SRR17… b_cell    1 d   TRUE     
-    ##  3 -32.2  -4.32 -35.8  -1.99   -1.12 -2.70 SRR17… b_cell    3 d   TRUE     
-    ##  4 -32.3  -4.43 -37.3  -1.99   -1.21 -2.45 SRR17… b_cell    7 d   TRUE     
-    ##  5   5.44 31.8    4.08 -0.144  11.3  -2.94 SRR17… dendriti… 0 d   FALSE    
-    ##  6   4.28 31.7    4.35 -0.403  10.2  -2.91 SRR17… dendriti… 1 d   FALSE    
-    ##  7   5.74 31.7    3.40 -0.290  13.0  -2.07 SRR17… dendriti… 3 d   FALSE    
-    ##  8   3.62 32.1    4.23 -0.519  10.1  -2.43 SRR17… dendriti… 7 d   FALSE    
-    ##  9  11.5  32.8    5.37  5.60  -10.2  -2.66 SRR17… monocyte  0 d   FALSE    
-    ## 10  11.5  31.6    5.16  4.90  -10.2  -2.92 SRR17… monocyte  1 d   FALSE    
-    ## # … with 38 more rows, and 6 more variables: batch <chr>,
-    ## #   factor_of_interest <chr>, merged.transcripts <dbl>, TMM <dbl>,
-    ## #   multiplier <dbl>, sample.x <chr>
+    ## # A tibble: 48 × 14
+    ##        PC1   PC2    PC3     PC4    PC5   PC6 .sample Cell.…¹ time  condi…² batch
+    ##      <dbl> <dbl>  <dbl>   <dbl>  <dbl> <dbl> <chr>   <fct>   <fct> <lgl>   <fct>
+    ##  1 -12.6   -2.52 -14.9  -0.424  -0.592 -1.22 SRR174… b_cell  0 d   TRUE    0    
+    ##  2 -12.6   -2.57 -15.2  -0.140  -0.388 -1.30 SRR174… b_cell  1 d   TRUE    1    
+    ##  3 -12.6   -2.41 -14.5  -0.714  -0.344 -1.10 SRR174… b_cell  3 d   TRUE    1    
+    ##  4 -12.5   -2.34 -14.9  -0.816  -0.427 -1.00 SRR174… b_cell  7 d   TRUE    1    
+    ##  5   0.189 13.0    1.66 -0.0269  4.64  -1.35 SRR174… dendri… 0 d   FALSE   0    
+    ##  6  -0.293 12.9    1.76 -0.0727  4.21  -1.28 SRR174… dendri… 1 d   FALSE   0    
+    ##  7   0.407 13.0    1.42 -0.0529  5.37  -1.01 SRR174… dendri… 3 d   FALSE   1    
+    ##  8  -0.620 13.0    1.73 -0.201   4.17  -1.07 SRR174… dendri… 7 d   FALSE   0    
+    ##  9   2.56  13.5    2.32  2.03   -4.32  -1.22 SRR174… monocy… 0 d   FALSE   1    
+    ## 10   2.65  13.1    2.21  1.80   -4.29  -1.30 SRR174… monocy… 1 d   FALSE   1    
+    ## # … with 38 more rows, 3 more variables: factor_of_interest <lgl>, TMM <dbl>,
+    ## #   multiplier <dbl>, and abbreviated variable names ¹​Cell.type, ²​condition
+    ## # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
 
 ``` r
 counts_SE.norm.PCA %>%
@@ -477,20 +481,21 @@ counts_SE.norm.tSNE %>%
     select(contains("tSNE"), everything()) 
 ```
 
-    ## # A tibble: 251 x 5
-    ##       tSNE1  tSNE2 sample                      Call  sample.x                   
-    ##       <dbl>  <dbl> <chr>                       <fct> <chr>                      
-    ##  1   0.0536  10.8  TCGA-A1-A0SD-01A-11R-A115-… LumA  TCGA-A1-A0SD-01A-11R-A115-…
-    ##  2   7.00    -3.58 TCGA-A1-A0SF-01A-11R-A144-… LumA  TCGA-A1-A0SF-01A-11R-A144-…
-    ##  3  -4.30    18.1  TCGA-A1-A0SG-01A-11R-A144-… LumA  TCGA-A1-A0SG-01A-11R-A144-…
-    ##  4  -6.36     2.24 TCGA-A1-A0SH-01A-11R-A084-… LumA  TCGA-A1-A0SH-01A-11R-A084-…
-    ##  5  -9.99     2.99 TCGA-A1-A0SI-01A-11R-A144-… LumB  TCGA-A1-A0SI-01A-11R-A144-…
-    ##  6   0.273   -8.08 TCGA-A1-A0SJ-01A-11R-A084-… LumA  TCGA-A1-A0SJ-01A-11R-A084-…
-    ##  7   6.94   -27.9  TCGA-A1-A0SK-01A-12R-A084-… Basal TCGA-A1-A0SK-01A-12R-A084-…
-    ##  8 -11.8     -5.48 TCGA-A1-A0SM-01A-11R-A084-… LumA  TCGA-A1-A0SM-01A-11R-A084-…
-    ##  9 -10.1     -4.96 TCGA-A1-A0SN-01A-11R-A144-… LumB  TCGA-A1-A0SN-01A-11R-A144-…
-    ## 10  -3.44    26.5  TCGA-A1-A0SQ-01A-21R-A144-… LumA  TCGA-A1-A0SQ-01A-21R-A144-…
+    ## # A tibble: 251 × 4
+    ##     tSNE1  tSNE2 .sample                      Call 
+    ##     <dbl>  <dbl> <chr>                        <fct>
+    ##  1  -5.25  10.2  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2   6.41   2.79 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3  -9.28   6.63 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4  -1.76   4.82 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5  -1.41  12.2  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  -1.89  -3.60 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7  18.5  -13.4  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8  -4.03 -10.4  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9  -2.84 -10.8  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10 -19.3    5.03 TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # … with 241 more rows
+    ## # ℹ Use `print(n = ...)` to see more rows
 
 ``` r
 counts_SE.norm.tSNE %>%
@@ -498,7 +503,7 @@ counts_SE.norm.tSNE %>%
     ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
 
-![](man/figures/unnamed-chunk-12-1.png)<!-- -->
+![](man/figures/unnamed-chunk-14-1.png)<!-- -->
 
 ## Rotate `dimensions`
 
@@ -709,6 +714,10 @@ counts_SE.cibersort =
     deconvolve_cellularity(action="get", cores=1, prefix = "cibersort__") 
 ```
 
+    ## 
+    ## The downloaded binary packages are in
+    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIi5KN6/downloaded_packages
+
 </div>
 
 <div class="column-right">
@@ -769,21 +778,27 @@ abundance across conditions
     test_differential_cellularity(. ~ condition )
 ```
 
-    ## # A tibble: 22 x 7
-    ##    .cell_type cell_type_propo… `estimate_(Inte… estimate_condit…
-    ##    <chr>      <list>                      <dbl>            <dbl>
-    ##  1 cibersort… <tibble [48 × 8…            -2.97            2.33 
-    ##  2 cibersort… <tibble [48 × 8…            -4.79            1.86 
-    ##  3 cibersort… <tibble [48 × 8…            -5.44           -0.503
-    ##  4 cibersort… <tibble [48 × 8…            -2.28            0.883
-    ##  5 cibersort… <tibble [48 × 8…            -2.79           -0.637
-    ##  6 cibersort… <tibble [48 × 8…            -2.60            0.320
-    ##  7 cibersort… <tibble [48 × 8…            -3.72            2.14 
-    ##  8 cibersort… <tibble [48 × 8…            -5.20           -0.251
-    ##  9 cibersort… <tibble [48 × 8…            -4.80            1.75 
-    ## 10 cibersort… <tibble [48 × 8…            -5.34           -0.219
-    ## # … with 12 more rows, and 3 more variables: std.error_conditionTRUE <dbl>,
-    ## #   statistic_conditionTRUE <dbl>, p.value_conditionTRUE <dbl>
+    ## 
+    ## The downloaded binary packages are in
+    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIi5KN6/downloaded_packages
+
+    ## # A tibble: 22 × 7
+    ##    .cell_type                  cell_t…¹ estim…² estim…³ std.e…⁴ stati…⁵ p.valu…⁶
+    ##    <chr>                       <list>     <dbl>   <dbl>   <dbl>   <dbl>    <dbl>
+    ##  1 cibersort.B.cells.naive     <tibble>   -2.94   2.25    0.367   6.13  8.77e-10
+    ##  2 cibersort.B.cells.memory    <tibble>   -4.86   1.48    0.436   3.40  6.77e- 4
+    ##  3 cibersort.Plasma.cells      <tibble>   -5.33  -0.487   0.507  -0.960 3.37e- 1
+    ##  4 cibersort.T.cells.CD8       <tibble>   -2.33   0.924   0.475   1.94  5.18e- 2
+    ##  5 cibersort.T.cells.CD4.naive <tibble>   -2.83  -0.620   0.531  -1.17  2.43e- 1
+    ##  6 cibersort.T.cells.CD4.memo… <tibble>   -2.46   0.190   0.500   0.380 7.04e- 1
+    ##  7 cibersort.T.cells.CD4.memo… <tibble>   -3.67   2.23    0.427   5.22  1.80e- 7
+    ##  8 cibersort.T.cells.follicul… <tibble>   -5.68  -0.217   0.507  -0.427 6.69e- 1
+    ##  9 cibersort.T.cells.regulato… <tibble>   -5.04   1.94    0.360   5.39  6.86e- 8
+    ## 10 cibersort.T.cells.gamma.de… <tibble>   -4.78  -0.250   0.514  -0.486 6.27e- 1
+    ## # … with 12 more rows, and abbreviated variable names ¹​cell_type_proportions,
+    ## #   ²​`estimate_(Intercept)`, ³​estimate_conditionTRUE, ⁴​std.error_conditionTRUE,
+    ## #   ⁵​statistic_conditionTRUE, ⁶​p.value_conditionTRUE
+    ## # ℹ Use `print(n = ...)` to see more rows
 
 We can also perform regression analysis with censored data (coxph).
 
@@ -804,20 +819,22 @@ counts_SE_survival %>%
     test_differential_cellularity(survival::Surv(days, dead) ~ .)
 ```
 
-    ## # A tibble: 22 x 6
-    ##    .cell_type            cell_type_proport… estimate std.error statistic p.value
-    ##    <chr>                 <list>                <dbl>     <dbl>     <dbl>   <dbl>
-    ##  1 cibersort.B.cells.na… <tibble [48 × 9]>     2.05      0.568     3.61  3.03e-4
-    ##  2 cibersort.B.cells.me… <tibble [48 × 9]>     0.721     0.303     2.38  1.72e-2
-    ##  3 cibersort.Plasma.cel… <tibble [48 × 9]>    -0.954     0.504    -1.89  5.83e-2
-    ##  4 cibersort.T.cells.CD8 <tibble [48 × 9]>     0.496     0.783     0.633 5.27e-1
-    ##  5 cibersort.T.cells.CD… <tibble [48 × 9]>     1.19      0.468     2.54  1.12e-2
-    ##  6 cibersort.T.cells.CD… <tibble [48 × 9]>     0.506     0.500     1.01  3.11e-1
-    ##  7 cibersort.T.cells.CD… <tibble [48 × 9]>    -0.156     0.416    -0.374 7.09e-1
-    ##  8 cibersort.T.cells.fo… <tibble [48 × 9]>     1.60      0.614     2.60  9.33e-3
-    ##  9 cibersort.T.cells.re… <tibble [48 × 9]>     0.183     0.405     0.451 6.52e-1
-    ## 10 cibersort.T.cells.ga… <tibble [48 × 9]>     1.01      0.955     1.05  2.92e-1
-    ## # … with 12 more rows
+    ## # A tibble: 22 × 6
+    ##    .cell_type                           cell_t…¹ estim…² std.e…³ stati…⁴ p.value
+    ##    <chr>                                <list>     <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 cibersort.B.cells.naive              <tibble>  -0.224   0.415  -0.540  0.589 
+    ##  2 cibersort.B.cells.memory             <tibble>   0.510   0.346   1.48   0.140 
+    ##  3 cibersort.Plasma.cells               <tibble>   0.892   0.449   1.99   0.0467
+    ##  4 cibersort.T.cells.CD8                <tibble>   0.531   0.639   0.831  0.406 
+    ##  5 cibersort.T.cells.CD4.naive          <tibble>   0.112   0.386   0.290  0.772 
+    ##  6 cibersort.T.cells.CD4.memory.resting <tibble>   0.498   0.540   0.921  0.357 
+    ##  7 cibersort.T.cells.CD4.memory.activa… <tibble>   2.37    0.939   2.52   0.0117
+    ##  8 cibersort.T.cells.follicular.helper  <tibble>  -0.544   0.421  -1.29   0.197 
+    ##  9 cibersort.T.cells.regulatory..Tregs. <tibble>   1.59    0.656   2.42   0.0157
+    ## 10 cibersort.T.cells.gamma.delta        <tibble>   0.510   0.688   0.741  0.459 
+    ## # … with 12 more rows, and abbreviated variable names ¹​cell_type_proportions,
+    ## #   ²​estimate, ³​std.error, ⁴​statistic
+    ## # ℹ Use `print(n = ...)` to see more rows
 
 We can also perform test of Kaplan-Meier curves.
 
@@ -834,20 +851,22 @@ counts_stratified =
 counts_stratified
 ```
 
-    ## # A tibble: 22 x 6
-    ##    .cell_type   cell_type_propor… .low_cellularit… .high_cellulari… pvalue plot 
-    ##    <chr>        <list>                       <dbl>            <dbl>  <dbl> <lis>
-    ##  1 cibersort.B… <tibble [48 × 9]>             14.9            13.1   0.245 <ggs…
-    ##  2 cibersort.B… <tibble [48 × 9]>             20.9             7.07  0.178 <ggs…
-    ##  3 cibersort.P… <tibble [48 × 9]>             13.8            14.2   0.210 <ggs…
-    ##  4 cibersort.T… <tibble [48 × 9]>             12.5            15.5   0.554 <ggs…
-    ##  5 cibersort.T… <tibble [48 × 9]>             13.8            14.2   0.931 <ggs…
-    ##  6 cibersort.T… <tibble [48 × 9]>             12.5            15.5   0.327 <ggs…
-    ##  7 cibersort.T… <tibble [48 × 9]>             12.9            15.1   0.417 <ggs…
-    ##  8 cibersort.T… <tibble [48 × 9]>             21.5             6.53  0.828 <ggs…
-    ##  9 cibersort.T… <tibble [48 × 9]>             14.6            13.4   0.312 <ggs…
-    ## 10 cibersort.T… <tibble [48 × 9]>             25.3             2.73  0.399 <ggs…
-    ## # … with 12 more rows
+    ## # A tibble: 22 × 6
+    ##    .cell_type                         cell_t…¹ .low_…² .high…³ pvalue plot      
+    ##    <chr>                              <list>     <dbl>   <dbl>  <dbl> <list>    
+    ##  1 cibersort.B.cells.naive            <tibble>   14.4     7.56  0.506 <ggsrvplt>
+    ##  2 cibersort.B.cells.memory           <tibble>   17.2     4.77  0.500 <ggsrvplt>
+    ##  3 cibersort.Plasma.cells             <tibble>   13.3     8.73  0.903 <ggsrvplt>
+    ##  4 cibersort.T.cells.CD8              <tibble>   13.9     8.06  0.369 <ggsrvplt>
+    ##  5 cibersort.T.cells.CD4.naive        <tibble>   12.8     9.15  0.407 <ggsrvplt>
+    ##  6 cibersort.T.cells.CD4.memory.rest… <tibble>    7.65   14.4   0.105 <ggsrvplt>
+    ##  7 cibersort.T.cells.CD4.memory.acti… <tibble>   15.7     6.26  0.392 <ggsrvplt>
+    ##  8 cibersort.T.cells.follicular.help… <tibble>   17.1     4.88  0.949 <ggsrvplt>
+    ##  9 cibersort.T.cells.regulatory..Tre… <tibble>   13.7     8.35  0.771 <ggsrvplt>
+    ## 10 cibersort.T.cells.gamma.delta      <tibble>   16.2     5.76  0.379 <ggsrvplt>
+    ## # … with 12 more rows, and abbreviated variable names ¹​cell_type_proportions,
+    ## #   ²​.low_cellularity_expected, ³​.high_cellularity_expected
+    ## # ℹ Use `print(n = ...)` to see more rows
 
 Plot Kaplan-Meier curves
 
@@ -855,7 +874,7 @@ Plot Kaplan-Meier curves
 counts_stratified$plot[[1]]
 ```
 
-![](man/figures/unnamed-chunk-17-1.png)<!-- -->
+![](man/figures/unnamed-chunk-19-1.png)<!-- -->
 
 ## Cluster `samples`
 
@@ -1010,6 +1029,10 @@ counts_SE.norm.non_redundant =
   remove_redundancy(    method = "correlation" )
 ```
 
+    ## 
+    ## The downloaded binary packages are in
+    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIi5KN6/downloaded_packages
+
 </div>
 
 <div class="column-right">
@@ -1115,20 +1138,23 @@ This currently works for human and mouse.
 counts_ensembl %>% ensembl_to_symbol(ens)
 ```
 
-    ## # A tibble: 119 x 8
-    ##    ens   iso   `read count` sample cases_0_project… cases_0_samples… transcript
-    ##    <chr> <chr>        <dbl> <chr>  <chr>            <chr>            <chr>     
-    ##  1 ENSG… 13             144 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ##  2 ENSG… 13              72 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ##  3 ENSG… 13               0 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ##  4 ENSG… 13            1099 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ##  5 ENSG… 13              11 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ##  6 ENSG… 13               2 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ##  7 ENSG… 13               3 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ##  8 ENSG… 13            2678 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ##  9 ENSG… 13             751 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ## 10 ENSG… 13               1 TARGE… Acute Myeloid L… Primary Blood D… TSPAN6    
-    ## # … with 109 more rows, and 1 more variable: ref_genome <chr>
+    ## # A tibble: 119 × 8
+    ##    ens             iso   `read count` sample     cases…¹ cases…² trans…³ ref_g…⁴
+    ##    <chr>           <chr>        <dbl> <chr>      <chr>   <chr>   <chr>   <chr>  
+    ##  1 ENSG00000000003 13             144 TARGET-20… Acute … Primar… TSPAN6  hg38   
+    ##  2 ENSG00000000003 13              72 TARGET-20… Acute … Primar… TSPAN6  hg38   
+    ##  3 ENSG00000000003 13               0 TARGET-20… Acute … Primar… TSPAN6  hg38   
+    ##  4 ENSG00000000003 13            1099 TARGET-20… Acute … Primar… TSPAN6  hg38   
+    ##  5 ENSG00000000003 13              11 TARGET-20… Acute … Primar… TSPAN6  hg38   
+    ##  6 ENSG00000000003 13               2 TARGET-20… Acute … Primar… TSPAN6  hg38   
+    ##  7 ENSG00000000003 13               3 TARGET-20… Acute … Primar… TSPAN6  hg38   
+    ##  8 ENSG00000000003 13            2678 TARGET-20… Acute … Primar… TSPAN6  hg38   
+    ##  9 ENSG00000000003 13             751 TARGET-20… Acute … Primar… TSPAN6  hg38   
+    ## 10 ENSG00000000003 13               1 TARGET-20… Acute … Primar… TSPAN6  hg38   
+    ## # … with 109 more rows, and abbreviated variable names
+    ## #   ¹​cases_0_project_disease_type, ²​cases_0_samples_0_sample_type, ³​transcript,
+    ## #   ⁴​ref_genome
+    ## # ℹ Use `print(n = ...)` to see more rows
 
 ## From gene symbol to gene description (gene name in full)
 
@@ -1136,20 +1162,25 @@ We can add gene full name (and in future description) from symbol
 identifiers. This currently works for human and mouse.
 
 ``` r
-counts_SE %>% describe_transcript() %>% select(transcript, description, everything())
+counts_SE %>% 
+    describe_transcript() %>% 
+    select(feature, description, everything())
 ```
 
-    ## # A tibble abstraction: 408,624 x 9
-    ##    transcript sample count Cell.type time  condition batch factor_of_inter…
-    ##    <chr>      <chr>  <dbl> <fct>     <fct> <lgl>     <fct> <lgl>           
-    ##  1 A1BG       SRR17…   153 b_cell    0 d   TRUE      0     TRUE            
-    ##  2 A1BG-AS1   SRR17…    83 b_cell    0 d   TRUE      0     TRUE            
-    ##  3 AAAS       SRR17…   868 b_cell    0 d   TRUE      0     TRUE            
-    ##  4 AACS       SRR17…   222 b_cell    0 d   TRUE      0     TRUE            
-    ##  5 AAGAB      SRR17…   590 b_cell    0 d   TRUE      0     TRUE            
-    ##  6 AAMDC      SRR17…    48 b_cell    0 d   TRUE      0     TRUE            
-    ##  7 AAMP       SRR17…  1257 b_cell    0 d   TRUE      0     TRUE            
-    ##  8 AANAT      SRR17…   284 b_cell    0 d   TRUE      0     TRUE            
-    ##  9 AAR2       SRR17…   379 b_cell    0 d   TRUE      0     TRUE            
-    ## 10 AARS2      SRR17…   685 b_cell    0 d   TRUE      0     TRUE            
-    ## # … with 40 more rows, and 1 more variable: description <chr>
+    ## # A SummarizedExperiment-tibble abstraction: 408,624 × 48
+    ## # [90mFeatures=8513 | Samples=48 | Assays=count[0m
+    ##    feature  sample     count Cell.…¹ time  condi…² batch facto…³ descr…⁴ gene_…⁵
+    ##    <chr>    <chr>      <dbl> <fct>   <fct> <lgl>   <fct> <lgl>   <chr>   <chr>  
+    ##  1 A1BG     SRR1740034   153 b_cell  0 d   TRUE    0     TRUE    alpha-… A1BG   
+    ##  2 A1BG-AS1 SRR1740034    83 b_cell  0 d   TRUE    0     TRUE    A1BG a… A1BG-A…
+    ##  3 AAAS     SRR1740034   868 b_cell  0 d   TRUE    0     TRUE    aladin… AAAS   
+    ##  4 AACS     SRR1740034   222 b_cell  0 d   TRUE    0     TRUE    acetoa… AACS   
+    ##  5 AAGAB    SRR1740034   590 b_cell  0 d   TRUE    0     TRUE    alpha … AAGAB  
+    ##  6 AAMDC    SRR1740034    48 b_cell  0 d   TRUE    0     TRUE    adipog… AAMDC  
+    ##  7 AAMP     SRR1740034  1257 b_cell  0 d   TRUE    0     TRUE    angio … AAMP   
+    ##  8 AANAT    SRR1740034   284 b_cell  0 d   TRUE    0     TRUE    aralky… AANAT  
+    ##  9 AAR2     SRR1740034   379 b_cell  0 d   TRUE    0     TRUE    AAR2 s… AAR2   
+    ## 10 AARS2    SRR1740034   685 b_cell  0 d   TRUE    0     TRUE    alanyl… AARS2  
+    ## # … with 40 more rows, and abbreviated variable names ¹​Cell.type, ²​condition,
+    ## #   ³​factor_of_interest, ⁴​description, ⁵​gene_name
+    ## # ℹ Use `print(n = ...)` to see more rows
