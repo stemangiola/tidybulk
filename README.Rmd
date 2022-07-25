@@ -15,7 +15,9 @@ knitr::opts_chunk$set( fig.path = "man/figures/")
 
 The code is released under the version 3 of the GNU General Public License.
 
-#  <img src="inst/logo.png" height="139px" width="120px" />
+```{r, echo=FALSE, out.height = "139px", out.width = "120px"}
+knitr::include_graphics("man/figures/logo.png")
+```
   
 website: [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
 
@@ -38,7 +40,9 @@ gate information to your tibble
 
 -->
 
-#  <img src="inst/new_SE_usage-01.png" width="800px" />
+```{r, echo=FALSE, out.width = "800px"}
+knitr::include_graphics("man/figures/new_SE_usage-01.png")
+```
 
 
 ## Functions/utilities available
@@ -60,7 +64,7 @@ Function | Description
 `test_gene_enrichment` | Gene enrichment analyses (EGSEA)
 `test_gene_overrepresentation` | Gene enrichment on list of transcript names (no rank)
 `test_gene_rank` | Gene enrichment on list of transcript (GSEA)
-`impute_missing_abundance` | Impute abundance for missing data points using sample groupings 
+`impute_missing_abundance` | Impute abundance for missing data points using sample groupings
 
 
 Utilities | Description
@@ -150,8 +154,9 @@ tidybulk provide the `aggregate_duplicates` function to aggregate duplicated tra
 
 <div class="column-left">
 TidyTranscriptomics
-```{r aggregate, cache=TRUE, message=FALSE, warning=FALSE, results='hide', class.source='yellow'}
-counts_SE.aggr = counts_SE %>% aggregate_duplicates()
+```{r aggregate, message=FALSE, warning=FALSE, results='hide', class.source='yellow'}
+rowData(counts_SE)$gene_name = rownames(counts_SE)
+counts_SE.aggr = counts_SE %>% aggregate_duplicates(.transcript = gene_name)
 ```
 </div>
 <div class="column-right">
@@ -291,7 +296,7 @@ counts_SE.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
 
 counts_SE.norm.MDS %>%
 	pivot_sample() %>%
-  GGally::ggpairs(columns = 10:15, ggplot2::aes(colour=`Cell.type`))
+  GGally::ggpairs(columns = 6:(6+5), ggplot2::aes(colour=`Cell.type`))
 
 
 ```
@@ -829,7 +834,9 @@ counts_ensembl %>% ensembl_to_symbol(ens)
 
 We can add gene full name (and in future description) from symbol identifiers. This currently works for human and mouse.
 
-```{r description, cache=TRUE}
-counts_SE %>% describe_transcript() %>% select(transcript, description, everything())
+```{r description}
+counts_SE %>% 
+	describe_transcript() %>% 
+	select(feature, description, everything())
 ```
 
