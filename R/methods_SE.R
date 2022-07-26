@@ -377,7 +377,7 @@ setMethod("cluster_elements",
 		# Communicate the attribute added
 		{
 
-		  rlang::inform(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access %s results", method),  .frequency = "once")
+		  rlang::inform(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access %s results", method),  .frequency = "always")
 
 			(.)
 		}
@@ -1213,7 +1213,7 @@ such as batch effects (if applicable) in the formula.
 
 		# Communicate the attribute added
 		{
-		  rlang::inform(sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access DE results %s", method),  .frequency = "once")
+		  rlang::inform(sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access DE results %s", method),  .frequency = "always")
 
 			(.)
 		}
