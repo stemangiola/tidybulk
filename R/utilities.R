@@ -463,17 +463,17 @@ add_class = function(var, name) {
 #' @return A list of column enquo or error
 get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance){
 
-    if( .sample %>% quo_is_symbol() ) .sample = .sample
+    if( quo_is_symbolic(.sample) ) .sample = .sample
     else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
       .sample =  get_tt_columns(.data)$.sample
     else my_stop()
 
-    if( .transcript %>% quo_is_symbol() ) .transcript = .transcript
+    if( quo_is_symbolic(.transcript) ) .transcript = .transcript
     else if(".transcript" %in% (.data %>% get_tt_columns() %>% names))
       .transcript =  get_tt_columns(.data)$.transcript
     else my_stop()
 
-    if( .abundance %>% quo_is_symbolic() ) .abundance = .abundance
+    if(  quo_is_symbolic(.abundance) ) .abundance = .abundance
     else if(".abundance" %in% (.data %>% get_tt_columns() %>% names))
       .abundance = get_tt_columns(.data)$.abundance
     else my_stop()
@@ -894,8 +894,8 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
   .abundance_scaled = enquo(.abundance_scaled)
 
   # x-annotation df
-  n_x = .data %>% distinct(!!.horizontal) %>% nrow
-  n_y = .data %>% distinct(!!.vertical) %>% nrow
+  n_x = .data %>% select(!!.horizontal) |> distinct() |> nrow()
+  n_y = .data %>% select(!!.vertical) |> distinct() |> nrow()
 
   # Sample wise columns
   horizontal_cols=
@@ -905,12 +905,12 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
     map(
       ~
         .x %>%
-        ifelse_pipe(
+        when(
           .data %>%
-            distinct(!!.horizontal, !!as.symbol(.x)) %>%
-            nrow %>%
-            equals(n_x),
-          ~ .x,
+            select(!!.horizontal, !!as.symbol(.x)) %>%
+            distinct() |>
+            nrow() %>%
+            equals(n_x) ~ .x,
           ~ NULL
         )
     ) %>%
@@ -929,8 +929,9 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
         .x %>%
         ifelse_pipe(
           .data %>%
-            distinct(!!.vertical, !!as.symbol(.x)) %>%
-            nrow %>%
+            select(!!.vertical, !!as.symbol(.x)) |>
+            distinct() |>
+            nrow() %>%
             equals(n_y),
           ~ .x,
           ~ NULL
@@ -964,8 +965,9 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
         .x %>%
         ifelse_pipe(
           .data %>%
-            distinct(!!.vertical, !!.horizontal, !!as.symbol(.x)) %>%
-            nrow %>%
+            select(!!.vertical, !!.horizontal, !!as.symbol(.x)) %>%
+            distinct() |>
+            nrow() %>%
             equals(n_x * n_y),
           ~ .x,
           ~ NULL
@@ -1461,41 +1463,11 @@ rotation = function(m, d) {
 	) %>% as_matrix) %*% m)
 }
 
-#'
-#' @keywords internal
-#' @noRd
-#'
-#' @importFrom dplyr select
-#' @importFrom tibble as_tibble
-#' @importFrom tibble tibble
-get_special_datasets <- function(SummarizedExperiment_object) {
-	if (
-		"RangedSummarizedExperiment" %in% .class2(SummarizedExperiment_object) &
-
-		rowRanges(SummarizedExperiment_object) %>%
-		as.data.frame() %>%
-		nrow() %>%
-		gt(0)
-	) {
-		rowRanges(SummarizedExperiment_object) %>%
-			as.data.frame() %>%
-
-			# Take off rowData columns as there is a recursive anomaly within gene ranges
-			suppressWarnings(
-				select(-one_of(colnames(rowData(SummarizedExperiment_object))))
-			) %>%
-			tibble::as_tibble(rownames="feature") %>%
-			list()
-	} else {
-		tibble() %>% list()
-	}
-}
-
 combineByRow <- function(m, fun = NULL) {
   # Shown here
   #https://stackoverflow.com/questions/8139301/aggregate-rows-in-a-large-matrix-by-rowname
 
-  m <- m[ order(rownames(m)), ]
+  m <- m[ order(rownames(m)), ,drop=FALSE]
 
   ## keep track of previous row name
   prev <- rownames(m)[1]
@@ -1518,7 +1490,7 @@ combineByRow <- function(m, fun = NULL) {
     ## combine all rows and mark invalid rows
     if (prev != curr || is.na(curr)) {
       if (i.start < i.end) {
-        m[i.start,] <- apply(m[i.start:i.end,], 2, fun)
+        m[i.start,] <- apply(m[i.start:i.end,,drop=FALSE], 2, fun)
         m.rownames[(1+i.start):i.end] <- NA
       }
 
@@ -1529,7 +1501,7 @@ combineByRow <- function(m, fun = NULL) {
     }
   }
 
-  m[ which(!is.na(m.rownames)),]
+  m[ which(!is.na(m.rownames)),,drop=FALSE]
 }
 
 filter_genes_on_condition = function(.data, .subset_for_scaling){
@@ -1596,3 +1568,15 @@ fill_NA_matrix_with_factor_colwise = function(.data, factor){
     .[rn, cn]
 
 }
+
+select_non_standard_column_class = function(.x){
+  !is.numeric(.x) & !is.character(.x) & !is.factor(.x) & !is.logical(.x)
+}
+
+get_special_column_name_symbol = function(name){
+  list(name = name, symbol = as.symbol(name))
+}
+
+feature__ =  get_special_column_name_symbol(".feature")
+sample__ = get_special_column_name_symbol(".sample")
+

@@ -24,41 +24,12 @@
 								~ as.symbol(.x),
 								~ NULL)
 
-	sample_info <-
-		colData(.data) %>%
+	.as_tibble_optimised(.data) %>%
 
-		# If reserved column names are present add .x
-		change_reserved_column_names() %>%
-
-		# Convert to tibble
-		tibble::as_tibble(rownames="sample")
-
-
-	range_info <-
-		 get_special_datasets(.data) %>%
-			reduce(left_join, by="coordinate")
-
-	gene_info <-
-		rowData(.data) %>%
-
-		# If reserved column names are present add .x
-		change_reserved_column_names() %>%
-
-		# Convert to tibble
-		tibble::as_tibble(rownames="feature")
-
-	count_info <- get_count_datasets(.data)
-
-	# Return
-	count_info %>%
-	left_join(sample_info, by="sample") %>%
-	left_join(gene_info, by="feature") %>%
-	when(nrow(range_info) > 0 ~ (.) %>% left_join(range_info) %>% suppressMessages(), ~ (.)) %>%
-
-	mutate_if(is.character, as.factor) %>%
+	# mutate_if(is.character, as.factor) %>%
 	tidybulk(
-		sample,
-		feature,
+		!!as.symbol(sample__$name),
+		!!as.symbol(feature__$name),
 		!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
 		!!norm_col # scaled counts if any
 	)
@@ -257,7 +228,7 @@ setMethod("scale_abundance",
 .cluster_elements_se = function(.data,
 																method ,
 																of_samples = TRUE,
-																log_transform = TRUE,
+																transform = log1p,
 																...) {
 
 	my_assay =
@@ -280,7 +251,7 @@ setMethod("scale_abundance",
 		my_cluster_function(
 			my_assay,
 			of_samples = of_samples,
-			log_transform = log_transform,
+			transform = transform,
 			...
 		) %>%
 		as.character() %>%
@@ -338,7 +309,7 @@ setMethod("cluster_elements",
 																 .dims = 2,
 																 top = 500,
 																 of_samples = TRUE,
-																 log_transform = TRUE,
+																 transform = log1p,
 																 scale = TRUE,
 																 ...) {
 
@@ -353,10 +324,10 @@ setMethod("cluster_elements",
 		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 
 		# Filter most variable genes
-		keep_variable_transcripts_SE(top = top, log_transform = log_transform) %>%
+		keep_variable_transcripts_SE(top = top, transform = transform) %>%
 
 		# Check if log transform is needed
-		when(log_transform ~ log1p(.), ~ (.) )
+		transform()
 
 	my_reduction_function  =
 		method %>%
@@ -375,7 +346,7 @@ setMethod("cluster_elements",
 			.dims = .dims,
 			top = top,
 			of_samples = of_samples,
-			log_transform = log_transform,
+			transform = transform,
 			scale=scale,
 			...
 		)
@@ -406,7 +377,7 @@ setMethod("cluster_elements",
 		# Communicate the attribute added
 		{
 
-		  rlang::inform(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access %s results", method),  .frequency = "once")
+		  rlang::inform(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access %s results", method),  .frequency = "always")
 
 			(.)
 		}
@@ -541,10 +512,13 @@ setMethod("rotate_dimensions",
 																 of_samples = TRUE,
 																 correlation_threshold = 0.9,
 																 top = Inf,
-																 log_transform = FALSE,
+																 transform = identity,
 
 																 Dim_a_column = NULL,
-																 Dim_b_column = NULL) {
+																 Dim_b_column = NULL,
+
+																 # DEPRECATED
+																 log_transform = NULL) {
 
 
 	Dim_a_column = enquo(Dim_a_column)
@@ -574,10 +548,10 @@ setMethod("rotate_dimensions",
 					.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 
 					# Filter most variable genes
-					keep_variable_transcripts_SE(top = top, log_transform = log_transform) %>%
+					keep_variable_transcripts_SE(top = top, transform = transform) %>%
 
 					# Check if log transform is needed
-					when(log_transform ~ log1p(.), ~ (.) )
+					transform()
 
 				# Get correlated elements
 				remove_redundancy_elements_through_correlation_SE(
@@ -650,7 +624,8 @@ setMethod("remove_redundancy",
 
 .adjust_abundance_se = function(.data,
 																.formula,
-																log_transform = TRUE,
+																transform = log1p,
+																inverse_transform = expm1,
 																...) {
 
 	# Check if package is installed, otherwise install
@@ -695,7 +670,7 @@ setMethod("remove_redundancy",
 		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 
 		# Check if log transform is needed
-		when(log_transform ~ log1p(.), ~ (.))
+	  transform()
 
 
 	# Set column name for value scaled
@@ -716,7 +691,7 @@ setMethod("remove_redundancy",
 								...)  %>%
 
 		# Check if log transform needs to be reverted
-		when(log_transform ~ expm1(.), ~ (.))
+	  inverse_transform()
 
 
 	# Add the assay
@@ -787,23 +762,54 @@ setMethod("adjust_abundance",
 
   collapse_function = function(x){ x %>% unique() %>% paste(collapse = "___")	}
 
-  feature_column_name = ".feature"
+
+  # Non standard column classes
+  non_standard_columns =
+    .data %>%
+    rowData() %>%
+    as_tibble() %>%
+    select_if(select_non_standard_column_class) %>%
+    colnames()
+
+  # GRanges
+  columns_to_collapse =
+    .data %>%
+    rowData() %>%
+    colnames() %>%
+    outersect(non_standard_columns) %>%
+    setdiff(quo_name(.transcript)) %>%
+    c(feature__$name)
+    # when(
+    #   !is.null(rownames(.data)) ~ c(., feature__$name),
+    #   ~ (.)
+    # )
 
   # Row data
   new_row_data =
     .data %>%
     rowData() %>%
-    as_tibble(rownames = feature_column_name) %>%
+    as_tibble(rownames = feature__$name) %>%
     group_by(!!as.symbol(quo_name(.transcript))) %>%
     summarise(
-      across(everything(), ~ .x %>% collapse_function()),
-      merged.transcripts = n()
+      across(columns_to_collapse, ~ .x %>% collapse_function()),
+      across(non_standard_columns, ~ .x[1]),
+      merged_transcripts = n()
     ) %>%
-    arrange(!!as.symbol(feature_column_name)) %>%
-    as.data.frame()
 
-  rownames(new_row_data) = new_row_data[,feature_column_name]
-  new_row_data = new_row_data %>% select(-feature_column_name)
+    arrange(!!as.symbol(feature__$name)) %>%
+    as.data.frame() %>%
+    {
+      .x = (.)
+      rownames(.x) = .x[,feature__$name]
+      .x = .x %>% select(-feature__$name)
+      .x
+    }
+
+  # If no duplicate exit
+  if(!nrow(new_row_data)<nrow(rowData(.data))){
+    message(sprintf("tidybulk says: your object does not have duplicates along the %s column. The input dataset is returned.", quo_name(.transcript)))
+    return(.data)
+  }
 
   # Counts
   new_count_data =
@@ -814,51 +820,70 @@ setMethod("adjust_abundance",
       ~ {
         is_data_frame = .x %>% is("data.frame")
         if(is_data_frame) .x = .x %>% as.matrix()
+
+        # Gove duplicated rownames
         rownames(.x) = rowData(.data)[,quo_name(.transcript)]
+
+        # Combine
+        if(rownames(.x) |> is.na() |> which() |> length() |> gt(0))
+          stop(sprintf("tidybulk says: you have some %s that are NAs", quo_name(.transcript)))
+
         .x =  combineByRow(.x, aggregation_function)
-        rownames(.x) = new_row_data[match(rownames(.x), new_row_data[,quo_name(.transcript)]),] %>% rownames()
-        .x = .x[match(rownames(new_row_data), rownames(.x)),]
+        .x = .x[match(new_row_data[,quo_name(.transcript)], rownames(.x)),,drop=FALSE]
+        rownames(.x) = rownames(new_row_data)
+
         if(is_data_frame) .x = .x %>% as.data.frame()
         .x
       }
     )
 
-  # GRanges
-  columns_to_collapse = .data %>% rowData() %>% colnames() %>% setdiff(quo_name(.transcript)) %>% c(feature_column_name)
+  if(!is.null(rowRanges(.data))){
 
-  rr = rowRanges(.data)
+    new_range_data = rowRanges(.data) %>% as_tibble()
 
-  if(!is.null(rr))
-    new_range_data =
-      rr %>%
-      as_tibble() %>%
-      # Add names
-      when(
-        is(rr, "CompressedGRangesList") ~ mutate(., !!as.symbol(feature_column_name) := group_name),
-        ~ mutate(., !!as.symbol(feature_column_name) := rr@ranges@NAME)
+    # If GRangesList & and .transcript is not there add .transcript
+    if(is(rowRanges(.data), "CompressedGRangesList") & !quo_name(.transcript) %in% colnames(new_range_data)){
+
+      new_range_data =
+        new_range_data %>% left_join(
+        rowData(.data)[,quo_name(.transcript),drop=FALSE] %>%
+          as_tibble(rownames = feature__$name) ,
+        by=c("group_name" = feature__$name)
       ) %>%
-      left_join(
-        rowData(.data) %>%
-          as.data.frame() %>%
-          select(!!as.symbol(quo_name(.transcript))) %>%
-          as_tibble(rownames =feature_column_name),
-            by = feature_column_name
-      ) %>%
-      group_by(!!as.symbol(quo_name(.transcript))) %>%
-      mutate(
-        across(columns_to_collapse, ~ .x %>% collapse_function()),
-        merged.transcripts = n()
-      ) %>%
-      arrange(!!as.symbol(feature_column_name)) %>%
+        select(-group_name, -group)
+    }
 
-      select(-one_of("group_name", "group")) %>%
-      suppressWarnings() %>%
+    # Through warning if there are logicals of factor in the data frame
+    # because they cannot be merged if they are not unique
+    if (length(non_standard_columns)>0 & new_range_data %>%  pull(!!.transcript) %>% duplicated() %>% which() %>% length() %>% gt(0) ) {
+      warning(paste(capture.output({
+        cat(crayon::blue("tidybulk says: If duplicates exist from the following columns, only the first instance was taken (lossy behaviour), as aggregating those classes with concatenation is not possible.\n"))
+        print(rowData(.data)[1,non_standard_columns,drop=FALSE])
+      }), collapse = "\n"))
+    }
 
-      makeGRangesListFromDataFrame( split.field = feature_column_name,
-                                    keep.extra.columns = TRUE) %>%
+    new_range_data = new_range_data %>%
 
-      .[match(rownames(new_count_data[[1]]), names(.))]
+      # I have to use this trick because rowRanges() and rowData() share @elementMetadata
+      select(-one_of(colnames(new_row_data) %>% outersect(quo_name(.transcript)))) %>%
+      suppressWarnings()
 
+
+    #if(is(rr, "CompressedGRangesList") | nrow(new_row_data)<nrow(rowData(.data))) {
+    new_range_data = makeGRangesListFromDataFrame(
+        new_range_data,
+        split.field = quo_name(.transcript),
+        keep.extra.columns = TRUE
+      )
+
+      # Give back rownames
+      new_range_data = new_range_data %>%  .[match(new_row_data[,quo_name(.transcript)], names(.))]
+      #names(new_range_data) = rownames(new_row_data)
+    #}
+    # else if(is(rr, "GRanges")) new_range_data = makeGRangesFromDataFrame(new_range_data, keep.extra.columns = TRUE)
+    # else stop("tidybulk says: riowRanges should be either GRanges or CompressedGRangesList. Or am I missing something?")
+
+  }
 
   # Build the object
   .data_collapsed =
@@ -867,7 +892,7 @@ setMethod("adjust_abundance",
       colData = colData(.data)
     )
 
-  if(!is.null(rr)) rowRanges(.data_collapsed) = new_range_data
+  if(!is.null(rowRanges(.data))) rowRanges(.data_collapsed) = new_range_data
 
   rowData(.data_collapsed) = new_row_data
 
@@ -901,19 +926,31 @@ setMethod("aggregate_duplicates",
 
 
 
-
+#' @importFrom rlang quo_is_symbolic
 .deconvolve_cellularity_se = function(.data,
 																			reference = X_cibersort,
 																			method = "cibersort",
 																			prefix = "",
 																			...) {
 
+  .transcript = enquo(.transcript)
+  .sample = s_(.data)$symbol
+
 	my_assay =
 		.data %>%
 
 		assays() %>%
 		as.list() %>%
-		.[[get_assay_scaled_if_exists_SE(.data)]]
+		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
+
+	  # Change row names
+	  when(quo_is_symbolic(.transcript) ~ {
+  	    .x = (.)
+  	    rownames(.x) = .data %>% pivot_transcript() %>% pull(!!.transcript)
+  	    .x
+  	  },
+  	  ~ (.)
+	  )
 
 	# Get the dots arguments
 	dots_args = rlang::dots_list(...)
@@ -952,7 +989,7 @@ setMethod("aggregate_duplicates",
 				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
 
 				# Validate reference
-				validate_signature_SE(.data, reference, !!.transcript)
+				validate_signature_SE(., reference)
 
 				do.call(my_CIBERSORT, list(Y = ., X = reference, QN=FALSE) %>% c(dots_args)) %$%
 					proportions %>%
@@ -967,7 +1004,7 @@ setMethod("aggregate_duplicates",
 				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
 
 				# Validate reference
-				validate_signature_SE(.data, reference, !!.transcript)
+				validate_signature_SE(., reference)
 
 				(.) %>%
 					run_llsr(reference, ...) %>%
@@ -1010,7 +1047,7 @@ setMethod("aggregate_duplicates",
 
 		# Parse results and return
 		setNames(c(
-			"sample",
+			quo_name(.sample),
 			(.) %>% select(-1) %>% colnames() %>% sprintf("%s%s", prefix, .)
 
 		))
@@ -1018,7 +1055,7 @@ setMethod("aggregate_duplicates",
 	# Att proportions
 	colData(.data) = colData(.data) %>% cbind(
 		my_proportions %>%
-			as_matrix(rownames = "sample") %>%
+			as_matrix(rownames = .sample) %>%
 		  .[match(rownames(colData(.data)), rownames(.)),]
 		)
 
@@ -1061,7 +1098,7 @@ setMethod(
 #' @importFrom rlang inform
 .test_differential_abundance_se = function(.data,
 																					 .formula,
-																					 .contrasts = NULL,
+																					 contrasts = NULL,
 																					 method = "edgeR_quasi_likelihood",
 																					 test_above_log2_fold_change = NULL,
 																					 scaling_method = "TMM",
@@ -1069,6 +1106,15 @@ setMethod(
 																					 prefix = "",
 																					 ...)
 {
+
+  # DEPRECATION OF .constrasts
+  if (is_present(.contrasts) & !is.null(.contrasts)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+
+    contrasts = .contrasts
+  }
 
 	# Clearly state what counts are used
   # Clearly state what counts are used
@@ -1098,7 +1144,7 @@ such as batch effects (if applicable) in the formula.
 				get_differential_transcript_abundance_bulk_SE(
 					.,
 					.formula,
-					.contrasts = .contrasts,
+					.contrasts = contrasts,
 					colData(.data),
 					method = method,
 					test_above_log2_fold_change = test_above_log2_fold_change,
@@ -1112,7 +1158,7 @@ such as batch effects (if applicable) in the formula.
 			grepl("voom", method) ~ get_differential_transcript_abundance_bulk_voom_SE(
 				.,
 				.formula,
-				.contrasts = .contrasts,
+				.contrasts = contrasts,
 				colData(.data),
 				method = method,
 				test_above_log2_fold_change = test_above_log2_fold_change,
@@ -1125,7 +1171,7 @@ such as batch effects (if applicable) in the formula.
 			tolower(method)=="deseq2" ~ get_differential_transcript_abundance_deseq2_SE(
 				.,
 				.formula,
-				.contrasts = .contrasts,
+				.contrasts = contrasts,
 				method = method,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
@@ -1167,7 +1213,7 @@ such as batch effects (if applicable) in the formula.
 
 		# Communicate the attribute added
 		{
-		  rlang::inform(sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access DE results %s", method),  .frequency = "once")
+		  rlang::inform(sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access DE results %s", method),  .frequency = "always")
 
 			(.)
 		}
@@ -1208,7 +1254,7 @@ setMethod(
 
 .keep_variable_se = function(.data,
 														 top = 500,
-														 log_transform = TRUE)
+														 transform = log1p)
 {
 
 
@@ -1223,7 +1269,7 @@ setMethod(
 		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 
 		# Filter most variable genes
-		keep_variable_transcripts_SE(top = top, log_transform = log_transform) %>%
+		keep_variable_transcripts_SE(top = top, transform = transform) %>%
 
 		# Take gene names
 		rownames()
@@ -1247,6 +1293,8 @@ setMethod("keep_variable",
 
 #' keep_variable
 #' @inheritParams keep_variable
+#'
+#' @importFrom purrr map_chr
 #'
 #' @docType methods
 #' @rdname keep_variable-methods
@@ -1273,10 +1321,10 @@ setMethod("keep_variable",
 	# Check factor_of_interest
 	if(
 		!is.null(factor_of_interest) &&
-		quo_is_symbol(factor_of_interest) &&
-		(quo_name(factor_of_interest) %in% colnames(colData(.data)) %>% not())
+		quo_is_symbolic(factor_of_interest) &&
+		(quo_names(factor_of_interest) %in% colnames(colData(.data)) |> all() %>% not())
 	)
-		stop(sprintf("tidybulk says: the column %s is not present in colData", quo_name(factor_of_interest)))
+		stop(sprintf("tidybulk says: the column %s is not present in colData", quo_names(factor_of_interest)))
 
 	if (minimum_counts < 0)
 		stop("The parameter minimum_counts must be > 0")
@@ -1297,16 +1345,22 @@ setMethod("keep_variable",
 
 		factor_of_interest %>%
 		when(
-			quo_is_symbol(factor_of_interest) &&
+			quo_is_symbolic(factor_of_interest) &&
 				(
-					colData(.data)[, quo_name(factor_of_interest)] %>%
-						class %in% c("numeric", "integer", "double")) ~
+					colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
+					  as_tibble() |>
+						map_chr(~class(.x)) %in% c("numeric", "integer", "double") |>
+					  any()
+				) ~
 				{
-					message("tidybulk says: The factor of interest is continuous (e.g., integer,numeric, double). The data will be filtered without grouping.")
+					message("tidybulk says: The factor(s) of interest include continuous variable (e.g., integer,numeric, double). The data will be filtered without grouping.")
 					NULL
 				},
-			quo_is_symbol(factor_of_interest) ~
-				colData(.data)[, quo_name(factor_of_interest)],
+			quo_is_symbolic(factor_of_interest) ~
+				colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
+			  as_tibble() |>
+			  unite("factor_of_interest") |>
+			  pull(factor_of_interest),
 			~ NULL
 		)
 
@@ -1431,13 +1485,15 @@ setMethod("keep_abundant",
 																			.sample = NULL,
 																			.entrez,
 																			.abundance = NULL,
-																			.contrasts = NULL,
+																			contrasts = NULL,
 																			methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																			gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 																			species,
 																			cores = 10,
 
-																			method = NULL # DEPRECATED
+																			# DEPRECATED
+																			method = NULL,
+																			.contrasts = NULL
 																		)	{
 
 	# DEPRECATION OF reference function
@@ -1447,6 +1503,15 @@ setMethod("keep_abundant",
 		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", details = "The argument method is now deprecated please use methods")
 		methods = method
 	}
+
+  # DEPRECATION OF .constrasts
+  if (is_present(.contrasts) & !is.null(.contrasts)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+
+    contrasts = .contrasts
+  }
 
 	.entrez = enquo(.entrez)
 
@@ -1495,7 +1560,7 @@ setMethod("keep_abundant",
 	)
 
 	my_contrasts =
-		.contrasts %>%
+		contrasts %>%
 		when(
 			length(.) > 0 ~ limma::makeContrasts(contrasts = ., levels = design),
 			~ NULL
@@ -1894,7 +1959,7 @@ setMethod("test_gene_rank",
 		) %>%
 
 		# Convert to tibble
-		tibble::as_tibble(rownames="sample")
+		tibble::as_tibble(rownames=sample__$name)
 
 
 
@@ -1934,7 +1999,7 @@ setMethod("pivot_sample",
 
 	range_info <-
 		get_special_datasets(.data) %>%
-		reduce(left_join, by="feature")
+		reduce(left_join, by=feature__$name)
 
 	gene_info <-
 		rowData(.data) %>%
@@ -1946,11 +2011,11 @@ setMethod("pivot_sample",
 		) %>%
 
 		# Convert to tibble
-		tibble::as_tibble(rownames="feature")
+		tibble::as_tibble(rownames=feature__$name)
 
 	gene_info %>%
 		when(
-			nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by="feature"),
+			nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by=feature__$name),
 			~ (.)
 		)
 }

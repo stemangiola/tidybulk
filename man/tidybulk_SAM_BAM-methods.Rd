@@ -13,7 +13,7 @@ tidybulk_SAM_BAM(file_names, genome = "hg38", ...)
 \arguments{
 \item{file_names}{A character vector}
 
-\item{genome}{A character string}
+\item{genome}{A character string specifying an in-built annotation used for read summarization. It has four possible values including "mm10", "mm9", "hg38" and "hg19"}
 
 \item{...}{Further parameters passed to the function Rsubread::featureCounts}
 }

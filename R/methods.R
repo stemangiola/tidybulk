@@ -31,7 +31,7 @@ setOldClass("tidybulk")
 #'
 #' @examples
 #'
-#' my_tt =  tidybulk(tidybulk::se_mini)
+#' tidybulk(tidybulk::se_mini)
 #'
 #'
 #' @docType methods
@@ -153,6 +153,7 @@ setGeneric("as_SummarizedExperiment", function(.data,
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("S4Vectors", ask = FALSE)
 	}
+
 	# If present get the scaled abundance
 	.abundance_scaled =
 		.data %>%
@@ -174,28 +175,56 @@ setGeneric("as_SummarizedExperiment", function(.data,
 	feature_cols = col_direction$vertical_cols
 	counts_cols = col_direction$counts_cols
 
-	colData = .data %>% select(!!.sample, sample_cols) %>% distinct %>% arrange(!!.sample) %>% {
-		S4Vectors::DataFrame((.) %>% select(-!!.sample),
-												 row.names = (.) %>% pull(!!.sample))
+	colData =
+	  .data %>%
+	  select(!!.sample, sample_cols) %>%
+	  distinct() %>%
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!sample__$name, !!.sample, remove = FALSE, sep = "___") |>
+
+	  arrange(!!sample__$symbol) %>% {
+		S4Vectors::DataFrame(
+		  (.) %>% select(-!!sample__$symbol),
+		  row.names = (.) %>% pull(!!sample__$symbol)
+		)
 	}
 
-	rowData = .data %>% select(!!.transcript, feature_cols) %>% distinct %>% arrange(!!.transcript) %>% {
-		S4Vectors::DataFrame((.) %>% select(-!!.transcript),
-												 row.names = (.) %>% pull(!!.transcript))
+	rowData =
+	  .data %>%
+	  select(!!.transcript, feature_cols) %>%
+	  distinct() %>%
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!feature__$name, !!.transcript, remove = FALSE, sep = "___") |>
+
+	  arrange(!!feature__$symbol) %>% {
+		S4Vectors::DataFrame(
+		  (.) %>% select(-!!feature__$symbol),
+		  row.names = (.) %>% pull(!!feature__$symbol)
+		)
 	}
 
 	my_assays =
 		.data %>%
-		select(!!.sample,
-					 !!.transcript,
-					 !!.abundance,
-					 !!.abundance_scaled,
-					 counts_cols) %>%
-		distinct() %>%
-		pivot_longer( cols=-c(!!.transcript,!!.sample), names_to="assay", values_to= ".a") %>%
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!sample__$name, !!.sample, remove = FALSE, sep = "___") |>
+
+	  # Unite if multiple sample columns
+	  tidyr::unite(!!feature__$name, !!.transcript, remove = FALSE, sep = "___") |>
+
+	  select(!!sample__$symbol,
+	         !!feature__$symbol,
+	         !!.abundance,
+	         !!.abundance_scaled,
+	         counts_cols) %>%
+	  distinct() %>%
+
+		pivot_longer( cols=-c(!!feature__$symbol,!!sample__$symbol), names_to="assay", values_to= ".a") %>%
 		nest(`data` = -`assay`) %>%
 		mutate(`data` = `data` %>%  map(
-			~ .x %>% spread(!!.sample, .a) %>% as_matrix(rownames = quo_name(.transcript))
+			~ .x %>% spread(!!sample__$symbol, .a) %>% as_matrix(rownames = feature__$name)
 		))
 
 	# Build the object
@@ -252,7 +281,7 @@ setMethod("as_SummarizedExperiment", "tidybulk", .as_SummarizedExperiment)
 #' @name tidybulk_SAM_BAM
 #'
 #' @param file_names A character vector
-#' @param genome A character string
+#' @param genome A character string specifying an in-built annotation used for read summarization. It has four possible values including "mm10", "mm9", "hg38" and "hg19"
 #' @param ... Further parameters passed to the function Rsubread::featureCounts
 #'
 #' @details This function is based on FeatureCounts package (DOI: 10.1093/bioinformatics/btt656). This function creates a tidybulk object and is useful if you want
@@ -514,9 +543,11 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 #'
 #' @param method A character string. The cluster algorithm to use, at the moment k-means is the only algorithm included.
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function kmeans
+#'
+#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details identifies clusters in the data, normally of samples.
 #' This function returns a tibble with additional columns for the cluster annotation.
@@ -553,9 +584,14 @@ setGeneric("cluster_elements", function(.data,
 																				.abundance = NULL,
 																				method,
 																				of_samples = TRUE,
-																				log_transform = TRUE,
+																				transform = log1p,
+
 																				action = "add",
-																				...)
+																				...,
+
+																				# DEPRECATED
+																				log_transform = NULL
+                                      )
 	standardGeneric("cluster_elements"))
 
 # Set internal
@@ -565,10 +601,26 @@ setGeneric("cluster_elements", function(.data,
 															 .abundance = NULL,
 															 method ,
 															 of_samples = TRUE,
-															 log_transform = TRUE,
+															 transform = log1p,
+
 															 action = "add",
-															 ...)
+															 ...,
+
+															 # DEPRECATED
+															 log_transform = NULL
+
+															 )
 {
+
+  # DEPRECATION OF log_transform
+  if (is_present(log_transform) & !is.null(log_transform)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
+
+    if(log_transform == TRUE) transform = log1p
+  }
+
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
@@ -608,7 +660,7 @@ setGeneric("cluster_elements", function(.data,
 				.element = !!.element,
 				.feature = !!.feature,
 				of_samples = of_samples,
-				log_transform = log_transform,
+				transform = transform,
 				...
 			),
 			method == "SNN" ~ stop("tidybulk says: Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable."),
@@ -617,7 +669,7 @@ setGeneric("cluster_elements", function(.data,
 			# 	.element = !!.element,
 			# 	.feature = !!.feature,
 			# 	of_samples = of_samples,
-			# 	log_transform = log_transform,
+			# 	transform = transform,
 			# 	...
 			# ),
 			TRUE ~ 		stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
@@ -707,10 +759,12 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 #' @param top An integer. How many top genes to select for dimensionality reduction
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param .dims An integer. The number of dimensions your are interested in (e.g., 4 for returning the first four principal components).
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param scale A boolean for method="PCA", this will be passed to the `prcomp` function. It is not included in the ... argument because although the default for `prcomp` if FALSE, it is advisable to set it as TRUE.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"
+#'
+#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details This function reduces the dimensions of the transcript abundances.
 #' It can use multi-dimensional scaling (MDS; DOI.org/10.1186/gb-2010-11-3-r25),
@@ -777,10 +831,15 @@ setGeneric("reduce_dimensions", function(.data,
 
 																				 top = 500,
 																				 of_samples = TRUE,
-																				 log_transform = TRUE,
+																				 transform = log1p,
 																				 scale = TRUE,
 																				 action = "add",
-																				 ...)
+																				 ...,
+
+																				 # DEPRECATED
+																				 log_transform = NULL
+
+                                      )
 					 standardGeneric("reduce_dimensions"))
 
 # Set internal
@@ -793,11 +852,26 @@ setGeneric("reduce_dimensions", function(.data,
 
 																top = 500,
 																of_samples = TRUE,
-																log_transform = TRUE,
+																transform = log1p,
 																scale = TRUE,
 																action = "add",
-																...)
+																...,
+
+																# DEPRECATED
+																log_transform = NULL
+
+																)
 {
+
+  # DEPRECATION OF log_transform
+  if (is_present(log_transform) & !is.null(log_transform)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
+
+    if(log_transform == TRUE) transform = log1p
+  }
+
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
@@ -838,7 +912,7 @@ setGeneric("reduce_dimensions", function(.data,
 				.feature = !!.feature,
 				top = top,
 				of_samples = of_samples,
-				log_transform = log_transform,
+				transform = transform,
 				...
 			),
 			tolower(method) == tolower("PCA") ~ 	get_reduced_dimensions_PCA_bulk(.,
@@ -848,7 +922,7 @@ setGeneric("reduce_dimensions", function(.data,
 				.feature = !!.feature,
 				top = top,
 				of_samples = of_samples,
-				log_transform = log_transform,
+				transform = transform,
 				scale = scale,
 				...
 			),
@@ -859,7 +933,7 @@ setGeneric("reduce_dimensions", function(.data,
 				.feature = !!.feature,
 				top = top,
 				of_samples = of_samples,
-				log_transform = log_transform,
+				transform = transform,
 				...
 			),
 			tolower(method) == tolower("UMAP") ~ 	get_reduced_dimensions_UMAP_bulk(.,
@@ -869,7 +943,7 @@ setGeneric("reduce_dimensions", function(.data,
 			                                                                       .feature = !!.feature,
 			                                                                       top = top,
 			                                                                       of_samples = of_samples,
-			                                                                       log_transform = log_transform,
+			                                                                       transform = transform,
 			                                                                       scale = scale,
 			                                                                       ...
 			),
@@ -1130,12 +1204,13 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 #'
 #' @param method A character string. The method to use, correlation and reduced_dimensions are available. The latter eliminates one of the most proximar pairs of samples in PCA reduced dimensions.
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param correlation_threshold A real number between 0 and 1. For correlation based calculation.
 #' @param top An integer. How many top genes to select for correlation based method
 #' @param Dim_a_column A character string. For reduced_dimension based calculation. The column of one principal component
 #' @param Dim_b_column A character string. For reduced_dimension based calculation. The column of another principal component
 #'
+#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details This function removes redundant elements from the original data set (e.g., samples or transcripts).
 #' For example, if we want to define cell-type specific signatures with low sample redundancy.
@@ -1209,14 +1284,15 @@ setGeneric("remove_redundancy", function(.data,
 
 																				 of_samples = TRUE,
 
-
-
 																				 correlation_threshold = 0.9,
 																				 top = Inf,
-																				 log_transform = FALSE,
-
+																				 transform = identity,
 																				 Dim_a_column,
-																				 Dim_b_column)
+																				 Dim_b_column,
+
+																				 # DEPRECATED
+																				 log_transform = NULL
+																				 )
 					 standardGeneric("remove_redundancy"))
 
 # Set internal
@@ -1228,15 +1304,27 @@ setGeneric("remove_redundancy", function(.data,
 
 																of_samples = TRUE,
 
-
-
 																correlation_threshold = 0.9,
 																top = Inf,
-																log_transform = FALSE,
+																transform = identity,
 
 																Dim_a_column = NULL,
-																Dim_b_column = NULL)
+																Dim_b_column = NULL,
+
+																# DEPRECATED
+																log_transform = NULL
+)
 {
+
+  # DEPRECATION OF log_transform
+  if (is_present(log_transform) & !is.null(log_transform)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
+
+    if(log_transform == TRUE) transform = log1p
+  }
+
 	# Make col names
 	.abundance = enquo(.abundance)
 	.element = enquo(.element)
@@ -1261,7 +1349,7 @@ setGeneric("remove_redundancy", function(.data,
 			correlation_threshold = correlation_threshold,
 			top = top,
 			of_samples = of_samples,
-			log_transform = log_transform
+			transform = transform
 		)
 	}
 	else if (method == "reduced_dimensions") {
@@ -1329,9 +1417,12 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #'
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param inverse_transform A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function sva::ComBat
+#'
+#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details This function adjusts the abundance for (known) unwanted variation.
 #' At the moment just an unwanted covariate is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
@@ -1352,9 +1443,7 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' cm$batch = 0
 #' cm$batch[colnames(cm) %in% c("SRR1740035", "SRR1740043")] = 1
 #'
-#' res =
 #'  cm %>%
-#'  tidybulk(sample, transcript, count) |>
 #'  identify_abundant() |>
 #' 	adjust_abundance(	~ condition + batch	)
 #'
@@ -1369,21 +1458,44 @@ setGeneric("adjust_abundance", function(.data,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL,
-																				log_transform = TRUE,
+																				transform = log1p,
+																				inverse_transform = expm1,
+
 																				action = "add",
-																				...)
+																				...,
+
+																				# DEPRECATED
+																				log_transform = NULL
+																				)
 	standardGeneric("adjust_abundance"))
 
 # Set internal
 .adjust_abundance = 	function(.data,
-															.formula,
-															.sample = NULL,
-															.transcript = NULL,
-															.abundance = NULL,
-															log_transform = TRUE,
-															action = "add",
-															...)
+                              .formula,
+                              .sample = NULL,
+                              .transcript = NULL,
+                              .abundance = NULL,
+                              transform = log1p,
+                              inverse_transform = expm1,
+                              action = "add",
+                              ...,
+
+                              # DEPRECATED
+                              log_transform = NULL)
 {
+
+  # DEPRECATION OF log_transform
+  if (is_present(log_transform) & !is.null(log_transform)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
+
+    if(log_transform == TRUE){
+      transform = log1p
+      inverse_transform = expm1
+    }
+  }
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -1420,7 +1532,8 @@ setGeneric("adjust_abundance", function(.data,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			log_transform = log_transform,
+			transform = transform,
+			inverse_transform = inverse_transform,
 			...
 		)
 
@@ -1652,7 +1765,7 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param reference A data frame. A rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.
+#' @param reference A data frame. The methods cibersort and llsr can accept a custom rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. For exampler tidybulk::X_cibersort. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.
 #' @param method A character string. The method to be used. At the moment Cibersort (default), epic and llsr (linear least squares regression) are available.
 #' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
@@ -1674,7 +1787,7 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 #' library(dplyr)
 #'
 #' # Subsetting for time efficiency
-#' tidybulk::se_mini |> tidybulk() |>filter(sample=="SRR1740034") |> deconvolve_cellularity(sample, feature, count, cores = 1)
+#' tidybulk::se_mini |> deconvolve_cellularity(cores = 1)
 #'
 #'
 #' @docType methods
@@ -1814,7 +1927,10 @@ setMethod("deconvolve_cellularity",
 #'
 #' @examples
 #'
-#' tidybulk::se_mini |> tidybulk() |> as_tibble() |> symbol_to_entrez(.transcript = feature, .sample = sample)
+#' # This function was designed for data.frame
+#' # Convert from SummarizedExperiment for this example. It is NOT reccomended.
+#'
+#' tidybulk::se_mini |> tidybulk() |> as_tibble() |> symbol_to_entrez(.transcript = .feature, .sample = .sample)
 #'
 #' @export
 #'
@@ -2013,7 +2129,10 @@ setMethod("describe_transcript", "tidybulk", .describe_transcript)
 #'
 #' library(dplyr)
 #'
-#' tidybulk::counts_SE |> tidybulk() |> as_tibble() |> ensembl_to_symbol(feature)
+#' # This function was designed for data.frame
+#' # Convert from SummarizedExperiment for this example. It is NOT reccomended.
+#'
+#' tidybulk::counts_SE |> tidybulk() |> as_tibble() |> ensembl_to_symbol(.feature)
 #'
 #'
 #'
@@ -2113,7 +2232,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .contrasts This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param contrasts This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights"
 #' @param test_above_log2_fold_change A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
 #' @param scaling_method A character string. The scaling method passed to the back-end functions: edgeR and limma-voom (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile"). Setting the parameter to \"none\" will skip the compensation for sequencing-depth for the method edgeR or limma-voom.
@@ -2122,6 +2241,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param significance_threshold DEPRECATED - A real between 0 and 1 (usually 0.05).
 #' @param fill_missing_values DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
+#' @param .contrasts DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param ... Further arguments passed to some of the internal functions. Currently, it is needed just for internal debug.
 #'
 #'
@@ -2184,7 +2304,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'  identify_abundant() |>
 #'  test_differential_abundance(
 #' 	    ~ 0 + condition,
-#' 	    .contrasts = c( "conditionTRUE - conditionFALSE")
+#' 	    contrasts = c( "conditionTRUE - conditionFALSE")
 #'  )
 #'
 #'  # DESeq2 - equivalent for limma-voom
@@ -2202,7 +2322,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'  identify_abundant() |>
 #'  test_differential_abundance(
 #' 	    ~ 0 + condition,
-#' 	    .contrasts = list(c("condition", "TRUE", "FALSE")),
+#' 	    contrasts = list(c("condition", "TRUE", "FALSE")),
 #' 	    method="deseq2"
 #'  )
 #'
@@ -2215,7 +2335,7 @@ setGeneric("test_differential_abundance", function(.data,
 																									 .sample = NULL,
 																									 .transcript = NULL,
 																									 .abundance = NULL,
-																									 .contrasts = NULL,
+																									 contrasts = NULL,
 																									 method = "edgeR_quasi_likelihood",
 																									 test_above_log2_fold_change = NULL,
 																									 scaling_method = "TMM",
@@ -2226,7 +2346,8 @@ setGeneric("test_differential_abundance", function(.data,
 
 																									 # DEPRECATED
 																									 significance_threshold = NULL,
-																									 fill_missing_values = NULL
+																									 fill_missing_values = NULL,
+																									 .contrasts = NULL
 																									)
 					 standardGeneric("test_differential_abundance"))
 
@@ -2237,7 +2358,7 @@ setGeneric("test_differential_abundance", function(.data,
 																					.sample = NULL,
 																					.transcript = NULL,
 																					.abundance = NULL,
-																					.contrasts = NULL,
+																					contrasts = NULL,
 																					method = "edgeR_quasi_likelihood",
 																					test_above_log2_fold_change = NULL,
 																					scaling_method = "TMM",
@@ -2249,7 +2370,8 @@ setGeneric("test_differential_abundance", function(.data,
 
 																					# DEPRECATED
 																					significance_threshold = NULL,
-																					fill_missing_values = NULL
+																					fill_missing_values = NULL,
+																					.contrasts = NULL
 																				)
 {
 	# Get column names
@@ -2275,6 +2397,15 @@ setGeneric("test_differential_abundance", function(.data,
 		# Signal the deprecation to the user
 		deprecate_warn("1.1.7", "tidybulk::test_differential_abundance(fill_missing_values = )", details = "The argument fill_missing_values is now deprecated, you will receive a warning/error instead. Please use externally the methods fill_missing_abundance or impute_missing_abundance instead.")
 
+	}
+
+	# DEPRECATION OF .constrasts
+	if (is_present(.contrasts) & !is.null(.contrasts)) {
+
+	  # Signal the deprecation to the user
+	  deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+
+	  contrasts = .contrasts
 	}
 
 	# Clearly state what counts are used
@@ -2317,7 +2448,7 @@ such as batch effects (if applicable) in the formula.
 				.sample = !!.sample,
 				.transcript = !!.transcript,
 				.abundance = !!.abundance,
-				.contrasts = .contrasts,
+				.contrasts = contrasts,
 				method = method,
 				test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
@@ -2333,7 +2464,7 @@ such as batch effects (if applicable) in the formula.
 					.sample = !!.sample,
 					.transcript = !!.transcript,
 					.abundance = !!.abundance,
-					.contrasts = .contrasts,
+					.contrasts = contrasts,
 					method = method,
 					test_above_log2_fold_change = test_above_log2_fold_change,
 					scaling_method = scaling_method,
@@ -2349,7 +2480,7 @@ such as batch effects (if applicable) in the formula.
 				.sample = !!.sample,
 				.transcript = !!.transcript,
 				.abundance = !!.abundance,
-				.contrasts = .contrasts,
+				.contrasts = contrasts,
 				method = method,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
@@ -2367,10 +2498,6 @@ such as batch effects (if applicable) in the formula.
 		.data %>%
 			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
 
-			# # Arrange
-			# ifelse_pipe(.contrasts %>% is.null,
-			# 						~ .x %>% arrange(FDR))	%>%
-
 			# Attach attributes
 			reattach_internals(.data_processed)
 
@@ -2381,17 +2508,8 @@ such as batch effects (if applicable) in the formula.
 
 			# Selecting the right columns
 			pivot_transcript(!!.transcript) %>%
-			# select(
-			# 	!!.transcript,
-			# 	get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$vertical_cols
-			# ) %>%
-			# distinct() %>%
 
 			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
-
-			# # Arrange
-			# ifelse_pipe(.contrasts %>% is.null,
-			# 						~ .x %>% arrange(FDR))	%>%
 
 			# Attach attributes
 			reattach_internals(.data_processed)
@@ -2457,7 +2575,9 @@ setMethod("test_differential_abundance",
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param top Integer. Number of top transcript to consider
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#'
+#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details At the moment this function uses edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}
 #'
@@ -2490,7 +2610,11 @@ setGeneric("keep_variable", function(.data,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
 																			 top = 500,
-																			 log_transform = TRUE)
+																			 transform = log1p,
+
+																			 # DEPRECATED
+																			 log_transform = TRUE
+																			 )
 	standardGeneric("keep_variable"))
 
 # Set internal
@@ -2499,8 +2623,21 @@ setGeneric("keep_variable", function(.data,
 															.transcript = NULL,
 															.abundance = NULL,
 															top = 500,
-															log_transform = TRUE)
+															transform = log1p,
+
+															# DEPRECATED
+															log_transform = NULL)
 {
+
+  # DEPRECATION OF log_transform
+  if (is_present(log_transform) & !is.null(log_transform)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
+
+    if(log_transform == TRUE) transform = log1p
+  }
+
 	# Make col names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2518,7 +2655,7 @@ setGeneric("keep_variable", function(.data,
 		.transcript = !!.transcript,
 		.abundance = !!.abundance,
 		top = top,
-		log_transform = log_transform
+		transform = transform
 	)
 }
 
@@ -2832,13 +2969,14 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @param .sample The name of the sample column
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .contrasts = NULL,
+#' @param contrasts This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param methods A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.
 #' @param gene_sets A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.
 #' @param species A character. It can be human, mouse or rat.
 #' @param cores An integer. The number of cores available
 #'
 #' @param method DEPRECATED. Please use methods.
+#' @param .contrasts DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #'
 #' @details This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 #'
@@ -2881,8 +3019,10 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @examples
 #' \dontrun{
 #'
-#' df_entrez = tidybulk::se_mini |> tidybulk() |> as_tibble() |> symbol_to_entrez( .transcript = feature, .sample = sample)
-#' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
+#' library(SummarizedExperiment)
+#' se = tidybulk::se_mini
+#' rowData( se)$entrez = rownames(se )
+#' df_entrez = aggregate_duplicates(se,.transcript = entrez )
 #'
 #' library("EGSEA")
 #'
@@ -2910,13 +3050,15 @@ setGeneric("test_gene_enrichment", function(.data,
 																							 .sample = NULL,
 																							 .entrez,
 																							 .abundance = NULL,
-																							 .contrasts = NULL,
+																							 contrasts = NULL,
 																							 methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																							 gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 																							 species,
 																							 cores = 10,
 
-																						method = NULL # DEPRECATED
+																							 # DEPRECATED
+																						method = NULL,
+																						.contrasts = NULL
 																						)
 	standardGeneric("test_gene_enrichment"))
 
@@ -2927,13 +3069,15 @@ setGeneric("test_gene_enrichment", function(.data,
 																			.sample = NULL,
 																			.entrez,
 																			.abundance = NULL,
-																			.contrasts = NULL,
+																			contrasts = NULL,
 																	    methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
 																			gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 																			species,
 																			cores = 10,
 
-																	 method = NULL # DEPRECATED
+																			# DEPRECATED
+																	 method = NULL,
+																	 .contrasts = NULL
 																	 )	{
 
 	# DEPRECATION OF reference function
@@ -2943,6 +3087,15 @@ setGeneric("test_gene_enrichment", function(.data,
 		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", details = "The argument method is now deprecated please use methods")
 		methods = method
 	}
+
+  # DEPRECATION OF .constrasts
+  if (is_present(.contrasts) & !is.null(.contrasts)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+
+    contrasts = .contrasts
+  }
 
 	# Make col names
 	.sample = enquo(.sample)
@@ -2986,7 +3139,7 @@ setGeneric("test_gene_enrichment", function(.data,
 			.sample = !!.sample,
 			.entrez = !!.entrez,
 			.abundance = !!.abundance,
-			.contrasts = .contrasts,
+			.contrasts = contrasts,
 			methods = methods,
 			gene_sets = gene_sets,
 			species = species,
@@ -3074,9 +3227,8 @@ setMethod("test_gene_enrichment",
 #'
 #' @examples
 #'
-#' df_entrez = tidybulk::se_mini |> tidybulk() |> as_tibble() |> symbol_to_entrez( .transcript = feature, .sample = sample)
-#' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
-#' df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+#' #se_mini = aggregate_duplicates(tidybulk::se_mini, .transcript = entrez)
+#' #df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #'
 #' \dontrun{
 #' 	test_gene_overrepresentation(
@@ -3244,15 +3396,14 @@ setMethod("test_gene_overrepresentation",
 #'
 #' \dontrun{
 #'
-#' df_entrez = tidybulk::se_mini |> tidybulk() |> as_tibble() |> symbol_to_entrez( .transcript = feature, .sample = sample)
-#' df_entrez = aggregate_duplicates(df_entrez, aggregation_function = sum, .sample = sample, .transcript = entrez, .abundance = count)
-#' df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+#' df_entrez = tidybulk::se_mini
+#' df_entrez = mutate(df_entrez, do_test = .feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #' df_entrez  = df_entrez %>% test_differential_abundance(~ condition)
 #'
 #'
 #'	test_gene_rank(
 #'		df_entrez,
-#' 		.sample = sample,
+#' 		.sample = .sample,
 #'		.entrez = entrez,
 #' 		species="Homo sapiens",
 #'    gene_sets =c("C2"),
@@ -3590,7 +3741,7 @@ setMethod("pivot_transcript",
 #'
 #' @examples
 #'
-#' tidybulk::se_mini |> tidybulk() |> fill_missing_abundance( fill_with = 0)
+#' # tidybulk::se_mini |>  fill_missing_abundance( fill_with = 0)
 #'
 #'
 #' @docType methods
@@ -3861,19 +4012,8 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #' 	)
 #'
 #' 	# Cox regression - multiple
-#' 	library(dplyr)
-#' 	library(tidyr)
 #'
 #'	tidybulk::se_mini |>
-#'	   tidybulk() |>
-#'
-#'		# Add survival data
-#'		nest(data = -sample) |>
-#'		mutate(
-#'			days = c(1, 10, 500, 1000, 2000),
-#'			dead = c(1, 1, 1, 0, 1)
-#'		) %>%
-#'		unnest(data) |>
 #'
 #'		# Test
 #'		test_differential_cellularity(
@@ -4018,15 +4158,6 @@ setMethod("test_differential_cellularity",
 #' library(tidyr)
 #'
 #'	tidybulk::se_mini |>
-#'	   tidybulk() |>
-#'
-#'	# Add survival data
-#'	nest(data = -sample) |>
-#'	mutate(
-#'		days = c(1, 10, 500, 1000, 2000),
-#'		dead = c(1, 1, 1, 0, 1)
-#'	) %>%
-#'	unnest(data) |>
 #'	test_stratification_cellularity(
 #'		survival::Surv(days, dead) ~ .,
 #'		cores = 1
@@ -4137,10 +4268,8 @@ setMethod("test_stratification_cellularity",
 #'
 #' @examples
 #'
-#' # Define tidybulk tibble
-#' df = tidybulk(tidybulk::se_mini)
 #'
-#' get_bibliography(df)
+#' get_bibliography(tidybulk::se_mini)
 #'
 #'
 #'
@@ -4235,9 +4364,8 @@ setMethod("get_bibliography",
 #'
 #' @examples
 #'
-#' library(dplyr)
 #'
-#' tidybulk::se_mini |> tidybulk() |> select(feature, count) |> head() |> as_matrix(rownames=feature)
+#' tibble(.feature = "CD3G", count=1) |> as_matrix(rownames=.feature)
 #'
 #' @export
 as_matrix <- function(tbl,

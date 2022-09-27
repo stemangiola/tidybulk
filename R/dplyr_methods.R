@@ -723,7 +723,7 @@ rowwise.tidybulk <- function(data, ...)
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(sample) %>% mutate(source = "AU")
+#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(.sample) %>% mutate(source = "AU")
 #' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% left_join(annotation)
 #'
 #' @rdname dplyr-methods
@@ -763,7 +763,7 @@ left_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", 
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(sample) %>% mutate(source = "AU")
+#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(.sample) %>% mutate(source = "AU")
 #' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% inner_join(annotation)
 #'
 #' @rdname join-methods
@@ -802,7 +802,7 @@ inner_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(sample) %>% mutate(source = "AU")
+#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(.sample) %>% mutate(source = "AU")
 #' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% right_join(annotation)
 #'
 #' @rdname join-methods
@@ -843,7 +843,7 @@ right_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #'
 #' @examples
 #'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(sample) %>% mutate(source = "AU")
+#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(.sample) %>% mutate(source = "AU")
 #' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% full_join(annotation)
 #'
 #' @rdname join-methods

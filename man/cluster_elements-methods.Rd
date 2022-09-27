@@ -17,9 +17,10 @@ cluster_elements(
   .abundance = NULL,
   method,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{cluster_elements}{spec_tbl_df}(
@@ -29,9 +30,10 @@ cluster_elements(
   .abundance = NULL,
   method,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{cluster_elements}{tbl_df}(
@@ -41,9 +43,10 @@ cluster_elements(
   .abundance = NULL,
   method,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{cluster_elements}{tidybulk}(
@@ -53,9 +56,10 @@ cluster_elements(
   .abundance = NULL,
   method,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{cluster_elements}{SummarizedExperiment}(
@@ -65,9 +69,10 @@ cluster_elements(
   .abundance = NULL,
   method,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 
 \S4method{cluster_elements}{RangedSummarizedExperiment}(
@@ -77,9 +82,10 @@ cluster_elements(
   .abundance = NULL,
   method,
   of_samples = TRUE,
-  log_transform = TRUE,
+  transform = log1p,
   action = "add",
-  ...
+  ...,
+  log_transform = NULL
 )
 }
 \arguments{
@@ -95,11 +101,13 @@ cluster_elements(
 
 \item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
 
-\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function kmeans}
+
+\item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A tbl object with additional columns with cluster labels

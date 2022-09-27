@@ -42,8 +42,8 @@
 #' @examples
 #'
 #' library(dplyr)
-#' 
-#' tidybulk::se_mini %>% tidybulk() %>% nest( data = -feature) %>%
+#'
+#' tidybulk::se_mini %>% tidybulk() %>% nest( data = -.feature) %>%
 #' unnest(data)
 #'
 #' @rdname nest-methods
@@ -57,16 +57,16 @@ unnest.nested_tidybulk <- function (data, cols, ..., keep_empty=FALSE, ptype=NUL
 {
 
 	cols <- enquo(cols)
-	
-	
+
+
 	data %>%
 		drop_class(c("nested_tidybulk", "tt")) %>%
-		tidyr::unnest(!!cols, ..., keep_empty = keep_empty, ptype = ptype, 
+		tidyr::unnest(!!cols, ..., keep_empty = keep_empty, ptype = ptype,
 								names_sep = names_sep, names_repair = names_repair) %>%
 
 		# Attach attributes
 		reattach_internals(data) %>%
-		
+
 		# Add class
 		add_class("tt") %>%
 		add_class("tidybulk")
@@ -84,7 +84,7 @@ unnest.nested_tidybulk <- function (data, cols, ..., keep_empty=FALSE, ptype=NUL
 #'
 #' @examples
 #'
-#' tidybulk::se_mini %>% tidybulk() %>% nest( data = -feature)
+#' tidybulk::se_mini %>% tidybulk() %>% nest( data = -.feature)
 #'
 #' @rdname nest-methods
 #' @name nest
@@ -97,26 +97,26 @@ nest.tidybulk <- function (.data, ..., .names_sep = NULL)
 {
 	cols <- enquos(...)
 	col_name_data  = names(cols)
-	
+
 	.data %>%
-		
+
 		# This is needed otherwise nest goes into loop and fails
 		drop_class(c("tidybulk", "tt")) %>%
 		tidyr::nest(...) %>%
-		
+
 		# Add classes afterwards
 		mutate(!!as.symbol(col_name_data) := map(
-			!!as.symbol(col_name_data), 
-			~ .x %>% 
+			!!as.symbol(col_name_data),
+			~ .x %>%
 				add_class("tt") %>%
 				add_class("tidybulk")
 		)) %>%
-		
+
 		# Attach attributes
 		reattach_internals(.data) %>%
-		
+
 		# Add class
 		add_class("tt") %>%
 		add_class("nested_tidybulk")
-	
+
 }
