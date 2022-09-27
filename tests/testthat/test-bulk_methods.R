@@ -219,7 +219,7 @@ test_that("Only differential trancript abundance - no object",{
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-12.58107, -12.19281, -11.58286, -11.19910),
-		tolerance=1e-5
+		tolerance=0.5
 	)
 
 	expect_equal(
