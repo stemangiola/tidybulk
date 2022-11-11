@@ -868,7 +868,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 	# Check if contrasts are of the same form
 	if(
 		.contrasts %>% is.null %>% not() &
-		.contrasts %>% class %>% equals("list") %>% not()
+		.contrasts %>% is("list") %>% not()
 	)
 		stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
 
@@ -2904,7 +2904,7 @@ run_epic = function(mix, reference = NULL) {
 	if("EPIC" %in% .packages() %>% not) stop("tidybulk says: Please install and then load the package EPIC manually (i.e. library(EPIC)). This is because EPIC is not in Bioconductor or CRAN so it is not possible to seamlessly make EPIC part of the dependencies.")
 
 	# Get common markers
-	if( reference %>% class %>% equals("data.frame")){
+	if( reference  |> is("data.frame") | reference  |> is("matrix")){
 		markers = intersect(rownames(mix), rownames(reference))
 
 		X <- (reference[markers, , drop = FALSE])
@@ -3065,7 +3065,7 @@ get_cell_type_proportions = function(.data,
 			},
 
 			~ stop(
-				"tidybulk says: please choose between cibersort, llsr and epic methods"
+				"tidybulk says: please choose between llsr, cibersort, epic, mcp_counter, quantiseq, and xcell methods"
 			)
 		)	 %>%
 
@@ -3435,7 +3435,7 @@ fill_NA_using_formula = function(.data,
  		unnest(ct_data)
 
  # For non scaled counts create a pseudo scale based on library size, then calculate imputed and scale back
- abundance_is_int = .data %>% slice(1) %>% pull(!!.abundance) %>% class() %>% equals("integer")
+ abundance_is_int = .data %>% slice(1) %>% pull(!!.abundance) %>% is("integer")
  .data =
    .data %>%
    group_by(!!.sample) %>%
