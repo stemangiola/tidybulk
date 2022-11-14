@@ -1,4 +1,4 @@
-pandoc: '2.18'
+pandoc: 2.19.2
 pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
@@ -6,5 +6,5 @@ articles:
   introduction: introduction.html
   manuscript_differential_transcript_abundance: manuscript_differential_transcript_abundance.html
   manuscript_transcriptional_signatures: manuscript_transcriptional_signatures.html
-last_built: 2022-09-28T01:21Z
+last_built: 2022-11-14T22:14Z
 
