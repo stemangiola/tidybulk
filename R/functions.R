@@ -472,6 +472,28 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		)
 	)
 
+	# Specify the design column tested
+	if(is.null(.contrasts))
+	  message(
+	    sprintf(
+	      "tidybulk says: The design column being tested is %s",
+	      design %>% colnames %>% .[1]
+	    )
+	  )
+
+	# If I don't have intercept or I have categorical factor of interest BUT I don't have contrasts
+	if(
+	  is.null(.contrasts) &
+	  (
+	    (
+	    ! .data |> pull(parse_formula(.formula)[1]) |> is("numeric") &
+	    .data |> pull(parse_formula(.formula)[1]) |> unique() |> length() |> gt(2)
+	    ) |
+	    colnames(design)[1] != "(Intercept)"
+	  )
+	 )
+	  warning("tidybulk says: If you have (i) an intercept-free design (i.e. ~ 0 + factor) or you have a categorical factor of interest with more than 2 values you should use the `contrasts` argument.")
+
 	my_contrasts =
 		.contrasts %>%
 		ifelse_pipe(length(.) > 0,
