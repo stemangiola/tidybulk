@@ -284,7 +284,9 @@ test_that("differential trancript abundance - SummarizedExperiment",{
   res =		test_differential_abundance(
     se_mini |>
       identify_abundant(factor_of_interest = condition),
-    ~ condition
+    ~ condition,
+    method = "edgeR_quasi_likelihood"
+
   )
 
   w = match(  c("CLEC7A" , "FAM198B", "FCN1"  ,  "HK3"   ), rownames(res) )
@@ -293,7 +295,8 @@ test_that("differential trancript abundance - SummarizedExperiment",{
   res_tibble =		test_differential_abundance(
     input_df |> identify_abundant(a, b, c, factor_of_interest = condition),
     ~ condition	,
-    a, b, c
+    a, b, c,
+    method = "edgeR_quasi_likelihood"
   )
 
   expect_equal(
