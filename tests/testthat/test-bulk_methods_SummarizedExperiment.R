@@ -3,8 +3,19 @@ context('Bulk methods SummarizedExperiment')
 data("se_mini")
 data("breast_tcga_mini_SE")
 
-input_df =  se_mini |> tidybulk() |> as_tibble() |> setNames( c( "b","a",  "c", "Cell type",  "time" , "condition", "days",  "dead", "entrez"))
-input_df_breast = setNames( breast_tcga_mini_SE |> tidybulk() |> as_tibble(), c( "b", "a","c", "c norm", "call" ))
+
+input_df =
+  se_mini |>
+  tidybulk() |>
+  as_tibble() |>
+  setNames( c( "b","a",  "c", "Cell type",  "time" , "condition", "days",  "dead", "entrez"))
+
+input_df_breast =
+  breast_tcga_mini_SE |>
+  tidybulk() |>
+  as_tibble() |>
+  setNames( c( "b", "a","c", "c norm", "call" ))
+
 
 test_that("tidybulk SummarizedExperiment conversion",{
 
@@ -28,12 +39,28 @@ test_that("tidybulk SummarizedExperiment conversion",{
 
 test_that("tidybulk SummarizedExperiment normalisation manual",{
 
-  res = tidybulk(tidybulk:::tidybulk_to_SummarizedExperiment(scale_abundance(tidybulk(se) |> identify_abundant())))
 
-  res2 = tidybulk(se) |> identify_abundant() |> scale_abundance()
+  res = se |>
+    tidybulk() |>
+    identify_abundant() |>
+    scale_abundance() |>
+    tidybulk:::tidybulk_to_SummarizedExperiment() |>
+    tidybulk()
 
-  res |> distinct(.sample, multiplier) |> pull(multiplier)
-  res2 |> distinct(.sample, multiplier) |> pull(multiplier)
+  res2 =
+    se |>
+    tidybulk() |>
+    identify_abundant() |>
+    scale_abundance()
+
+  res |>
+    distinct(.sample, multiplier) |>
+    pull(multiplier)
+
+  res2 |>
+    distinct(.sample, multiplier) |>
+    pull(multiplier)
+
 
 
   expect_equal(
@@ -54,6 +81,7 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 })
 
 test_that("tidybulk SummarizedExperiment normalisation",{
+
 
   res = se |> identify_abundant() |> scale_abundance()
 
@@ -564,6 +592,7 @@ test_that("impute missing",{
     dplyr::slice(-1) |>
     tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) |>
     impute_missing_abundance(	~ condition	)
+
 
   list_SE = SummarizedExperiment::assays(res) |> as.list()
 
