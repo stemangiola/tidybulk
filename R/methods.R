@@ -224,7 +224,17 @@ setGeneric("as_SummarizedExperiment", function(.data,
 		pivot_longer( cols=-c(!!feature__$symbol,!!sample__$symbol), names_to="assay", values_to= ".a") %>%
 		nest(`data` = -`assay`) %>%
 		mutate(`data` = `data` %>%  map(
-			~ .x %>% spread(!!sample__$symbol, .a) %>% as_matrix(rownames = feature__$name)
+			~ .x %>%
+			  spread(!!sample__$symbol, .a) %>%
+
+			  # arrange sample
+			  select(!!feature__$symbol, rownames(colData)) |>
+
+			  # Arrange symbol
+			  arrange(!!feature__$symbol) |>
+
+			  # Convert
+			  as_matrix(rownames = feature__$name)
 		))
 
 	# Build the object
