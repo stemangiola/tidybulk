@@ -873,7 +873,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param ... Additional arguments for DESeq2
 #'
-#' @return A tibble with edgeR results
+#' @return A tibble with DESeq2 results
 #'
 get_differential_transcript_abundance_deseq2 <- function(.data,
 																											 .formula,
@@ -882,7 +882,10 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 																											 .abundance = NULL,
 																											 .contrasts = NULL,
 																											 method = "edgeR_quasi_likelihood",
-																											 scaling_method = "TMM",
+
+                                                           test_above_log2_fold_change = NULL,
+                                                         
+                                                           scaling_method = "TMM",
 																											 omit_contrast_in_colnames = FALSE,
 																											 prefix = "",
 																											 ...) {
@@ -905,11 +908,6 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		omit_contrast_in_colnames = FALSE
 	}
 
-	if (find.package("acepack", quiet = TRUE) %>% length %>% equals(0)) {
-		message("tidybulk says: Installing acepack needed for analyses")
-		install.packages("acepack", repos = "https://cloud.r-project.org")
-	}
-
 	# Check if package is installed, otherwise install
 	if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
 		message("tidybulk says: Installing DESeq2 needed for differential transcript abundance analyses")
@@ -918,6 +916,10 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		BiocManager::install("DESeq2", ask = FALSE)
 	}
 
+        if (is.null(test_above_log2_fold_change)) {
+          test_above_log2_fold_change <- 0
+        }
+  
 	# # Print the design column names in case I want contrasts
 	# message(
 	# 	sprintf(
@@ -966,7 +968,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 				(deseq2_object@colData[,parse_formula(.formula)[1]] %>%
 				 	class %in% c("numeric", "integer", "double")) 	~
 				(.) %>%
-				DESeq2::results() %>%
+				DESeq2::results(lfcThreshold=test_above_log2_fold_change) %>%
 				as_tibble(rownames = quo_name(.transcript)),
 
 			# Simple comparison discrete
@@ -976,13 +978,13 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 					parse_formula(.formula)[1],
 					deseq2_object@colData[,parse_formula(.formula)[1]] %>% levels %>% .[2],
 					deseq2_object@colData[,parse_formula(.formula)[1]] %>% levels %>% .[1]
-				)) %>%
+				), lfcThreshold=test_above_log2_fold_change) %>%
 				as_tibble(rownames = quo_name(.transcript)),
 
 			# Simple comparison discrete
 			my_contrasts %>% is.null %>% not() & omit_contrast_in_colnames	~
 				(.) %>%
-				DESeq2::results(contrast = my_contrasts[[1]])%>%
+				DESeq2::results(contrast = my_contrasts[[1]], lfcThreshold=test_above_log2_fold_change)%>%
 				as_tibble(rownames = quo_name(.transcript)),
 
 			# Multiple comparisons NOT USED AT THE MOMENT
@@ -994,7 +996,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 						~ 	deseq2_obj %>%
 
 							# select method
-							DESeq2::results(contrast = my_contrasts[[.x]])	%>%
+							DESeq2::results(contrast = my_contrasts[[.x]], lfcThreshold=test_above_log2_fold_change)	%>%
 
 							# Convert to tibble
 							as_tibble(rownames = quo_name(.transcript)) %>%

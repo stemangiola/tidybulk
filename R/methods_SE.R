@@ -1173,6 +1173,7 @@ such as batch effects (if applicable) in the formula.
 				.formula,
 				.contrasts = contrasts,
 				method = method,
+                                test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
 				prefix = prefix
