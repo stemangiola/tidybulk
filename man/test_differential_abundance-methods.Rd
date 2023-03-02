@@ -211,7 +211,7 @@ keep_abundant(
 ) %>%
 
 # DESeq2
-DESeq2::DESeqDataSet( design = .formula) %>%
+DESeq2::DESeqDataSet(design = .formula) %>%
 DESeq2::DESeq() %>%
 DESeq2::results()
 }
@@ -239,7 +239,17 @@ my_se_mini$condition  = factor(my_se_mini$condition)
 
 my_se_mini  |>
  identify_abundant() |>
-	test_differential_abundance( ~ condition, method="deseq2" )
+	test_differential_abundance( ~ condition, method="deseq2", fitType="local" )
+
+res <- my_se_mini  |>
+ identify_abundant() |>
+	test_differential_abundance( ~ condition, method="deseq2", fitType="local", test_above_log2_fold_change=4 )
+
+# confirm that lfcThreshold was used
+res |>
+  mcols() |>
+  DESeq2::DESeqResults() |>
+  DESeq2::plotMA()
 
 	# The function `test_differential_abundance` operates with contrasts too
 
@@ -248,7 +258,8 @@ my_se_mini  |>
  test_differential_abundance(
 	    ~ 0 + condition,
 	    contrasts = list(c("condition", "TRUE", "FALSE")),
-	    method="deseq2"
+	    method="deseq2",
+         fitType="local"
  )
 
 }

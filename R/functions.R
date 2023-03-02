@@ -876,19 +876,17 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @return A tibble with DESeq2 results
 #'
 get_differential_transcript_abundance_deseq2 <- function(.data,
-																											 .formula,
-																											 .sample = NULL,
-																											 .transcript = NULL,
-																											 .abundance = NULL,
-																											 .contrasts = NULL,
-																											 method = "edgeR_quasi_likelihood",
-
-                                                           test_above_log2_fold_change = NULL,
-                                                         
-                                                           scaling_method = "TMM",
-																											 omit_contrast_in_colnames = FALSE,
-																											 prefix = "",
-																											 ...) {
+                                                         .formula,
+                                                         .sample = NULL,
+                                                         .transcript = NULL,
+                                                         .abundance = NULL,
+                                                         .contrasts = NULL,
+                                                         method = "edgeR_quasi_likelihood",
+                                                         test_above_log2_fold_change = NULL,
+                                                         scaling_method = "TMM",
+                                                         omit_contrast_in_colnames = FALSE,
+                                                         prefix = "",
+                                                         ...) {
 
 	# Check if contrasts are of the same form
 	if(
@@ -954,7 +952,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		tidybulk_to_SummarizedExperiment(!!.sample, !!.transcript, counts) %>%
 
 		# DESeq2
-		DESeq2::DESeqDataSet( design = .formula) %>%
+		DESeq2::DESeqDataSet(design = .formula) %>%
 		DESeq2::DESeq(...)
 
 	# Read ft object

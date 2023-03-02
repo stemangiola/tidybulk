@@ -1055,16 +1055,16 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' @return A tibble with DESeq2 results
 #'
 get_differential_transcript_abundance_deseq2_SE <- function(.data,
-																												 .formula,
-																												 .contrasts = NULL,
-																												 method = "edgeR_quasi_likelihood",
+                                                            .formula,
+                                                            .contrasts = NULL,
+                                                            method = "edgeR_quasi_likelihood",
 
-                                                                   test_above_log2_fold_change = NULL,
+                                                            test_above_log2_fold_change = NULL,
 
-                                                                   scaling_method = "TMM",
-																												 omit_contrast_in_colnames = FALSE,
-																												 prefix = "",
-																												 ...) {
+                                                            scaling_method = "TMM",
+                                                            omit_contrast_in_colnames = FALSE,
+                                                            prefix = "",
+                                                            ...) {
 
 
 	# Check if contrasts are of the same form
