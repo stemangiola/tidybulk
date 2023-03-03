@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.2</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
                         <h4 data-toc-skip class="author">Stefano
 Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2022-11-22</h4>
+            <h4 data-toc-skip class="date">2023-03-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -303,7 +303,7 @@ tools (tidyverse) are available to us, this object is in fact a
 <p>First of all, you can cite all articles utilised within your workflow
 automatically from any tidybulk tibble</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>   <span class="fu"><a href="../reference/get_bibliography-methods.html">get_bibliography</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE</span> <span class="op">|&gt;</span>    <span class="fu"><a href="../reference/get_bibliography-methods.html">get_bibliography</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="aggregate-duplicated-transcripts">Aggregate duplicated <code>transcripts</code><a class="anchor" aria-label="anchor" href="#aggregate-duplicated-transcripts"></a>
@@ -321,7 +321,7 @@ and factors and boolean are appended as characters.</p>
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">counts_SE</span><span class="op">)</span><span class="op">$</span><span class="va">gene_name</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">counts_SE</span><span class="op">)</span></span>
-<span><span class="va">counts_SE.aggr</span> <span class="op">=</span> <span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/aggregate_duplicates-methods.html">aggregate_duplicates</a></span><span class="op">(</span>.transcript <span class="op">=</span> <span class="va">gene_name</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">counts_SE.aggr</span> <span class="op">=</span> <span class="va">counts_SE</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/aggregate_duplicates-methods.html">aggregate_duplicates</a></span><span class="op">(</span>.transcript <span class="op">=</span> <span class="va">gene_name</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -355,7 +355,7 @@ as <code>&lt;NAME OF COUNT COLUMN&gt;_scaled</code>.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm</span> <span class="op">=</span> <span class="va">counts_SE.aggr</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">condition</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/scale_abundance-methods.html">scale_abundance</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm</span> <span class="op">=</span> <span class="va">counts_SE.aggr</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">condition</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/scale_abundance-methods.html">scale_abundance</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -375,7 +375,7 @@ as <code>&lt;NAME OF COUNT COLUMN&gt;_scaled</code>.</p>
 On the x axis we have the log scaled counts, on the y axes we have the
 density, data is grouped by sample and coloured by cell type.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">count_scaled</span> <span class="op">+</span> <span class="fl">1</span>, group<span class="op">=</span><span class="va">sample</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html" class="external-link">geom_density</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_log10</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -389,7 +389,7 @@ density, data is grouped by sample and coloured by cell type.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.variable</span> <span class="op">=</span> <span class="va">counts_SE.norm</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/keep_variable-methods.html">keep_variable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.variable</span> <span class="op">=</span> <span class="va">counts_SE.norm</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/keep_variable-methods.html">keep_variable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -431,7 +431,7 @@ the reduced dimensions.</p>
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS</span> <span class="op">=</span></span>
-<span>  <span class="va">counts_SE.norm</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="va">counts_SE.norm</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
@@ -443,7 +443,7 @@ the reduced dimensions.</p>
 <span><span class="va">cmds</span> <span class="op">=</span> <span class="fu">limma</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/limma/man/plotMDS.html" class="external-link">plotMDS</a></span><span class="op">(</span>ndim <span class="op">=</span> <span class="va">.dims</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cmds</span> <span class="op">=</span> <span class="va">cmds</span> <span class="op">%$%</span> </span>
-<span>    <span class="va">cmdscale.out</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="va">cmdscale.out</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Dim%s"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cmds</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span></span>
@@ -457,7 +457,7 @@ the reduced dimensions.</p>
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data
 is coloured by cell type.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span>  <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span>  <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 48 × 14</span></span></span>
 <span><span class="co">##      Dim1   Dim2   Dim3     Dim4    Dim5    Dim6 .sample   Cell.…¹ time  condi…²</span></span>
 <span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>  </span></span>
@@ -475,8 +475,8 @@ is coloured by cell type.</p>
 <span><span class="co">## <span style="color: #949494;">#   TMM &lt;dbl&gt;, multiplier &lt;dbl&gt;, and abbreviated variable names ¹​Cell.type,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   ²​condition</span></span></span></code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html" class="external-link">ggpairs</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="fl">6</span><span class="op">:</span><span class="op">(</span><span class="fl">6</span><span class="op">+</span><span class="fl">5</span><span class="op">)</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>colour<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_mds-1.png" width="700"></p>
 <p><strong>PCA</strong></p>
@@ -484,14 +484,14 @@ is coloured by cell type.</p>
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.PCA</span> <span class="op">=</span></span>
-<span>  <span class="va">counts_SE.norm</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="va">counts_SE.norm</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"PCA"</span>, .dims <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">pc</span> <span class="op">=</span> <span class="va">count_m_log</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">pc</span> <span class="op">=</span> <span class="va">count_m_log</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">variance</span> <span class="op">=</span> <span class="va">pc</span><span class="op">$</span><span class="va">sdev</span><span class="op">^</span><span class="fl">2</span></span>
 <span><span class="va">variance</span> <span class="op">=</span> <span class="op">(</span><span class="va">variance</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">variance</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span>
 <span><span class="va">pc</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span></span>
@@ -505,7 +505,7 @@ is coloured by cell type.</p>
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data
 is coloured by cell type.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"PC"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.PCA</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"PC"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 48 × 14</span></span></span>
 <span><span class="co">##        PC1   PC2    PC3     PC4    PC5   PC6 .sample Cell.…¹ time  condi…² batch</span></span>
 <span><span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
@@ -522,8 +522,8 @@ is coloured by cell type.</p>
 <span><span class="co">## <span style="color: #949494;"># … with 38 more rows, 3 more variables: factor_of_interest &lt;lgl&gt;, TMM &lt;dbl&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   multiplier &lt;dbl&gt;, and abbreviated variable names ¹​Cell.type, ²​condition</span></span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.PCA</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.PCA</span> <span class="op">|&gt;</span></span>
+<span>     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html" class="external-link">ggpairs</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="fl">11</span><span class="op">:</span><span class="fl">13</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>colour<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/plot_pca-1.png" width="700"></p>
 <strong>tSNE</strong>
@@ -531,8 +531,8 @@ is coloured by cell type.</p>
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op">=</span></span>
-<span>    <span class="va">breast_tcga_mini_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="va">breast_tcga_mini_SE</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span></span>
 <span>        method <span class="op">=</span> <span class="st">"tSNE"</span>,</span>
 <span>        perplexity<span class="op">=</span><span class="fl">10</span>,</span>
@@ -559,26 +559,26 @@ is coloured by cell type.</p>
 </div>
 <p>Plot</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 251 × 4</span></span></span>
-<span><span class="co">##       tSNE1  tSNE2 .sample                      Call </span></span>
-<span><span class="co">##       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>   8.00     8.35 TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>  -<span style="color: #BB0000;">3.20</span>    -<span style="color: #BB0000;">5.85</span> TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>  10.1     -<span style="color: #BB0000;">4.20</span> TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>  -<span style="color: #BB0000;">2.11</span>     5.41 TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>   2.95     7.69 TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>   0.079<span style="text-decoration: underline;">0</span>  -<span style="color: #BB0000;">8.58</span> TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">32.7</span>    -<span style="color: #BB0000;">10.6</span>  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">8.87</span>     5.43 TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>  -<span style="color: #BB0000;">9.24</span>     3.91 TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>  24.0      6.25 TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
+<span><span class="co">##     tSNE1  tSNE2 .sample                      Call </span></span>
+<span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>   9.83  0.593 TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>  -<span style="color: #BB0000;">3.02</span> -<span style="color: #BB0000;">4.66</span>  TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>  13.1  -<span style="color: #BB0000;">7.02</span>  TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>   9.31 -<span style="color: #BB0000;">9.44</span>  TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>   6.78 -<span style="color: #BB0000;">0.362</span> TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  -<span style="color: #BB0000;">3.63</span>  2.65  TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">28.6</span>  -<span style="color: #BB0000;">2.98</span>  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">9.53</span>  8.50  TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>  -<span style="color: #BB0000;">8.03</span>  8.48  TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>  21.4   5.82  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
 <span><span class="co">## <span style="color: #949494;"># … with 241 more rows</span></span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color<span class="op">=</span><span class="va">Call</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="va">my_theme</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
 </div>
@@ -597,7 +597,7 @@ default, or as specified in the input arguments.
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op">=</span></span>
-<span>  <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="va">counts_SE.norm.MDS</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/rotate_dimensions-methods.html">rotate_dimensions</a></span><span class="op">(</span><span class="va">`Dim1`</span>, <span class="va">`Dim2`</span>, rotation_degrees <span class="op">=</span> <span class="fl">45</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
@@ -608,9 +608,9 @@ default, or as specified in the input arguments.
 <span>    <span class="op">(</span><span class="op">(</span><span class="fu"><a href="../reference/bind-methods.html">bind_rows</a></span><span class="op">(</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>`1` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>, `2` <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>`1` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>, `2` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="va">as_matrix</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">m</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/as_matrix.html">as_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">m</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span><span class="va">mds_r</span> <span class="op">=</span> <span class="va">pca</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">rotation</span><span class="op">(</span><span class="va">rotation_degrees</span><span class="op">)</span></span>
+<span><span class="va">mds_r</span> <span class="op">=</span> <span class="va">pca</span> <span class="op">|&gt;</span> <span class="fu">rotation</span><span class="op">(</span><span class="va">rotation_degrees</span><span class="op">)</span></span>
 <span><span class="va">mds_r</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">mds_r</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    <span class="st">"Cell.type"</span></span>
@@ -622,7 +622,7 @@ default, or as specified in the input arguments.
 <p><strong>Original</strong> On the x and y axes axis we have the first
 two reduced dimensions, data is coloured by cell type.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span> <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="va">my_theme</span></span></code></pre></div>
@@ -631,8 +631,8 @@ two reduced dimensions, data is coloured by cell type.</p>
 two reduced dimensions rotated of 45 degrees, data is coloured by cell
 type.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.MDS.rotated</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1_rotated_45`</span>, y<span class="op">=</span><span class="va">`Dim2_rotated_45`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span> <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="va">my_theme</span></span></code></pre></div>
@@ -653,7 +653,7 @@ false discovery rate).
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.de</span> <span class="op">=</span></span>
-<span>    <span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="va">counts_SE</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">condition</span>, action<span class="op">=</span><span class="st">"get"</span><span class="op">)</span></span>
 <span><span class="va">counts_SE.de</span></span></code></pre></div>
 </div>
@@ -680,8 +680,8 @@ contrasts too. The constrasts hve the name of the design matrix
 (generally <name_column_covariate><values_of_covariate>)</values_of_covariate></name_column_covariate></p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.de</span> <span class="op">=</span></span>
-<span>    <span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">condition</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="va">counts_SE</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">condition</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span></span>
 <span>        <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">condition</span>,                  </span>
 <span>        .contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"conditionTRUE - conditionFALSE"</span><span class="op">)</span>,</span>
@@ -704,7 +704,7 @@ unwanted covariated is allowed at a time.</p>
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.adj</span> <span class="op">=</span></span>
-<span>    <span class="va">counts_SE.norm</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/adjust_abundance-methods.html">adjust_abundance</a></span><span class="op">(</span>    <span class="op">~</span> <span class="va">factor_of_interest</span> <span class="op">+</span> <span class="va">batch</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="va">counts_SE.norm</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/adjust_abundance-methods.html">adjust_abundance</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">factor_of_interest</span> <span class="op">+</span> <span class="va">batch</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
@@ -749,13 +749,13 @@ adjusted cell type proportions.</p>
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.cibersort</span> <span class="op">=</span></span>
-<span>    <span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="va">counts_SE</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/deconvolve_cellularity-methods.html">deconvolve_cellularity</a></span><span class="op">(</span>action<span class="op">=</span><span class="st">"get"</span>, cores<span class="op">=</span><span class="fl">1</span>, prefix <span class="op">=</span> <span class="st">"cibersort__"</span><span class="op">)</span> </span></code></pre></div>
 </div>
 <div class="column-right">
 <p>Standard procedure (comparative purpose)</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(‘CIBERSORT.R’)</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>count_m <span class="sc">%&gt;%</span> <span class="fu">write.table</span>(<span class="st">"mixture_file.txt"</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>count_m <span class="sc">|&gt;</span> <span class="fu">write.table</span>(<span class="st">"mixture_file.txt"</span>)</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">CIBERSORT</span>(</span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sig_matrix_file.txt"</span>,</span>
 <span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mixture_file.txt"</span>,</span>
@@ -776,19 +776,18 @@ cell types inferred by Cibersort, on the y axis we have the inferred
 proportions. The data is facetted and coloured by nominal cell types
 (annotation given by the researcher after FACS sorting).</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.cibersort</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.cibersort</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span></span>
 <span>        names_to<span class="op">=</span> <span class="st">"Cell_type_inferred"</span>, </span>
 <span>        values_to <span class="op">=</span> <span class="st">"proportion"</span>, </span>
 <span>        names_prefix <span class="op">=</span><span class="st">"cibersort__"</span>, </span>
 <span>        cols<span class="op">=</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"cibersort__"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Cell_type_inferred`</span>, y<span class="op">=</span><span class="va">proportion</span>, fill<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">Cell_type_inferred</span>, y<span class="op">=</span><span class="va">proportion</span>, fill<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">`Cell.type`</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="va">my_theme</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, aspect.ratio<span class="op">=</span><span class="fl">1</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/plot_cibersort-1.png" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="test-differential-cell-type-abundance">Test differential cell-type abundance<a class="anchor" aria-label="anchor" href="#test-differential-cell-type-abundance"></a>
@@ -796,12 +795,12 @@ proportions. The data is facetted and coloured by nominal cell types
 <p>We can also perform a statistical test on the differential cell-type
 abundance across conditions</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>    <span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span>    <span class="va">counts_SE</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/test_differential_cellularity-methods.html">test_differential_cellularity</a></span><span class="op">(</span><span class="va">.</span> <span class="op">~</span> <span class="va">condition</span> <span class="op">)</span></span></code></pre></div>
 <p>We can also perform regression analysis with censored data
 (coxph).</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>    <span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span>    <span class="va">counts_SE</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/test_differential_cellularity-methods.html">test_differential_cellularity</a></span><span class="op">(</span><span class="fu">survival</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">dead</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -817,7 +816,7 @@ the plan is to introduce more clustering methods.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.cluster</span> <span class="op">=</span> <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.cluster</span> <span class="op">=</span> <span class="va">counts_SE.norm.MDS</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/cluster_elements-methods.html">cluster_elements</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"kmeans"</span>, centers <span class="op">=</span> <span class="fl">2</span>, action<span class="op">=</span><span class="st">"get"</span> <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
@@ -839,7 +838,7 @@ the plan is to introduce more clustering methods.</p>
 <p>We can add cluster annotation to the MDS dimension reduced data set
 and plot.</p>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span> <span class="va">counts_SE.norm.cluster</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span> <span class="va">counts_SE.norm.cluster</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`cluster_kmeans`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="va">my_theme</span></span></code></pre></div>
@@ -852,7 +851,7 @@ this option in unaviable.</p>
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.SNN</span> <span class="op">=</span></span>
-<span>    <span class="va">counts_SE.norm.tSNE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="va">counts_SE.norm.tSNE</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/cluster_elements-methods.html">cluster_elements</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"SNN"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
@@ -881,20 +880,20 @@ this option in unaviable.</p>
 
 </div>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.SNN</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html" class="external-link">gather</a></span><span class="op">(</span><span class="va">source</span>, <span class="va">Call</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cluster_SNN"</span>, <span class="st">"Call"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">counts_SE.norm.SNN</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html" class="external-link">gather</a></span><span class="op">(</span><span class="va">source</span>, <span class="va">Call</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cluster_SNN"</span>, <span class="st">"Call"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">`tSNE1`</span>, y <span class="op">=</span> <span class="va">`tSNE2`</span>, color<span class="op">=</span><span class="va">Call</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="op">~</span><span class="va">source</span><span class="op">)</span> <span class="op">+</span> <span class="va">my_theme</span></span>
 <span></span>
 <span></span>
 <span><span class="co"># Do differential transcription between clusters</span></span>
-<span><span class="va">counts_SE.norm.SNN</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">`cluster_SNN`</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">counts_SE.norm.SNN</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/mutate-methods.html">mutate</a></span><span class="op">(</span>factor_of_interest <span class="op">=</span> <span class="va">`cluster_SNN`</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/test_differential_abundance-methods.html">test_differential_abundance</a></span><span class="op">(</span></span>
 <span>    <span class="op">~</span> <span class="va">factor_of_interest</span>,</span>
 <span>    action<span class="op">=</span><span class="st">"get"</span></span>
@@ -921,7 +920,7 @@ space.</li>
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.non_redundant</span> <span class="op">=</span></span>
-<span>    <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="va">counts_SE.norm.MDS</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/remove_redundancy-methods.html">remove_redundancy</a></span><span class="op">(</span>    method <span class="op">=</span> <span class="st">"correlation"</span> <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
@@ -938,14 +937,14 @@ space.</li>
 <span>        sort <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>        diag <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>        upper <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>    <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/filter-methods.html">filter</a></span><span class="op">(</span><span class="va">correlation</span> <span class="op">&gt;</span> <span class="va">correlation_threshold</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">item1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/filter-methods.html">filter</a></span><span class="op">(</span><span class="va">correlation</span> <span class="op">&gt;</span> <span class="va">correlation_threshold</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/distinct-methods.html">distinct</a></span><span class="op">(</span><span class="va">item1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/rename-methods.html">rename</a></span><span class="op">(</span><span class="op">!</span><span class="op">!</span><span class="va">.element</span> <span class="op">:=</span> <span class="va">item1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Return non redudant data frame</span></span>
-<span><span class="va">counts</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter-joins.html" class="external-link">anti_join</a></span><span class="op">(</span><span class="va">.data.correlated</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/spread.html" class="external-link">spread</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">rc</span>, <span class="op">-</span> <span class="va">transcript</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">counts</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter-joins.html" class="external-link">anti_join</a></span><span class="op">(</span><span class="va">.data.correlated</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/spread.html" class="external-link">spread</a></span><span class="op">(</span><span class="va">sample</span>, <span class="va">rc</span>, <span class="op">-</span> <span class="va">transcript</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/dplyr-methods.html">left_join</a></span><span class="op">(</span><span class="va">annotation</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
@@ -954,8 +953,8 @@ space.</li>
 <p>We can visualise how the reduced redundancy with the reduced
 dimentions look like</p>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.non_redundant</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.non_redundant</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="va">my_theme</span></span></code></pre></div>
@@ -963,7 +962,7 @@ dimentions look like</p>
 <p><strong>Approach 2</strong></p>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.non_redundant</span> <span class="op">=</span></span>
-<span>    <span class="va">counts_SE.norm.MDS</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="va">counts_SE.norm.MDS</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/remove_redundancy-methods.html">remove_redundancy</a></span><span class="op">(</span></span>
 <span>    method <span class="op">=</span> <span class="st">"reduced_dimensions"</span>,</span>
 <span>    Dim_a_column <span class="op">=</span> <span class="va">`Dim1`</span>,</span>
@@ -972,8 +971,8 @@ dimentions look like</p>
 <p>We can visualise MDS reduced dimensions of the samples with the
 closest pair removed.</p>
 <div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE.norm.non_redundant</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">counts_SE.norm.non_redundant</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">`Dim1`</span>, y<span class="op">=</span><span class="va">`Dim2`</span>, color<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="va">my_theme</span></span></code></pre></div>
@@ -1008,7 +1007,7 @@ tidy structure (similar to counts).</p>
 since different resources use ensembl IDs while others use gene symbol
 IDs. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_ensembl</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/ensembl_to_symbol-methods.html">ensembl_to_symbol</a></span><span class="op">(</span><span class="va">ens</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_ensembl</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/ensembl_to_symbol-methods.html">ensembl_to_symbol</a></span><span class="op">(</span><span class="va">ens</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 119 × 8</span></span></span>
 <span><span class="co">##    ens             iso   `read count` sample     cases…¹ cases…² trans…³ ref_g…⁴</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
@@ -1032,8 +1031,8 @@ IDs. This currently works for human and mouse.</p>
 <p>We can add gene full name (and in future description) from symbol
 identifiers. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_SE</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>    <span class="fu"><a href="../reference/describe_transcript-methods.html">describe_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<code class="sourceCode R"><span><span class="va">counts_SE</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="../reference/describe_transcript-methods.html">describe_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">feature</span>, <span class="va">description</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A SummarizedExperiment-tibble abstraction: 408,624 × 48</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># </span><span style="color: #555555;">Features=8513 | Samples=48 | Assays=count</span></span></span>
@@ -1079,55 +1078,54 @@ identifiers. This currently works for human and mouse.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
 <span><span class="co">##  [1] tidySummarizedExperiment_1.8.0 SummarizedExperiment_1.28.0   </span></span>
-<span><span class="co">##  [3] Biobase_2.58.0                 GenomicRanges_1.50.1          </span></span>
-<span><span class="co">##  [5] GenomeInfoDb_1.34.3            IRanges_2.32.0                </span></span>
-<span><span class="co">##  [7] S4Vectors_0.36.0               BiocGenerics_0.44.0           </span></span>
+<span><span class="co">##  [3] Biobase_2.58.0                 GenomicRanges_1.50.2          </span></span>
+<span><span class="co">##  [5] GenomeInfoDb_1.34.9            IRanges_2.32.0                </span></span>
+<span><span class="co">##  [7] S4Vectors_0.36.2               BiocGenerics_0.44.0           </span></span>
 <span><span class="co">##  [9] MatrixGenerics_1.10.0          matrixStats_0.63.0            </span></span>
-<span><span class="co">## [11] tidybulk_1.9.6                 ggrepel_0.9.2                 </span></span>
-<span><span class="co">## [13] ggplot2_3.4.0                  magrittr_2.0.3                </span></span>
-<span><span class="co">## [15] tibble_3.1.8                   tidyr_1.2.1                   </span></span>
-<span><span class="co">## [17] dplyr_1.0.10                   knitr_1.41                    </span></span>
+<span><span class="co">## [11] tidybulk_1.11.2                ggrepel_0.9.3                 </span></span>
+<span><span class="co">## [13] ggplot2_3.4.1                  magrittr_2.0.3                </span></span>
+<span><span class="co">## [15] tibble_3.1.8                   tidyr_1.3.0                   </span></span>
+<span><span class="co">## [17] dplyr_1.1.0                    knitr_1.42                    </span></span>
 <span><span class="co">## [19] BiocStyle_2.26.0              </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##   [1] Rtsne_0.16             colorspace_2.0-3       ellipsis_0.3.2        </span></span>
-<span><span class="co">##   [4] class_7.3-20           rprojroot_2.0.3        XVector_0.38.0        </span></span>
-<span><span class="co">##   [7] fs_1.5.2               tidytext_0.3.4         proxy_0.4-27          </span></span>
+<span><span class="co">##   [1] Rtsne_0.16             colorspace_2.1-0       ellipsis_0.3.2        </span></span>
+<span><span class="co">##   [4] class_7.3-21           rprojroot_2.0.3        XVector_0.38.0        </span></span>
+<span><span class="co">##   [7] fs_1.6.1               tidytext_0.4.1         proxy_0.4-27          </span></span>
 <span><span class="co">##  [10] farver_2.1.1           SnowballC_0.7.0        bit64_4.0.5           </span></span>
-<span><span class="co">##  [13] AnnotationDbi_1.60.0   fansi_1.0.3            codetools_0.2-18      </span></span>
-<span><span class="co">##  [16] splines_4.2.2          cachem_1.0.6           jsonlite_1.8.3        </span></span>
-<span><span class="co">##  [19] broom_1.0.1            annotate_1.76.0        png_0.1-7             </span></span>
-<span><span class="co">##  [22] BiocManager_1.30.19    readr_2.1.3            compiler_4.2.2        </span></span>
-<span><span class="co">##  [25] httr_1.4.4             backports_1.4.1        assertthat_0.2.1      </span></span>
-<span><span class="co">##  [28] Matrix_1.5-3           fastmap_1.1.0          lazyeval_0.2.2        </span></span>
-<span><span class="co">##  [31] limma_3.54.0           cli_3.4.1              org.Mm.eg.db_3.16.0   </span></span>
-<span><span class="co">##  [34] htmltools_0.5.3        tools_4.2.2            gtable_0.3.1          </span></span>
-<span><span class="co">##  [37] glue_1.6.2             GenomeInfoDbData_1.2.9 reshape2_1.4.4        </span></span>
-<span><span class="co">##  [40] Rcpp_1.0.9             jquerylib_0.1.4        pkgdown_2.0.6         </span></span>
-<span><span class="co">##  [43] vctrs_0.5.1            Biostrings_2.66.0      preprocessCore_1.60.0 </span></span>
-<span><span class="co">##  [46] nlme_3.1-160           xfun_0.35              stringr_1.4.1         </span></span>
-<span><span class="co">##  [49] lifecycle_1.0.3        XML_3.99-0.12          org.Hs.eg.db_3.16.0   </span></span>
-<span><span class="co">##  [52] edgeR_3.40.0           zlibbioc_1.44.0        scales_1.2.1          </span></span>
-<span><span class="co">##  [55] ragg_1.2.4             hms_1.1.2              parallel_4.2.2        </span></span>
-<span><span class="co">##  [58] RColorBrewer_1.1-3     yaml_2.3.6             memoise_2.0.1         </span></span>
-<span><span class="co">##  [61] sass_0.4.3             reshape_0.8.9          stringi_1.7.8         </span></span>
-<span><span class="co">##  [64] RSQLite_2.2.18         highr_0.9              genefilter_1.80.0     </span></span>
-<span><span class="co">##  [67] tokenizers_0.2.3       desc_1.4.2             e1071_1.7-12          </span></span>
-<span><span class="co">##  [70] BiocParallel_1.32.1    rlang_1.0.6            pkgconfig_2.0.3       </span></span>
-<span><span class="co">##  [73] systemfonts_1.0.4      bitops_1.0-7           evaluate_0.18         </span></span>
-<span><span class="co">##  [76] lattice_0.20-45        purrr_0.3.5            htmlwidgets_1.5.4     </span></span>
-<span><span class="co">##  [79] labeling_0.4.2         bit_4.0.5              tidyselect_1.2.0      </span></span>
-<span><span class="co">##  [82] GGally_2.1.2           plyr_1.8.8             bookdown_0.30         </span></span>
-<span><span class="co">##  [85] R6_2.5.1               generics_0.1.3         DelayedArray_0.24.0   </span></span>
-<span><span class="co">##  [88] DBI_1.1.3              pillar_1.8.1           withr_2.5.0           </span></span>
-<span><span class="co">##  [91] mgcv_1.8-41            survival_3.4-0         KEGGREST_1.38.0       </span></span>
-<span><span class="co">##  [94] RCurl_1.98-1.9         janeaustenr_1.0.0      widyr_0.1.5           </span></span>
-<span><span class="co">##  [97] crayon_1.5.2           utf8_1.2.2             plotly_4.10.1         </span></span>
-<span><span class="co">## [100] tzdb_0.3.0             rmarkdown_2.18         locfit_1.5-9.6        </span></span>
-<span><span class="co">## [103] grid_4.2.2             sva_3.46.0             data.table_1.14.6     </span></span>
-<span><span class="co">## [106] blob_1.2.3             digest_0.6.30          xtable_1.8-4          </span></span>
-<span><span class="co">## [109] textshaping_0.3.6      munsell_0.5.0          viridisLite_0.4.1     </span></span>
-<span><span class="co">## [112] bslib_0.4.1</span></span></code></pre>
+<span><span class="co">##  [13] AnnotationDbi_1.60.0   fansi_1.0.4            codetools_0.2-19      </span></span>
+<span><span class="co">##  [16] splines_4.2.2          cachem_1.0.7           jsonlite_1.8.4        </span></span>
+<span><span class="co">##  [19] broom_1.0.3            annotate_1.76.0        png_0.1-8             </span></span>
+<span><span class="co">##  [22] BiocManager_1.30.20    readr_2.1.4            compiler_4.2.2        </span></span>
+<span><span class="co">##  [25] httr_1.4.5             backports_1.4.1        Matrix_1.5-3          </span></span>
+<span><span class="co">##  [28] fastmap_1.1.1          lazyeval_0.2.2         limma_3.54.2          </span></span>
+<span><span class="co">##  [31] cli_3.6.0              org.Mm.eg.db_3.16.0    htmltools_0.5.4       </span></span>
+<span><span class="co">##  [34] tools_4.2.2            gtable_0.3.1           glue_1.6.2            </span></span>
+<span><span class="co">##  [37] GenomeInfoDbData_1.2.9 reshape2_1.4.4         Rcpp_1.0.10           </span></span>
+<span><span class="co">##  [40] jquerylib_0.1.4        pkgdown_2.0.7          vctrs_0.5.2           </span></span>
+<span><span class="co">##  [43] Biostrings_2.66.0      preprocessCore_1.60.2  nlme_3.1-162          </span></span>
+<span><span class="co">##  [46] xfun_0.37              stringr_1.5.0          lifecycle_1.0.3       </span></span>
+<span><span class="co">##  [49] XML_3.99-0.13          org.Hs.eg.db_3.16.0    edgeR_3.40.2          </span></span>
+<span><span class="co">##  [52] zlibbioc_1.44.0        scales_1.2.1           ragg_1.2.5            </span></span>
+<span><span class="co">##  [55] hms_1.1.2              parallel_4.2.2         RColorBrewer_1.1-3    </span></span>
+<span><span class="co">##  [58] yaml_2.3.7             memoise_2.0.1          sass_0.4.5            </span></span>
+<span><span class="co">##  [61] reshape_0.8.9          stringi_1.7.12         RSQLite_2.3.0         </span></span>
+<span><span class="co">##  [64] highr_0.10             genefilter_1.80.3      tokenizers_0.3.0      </span></span>
+<span><span class="co">##  [67] desc_1.4.2             e1071_1.7-13           BiocParallel_1.32.5   </span></span>
+<span><span class="co">##  [70] rlang_1.0.6            pkgconfig_2.0.3        systemfonts_1.0.4     </span></span>
+<span><span class="co">##  [73] bitops_1.0-7           evaluate_0.20          lattice_0.20-45       </span></span>
+<span><span class="co">##  [76] purrr_1.0.1            htmlwidgets_1.6.1      labeling_0.4.2        </span></span>
+<span><span class="co">##  [79] bit_4.0.5              tidyselect_1.2.0       GGally_2.1.2          </span></span>
+<span><span class="co">##  [82] plyr_1.8.8             bookdown_0.32          R6_2.5.1              </span></span>
+<span><span class="co">##  [85] generics_0.1.3         DelayedArray_0.24.0    DBI_1.1.3             </span></span>
+<span><span class="co">##  [88] pillar_1.8.1           withr_2.5.0            mgcv_1.8-41           </span></span>
+<span><span class="co">##  [91] survival_3.5-3         KEGGREST_1.38.0        RCurl_1.98-1.10       </span></span>
+<span><span class="co">##  [94] janeaustenr_1.0.0      widyr_0.1.5            crayon_1.5.2          </span></span>
+<span><span class="co">##  [97] utf8_1.2.3             plotly_4.10.1          tzdb_0.3.0            </span></span>
+<span><span class="co">## [100] rmarkdown_2.20         locfit_1.5-9.7         grid_4.2.2            </span></span>
+<span><span class="co">## [103] sva_3.46.0             data.table_1.14.8      blob_1.2.3            </span></span>
+<span><span class="co">## [106] digest_0.6.31          xtable_1.8-4           textshaping_0.3.6     </span></span>
+<span><span class="co">## [109] munsell_0.5.0          viridisLite_0.4.1      bslib_0.4.2</span></span></code></pre>
 </div>
 </div>
   </div>
@@ -1149,7 +1147,7 @@ identifiers. This currently works for human and mouse.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
