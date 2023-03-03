@@ -1057,7 +1057,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 get_differential_transcript_abundance_deseq2_SE <- function(.data,
                                                             .formula,
                                                             .contrasts = NULL,
-                                                            method = "edgeR_quasi_likelihood",
+                                                            method = "deseq2",
 
                                                             test_above_log2_fold_change = NULL,
 
@@ -1099,7 +1099,7 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 
 		# DESeq2
 		DESeq2::DESeqDataSet( design = .formula) %>%
-		DESeq2::DESeq()
+		DESeq2::DESeq(...)
 
 	# Return
 	list(

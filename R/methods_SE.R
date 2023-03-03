@@ -1164,7 +1164,8 @@ such as batch effects (if applicable) in the formula.
 				test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
-				prefix = prefix
+                                prefix = prefix,
+                                ...
 			),
 
 			# DESeq2
@@ -1203,7 +1204,7 @@ such as batch effects (if applicable) in the formula.
 			tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
 			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights"),
 			tolower(method) == "deseq2" ~ (.) %>% memorise_methods_used("deseq2"),
-			~ stop("tidybulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)")
+			~ stop("tidybulk says: method not supported")
 		) %>%
 
 	    when(
