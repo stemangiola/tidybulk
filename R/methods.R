@@ -2290,7 +2290,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'	) %>%
 #'
 #'	# DESeq2
-#'	DESeq2::DESeqDataSet( design = .formula) %>%
+#'	DESeq2::DESeqDataSet(design = .formula) %>%
 #'	DESeq2::DESeq() %>%
 #'	DESeq2::results()
 #'
@@ -2322,18 +2322,35 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' my_se_mini = tidybulk::se_mini
 #' my_se_mini$condition  = factor(my_se_mini$condition)
 #'
+#' # demontrating with `fitType` that you can access any arguments to DESeq()
 #' my_se_mini  |>
-#'  identify_abundant() |>
-#' 	test_differential_abundance( ~ condition, method="deseq2" )
+#'    identify_abundant() |>
+#'        test_differential_abundance( ~ condition, method="deseq2", fitType="local")
 #'
-#' 	# The function `test_differential_abundance` operates with contrasts too
+#' # testing above a log2 threshold, passes along value to lfcThreshold of results()
+#' res <- my_se_mini  |>
+#'    identify_abundant() |>
+#'         test_differential_abundance( ~ condition, method="deseq2",
+#'             fitType="local",
+#'             test_above_log2_fold_change=4 )
+#'
+#' # confirm that lfcThreshold was used
+#' \dontrun{
+#'     res |>
+#'         mcols() |>
+#'         DESeq2::DESeqResults() |>
+#'         DESeq2::plotMA()
+#' }
+#' 
+#' # The function `test_differential_abundance` operates with contrasts too
 #'
 #'  my_se_mini |>
 #'  identify_abundant() |>
 #'  test_differential_abundance(
 #' 	    ~ 0 + condition,
 #' 	    contrasts = list(c("condition", "TRUE", "FALSE")),
-#' 	    method="deseq2"
+#' 	    method="deseq2",
+#'          fitType="local"
 #'  )
 #'
 #' @docType methods
@@ -2492,6 +2509,7 @@ such as batch effects (if applicable) in the formula.
 				.abundance = !!.abundance,
 				.contrasts = contrasts,
 				method = method,
+				test_above_log2_fold_change = test_above_log2_fold_change,                                
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
 				prefix = prefix,

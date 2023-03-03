@@ -644,7 +644,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 		test_deseq2_df |>
 		tidybulk() |>
 		 identify_abundant(factor_of_interest = condition) |>
-		test_differential_abundance(~condition, method="DeSEQ2", action="get")
+		test_differential_abundance(~condition, method="DESeq2", action="get")
 
 
 	expect_equal(
@@ -790,6 +790,19 @@ test_that("DESeq2 differential trancript abundance - no object",{
 		0
 	)
 
+        # DESeq2 with lfcThreshold using test_above_log2_fold_change
+        res_lfc <- test_deseq2_df |>
+          keep_abundant(factor_of_interest = condition) |>
+          test_differential_abundance(~condition, method="DESeq2", test_above_log2_fold_change=1) |>
+          mcols()
+
+        # DESeq2::plotMA(DESeq2::DESeqResults(res_lfc))
+
+        # significant are outside of LFC 1 / -1
+        idx <- which(res_lfc$padj < .1)
+        expect_true(all(abs(res_lfc$log2FoldChange[idx]) > 1))
+
+        
 })
 
 test_that("test prefix",{
@@ -801,7 +814,7 @@ test_that("test prefix",{
 
 	res_DeSEQ2 =
 		df |>
-		test_differential_abundance(~condition, method="DeSEQ2", action="only", prefix = "prefix_")
+		test_differential_abundance(~condition, method="DESeq2", action="only", prefix = "prefix_")
 
 	res_voom =
 		df |>

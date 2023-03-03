@@ -1052,16 +1052,19 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param ... Additional arguments for DESeq2
 #'
-#' @return A tibble with edgeR results
+#' @return A tibble with DESeq2 results
 #'
 get_differential_transcript_abundance_deseq2_SE <- function(.data,
-																												 .formula,
-																												 .contrasts = NULL,
-																												 method = "edgeR_quasi_likelihood",
-																												 scaling_method = "TMM",
-																												 omit_contrast_in_colnames = FALSE,
-																												 prefix = "",
-																												 ...) {
+                                                            .formula,
+                                                            .contrasts = NULL,
+                                                            method = "deseq2",
+
+                                                            test_above_log2_fold_change = NULL,
+
+                                                            scaling_method = "TMM",
+                                                            omit_contrast_in_colnames = FALSE,
+                                                            prefix = "",
+                                                            ...) {
 
 
 	# Check if contrasts are of the same form
@@ -1077,11 +1080,6 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 		omit_contrast_in_colnames = FALSE
 	}
 
-	if (find.package("acepack", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing acepack needed for analyses")
-		install.packages("acepack", repos = "https://cloud.r-project.org")
-	}
-
 	# Check if package is installed, otherwise install
 	if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing DESeq2 needed for differential transcript abundance analyses")
@@ -1090,6 +1088,10 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 		BiocManager::install("DESeq2", ask = FALSE)
 	}
 
+        if (is.null(test_above_log2_fold_change)) {
+          test_above_log2_fold_change <- 0
+        }
+  
 	my_contrasts = .contrasts
 
 	deseq2_object =
@@ -1097,7 +1099,7 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 
 		# DESeq2
 		DESeq2::DESeqDataSet( design = .formula) %>%
-		DESeq2::DESeq()
+		DESeq2::DESeq(...)
 
 	# Return
 	list(
@@ -1114,7 +1116,7 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 					(deseq2_object@colData[,parse_formula(.formula)[1]] %>%
 					 	class %in% c("numeric", "integer", "double")) 	~
 					(.) %>%
-					DESeq2::results() %>%
+					DESeq2::results(lfcThreshold=test_above_log2_fold_change) %>%
 					as_tibble(rownames = "transcript"),
 
 				# Simple comparison discrete
@@ -1124,13 +1126,13 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 						parse_formula(.formula)[1],
 						deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels %>% .[2],
 						deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels %>% .[1]
-					)) %>%
+					), lfcThreshold=test_above_log2_fold_change) %>%
 					as_tibble(rownames = "transcript"),
 
 				# Simple comparison discrete
 				my_contrasts %>% is.null %>% not() & omit_contrast_in_colnames	~
 					(.) %>%
-					DESeq2::results(contrast = my_contrasts[[1]])%>%
+					DESeq2::results(contrast = my_contrasts[[1]], lfcThreshold=test_above_log2_fold_change)%>%
 					as_tibble(rownames = "transcript"),
 
 				# Multiple comparisons NOT USED AT THE MOMENT
@@ -1142,7 +1144,7 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 							~ 	deseq2_obj %>%
 
 								# select method
-								DESeq2::results(contrast = my_contrasts[[.x]])	%>%
+								DESeq2::results(contrast = my_contrasts[[.x]], lfcThreshold=test_above_log2_fold_change)	%>%
 
 								# Convert to tibble
 								as_tibble(rownames = "transcript") %>%
