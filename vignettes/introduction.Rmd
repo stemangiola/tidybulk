@@ -550,7 +550,7 @@ results$cell_type = tibble_counts[
 
 With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is facetted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).
 
-```{r plot_cibersort}
+```{r plot_cibersort, eval=FALSE}
 counts_SE.cibersort |>
 	pivot_longer(
 		names_to= "Cell_type_inferred", 
