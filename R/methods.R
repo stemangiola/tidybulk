@@ -2335,12 +2335,14 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'             test_above_log2_fold_change=4 )
 #'
 #' # confirm that lfcThreshold was used
-#' res |>
-#'     mcols() |>
-#'     DESeq2::DESeqResults() |>
-#'     DESeq2::plotMA()
+#' \dontrun{
+#'     res |>
+#'         mcols() |>
+#'         DESeq2::DESeqResults() |>
+#'         DESeq2::plotMA()
+#' }
 #' 
-#' 	# The function `test_differential_abundance` operates with contrasts too
+#' # The function `test_differential_abundance` operates with contrasts too
 #'
 #'  my_se_mini |>
 #'  identify_abundant() |>
