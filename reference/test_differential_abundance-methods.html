@@ -307,7 +307,7 @@ keep_abundant(
 		minimum_proportion = minimum_proportion
 ) <!-- %&gt;% --></p>
 <p># DESeq2
-DESeq2::DESeqDataSet( design = .formula) <!-- %&gt;% -->
+DESeq2::DESeqDataSet(design = .formula) <!-- %&gt;% -->
 DESeq2::DESeq() <!-- %&gt;% -->
 DESeq2::results()</p>
     </div>
@@ -364,22 +364,17 @@ DESeq2::results()</p>
 <span class="r-in"><span><span class="va">my_se_mini</span> <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="va"><a href="se_mini.html">se_mini</a></span></span></span>
 <span class="r-in"><span><span class="va">my_se_mini</span><span class="op">$</span><span class="va">condition</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">my_se_mini</span><span class="op">$</span><span class="va">condition</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># demontrating with `fitType` that you can access any arguments to DESeq()</span></span></span>
 <span class="r-in"><span><span class="va">my_se_mini</span>  <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">test_differential_abundance</span><span class="op">(</span> <span class="op">~</span> <span class="va">condition</span>, method<span class="op">=</span><span class="st">"deseq2"</span> <span class="op">)</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>       <span class="fu">test_differential_abundance</span><span class="op">(</span> <span class="op">~</span> <span class="va">condition</span>, method<span class="op">=</span><span class="st">"deseq2"</span>, fitType<span class="op">=</span><span class="st">"local"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No group or design set. Assuming all samples belong to one group.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Installing acepack needed for analyses</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Installing package into ‘/__w/_temp/Library’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> (as ‘lib’ is unspecified)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> renaming the first element in assays to 'counts'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> converting counts to integer mode</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> estimating size factors</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> estimating dispersions</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> gene-wise dispersion estimates</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> mean-dispersion relationship</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> -- note: fitType='parametric', but the dispersion trend was not well captured by the</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>    function: y = a/x + b, and a local regression fit was automatically substituted.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>    specify fitType='local' or 'mean' to avoid this message next time.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> final dispersion estimates</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> fitting model and testing</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$deseq2`</span>
@@ -392,14 +387,40 @@ DESeq2::results()</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colData names(5): Cell.type time condition days dead</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># The function `test_differential_abundance` operates with contrasts too</span></span></span>
+<span class="r-in"><span><span class="co"># testing above a log2 threshold, passes along value to lfcThreshold of results()</span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">my_se_mini</span>  <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>        <span class="fu">test_differential_abundance</span><span class="op">(</span> <span class="op">~</span> <span class="va">condition</span>, method<span class="op">=</span><span class="st">"deseq2"</span>,</span></span>
+<span class="r-in"><span>            fitType<span class="op">=</span><span class="st">"local"</span>,</span></span>
+<span class="r-in"><span>            test_above_log2_fold_change<span class="op">=</span><span class="fl">4</span> <span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> No group or design set. Assuming all samples belong to one group.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> renaming the first element in assays to 'counts'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> converting counts to integer mode</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> estimating size factors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> estimating dispersions</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> gene-wise dispersion estimates</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> mean-dispersion relationship</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> final dispersion estimates</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> fitting model and testing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$deseq2`</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># confirm that lfcThreshold was used</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">res</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>        <span class="fu">mcols</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>        <span class="fu">DESeq2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqResults.html" class="external-link">DESeqResults</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>        <span class="fu">DESeq2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/plotMA.html" class="external-link">plotMA</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># The function `test_differential_abundance` operates with contrasts too</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span> <span class="va">my_se_mini</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span> <span class="fu"><a href="identify_abundant-methods.html">identify_abundant</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span> <span class="fu">test_differential_abundance</span><span class="op">(</span></span></span>
 <span class="r-in"><span>      <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">condition</span>,</span></span>
 <span class="r-in"><span>      contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition"</span>, <span class="st">"TRUE"</span>, <span class="st">"FALSE"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>      method<span class="op">=</span><span class="st">"deseq2"</span></span></span>
+<span class="r-in"><span>      method<span class="op">=</span><span class="st">"deseq2"</span>,</span></span>
+<span class="r-in"><span>         fitType<span class="op">=</span><span class="st">"local"</span></span></span>
 <span class="r-in"><span> <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No group or design set. Assuming all samples belong to one group.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> renaming the first element in assays to 'counts'</span>
@@ -408,9 +429,6 @@ DESeq2::results()</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> estimating dispersions</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> gene-wise dispersion estimates</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> mean-dispersion relationship</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> -- note: fitType='parametric', but the dispersion trend was not well captured by the</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>    function: y = a/x + b, and a local regression fit was automatically substituted.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>    specify fitType='local' or 'mean' to avoid this message next time.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> final dispersion estimates</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> fitting model and testing</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$deseq2`</span>
