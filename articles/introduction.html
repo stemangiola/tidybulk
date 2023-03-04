@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.11.3</span>
       </span>
     </div>
 
@@ -563,18 +563,18 @@ is coloured by cell type.</p>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 251 × 4</span></span></span>
-<span><span class="co">##      tSNE1    tSNE2 .sample                      Call </span></span>
-<span><span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>  10.8     0.072<span style="text-decoration: underline;">7</span> TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>  -<span style="color: #BB0000;">5.08</span>    3.04   TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>  17.6     8.63   TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>   3.65   -<span style="color: #BB0000;">6.12</span>   TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>   8.61   -<span style="color: #BB0000;">2.62</span>   TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  -<span style="color: #BB0000;">6.54</span>   -<span style="color: #BB0000;">2.15</span>   TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">29.7</span>    -<span style="color: #BB0000;">5.08</span>   TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">1.38</span>  -<span style="color: #BB0000;">13.2</span>    TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>  -<span style="color: #BB0000;">0.312</span> -<span style="color: #BB0000;">12.6</span>    TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>  25.3     4.82   TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
+<span><span class="co">##     tSNE1   tSNE2 .sample                      Call </span></span>
+<span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>  -<span style="color: #BB0000;">8.66</span>   0.475 TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>   3.95  11.9   TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> -<span style="color: #BB0000;">12.3</span>   -<span style="color: #BB0000;">8.12</span>  TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>  -<span style="color: #BB0000;">1.10</span> -<span style="color: #BB0000;">17.8</span>   TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>   3.87 -<span style="color: #BB0000;">15.1</span>   TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>  -<span style="color: #BB0000;">2.05</span>  -<span style="color: #BB0000;">3.24</span>  TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>  31.0  -<span style="color: #BB0000;">12.4</span>   TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>  -<span style="color: #BB0000;">3.92</span> -<span style="color: #BB0000;">15.2</span>   TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>  -<span style="color: #BB0000;">3.84</span> -<span style="color: #BB0000;">13.2</span>   TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> -<span style="color: #BB0000;">15.9</span>   13.1   TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
 <span><span class="co">## <span style="color: #949494;"># … with 241 more rows</span></span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op">|&gt;</span></span>
@@ -1082,7 +1082,7 @@ identifiers. This currently works for human and mouse.</p>
 <span><span class="co">##  [5] GenomeInfoDb_1.34.9            IRanges_2.32.0                </span></span>
 <span><span class="co">##  [7] S4Vectors_0.36.2               BiocGenerics_0.44.0           </span></span>
 <span><span class="co">##  [9] MatrixGenerics_1.10.0          matrixStats_0.63.0            </span></span>
-<span><span class="co">## [11] tidybulk_1.11.2                ggrepel_0.9.3                 </span></span>
+<span><span class="co">## [11] tidybulk_1.11.3                ggrepel_0.9.3                 </span></span>
 <span><span class="co">## [13] ggplot2_3.4.1                  magrittr_2.0.3                </span></span>
 <span><span class="co">## [15] tibble_3.1.8                   tidyr_1.3.0                   </span></span>
 <span><span class="co">## [17] dplyr_1.1.0                    knitr_1.42                    </span></span>
