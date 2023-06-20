@@ -2,14 +2,7 @@
 % Please edit documentation in R/dplyr_methods.R
 \name{bind}
 \alias{bind}
-\alias{bind_rows}
-\alias{bind_cols}
 \title{Efficiently bind multiple data frames by row and column}
-\usage{
-bind_rows(..., .id = NULL)
-
-bind_cols(..., .id = NULL)
-}
 \arguments{
 \item{...}{Data frames to combine.
 
@@ -21,7 +14,7 @@ bind_cols(..., .id = NULL)
 
   When column-binding, rows are matched by position, so all data
   frames must have the same number of rows. To match by value, not
-  position, see [mutate-joins].}
+  position, see mutate-joins.}
 
 \item{.id}{Data frame identifier.
 
@@ -31,6 +24,8 @@ bind_cols(..., .id = NULL)
   list of data frames is supplied, the labels are taken from the
   names of the list. If no names are found a numeric sequence is
   used instead.}
+
+\item{add.cell.ids}{from Seurat 3.0 A character vector of length(x = c(x, y)). Appends the corresponding values to the start of each objects' cell names.}
 }
 \value{
 `bind_rows()` and `bind_cols()` return the same type as
@@ -46,11 +41,11 @@ The output of `bind_rows()` will contain a column if that column
 appears in any of the inputs.
 }
 \examples{
+`\%>\%` = magrittr::`\%>\%`
+tt = pbmc_small
+bind_rows(    tt, tt  )
 
-one <- mtcars[1:4, ]
-two <- mtcars[11:14, ]
-
-# You can supply data frames as arguments:
-bind_rows(one, two)
+tt_bind = tt \%>\% select(nCount_RNA ,nFeature_RNA)
+tt \%>\% bind_cols(tt_bind)
 
 }
