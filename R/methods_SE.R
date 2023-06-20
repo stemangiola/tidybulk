@@ -42,8 +42,8 @@
 #'
 #' @importFrom tibble as_tibble
 #' @importFrom purrr reduce
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #'
 #'
 #' @inheritParams tidybulk
@@ -1298,6 +1298,7 @@ setMethod("keep_variable",
 #' @inheritParams keep_variable
 #'
 #' @importFrom purrr map_chr
+#' @importFrom tidyr unite
 #'
 #' @docType methods
 #' @rdname keep_variable-methods

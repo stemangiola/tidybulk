@@ -3,8 +3,8 @@
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom stats kmeans
 #' @importFrom rlang :=
@@ -55,8 +55,8 @@ get_clusters_kmeans_bulk_SE <-
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom utils install.packages
@@ -113,8 +113,8 @@ get_clusters_SNN_bulk_SE <-
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom purrr map_dfr
 #' @importFrom rlang :=
@@ -207,8 +207,8 @@ get_reduced_dimensions_MDS_bulk_SE <-
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats prcomp
@@ -309,8 +309,8 @@ we suggest to partition the dataset for sample clusters.
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
@@ -392,8 +392,8 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 #'
 #' @keywords internal
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
@@ -564,8 +564,8 @@ keep_variable_transcripts_SE = function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
 #'
@@ -694,8 +694,8 @@ remove_redundancy_elements_though_reduced_dimensions_SE <-
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -861,8 +861,8 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -1035,8 +1035,8 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix

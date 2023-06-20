@@ -109,7 +109,7 @@ get_count_datasets <- function(se) {
       #%>%
       #  rename(!!.y := count)
     }) %>%
-    when(
+    when( 
       length(.)>0 ~ bind_cols(.,  .name_repair = c("minimal")) %>% .[!duplicated(colnames(.))], # reduce(., left_join, by = c(f_(se)$name, s_(se)$name)),
       ~ expand.grid(
         rownames(se), colnames(se)
