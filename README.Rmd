@@ -95,6 +95,7 @@ library(ggplot2)
 library(ggrepel)
 library(tidybulk)
 library(tidySummarizedExperiment)
+library(here)
 
 my_theme = 	
 	theme_bw() +
@@ -111,7 +112,9 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
-tibble_counts = tidybulk::counts_SE %>% tidybulk() %>% as_tibble()
+
+counts_SE = here("dev/counts_SE.rda") |> load()
+tibble_counts = counts_SE %>% tidybulk() %>% as_tibble()
 
 ```
 

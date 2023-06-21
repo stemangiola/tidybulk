@@ -53,7 +53,7 @@ save(GO, file="data/GO.rda", compress = "gzip")
 
 res_fly <- queryMany(
 	flybaseIDs,
-	#flybaseR::id.converter(flybaseIDs, symbols = T, convert.into = "genes"),
+	#flybaseR::id.converter(flybaseIDs, symbols = TRUE, convert.into = "genes"),
 	scopes='symbol',
 	fields=c('entrezgene', 'go'),
 	species='fruitfly'

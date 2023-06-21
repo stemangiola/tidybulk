@@ -127,10 +127,10 @@ Underlying custom method:
 		// r = the angle
 		// m data matrix
    r = d * pi / 180
-   ((dplyr::bind_rows(
+   ((bind_rows(
 	  c(`1` = cos(r), `2` = -sin(r)),
 	  c(`1` = sin(r), `2` = cos(r))
-  ) %>% as_matrix) %*% m)
+  ) |> as_matrix()) %*% m)
  }
 }
 \examples{

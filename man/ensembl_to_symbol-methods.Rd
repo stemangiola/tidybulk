@@ -42,12 +42,12 @@ This is useful since different resources use ensembl IDs while others use gene s
 }
 \examples{
 
-library(dplyr)
+
 
 # This function was designed for data.frame
 # Convert from SummarizedExperiment for this example. It is NOT reccomended.
 
-tidybulk::counts_SE |> tidybulk() |> as_tibble() |> ensembl_to_symbol(.feature)
+tidybulk::se_mini |> tidybulk() |> as_tibble() |> ensembl_to_symbol(.feature)
 
 
 

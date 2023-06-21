@@ -52,8 +52,8 @@ pre{
 
 ```{r, echo=FALSE, include=FALSE, }
 library(knitr)
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
-                      message = FALSE, cache.lazy = FALSE)
+# knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
+#                       message = FALSE, cache.lazy = FALSE)
 
 library(dplyr)
 library(tidyr)
@@ -80,7 +80,7 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
-tibble_counts = tidybulk::counts_SE %>% tidybulk() %>% as_tibble()
+tibble_counts = tidybulk::se_mini %>% tidybulk() %>% as_tibble()
 
 ```
 

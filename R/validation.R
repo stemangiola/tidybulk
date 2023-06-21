@@ -4,8 +4,8 @@
 #'
 #' @keywords internal
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom purrr map
 #'
@@ -33,8 +33,8 @@ check_if_wrong_input = function(.data, list_input, expected_type) {
 #'
 #' @keywords internal
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom utils capture.output
 #'
@@ -61,8 +61,8 @@ check_if_duplicated_genes <- function(.data,
 #'
 #' @keywords internal
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #'
 #' @param .data A tibble of read counts
@@ -73,14 +73,14 @@ check_if_duplicated_genes <- function(.data,
 check_if_counts_is_na = function(.data, .abundance) {
 	.abundance = enquo(.abundance)
 
-	.data %>% filter(!!.abundance %>% is.na) %>% nrow %>% equals(0)
+	.data %>% filter(!!.abundance %>% is.na) %>% nrow() %>% equals(0)
 
 }
 
 check_if_transcript_is_na = function(.data, .transcript) {
 	.transcript = enquo(.transcript)
 
-	.data %>% filter(!!.transcript %>% is.na) %>% nrow %>% equals(0)
+	.data %>% filter(!!.transcript %>% is.na) %>% nrow() %>% equals(0)
 
 }
 
@@ -101,6 +101,7 @@ check_if_column_missing = function(.data, .sample, .transcript, .abundance) {
 		equals(3)
 }
 
+#' @importFrom dplyr pull
 column_type_checking = function(.data, .sample, .transcript, .abundance) {
 	# Parse column names
 	.sample = enquo(.sample)
@@ -142,7 +143,7 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance){
 		distinct(!!.sample, !!.transcript, !!.abundance) %>%
 		count(!!.sample) %>%
 		count(n, name = "nn") %>%
-		nrow %>%
+		nrow() %>%
 		equals(1)
 
 	is_rectangular

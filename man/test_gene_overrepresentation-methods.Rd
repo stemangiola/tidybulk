@@ -108,19 +108,21 @@ This wrapper execute gene enrichment analyses of the dataset using a list of tra
 This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
 
 Undelying method:
- msigdbr::msigdbr(species = species) %>%#'
-	nest(data = -gs_cat) %>%
+ msigdbr::msigdbr(species = species) |>
+	nest(data = -gs_cat) |>
 	mutate(test =
 			map(
 				data,
 				~ clusterProfiler::enricher(
 					my_entrez_rank,
-				 	TERM2GENE=.x %>% select(gs_name, entrez_gene),
+				 	TERM2GENE=.x |> select(gs_name, entrez_gene),
 					pvalueCutoff = 1
-					) %>%	as_tibble
+					) |>	as_tibble()
 			))
 }
 \examples{
+
+print("Not run for build time.")
 
 #se_mini = aggregate_duplicates(tidybulk::se_mini, .transcript = entrez)
 #df_entrez = mutate(df_entrez, do_test = feature \%in\% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))

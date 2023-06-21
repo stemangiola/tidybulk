@@ -104,10 +104,10 @@ For example, we often have to convert ensembl symbols to gene/transcript symbol,
  are appended, and factors and boolean are appended as characters.
 
  Underlying custom method:
- data %>%
-		filter(n_aggr > 1) %>%
-		group_by(!!.sample,!!.transcript) %>%
-		dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function())
+ data |>
+		filter(n_aggr > 1) |>
+		group_by(!!.sample,!!.transcript) |>
+		dplyr::mutate(!!.abundance := !!.abundance |> aggregation_function())
 }
 \examples{
 

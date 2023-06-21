@@ -180,27 +180,27 @@ This function provides the option to use edgeR \url{https://doi.org/10.1093/bioi
 All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.
 
 Underlying method for edgeR framework:
-	.data %>%
+	.data |>
 
 	# Filter
 keep_abundant(
 		factor_of_interest = !!(as.symbol(parse_formula(.formula)[1])),
 		minimum_counts = minimum_counts,
 		minimum_proportion = minimum_proportion
-	) %>%
+	) |>
 
 		# Format
-		select(!!.transcript,!!.sample,!!.abundance) %>%
-		spread(!!.sample,!!.abundance) %>%
+		select(!!.transcript,!!.sample,!!.abundance) |>
+		spread(!!.sample,!!.abundance) |>
 		as_matrix(rownames = !!.transcript) %>%
 
 		# edgeR
-		edgeR::DGEList(counts = .) %>%
-		edgeR::calcNormFactors(method = scaling_method) %>%
-		edgeR::estimateDisp(design) %>%
+		edgeR::DGEList(counts = .) |>
+		edgeR::calcNormFactors(method = scaling_method) |>
+		edgeR::estimateDisp(design) |>
 
 		# Fit
-		edgeR::glmQLFit(design) %>% // or glmFit according to choice
+		edgeR::glmQLFit(design) |> // or glmFit according to choice
 		edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
 
 Underlying method for DESeq2 framework:
@@ -208,11 +208,11 @@ keep_abundant(
 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 		minimum_counts = minimum_counts,
 		minimum_proportion = minimum_proportion
-) %>%
+) |>
 
 # DESeq2
-DESeq2::DESeqDataSet(design = .formula) %>%
-DESeq2::DESeq() %>%
+DESeq2::DESeqDataSet(design = .formula) |>
+DESeq2::DESeq() |>
 DESeq2::results()
 }
 \examples{

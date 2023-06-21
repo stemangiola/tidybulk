@@ -70,6 +70,8 @@ This function fills the abundance of missing sample-transcript pair using the me
 }
 \examples{
 
+print("Not run for build time.")
+
 # tidybulk::se_mini |>  fill_missing_abundance( fill_with = 0)
 
 

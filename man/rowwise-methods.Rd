@@ -29,8 +29,8 @@ use \code{[[1]]}. This makes `summarise()` on a rowwise tbl
 effectively equivalent to [plyr::ldply()].
 }
 \examples{
-`\%>\%` = magrittr::`\%>\%`
+
 df <- expand.grid(x = 1:3, y = 3:1)
-df_done <- df \%>\% rowwise() \%>\% do(i = seq(.$x, .$y))
+df_done <- df |> rowwise() 
 
 }

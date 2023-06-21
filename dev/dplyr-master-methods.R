@@ -190,7 +190,7 @@ bind_rows <- function(..., .id = NULL) {
 #' @export
 bind_rows.default <-  function(..., .id = NULL)
 {
-  dplyr::bind_rows(..., .id = .id)
+  bind_rows(..., .id = .id)
 }
 
 #' @export
@@ -205,7 +205,7 @@ bind_rows.tidybulk <- function(..., .id = NULL)
   # tt_columns of the two objects must match
   error_if_parameters_not_match(par1, par2)
 
-  dplyr::bind_rows(..., .id = .id) %>%
+  bind_rows(..., .id = .id) %>%
 
     # Attach attributes from the first object
     add_attr(tts[[1]] %>% attr("internals"), "internals")
@@ -225,7 +225,7 @@ bind_cols <- function(..., .id = NULL) {
 #' @export
 bind_cols.default <-  function(..., .id = NULL)
 {
-  dplyr::bind_cols(..., .id = .id)
+  bind_cols(..., .id = .id)
 }
 
 #' @export
@@ -234,7 +234,7 @@ bind_cols.tidybulk <- function(..., .id = NULL)
 
   tts = flatten_if(dots_values(...), is_spliced) # Original that fails Bioconductor dplyr:::flatten_bindable(rlang::dots_values(...))
   
-  dplyr::bind_cols(..., .id = .id) %>%
+  bind_cols(..., .id = .id) %>%
 
     # Attach attributes
     add_attr(tts[[1]] %>% attr("internals"), "internals")

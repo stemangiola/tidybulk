@@ -142,7 +142,37 @@ A `SummarizedExperiment` object
 remove_redundancy() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a consistent object (to the input) with dropped elements (e.g., samples).
 }
 \details{
+`r lifecycle::badge("maturing")`
 
+This function removes redundant elements from the original data set (e.g., samples or transcripts).
+For example, if we want to define cell-type specific signatures with low sample redundancy.
+This function returns a tibble with dropped redundant elements (e.g., samples).
+Two redundancy estimation approaches are supported:
+(i) removal of highly correlated clusters of elements (keeping a representative) with method="correlation";
+(ii) removal of most proximal element pairs in a reduced dimensional space.
+
+Underlying method for correlation:
+widyr::pairwise_cor(sample, transcript,count, sort = TRUE, diag = FALSE, upper = FALSE)
+
+Underlying custom method for reduced dimensions:
+select_closest_pairs = function(df) {
+		couples <- df |> head(n = 0)
+
+		while (df |> nrow() > 0) {
+			pair <- df |>
+			arrange(dist) |>
+			head(n = 1)
+			couples <- couples |> bind_rows(pair)
+			df <- df |>
+				filter(
+					!`sample 1` %in% (pair |> select(1:2) |> as.character()) &
+						!`sample 2` %in% (pair |> select(1:2) |> as.character())
+				)
+		}
+
+		couples
+
+	}
 }
 \examples{
 

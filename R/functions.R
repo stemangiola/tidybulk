@@ -151,8 +151,8 @@ create_tt_from_bam_sam_bulk <-
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
@@ -236,8 +236,8 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr equals
 #' @importFrom rlang :=
@@ -362,14 +362,17 @@ get_scaled_counts_bulk <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
 #' @importFrom rlang inform
+#' @importFrom tidyr spread
+#' @importFrom tidyr pivot_wider
+#' @importFrom dplyr slice
 #'
 #'
 #' @param .data A tibble
@@ -451,7 +454,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	# 	count() %>%
 	# 	ungroup() %>%
 	# 	{
-	# 		(.) %>% nrow %>% st(2) |
+	# 		(.) %>% nrow() %>% st(2) |
 	# 		(.) %>% distinct(n) %>%	pull(n) %>%	min %>% st(2)
 	# 	}
 	# )
@@ -646,14 +649,15 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
 #' @importFrom rlang inform
+#' @importFrom dplyr arrange
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, referring only to numeric variables
@@ -853,14 +857,15 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
 #' @importFrom rlang inform
+#' @importFrom dplyr mutate_if
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, referring only to numeric variables
@@ -1033,8 +1038,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -1045,6 +1050,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 #' @importFrom stringr str_split
 #' @importFrom stringr str_replace_all
 #' @importFrom stringr str_remove
+#' @importFrom dplyr starts_with
 #'
 #'
 #' @param .data A tibble
@@ -1101,17 +1107,14 @@ test_differential_cellularity_ <- function(.data,
 		pull(prop) %>%
 		min()
 
-
 	# Check if test is univaiable or multivariable
-	.formula %>%
-		when(
-
-			# Univariable
-			format(.) %>%
-				str_split("~") %>%
-				.[[1]] %>%
-				map_lgl( ~ grepl("\\. | \\.", .x)) %>%
-				which	== 1 ~ {
+	# Univariable
+	if(
+	  format(.formula) %>%
+	  str_split("~") %>%
+	  .[[1]] %>%
+	  map_lgl( ~ grepl("\\. | \\.", .x)) %>%
+	  which	== 1 ){
 					# Parse formula
 					.my_formula =
 						.formula %>%
@@ -1126,7 +1129,7 @@ test_differential_cellularity_ <- function(.data,
 						as.formula
 
 					# Test
-					univariable_differential_tissue_composition(deconvoluted,
+					result = univariable_differential_tissue_composition(deconvoluted,
 																											method,
 																											.my_formula,
 																											min_detected_proportion) %>%
@@ -1139,50 +1142,51 @@ test_differential_cellularity_ <- function(.data,
 							grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
 							~ (.) %>% memorise_methods_used("betareg")
 						)
-				},
+	} else {
 
-			# Multivariable
-			~ {
-				# Parse formula
-				covariates =
-					deconvoluted %>%
-					select(starts_with(method)) %>%
-					colnames() %>%
-					gsub(sprintf("%s:", method), "", .) %>%
-					str_replace_all("[ \\(\\)]", "___")
-
-				# Parse formula
-				.my_formula =
-					.formula %>%
-					when(
-						# If I have the dot, needed definitely for censored
-						format(.) %>% grepl("\\.", .) %>% any ~
-							format(.formula) %>%
-							str_replace("([-\\+\\*~ ])(\\.)",
-													sprintf(
-														"\\1%s", paste(covariates, collapse = " + ")
-													)),
-
-						# If normal formula
-						~ sprintf(".proportion_0_corrected%s", format(.))
-					) %>%
-
-					as.formula
-
-				# Test
-				multivariable_differential_tissue_composition(deconvoluted,
-																											method,
-																											.my_formula,
-																											min_detected_proportion) %>%
-
-					# Attach attributes
-					reattach_internals(.data) %>%
-
-					# Add methods used
-					when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot"), object_containing_methods = .data),
-							 ~ (.))
-
-			}) %>%
+	    # Parse formula
+	    covariates =
+	      deconvoluted %>%
+	      select(starts_with(method)) %>%
+	      colnames() %>%
+	      gsub(sprintf("%s:", method), "", .) %>%
+	      str_replace_all("[ \\(\\)]", "___")
+	    
+	    # Parse formula
+	    .my_formula =
+	      .formula %>%
+	      when(
+	        # If I have the dot, needed definitely for censored
+	        format(.) %>% grepl("\\.", .) %>% any ~
+	          format(.formula) %>%
+	          str_replace("([-\\+\\*~ ])(\\.)",
+	                      sprintf(
+	                        "\\1%s", paste(covariates, collapse = " + ")
+	                      )),
+	        
+	        # If normal formula
+	        ~ sprintf(".proportion_0_corrected%s", format(.))
+	      ) %>%
+	      
+	      as.formula
+	    
+	    # Test
+	   result =  multivariable_differential_tissue_composition(deconvoluted,
+	                                                  method,
+	                                                  .my_formula,
+	                                                  min_detected_proportion) %>%
+	      
+	      # Attach attributes
+	      reattach_internals(.data) %>%
+	      
+	      # Add methods used
+	      when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot"), object_containing_methods = .data),
+	           ~ (.))
+	    
+	  }
+				
+	
+	result |>
 
 		# Eliminate prefix
 		mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
@@ -1196,8 +1200,8 @@ test_differential_cellularity_ <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -1287,8 +1291,8 @@ test_stratification_cellularity_ <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom purrr map2_dfr
@@ -1457,7 +1461,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
         	limma::voom(design, plot = FALSE) %>%
 
         	# Execute EGSEA
-        	egsea(
+    	  EGSEA::egsea(
         		contrasts = my_contrasts,
         		gs.annots = nonkegg_genesets,
         		baseGSEAs = methods,
@@ -1535,8 +1539,8 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom stats kmeans
 #' @importFrom rlang :=
@@ -1603,8 +1607,8 @@ get_clusters_kmeans_bulk <-
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom utils install.packages
@@ -1684,8 +1688,8 @@ get_clusters_SNN_bulk <-
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom purrr map_dfr
 #' @importFrom rlang :=
@@ -1799,8 +1803,8 @@ get_reduced_dimensions_MDS_bulk <-
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats prcomp
@@ -1866,7 +1870,7 @@ get_reduced_dimensions_PCA_bulk <-
 
 			spread(!!.element,!!.abundance) %>%
 
-			drop_na %>% # Is this necessary?
+			drop_na() %>% # Is this necessary?
 
 			# check that there are non-NA genes for enough samples
 			ifelse2_pipe(# First condition
@@ -1945,8 +1949,8 @@ we suggest to partition the dataset for sample clusters.
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
@@ -2002,7 +2006,7 @@ get_reduced_dimensions_TSNE_bulk <-
 		# Set perprexity to not be too high
 		if (!"perplexity" %in% names(arguments))
 			arguments = arguments %>% c(perplexity = ((
-				.data %>% distinct(!!.element) %>% nrow %>% sum(-1)
+				.data %>% distinct(!!.element) %>% nrow() %>% sum(-1)
 			) / 3 / 2) %>% floor() %>% min(30))
 
 		# If not enough samples stop
@@ -2058,8 +2062,8 @@ get_reduced_dimensions_TSNE_bulk <-
 #'
 #' @keywords internal
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
@@ -2183,10 +2187,11 @@ get_reduced_dimensions_UMAP_bulk <-
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang quo_is_null
+#' @importFrom dplyr between
 #'
 #'
 #' @param .data A tibble
@@ -2231,7 +2236,7 @@ get_rotated_dimensions =
 		# Function that rotates a 2D space of a arbitrary angle
 		rotation = function(m, d) {
 			r = d * pi / 180
-			((dplyr::bind_rows(
+			((bind_rows(
 				c(`1` = cos(r), `2` = -sin(r)),
 				c(`1` = sin(r), `2` = cos(r))
 			) %>% as_matrix) %*% m)
@@ -2267,11 +2272,14 @@ get_rotated_dimensions =
 #' @noRd
 #'
 #' @importFrom dplyr summarise_all
-#' @importFrom dplyr bind_rows
 #' @importFrom magrittr %$%
 #' @importFrom rlang :=
 #' @importFrom tidyr replace_na
 #' @importFrom dplyr across
+#' @importFrom dplyr select_if
+#' @importFrom dplyr count
+#' @importFrom dplyr group_cols
+#' @importFrom dplyr n
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -2402,7 +2410,7 @@ aggregate_duplicated_transcripts_bulk =
 			# input: tibble
 			# output tibble distinct
 			{
-				dplyr::bind_rows(
+				bind_rows(
 					# Unique symbols
 					(.) %>%
 						filter(n_aggr == 1) %>%
@@ -2437,7 +2445,7 @@ aggregate_duplicated_transcripts_bulk =
 #' @noRd
 #'
 #' @importFrom dplyr summarise_all
-#' @importFrom dplyr bind_rows
+#' @importFrom ttservice bind_rows
 #' @importFrom magrittr %$%
 #' @importFrom rlang :=
 #' @importFrom stringi stri_c
@@ -2544,10 +2552,11 @@ aggregate_duplicated_transcripts_DT =
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
+#' @importFrom dplyr anti_join
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -3110,8 +3119,8 @@ get_cell_type_proportions = function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -3399,8 +3408,8 @@ tidybulk_to_SummarizedExperiment = function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -3560,7 +3569,7 @@ fill_NA_using_formula = function(.data,
 											) %>%
 
 											# Through warning if group of size 1
-											ifelse_pipe((.) %>% nrow %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
+											ifelse_pipe((.) %>% nrow() %>% `<` (2), warning("tidybulk says: According to your design matrix, u have sample groups of size < 2, so you your dataset could still be sparse."))
 	)) %>%
 	unnest(cov_data) %>%
    when( need_log ~ mutate(., !!.abundance := exp(!!.abundance)-1), ~ (.)   ) %>%
@@ -3585,12 +3594,14 @@ fill_NA_using_formula = function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
+#' @importFrom dplyr if_else
+#' @importFrom dplyr contains
 #'
 #' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
 #' @param .sample The name of the element column

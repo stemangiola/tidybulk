@@ -53,11 +53,6 @@
 #'
 "breast_tcga_mini_SE"
 
-#' Needed for vignette counts_SE
-#'
-#'
-"counts_SE"
-
 #' Needed for tests tximeta_summarizeToGene_object, It is SummarizedExperiment from tximeta
 #'
 #'

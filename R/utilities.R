@@ -11,8 +11,8 @@ my_stop = function() {
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @importFrom purrr as_mapper
 #'
 #' @param .x A tibble
@@ -36,8 +36,8 @@ ifelse_pipe = function(.x, .p, .f1, .f2 = NULL) {
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #'
 #' @param .x A tibble
 #' @param .p1 A boolean
@@ -83,7 +83,7 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
 error_if_log_transformed <- function(x, .abundance) {
   .abundance = enquo(.abundance)
 
-  if (x %>% nrow %>% gt(0))
+  if (x %>% nrow() %>% gt(0))
     if (x %>% summarise(m = !!.abundance %>% max) %>% pull(m) < 50)
       stop(
         "tidybulk says: The input was log transformed, this algorithm requires raw (un-scaled) read counts"
@@ -95,8 +95,8 @@ error_if_log_transformed <- function(x, .abundance) {
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom utils capture.output
 #'
@@ -138,8 +138,8 @@ error_if_duplicated_genes <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #'
 #' @param .data A tibble of read counts
@@ -151,7 +151,7 @@ error_if_counts_is_na = function(.data, .abundance) {
   .abundance = enquo(.abundance)
 
   # Do the check
-  if (.data %>% filter(!!.abundance %>% is.na) %>% nrow %>% gt(0))
+  if (.data %>% filter(!!.abundance %>% is.na) %>% nrow() %>% gt(0))
     stop("tidybulk says: You have NA values in your counts")
 
   # If all good return original data frame
@@ -163,8 +163,8 @@ error_if_counts_is_na = function(.data, .abundance) {
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom purrr map
 #'
@@ -1003,7 +1003,7 @@ get_specific_annotation_columns = function(.data, .col){
       ifelse_pipe(
         .data %>%
           distinct(!!.col, !!as.symbol(.x)) %>%
-          nrow %>%
+          nrow() %>%
           equals(n_x),
         ~ .x,
         ~ NULL
@@ -1043,12 +1043,13 @@ quo_names <- function(v) {
 #' @keywords internal
 #' @noRd
 #'
-#' @import dplyr
-#' @import tidyr
+#' 
+#' 
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats median
 #' @importFrom rlang quo_is_symbol
+#' @importFrom tidyr drop_na
 #'
 #' @param .data A tibble
 #' @param .sample The name of the sample column
@@ -1341,7 +1342,7 @@ univariable_differential_tissue_stratification = function(
 
 				if(data %>%
 					 distinct(.high_cellularity) %>%
-					 nrow %>%
+					 nrow() %>%
 					 equals(1)
 				) return(NULL)
 
@@ -1354,10 +1355,10 @@ univariable_differential_tissue_stratification = function(
 						fit=.,
 						data = data,
 						risk.table = FALSE,
-						conf.int = T,
+						conf.int = TRUE,
 						palette = c("#ed6f68",  "#5366A0" ),
 						legend = "none",
-						pval = T
+						pval = TRUE
 					)
 
 				fit %>%
@@ -1421,7 +1422,7 @@ univariable_differential_tissue_stratification_SE = function(
 
 				if(data %>%
 					 distinct(.high_cellularity) %>%
-					 nrow %>%
+					 nrow() %>%
 					 equals(1)
 				) return(NULL)
 
@@ -1434,10 +1435,10 @@ univariable_differential_tissue_stratification_SE = function(
 						fit=.,
 						data = data,
 						risk.table = FALSE,
-						conf.int = T,
+						conf.int = TRUE,
 						palette = c("#ed6f68",  "#5366A0" ),
 						legend = "none",
-						pval = T
+						pval = TRUE
 					)
 
 				fit %>%
@@ -1457,7 +1458,7 @@ univariable_differential_tissue_stratification_SE = function(
 # Function that rotates a 2D space of a arbitrary angle
 rotation = function(m, d) {
 	r = d * pi / 180
-	((dplyr::bind_rows(
+	((bind_rows(
 		c(`1` = cos(r), `2` = -sin(r)),
 		c(`1` = sin(r), `2` = cos(r))
 	) %>% as_matrix) %*% m)

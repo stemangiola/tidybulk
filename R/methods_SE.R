@@ -3,6 +3,10 @@
 												.transcript,
 												.abundance,
 												.abundance_scaled = NULL) {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Check if package is installed, otherwise install
 	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing SummarizedExperiment")
@@ -42,8 +46,8 @@
 #'
 #' @importFrom tibble as_tibble
 #' @importFrom purrr reduce
-#' @import dplyr
-#' @import tidyr
+#' 
+#' @export
 #'
 #'
 #' @inheritParams tidybulk
@@ -56,6 +60,9 @@
 setMethod("tidybulk", "SummarizedExperiment", .tidybulk_se)
 
 #' tidybulk
+#' 
+#' @export
+#' 
 #' @inheritParams tidybulk
 #'
 #' @docType methods
@@ -88,6 +95,9 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 															 reference_selection_function = NULL) {
 
 
+  # Fix NOTEs
+  . = NULL
+  
 	# Check if package is installed, otherwise install
 	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing edgeR needed for analyses")
@@ -231,6 +241,9 @@ setMethod("scale_abundance",
 																transform = log1p,
 																...) {
 
+  # Fix NOTEs
+  . = NULL
+  
 	my_assay =
 		.data %>%
 		# Filter abundant if performed
@@ -313,6 +326,9 @@ setMethod("cluster_elements",
 																 scale = TRUE,
 																 ...) {
 
+  # Fix NOTEs
+  . = NULL
+  
 	my_assay =
 		.data %>%
 
@@ -421,6 +437,9 @@ setMethod("reduce_dimensions",
 																 dimension_2_column_rotated = NULL,
 																 action = "add") {
 
+  # Fix NOTEs
+  . = NULL
+  
 	# Parse other colnames
 	dimension_1_column = enquo(dimension_1_column)
 	dimension_2_column = enquo(dimension_2_column)
@@ -521,6 +540,9 @@ setMethod("rotate_dimensions",
 																 log_transform = NULL) {
 
 
+  # Fix NOTEs
+  . = NULL
+  
 	Dim_a_column = enquo(Dim_a_column)
 	Dim_b_column = enquo(Dim_b_column)
 
@@ -628,6 +650,9 @@ setMethod("remove_redundancy",
 																inverse_transform = expm1,
 																...) {
 
+  # Fix NOTEs
+  . = NULL
+  
 	# Check if package is installed, otherwise install
 	if (find.package("sva", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing sva - Combat needed for adjustment for unwanted variation")
@@ -749,6 +774,10 @@ setMethod("adjust_abundance",
 																		.abundance = NULL,
 																		aggregation_function = sum,
 																		keep_integer = TRUE) {
+  
+  # Fix NOTEs
+  . = NULL
+  
   # Make col names
   .transcript = enquo(.transcript)
 
@@ -933,6 +962,9 @@ setMethod("aggregate_duplicates",
 																			prefix = "",
 																			...) {
 
+  # Fix NOTEs
+  . = NULL
+  
   .transcript = enquo(.transcript)
   .sample = s_(.data)$symbol
 
@@ -1107,6 +1139,9 @@ setMethod(
 																					 ...)
 {
 
+  # Fix NOTEs
+  . = NULL
+  
   # DEPRECATION OF .constrasts
   if (is_present(.contrasts) & !is.null(.contrasts)) {
 
@@ -1260,6 +1295,9 @@ setMethod(
 														 transform = log1p)
 {
 
+  # Fix NOTEs
+  . = NULL
+  
 
 	variable_transcripts =
 		.data %>%
@@ -1298,6 +1336,7 @@ setMethod("keep_variable",
 #' @inheritParams keep_variable
 #'
 #' @importFrom purrr map_chr
+#' @importFrom tidyr unite
 #'
 #' @docType methods
 #' @rdname keep_variable-methods
@@ -1317,6 +1356,9 @@ setMethod("keep_variable",
 																 minimum_proportion = 0.7)
 {
 
+  # Fix NOTEs
+  . = NULL
+  
 
 	factor_of_interest = enquo(factor_of_interest)
 
@@ -1439,6 +1481,9 @@ setMethod("identify_abundant",
 														 minimum_proportion = 0.7)
 {
 
+  # Fix NOTEs
+  . = NULL
+  
 	factor_of_interest = enquo(factor_of_interest)
 
 	.data =
@@ -1483,6 +1528,10 @@ setMethod("keep_abundant",
 
 #' @importFrom lifecycle deprecate_warn
 #' @importFrom stringr str_replace
+#' @importFrom dplyr everything
+#' 
+#' 
+#' 
 .test_gene_enrichment_SE = 		function(.data,
 																			.formula,
 																			.sample = NULL,
@@ -1499,6 +1548,9 @@ setMethod("keep_abundant",
 																			.contrasts = NULL
 																		)	{
 
+  # Fix NOTEs
+  . = NULL
+  
 	# DEPRECATION OF reference function
 	if (is_present(method) & !is.null(method)) {
 
@@ -2000,6 +2052,9 @@ setMethod("pivot_sample",
 .pivot_transcript = 		function(.data,
 															 .transcript = NULL)	{
 
+  # Fix NOTEs
+  . = NULL
+  
 	range_info <-
 		get_special_datasets(.data) %>%
 		reduce(left_join, by=feature__$name)
@@ -2054,6 +2109,9 @@ setMethod("pivot_transcript",
 																				suffix = "",
 																				force_scaling = FALSE) {
 
+  # Fix NOTEs
+  . = NULL
+  
   .abundance = enquo(.abundance)
 
   .assay_to_impute =
@@ -2080,7 +2138,7 @@ setMethod("pivot_transcript",
         else message(sprintf("tidybulk says: %s appears not to be scaled for sequencing depth (missing _scaled suffix; if you think this column is idependent of sequencing depth ignore this message), therefore the imputation can produce non meaningful results if sequencing depth for samples are highly variable. If you use force_scaling = TRUE library size will be used for eliminatig some sequencig depth effect before imputation", .y))
 
         # Log
-        need_log = max(.x, na.rm=T) > 50
+        need_log = max(.x, na.rm=TRUE) > 50
         if(need_log) .x = log1p(.x)
 
         # Imputation
@@ -2163,6 +2221,10 @@ setMethod("impute_missing_abundance",
 																						 reference = X_cibersort,
 																						 ...)
 {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing broom needed for analyses")
 		install.packages("broom", repos = "https://cloud.r-project.org")
@@ -2319,6 +2381,9 @@ setMethod(
 																							...)
 {
 
+  # Fix NOTEs
+  . = NULL
+  
 	# Validate formula
 	if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
 		stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
@@ -2423,6 +2488,9 @@ setMethod("get_bibliography",
 .describe_transcript_SE = function(.data,
 															 .transcript = NULL) {
 
+  # Fix NOTEs
+  . = NULL
+  
 	# Check if package is installed, otherwise install
 	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")

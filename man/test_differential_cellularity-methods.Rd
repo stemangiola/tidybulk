@@ -119,7 +119,7 @@ and passes the proportions inferred into a generalised linear model (DOI:dx.doi.
 or a cox regression model (ISBN: 978-1-4757-3294-8)
 
 Underlying method for the generalised linear model:
-data %>%
+data |>
 deconvolve_cellularity(
 	!!.sample, !!.transcript, !!.abundance,
 	method=method,
@@ -131,7 +131,7 @@ deconvolve_cellularity(
 	betareg::betareg(.my_formula, .)
 
 Underlying method for the cox regression:
-data %>%
+data |>
 deconvolve_cellularity(
 	!!.sample, !!.transcript, !!.abundance,
 	method=method,
@@ -140,7 +140,7 @@ deconvolve_cellularity(
 	...
 )  %>%
 	[..] %>%
-	mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
+	mutate(.proportion_0_corrected = .proportion_0_corrected  |> boot::logit()) %>%
 	survival::coxph(.my_formula, .)
 }
 \examples{

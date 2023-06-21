@@ -40,8 +40,8 @@ Methods available in currently loaded packages:
 }
 
 \examples{
-`\%>\%` = magrittr::`\%>\%`
-by_cyl <- mtcars \%>\% group_by(cyl)
+
+by_cyl <- mtcars |> group_by(cyl)
 
 }
 \concept{grouping functions}

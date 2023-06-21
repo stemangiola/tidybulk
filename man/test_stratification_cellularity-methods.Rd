@@ -112,7 +112,7 @@ or a cox regression model (ISBN: 978-1-4757-3294-8)
 
 
 Underlying method for the test:
-data %>%
+data |>
 deconvolve_cellularity(
 	!!.sample, !!.transcript, !!.abundance,
 	method=method,
@@ -120,14 +120,12 @@ deconvolve_cellularity(
 	action="get",
 	...
 )  %>%
-	[..] %>%
-	mutate(.high_cellularity = .proportion > median(.proportion)) %>%
+	[..] |>
+	mutate(.high_cellularity = .proportion > median(.proportion)) |>
 	survival::survdiff(data = data, .my_formula)
 }
 \examples{
 
-library(dplyr)
-library(tidyr)
 
 tidybulk::se_mini |>
 test_stratification_cellularity(

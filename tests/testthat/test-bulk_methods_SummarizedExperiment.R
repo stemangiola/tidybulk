@@ -3,8 +3,8 @@ context('Bulk methods SummarizedExperiment')
 data("se_mini")
 data("breast_tcga_mini_SE")
 
-input_df =  setNames(se_mini %>% tidybulk() %>% as_tibble(), c( "b","a",  "c", "Cell type",  "time" , "condition", "days",  "dead", "entrez"))
-input_df_breast = setNames( breast_tcga_mini_SE %>% tidybulk() %>% as_tibble(), c( "b", "a","c", "c norm", "call" ))
+input_df =  se_mini |> tidybulk() |> as_tibble() |> setNames( c( "b","a",  "c", "Cell type",  "time" , "condition", "days",  "dead", "entrez"))
+input_df_breast = setNames( breast_tcga_mini_SE |> tidybulk() |> as_tibble(), c( "b", "a","c", "c norm", "call" ))
 
 test_that("tidybulk SummarizedExperiment conversion",{
 
@@ -16,7 +16,7 @@ test_that("tidybulk SummarizedExperiment conversion",{
 
   expect_equal(	ncol(res),	13	)
 
-  res = res %>% tidybulk:::tidybulk_to_SummarizedExperiment()
+  res = res |> tidybulk:::tidybulk_to_SummarizedExperiment()
 
   expect_equal(	class(res)[1],	"SummarizedExperiment"	)
 
@@ -28,17 +28,17 @@ test_that("tidybulk SummarizedExperiment conversion",{
 
 test_that("tidybulk SummarizedExperiment normalisation manual",{
 
-  res = tidybulk(tidybulk:::tidybulk_to_SummarizedExperiment(scale_abundance(tidybulk(se) %>% identify_abundant())))
+  res = tidybulk(tidybulk:::tidybulk_to_SummarizedExperiment(scale_abundance(tidybulk(se) |> identify_abundant())))
 
-  res2 = tidybulk(se) %>% identify_abundant() %>% scale_abundance()
+  res2 = tidybulk(se) |> identify_abundant() |> scale_abundance()
 
-  res %>% distinct(.sample, multiplier) %>% pull(multiplier)
-  res2 %>% distinct(.sample, multiplier) %>% pull(multiplier)
+  res |> distinct(.sample, multiplier) |> pull(multiplier)
+  res2 |> distinct(.sample, multiplier) |> pull(multiplier)
 
 
   expect_equal(
-    res %>% distinct(.sample, multiplier) %>% pull(multiplier),
-    res2 %>% distinct(.sample, multiplier) %>% pull(multiplier) %>% as.numeric(),
+    res |> distinct(.sample, multiplier) |> pull(multiplier),
+    res2 |> distinct(.sample, multiplier) |> pull(multiplier) |> as.numeric(),
     tolerance=1e-3
   )
 
@@ -55,7 +55,7 @@ test_that("tidybulk SummarizedExperiment normalisation manual",{
 
 test_that("tidybulk SummarizedExperiment normalisation",{
 
-  res = se %>% identify_abundant() %>% scale_abundance()
+  res = se |> identify_abundant() |> scale_abundance()
 
   expect_equal(
     names(SummarizedExperiment::assays(res)),
@@ -66,7 +66,7 @@ test_that("tidybulk SummarizedExperiment normalisation",{
 
 test_that("tidybulk SummarizedExperiment normalisation subset",{
 
-  res = se %>% identify_abundant() %>% scale_abundance(
+  res = se |> identify_abundant() |> scale_abundance(
     .subset_for_scaling = .abundant & grepl("^E", .feature)
   )
 
@@ -100,7 +100,7 @@ test_that("tidybulk SummarizedExperiment clustering",{
 
 test_that("tidybulk SummarizedExperiment clustering",{
 
-  res = se %>% identify_abundant() %>% reduce_dimensions(method="PCA")
+  res = se |> identify_abundant() |> reduce_dimensions(method="PCA")
 
   expect_equal(
     tail(names(SummarizedExperiment::colData(res)), 1),
@@ -112,7 +112,7 @@ test_that("tidybulk SummarizedExperiment clustering",{
 test_that("Get rotated dimensions - SummarizedExperiment",{
 
   res.pca =
-    reduce_dimensions(se %>% identify_abundant(),		method="PCA"	)
+    reduce_dimensions(se |> identify_abundant(),		method="PCA"	)
 
   res =
     rotate_dimensions(
@@ -151,7 +151,7 @@ test_that("Get adjusted counts - SummarizedExperiment",{
 
   res =
     adjust_abundance(
-      cm %>% identify_abundant(),
+      cm |> identify_abundant(),
       ~ condition + batch
     )
 
@@ -166,7 +166,7 @@ test_that("Aggregate duplicated transcript - SummarizedExperiment",{
 
   se = tidybulk::se
   SummarizedExperiment::rowData(se)$bla =
-    rownames(se) %>% purrr::map_chr(~ {
+    rownames(se) |> purrr::map_chr(~ {
     if(.x  %in% c("LRG_239", "LRG_405")) "BLAAA"
     else .x
   })
@@ -178,9 +178,9 @@ test_that("Aggregate duplicated transcript - SummarizedExperiment",{
 
 
   expect_equal(
-    as.data.frame(rowRanges(se["ENSG00000272397","SRR1039508"])) %>%
+    as.data.frame(rowRanges(se["ENSG00000272397","SRR1039508"])) |>
       mutate_if(is.factor, as.character),
-    as.data.frame(rowRanges(res["ENSG00000272397","SRR1039508"]))%>%
+    as.data.frame(rowRanges(res["ENSG00000272397","SRR1039508"]))|>
       mutate_if(is.factor, as.character),
   )
 
@@ -204,7 +204,7 @@ test_that("Add cell type proportions - SummarizedExperiment",{
 test_that("differential trancript abundance - SummarizedExperiment",{
 
   res =		test_differential_abundance(
-    se_mini %>%
+    se_mini |>
       identify_abundant(factor_of_interest = condition),
     ~ condition
   )
@@ -213,7 +213,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
   # Quasi likelihood
   res_tibble =		test_differential_abundance(
-    input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
+    input_df |> identify_abundant(a, b, c, factor_of_interest = condition),
     ~ condition	,
     a, b, c
   )
@@ -226,22 +226,22 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
   expect_equal(
     res@elementMetadata[w,]$logFC,
-    res_tibble %>%
-      pivot_transcript(b) %>%
-      filter(b %in% rownames(res)[w]) %>%
-      dplyr::arrange(b) %>%
+    res_tibble |>
+      pivot_transcript(b) |>
+      filter(b %in% rownames(res)[w]) |>
+      dplyr::arrange(b) |>
       dplyr::pull(logFC),
     tolerance=1e-4
   )
 
   # Likelihood ratio
   res2 =		test_differential_abundance(
-    se_mini %>%
+    se_mini |>
       identify_abundant(factor_of_interest = condition),
     ~ condition, method = "edgeR_likelihood_ratio"	)
 
   res2_tibble =		test_differential_abundance(
-    input_df %>% identify_abundant(a, b, c, factor_of_interest = condition),
+    input_df |> identify_abundant(a, b, c, factor_of_interest = condition),
     ~ condition	,
     a, b, c, method = "edgeR_likelihood_ratio"
   )
@@ -254,17 +254,17 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
   expect_equal(
     res2@elementMetadata[w,]$logFC,
-    res2_tibble %>%
-      pivot_transcript(b) %>%
-      filter(b %in% rownames(res)[w]) %>%
-      dplyr::arrange(b) %>%
+    res2_tibble |>
+      pivot_transcript(b) |>
+      filter(b %in% rownames(res)[w]) |>
+      dplyr::arrange(b) |>
       dplyr::pull(logFC),
     tolerance=1e-4
   )
 
   # Treat
-  se_mini %>%
-    identify_abundant(a, b, c, factor_of_interest = condition) %>%
+  se_mini |>
+    identify_abundant(a, b, c, factor_of_interest = condition) |>
     test_differential_abundance(
       ~ condition,
       .sample = a,
@@ -274,11 +274,10 @@ test_that("differential trancript abundance - SummarizedExperiment",{
       method = "edgeR_likelihood_ratio",
       test_above_log2_fold_change = 1,
       action="only"
-    ) %>%
-    `@` (elementMetadata) %>%
-    as_tibble() %>%
-    filter(FDR<0.05) %>%
-    nrow %>%
+    ) |> SummarizedExperiment::rowData() |>
+    as_tibble() |>
+    filter(FDR<0.05) |>
+    nrow() |>
     expect_equal(169)
 
 })
@@ -286,8 +285,8 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
 test_that("Voom with treat method",{
 
-  se_mini %>%
-    identify_abundant(a, b, c, factor_of_interest = condition) %>%
+  se_mini |>
+    identify_abundant(a, b, c, factor_of_interest = condition) |>
     test_differential_abundance(
       ~ condition,
       .sample = a,
@@ -296,17 +295,16 @@ test_that("Voom with treat method",{
       method = "limma_voom",
       test_above_log2_fold_change = 1,
       action="only"
-    ) %>%
-    `@` (elementMetadata) %>%
-    as_tibble() %>%
-    filter(adj.P.Val<0.05) %>%
-    nrow %>%
+    ) |> SummarizedExperiment::rowData() |>
+    as_tibble() |>
+    filter(adj.P.Val<0.05) |>
+    nrow() |>
     expect_equal(97)
 
   # with multiple contrasts
   res <-
-    se_mini %>%
-    identify_abundant(a, b, c, factor_of_interest = Cell.type) %>%
+    se_mini |>
+    identify_abundant(a, b, c, factor_of_interest = Cell.type) |>
     test_differential_abundance(
       ~ 0 + Cell.type,
       .sample = a,
@@ -316,18 +314,17 @@ test_that("Voom with treat method",{
       method = "limma_voom",
       test_above_log2_fold_change = 1,
       action="only"
-    ) %>%
-    `@` (elementMetadata) %>%
+    ) |> SummarizedExperiment::rowData() |>
     as_tibble()
 
-  res %>%
-    filter(adj.P.Val___Cell.typeb_cell.Cell.typemonocyte < 0.05) %>%
-    nrow %>%
+  res |>
+    filter(adj.P.Val___Cell.typeb_cell.Cell.typemonocyte < 0.05) |>
+    nrow() |>
     expect_equal(293)
 
-  res %>%
-    filter(adj.P.Val___Cell.typeb_cell.Cell.typet_cell < 0.05) %>%
-    nrow %>%
+  res |>
+    filter(adj.P.Val___Cell.typeb_cell.Cell.typet_cell < 0.05) |>
+    nrow() |>
     expect_equal(246)
 
 })
@@ -365,13 +362,16 @@ test_that("filter variable - no object",{
 test_that("impute missing",{
 
   res =
-    input_df %>%
-    dplyr::slice(-1) %>%
-    tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+    input_df |>
+    dplyr::slice(-1) |>
+    tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) |>
     impute_missing_abundance(	~ condition	)
 
-  expect_equal(	SummarizedExperiment::assays(res) %>% as.list() %>% .[[1]] %>% .["TNFRSF4", "SRR1740034"],	6	)
-
+  list_SE = SummarizedExperiment::assays(res) |> as.list()
+  
+  list_SE[[1]]["TNFRSF4", "SRR1740034"] |>
+    expect_equal(6)
+  
 
   expect_equal(	nrow(res)*ncol(res),	nrow(input_df)	)
 
@@ -380,46 +380,46 @@ test_that("impute missing",{
 test_that("differential composition",{
 
   # Cibersort
-  se_mini %>%
-    test_differential_cellularity(. ~ condition	, cores = 1	) %>%
-    pull(`estimate_(Intercept)`) %>%
-    .[[1]] %>%
-    as.integer %>%
+  se_mini |>
+    test_differential_cellularity(. ~ condition	, cores = 1	) |>
+    pull(`estimate_(Intercept)`) |>
+    magrittr::extract2(1) |>
+    as.integer() |>
     expect_equal(	-2, 	tollerance =1e-3)
 
   # llsr
-  se_mini %>%
+  se_mini |>
     test_differential_cellularity(
       . ~ condition,
       method="llsr"
-    ) %>%
-    pull(`estimate_(Intercept)`) %>%
-    .[[1]] %>%
-    as.integer %>%
+    ) |>
+    pull(`estimate_(Intercept)`) |>
+    magrittr::extract2(1) |>
+    as.integer() |>
     expect_equal(	-2, 	tollerance =1e-3)
 
   # Survival analyses
-  input_df %>%
-    dplyr::select(a, b, c) %>%
-    nest(data = -a) %>%
+  input_df |>
+    dplyr::select(a, b, c) |>
+    nest(data = -a) |>
     mutate(
       days = c(1, 10, 500, 1000, 2000),
       dead = c(1, 1, 1, 0, 1)
-    ) %>%
-    unnest(data) %>%
-    tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+    ) |>
+    unnest(data) |>
+    tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) |>
     test_differential_cellularity(
       survival::Surv(days, dead) ~ .,
       cores = 1
-    ) %>%
-    pull(estimate) %>%
-    .[[1]] %>%
+    ) |>
+    pull(estimate) |>
+    magrittr::extract2(1) |>
     expect_equal(26.2662279, tolerance = 30)
   # round() %in% c(
   # 	26,  # 97 is the github action MacOS that has different value
   # 	26, # 112 is the github action UBUNTU that has different value
   # 	26 # 93 is the github action Windows that has different value
-  # ) %>%
+  # ) |>
   # expect_true()
 
 })
@@ -427,48 +427,48 @@ test_that("differential composition",{
 test_that("test_stratification_cellularity",{
 
   # Cibersort
-  input_df %>%
-    select(a, b, c) %>%
-    nest(data = -a) %>%
+  input_df |>
+    select(a, b, c) |>
+    nest(data = -a) |>
     mutate(
       days = c(1, 10, 500, 1000, 2000),
       dead = c(1, 1, 1, 0, 1)
-    ) %>%
-    unnest(data) %>%
-    tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+    ) |>
+    unnest(data) |>
+    tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) |>
     test_stratification_cellularity(
       survival::Surv(days, dead) ~ .,
       cores = 1
-    ) %>%
-    pull(.low_cellularity_expected) %>%
-    .[[1]] %>%
+    ) |>
+    pull(.low_cellularity_expected) |>
+    magrittr::extract2(1) |>
     expect_equal(3.35, tolerance  =1e-1)
 
   # llsr
-  input_df %>%
-    select(a, b, c) %>%
-    nest(data = -a) %>%
+  input_df |>
+    select(a, b, c) |>
+    nest(data = -a) |>
     mutate(
       days = c(1, 10, 500, 1000, 2000),
       dead = c(1, 1, 1, 0, 1)
-    ) %>%
-    unnest(data) %>%
+    ) |>
+    unnest(data) |>
     test_stratification_cellularity(
       survival::Surv(days, dead) ~ .,
       .sample = a,
       .transcript = b,
       .abundance = c,
       method = "llsr"
-    ) %>%
-    pull(.low_cellularity_expected) %>%
-    .[[1]] %>%
+    ) |>
+    pull(.low_cellularity_expected) |>
+    magrittr::extract2(1) |>
     expect_equal(3.35, tolerance  =1e-1)
 })
 
 
 # test_that("Get gene enrichment - no object",{
 #
-# 	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
+# 	if (find.package("EGSEA", quiet = TRUE) |> length |> equals(0)) {
 # 		message("Installing EGSEA needed for differential transcript abundance analyses")
 # 		if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos = "https://cloud.r-project.org")
 # 		BiocManager::install("EGSEA")
@@ -486,8 +486,8 @@ test_that("test_stratification_cellularity",{
 # 			.transcript = d,
 # 			.sample = a,
 # 			.abundance = c
-# 		) %>% identify_abundant(a, b, c, factor_of_interest = condition) %>%
-# 		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+# 		) |> identify_abundant(a, b, c, factor_of_interest = condition) |>
+# 		tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) |>
 # 		test_gene_enrichment(
 # 			~ condition,
 # 			.entrez = d,
@@ -520,8 +520,8 @@ test_that("gene over representation",{
   df_entrez = mutate(df_entrez, do_test = b %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 
   res =
-    df_entrez %>%
-    tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) %>%
+    df_entrez |>
+    tidybulk:::tidybulk_to_SummarizedExperiment(a, b, c) |>
     test_gene_overrepresentation(
       .entrez = entrez,
       .do_test = do_test,
@@ -541,7 +541,7 @@ test_that("Only reduced dimensions MDS - no object",{
 
 
   res =
-    breast_tcga_mini_SE %>%
+    breast_tcga_mini_SE |>
     reduce_dimensions(method = "MDS")
 
   expect_equal(
@@ -551,7 +551,7 @@ test_that("Only reduced dimensions MDS - no object",{
   )
 
   expect_equal(
-    ncol(colData(res)),
+    ncol(SummarizedExperiment::colData(res)),
     3
   )
 
@@ -565,7 +565,7 @@ test_that("Only reduced dimensions PCA - no object",{
 
 
   res =
-    breast_tcga_mini_SE %>%
+    breast_tcga_mini_SE |>
     reduce_dimensions(  method = "PCA"  )
 
   expect_equal(
@@ -575,7 +575,7 @@ test_that("Only reduced dimensions PCA - no object",{
   )
 
   expect_equal(
-    ncol(colData(res)),
+    ncol(SummarizedExperiment::colData(res)),
     3
   )
 
@@ -589,7 +589,7 @@ test_that("Only reduced dimensions tSNE - no object",{
 
 
   res =
-    breast_tcga_mini_SE %>%
+    breast_tcga_mini_SE |>
     reduce_dimensions(  method = "tSNE"  )
 
   expect_equal(
@@ -599,7 +599,7 @@ test_that("Only reduced dimensions tSNE - no object",{
   )
 
   expect_equal(
-    ncol(colData(res)),
+    ncol(SummarizedExperiment::colData(res)),
     3
   )
 
@@ -613,7 +613,7 @@ test_that("Only reduced dimensions UMAP - no object",{
 
 
   res =
-    breast_tcga_mini_SE %>%
+    breast_tcga_mini_SE |>
     reduce_dimensions(  method = "UMAP"  )
 
   expect_equal(
@@ -623,7 +623,7 @@ test_that("Only reduced dimensions UMAP - no object",{
   )
 
   expect_equal(
-    ncol(colData(res)),
+    ncol(SummarizedExperiment::colData(res)),
     3
   )
 
