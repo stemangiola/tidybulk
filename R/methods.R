@@ -36,6 +36,7 @@ setOldClass("tidybulk")
 #'
 #' @docType methods
 #' @rdname tidybulk-methods
+#' 
 #' @export
 #'
 setGeneric("tidybulk", function(.data,
@@ -77,6 +78,9 @@ setGeneric("tidybulk", function(.data,
 														 !!.abundance_scaled)
 }
 #' tidybulk
+#' 
+#' @export
+#' 
 #' @inheritParams tidybulk
 #'
 #' @docType methods
@@ -88,6 +92,8 @@ setMethod("tidybulk", "spec_tbl_df", .tidybulk)
 
 #' tidybulk
 #'
+#' @export
+#' 
 #' @importFrom purrr map2
 #'
 #' @inheritParams tidybulk
@@ -130,6 +136,9 @@ setGeneric("as_SummarizedExperiment", function(.data,
 																						.sample = NULL,
 																						.transcript = NULL,
 																						.abundance = NULL) {
+  
+  # Fix NOTEs
+  . = NULL
 
 	# Get column names
 	.sample = enquo(.sample)
@@ -141,13 +150,13 @@ setGeneric("as_SummarizedExperiment", function(.data,
 	.abundance = col_names$.abundance
 
 	# Check if package is installed, otherwise install
-	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
+	if (find.package("SummarizedExperiment", quiet = TRUE) |> length() |> equals(0)) {
 		message("Installing SummarizedExperiment")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("SummarizedExperiment", ask = FALSE)
 	}
-	if (find.package("S4Vectors", quiet = TRUE) %>% length %>% equals(0)) {
+	if (find.package("S4Vectors", quiet = TRUE) |> length() %>% equals(0)) {
 		message("Installing S4Vectors")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -247,6 +256,9 @@ setGeneric("as_SummarizedExperiment", function(.data,
 }
 
 #' as_SummarizedExperiment
+#' 
+#' @export
+#' 
 #' @inheritParams as_SummarizedExperiment
 #'
 #' @docType methods
@@ -257,6 +269,9 @@ setGeneric("as_SummarizedExperiment", function(.data,
 setMethod("as_SummarizedExperiment", "spec_tbl_df", .as_SummarizedExperiment)
 
 #' as_SummarizedExperiment
+#' 
+#' @export
+#' 
 #' @inheritParams as_SummarizedExperiment
 #'
 #' @docType methods
@@ -267,7 +282,8 @@ setMethod("as_SummarizedExperiment", "spec_tbl_df", .as_SummarizedExperiment)
 setMethod("as_SummarizedExperiment", "tbl_df", .as_SummarizedExperiment)
 
 #' as_SummarizedExperiment
-#'
+#' 
+#' @export
 #'
 #' @inheritParams as_SummarizedExperiment
 #'
@@ -316,6 +332,9 @@ setGeneric("tidybulk_SAM_BAM", function(file_names, genome = "hg38", ...)
 	standardGeneric("tidybulk_SAM_BAM"))
 
 #' tidybulk_SAM_BAM
+#' 
+#' @export
+#' 
 #' @inheritParams tidybulk_SAM_BAM-methods
 #'
 #' @docType methods
@@ -402,6 +421,10 @@ setGeneric("scale_abundance", function(.data,
 														 # DEPRECATED
 														 reference_selection_function = NULL)
 {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -505,6 +528,9 @@ setGeneric("scale_abundance", function(.data,
 }
 
 #' scale_abundance
+#' 
+#' @export
+#' 
 #' @inheritParams scale_abundance
 #'
 #' @docType methods
@@ -515,6 +541,9 @@ setGeneric("scale_abundance", function(.data,
 setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
 
 #' scale_abundance
+#' 
+#' @export
+#' 
 #' @inheritParams scale_abundance
 #'
 #' @docType methods
@@ -525,6 +554,9 @@ setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
 setMethod("scale_abundance", "tbl_df", .scale_abundance)
 
 #' scale_abundance
+#' 
+#' @export
+#' 
 #' @inheritParams scale_abundance
 #'
 #' @docType methods
@@ -622,6 +654,9 @@ setGeneric("cluster_elements", function(.data,
 															 )
 {
 
+  # Fix NOTEs
+  . = NULL
+  
   # DEPRECATION OF log_transform
   if (is_present(log_transform) & !is.null(log_transform)) {
 
@@ -690,8 +725,8 @@ setGeneric("cluster_elements", function(.data,
 	# Actions
 		if (action == "add"){
 
-			.data %>%
-				dplyr::left_join(	.data_procesed,		by=quo_name(.element)	) %>%
+			.data |>
+				dplyr::left_join(	.data_procesed,		by=quo_name(.element)	) |>
 
 				# Attach attributes
 				reattach_internals(.data)
@@ -699,12 +734,12 @@ setGeneric("cluster_elements", function(.data,
 		}
 		else if (action == "get"){
 
-			.data %>%
+			.data |>
 
 				# Selecting the right columns
-				pivot_sample(!!.element) %>%
+				pivot_sample(!!.element) |>
 
-				dplyr::left_join(	.data_procesed,		by=quo_name(.element)	) %>%
+				dplyr::left_join(	.data_procesed,		by=quo_name(.element)	) |>
 
 				# Attach attributes
 				reattach_internals(.data)
@@ -792,18 +827,18 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 #' Underlying method for UMAP:
 #'
 #'  df_source =
-#' .data %>%
+#' .data |>
 #'
 #'   # Filter NA symbol
-#'   filter(!!.feature %>% is.na %>% not()) %>%
+#'   filter(!!.feature |> is.na() |> not()) |>
 #'
 #'   # Prepare data frame
-#'   distinct(!!.feature,!!.element,!!.abundance) %>%
+#'   distinct(!!.feature,!!.element,!!.abundance) |>
 #'
 #'   # Filter most variable genes
-#'   keep_variable_transcripts(top) %>%
-#'   reduce_dimensions(method="PCA",  .dims = calculate_for_pca_dimensions,  action="get" ) %>%
-#'   as_matrix(rownames = quo_name(.element)) %>%
+#'   keep_variable_transcripts(top) |>
+#'   reduce_dimensions(method="PCA",  .dims = calculate_for_pca_dimensions,  action="get" ) |>
+#'   as_matrix(rownames = quo_name(.element)) |>
 #'   uwot::tumap(...)
 #'
 #'
@@ -872,6 +907,10 @@ setGeneric("reduce_dimensions", function(.data,
 
 																)
 {
+  
+  # Fix NOTEs
+  . = NULL
+  
 
   # DEPRECATION OF log_transform
   if (is_present(log_transform) & !is.null(log_transform)) {
@@ -964,7 +1003,7 @@ setGeneric("reduce_dimensions", function(.data,
 
 	if (action == "add"){
 
-		.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+		.data |>	dplyr::left_join(.data_processed,	by = quo_name(.element)) |>
 
 			# Attach attributes
 			reattach_internals(.data_processed)
@@ -972,12 +1011,12 @@ setGeneric("reduce_dimensions", function(.data,
 	}
 	else if (action == "get"){
 
-		.data %>%
+		.data |>
 
 			# Selecting the right columns
-			pivot_sample(!!.element) %>%
+			pivot_sample(!!.element) |>
 
-			dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+			dplyr::left_join(.data_processed,	by = quo_name(.element)) |>
 
 			# Attach attributes
 			reattach_internals(.data_processed)
@@ -1053,7 +1092,7 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 #'    ((bind_rows(
 #' 	  c(`1` = cos(r), `2` = -sin(r)),
 #' 	  c(`1` = sin(r), `2` = cos(r))
-#'   ) %>% as_matrix) %*% m)
+#'   ) |> as_matrix()) %*% m)
 #'  }
 #'
 #'
@@ -1096,6 +1135,10 @@ setGeneric("rotate_dimensions", function(.data,
 																dimension_2_column_rotated = NULL,
 																action =	"add")
 {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Get column names
 	.element = enquo(.element)
 	col_names = get_elements(.data, .element)
@@ -1135,8 +1178,8 @@ setGeneric("rotate_dimensions", function(.data,
 
 	if (action == "add"){
 
-		.data %>%
-			dplyr::left_join(	.data_processed,	by = quo_name(.element)	) %>%
+		.data |>
+			dplyr::left_join(	.data_processed,	by = quo_name(.element)	) |>
 
 			# Attach attributes
 			reattach_internals(.data)
@@ -1144,16 +1187,16 @@ setGeneric("rotate_dimensions", function(.data,
 	}
 	else if (action == "get"){
 
-		.data %>%
+		.data |>
 
 			# Selecting the right columns
 			select(
 				!!.element,
 				get_specific_annotation_columns(.data, !!.element)
-			) %>%
-			distinct() %>%
+			) |>
+			distinct() |>
 
-			dplyr::left_join(	.data_processed,	by = quo_name(.element)	) %>%
+			dplyr::left_join(	.data_processed,	by = quo_name(.element)	) |>
 
 			# Attach attributes
 			reattach_internals(.data)
@@ -1234,17 +1277,17 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 #'
 #' Underlying custom method for reduced dimensions:
 #' select_closest_pairs = function(df) {
-#' 		couples <- df %>% head(n = 0)
+#' 		couples <- df |> head(n = 0)
 #'
-#' 		while (df %>% nrow() > 0) {
-#' 			pair <- df %>%
-#' 			arrange(dist) %>%
+#' 		while (df |> nrow() > 0) {
+#' 			pair <- df |>
+#' 			arrange(dist) |>
 #' 			head(n = 1)
-#' 			couples <- couples %>% bind_rows(pair)
-#' 			df <- df %>%
+#' 			couples <- couples |> bind_rows(pair)
+#' 			df <- df |>
 #' 				filter(
-#' 					!`sample 1` %in% (pair %>% select(1:2) %>% as.character()) &
-#' 						!`sample 2` %in% (pair %>% select(1:2) %>% as.character())
+#' 					!`sample 1` %in% (pair |> select(1:2) |> as.character()) &
+#' 						!`sample 2` %in% (pair |> select(1:2) |> as.character())
 #' 				)
 #' 		}
 #'
@@ -1326,6 +1369,9 @@ setGeneric("remove_redundancy", function(.data,
 )
 {
 
+  # Fix NOTEs
+  . = NULL
+  
   # DEPRECATION OF log_transform
   if (is_present(log_transform) & !is.null(log_transform)) {
 
@@ -1453,7 +1499,7 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' cm$batch = 0
 #' cm$batch[colnames(cm) %in% c("SRR1740035", "SRR1740043")] = 1
 #'
-#'  cm %>%
+#'  cm |>
 #'  identify_abundant() |>
 #' 	adjust_abundance(	~ condition + batch	)
 #'
@@ -1494,6 +1540,9 @@ setGeneric("adjust_abundance", function(.data,
                               log_transform = NULL)
 {
 
+  # Fix NOTEs
+  . = NULL
+  
   # DEPRECATION OF log_transform
   if (is_present(log_transform) & !is.null(log_transform)) {
 
@@ -1535,7 +1584,7 @@ setGeneric("adjust_abundance", function(.data,
 				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
 				(.)
 			}
-		) %>%
+		) |>
 
 		get_adjusted_counts_for_unwanted_variation_bulk(
 			.formula,
@@ -1549,10 +1598,10 @@ setGeneric("adjust_abundance", function(.data,
 
 	if (action == "add"){
 
-		.data %>%
+		.data |>
 
 			# Add adjusted column
-			dplyr::left_join(.data_processed,	by = c(quo_name(.transcript), quo_name(.sample))) %>%
+			dplyr::left_join(.data_processed,	by = c(quo_name(.transcript), quo_name(.sample))) |>
 
 			# Attach attributes
 			reattach_internals(.data)
@@ -1560,19 +1609,19 @@ setGeneric("adjust_abundance", function(.data,
 	}
 	else if (action == "get"){
 
-		.data %>%
+		.data |>
 
 			# Selecting the right columns
-			pivot_sample(!!.sample) %>%
+			pivot_sample(!!.sample) |>
 			#
 			# select(
 			# 	!!.sample,
 			# 	get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
-			# ) %>%
-			# distinct() %>%
+			# ) |>
+			# distinct() |>
 
 			# Add adjusted column
-			dplyr::left_join(.data_processed,	by = quo_name(.sample)) %>%
+			dplyr::left_join(.data_processed,	by = quo_name(.sample)) |>
 
 			# Attach attributes
 			reattach_internals(.data)
@@ -1641,10 +1690,10 @@ setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 #'  are appended, and factors and boolean are appended as characters.
 #'
 #'  Underlying custom method:
-#'  data %>%
-#' 		filter(n_aggr > 1) %>%
-#' 		group_by(!!.sample,!!.transcript) %>%
-#' 		dplyr::mutate(!!.abundance := !!.abundance %>% aggregation_function())
+#'  data |>
+#' 		filter(n_aggr > 1) |>
+#' 		group_by(!!.sample,!!.transcript) |>
+#' 		dplyr::mutate(!!.abundance := !!.abundance |> aggregation_function())
 #'
 #' @return A consistent object (to the input) with aggregated transcript abundance and annotation
 #'
@@ -1685,6 +1734,10 @@ setGeneric("aggregate_duplicates", function(.data,
 																	.abundance = NULL,
 																	aggregation_function = sum,
 																	keep_integer = TRUE)  {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Make col names
   # Get column names
   .sample = enquo(.sample)
@@ -1703,7 +1756,7 @@ setGeneric("aggregate_duplicates", function(.data,
 						 skip_dupli_check = TRUE)
 
 	# If I have a small normal data set
-	if(.data %>% pull(!!.sample) %>% unique %>% length %>% st(100)){
+	if(.data |> pull(!!.sample) |> unique() |> length() |> st(100)){
   	aggregate_duplicated_transcripts_bulk(
   		.data,
 
@@ -1825,6 +1878,10 @@ setGeneric("deconvolve_cellularity", function(.data,
 																		 prefix = "",
 																		 action = "add",
 																		 ...)  {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -1857,30 +1914,30 @@ setGeneric("deconvolve_cellularity", function(.data,
 	)
 
 	if (action == "add"){
-		.data %>%
+		.data |>
 
 			# Add new annotation
-			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
+			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) |>
 
 			# Attach attributes
 			reattach_internals(.data_processed)
 	}
 
 	else if (action == "get"){
-		.data %>%
+		.data |>
 
 
 			# Selecting the right columns
-			pivot_sample(!!.sample) %>%
+			pivot_sample(!!.sample) |>
 			#
 			# select(
 			# 	!!.sample,
 			# 	get_x_y_annotation_columns(.data, !!.sample,!!.transcript, !!.abundance, NULL)$horizontal_cols
-			# ) %>%
-			# distinct() %>%
+			# ) |>
+			# distinct() |>
 
 			# Add new annotation
-			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) %>%
+			dplyr::left_join(.data_processed,				by = quo_name(.sample)			) |>
 
 			# Attach attributes
 			reattach_internals(.data_processed)
@@ -1947,6 +2004,10 @@ setMethod("deconvolve_cellularity",
 symbol_to_entrez = function(.data,
 														.transcript = NULL,
 														.sample = NULL) {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Get column names
 	.transcript = enquo(.transcript)
 	.sample = enquo(.sample)
@@ -1954,34 +2015,34 @@ symbol_to_entrez = function(.data,
 	.transcript = col_names$.transcript
 
 	# Check if package is installed, otherwise install
-	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+	if (find.package("org.Hs.eg.db", quiet = TRUE) |> length() |> equals(0)) {
 		message("Installing org.Hs.eg.db needed for annotation")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
 		BiocManager::install("org.Hs.eg.db", ask = FALSE)
 	}
 
-	.data %>%
+	.data |>
 
 		# Solve the lower case
-		mutate(transcript_upper := !!.transcript %>% toupper()) %>%
+		mutate(transcript_upper := (!!.transcript) |> toupper()) %>%
 
 		# Join
 		dplyr::left_join(
 			# Get entrez mapping 1:1
 			AnnotationDbi::mapIds(
 				org.Hs.eg.db::org.Hs.eg.db,
-				(.) %>% pull(transcript_upper) %>% as.character() %>% unique(),
+				(.) |> pull(transcript_upper) |> as.character() |> unique(),
 				'ENTREZID',
 				'SYMBOL'
-			) %>%
-				enframe(name = "transcript_upper", value = "entrez") %>%
-				filter(entrez %>% is.na %>% not()) %>%
-				group_by(transcript_upper) %>%
-				slice(1) %>%
+			) |>
+				enframe(name = "transcript_upper", value = "entrez") |>
+				filter(entrez |> is.na() |> not()) |>
+				group_by(transcript_upper) |>
+				slice(1) |>
 				ungroup(),
 			by = "transcript_upper"
-		) %>%
+		) |>
 
 		# Eliminate the upper case
 		select(-transcript_upper)
@@ -2013,6 +2074,9 @@ setGeneric("describe_transcript", function(.data,
 .describe_transcript = function(.data,
 														.transcript = NULL) {
 
+  # Fix NOTEs
+  . = NULL
+  
 	# Get column names
 	.transcript = enquo(.transcript)
 	col_names = get_transcript(.data, .transcript)
@@ -2020,7 +2084,7 @@ setGeneric("describe_transcript", function(.data,
 
 
 	# Check if package is installed, otherwise install
-	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+	if (find.package("org.Hs.eg.db", quiet = TRUE) |> length() |> equals(0)) {
 		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -2028,7 +2092,7 @@ setGeneric("describe_transcript", function(.data,
 	}
 
 	# Check if package is installed, otherwise install
-	if (find.package("org.Mm.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
+	if (find.package("org.Mm.eg.db", quiet = TRUE) |> length() |> equals(0)) {
 		message("Installing org.Mm.eg.db needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -2036,7 +2100,7 @@ setGeneric("describe_transcript", function(.data,
 	}
 
 	# Check if package is installed, otherwise install
-	if (find.package("AnnotationDbi", quiet = TRUE) %>% length %>% equals(0)) {
+	if (find.package("AnnotationDbi", quiet = TRUE) |> length() |> equals(0)) {
 		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
 		if (!requireNamespace("BiocManager", quietly = TRUE))
 			install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -2049,7 +2113,7 @@ setGeneric("describe_transcript", function(.data,
 		# Human
 		tryCatch(suppressMessages(AnnotationDbi::mapIds(
 			org.Hs.eg.db::org.Hs.eg.db,
-			keys = pull(.data, !!.transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+			keys = pull(.data, !!.transcript) |> unique() |> as.character(),  #ensembl_symbol_mapping$transcript %>% unique,
 			column = "GENENAME",
 			keytype = "SYMBOL",
 			multiVals = "first"
@@ -2060,26 +2124,26 @@ setGeneric("describe_transcript", function(.data,
 		c(
 			tryCatch(suppressMessages(AnnotationDbi::mapIds(
 				org.Mm.eg.db::org.Mm.eg.db,
-				keys = pull(.data, !!.transcript) %>% unique %>% as.character,  #ensembl_symbol_mapping$transcript %>% unique,
+				keys = pull(.data, !!.transcript) |> unique() |> as.character(),  #ensembl_symbol_mapping$transcript %>% unique,
 				column = "GENENAME",
 				keytype = "SYMBOL",
 				multiVals = "first"
 			)) %>% .[!is.na(.)], error = function(x){})
 
-		) %>%
+		) |>
 
 		# Parse
-		unlist() %>%
-		#unique() %>%
-		enframe(name = quo_name(.transcript), value = "description") %>%
+		unlist() |>
+		#unique() |>
+		enframe(name = quo_name(.transcript), value = "description") |>
 
 		# Select just one per transcript
-		distinct() %>%
-		group_by(!!.transcript) %>%
-		slice(1) %>%
+		distinct() |>
+		group_by(!!.transcript) |>
+		slice(1) |>
 		ungroup()
 
-	.data %>%
+	.data |>
 		left_join(description_df, by = quo_name(.transcript))
 }
 
@@ -2161,6 +2225,10 @@ setGeneric("ensembl_to_symbol", function(.data,
 															.ensembl,
 															action = "add")
 {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Make col names
 	.ensembl = enquo(.ensembl)
 
@@ -2169,8 +2237,8 @@ setGeneric("ensembl_to_symbol", function(.data,
 	if (action == "add"){
 
 		# Add new symbols column
-		.data %>%
-			dplyr::left_join(.data_processed, by=quo_name(.ensembl)) %>%
+		.data |>
+			dplyr::left_join(.data_processed, by=quo_name(.ensembl)) |>
 
 			# Attach attributes
 			reattach_internals(.data)
@@ -2179,10 +2247,10 @@ setGeneric("ensembl_to_symbol", function(.data,
 	# else if (action == "get"){
 	#
 	# 	# Add new symbols column
-	# 	.data %>%
+	# 	.data |>
 	#
 	#
-	# 		dplyr::left_join(.data_processed) %>%
+	# 		dplyr::left_join(.data_processed) |>
 	#
 	# 		# Attach attributes
 	# 		reattach_internals(.data)
@@ -2259,27 +2327,27 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.
 #'
 #' Underlying method for edgeR framework:
-#' 	.data %>%
+#' 	.data |>
 #'
 #' 	# Filter
 #'	keep_abundant(
 #'			factor_of_interest = !!(as.symbol(parse_formula(.formula)[1])),
 #'			minimum_counts = minimum_counts,
 #'			minimum_proportion = minimum_proportion
-#'		) %>%
+#'		) |>
 #'
 #'			# Format
-#'			select(!!.transcript,!!.sample,!!.abundance) %>%
-#'			spread(!!.sample,!!.abundance) %>%
+#'			select(!!.transcript,!!.sample,!!.abundance) |>
+#'			spread(!!.sample,!!.abundance) |>
 #'			as_matrix(rownames = !!.transcript) %>%
 #'
 #'			# edgeR
-#'			edgeR::DGEList(counts = .) %>%
-#'			edgeR::calcNormFactors(method = scaling_method) %>%
-#'			edgeR::estimateDisp(design) %>%
+#'			edgeR::DGEList(counts = .) |>
+#'			edgeR::calcNormFactors(method = scaling_method) |>
+#'			edgeR::estimateDisp(design) |>
 #'
 #'			# Fit
-#'			edgeR::glmQLFit(design) %>% // or glmFit according to choice
+#'			edgeR::glmQLFit(design) |> // or glmFit according to choice
 #'			edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
 #'
 #'	Underlying method for DESeq2 framework:
@@ -2287,11 +2355,11 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 #'			minimum_counts = minimum_counts,
 #'			minimum_proportion = minimum_proportion
-#'	) %>%
+#'	) |>
 #'
 #'	# DESeq2
-#'	DESeq2::DESeqDataSet(design = .formula) %>%
-#'	DESeq2::DESeq() %>%
+#'	DESeq2::DESeqDataSet(design = .formula) |>
+#'	DESeq2::DESeq() |>
 #'	DESeq2::results()
 #'
 #'
@@ -2401,6 +2469,10 @@ setGeneric("test_differential_abundance", function(.data,
 																					.contrasts = NULL
 																				)
 {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2523,8 +2595,8 @@ such as batch effects (if applicable) in the formula.
 
 	if (action == "add"){
 
-		.data %>%
-			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
+		.data |>
+			dplyr::left_join(.data_processed, by = quo_name(.transcript)) |>
 
 			# Attach attributes
 			reattach_internals(.data_processed)
@@ -2532,12 +2604,12 @@ such as batch effects (if applicable) in the formula.
 	}
 	else if (action == "get"){
 
-		.data %>%
+		.data |>
 
 			# Selecting the right columns
-			pivot_transcript(!!.transcript) %>%
+			pivot_transcript(!!.transcript) |>
 
-			dplyr::left_join(.data_processed, by = quo_name(.transcript)) %>%
+			dplyr::left_join(.data_processed, by = quo_name(.transcript)) |>
 
 			# Attach attributes
 			reattach_internals(.data_processed)
@@ -2657,6 +2729,9 @@ setGeneric("keep_variable", function(.data,
 															log_transform = NULL)
 {
 
+  # Fix NOTEs
+  . = NULL
+  
   # DEPRECATION OF log_transform
   if (is_present(log_transform) & !is.null(log_transform)) {
 
@@ -2780,6 +2855,10 @@ setGeneric("identify_abundant", function(.data,
 														minimum_counts = 10,
 														minimum_proportion = 0.7)
 {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2803,7 +2882,7 @@ setGeneric("identify_abundant", function(.data,
 		when(
 
 			# If column is present use this instead of doing more work
-			".abundant" %in% colnames(.) %>% not ~  {
+			".abundant" %in% colnames(.) |> not() ~  {
 					gene_to_exclude =
 						add_scaled_counts_bulk.get_low_expressed(
 							.data,
@@ -2815,10 +2894,10 @@ setGeneric("identify_abundant", function(.data,
 							minimum_proportion = minimum_proportion
 						)
 
-					dplyr::mutate(., .abundant := !!.transcript %in% gene_to_exclude %>% not())
+					dplyr::mutate(., .abundant := (!!.transcript %in% gene_to_exclude) |> not())
 				},
 			~ (.)
-		)	%>%
+		)	|>
 
 		# Attach attributes
 		reattach_internals(.data)
@@ -2918,6 +2997,10 @@ setGeneric("keep_abundant", function(.data,
 															minimum_counts = 10,
 															minimum_proportion = 0.7)
 {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2935,7 +3018,7 @@ setGeneric("keep_abundant", function(.data,
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 	}
 
-	.data %>%
+	.data |>
 
 		# Filter
 		identify_abundant(
@@ -2945,8 +3028,8 @@ setGeneric("keep_abundant", function(.data,
 			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion
-		) %>%
-		dplyr::filter(.abundant) %>%
+		) |>
+		dplyr::filter(.abundant) |>
 
 		# Attach attributes
 		reattach_internals(.data)
@@ -3010,24 +3093,24 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #'
 #'
 #' dge =
-#' 	data %>%
+#' 	data |>
 #' 	keep_abundant(
 #' 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 #' 		!!.sample, !!.entrez, !!.abundance
 #' 	) %>%
 #'
 #' 	# Make sure transcript names are adjacent
-#' 	[...] %>%
+#' 	[...] |>
 #' 	as_matrix(rownames = !!.entrez) %>%
 #' 	edgeR::DGEList(counts = .)
 #'
 #' idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets,
 #'	               kegg.exclude = kegg.exclude)
 #'
-#' dge %>%
+#' dge |>
 #'
 #' 	# Calculate weights
-#' 	limma::voom(design, plot = FALSE) %>%
+#' 	limma::voom(design, plot = FALSE) |>
 #'
 #' 	# Execute EGSEA
 #' 	egsea(
@@ -3108,6 +3191,9 @@ setGeneric("test_gene_enrichment", function(.data,
 																	 .contrasts = NULL
 																	 )	{
 
+  # Fix NOTEs
+  . = NULL
+  
 	# DEPRECATION OF reference function
 	if (is_present(method) & !is.null(method)) {
 
@@ -3138,9 +3224,9 @@ setGeneric("test_gene_enrichment", function(.data,
 	.data =
 		.data %>%
 		when(
-			filter(., !!.entrez %>% is.na) %>% nrow() %>% gt(0) ~ {
+			filter(., !!.entrez |> is.na()) |> nrow() |> gt(0) ~ {
 				warning("tidybulk says: There are NA entrez IDs. Those genes will be filtered")
-				filter(., !!.entrez %>% is.na %>% not())
+				filter(., !!.entrez |> is.na() |> not())
 			},
 			~ (.)
 		)
@@ -3160,7 +3246,7 @@ setGeneric("test_gene_enrichment", function(.data,
 				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
 				(.)
 			}
-		) %>%
+		) |>
 
 		test_gene_enrichment_bulk_EGSEA(
 			.formula,
@@ -3236,16 +3322,16 @@ setMethod("test_gene_enrichment",
 #' This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
 #'
 #' Undelying method:
-#'  msigdbr::msigdbr(species = species) %>%#'
-#' 	nest(data = -gs_cat) %>%
+#'  msigdbr::msigdbr(species = species) |>
+#' 	nest(data = -gs_cat) |>
 #' 	mutate(test =
 #' 			map(
 #' 				data,
 #' 				~ clusterProfiler::enricher(
 #' 					my_entrez_rank,
-#' 				 	TERM2GENE=.x %>% select(gs_name, entrez_gene),
+#' 				 	TERM2GENE=.x |> select(gs_name, entrez_gene),
 #' 					pvalueCutoff = 1
-#' 					) %>%	as_tibble
+#' 					) |>	as_tibble()
 #' 			))
 #'
 #' @return A consistent object (to the input)
@@ -3255,6 +3341,8 @@ setMethod("test_gene_enrichment",
 #'
 #' @examples
 #'
+#' print("Not run for build time.")
+#' 
 #' #se_mini = aggregate_duplicates(tidybulk::se_mini, .transcript = entrez)
 #' #df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #'
@@ -3308,26 +3396,26 @@ setGeneric("test_gene_overrepresentation", function(.data,
 		stop("tidybulk says: the .entrez parameter appears to no be set")
 
 	# Check column type
-	if (.data %>% distinct(!!.do_test) %>% sapply(class) %in% c("logical") %>% not() %>% any)
+	if (.data |> distinct(!!.do_test) |> sapply(class) %in% c("logical") |> not() |> any())
 		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
 
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
-	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
+	if (find.package("msigdbr", quiet = TRUE) |> length() |> equals(0)) {
 		message("msigdbr not installed. Installing.")
 		BiocManager::install("msigdbr", ask = FALSE)
 	}
 
 	# Check is correct species name
-	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
+	if(species %in% msigdbr::msigdbr_species()$species_name |> not())
 		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
 
-	.data %>%
-		#filter(!!.entrez %in% unique(m_df$entrez_gene)) %>%
-		filter(!!.do_test) %>%
-		distinct(!!.entrez) %>%
-		pull(!!.entrez) %>%
-		entrez_over_to_gsea(species, gene_collections  = gene_sets ) %>%
+	.data |>
+		#filter(!!.entrez %in% unique(m_df$entrez_gene)) |>
+		filter(!!.do_test) |>
+		distinct(!!.entrez) |>
+		pull(!!.entrez) |>
+		entrez_over_to_gsea(species, gene_collections  = gene_sets ) |>
 
 	  # Add methods used
 	  memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"), object_containing_methods = .data)
@@ -3400,16 +3488,16 @@ setMethod("test_gene_overrepresentation",
 #'	when(
 #'		!is.null(gene_sets ) ~ filter(., gs_cat %in% gene_sets ),
 #'		~ (.)
-#'	) %>%
+#'	) |>
 #'
 #'	# Execute calculation
-#'	nest(data = -gs_cat) %>%
+#'	nest(data = -gs_cat) |>
 #'	mutate(fit =
 #'				 	map(
 #'				 		data,
 #'				 		~ 	clusterProfiler::GSEA(
 #'				 			my_entrez_rank,
-#'				 			TERM2GENE=.x %>% select(gs_name, entrez_gene),
+#'				 			TERM2GENE=.x |> select(gs_name, entrez_gene),
 #'				 			pvalueCutoff = 1
 #'				 		)
 #'
@@ -3422,11 +3510,13 @@ setMethod("test_gene_overrepresentation",
 #'
 #' @examples
 #'
+#' print("Not run for build time.")
+#' 
 #' \dontrun{
 #'
 #' df_entrez = tidybulk::se_mini
 #' df_entrez = mutate(df_entrez, do_test = .feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
-#' df_entrez  = df_entrez %>% test_differential_abundance(~ condition)
+#' df_entrez  = df_entrez |> test_differential_abundance(~ condition)
 #'
 #'
 #'	test_gene_rank(
@@ -3492,38 +3582,38 @@ setGeneric("test_gene_rank", function(.data,
 
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
-	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
+	if (find.package("msigdbr", quiet = TRUE) |> length() |> equals(0)) {
 		message("msigdbr not installed. Installing.")
 		BiocManager::install("msigdbr", ask = FALSE)
 	}
 
 	# Check is correct species name
-	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
+	if(species %in% msigdbr::msigdbr_species()$species_name |> not())
 		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
 
 	# Check if missing entrez
-	if(.data %>% filter(!!.entrez %>% is.na) %>% nrow() %>% gt(0) ){
+	if(.data |> filter(!!.entrez |> is.na()) |> nrow() |> gt(0) ){
 		warning("tidybulk says: there are .entrez that are NA. Those will be removed")
-		.data = .data %>%	filter(!!.entrez %>% is.na %>% not())
+		.data = .data |>	filter(!!.entrez |> is.na() |> not())
 	}
 
 	# Check if missing .arrange_desc
-	if(.data %>% filter(!!.arrange_desc %>% is.na) %>% nrow() %>% gt(0) ){
+	if(.data |> filter(!!.arrange_desc |> is.na()) |> nrow() |> gt(0) ){
 		warning("tidybulk says: there are .arrange_desc that are NA. Those will be removed")
-		.data = .data %>%	filter(!!.arrange_desc %>% is.na %>% not())
+		.data = .data |>	filter(!!.arrange_desc |> is.na() |> not())
 	}
 
-	.data %>%
-		pivot_transcript(!!.entrez) %>%
-		arrange(desc(!!.arrange_desc)) %>%
-		select(!!.entrez, !!.arrange_desc) %>%
-		deframe() %>%
-		entrez_rank_to_gsea(species, gene_collections  = gene_sets ) %>%
+	.data |>
+		pivot_transcript(!!.entrez) |>
+		arrange(desc(!!.arrange_desc)) |>
+		select(!!.entrez, !!.arrange_desc) |>
+		deframe() |>
+		entrez_rank_to_gsea(species, gene_collections  = gene_sets ) |>
 
 	  # Add methods used. It is here and not in fucntions because I need the original .data
 	  memorise_methods_used(c("clusterProfiler", "enrichplot"), object_containing_methods = .data) %>%
 	  when(
-	    gene_sets %>% is("character") ~ (.) %>% memorise_methods_used("msigdbr"),
+	    gene_sets |> is("character") ~ (.) |> memorise_methods_used("msigdbr"),
 	    ~ (.)
 	  )
 
@@ -3608,16 +3698,16 @@ setGeneric("pivot_sample", function(.data,
 	col_names = get_sample(.data, .sample)
 	.sample = col_names$.sample
 
-	.data %>%
+	.data |>
 
 		# Selecting the right columns
 		select(
 			!!.sample,
 			get_specific_annotation_columns(.data, !!.sample)
-		) %>%
-		distinct() %>%
+		) |>
+		distinct() |>
 
-		drop_class(c("tidybulk", "tt")) %>%
+		drop_class(c("tidybulk", "tt")) |>
 		drop_internals()
 
 
@@ -3697,16 +3787,16 @@ setGeneric("pivot_transcript", function(.data,
 	col_names = get_transcript(.data, .transcript)
 	.transcript = col_names$.transcript
 
-	.data %>%
+	.data |>
 
 		# Selecting the right columns
 		select(
 			!!.transcript,
 			get_specific_annotation_columns(.data, !!.transcript)
-		) %>%
-		distinct() %>%
+		) |>
+		distinct() |>
 
-		drop_class(c("tidybulk", "tt")) %>%
+		drop_class(c("tidybulk", "tt")) |>
 		drop_internals()
 
 
@@ -3769,6 +3859,8 @@ setMethod("pivot_transcript",
 #'
 #' @examples
 #'
+#' print("Not run for build time.")
+#' 
 #' # tidybulk::se_mini |>  fill_missing_abundance( fill_with = 0)
 #'
 #'
@@ -3908,6 +4000,10 @@ setGeneric("impute_missing_abundance", function(.data,
 															suffix = "",
 															force_scaling = FALSE)
 {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -3920,10 +4016,10 @@ setGeneric("impute_missing_abundance", function(.data,
 	# Get scaled abundance if present, otherwise get abundance
 	.abundance_scaled = NULL
 	if(
-		.data %>% get_tt_columns() %>% is.null %>% not() &&
-		".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
-		quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames) &&
-		quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) != quo_name(.abundance)
+		.data |> get_tt_columns() |> is.null() |> not() &&
+		".abundance_scaled" %in% (.data |> get_tt_columns() |> names()) &&
+		quo_name(.data |> get_tt_columns() %$% .abundance_scaled) %in% (.data |> colnames()) &&
+		quo_name(.data |> get_tt_columns() %$% .abundance_scaled) != quo_name(.abundance)
 	)
 		.abundance_scaled = get_tt_columns(.data)$.abundance_scaled
 
@@ -3938,7 +4034,7 @@ setGeneric("impute_missing_abundance", function(.data,
 			.abundance = !!.abundance,
 			.abundance_scaled = !!.abundance_scaled,
 			suffix = suffix,
-			force_scaling = force_scaling) %>%
+			force_scaling = force_scaling) |>
 
 		# Reattach internals
 		reattach_internals(.data)
@@ -3982,8 +4078,8 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #' @description test_differential_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
-#'
+#' @importFrom stringr str_detect
+#' 
 #' @name test_differential_cellularity
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
@@ -4001,7 +4097,7 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #' or a cox regression model (ISBN: 978-1-4757-3294-8)
 #'
 #' Underlying method for the generalised linear model:
-#' data %>%
+#' data |>
 #' deconvolve_cellularity(
 #' 	!!.sample, !!.transcript, !!.abundance,
 #' 	method=method,
@@ -4013,7 +4109,7 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #' 	betareg::betareg(.my_formula, .)
 #'
 #' Underlying method for the cox regression:
-#' data %>%
+#' data |>
 #' deconvolve_cellularity(
 #' 	!!.sample, !!.transcript, !!.abundance,
 #' 	method=method,
@@ -4022,7 +4118,7 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #' 	...
 #' )  %>%
 #' 	[..] %>%
-#' 	mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
+#' 	mutate(.proportion_0_corrected = .proportion_0_corrected  |> boot::logit()) %>%
 #' 	survival::coxph(.my_formula, .)
 #'
 #' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
@@ -4077,6 +4173,10 @@ setGeneric("test_differential_cellularity", function(.data,
 																						significance_threshold = 0.05,
 																						...)
 {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -4090,7 +4190,7 @@ setGeneric("test_differential_cellularity", function(.data,
 	if(do_validate()) validation(.data, !!.sample, !!.transcript, !!.abundance)
 
 	# Validate formula
-	if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
+	if(.formula |> format() |> str_detect(" \\.|\\. ", negate = TRUE))
 		stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
 
 	test_differential_cellularity_(
@@ -4145,6 +4245,7 @@ setMethod("test_differential_cellularity",
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
+#' @importFrom stringr str_detect
 #'
 #' @name test_stratification_cellularity
 #'
@@ -4163,7 +4264,7 @@ setMethod("test_differential_cellularity",
 #'
 #'
 #' Underlying method for the test:
-#' data %>%
+#' data |>
 #' deconvolve_cellularity(
 #' 	!!.sample, !!.transcript, !!.abundance,
 #' 	method=method,
@@ -4171,8 +4272,8 @@ setMethod("test_differential_cellularity",
 #' 	action="get",
 #' 	...
 #' )  %>%
-#' 	[..] %>%
-#' 	mutate(.high_cellularity = .proportion > median(.proportion)) %>%
+#' 	[..] |>
+#' 	mutate(.high_cellularity = .proportion > median(.proportion)) |>
 #' 	survival::survdiff(data = data, .my_formula)
 #'
 #' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
@@ -4208,7 +4309,7 @@ setGeneric("test_stratification_cellularity", function(.data,
 	standardGeneric("test_stratification_cellularity"))
 
 # Set internal
-.test_stratification_cellularity = 		function(.data,
+.test_stratification_cellularity = function(.data,
 																							.formula,
 																							.sample = NULL,
 																							.transcript = NULL,
@@ -4217,6 +4318,10 @@ setGeneric("test_stratification_cellularity", function(.data,
 																							reference = X_cibersort,
 																							...)
 {
+  
+  # Fix NOTEs
+  . = NULL
+  
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -4230,7 +4335,7 @@ setGeneric("test_stratification_cellularity", function(.data,
 	if(do_validate()) validation(.data, !!.sample, !!.transcript, !!.abundance)
 
 	# Validate formula
-	if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
+	if(.formula |> format() %>% str_detect(" \\.|\\. ", negate = TRUE))
 		stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
 
 	test_stratification_cellularity_(
@@ -4314,7 +4419,9 @@ setGeneric("get_bibliography", function(.data)
 .get_bibliography = 		function(.data)
 {
 
-
+  # Fix NOTEs
+  . = NULL
+  
 	default_methods = c("tidybulk", "tidyverse")
 
 	# If there is not attributes parameter
@@ -4322,16 +4429,16 @@ setGeneric("get_bibliography", function(.data)
 			.data %>%
 			when(
 				!(
-					!"internals" %in% (attributes(.) %>% names()) &&
-						!"methods_used" %in% (attr(., "internals") %>% names())
+					!"internals" %in% (attributes(.) |> names()) &&
+						!"methods_used" %in% (attr(., "internals") |> names())
 				) ~ 	attr(., "internals") %>% .[["methods_used"]],
 				~ ""
 			)
 
 
 	my_bibliography() %>%
-		.[c(default_methods, my_methods)] %>%
-		unlist %>%
+		.[c(default_methods, my_methods)] |>
+		unlist() |>
 		writeLines()
 
 }
@@ -4399,6 +4506,10 @@ setMethod("get_bibliography",
 as_matrix <- function(tbl,
                       rownames = NULL,
                       do_check = TRUE) {
+  
+  # Fix NOTEs
+  . = NULL
+  
   rownames = enquo(rownames)
   tbl %>%
 
@@ -4407,26 +4518,26 @@ as_matrix <- function(tbl,
       do_check &&
         tbl %>%
         # If rownames defined eliminate it from the data frame
-        ifelse_pipe(!quo_is_null(rownames), ~ .x[,-1], ~ .x) %>%
-        dplyr::summarise_all(class) %>%
-        tidyr::gather(variable, class) %>%
-        pull(class) %>%
+        ifelse_pipe(!quo_is_null(rownames), ~ .x[,-1], ~ .x) |>
+        dplyr::summarise_all(class) |>
+        tidyr::gather(variable, class) |>
+        pull(class) |>
         unique() %>%
-        `%in%`(c("numeric", "integer")) %>% not() %>% any(),
+        `%in%`(c("numeric", "integer")) |> not() |> any(),
       ~ {
         warning("tidybulk says: there are NON-numerical columns, the matrix will NOT be numerical")
         .x
       }
-    ) %>%
-    as.data.frame() %>%
+    ) |>
+    as.data.frame() |>
 
     # Deal with rownames column if present
     ifelse_pipe(
       !quo_is_null(rownames),
-      ~ .x %>%
-        magrittr::set_rownames(tbl %>% pull(!!rownames)) %>%
+      ~ .x |>
+        magrittr::set_rownames(tbl |> pull(!!rownames)) |>
         select(-1)
-    ) %>%
+    ) |>
 
     # Convert to matrix
     as.matrix()

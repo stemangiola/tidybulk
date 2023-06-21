@@ -168,18 +168,18 @@ Rtsne::Rtsne(data, ...)
 Underlying method for UMAP:
 
  df_source =
-.data %>%
+.data |>
 
   # Filter NA symbol
-  filter(!!.feature %>% is.na %>% not()) %>%
+  filter(!!.feature |> is.na() |> not()) |>
 
   # Prepare data frame
-  distinct(!!.feature,!!.element,!!.abundance) %>%
+  distinct(!!.feature,!!.element,!!.abundance) |>
 
   # Filter most variable genes
-  keep_variable_transcripts(top) %>%
-  reduce_dimensions(method="PCA",  .dims = calculate_for_pca_dimensions,  action="get" ) %>%
-  as_matrix(rownames = quo_name(.element)) %>%
+  keep_variable_transcripts(top) |>
+  reduce_dimensions(method="PCA",  .dims = calculate_for_pca_dimensions,  action="get" ) |>
+  as_matrix(rownames = quo_name(.element)) |>
   uwot::tumap(...)
 }
 \examples{

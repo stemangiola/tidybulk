@@ -142,7 +142,7 @@ cm = tidybulk::se_mini
 cm$batch = 0
 cm$batch[colnames(cm) \%in\% c("SRR1740035", "SRR1740043")] = 1
 
- cm \%>\%
+ cm |>
  identify_abundant() |>
 	adjust_abundance(	~ condition + batch	)
 

@@ -130,7 +130,7 @@ Underlying custom method:
    ((bind_rows(
 	  c(`1` = cos(r), `2` = -sin(r)),
 	  c(`1` = sin(r), `2` = cos(r))
-  ) %>% as_matrix) %*% m)
+  ) |> as_matrix()) %*% m)
  }
 }
 \examples{

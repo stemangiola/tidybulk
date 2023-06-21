@@ -1,7 +1,7 @@
 Type: Package
 Package: tidybulk
 Title: Brings transcriptomics to the tidyverse 
-Version: 1.11.3
+Version: 1.11.4
 Authors@R: c(person("Stefano", "Mangiola", email = "mangiolastefano@gmail.com",
                   role = c("aut", "cre")),
             person("Maria", "Doyle", email = "Maria.Doyle@petermac.org",
@@ -13,7 +13,7 @@ Description: This is a collection of utility functions that allow
 License: GPL-3
 Depends:
     R (>= 4.1.0),
-    ttservice
+    ttservice (>= 0.3.6)
 Imports:
     tibble,
     readr,
@@ -76,7 +76,8 @@ Suggests:
     uwot,
     matrixStats,
     igraph,
-    EGSEA
+    EGSEA,
+    IRanges
 VignetteBuilder: 
     knitr
 RdMacros:

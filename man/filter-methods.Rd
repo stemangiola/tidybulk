@@ -67,6 +67,10 @@ The following methods are currently available in loaded packages:
 
 \examples{
 
+data(se)
+
+se |> tidybulk() |> filter(dex=="untrt")
+
 # Learn more in ?dplyr_tidy_eval
 }
 \seealso{

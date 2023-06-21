@@ -85,9 +85,9 @@ Methods available in currently loaded packages:
 }
 
 \examples{
-`\%>\%` = magrittr::`\%>\%`
+
 # Newly created variables are available immediately
-mtcars \%>\% as_tibble() \%>\% mutate(
+mtcars |> as_tibble() |> mutate(
   cyl2 = cyl * 2,
   cyl4 = cyl2 * 2
 )

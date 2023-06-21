@@ -115,16 +115,16 @@ msigdbr::msigdbr(species = species) %>%
 when(
 	!is.null(gene_sets ) ~ filter(., gs_cat %in% gene_sets ),
 	~ (.)
-) %>%
+) |>
 
 # Execute calculation
-nest(data = -gs_cat) %>%
+nest(data = -gs_cat) |>
 mutate(fit =
 			 	map(
 			 		data,
 			 		~ 	clusterProfiler::GSEA(
 			 			my_entrez_rank,
-			 			TERM2GENE=.x %>% select(gs_name, entrez_gene),
+			 			TERM2GENE=.x |> select(gs_name, entrez_gene),
 			 			pvalueCutoff = 1
 			 		)
 
@@ -132,11 +132,13 @@ mutate(fit =
 }
 \examples{
 
+print("Not run for build time.")
+
 \dontrun{
 
 df_entrez = tidybulk::se_mini
 df_entrez = mutate(df_entrez, do_test = .feature \%in\% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
-df_entrez  = df_entrez \%>\% test_differential_abundance(~ condition)
+df_entrez  = df_entrez |> test_differential_abundance(~ condition)
 
 
 test_gene_rank(

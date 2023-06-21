@@ -1355,10 +1355,10 @@ univariable_differential_tissue_stratification = function(
 						fit=.,
 						data = data,
 						risk.table = FALSE,
-						conf.int = T,
+						conf.int = TRUE,
 						palette = c("#ed6f68",  "#5366A0" ),
 						legend = "none",
-						pval = T
+						pval = TRUE
 					)
 
 				fit %>%
@@ -1438,7 +1438,7 @@ univariable_differential_tissue_stratification_SE = function(
 						conf.int = T,
 						palette = c("#ed6f68",  "#5366A0" ),
 						legend = "none",
-						pval = T
+						pval = TRUE
 					)
 
 				fit %>%

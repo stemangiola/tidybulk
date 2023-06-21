@@ -1,3 +1,7 @@
+
+#' @export
+dplyr::select
+
 #' Arrange rows by column values
 #'
 #'
@@ -58,15 +62,15 @@ NULL
 #' @export
 arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 
-	.data %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::arrange( ..., .by_group = .by_group) %>%
+	.data |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::arrange( ..., .by_group = .by_group) |>
 
 		# Attach attributes
-		reattach_internals(.data) %>%
+		reattach_internals(.data) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 }
@@ -106,12 +110,13 @@ arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 #' @return `bind_rows()` and `bind_cols()` return the same type as
 #'   the first input, either a data frame, `tbl_df`, or `grouped_df`.
 #' @examples
-#' `%>%` = magrittr::`%>%`
-#' tt = pbmc_small
-#' bind_rows(    tt, tt  )
+#' data(se_mini)
 #'
-#' tt_bind = tt %>% select(nCount_RNA ,nFeature_RNA)
-#' tt %>% bind_cols(tt_bind)
+#' se_mini_tidybulk = se_mini |> tidybulk()
+#' bind_rows(    se_mini_tidybulk, se_mini_tidybulk  )
+#'
+#' tt_bind = se_mini_tidybulk |> select(time, condition)
+#' se_mini_tidybulk |> bind_cols(tt_bind)
 #'
 #' @name bind_rows
 NULL
@@ -127,13 +132,13 @@ bind_rows.tidybulk <- function(..., .id = NULL)
 
 	tts = flatten_if(dots_values(...), is_spliced) # Original that fails Bioconductor dplyr:::flatten_bindable(rlang::dots_values(...))
 
-	par1 = tts[[1]] %>% get_tt_columns() %>% unlist
-	par2 = tts[[2]] %>% get_tt_columns() %>% unlist
+	par1 = tts[[1]] |> get_tt_columns() |> unlist()
+	par2 = tts[[2]] |> get_tt_columns() |> unlist()
 
 	# # tt_columns of the two objects must match
 	# error_if_parameters_not_match(par1, par2)
 
-	bind_rows(..., .id = .id) %>%
+	dplyr::bind_rows(..., .id = .id) |>
 
 		# Attach attributes
 		reattach_internals(tts[[1]])
@@ -160,7 +165,7 @@ bind_cols.tidybulk <- function(..., .id = NULL)
 
 	tts = 	tts = flatten_if(dots_values(...), is_spliced) # Original that fails Bioconductor dplyr:::flatten_bindable(rlang::dots_values(...))
 
-	bind_cols(..., .id = .id) %>%
+	dplyr::bind_cols(..., .id = .id) |>
 
 		# Attach attributes
 		reattach_internals(tts[[1]])
@@ -180,7 +185,7 @@ bind_cols.tidybulk <- function(..., .id = NULL)
 #'
 #' @examples
 #'
-#' tidybulk::se_mini %>% tidybulk() %>% distinct()
+#' tidybulk::se_mini |> tidybulk() |> distinct()
 #'
 #'
 #' @export
@@ -191,15 +196,15 @@ NULL
 #' @export
 distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 {
-	.data %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::distinct(..., .keep_all = .keep_all) %>%
+	.data |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::distinct(..., .keep_all = .keep_all) |>
 
 		# Attach attributes
-		reattach_internals(.data) %>%
+		reattach_internals(.data) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 }
@@ -258,10 +263,16 @@ distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 #'
 #' @rdname filter-methods
 #' @name filter
+#' 
 #' @importFrom dplyr filter
 #'
 #' @export
+#' 
 #' @examples
+#' 
+#' data(se)
+#' 
+#' se |> tidybulk() |> filter(dex=="untrt")
 #'
 #' # Learn more in ?dplyr_tidy_eval
 NULL
@@ -270,15 +281,15 @@ NULL
 #' @export
 filter.tidybulk <- function (.data, ..., .preserve = FALSE)
 {
-	.data %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::filter( ..., .preserve = .preserve) %>%
+	.data |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::filter( ..., .preserve = .preserve) |>
 
 		# Attach attributes
-		reattach_internals(.data) %>%
+		reattach_internals(.data) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 }
@@ -318,9 +329,10 @@ filter.tidybulk <- function (.data, ..., .preserve = FALSE)
 #' @importFrom dplyr group_by
 #'
 #' @export
+#' 
 #' @examples
-#' `%>%` = magrittr::`%>%`
-#' by_cyl <- mtcars %>% group_by(cyl)
+#' 
+#' by_cyl <- mtcars |> group_by(cyl)
 #'
 NULL
 
@@ -328,15 +340,15 @@ NULL
 #' @export
 group_by.tidybulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data))
 {
-	.data %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::group_by( ..., .drop = .drop) %>%
+	.data |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::group_by( ..., .drop = .drop) |>
 
 		# Attach attributes
-		reattach_internals(.data) %>%
+		reattach_internals(.data) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 }
@@ -352,15 +364,15 @@ group_by.tidybulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_d
 #' @export
 ungroup.tidybulk <- function (x, ...)
 {
-	x %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::ungroup( ...) %>%
+	x |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::ungroup( ...) |>
 
 		# Attach attributes
-		reattach_internals(x) %>%
+		reattach_internals(x) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 }
@@ -428,9 +440,10 @@ ungroup.tidybulk <- function (x, ...)
 #'
 #' The following methods are currently available in loaded packages:
 #' @examples
-#' `%>%` = magrittr::`%>%`
+#' 
 #' # A summary applied to ungrouped tbl returns a single row
-#' mtcars %>%
+#' 
+#' mtcars |>
 #'   summarise(mean = mean(disp))
 #'
 #'
@@ -444,15 +457,15 @@ NULL
 #' @export
 summarise.tidybulk <- function (.data, ...)
 {
-	.data %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::summarise( ...) %>%
+	.data |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::summarise( ...) |>
 
 		# Attach attributes
-		reattach_internals(.data) %>%
+		reattach_internals(.data) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 }
@@ -533,9 +546,9 @@ summarise.tidybulk <- function (.data, ...)
 #' Methods available in currently loaded packages:
 #'
 #' @examples
-#' `%>%` = magrittr::`%>%`
+#' 
 #' # Newly created variables are available immediately
-#' mtcars %>% as_tibble() %>% mutate(
+#' mtcars |> as_tibble() |> mutate(
 #'   cyl2 = cyl * 2,
 #'   cyl4 = cyl2 * 2
 #' )
@@ -550,15 +563,15 @@ NULL
 #' @export
 mutate.tidybulk <- function(.data, ...)
 {
-	.data %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::mutate(...) %>%
+	.data |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::mutate(...) |>
 
 		# Attach attributes
-		reattach_internals(.data) %>%
+		reattach_internals(.data) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 
@@ -568,15 +581,15 @@ mutate.tidybulk <- function(.data, ...)
 #' @export
 mutate.nested_tidybulk <- function(.data, ...)
 {
-	.data %>%
-		drop_class(c("nested_tidybulk", "tt")) %>%
-		dplyr::mutate(...) %>%
+	.data |>
+		drop_class(c("nested_tidybulk", "tt")) |>
+		dplyr::mutate(...) |>
 
 		# Attach attributes
-		reattach_internals(.data) %>%
+		reattach_internals(.data) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("nested_tidybulk")
 
 
@@ -608,8 +621,9 @@ mutate.nested_tidybulk <- function(.data, ...)
 #' The following methods are currently available in loaded packages:
 #' @family single table verbs
 #' @export
+#' 
 #' @examples
-#' `%>%` = magrittr::`%>%`
+#' 
 #' iris <- as_tibble(iris) # so it prints a little nicer
 #' rename(iris, petal_length = Petal.Length)
 #'
@@ -623,15 +637,15 @@ NULL
 #' @export
 rename.tidybulk <- function(.data, ...)
 {
-	.data %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::rename(...) %>%
+	.data |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::rename(...) |>
 
 		# Attach attributes
-		reattach_internals(.data) %>%
+		reattach_internals(.data) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 
@@ -662,9 +676,9 @@ rename.tidybulk <- function(.data, ...)
 #'
 #' @export
 #' @examples
-#' `%>%` = magrittr::`%>%`
+#' 
 #' df <- expand.grid(x = 1:3, y = 3:1)
-#' df_done <- df %>% rowwise() %>% do(i = seq(.$x, .$y))
+#' df_done <- df |> rowwise() 
 #'
 #' @rdname rowwise-methods
 #' @name rowwise
@@ -676,15 +690,15 @@ NULL
 #' @export
 rowwise.tidybulk <- function(data, ...)
 {
-	data %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::rowwise() %>%
+	data |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::rowwise() |>
 
 		# Attach attributes
-		reattach_internals(.data) %>%
+		reattach_internals(.data) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 
@@ -702,9 +716,9 @@ rowwise.tidybulk <- function(data, ...)
 #' @return A tt object
 #'
 #' @examples
-#'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(.sample) %>% mutate(source = "AU")
-#' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% left_join(annotation)
+#' 
+#' annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' tidybulk::counts_SE |> tidybulk() |> as_tibble() |> left_join(annotation)
 #'
 #' @rdname dplyr-methods
 #' @name left_join
@@ -717,15 +731,15 @@ NULL
 left_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 															...)
 {
-	x %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::left_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
+	x |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::left_join(y, by = by, copy = copy, suffix = suffix, ...) |>
 
 		# Attach attributes
-		reattach_internals(x) %>%
+		reattach_internals(x) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 }
@@ -742,9 +756,9 @@ left_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", 
 #' @return A tt object
 #'
 #' @examples
-#'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(.sample) %>% mutate(source = "AU")
-#' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% inner_join(annotation)
+#' 
+#' annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' tidybulk::counts_SE |> tidybulk() |> as_tibble() |> inner_join(annotation)
 #'
 #' @rdname join-methods
 #' @name inner_join
@@ -756,15 +770,15 @@ NULL
 #' @export
 inner_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...)
 {
-	x %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::inner_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
+	x |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::inner_join(y, by = by, copy = copy, suffix = suffix, ...) |>
 
 		# Attach attributes
-		reattach_internals(x) %>%
+		reattach_internals(x) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 }
@@ -781,9 +795,9 @@ inner_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #' @return A tt object
 #'
 #' @examples
-#'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(.sample) %>% mutate(source = "AU")
-#' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% right_join(annotation)
+#' 
+#' annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' tidybulk::counts_SE |> tidybulk() |> as_tibble() |> right_join(annotation)
 #'
 #' @rdname join-methods
 #' @name right_join
@@ -796,15 +810,15 @@ NULL
 right_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 															 ...)
 {
-	x %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::right_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
+	x |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::right_join(y, by = by, copy = copy, suffix = suffix, ...) |>
 
 		# Attach attributes
-		reattach_internals(x) %>%
+		reattach_internals(x) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 }
@@ -822,9 +836,9 @@ right_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #' @return A tt object
 #'
 #' @examples
-#'`%>%` = magrittr::`%>%`
-#' annotation = tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% distinct(.sample) %>% mutate(source = "AU")
-#' tidybulk::counts_SE %>% tidybulk() %>% as_tibble() %>% full_join(annotation)
+#' 
+#' annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' tidybulk::counts_SE |> tidybulk() |> as_tibble() |> full_join(annotation)
 #'
 #' @rdname join-methods
 #' @name full_join
@@ -837,15 +851,15 @@ NULL
 full_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 															 ...)
 {
-	x %>%
-		drop_class(c("tidybulk", "tt")) %>%
-		dplyr::full_join(y, by = by, copy = copy, suffix = suffix, ...) %>%
+	x |>
+		drop_class(c("tidybulk", "tt")) |>
+		dplyr::full_join(y, by = by, copy = copy, suffix = suffix, ...) |>
 
 		# Attach attributes
-		reattach_internals(x) %>%
+		reattach_internals(x) |>
 
 		# Add class
-		add_class("tt") %>%
+		add_class("tt") |>
 		add_class("tidybulk")
 
 }

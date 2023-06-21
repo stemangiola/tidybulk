@@ -24,8 +24,8 @@ A tt object
 Left join datasets
 }
 \examples{
-`\%>\%` = magrittr::`\%>\%`
-annotation = tidybulk::counts_SE \%>\% tidybulk() \%>\% as_tibble() \%>\% distinct(.sample) \%>\% mutate(source = "AU")
-tidybulk::counts_SE \%>\% tidybulk() \%>\% as_tibble() \%>\% left_join(annotation)
+
+annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+tidybulk::counts_SE |> tidybulk() |> as_tibble() |> left_join(annotation)
 
 }

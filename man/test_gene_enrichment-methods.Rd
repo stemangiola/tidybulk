@@ -154,24 +154,24 @@ This wrapper executes ensemble gene enrichment analyses of the dataset using EGS
 
 
 dge =
-	data %>%
+	data |>
 	keep_abundant(
 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 		!!.sample, !!.entrez, !!.abundance
 	) %>%
 
 	# Make sure transcript names are adjacent
-	[...] %>%
+	[...] |>
 	as_matrix(rownames = !!.entrez) %>%
 	edgeR::DGEList(counts = .)
 
 idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets,
                kegg.exclude = kegg.exclude)
 
-dge %>%
+dge |>
 
 	# Calculate weights
-	limma::voom(design, plot = FALSE) %>%
+	limma::voom(design, plot = FALSE) |>
 
 	# Execute EGSEA
 	egsea(

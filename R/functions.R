@@ -1050,6 +1050,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 #' @importFrom stringr str_split
 #' @importFrom stringr str_replace_all
 #' @importFrom stringr str_remove
+#' @importFrom dplyr starts_with
 #'
 #'
 #' @param .data A tibble
@@ -1106,17 +1107,14 @@ test_differential_cellularity_ <- function(.data,
 		pull(prop) %>%
 		min()
 
-
 	# Check if test is univaiable or multivariable
-	.formula %>%
-		when(
-
-			# Univariable
-			format(.) %>%
-				str_split("~") %>%
-				.[[1]] %>%
-				map_lgl( ~ grepl("\\. | \\.", .x)) %>%
-				which	== 1 ~ {
+	# Univariable
+	if(
+	  format(.formula) %>%
+	  str_split("~") %>%
+	  .[[1]] %>%
+	  map_lgl( ~ grepl("\\. | \\.", .x)) %>%
+	  which	== 1 ){
 					# Parse formula
 					.my_formula =
 						.formula %>%
@@ -1131,7 +1129,7 @@ test_differential_cellularity_ <- function(.data,
 						as.formula
 
 					# Test
-					univariable_differential_tissue_composition(deconvoluted,
+					result = univariable_differential_tissue_composition(deconvoluted,
 																											method,
 																											.my_formula,
 																											min_detected_proportion) %>%
@@ -1144,50 +1142,51 @@ test_differential_cellularity_ <- function(.data,
 							grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
 							~ (.) %>% memorise_methods_used("betareg")
 						)
-				},
+	} else {
 
-			# Multivariable
-			~ {
-				# Parse formula
-				covariates =
-					deconvoluted %>%
-					select(starts_with(method)) %>%
-					colnames() %>%
-					gsub(sprintf("%s:", method), "", .) %>%
-					str_replace_all("[ \\(\\)]", "___")
-
-				# Parse formula
-				.my_formula =
-					.formula %>%
-					when(
-						# If I have the dot, needed definitely for censored
-						format(.) %>% grepl("\\.", .) %>% any ~
-							format(.formula) %>%
-							str_replace("([-\\+\\*~ ])(\\.)",
-													sprintf(
-														"\\1%s", paste(covariates, collapse = " + ")
-													)),
-
-						# If normal formula
-						~ sprintf(".proportion_0_corrected%s", format(.))
-					) %>%
-
-					as.formula
-
-				# Test
-				multivariable_differential_tissue_composition(deconvoluted,
-																											method,
-																											.my_formula,
-																											min_detected_proportion) %>%
-
-					# Attach attributes
-					reattach_internals(.data) %>%
-
-					# Add methods used
-					when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot"), object_containing_methods = .data),
-							 ~ (.))
-
-			}) %>%
+	    # Parse formula
+	    covariates =
+	      deconvoluted %>%
+	      select(starts_with(method)) %>%
+	      colnames() %>%
+	      gsub(sprintf("%s:", method), "", .) %>%
+	      str_replace_all("[ \\(\\)]", "___")
+	    
+	    # Parse formula
+	    .my_formula =
+	      .formula %>%
+	      when(
+	        # If I have the dot, needed definitely for censored
+	        format(.) %>% grepl("\\.", .) %>% any ~
+	          format(.formula) %>%
+	          str_replace("([-\\+\\*~ ])(\\.)",
+	                      sprintf(
+	                        "\\1%s", paste(covariates, collapse = " + ")
+	                      )),
+	        
+	        # If normal formula
+	        ~ sprintf(".proportion_0_corrected%s", format(.))
+	      ) %>%
+	      
+	      as.formula
+	    
+	    # Test
+	   result =  multivariable_differential_tissue_composition(deconvoluted,
+	                                                  method,
+	                                                  .my_formula,
+	                                                  min_detected_proportion) %>%
+	      
+	      # Attach attributes
+	      reattach_internals(.data) %>%
+	      
+	      # Add methods used
+	      when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot"), object_containing_methods = .data),
+	           ~ (.))
+	    
+	  }
+				
+	
+	result |>
 
 		# Eliminate prefix
 		mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
@@ -1462,7 +1461,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
         	limma::voom(design, plot = FALSE) %>%
 
         	# Execute EGSEA
-        	egsea(
+    	  EGSEA::egsea(
         		contrasts = my_contrasts,
         		gs.annots = nonkegg_genesets,
         		baseGSEAs = methods,
@@ -2558,6 +2557,7 @@ aggregate_duplicated_transcripts_DT =
 #' 
 #' @import tibble
 #' @importFrom rlang :=
+#' @importFrom dplyr anti_join
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -3602,6 +3602,7 @@ fill_NA_using_formula = function(.data,
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
 #' @importFrom dplyr if_else
+#' @importFrom dplyr contains
 #'
 #' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
 #' @param .sample The name of the element column
