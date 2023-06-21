@@ -138,7 +138,7 @@ bind_rows.tidybulk <- function(..., .id = NULL)
 	# # tt_columns of the two objects must match
 	# error_if_parameters_not_match(par1, par2)
 
-	dplyr::bind_rows(..., .id = .id) |>
+	ttservice:::bind_rows.data.frame(..., .id = .id) |>
 
 		# Attach attributes
 		reattach_internals(tts[[1]])

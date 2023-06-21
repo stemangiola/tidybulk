@@ -42,7 +42,7 @@ This is useful since different resources use ensembl IDs while others use gene s
 }
 \examples{
 
-library(dplyr)
+
 
 # This function was designed for data.frame
 # Convert from SummarizedExperiment for this example. It is NOT reccomended.

@@ -126,8 +126,6 @@ deconvolve_cellularity(
 }
 \examples{
 
-library(dplyr)
-library(tidyr)
 
 tidybulk::se_mini |>
 test_stratification_cellularity(

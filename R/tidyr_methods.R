@@ -41,10 +41,8 @@
 #'
 #' @examples
 #'
-#' library(dplyr)
 #'
-#' tidybulk::se_mini %>% tidybulk() %>% nest( data = -.feature) %>%
-#' unnest(data)
+#' tidybulk::se_mini |> tidybulk() |> nest( data = -.feature) |> unnest(data)
 #'
 #' @rdname nest-methods
 #' @name unnest
@@ -92,7 +90,12 @@ unnest.nested_tidybulk <- function (data, cols, ..., keep_empty=FALSE, ptype=NUL
 #' @export
 NULL
 
+#' @importFrom rlang enquos
+#' 
 #' @export
+#' 
+#' 
+#' 
 nest.tidybulk <- function (.data, ..., .names_sep = NULL)
 {
 	cols <- enquos(...)

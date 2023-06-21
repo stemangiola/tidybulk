@@ -128,7 +128,6 @@ CIBERSORT(Y = data, X = reference, ...)
 }
 \examples{
 
-library(dplyr)
 
 # Subsetting for time efficiency
 tidybulk::se_mini |> deconvolve_cellularity(cores = 1)

@@ -1847,7 +1847,6 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 #'
 #' @examples
 #'
-#' library(dplyr)
 #'
 #' # Subsetting for time efficiency
 #' tidybulk::se_mini |> deconvolve_cellularity(cores = 1)
@@ -2201,7 +2200,7 @@ setMethod("describe_transcript", "tidybulk", .describe_transcript)
 #'
 #' @examples
 #'
-#' library(dplyr)
+#' 
 #'
 #' # This function was designed for data.frame
 #' # Convert from SummarizedExperiment for this example. It is NOT reccomended.
@@ -4283,8 +4282,6 @@ setMethod("test_differential_cellularity",
 #'
 #' @examples
 #'
-#' library(dplyr)
-#' library(tidyr)
 #'
 #'	tidybulk::se_mini |>
 #'	test_stratification_cellularity(

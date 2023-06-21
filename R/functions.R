@@ -2272,7 +2272,6 @@ get_rotated_dimensions =
 #' @noRd
 #'
 #' @importFrom dplyr summarise_all
-#' @importFrom dplyr bind_rows
 #' @importFrom magrittr %$%
 #' @importFrom rlang :=
 #' @importFrom tidyr replace_na

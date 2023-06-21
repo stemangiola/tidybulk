@@ -52,10 +52,8 @@ nest
 }
 \examples{
 
-library(dplyr)
 
-tidybulk::se_mini \%>\% tidybulk() \%>\% nest( data = -.feature) \%>\%
-unnest(data)
+tidybulk::se_mini |> tidybulk() |> nest( data = -.feature) |> unnest(data)
 
 
 tidybulk::se_mini \%>\% tidybulk() \%>\% nest( data = -.feature)
