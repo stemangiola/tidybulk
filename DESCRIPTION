@@ -77,7 +77,8 @@ Suggests:
     matrixStats,
     igraph,
     EGSEA,
-    IRanges
+    IRanges,
+    here
 VignetteBuilder: 
     knitr
 RdMacros:

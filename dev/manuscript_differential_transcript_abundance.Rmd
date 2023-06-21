@@ -18,8 +18,8 @@ This decument includes the code used for the manuscript, for the differential fe
 ```{r, echo=FALSE, include=FALSE}
 library(knitr)
 #library(kableExtra)
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
-                      message = FALSE, cache.lazy = FALSE)
+# knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
+#                       message = FALSE, cache.lazy = FALSE)
 #options(width = 120)
 options(pillar.min_title_chars = Inf)
 

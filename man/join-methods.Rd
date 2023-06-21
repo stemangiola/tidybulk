@@ -34,15 +34,15 @@ Full join datasets
 }
 \examples{
 
-annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
-tidybulk::counts_SE |> tidybulk() |> as_tibble() |> inner_join(annotation)
+annotation = tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+tidybulk::se_mini |> tidybulk() |> as_tibble() |> inner_join(annotation)
 
 
-annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
-tidybulk::counts_SE |> tidybulk() |> as_tibble() |> right_join(annotation)
+annotation = tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+tidybulk::se_mini |> tidybulk() |> as_tibble() |> right_join(annotation)
 
 
-annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
-tidybulk::counts_SE |> tidybulk() |> as_tibble() |> full_join(annotation)
+annotation = tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+tidybulk::se_mini |> tidybulk() |> as_tibble() |> full_join(annotation)
 
 }

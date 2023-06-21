@@ -717,8 +717,8 @@ rowwise.tidybulk <- function(data, ...)
 #'
 #' @examples
 #' 
-#' annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
-#' tidybulk::counts_SE |> tidybulk() |> as_tibble() |> left_join(annotation)
+#' annotation = tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' tidybulk::se_mini |> tidybulk() |> as_tibble() |> left_join(annotation)
 #'
 #' @rdname dplyr-methods
 #' @name left_join
@@ -757,8 +757,8 @@ left_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", 
 #'
 #' @examples
 #' 
-#' annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
-#' tidybulk::counts_SE |> tidybulk() |> as_tibble() |> inner_join(annotation)
+#' annotation = tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' tidybulk::se_mini |> tidybulk() |> as_tibble() |> inner_join(annotation)
 #'
 #' @rdname join-methods
 #' @name inner_join
@@ -796,8 +796,8 @@ inner_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #'
 #' @examples
 #' 
-#' annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
-#' tidybulk::counts_SE |> tidybulk() |> as_tibble() |> right_join(annotation)
+#' annotation = tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' tidybulk::se_mini |> tidybulk() |> as_tibble() |> right_join(annotation)
 #'
 #' @rdname join-methods
 #' @name right_join
@@ -837,8 +837,8 @@ right_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #'
 #' @examples
 #' 
-#' annotation = tidybulk::counts_SE |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
-#' tidybulk::counts_SE |> tidybulk() |> as_tibble() |> full_join(annotation)
+#' annotation = tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' tidybulk::se_mini |> tidybulk() |> as_tibble() |> full_join(annotation)
 #'
 #' @rdname join-methods
 #' @name full_join
