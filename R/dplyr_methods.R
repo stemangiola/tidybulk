@@ -56,7 +56,6 @@ dplyr::select
 #'
 #' arrange(mtcars, cyl, disp)
 #'
-#' @export
 NULL
 
 #' @export
@@ -145,7 +144,7 @@ bind_rows.tidybulk <- function(..., .id = NULL)
 
 }
 
-#' @export
+
 #'
 #' @importFrom ttservice bind_cols
 #' @inheritParams bind_cols
@@ -188,7 +187,6 @@ bind_cols.tidybulk <- function(..., .id = NULL)
 #' tidybulk::se_mini |> tidybulk() |> distinct()
 #'
 #'
-#' @export
 NULL
 
 
@@ -266,7 +264,6 @@ distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 #' 
 #' @importFrom dplyr filter
 #'
-#' @export
 #' 
 #' @examples
 #' 
@@ -328,7 +325,6 @@ filter.tidybulk <- function (.data, ..., .preserve = FALSE)
 #' @name group_by
 #' @importFrom dplyr group_by
 #'
-#' @export
 #' 
 #' @examples
 #' 
@@ -410,7 +406,6 @@ ungroup.tidybulk <- function (x, ...)
 #' results, consider using new names for your summary variables, especially when
 #' creating multiple summaries.
 #'
-#' @export
 #' @param .data A tbl. (See dplyr)
 #' @param ... <[`tidy-eval`][dplyr_tidy_eval]> Name-value pairs of summary
 #'   functions. The name will be the name of the variable in the result.
@@ -450,7 +445,7 @@ ungroup.tidybulk <- function (x, ...)
 #' @rdname summarise-methods
 #' @name summarise
 #' @importFrom dplyr summarise
-#' @export
+
 NULL
 
 #' @inheritParams summarise
@@ -504,7 +499,6 @@ summarise.tidybulk <- function (.data, ...)
 #' The former normalises `mass` by the global average whereas the
 #' latter normalises by the averages within gender levels.
 #'
-#' @export
 #' @param .data A tbl. (See dplyr)
 #' @param ... <[`tidy-eval`][dplyr_tidy_eval]> Name-value pairs.
 #'   The name gives the name of the column in the output.
@@ -556,7 +550,7 @@ summarise.tidybulk <- function (.data, ...)
 #' @rdname mutate-methods
 #' @name mutate
 #' @importFrom dplyr mutate
-#' @export
+
 NULL
 
 #' @inheritParams mutate
@@ -620,7 +614,6 @@ mutate.nested_tidybulk <- function(.data, ...)
 #'
 #' The following methods are currently available in loaded packages:
 #' @family single table verbs
-#' @export
 #' 
 #' @examples
 #' 
@@ -630,7 +623,7 @@ mutate.nested_tidybulk <- function(.data, ...)
 #' @rdname rename-methods
 #' @name rename
 #' @importFrom dplyr rename
-#' @export
+
 NULL
 
 #' @inheritParams rename
@@ -674,7 +667,6 @@ rename.tidybulk <- function(.data, ...)
 #'
 #'   A `tbl`
 #'
-#' @export
 #' @examples
 #' 
 #' df <- expand.grid(x = 1:3, y = 3:1)
@@ -683,7 +675,6 @@ rename.tidybulk <- function(.data, ...)
 #' @rdname rowwise-methods
 #' @name rowwise
 #' @importFrom dplyr rowwise
-#' @export
 NULL
 
 #' @inheritParams rowwise
@@ -723,7 +714,7 @@ rowwise.tidybulk <- function(data, ...)
 #' @rdname dplyr-methods
 #' @name left_join
 #' @importFrom dplyr left_join
-#' @export
+
 NULL
 
 #' @inheritParams left_join
@@ -763,7 +754,7 @@ left_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", 
 #' @rdname join-methods
 #' @name inner_join
 #' @importFrom dplyr inner_join
-#' @export
+
 NULL
 
 #' @inheritParams inner_join
@@ -802,7 +793,7 @@ inner_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #' @rdname join-methods
 #' @name right_join
 #' @importFrom dplyr right_join
-#' @export
+
 NULL
 
 #' @inheritParams right_join
@@ -843,7 +834,7 @@ right_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #' @rdname join-methods
 #' @name full_join
 #' @importFrom dplyr full_join
-#' @export
+
 NULL
 
 #' @inheritParams full_join

@@ -47,7 +47,6 @@
 #' @rdname nest-methods
 #' @name unnest
 #'
-#' @export
 NULL
 
 #' @export
@@ -87,7 +86,7 @@ unnest.nested_tidybulk <- function (data, cols, ..., keep_empty=FALSE, ptype=NUL
 #' @rdname nest-methods
 #' @name nest
 #'
-#' @export
+
 NULL
 
 #' @importFrom rlang enquos
