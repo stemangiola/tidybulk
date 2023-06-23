@@ -1,7 +1,3 @@
-
-#' @export
-dplyr::select
-
 #' Arrange rows by column values
 #'
 #'
@@ -53,7 +49,9 @@ dplyr::select
 #' @importFrom dplyr arrange
 #'
 #' @examples
-#'
+#' data(se_mini)
+#' 
+#' se_mini |> tidybulk() |> arrange(time)
 #' arrange(mtcars, cyl, disp)
 #'
 NULL

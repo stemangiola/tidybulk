@@ -52,7 +52,9 @@ The following methods are currently available in loaded packages:
 }
 
 \examples{
+data(se_mini)
 
+se_mini |> tidybulk() |> arrange(time)
 arrange(mtcars, cyl, disp)
 
 }

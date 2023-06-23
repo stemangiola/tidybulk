@@ -3,7 +3,6 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
-\alias{select}
 \alias{do}
 \alias{tibble}
 \alias{as_tibble}
@@ -14,7 +13,7 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dplyr}{\code{\link[dplyr]{do}}, \code{\link[dplyr]{select}}}
+  \item{dplyr}{\code{\link[dplyr]{do}}}
 
   \item{tibble}{\code{\link[tibble]{as_tibble}}, \code{\link[tibble]{tibble}}}
 }}

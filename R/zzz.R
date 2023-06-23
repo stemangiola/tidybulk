@@ -15,6 +15,10 @@ This message can be suppressed by:
 ")	
 	
 	packageStartupMessage(msg)
+	
+	# Attach tidyverse
+	attached <- tidyverse_attach()
+	
 }
 
 rv = R.Version()
@@ -24,3 +28,5 @@ if(getRversion() >= "4.0.0" && as.numeric(rv$`svn rev`) >= 77889) {
 } else {
 	unitType = function(x, recurse = TRUE) attr(x, "unit")
 }
+
+
