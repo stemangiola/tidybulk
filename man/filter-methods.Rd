@@ -7,9 +7,12 @@
 \item{.data}{A tbl. (See dplyr)}
 
 \item{...}{<[`tidy-eval`][dplyr_tidy_eval]> Logical predicates defined in
-terms of the variables in `.data`.
-Multiple conditions are combined with `&`. Only rows where the
-condition evaluates to `TRUE` are kept.}
+ terms of the variables in `.data`.
+ Multiple conditions are combined with `&`. Only rows where the
+ condition evaluates to `TRUE` are kept.
+@param .by <tidy-select> Optionally, a selection of columns to group by for just this operation, 
+functioning as an alternative to group_by(). 
+For details and examples, see ?dplyr_by.}
 
 \item{.preserve}{when `FALSE` (the default), the grouping structure
 is recalculated based on the resulting data, otherwise it is kept as is.}

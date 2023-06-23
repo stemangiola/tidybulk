@@ -240,6 +240,9 @@ distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 #'   terms of the variables in `.data`.
 #'   Multiple conditions are combined with `&`. Only rows where the
 #'   condition evaluates to `TRUE` are kept.
+#'  @param .by <tidy-select> Optionally, a selection of columns to group by for just this operation, 
+#'  functioning as an alternative to group_by(). 
+#'  For details and examples, see ?dplyr_by.
 #' @param .preserve when `FALSE` (the default), the grouping structure
 #'   is recalculated based on the resulting data, otherwise it is kept as is.
 #' @return
@@ -274,11 +277,11 @@ NULL
 
 #' @inheritParams filter
 #' @export
-filter.tidybulk <- function (.data, ..., .preserve = FALSE)
+filter.tidybulk <- function (.data, ..., .by = NULL, .preserve = FALSE)
 {
 	.data |>
 		drop_class(c("tidybulk", "tt")) |>
-		dplyr::filter( ..., .preserve = .preserve) |>
+		dplyr::filter( ..., .by = .by, .preserve = .preserve) |>
 
 		# Attach attributes
 		reattach_internals(.data) |>

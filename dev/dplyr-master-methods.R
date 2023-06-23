@@ -412,18 +412,18 @@ dplyr::distinct_if
 #' # Learn more in ?dplyr_tidy_eval
 ############# START ADDED tidybulk #####################################
 #' @export
-filter <- function (.data, ..., .preserve = FALSE)  {
+filter <- function (.data, ..., .by = NULL, .preserve = FALSE)  {
   UseMethod("filter")
 }
 
 #' @export
-filter.default <-  function (.data, ..., .preserve = FALSE)
+filter.default <-  function (.data, ..., .by = NULL, .preserve = FALSE)
 {
   dplyr::filter(.data, ..., .preserve = .preserve)
 }
 
 #' @export
-filter.tidybulk <- function (.data, ..., .preserve = FALSE)
+filter.tidybulk <- function (.data, ..., .by = NULL, .preserve = FALSE)
 {
   .data %>%
     drop_class(c("tidybulk", "tt")) %>%
@@ -540,18 +540,18 @@ dplyr::filter_if
 #'
 ############# START ADDED tidybulk #####################################
 #' @export
-filter <- function (.data, ..., .preserve = FALSE)  {
+filter <- function (.data, ..., .by = NULL, .preserve = FALSE)  {
   UseMethod("filter")
 }
 
 #' @export
-filter.default <-  function (.data, ..., .preserve = FALSE)
+filter.default <-  function (.data, ..., .by = NULL, .preserve = FALSE)
 {
   dplyr::filter(.data, ..., .preserve = .preserve)
 }
 
 #' @export
-filter.tidybulk <- function (.data, ..., .preserve = FALSE)
+filter.tidybulk <- function (.data, ..., .by = NULL, .preserve = FALSE)
 {
   .data %>%
     drop_class(c("tidybulk", "tt")) %>%
