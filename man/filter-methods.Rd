@@ -24,6 +24,8 @@ An object of the same type as `.data`.
 * Columns are not modified.
 * The number of groups may be reduced (if `.preserve` is not `TRUE`).
 * Data frame attributes are preserved.
+
+The following methods are currently available in loaded packages:
 }
 \description{
 `filter()` retains the rows where the conditions you provide a `TRUE`. Note
@@ -59,22 +61,12 @@ whereas the latter keeps rows with `mass` greater than the gender
 average.
 }
 
-\section{Methods}{
-
-This function is a **generic**, which means that packages can provide
-implementations (methods) for other classes. See the documentation of
-individual methods for extra arguments and differences in behaviour.
-
-The following methods are currently available in loaded packages:
-}
-
 \examples{
 
 data(se)
 
 se |> tidybulk() |> filter(dex=="untrt")
 
-# Learn more in ?dplyr_tidy_eval
 }
 \seealso{
 [filter_all()], [filter_if()] and [filter_at()].

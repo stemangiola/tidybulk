@@ -245,6 +245,7 @@ distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 #'  For details and examples, see ?dplyr_by.
 #' @param .preserve when `FALSE` (the default), the grouping structure
 #'   is recalculated based on the resulting data, otherwise it is kept as is.
+#'   
 #' @return
 #' An object of the same type as `.data`.
 #'
@@ -252,11 +253,7 @@ distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 #' * Columns are not modified.
 #' * The number of groups may be reduced (if `.preserve` is not `TRUE`).
 #' * Data frame attributes are preserved.
-#' @section Methods:
-#' This function is a **generic**, which means that packages can provide
-#' implementations (methods) for other classes. See the documentation of
-#' individual methods for extra arguments and differences in behaviour.
-#'
+#' 
 #' The following methods are currently available in loaded packages:
 #' @seealso [filter_all()], [filter_if()] and [filter_at()].
 #'
@@ -272,13 +269,12 @@ distinct.tidybulk <- function (.data, ..., .keep_all = FALSE)
 #' 
 #' se |> tidybulk() |> filter(dex=="untrt")
 #'
-#' # Learn more in ?dplyr_tidy_eval
 NULL
 
 #' @inheritParams filter
 #' @export
-filter.tidybulk <- function (.data, ..., .by = NULL, .preserve = FALSE)
-{
+filter.tidybulk <- function(.data, ..., .by = NULL, .preserve = FALSE){
+  
 	.data |>
 		drop_class(c("tidybulk", "tt")) |>
 		dplyr::filter( ..., .by = .by, .preserve = .preserve) |>
