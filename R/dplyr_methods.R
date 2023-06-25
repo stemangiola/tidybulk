@@ -324,6 +324,7 @@ filter.tidybulk <- function (.data, ..., .by = NULL, .preserve = FALSE)
 #'
 #' @rdname group_by-methods
 #' @name group_by
+#' 
 #' @importFrom dplyr group_by
 #'
 #' 

@@ -198,7 +198,7 @@ bind_rows.tidybulk <- function(..., .id = NULL)
 {
 
   tts = flatten_if(dots_values(...), is_spliced) # Original that fails Bioconductor dplyr:::flatten_bindable(rlang::dots_values(...))
-  
+
   par1 = tts[[1]] %>% get_tt_columns() %>% unlist
   par2 = tts[[2]] %>% get_tt_columns() %>% unlist
 
@@ -233,7 +233,7 @@ bind_cols.tidybulk <- function(..., .id = NULL)
 {
 
   tts = flatten_if(dots_values(...), is_spliced) # Original that fails Bioconductor dplyr:::flatten_bindable(rlang::dots_values(...))
-  
+
   bind_cols(..., .id = .id) %>%
 
     # Attach attributes
@@ -359,6 +359,9 @@ dplyr::distinct_if
 #'   terms of the variables in `.data`.
 #'   Multiple conditions are combined with `&`. Only rows where the
 #'   condition evaluates to `TRUE` are kept.
+#'  @param .by <tidy-select> Optionally, a selection of columns to group by for just this operation,
+#'  functioning as an alternative to group_by().
+#'  For details and examples, see ?dplyr_by.
 #' @param .preserve when `FALSE` (the default), the grouping structure
 #'   is recalculated based on the resulting data, otherwise it is kept as is.
 #' @return
