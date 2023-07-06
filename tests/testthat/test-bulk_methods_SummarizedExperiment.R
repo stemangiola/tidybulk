@@ -267,9 +267,6 @@ test_that("differential trancript abundance - SummarizedExperiment",{
     identify_abundant(a, b, c, factor_of_interest = condition) |>
     test_differential_abundance(
       ~ condition,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
       scaling_method = "TMM",
       method = "edgeR_likelihood_ratio",
       test_above_log2_fold_change = 1,
@@ -286,12 +283,9 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 test_that("Voom with treat method",{
 
   se_mini |>
-    identify_abundant(a, b, c, factor_of_interest = condition) |>
+    identify_abundant(factor_of_interest = condition) |>
     test_differential_abundance(
       ~ condition,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
       method = "limma_voom",
       test_above_log2_fold_change = 1,
       action="only"
@@ -307,9 +301,6 @@ test_that("Voom with treat method",{
     identify_abundant(a, b, c, factor_of_interest = Cell.type) |>
     test_differential_abundance(
       ~ 0 + Cell.type,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
       .contrasts = c("Cell.typeb_cell-Cell.typemonocyte", "Cell.typeb_cell-Cell.typet_cell"),
       method = "limma_voom",
       test_above_log2_fold_change = 1,
