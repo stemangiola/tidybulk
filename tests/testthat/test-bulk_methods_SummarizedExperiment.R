@@ -280,6 +280,86 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 })
 
 
+test_that("differential trancript abundance - SummarizedExperiment - alternative .abundance",{
+  
+  assays(se_mini) = list(counts = assay(se_mini), bla = assay(se_mini))
+  
+  
+  res =	 se_mini |> 
+    identify_abundant(factor_of_interest = condition) |> 
+    test_differential_abundance(   ~ condition , .abundance =  bla)
+  
+  w = match(  c("CLEC7A" , "FAM198B", "FCN1"  ,  "HK3"   ), rownames(res) )
+  
+  # Quasi likelihood
+  res_tibble =		test_differential_abundance(
+    input_df |> identify_abundant(a, b, c, factor_of_interest = condition),
+    ~ condition	,
+    a, b, c
+  )
+  
+  expect_equal(
+    res@elementMetadata[w,]$logFC,
+    c(-11.58385, -13.53406, -12.58204, -12.19271),
+    tolerance=1e-4
+  )
+  
+  expect_equal(
+    res@elementMetadata[w,]$logFC,
+    res_tibble |>
+      pivot_transcript(b) |>
+      filter(b %in% rownames(res)[w]) |>
+      dplyr::arrange(b) |>
+      dplyr::pull(logFC),
+    tolerance=1e-4
+  )
+  
+  # Likelihood ratio
+  res2 =		test_differential_abundance(
+    se_mini |>
+      identify_abundant(factor_of_interest = condition),
+    ~ condition, .abundance =  bla, method = "edgeR_likelihood_ratio"	)
+  
+  res2_tibble =		test_differential_abundance(
+    input_df |> identify_abundant(a, b, c, factor_of_interest = condition),
+    ~ condition	,
+    a, b, c, method = "edgeR_likelihood_ratio"
+  )
+  
+  expect_equal(
+    res2@elementMetadata[w,]$logFC,
+    c(-11.57989, -13.53476, -12.57969, -12.19303),
+    tolerance=1e-4
+  )
+  
+  expect_equal(
+    res2@elementMetadata[w,]$logFC,
+    res2_tibble |>
+      pivot_transcript(b) |>
+      filter(b %in% rownames(res)[w]) |>
+      dplyr::arrange(b) |>
+      dplyr::pull(logFC),
+    tolerance=1e-4
+  )
+  
+  # Treat
+  se_mini |>
+    identify_abundant(a, b, c, factor_of_interest = condition) |>
+    test_differential_abundance(
+      ~ condition, .abundance =  bla,
+      scaling_method = "TMM",
+      method = "edgeR_likelihood_ratio",
+      test_above_log2_fold_change = 1,
+      action="only"
+    ) |> SummarizedExperiment::rowData() |>
+    as_tibble() |>
+    filter(FDR<0.05) |>
+    nrow() |>
+    expect_equal(169)
+  
+})
+
+
 test_that("Voom with treat method",{
 
   se_mini |>
