@@ -1099,20 +1099,77 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   }
   
   # Check if package is installed, otherwise install
-  if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
-    message("Installing DESeq2 needed for differential transcript abundance analyses")
+  if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing edgeR needed for differential transcript abundance analyses")
     if (!requireNamespace("BiocManager", quietly = TRUE))
       install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("DESeq2", ask = FALSE)
+    BiocManager::install("edgeR", ask = FALSE)
   }
   
-  if (is.null(test_above_log2_fold_change)) {
-    test_above_log2_fold_change <- 0
+  # Check if package is installed, otherwise install
+  if (find.package("glmmSeq", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing glmmSeq needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("glmmSeq", ask = FALSE)
   }
   
-
+  # If no assay is specified take first
+  my_assay = ifelse(
+    quo_is_symbol(.abundance), 
+    quo_name(.abundance), 
+    .data |>
+      assayNames() |>
+      extract2(1)
+  )
   
+  metadata = 
+    .data |> 
+    colData() 
   
+  counts = 
+    .data %>%
+    assay(my_assay)
+  
+  glmmSeq_object = 
+    glmmSeq::glmmSeq( .formula,
+                      countdata = counts ,
+                      metadata =   metadata |> as.data.frame(),
+                      dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts)),
+                      progress = TRUE, 
+                      method = method |> str_remove("(?i)^glmmSeq_" ),
+                      ...
+    ) 
+  
+  glmmSeq_object |> 
+    summary() |> 
+    as_tibble(rownames = "transcript") |>
+    mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |> 
+    
+    # Attach attributes
+    reattach_internals(.data) %>%
+    
+    # select method
+    memorise_methods_used("glmmSeq") %>% 
+    
+    # # Add raw object
+    # attach_to_internals(glmmSeq_object, "glmmSeq") %>%
+    
+    # Communicate the attribute added
+    {
+      rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
+      (.)
+    }  %>%
+    
+    # Attach prefix
+    setNames(c(
+      colnames(.)[1],
+      sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
+    )) |> 
+    
+    list() |> 
+    setNames("result") |> 
+    c(list(result_raw = glmmSeq_object))
   
   
 }
