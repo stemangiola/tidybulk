@@ -2586,6 +2586,22 @@ such as batch effects (if applicable) in the formula.
 				prefix = prefix,
 				...
 			),
+			
+			# glmmseq
+			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmTMB") ~ get_differential_transcript_abundance_glmmSeq(
+			  .,
+			  .formula,
+			  .sample = !!.sample,
+			  .transcript = !!.transcript,
+			  .abundance = !!.abundance,
+			  .contrasts = contrasts,
+			  method = method,
+			  test_above_log2_fold_change = test_above_log2_fold_change,                                
+			  scaling_method = scaling_method,
+			  omit_contrast_in_colnames = omit_contrast_in_colnames,
+			  prefix = prefix,
+			  ...
+			),
 
 			# Else error
 			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\"")
@@ -4539,3 +4555,5 @@ as_matrix <- function(tbl,
     # Convert to matrix
     as.matrix()
 }
+
+

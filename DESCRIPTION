@@ -78,7 +78,8 @@ Suggests:
     igraph,
     EGSEA,
     IRanges,
-    here
+    here,
+    glmmSeq
 VignetteBuilder: 
     knitr
 RdMacros:
