@@ -1130,6 +1130,7 @@ setMethod(
 #' @importFrom rlang inform
 .test_differential_abundance_se = function(.data,
 																					 .formula,
+																					 .abundance = NULL,
 																					 contrasts = NULL,
 																					 method = "edgeR_quasi_likelihood",
 																					 test_above_log2_fold_change = NULL,
@@ -1139,6 +1140,8 @@ setMethod(
 																					 ...)
 {
 
+  .abundance = enquo(.abundance)
+  
   # Fix NOTEs
   . = NULL
   
@@ -1179,8 +1182,9 @@ such as batch effects (if applicable) in the formula.
 				get_differential_transcript_abundance_bulk_SE(
 					.,
 					.formula,
+					.abundance = !!.abundance,
 					.contrasts = contrasts,
-					colData(.data),
+					sample_annotation = colData(.data),
 					method = method,
 					test_above_log2_fold_change = test_above_log2_fold_change,
 					scaling_method = scaling_method,
@@ -1193,8 +1197,9 @@ such as batch effects (if applicable) in the formula.
 			grepl("voom", method) ~ get_differential_transcript_abundance_bulk_voom_SE(
 				.,
 				.formula,
+				.abundance = !!.abundance,
 				.contrasts = contrasts,
-				colData(.data),
+				sample_annotation = colData(.data),
 				method = method,
 				test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
@@ -1207,15 +1212,31 @@ such as batch effects (if applicable) in the formula.
 			tolower(method)=="deseq2" ~ get_differential_transcript_abundance_deseq2_SE(
 				.,
 				.formula,
+				.abundance = !!.abundance,
 				.contrasts = contrasts,
 				method = method,
-                                test_above_log2_fold_change = test_above_log2_fold_change,
+        test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
 				prefix = prefix,
-                                ...
+         ...
 			),
 
+			# glmmseq
+			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmTMB") ~ get_differential_transcript_abundance_glmmSeq_SE(
+			  .,
+			  .formula,
+			  .abundance = !!.abundance,
+			  .contrasts = contrasts,
+			  sample_annotation = colData(.data),
+			  method = method,
+			  test_above_log2_fold_change = test_above_log2_fold_change,                                
+			  scaling_method = scaling_method,
+			  omit_contrast_in_colnames = omit_contrast_in_colnames,
+			  prefix = prefix,
+			  ...
+			),
+			
 			# Else error
 			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\"")
 		)

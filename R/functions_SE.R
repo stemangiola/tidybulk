@@ -701,6 +701,7 @@ remove_redundancy_elements_though_reduced_dimensions_SE <-
 #' @importFrom stats model.matrix
 #' @importFrom utils install.packages
 #' @importFrom purrr when
+#' @importFrom magrittr extract2
 #'
 #'
 #' @param .data A tibble
@@ -715,6 +716,7 @@ remove_redundancy_elements_though_reduced_dimensions_SE <-
 #'
 get_differential_transcript_abundance_bulk_SE <- function(.data,
 																											 .formula,
+																											 .abundance = NULL,
 																											 sample_annotation,
 																											 .contrasts = NULL,
 																											 method = "edgeR_quasi_likelihood",
@@ -724,6 +726,8 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 																											 prefix = "",
 																											 ...) {
 
+  .abundance = enquo(.abundance)
+  
 	# Check if omit_contrast_in_colnames is correctly setup
 	if(omit_contrast_in_colnames & length(.contrasts) > 1){
 		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
@@ -759,15 +763,19 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 		BiocManager::install("edgeR", ask = FALSE)
 	}
 
+	# If no assay is specified take first
+	my_assay = ifelse(
+	  quo_is_symbol(.abundance), 
+	  quo_name(.abundance), 
+	  .data |>
+	    assayNames() |>
+	    extract2(1)
+	 )
+	
 	edgeR_object =
-		.data %>%
-
-		# Extract assay
-		assays() %>%
-		as.list() %>%
-		.[[1]] %>%
-
-		edgeR::DGEList(counts = .) %>%
+		.data |> 
+	  assay(my_assay) |> 
+		edgeR::DGEList() %>%
 
 		# Scale data if method is not "none"
 		when(
@@ -881,6 +889,7 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 #'
 get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 																														.formula,
+																														.abundance = NULL,
 																														sample_annotation,
 																														.contrasts = NULL,
 																														method = NULL,
@@ -889,6 +898,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 																														omit_contrast_in_colnames = FALSE,
 																														prefix = "") {
 
+  .abundance = enquo(.abundance)
 
 	# Check if omit_contrast_in_colnames is correctly setup
 	if(omit_contrast_in_colnames & length(.contrasts) > 1){
@@ -926,15 +936,20 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 		BiocManager::install("limma", ask = FALSE)
 	}
 
+	# If no assay is specified take first
+	my_assay = ifelse(
+	  quo_is_symbol(.abundance), 
+	  quo_name(.abundance), 
+	  .data |>
+	    assayNames() |>
+	    extract2(1)
+	)
+	
 	voom_object =
 		.data %>%
 
-		# Extract assay
-		assays() %>%
-		as.list() %>%
-		.[[1]] %>%
-
-		edgeR::DGEList() %>%
+	  assay(my_assay) |> 
+	  edgeR::DGEList() %>%
 
 		# Scale data if method is not "none"
 		when(
@@ -1030,6 +1045,79 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 }
 
 
+#' Get differential transcription information to a tibble using glmmSeq
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' 
+#' 
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom utils install.packages
+#' @importFrom purrr when
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param ... Additional arguments for glmmSeq
+#'
+#' @return A tibble with glmmSeq results
+#'
+get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
+                                                            .formula,
+                                                            .abundance = NULL,
+                                                            .contrasts = NULL,
+                                                            sample_annotation ,
+                                                            method = "deseq2",
+                                                            
+                                                            test_above_log2_fold_change = NULL,
+                                                            
+                                                            scaling_method = "TMM",
+                                                            omit_contrast_in_colnames = FALSE,
+                                                            prefix = "",
+                                                            ...) {
+  
+  .abundance = enquo(.abundance)
+  
+  # Check if contrasts are of the same form
+  if(
+    .contrasts %>% is.null %>% not() &
+    .contrasts %>% class %>% equals("list") %>% not()
+  )
+    stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
+  
+  # Check if omit_contrast_in_colnames is correctly setup
+  if(omit_contrast_in_colnames & length(.contrasts) > 1){
+    warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+    omit_contrast_in_colnames = FALSE
+  }
+  
+  # Check if package is installed, otherwise install
+  if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
+    message("Installing DESeq2 needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("DESeq2", ask = FALSE)
+  }
+  
+  if (is.null(test_above_log2_fold_change)) {
+    test_above_log2_fold_change <- 0
+  }
+  
+
+  
+  
+  
+  
+}
+
+
 #' Get differential transcription information to a tibble using DESeq2
 #'
 #' @keywords internal
@@ -1056,6 +1144,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #'
 get_differential_transcript_abundance_deseq2_SE <- function(.data,
                                                             .formula,
+                                                            .abundance = NULL,
                                                             .contrasts = NULL,
                                                             method = "deseq2",
 
@@ -1066,7 +1155,8 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
                                                             prefix = "",
                                                             ...) {
 
-
+  .abundance = enquo(.abundance)
+  
 	# Check if contrasts are of the same form
 	if(
 		.contrasts %>% is.null %>% not() &
@@ -1094,11 +1184,23 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
   
 	my_contrasts = .contrasts
 
+	# If no assay is specified take first
+	my_assay = ifelse(
+	  quo_is_symbol(.abundance), 
+	  quo_name(.abundance), 
+	  .data |>
+	    assayNames() |>
+	    extract2(1)
+	)
+	
 	deseq2_object =
-		.data %>%
-
+	  
 		# DESeq2
-		DESeq2::DESeqDataSet( design = .formula) %>%
+		DESeq2::DESeqDataSetFromMatrix(
+		  countData = .data |> assay(my_assay),
+		  colData = colData(.data),
+		  design = .formula
+		) %>%
 		DESeq2::DESeq(...)
 
 	# Return
