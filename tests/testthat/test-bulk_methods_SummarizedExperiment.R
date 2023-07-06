@@ -64,6 +64,31 @@ test_that("tidybulk SummarizedExperiment normalisation",{
 
 })
 
+
+test_that("quantile normalisation",{
+  
+  res = se_mini |> quantile_normalise_abundance()
+  
+  res_tibble =
+    input_df |>
+    quantile_normalise_abundance(
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
+      action = "get"
+    )
+  
+  
+    SummarizedExperiment::assay(res, "count_scaled")["ABCB9","SRR1740035"] |> 
+  expect_equal(
+    res_tibble |> 
+      filter(a=="SRR1740035" & b=="ABCB9") |> 
+      pull(c_scaled)
+  )
+  
+})
+
+
 test_that("tidybulk SummarizedExperiment normalisation subset",{
 
   res = se |> identify_abundant() |> scale_abundance(

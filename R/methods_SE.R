@@ -235,6 +235,97 @@ setMethod("scale_abundance",
 					.scale_abundance_se)
 
 
+
+#' @importFrom magrittr multiply_by
+#' @importFrom magrittr divide_by
+#' @importFrom SummarizedExperiment assays
+#' @importFrom SummarizedExperiment colData
+#' @importFrom utils tail
+#' @importFrom stats na.omit
+#'
+.quantile_normalise_abundance_se = function(.data,
+                               .sample = NULL,
+                               .transcript = NULL,
+                               .abundance = NULL,
+                               .subset_for_scaling = NULL,
+                               action = NULL) {
+  
+  
+  # Fix NOTEs
+  . = NULL
+  
+  .abundance = enquo(.abundance)
+  .subset_for_scaling = enquo(.subset_for_scaling)
+  
+  # Set column name for value scaled
+  
+  # If no assay is specified take first
+  my_assay = ifelse(
+    quo_is_symbol(.abundance), 
+    quo_name(.abundance), 
+    .data |>
+      assayNames() |>
+      extract2(1)
+  )
+  
+  # Set column name for value scaled
+  value_scaled = my_assay %>% paste0(scaled_string)
+  
+  # Check if package is installed, otherwise install
+  if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing limma needed for analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("limma", ask = FALSE)
+  }
+  
+  # Reformat input data set
+  .data_norm <-
+    .data %>%
+    assay(my_assay) |> 
+    limma::normalizeQuantiles() |> 
+    list() |> 
+    setNames(value_scaled)
+  
+  # Add the assay
+  assays(.data) =  assays(.data) %>% c(.data_norm)
+  
+  .data %>%
+    
+    # Add methods
+    memorise_methods_used(c("quantile")) %>%
+    
+    # Attach column internals
+    add_tt_columns(.abundance_scaled = !!(function(x, v)	enquo(v))(x,!!as.symbol(value_scaled)))
+  
+}
+
+#' quantile_normalise_abundance
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("quantile_normalise_abundance",
+          "SummarizedExperiment",
+          .quantile_normalise_abundance_se)
+
+#' quantile_normalise_abundance
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("quantile_normalise_abundance",
+          "RangedSummarizedExperiment",
+          .quantile_normalise_abundance_se)
+
+
+
 .cluster_elements_se = function(.data,
 																method ,
 																of_samples = TRUE,

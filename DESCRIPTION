@@ -17,7 +17,7 @@ Depends:
 Imports:
     tibble,
     readr,
-    dplyr,
+    dplyr (>= 1.1.0),
     magrittr,
     tidyr,
     stringi,

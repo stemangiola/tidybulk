@@ -527,6 +527,7 @@ setGeneric("scale_abundance", function(.data,
 		)
 }
 
+
 #' scale_abundance
 #' 
 #' @export
@@ -565,6 +566,183 @@ setMethod("scale_abundance", "tbl_df", .scale_abundance)
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 setMethod("scale_abundance", "tidybulk", .scale_abundance)
+
+
+
+#' Normalise by quantiles the counts of transcripts/genes
+#'
+#' `r lifecycle::badge("maturing")`
+#'
+#' @description quantile_normalise_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#' @importFrom stats median
+#' @importFrom dplyr join_by
+#'
+#' @name quantile_normalise_abundance
+#'
+#' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .subset_for_scaling A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example
+#' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
+#'
+#'
+#' @details Scales transcript abundance compensating for sequencing depth
+#' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+#' Lowly transcribed transcripts/genes (defined with minimum_counts and minimum_proportion parameters)
+#' are filtered out from the scaling procedure.
+#' The scaling inference is then applied back to all unfiltered data.
+#'
+#' Underlying method
+#' edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))
+#'
+#'
+#'
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+#'
+#'
+#' @examples
+#'
+#'
+#'  tidybulk::se_mini |>
+#'    identify_abundant() |>
+#'    quantile_normalise_abundance()
+#'
+#'
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#' @export
+
+setGeneric("quantile_normalise_abundance", function(.data,
+                                                    .sample = NULL,
+                                                    .transcript = NULL,
+                                                    .abundance = NULL,
+                                                    .subset_for_scaling = NULL,
+                                                    action = "add")
+  standardGeneric("quantile_normalise_abundance"))
+
+# Set internal
+.quantile_normalise_abundance = 	function(.data,
+                                          .sample = NULL,
+                                          .transcript = NULL,
+                                          .abundance = NULL,
+                                          .subset_for_scaling = NULL,
+                                          action = "add")
+{
+  
+  # Fix NOTEs
+  . = NULL
+  
+  # Get column names
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+  col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+  .sample = col_names$.sample
+  .transcript = col_names$.transcript
+  .abundance = col_names$.abundance
+  
+  .subset_for_scaling = enquo(.subset_for_scaling)
+  
+  # Set column name for value scaled
+  value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
+  
+
+  # Check if package is installed, otherwise install
+  if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing limma needed for analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("limma", ask = FALSE)
+  }
+  
+  # Reformat input data set
+  .data_norm <-
+    .data %>%
+    
+    # Rename
+    dplyr::select(!!.sample,!!.transcript,!!.abundance) %>%
+    
+    # Set samples and genes as factors
+    dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript))  |> 
+    pivot_wider(names_from = !!.sample, values_from = !!.abundance) |> 
+    as_matrix(rownames=!!.transcript) |> 
+    limma::normalizeQuantiles() |> 
+    as_tibble(rownames = quo_name(.transcript)) |> 
+    pivot_longer(-!!.transcript, names_to = quo_name(.sample), values_to = quo_names(value_scaled)) |> 
+    
+
+    # Attach column internals
+    add_tt_columns(
+      !!.sample,
+      !!.transcript,
+      !!.abundance,
+      !!(function(x, v)	enquo(v))(x,!!value_scaled)
+    )
+  
+  
+  if (action %in% c( "add", "get")){
+    
+    .data %>%
+      
+      left_join(.data_norm, by= join_by(!!.sample, !!.transcript)) %>%
+
+      # Attach attributes
+      reattach_internals(.data_norm) |> 
+      
+      # Add methods
+      memorise_methods_used(c("quantile")) 
+    
+  }
+  else if (action == "only") .data_norm
+  else
+    stop(
+      "tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+    )
+}
+
+#' quantile_normalise_abundance
+#' 
+#' @export
+#' 
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+#'
+setMethod("quantile_normalise_abundance", "spec_tbl_df", .quantile_normalise_abundance)
+
+#' quantile_normalise_abundance
+#' 
+#' @export
+#' 
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+#'
+setMethod("quantile_normalise_abundance", "tbl_df", .quantile_normalise_abundance)
+
+#' quantile_normalise_abundance
+#' 
+#' @export
+#' 
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+#'
+setMethod("quantile_normalise_abundance", "tidybulk", .quantile_normalise_abundance)
 
 
 #' Get clusters of elements (e.g., samples or transcripts)
