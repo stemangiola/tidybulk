@@ -154,6 +154,28 @@ test_that("Scaled counts - subset",{
 
 })
 
+test_that("quantile normalisation",{
+  
+  res =
+    input_df |>
+    quantile_normalise_abundance(
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
+      action = "get"
+    )
+  
+  res |> 
+    pull(c_scaled) |> 
+    head() |> 
+  expect_equal(
+    c(1052.8 ,  63.8 ,7229.0 ,   2.9, 2143.6, 9272.8),
+    tolerance=1e-6
+  )
+  
+})
+
+
 test_that("filter variable - no object",{
 
 	res =

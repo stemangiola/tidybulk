@@ -355,8 +355,6 @@ get_scaled_counts_bulk <- function(.data,
 
 }
 
-
-
 #' Get differential transcription information to a tibble using edgeR.
 #'
 #' @keywords internal
