@@ -109,7 +109,6 @@ edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))
 
 
  tidybulk::se_mini |>
-   identify_abundant() |>
    quantile_normalise_abundance()
 
 

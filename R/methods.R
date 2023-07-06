@@ -608,7 +608,6 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 #'
 #'
 #'  tidybulk::se_mini |>
-#'    identify_abundant() |>
 #'    quantile_normalise_abundance()
 #'
 #'
