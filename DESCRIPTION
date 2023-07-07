@@ -79,7 +79,10 @@ Suggests:
     EGSEA,
     IRanges,
     here,
-    glmmSeq
+    glmmSeq,
+    pblapply,
+    pbmcapply,
+    parameters
 VignetteBuilder: 
     knitr
 RdMacros:
