@@ -120,11 +120,11 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
   glmmcall <- match.call(expand.dots = TRUE)
   method <- match.arg(method)
   if (is.null(control)) {
-    control <- switch(method, lme4 = glmerControl(optimizer = "bobyqa"), 
+    control <- switch(method, lme4 = lme4::glmerControl(optimizer = "bobyqa"), 
                       glmmTMB = glmmTMBControl())
   }
   countdata <- as.matrix(countdata)
-  if (length(findbars(modelFormula)) == 0) {
+  if (length(lme4::findbars(modelFormula)) == 0) {
     stop("No random effects terms specified in formula")
   }
   if (ncol(countdata) != nrow(metadata)) {
@@ -140,11 +140,11 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
   if (zeroCount > 0) 
     countdata[countdata == 0] <- zeroCount
   fullFormula <- update.formula(modelFormula, count ~ ., simplify = FALSE)
-  subFormula <- subbars(modelFormula)
+  subFormula <- lme4::subbars(modelFormula)
   variables <- rownames(attr(terms(subFormula), "factors"))
   subsetMetadata <- metadata[, variables]
   if (is.null(id)) {
-    fb <- findbars(modelFormula)
+    fb <- lme4::findbars(modelFormula)
     id <- sub(".*[|]", "", fb)
     id <- gsub(" ", "", id)
   }
@@ -190,10 +190,10 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
     hyp.matrix <- glmmSeq:::hyp_matrix(fullFormula, metadata, "count")
   }
   else {
-    if (length(findbars(reduced)) == 0) {
+    if (length(lme4::findbars(reduced)) == 0) {
       stop("No random effects terms specified in reduced formula")
     }
-    subReduced <- subbars(reduced)
+    subReduced <- lme4::subbars(reduced)
     redvars <- rownames(attr(terms(subReduced), "factors"))
     if (any(!redvars %in% variables)) {
       stop("Extra terms in reduced formula not found full formula")
@@ -211,7 +211,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       list(y = countdata[i, ], dispersion = dispersion[i])
     })
     if (Sys.info()["sysname"] == "Windows" & cores > 1) {
-      cl <- makeCluster(cores)
+      cl <- paralle::makeCluster(cores)
       on.exit(stopCluster(cl))
       dots <- list(...)
       varlist <- c("glmerCore", "fullList", "fullFormula", 
@@ -227,6 +227,16 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                     dots)
           do.call(glmerCore, args)
         }, cl = cl)
+        
+        names(resultList) <- rownames(countdata)
+        noErr <- vapply(resultList, function(x) x$tryErrors == "", FUN.VALUE = TRUE)
+        
+        ci_random_effect_df = 
+          do.call(
+            rbind,
+            pbapply::pblapply(resultList[noErr], function(x) lmer_to_confidence_intervals_random_effects(x$fit), cl = cl)
+          )
+        
       }
       else {
         resultList <- parLapply(cl = cl, fullList, function(geneList) {
@@ -237,6 +247,16 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                     dots)
           do.call(glmerCore, args)
         })
+        
+        names(resultList) <- rownames(countdata)
+        noErr <- vapply(resultList, function(x) x$tryErrors == "", FUN.VALUE = TRUE)
+        
+        ci_random_effect_df = 
+          do.call(
+            rbind,
+            parLapply(cl = cl, resultList[noErr], function(x) lmer_to_confidence_intervals_random_effects(x$fit))
+          )
+        
       }
     }
     else {
@@ -246,8 +266,17 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                     subsetMetadata, control, offset, modelData, 
                     designMatrix, hyp.matrix, ...)
         }, mc.cores = cores)
-        if ("value" %in% names(resultList)) 
-          resultList <- resultList$value
+        if ("value" %in% names(resultList)) resultList <- resultList$value
+        
+        names(resultList) <- rownames(countdata)
+        noErr <- vapply(resultList, function(x) x$tryErrors == "", FUN.VALUE = TRUE)
+        
+        ci_random_effect_df = 
+          do.call(
+            rbind,
+            pbmcapply::pbmclapply(resultList[noErr], function(x) lmer_to_confidence_intervals_random_effects(x$fit), mc.cores = cores)
+          )
+        
       }
       else {
         resultList <- mclapply(fullList, function(geneList) {
@@ -255,6 +284,16 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                     subsetMetadata, control, offset, modelData, 
                     designMatrix, hyp.matrix, ...)
         }, mc.cores = cores)
+        
+        names(resultList) <- rownames(countdata)
+        noErr <- vapply(resultList, function(x) x$tryErrors == "", FUN.VALUE = TRUE)
+        
+        ci_random_effect_df = 
+          do.call(
+            rbind,
+            mclapply(resultList[noErr], function(x) lmer_to_confidence_intervals_random_effects(x$fit), mc.cores = cores)
+          )
+        
       }
     }
   }
@@ -270,9 +309,9 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                    "reduced", "subsetMetadata", "family", "control", 
                    "modelData", "offset", "designMatrix", "hyp.matrix", 
                    "dots")
-      clusterExport(cl, varlist = varlist, envir = environment())
+      parallel::clusterExport(cl, varlist = varlist, envir = environment())
       if (progress) {
-        resultList <- pblapply(fullList, function(geneList) {
+        resultList <- pbapply::pblapply(fullList, function(geneList) {
           args <- c(list(geneList = geneList, fullFormula = fullFormula, 
                          reduced = reduced, data = subsetMetadata, 
                          family = family, control = control, offset = offset, 
@@ -280,6 +319,16 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                          hyp.matrix = hyp.matrix), dots)
           do.call(glmmSeq:::glmmTMBcore, args)
         }, cl = cl)
+        
+        names(resultList) <- rownames(countdata)
+        noErr <- vapply(resultList, function(x) x$tryErrors == "", FUN.VALUE = TRUE)
+        
+        ci_random_effect_df = 
+          do.call(
+            rbind,
+            pbapply::pblapply(resultList[noErr], function(x) lmer_to_confidence_intervals_random_effects(x$fit), cl = cl)
+          )
+        
       }
       else {
         resultList <- parLapply(cl = cl, fullList, function(geneList) {
@@ -290,6 +339,16 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                          hyp.matrix = hyp.matrix), dots)
           do.call(glmmSeq:::glmmTMBcore, args)
         })
+        
+        names(resultList) <- rownames(countdata)
+        noErr <- vapply(resultList, function(x) x$tryErrors == "", FUN.VALUE = TRUE)
+        
+        ci_random_effect_df = 
+          do.call(
+            rbind,
+            parLapply(cl = cl, resultList[noErr], function(x) lmer_to_confidence_intervals_random_effects(x$fit))
+          )
+        
       }
     }
     else {
@@ -299,8 +358,17 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                       subsetMetadata, family, control, offset, 
                       modelData, designMatrix, hyp.matrix, ...)
         }, mc.cores = cores)
-        if ("value" %in% names(resultList)) 
-          resultList <- resultList$value
+        if ("value" %in% names(resultList)) resultList <- resultList$value
+        
+        names(resultList) <- rownames(countdata)
+        noErr <- vapply(resultList, function(x) x$tryErrors == "", FUN.VALUE = TRUE)
+        
+        ci_random_effect_df = 
+          do.call(
+            rbind,
+            pbmcapply::pbmclapply(resultList[noErr], function(x) lmer_to_confidence_intervals_random_effects(x$fit), mc.cores = cores)
+          )
+        
       }
       else {
         resultList <- mclapply(fullList, function(geneList) {
@@ -308,14 +376,23 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                       subsetMetadata, family, control, offset, 
                       modelData, designMatrix, hyp.matrix, ...)
         }, mc.cores = cores)
+        
+        names(resultList) <- rownames(countdata)
+        noErr <- vapply(resultList, function(x) x$tryErrors == "", FUN.VALUE = TRUE)
+        
+        ci_random_effect_df = 
+          do.call(
+            rbind,
+            mclapply(resultList[noErr], function(x) lmer_to_confidence_intervals_random_effects(x$fit), mc.cores = cores)
+          )
+        
       }
     }
   }
   if (returnList) 
     return(resultList)
-  names(resultList) <- rownames(countdata)
-  noErr <- vapply(resultList, function(x) x$tryErrors == "", 
-                  FUN.VALUE = TRUE)
+
+  
   if (sum(noErr) == 0) {
     message("All genes returned an error. Check call. Check sufficient data in each group")
     outputErrors <- vapply(resultList[!noErr], function(x) {
@@ -340,10 +417,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                              1))
   
   # Add coeff for random effects
-  s$coef = s$coef |> cbind(
-    resultList[noErr] |> 
-      map_dfr(~ .x$fit |> lmer_to_confidence_intervals_random_effects())
-  )
+  s$coef = s$coef |> cbind(ci_random_effect_df )
   
   s$res <- cbind(s$res, meanExp)
   if (method == "lme4") {
