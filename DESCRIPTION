@@ -81,8 +81,7 @@ Suggests:
     here,
     glmmSeq,
     pblapply,
-    pbmcapply,
-    parameters
+    pbmcapply
 VignetteBuilder: 
     knitr
 RdMacros:

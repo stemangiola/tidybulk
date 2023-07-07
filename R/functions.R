@@ -742,30 +742,6 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
     BiocManager::install("glmmSeq", ask = FALSE)
   }
   
-  # Check if package is installed, otherwise install
-  if (find.package("pblapply", quiet = TRUE) %>% length %>% equals(0)) {
-    message("tidybulk says: Installing pblapply needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("pblapply", ask = FALSE)
-  }
-  
-  # Check if package is installed, otherwise install
-  if (find.package("pbmcapply", quiet = TRUE) %>% length %>% equals(0)) {
-    message("tidybulk says: Installing pbmcapply needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("pbmcapply", ask = FALSE)
-  }
-  
-  # Check if package is installed, otherwise install
-  if (find.package("parameters", quiet = TRUE) %>% length %>% equals(0)) {
-    message("tidybulk says: Installing parameters needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("parameters", ask = FALSE)
-  }
-  
   metadata = 
     .data |> 
     pivot_sample(!!.sample) |> 

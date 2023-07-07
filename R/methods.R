@@ -2555,7 +2555,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' 	# The function `test_differential_abundance` operates with contrasts too
 #'
 #'  tidybulk::se_mini |>
-#'  identify_abundant() |>
+#'  identify_abundant(factor_of_interest = condition) |>
 #'  test_differential_abundance(
 #' 	    ~ 0 + condition,
 #' 	    contrasts = c( "conditionTRUE - conditionFALSE")
@@ -2568,15 +2568,24 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #' # demontrating with `fitType` that you can access any arguments to DESeq()
 #' my_se_mini  |>
-#'    identify_abundant() |>
+#'    identify_abundant(factor_of_interest = condition) |>
 #'        test_differential_abundance( ~ condition, method="deseq2", fitType="local")
 #'
 #' # testing above a log2 threshold, passes along value to lfcThreshold of results()
 #' res <- my_se_mini  |>
-#'    identify_abundant() |>
+#'    identify_abundant(factor_of_interest = condition) |>
 #'         test_differential_abundance( ~ condition, method="deseq2",
 #'             fitType="local",
 #'             test_above_log2_fold_change=4 )
+#'             
+#' # Use random intercept and random effect models 
+#' 
+#'  se_mini |>
+#   identify_abundant(factor_of_interest = condition) |> 
+#   test_differential_abundance(
+#     ~ condition + (1 + condition | time),
+#     method = "glmmseq_lme4", cores = 1
+#   ) 
 #'
 #' # confirm that lfcThreshold was used
 #' \dontrun{

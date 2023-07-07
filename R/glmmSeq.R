@@ -1,4 +1,25 @@
 
+# From https://github.com/easystats/parameters
+standard_error = function  (model) 
+{
+  rand.se <- lme4::ranef(model, condVar = TRUE)
+  n.groupings <- length(rand.se)
+  for (m in 1:n.groupings) {
+    vars.m <- attr(rand.se[[m]], "postVar")
+    K <- dim(vars.m)[1]
+    J <- dim(vars.m)[3]
+    names.full <- dimnames(rand.se[[m]])
+    rand.se[[m]] <- array(NA, c(J, K))
+    for (j in 1:J) {
+      rand.se[[m]][j, ] <- sqrt(diag(as.matrix(vars.m[, 
+                                                      , j])))
+    }
+    dimnames(rand.se[[m]]) <- list(names.full[[1]], names.full[[2]])
+  }
+  rand.se
+}
+
+
 #' Get matrix from tibble
 #' 
 #' @importFrom purrr map2_dfc
@@ -13,7 +34,7 @@
 lmer_to_confidence_intervals_random_effects = function(fit){
   
   
-  ster = parameters::standard_error(fit, effects = "random")
+  ster = standard_error(fit)
   ster = map2_dfc(
     ster, names(ster),
     ~ .x |> 
@@ -68,7 +89,7 @@ glmerCore = function (geneList, fullFormula, reduced, data, control, offset,
   singular <- as.numeric(lme4::isSingular(fit))
   conv <- length(slot(fit, "optinfo")$conv$lme4$messages)
   vcov. <- suppressWarnings(as.matrix(vcov(fit, complete = FALSE)))
-  fixedEffects <- fixef(fit)
+  fixedEffects <- lme4::fixef(fit)
   stats <- setNames(c(disp, AIC(fit), as.numeric(logLik(fit))), 
                     c("Dispersion", "AIC", "logLik"))
   if (is.null(reduced)) {
@@ -163,7 +184,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
   if (verbose) 
     cat(paste0("\nn = ", length(ids), " samples, ", length(unique(ids)), 
                " individuals\n"))
-  FEformula <- nobars(modelFormula)
+  FEformula <- lme4::nobars(modelFormula)
   if (is.null(modelData)) {
     reducedVars <- rownames(attr(terms(FEformula), "factors"))
     varLevels <- lapply(reducedVars, function(x) {
@@ -219,6 +240,15 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                    "offset", "designMatrix", "hyp.matrix", "dots")
       clusterExport(cl, varlist = varlist, envir = environment())
       if (progress) {
+        
+        # Check if package is installed, otherwise install
+        if (find.package("pblapply", quiet = TRUE) %>% length %>% equals(0)) {
+          message("tidybulk says: Installing pblapply needed for differential transcript abundance analyses")
+          if (!requireNamespace("BiocManager", quietly = TRUE))
+            install.packages("BiocManager", repos = "https://cloud.r-project.org")
+          BiocManager::install("pblapply", ask = FALSE)
+        }
+        
         resultList <- pbapply::pblapply(fullList, function(geneList) {
           args <- c(list(geneList = geneList, fullFormula = fullFormula, 
                          reduced = reduced, data = subsetMetadata, 
@@ -261,6 +291,15 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
     }
     else {
       if (progress) {
+        
+        # Check if package is installed, otherwise install
+        if (find.package("pbmcapply", quiet = TRUE) %>% length %>% equals(0)) {
+          message("tidybulk says: Installing pbmcapply needed for differential transcript abundance analyses")
+          if (!requireNamespace("BiocManager", quietly = TRUE))
+            install.packages("BiocManager", repos = "https://cloud.r-project.org")
+          BiocManager::install("pbmcapply", ask = FALSE)
+        }
+        
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
           glmerCore(geneList, fullFormula, reduced, 
                     subsetMetadata, control, offset, modelData, 
@@ -311,6 +350,15 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                    "dots")
       parallel::clusterExport(cl, varlist = varlist, envir = environment())
       if (progress) {
+        
+        # Check if package is installed, otherwise install
+        if (find.package("pblapply", quiet = TRUE) %>% length %>% equals(0)) {
+          message("tidybulk says: Installing pblapply needed for differential transcript abundance analyses")
+          if (!requireNamespace("BiocManager", quietly = TRUE))
+            install.packages("BiocManager", repos = "https://cloud.r-project.org")
+          BiocManager::install("pblapply", ask = FALSE)
+        }
+        
         resultList <- pbapply::pblapply(fullList, function(geneList) {
           args <- c(list(geneList = geneList, fullFormula = fullFormula, 
                          reduced = reduced, data = subsetMetadata, 
@@ -353,6 +401,15 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
     }
     else {
       if (progress) {
+        
+        # Check if package is installed, otherwise install
+        if (find.package("pbmcapply", quiet = TRUE) %>% length %>% equals(0)) {
+          message("tidybulk says: Installing pbmcapply needed for differential transcript abundance analyses")
+          if (!requireNamespace("BiocManager", quietly = TRUE))
+            install.packages("BiocManager", repos = "https://cloud.r-project.org")
+          BiocManager::install("pbmcapply", ask = FALSE)
+        }
+        
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
           glmmSeq:::glmmTMBcore(geneList, fullFormula, reduced, 
                       subsetMetadata, family, control, offset, 
