@@ -1114,6 +1114,30 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     BiocManager::install("glmmSeq", ask = FALSE)
   }
   
+  # Check if package is installed, otherwise install
+  if (find.package("pblapply", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing pblapply needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("pblapply", ask = FALSE)
+  }
+  
+  # Check if package is installed, otherwise install
+  if (find.package("pbmcapply", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing pbmcapply needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("pbmcapply", ask = FALSE)
+  }
+  
+  # Check if package is installed, otherwise install
+  if (find.package("parameters", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing parameters needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("parameters", ask = FALSE)
+  }
+  
   # If no assay is specified take first
   my_assay = ifelse(
     quo_is_symbol(.abundance), 
@@ -1132,7 +1156,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     assay(my_assay)
   
   glmmSeq_object = 
-    glmmSeq::glmmSeq( .formula,
+    glmmSeq( .formula,
                       countdata = counts ,
                       metadata =   metadata |> as.data.frame(),
                       dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts)),

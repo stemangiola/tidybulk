@@ -430,7 +430,7 @@ test_that("differential trancript abundance - random effects SE",{
  res = 
    se_mini |>
     identify_abundant(factor_of_interest = condition) |> 
-    mutate(time = time |> stringr::str_replace_all(" ", "_")) |> 
+    #mutate(time = time |> stringr::str_replace_all(" ", "_")) |> 
     test_differential_abundance(
       ~ condition + (1 + condition | time),
       method = "glmmseq_lme4"
