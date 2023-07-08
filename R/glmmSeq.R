@@ -66,7 +66,7 @@ lmer_to_confidence_intervals_random_effects = function(fit){
 
 
 glmerCore = function (geneList, fullFormula, reduced, data, control, offset, 
-          modelData, designMatrix, hyp.matrix, ...) 
+          modelData, designMatrix, hyp.matrix, max_rows_for_matrix_multiplication = 60480, ...) 
 {
   data[, "count"] <- geneList$y
   disp <- geneList$dispersion
@@ -112,7 +112,7 @@ glmerCore = function (geneList, fullFormula, reduced, data, control, offset,
   newY <- predict(fit, newdata = modelData, re.form = NA)
   
   # If matrix is too big because model is too big
-  if(nrow(designMatrix) >= 60480) designMatrix = designMatrix[sample(seq_len(nrow(designMatrix)), 60480),,drop=FALSE]
+  if(nrow(designMatrix) >= max_rows_for_matrix_multiplication) designMatrix = designMatrix[sample(seq_len(nrow(designMatrix)), max_rows_for_matrix_multiplication),,drop=FALSE]
   
   a <- designMatrix %*% vcov.
   b <- as.matrix(a %*% t(designMatrix))
@@ -140,7 +140,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                     sizeFactors = NULL, reduced = NULL, modelData = NULL, designMatrix = NULL, 
                     method = c("lme4", "glmmTMB"), control = NULL, family = nbinom2, 
                     cores = 1, removeSingles = FALSE, zeroCount = 0.125, verbose = TRUE, 
-                    returnList = FALSE, progress = FALSE, ...) 
+                    returnList = FALSE, progress = FALSE, max_rows_for_matrix_multiplication = 60480, ...) 
 {
   glmmcall <- match.call(expand.dots = TRUE)
   method <- match.arg(method)
@@ -257,7 +257,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
           args <- c(list(geneList = geneList, fullFormula = fullFormula, 
                          reduced = reduced, data = subsetMetadata, 
                          control = control, offset = offset, modelData = modelData, 
-                         designMatrix = designMatrix, hyp.matrix = hyp.matrix), 
+                         designMatrix = designMatrix, hyp.matrix = hyp.matrix, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication), 
                     dots)
           do.call(glmerCore, args)
         }, cl = cl)
@@ -277,7 +277,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
           args <- c(list(geneList = geneList, fullFormula = fullFormula, 
                          reduced = reduced, data = subsetMetadata, 
                          control = control, offset = offset, modelData = modelData, 
-                         designMatrix = designMatrix, hyp.matrix = hyp.matrix), 
+                         designMatrix = designMatrix, hyp.matrix = hyp.matrix, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication), 
                     dots)
           do.call(glmerCore, args)
         })
@@ -307,7 +307,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
           glmerCore(geneList, fullFormula, reduced, 
                     subsetMetadata, control, offset, modelData, 
-                    designMatrix, hyp.matrix, ...)
+                    designMatrix, hyp.matrix, , max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
         }, mc.cores = cores)
         if ("value" %in% names(resultList)) resultList <- resultList$value
         
@@ -325,7 +325,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
         resultList <- mclapply(fullList, function(geneList) {
           glmerCore(geneList, fullFormula, reduced, 
                     subsetMetadata, control, offset, modelData, 
-                    designMatrix, hyp.matrix, ...)
+                    designMatrix, hyp.matrix,, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
         }, mc.cores = cores)
         
         names(resultList) <- rownames(countdata)
