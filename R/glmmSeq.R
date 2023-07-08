@@ -110,6 +110,10 @@ glmerCore = function (geneList, fullFormula, reduced, data, control, offset,
     }
   }
   newY <- predict(fit, newdata = modelData, re.form = NA)
+  
+  # If matrix is too big because model is too big
+  if(nrow() >= 60480) designMatrix = designMatrix[sample(seq_len(nrow(designMatrix)), 60480),,drop=FALSE]
+  
   a <- designMatrix %*% vcov.
   b <- as.matrix(a %*% t(designMatrix))
   predVar <- diag(b)
