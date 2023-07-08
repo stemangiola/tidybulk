@@ -355,8 +355,6 @@ get_scaled_counts_bulk <- function(.data,
 
 }
 
-
-
 #' Get differential transcription information to a tibble using edgeR.
 #'
 #' @keywords internal
@@ -759,12 +757,12 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   counts = counts[,rownames(metadata),drop=FALSE]
   
   glmmSeq_object = 
-    glmmSeq::glmmSeq( .formula,
+    glmmSeq( .formula,
           countdata = counts ,
           metadata =   metadata,
           dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts)),
           progress = TRUE, 
-          method = method |> str_remove("^glmmSeq_"),
+          method = method |> str_remove("(?i)^glmmSeq_"),
           ...
   ) 
   
@@ -784,10 +782,16 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
     # Communicate the attribute added
     {
       
-      rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
+      rlang::inform("\ntidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
       
       (.)
-    }
+    }  %>%
+    
+    # Attach prefix
+    setNames(c(
+      colnames(.)[1],
+      sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
+    ))
 }
 
 #' Get differential transcription information to a tibble using voom.

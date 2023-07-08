@@ -154,6 +154,28 @@ test_that("Scaled counts - subset",{
 
 })
 
+test_that("quantile normalisation",{
+  
+  res =
+    input_df |>
+    quantile_normalise_abundance(
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
+      action = "get"
+    )
+  
+  res |> 
+    pull(c_scaled) |> 
+    head() |> 
+  expect_equal(
+    c(1052.8 ,  63.8 ,7229.0 ,   2.9, 2143.6, 9272.8),
+    tolerance=1e-6
+  )
+  
+})
+
+
 test_that("filter variable - no object",{
 
 	res =
@@ -804,6 +826,30 @@ test_that("DESeq2 differential trancript abundance - no object",{
 
         
 })
+
+test_that("differential trancript abundance - random effects",{
+  
+  input_df |> 
+    identify_abundant(a, b, c, factor_of_interest = condition) |> 
+    mutate(time = time |> stringr::str_replace_all(" ", "_")) |> 
+    test_differential_abundance(
+      ~ condition + (1 + condition | time),
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
+      method = "glmmseq_lme4",
+      action="only"
+    ) |> 
+    pull(P_condition_adjusted) |> 
+    head(4) |> 
+    expect_equal(
+      c(0.1441371, 0.1066183, 0.1370748, 0.2065339),
+      tolerance=1e-6
+    )
+  
+
+})
+
 
 test_that("test prefix",{
 

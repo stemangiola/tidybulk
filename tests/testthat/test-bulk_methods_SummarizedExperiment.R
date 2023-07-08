@@ -64,6 +64,31 @@ test_that("tidybulk SummarizedExperiment normalisation",{
 
 })
 
+
+test_that("quantile normalisation",{
+  
+  res = se_mini |> quantile_normalise_abundance()
+  
+  res_tibble =
+    input_df |>
+    quantile_normalise_abundance(
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
+      action = "get"
+    )
+  
+  
+    SummarizedExperiment::assay(res, "count_scaled")["ABCB9","SRR1740035"] |> 
+  expect_equal(
+    res_tibble |> 
+      filter(a=="SRR1740035" & b=="ABCB9") |> 
+      pull(c_scaled)
+  )
+  
+})
+
+
 test_that("tidybulk SummarizedExperiment normalisation subset",{
 
   res = se |> identify_abundant() |> scale_abundance(
@@ -399,6 +424,28 @@ test_that("Voom with treat method",{
     expect_equal(246)
 
 })
+
+test_that("differential trancript abundance - random effects SE",{
+  
+ res = 
+   se_mini |>
+    identify_abundant(factor_of_interest = condition) |> 
+    #mutate(time = time |> stringr::str_replace_all(" ", "_")) |> 
+    test_differential_abundance(
+      ~ condition + (1 + condition | time),
+      method = "glmmseq_lme4"
+    ) 
+ 
+ rowData(res)[,"P_condition_adjusted"] |> 
+    head(4) |> 
+    expect_equal(
+      c(0.1441371, 0.1066183, 0.1370748, NA),
+      tolerance=1e-6
+    )
+  
+  
+})
+
 
 
 test_that("filter abundant - SummarizedExperiment",{
