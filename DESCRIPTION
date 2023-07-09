@@ -80,7 +80,7 @@ Suggests:
     IRanges,
     here,
     glmmSeq,
-    pblapply,
+    pbapply,
     pbmcapply
 VignetteBuilder: 
     knitr
