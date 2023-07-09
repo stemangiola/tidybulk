@@ -1387,27 +1387,28 @@ setMethod("keep_variable",
 
 
 	string_factor_of_interest =
-
-		factor_of_interest %>%
-		when(
-			quo_is_symbolic(factor_of_interest) &&
-				(
-					colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
-					  as_tibble() |>
-						map_chr(~class(.x)) %in% c("numeric", "integer", "double") |>
-					  any()
-				) ~
-				{
-					message("tidybulk says: The factor(s) of interest include continuous variable (e.g., integer,numeric, double). The data will be filtered without grouping.")
-					NULL
-				},
-			quo_is_symbolic(factor_of_interest) ~
-				colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
-			  as_tibble() |>
-			  unite("factor_of_interest") |>
-			  pull(factor_of_interest),
-			~ NULL
-		)
+	  
+	  factor_of_interest %>%
+	  when(
+	    quo_is_symbolic(factor_of_interest) &&
+	      (
+	        colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
+	          as_tibble() |>
+	          map(~class(.x)) |>
+	          unlist() %in% c("numeric", "integer", "double") |>
+	          any()
+	      ) ~
+	      {
+	        message("tidybulk says: The factor(s) of interest include continuous variable (e.g., integer,numeric, double). The data will be filtered without grouping.")
+	        NULL
+	      },
+	    quo_is_symbolic(factor_of_interest) ~
+	      colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
+	      as_tibble() |>
+	      unite("factor_of_interest") |>
+	      pull(factor_of_interest),
+	    ~ NULL
+	  )
 
 	# Check if package is installed, otherwise install
 	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
