@@ -2797,6 +2797,7 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #' @importFrom dplyr filter
+#' @importFrom tidyr drop_na
 #'
 #' @name identify_abundant
 #'
@@ -2854,10 +2855,14 @@ setGeneric("identify_abundant", function(.data,
 														minimum_counts = 10,
 														minimum_proportion = 0.7)
 {
-  
+
   # Fix NOTEs
   . = NULL
   
+  factor_of_interest = enquo(factor_of_interest)
+  
+ 
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2867,39 +2872,105 @@ setGeneric("identify_abundant", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
-	factor_of_interest = enquo(factor_of_interest)
-
+	if (minimum_counts < 0)
+	  stop("The parameter minimum_counts must be > 0")
+	if (minimum_proportion < 0 |	minimum_proportion > 1)
+	  stop("The parameter minimum_proportion must be between 0 and 1")
+	
+	
 	# Validate data frame
 	if(do_validate()) {
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 	}
 
+	
+	if(	".abundant" %in% colnames(.data) ) return( .data	|>	  reattach_internals(.data)	)
+
+	  
+  # Check if package is installed, otherwise install
+  if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+    message("Installing edgeR needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("edgeR", ask = FALSE)
+  }
+	
+	if(
+	  !is.null(factor_of_interest) && 
+	  ( enquo(factor_of_interest) |> quo_is_symbolic() | is.character(factor_of_interest) )
+	){
+	  
+	  # DEPRECATION OF symbolic factor_of_interest
+	  # factor_of_interest must be a character now because we identified 
+	  # a edge case for which if the column name is the same as an existing function, 
+	  # such as time the column name would not be registered as such but would be 
+	  # registered as that function
+	  
+    # # Signal the deprecation to the user
+    # warning(
+    #   "The `factor_of_interest` argument of `test_differential_abundance() is changed as of tidybulk 1.11.5", 
+    #   details = "The argument factor_of_interest must now be a character array. This because we identified a edge case for which if the column name is the same as an existing function, such as time the column name would not be registered as such but would be registered as that function"
+    # )
+	    
+	 factor_of_interest = factor_of_interest |> enquo() |> quo_names()
+	    
+
+	    # If is numeric ERROR
+	    if(
+	      .data |>
+	      select(factor_of_interest) |> 
+	      lapply(class) |>
+	      unlist() |>	
+	      as.character()%in% c("numeric", "integer", "double") |>
+	      any()
+	    ) 
+	      stop("tidybulk says: The factor(s) of interest must not include continuous variables (e.g., integer,numeric, double).")
+	    
+	    string_factor_of_interest = 
+	      .data %>%
+	      select(!!.sample, factor_of_interest) |> 
+	      distinct() |>
+	      arrange(!!.sample) |>
+	      select(factor_of_interest) |>
+	      pull(1)
+	  
+	  
+	} else {
+	  string_factor_of_interest = NULL
+	}
+	
+	gene_to_exclude =
 	.data %>%
-
-		# Filter
-		when(
-
-			# If column is present use this instead of doing more work
-			".abundant" %in% colnames(.) |> not() ~  {
-					gene_to_exclude =
-						add_scaled_counts_bulk.get_low_expressed(
-							.data,
-							.sample = !!.sample,
-							.transcript = !!.transcript,
-							.abundance = !!.abundance,
-							factor_of_interest = !!factor_of_interest,
-							minimum_counts = minimum_counts,
-							minimum_proportion = minimum_proportion
-						)
-
-					dplyr::mutate(., .abundant := (!!.transcript %in% gene_to_exclude) |> not())
-				},
-			~ (.)
-		)	|>
-
-		# Attach attributes
-		reattach_internals(.data)
+	  select(!!.sample,!!.transcript, !!.abundance) |>
+	  spread(!!.sample, !!.abundance) |>
+	  
+	  # Drop if transcript have missing value
+	  drop_na() %>%
+	  
+	  # If I don't have any transcript with all samples give meaningful error
+	  when(
+	    nrow(.) == 0 ~ stop("tidybulk says: you don't have any transcript that is in all samples. Please consider using impute_missing_abundance."),
+	    ~ (.)
+	  ) %>%
+	  
+	  # Call edgeR
+	  as_matrix(rownames = !!.transcript) |>
+	  edgeR::filterByExpr(
+	    min.count = minimum_counts,
+	    group = string_factor_of_interest,
+	    min.prop = minimum_proportion
+	  ) %>%
+	  not() |>
+	  which() |>
+	  names()
+	
+	.data |>
+	  dplyr::mutate(.abundant := (!!.transcript %in% gene_to_exclude) |> not()) |>
+	  
+	  # Attach attributes
+	  reattach_internals(.data)
+	
 }
 
 #' keep_abundant

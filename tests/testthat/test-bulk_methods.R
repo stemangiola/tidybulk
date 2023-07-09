@@ -96,15 +96,13 @@ test_that("Only scaled counts - no object",{
 	sam = distinct(input_df, a)
 	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
 
-	expect_message(
+	expect_error(
 		scale_abundance(
 			left_join(input_df, sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
 			.sample = a,
 			.transcript = b,
 			.abundance = c
-		),
-		"The factor of interest is continuous"
-	)
+		))
 
 })
 
@@ -236,7 +234,7 @@ test_that("Only differential trancript abundance - no object",{
 
 	res =
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
+			left_join(input_df , sam) |> identify_abundant(a, b, c),
 			~ condition_cont,
 			.sample = a,
 			.transcript = b,
@@ -261,7 +259,7 @@ test_that("Only differential trancript abundance - no object",{
 	# Continuous and discrete
 	res =
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
+			left_join(input_df , sam) |> identify_abundant(a, b, c),
 			~ condition_cont + condition,
 			.sample = a,
 			.transcript = b,
@@ -418,7 +416,7 @@ test_that("Only differential trancript abundance voom - no object",{
 
 	res =
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
+			left_join(input_df , sam) |> identify_abundant(a, b, c),
 			~ condition_cont,
 			.sample = a,
 			.transcript = b,
@@ -443,7 +441,7 @@ test_that("Only differential trancript abundance voom - no object",{
 	# Continuous and discrete
 	res =
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
+			left_join(input_df , sam) |> identify_abundant(a, b, c),
 			~ condition_cont + condition,
 			.sample = a,
 			.transcript = b,
@@ -682,8 +680,8 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
 
 	res =
+	  left_join(input_df , sam) |> identify_abundant(a, b, c) |>
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
 			~ condition_cont,
 			.sample = a,
 			.transcript = b,
@@ -708,7 +706,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	# Continuous and discrete
 	res =
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
+			left_join(input_df , sam) |> identify_abundant(a, b, c),
 			~ condition_cont + condition,
 			.sample = a,
 			.transcript = b,
