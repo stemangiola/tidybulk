@@ -235,6 +235,97 @@ setMethod("scale_abundance",
 					.scale_abundance_se)
 
 
+
+#' @importFrom magrittr multiply_by
+#' @importFrom magrittr divide_by
+#' @importFrom SummarizedExperiment assays
+#' @importFrom SummarizedExperiment colData
+#' @importFrom utils tail
+#' @importFrom stats na.omit
+#'
+.quantile_normalise_abundance_se = function(.data,
+                               .sample = NULL,
+                               .transcript = NULL,
+                               .abundance = NULL,
+                               .subset_for_scaling = NULL,
+                               action = NULL) {
+  
+  
+  # Fix NOTEs
+  . = NULL
+  
+  .abundance = enquo(.abundance)
+  .subset_for_scaling = enquo(.subset_for_scaling)
+  
+  # Set column name for value scaled
+  
+  # If no assay is specified take first
+  my_assay = ifelse(
+    quo_is_symbol(.abundance), 
+    quo_name(.abundance), 
+    .data |>
+      assayNames() |>
+      extract2(1)
+  )
+  
+  # Set column name for value scaled
+  value_scaled = my_assay %>% paste0(scaled_string)
+  
+  # Check if package is installed, otherwise install
+  if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing limma needed for analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("limma", ask = FALSE)
+  }
+  
+  # Reformat input data set
+  .data_norm <-
+    .data %>%
+    assay(my_assay) |> 
+    limma::normalizeQuantiles() |> 
+    list() |> 
+    setNames(value_scaled)
+  
+  # Add the assay
+  assays(.data) =  assays(.data) %>% c(.data_norm)
+  
+  .data %>%
+    
+    # Add methods
+    memorise_methods_used(c("quantile")) %>%
+    
+    # Attach column internals
+    add_tt_columns(.abundance_scaled = !!(function(x, v)	enquo(v))(x,!!as.symbol(value_scaled)))
+  
+}
+
+#' quantile_normalise_abundance
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("quantile_normalise_abundance",
+          "SummarizedExperiment",
+          .quantile_normalise_abundance_se)
+
+#' quantile_normalise_abundance
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("quantile_normalise_abundance",
+          "RangedSummarizedExperiment",
+          .quantile_normalise_abundance_se)
+
+
+
 .cluster_elements_se = function(.data,
 																method ,
 																of_samples = TRUE,
@@ -1130,6 +1221,7 @@ setMethod(
 #' @importFrom rlang inform
 .test_differential_abundance_se = function(.data,
 																					 .formula,
+																					 .abundance = NULL,
 																					 contrasts = NULL,
 																					 method = "edgeR_quasi_likelihood",
 																					 test_above_log2_fold_change = NULL,
@@ -1139,6 +1231,8 @@ setMethod(
 																					 ...)
 {
 
+  .abundance = enquo(.abundance)
+  
   # Fix NOTEs
   . = NULL
   
@@ -1179,8 +1273,9 @@ such as batch effects (if applicable) in the formula.
 				get_differential_transcript_abundance_bulk_SE(
 					.,
 					.formula,
+					.abundance = !!.abundance,
 					.contrasts = contrasts,
-					colData(.data),
+					sample_annotation = colData(.data),
 					method = method,
 					test_above_log2_fold_change = test_above_log2_fold_change,
 					scaling_method = scaling_method,
@@ -1193,8 +1288,9 @@ such as batch effects (if applicable) in the formula.
 			grepl("voom", method) ~ get_differential_transcript_abundance_bulk_voom_SE(
 				.,
 				.formula,
+				.abundance = !!.abundance,
 				.contrasts = contrasts,
-				colData(.data),
+				sample_annotation = colData(.data),
 				method = method,
 				test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
@@ -1207,15 +1303,31 @@ such as batch effects (if applicable) in the formula.
 			tolower(method)=="deseq2" ~ get_differential_transcript_abundance_deseq2_SE(
 				.,
 				.formula,
+				.abundance = !!.abundance,
 				.contrasts = contrasts,
 				method = method,
-                                test_above_log2_fold_change = test_above_log2_fold_change,
+        test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
 				prefix = prefix,
-                                ...
+         ...
 			),
 
+			# glmmseq
+			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmTMB") ~ get_differential_transcript_abundance_glmmSeq_SE(
+			  .,
+			  .formula,
+			  .abundance = !!.abundance,
+			  .contrasts = contrasts,
+			  sample_annotation = colData(.data),
+			  method = method,
+			  test_above_log2_fold_change = test_above_log2_fold_change,                                
+			  scaling_method = scaling_method,
+			  omit_contrast_in_colnames = omit_contrast_in_colnames,
+			  prefix = prefix,
+			  ...
+			),
+			
 			# Else error
 			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\"")
 		)
@@ -1239,6 +1351,7 @@ such as batch effects (if applicable) in the formula.
 			tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
 			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights"),
 			tolower(method) == "deseq2" ~ (.) %>% memorise_methods_used("deseq2"),
+			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmTMB") ~ (.) %>% memorise_methods_used("glmmseq"),
 			~ stop("tidybulk says: method not supported")
 		) %>%
 

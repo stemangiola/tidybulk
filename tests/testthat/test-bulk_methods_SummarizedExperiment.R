@@ -64,6 +64,31 @@ test_that("tidybulk SummarizedExperiment normalisation",{
 
 })
 
+
+test_that("quantile normalisation",{
+  
+  res = se_mini |> quantile_normalise_abundance()
+  
+  res_tibble =
+    input_df |>
+    quantile_normalise_abundance(
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
+      action = "get"
+    )
+  
+  
+    SummarizedExperiment::assay(res, "count_scaled")["ABCB9","SRR1740035"] |> 
+  expect_equal(
+    res_tibble |> 
+      filter(a=="SRR1740035" & b=="ABCB9") |> 
+      pull(c_scaled)
+  )
+  
+})
+
+
 test_that("tidybulk SummarizedExperiment normalisation subset",{
 
   res = se |> identify_abundant() |> scale_abundance(
@@ -267,9 +292,6 @@ test_that("differential trancript abundance - SummarizedExperiment",{
     identify_abundant(a, b, c, factor_of_interest = condition) |>
     test_differential_abundance(
       ~ condition,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
       scaling_method = "TMM",
       method = "edgeR_likelihood_ratio",
       test_above_log2_fold_change = 1,
@@ -283,15 +305,92 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 })
 
 
-test_that("Voom with treat method",{
-
+test_that("differential trancript abundance - SummarizedExperiment - alternative .abundance",{
+  
+  assays(se_mini) = list(counts = assay(se_mini), bla = assay(se_mini))
+  
+  
+  res =	 se_mini |> 
+    identify_abundant(factor_of_interest = condition) |> 
+    test_differential_abundance(   ~ condition , .abundance =  bla)
+  
+  w = match(  c("CLEC7A" , "FAM198B", "FCN1"  ,  "HK3"   ), rownames(res) )
+  
+  # Quasi likelihood
+  res_tibble =		test_differential_abundance(
+    input_df |> identify_abundant(a, b, c, factor_of_interest = condition),
+    ~ condition	,
+    a, b, c
+  )
+  
+  expect_equal(
+    res@elementMetadata[w,]$logFC,
+    c(-11.58385, -13.53406, -12.58204, -12.19271),
+    tolerance=1e-4
+  )
+  
+  expect_equal(
+    res@elementMetadata[w,]$logFC,
+    res_tibble |>
+      pivot_transcript(b) |>
+      filter(b %in% rownames(res)[w]) |>
+      dplyr::arrange(b) |>
+      dplyr::pull(logFC),
+    tolerance=1e-4
+  )
+  
+  # Likelihood ratio
+  res2 =		test_differential_abundance(
+    se_mini |>
+      identify_abundant(factor_of_interest = condition),
+    ~ condition, .abundance =  bla, method = "edgeR_likelihood_ratio"	)
+  
+  res2_tibble =		test_differential_abundance(
+    input_df |> identify_abundant(a, b, c, factor_of_interest = condition),
+    ~ condition	,
+    a, b, c, method = "edgeR_likelihood_ratio"
+  )
+  
+  expect_equal(
+    res2@elementMetadata[w,]$logFC,
+    c(-11.57989, -13.53476, -12.57969, -12.19303),
+    tolerance=1e-4
+  )
+  
+  expect_equal(
+    res2@elementMetadata[w,]$logFC,
+    res2_tibble |>
+      pivot_transcript(b) |>
+      filter(b %in% rownames(res)[w]) |>
+      dplyr::arrange(b) |>
+      dplyr::pull(logFC),
+    tolerance=1e-4
+  )
+  
+  # Treat
   se_mini |>
     identify_abundant(a, b, c, factor_of_interest = condition) |>
     test_differential_abundance(
+      ~ condition, .abundance =  bla,
+      scaling_method = "TMM",
+      method = "edgeR_likelihood_ratio",
+      test_above_log2_fold_change = 1,
+      action="only"
+    ) |> SummarizedExperiment::rowData() |>
+    as_tibble() |>
+    filter(FDR<0.05) |>
+    nrow() |>
+    expect_equal(169)
+  
+})
+
+
+test_that("Voom with treat method",{
+
+  se_mini |>
+    identify_abundant(factor_of_interest = condition) |>
+    test_differential_abundance(
       ~ condition,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
       method = "limma_voom",
       test_above_log2_fold_change = 1,
       action="only"
@@ -307,9 +406,6 @@ test_that("Voom with treat method",{
     identify_abundant(a, b, c, factor_of_interest = Cell.type) |>
     test_differential_abundance(
       ~ 0 + Cell.type,
-      .sample = a,
-      .transcript = b,
-      .abundance = c,
       .contrasts = c("Cell.typeb_cell-Cell.typemonocyte", "Cell.typeb_cell-Cell.typet_cell"),
       method = "limma_voom",
       test_above_log2_fold_change = 1,
@@ -328,6 +424,28 @@ test_that("Voom with treat method",{
     expect_equal(246)
 
 })
+
+test_that("differential trancript abundance - random effects SE",{
+  
+ res = 
+   se_mini |>
+    identify_abundant(factor_of_interest = condition) |> 
+    #mutate(time = time |> stringr::str_replace_all(" ", "_")) |> 
+    test_differential_abundance(
+      ~ condition + (1 + condition | time),
+      method = "glmmseq_lme4"
+    ) 
+ 
+ rowData(res)[,"P_condition_adjusted"] |> 
+    head(4) |> 
+    expect_equal(
+      c(0.1441371, 0.1066183, 0.1370748, NA),
+      tolerance=1e-6
+    )
+  
+  
+})
+
 
 
 test_that("filter abundant - SummarizedExperiment",{

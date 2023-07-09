@@ -1,3 +1,45 @@
+
+#' Get matrix from tibble
+#'
+#' @keywords internal
+#' @noRd
+#' 
+#' 
+#' @importFrom magrittr set_rownames
+#' @importFrom rlang quo_is_null
+#'
+#' @param tbl A tibble
+#' @param rownames The column name of the input tibble that will become the rownames of the output matrix
+#' @param do_check A boolean
+#'
+#' @return A matrix
+#'
+#' @examples
+#'
+#'
+#' tibble(.feature = "CD3G", count=1) |> as_matrix(rownames=.feature)
+#'
+as_data_frame <- function(tbl,
+                          rownames = NULL,
+                          do_check = TRUE) {
+  
+  # Fix NOTEs
+  . = NULL
+  
+  rownames = enquo(rownames)
+  tbl %>%
+    
+    as.data.frame() |>
+    
+    # Deal with rownames column if present
+    ifelse_pipe(
+      !quo_is_null(rownames),
+      ~ .x |>
+        magrittr::set_rownames(tbl |> pull(!!rownames)) |>
+        select(-1)
+    ) 
+}
+
 my_stop = function() {
   stop("
         You should call tidybulk library *after* tidyverse libraries.
@@ -1480,4 +1522,6 @@ get_special_column_name_symbol = function(name){
 
 feature__ =  get_special_column_name_symbol(".feature")
 sample__ = get_special_column_name_symbol(".sample")
+
+
 

@@ -19,3 +19,4 @@ egsea_report_*
 /Meta/
 /doc/
 _targets.R
+_targets*

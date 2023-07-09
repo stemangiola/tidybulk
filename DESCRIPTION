@@ -17,7 +17,7 @@ Depends:
 Imports:
     tibble,
     readr,
-    dplyr,
+    dplyr (>= 1.1.0),
     magrittr,
     tidyr,
     stringi,
@@ -78,7 +78,10 @@ Suggests:
     igraph,
     EGSEA,
     IRanges,
-    here
+    here,
+    glmmSeq,
+    pblapply,
+    pbmcapply
 VignetteBuilder: 
     knitr
 RdMacros:
