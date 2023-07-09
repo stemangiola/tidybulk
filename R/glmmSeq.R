@@ -25,7 +25,6 @@ standard_error = function  (model)
 #' @importFrom purrr map2_dfc
 #' @importFrom tidyr pivot_longer
 #' @importFrom tidyr pivot_wider
-#' @importFrom glue glue
 #' @importFrom dplyr join_by
 #'
 #' @keywords internal
@@ -41,7 +40,7 @@ lmer_to_confidence_intervals_random_effects = function(fit){
       as_tibble(rownames = "group_id") |>
       setNames(
         "group_id" |>
-          c(glue("{.y}__{colnames(.x)}"))
+          c(sprintf("%s__%s", .y, colnames(.x)))
       ) |>
       pivot_longer(-group_id, names_to = "parameter", values_to = "CI")
   )
@@ -53,7 +52,7 @@ lmer_to_confidence_intervals_random_effects = function(fit){
       as_tibble(rownames = "group_id") |>
       setNames(
         "group_id" |>
-          c(glue("{.y}__{colnames(.x)}"))
+          c(sprintf("%s__%s", .y, colnames(.x)))
       ) |>
       pivot_longer(-group_id, names_to = "parameter", values_to = "mode")
   )
@@ -236,7 +235,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
   # If matrix is too big because model is too big
   #-----------------------------------------------#
   rows_to_sample = sample(seq_len(nrow(designMatrix)), min(max_rows_for_matrix_multiplication, nrow(designMatrix)))
-  if(length(rows_to_sample) < nrow(designMatrix)) warning(glue("tidybulk says: for calculating p-value the combination of covariates has been limited to 10000 rather than {nrow(designMatrix)} othwerwise a matrix multiplication in the glmmSeq would overflow the momery available for arrays."))
+  if(length(rows_to_sample) < nrow(designMatrix)) warning(sprintf("tidybulk says: for calculating p-value the combination of covariates has been limited to 10000 rather than %d othwerwise a matrix multiplication in the glmmSeq would overflow the momery available for arrays.", nrow(designMatrix)))
   designMatrix = designMatrix[rows_to_sample,,drop=FALSE]
   modelData = modelData[rows_to_sample,,drop=FALSE]
   #----------------------------------------------#
