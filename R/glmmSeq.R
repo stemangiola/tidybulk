@@ -236,7 +236,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
   # If matrix is too big because model is too big
   #-----------------------------------------------#
   rows_to_sample = sample(seq_len(nrow(designMatrix)), min(max_rows_for_matrix_multiplication, nrow(designMatrix)))
-  if(length(rows_to_sample) < nrow(designMatrix)) warning(glue("tidybulk says: for calculating p-value the combination of covariates has been limited to 10000 rather than {nrow(designMatrix)} othwerwise a matrix multiplication in the glmmSeq would overflow the momery available for arrays.")
+  if(length(rows_to_sample) < nrow(designMatrix)) warning(glue("tidybulk says: for calculating p-value the combination of covariates has been limited to 10000 rather than {nrow(designMatrix)} othwerwise a matrix multiplication in the glmmSeq would overflow the momery available for arrays."))
   designMatrix = designMatrix[rows_to_sample,,drop=FALSE]
   modelData = modelData[rows_to_sample,,drop=FALSE]
   #----------------------------------------------#
