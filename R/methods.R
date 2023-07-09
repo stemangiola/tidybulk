@@ -2860,8 +2860,6 @@ setGeneric("identify_abundant", function(.data,
   . = NULL
   
   factor_of_interest = enquo(factor_of_interest)
-  
- 
 
 	# Get column names
 	.sample = enquo(.sample)
@@ -2895,6 +2893,14 @@ setGeneric("identify_abundant", function(.data,
       install.packages("BiocManager", repos = "https://cloud.r-project.org")
     BiocManager::install("edgeR", ask = FALSE)
   }
+	
+	# If character fail
+	if(
+	  !is.null(factor_of_interest) &&
+	  !factor_of_interest |> quo_is_null() &&
+	  !factor_of_interest |> quo_is_symbolic()
+	) stop("tidybulk says: factor_of_interest must be symbolic (i.e. column name/s not surrounded by single or double quotes) and not a character.")
+	
 	
 	if(
 	  !is.null(factor_of_interest) && 

@@ -1362,7 +1362,14 @@ setMethod("keep_variable",
 
 	factor_of_interest = enquo(factor_of_interest)
 
-
+	# If character fail
+	if(
+	  !is.null(factor_of_interest) &&
+	  !factor_of_interest |> quo_is_null() &&
+	  !factor_of_interest |> quo_is_symbolic()
+	) stop("tidybulk says: factor_of_interest must be symbolic (i.e. column name/s not surrounded by single or double quotes) and not a character.")
+	
+	
 	# Check factor_of_interest
 	if(
 		!is.null(factor_of_interest) &&
@@ -1384,7 +1391,7 @@ setMethod("keep_variable",
 		# Return
 		return(.data)
 	}
-
+	
 	if(
 	  !is.null(factor_of_interest) && 
 	  ( enquo(factor_of_interest) |> quo_is_symbolic() | is.character(factor_of_interest) )
