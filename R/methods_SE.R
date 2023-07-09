@@ -1475,7 +1475,14 @@ setMethod("keep_variable",
 
 	factor_of_interest = enquo(factor_of_interest)
 
-
+	# If character fail
+	if(
+	  !is.null(factor_of_interest) &&
+	  !factor_of_interest |> quo_is_null() &&
+	  !factor_of_interest |> quo_is_symbolic()
+	) stop("tidybulk says: factor_of_interest must be symbolic (i.e. column name/s not surrounded by single or double quotes) and not a character.")
+	
+	
 	# Check factor_of_interest
 	if(
 		!is.null(factor_of_interest) &&
@@ -1497,30 +1504,50 @@ setMethod("keep_variable",
 		# Return
 		return(.data)
 	}
+	
+	if(
+	  !is.null(factor_of_interest) && 
+	  ( enquo(factor_of_interest) |> quo_is_symbolic() | is.character(factor_of_interest) )
+	){
+	  
+	  # DEPRECATION OF symbolic factor_of_interest
+	  # factor_of_interest must be a character now because we identified 
+	  # a edge case for which if the column name is the same as an existing function, 
+	  # such as time the column name would not be registered as such but would be 
+	  # registered as that function
+	  
+	  # # Signal the deprecation to the user
+	  # warning(
+	  #   "The `factor_of_interest` argument of `test_differential_abundance() is changed as of tidybulk 1.11.5", 
+	  #   details = "The argument factor_of_interest must now be a character array. This because we identified a edge case for which if the column name is the same as an existing function, such as time the column name would not be registered as such but would be registered as that function"
+	  # )
+	  
+	  factor_of_interest = factor_of_interest |> enquo() |> quo_names()
+	  
+	  
+	  # If is numeric ERROR
+	  if(
+	    colData(.data)[, factor_of_interest, drop=FALSE] |>
+	          as_tibble() |>
+	          map(~class(.x)) |>
+	          unlist() %in% c("numeric", "integer", "double") |>
+	          any()
+	  ) 
+	    stop("tidybulk says: The factor(s) of interest must not include continuous variables (e.g., integer,numeric, double).")
+	  
+	  string_factor_of_interest = 
+	    colData(.data)[, factor_of_interest, drop=FALSE] |>
+	    as_tibble() |>
+	    unite("factor_of_interest") |>
+	    select(factor_of_interest) |>
+	    pull(1)
+	  
+	  
+	} else {
+	  string_factor_of_interest = NULL
+	}
+	
 
-
-	string_factor_of_interest =
-
-		factor_of_interest %>%
-		when(
-			quo_is_symbolic(factor_of_interest) &&
-				(
-					colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
-					  as_tibble() |>
-						map_chr(~class(.x)) %in% c("numeric", "integer", "double") |>
-					  any()
-				) ~
-				{
-					message("tidybulk says: The factor(s) of interest include continuous variable (e.g., integer,numeric, double). The data will be filtered without grouping.")
-					NULL
-				},
-			quo_is_symbolic(factor_of_interest) ~
-				colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
-			  as_tibble() |>
-			  unite("factor_of_interest") |>
-			  pull(factor_of_interest),
-			~ NULL
-		)
 
 	# Check if package is installed, otherwise install
 	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
@@ -1593,11 +1620,13 @@ setMethod("identify_abundant",
 														 minimum_counts = 10,
 														 minimum_proportion = 0.7)
 {
-
+  
   # Fix NOTEs
   . = NULL
   
-	factor_of_interest = enquo(factor_of_interest)
+    
+    factor_of_interest = factor_of_interest |> enquo()
+
 
 	.data =
 		.data %>%
