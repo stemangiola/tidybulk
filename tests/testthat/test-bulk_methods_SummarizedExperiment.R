@@ -403,7 +403,7 @@ test_that("Voom with treat method",{
   # with multiple contrasts
   res <-
     se_mini |>
-    identify_abundant(a, b, c, factor_of_interest = Cell.type) |>
+    identify_abundant( factor_of_interest = Cell.type) |>
     test_differential_abundance(
       ~ 0 + Cell.type,
       .contrasts = c("Cell.typeb_cell-Cell.typemonocyte", "Cell.typeb_cell-Cell.typet_cell"),
