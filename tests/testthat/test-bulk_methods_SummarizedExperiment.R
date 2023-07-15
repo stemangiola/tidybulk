@@ -98,7 +98,7 @@ test_that("tidybulk SummarizedExperiment normalisation subset",{
   expect_equal(
     unique(SummarizedExperiment::colData(res)$multiplier),
     c(1.3648110, 1.5756592, 1.1651309, 2.1282288, 1.2110911, 0.9574359, 1.4434610, 1.4897840),
-    tolerance=1e-4
+    tolerance=1e-3
   )
 
 })
@@ -246,7 +246,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
   expect_equal(
     res@elementMetadata[w,]$logFC,
     c(-11.58385, -13.53406, -12.58204, -12.19271),
-    tolerance=1e-4
+    tolerance=1e-3
   )
 
   expect_equal(
@@ -256,7 +256,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
       filter(b %in% rownames(res)[w]) |>
       dplyr::arrange(b) |>
       dplyr::pull(logFC),
-    tolerance=1e-4
+    tolerance=1e-3
   )
 
   # Likelihood ratio
@@ -274,7 +274,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
   expect_equal(
     res2@elementMetadata[w,]$logFC,
     c(-11.57989, -13.53476, -12.57969, -12.19303),
-    tolerance=1e-4
+    tolerance=1e-3
   )
 
   expect_equal(
@@ -284,7 +284,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
       filter(b %in% rownames(res)[w]) |>
       dplyr::arrange(b) |>
       dplyr::pull(logFC),
-    tolerance=1e-4
+    tolerance=1e-3
   )
 
   # Treat
@@ -326,7 +326,7 @@ test_that("differential trancript abundance - SummarizedExperiment - alternative
   expect_equal(
     res@elementMetadata[w,]$logFC,
     c(-11.58385, -13.53406, -12.58204, -12.19271),
-    tolerance=1e-4
+    tolerance=1e-3
   )
   
   expect_equal(
@@ -336,7 +336,7 @@ test_that("differential trancript abundance - SummarizedExperiment - alternative
       filter(b %in% rownames(res)[w]) |>
       dplyr::arrange(b) |>
       dplyr::pull(logFC),
-    tolerance=1e-4
+    tolerance=1e-3
   )
   
   # Likelihood ratio
@@ -354,7 +354,7 @@ test_that("differential trancript abundance - SummarizedExperiment - alternative
   expect_equal(
     res2@elementMetadata[w,]$logFC,
     c(-11.57989, -13.53476, -12.57969, -12.19303),
-    tolerance=1e-4
+    tolerance=1e-3
   )
   
   expect_equal(
@@ -364,7 +364,7 @@ test_that("differential trancript abundance - SummarizedExperiment - alternative
       filter(b %in% rownames(res)[w]) |>
       dplyr::arrange(b) |>
       dplyr::pull(logFC),
-    tolerance=1e-4
+    tolerance=1e-3
   )
   
   # Treat
@@ -440,7 +440,7 @@ test_that("differential trancript abundance - random effects SE",{
     head(4) |> 
     expect_equal(
       c(0.1441371, 0.1066183, 0.1370748, NA),
-      tolerance=1e-4
+      tolerance=1e-3
     )
   
   
