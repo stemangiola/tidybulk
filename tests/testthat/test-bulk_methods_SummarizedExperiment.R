@@ -289,7 +289,7 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
   # Treat
   se_mini |>
-    identify_abundant(a, b, c, factor_of_interest = condition) |>
+    identify_abundant(factor_of_interest = condition) |>
     test_differential_abundance(
       ~ condition,
       scaling_method = "TMM",
@@ -369,7 +369,7 @@ test_that("differential trancript abundance - SummarizedExperiment - alternative
   
   # Treat
   se_mini |>
-    identify_abundant(a, b, c, factor_of_interest = condition) |>
+    identify_abundant( factor_of_interest = condition) |>
     test_differential_abundance(
       ~ condition, .abundance =  bla,
       scaling_method = "TMM",

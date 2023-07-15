@@ -265,7 +265,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       list(y = countdata[i, ], dispersion = dispersion[i])
     })
     if (Sys.info()["sysname"] == "Windows" & cores > 1) {
-      cl <- paralle::makeCluster(cores)
+      cl <- parallel::makeCluster(cores)
       on.exit(stopCluster(cl))
       dots <- list(...)
       varlist <- c("glmerCore", "fullList", "fullFormula",

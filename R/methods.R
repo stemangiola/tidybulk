@@ -2580,12 +2580,12 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'             
 #' # Use random intercept and random effect models 
 #' 
-#'  se_mini |>
-#   identify_abundant(factor_of_interest = condition) |> 
-#   test_differential_abundance(
-#     ~ condition + (1 + condition | time),
-#     method = "glmmseq_lme4", cores = 1
-#   ) 
+#'  se_mini[1:50,] |>
+#'   identify_abundant(factor_of_interest = condition) |> 
+#'   test_differential_abundance(
+#'     ~ condition + (1 + condition | time),
+#'     method = "glmmseq_lme4", cores = 1
+#'   ) 
 #'
 #' # confirm that lfcThreshold was used
 #' \dontrun{
@@ -2896,10 +2896,7 @@ setMethod("test_differential_abundance",
 #'
 #'
 #'
-#' 	keep_variable(
-#' 	tidybulk::se_mini,
-#' 	    top = 500
-#' 	)
+#' 	keep_variable(tidybulk::se_mini, top = 500)
 #'
 #'
 #' @docType methods
@@ -3378,7 +3375,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	) %>%
 #'
 #' 	# Make sure transcript names are adjacent
-#' 	[...] |>
+#' 	[...] %>%
 #' 	as_matrix(rownames = !!.entrez) %>%
 #' 	edgeR::DGEList(counts = .)
 #'

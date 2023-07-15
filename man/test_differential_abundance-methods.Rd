@@ -251,7 +251,12 @@ res <- my_se_mini  |>
             
 # Use random intercept and random effect models 
 
- se_mini |>
+ se_mini[1:50,] |>
+  identify_abundant(factor_of_interest = condition) |> 
+  test_differential_abundance(
+    ~ condition + (1 + condition | time),
+    method = "glmmseq_lme4", cores = 1
+  ) 
 
 # confirm that lfcThreshold was used
 \dontrun{
