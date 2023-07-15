@@ -161,7 +161,7 @@ dge =
 	) %>%
 
 	# Make sure transcript names are adjacent
-	[...] |>
+	[...] %>%
 	as_matrix(rownames = !!.entrez) %>%
 	edgeR::DGEList(counts = .)
 

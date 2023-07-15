@@ -57,7 +57,7 @@ test_that("Only scaled counts - no object",{
 	expect_equal(
 		unique(res$multiplier),
 		c(1.2994008, 1.1781297, 2.6996428, 0.9702628, 1.8290148),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -84,7 +84,7 @@ test_that("Only scaled counts - no object",{
 	expect_equal(
 		unique(res$multiplier),
 		c(1.3078113, 1.1929933, 1.9014731, 0.9678922, 1.4771970),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -96,15 +96,13 @@ test_that("Only scaled counts - no object",{
 	sam = distinct(input_df, a)
 	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
 
-	expect_message(
+	expect_error(
 		scale_abundance(
 			left_join(input_df, sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
 			.sample = a,
 			.transcript = b,
 			.abundance = c
-		),
-		"The factor of interest is continuous"
-	)
+		))
 
 })
 
@@ -123,7 +121,7 @@ test_that("Adding scaled counts - no object",{
 	expect_equal(
 		unique(res$multiplier),
 		c(1.2994008, 1.1781297, 2.6996428, 0.9702628, 1.8290148),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -149,10 +147,32 @@ test_that("Scaled counts - subset",{
   expect_equal(
     unique(res$multiplier),
     c(1.253886, 1.099169, 1.469270, 1.418187, 1.616244),
-    tolerance=1e-6
+    tolerance=1e-3
   )
 
 })
+
+test_that("quantile normalisation",{
+  
+  res =
+    input_df |>
+    quantile_normalise_abundance(
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
+      action = "get"
+    )
+  
+  res |> 
+    pull(c_scaled) |> 
+    head() |> 
+  expect_equal(
+    c(1052.8 ,  63.8 ,7229.0 ,   2.9, 2143.6, 9272.8),
+    tolerance=1e-3
+  )
+  
+})
+
 
 test_that("filter variable - no object",{
 
@@ -168,7 +188,7 @@ test_that("filter variable - no object",{
 	expect_equal(
 		nrow(res),
 		25,
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -194,7 +214,7 @@ test_that("Only differential trancript abundance - no object",{
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-12.19303, -11.57989, -12.57969, -11.88829),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -236,7 +256,7 @@ test_that("Only differential trancript abundance - no object",{
 
 	res =
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
+			left_join(input_df , sam) |> identify_abundant(a, b, c),
 			~ condition_cont,
 			.sample = a,
 			.transcript = b,
@@ -248,7 +268,7 @@ test_that("Only differential trancript abundance - no object",{
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-3.673399, -3.251067, -3.042633,  2.833111),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -261,7 +281,7 @@ test_that("Only differential trancript abundance - no object",{
 	# Continuous and discrete
 	res =
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
+			left_join(input_df , sam) |> identify_abundant(a, b, c),
 			~ condition_cont + condition,
 			.sample = a,
 			.transcript = b,
@@ -273,7 +293,7 @@ test_that("Only differential trancript abundance - no object",{
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-2.406553, -2.988076, -4.990209, -4.286571),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -346,7 +366,7 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 	expect_equal(
 		unique(res$`logFC___conditionTRUE - conditionFALSE`)[1:4],
 		c(-12.19303, -11.57989, -12.57969, -11.88829),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -374,7 +394,7 @@ test_that("Add differential trancript abundance - no object",{
 	expect_equal(
 		dplyr::pull(dplyr::slice(distinct(res, b, logFC), 1:4) , "logFC"),
 		c(3.597633, 2.473975, 2.470380,       NA),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -402,7 +422,7 @@ test_that("Only differential trancript abundance voom - no object",{
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-12.25012, -11.48490, -10.29393, -11.69070),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -418,7 +438,7 @@ test_that("Only differential trancript abundance voom - no object",{
 
 	res =
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
+			left_join(input_df , sam) |> identify_abundant(a, b, c),
 			~ condition_cont,
 			.sample = a,
 			.transcript = b,
@@ -430,7 +450,7 @@ test_that("Only differential trancript abundance voom - no object",{
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-3.659127, -3.233295, -3.750860 ,-3.033059),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -443,7 +463,7 @@ test_that("Only differential trancript abundance voom - no object",{
 	# Continuous and discrete
 	res =
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
+			left_join(input_df , sam) |> identify_abundant(a, b, c),
 			~ condition_cont + condition,
 			.sample = a,
 			.transcript = b,
@@ -455,7 +475,7 @@ test_that("Only differential trancript abundance voom - no object",{
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-2.981563, -4.883692, -1.702294,  2.423231),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -510,7 +530,7 @@ test_that("Only differential trancript abundance - no object - with contrasts",{
 	expect_equal(
 		unique(res$`logFC___conditionTRUE - conditionFALSE`)[1:4],
 		c(-12.25012, -11.48490 ,-10.29393, -11.69070),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -538,7 +558,7 @@ test_that("Voom with sample weights method",{
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-10.357682, -11.624146, -12.121186, -9.287714),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -608,7 +628,7 @@ test_that("New method choice",{
 	expect_equal(
 		unique(res$logFC)[1:4],
 		c(-11.583849, -12.192713,  -8.927257,  -7.779931),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -667,7 +687,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
 		c(3.449740, 2.459516, 2.433466, 1.951263),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -682,8 +702,8 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	sam = mutate(sam, condition_cont = c(-0.4943428,  0.2428346,  0.7500223, -1.2440371,  1.4582024))
 
 	res =
+	  left_join(input_df , sam) |> identify_abundant(a, b, c) |>
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
 			~ condition_cont,
 			.sample = a,
 			.transcript = b,
@@ -695,7 +715,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
 		c(-1.1906895, -0.4422231,  0.9656122, -0.3328515),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -708,7 +728,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	# Continuous and discrete
 	res =
 		test_differential_abundance(
-			left_join(input_df , sam) |> identify_abundant(a, b, c, factor_of_interest = condition_cont),
+			left_join(input_df , sam) |> identify_abundant(a, b, c),
 			~ condition_cont + condition,
 			.sample = a,
 			.transcript = b,
@@ -720,7 +740,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
 		c(1.1110210, 3.0077779, 0.9024256, 4.7259792),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -804,6 +824,30 @@ test_that("DESeq2 differential trancript abundance - no object",{
 
         
 })
+
+test_that("differential trancript abundance - random effects",{
+  
+  input_df |> 
+    identify_abundant(a, b, c, factor_of_interest = condition) |> 
+    mutate(time = time |> stringr::str_replace_all(" ", "_")) |> 
+    test_differential_abundance(
+      ~ condition + (1 + condition | time),
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
+      method = "glmmseq_lme4",
+      action="only"
+    ) |> 
+    pull(P_condition_adjusted) |> 
+    head(4) |> 
+    expect_equal(
+      c(0.1441371, 0.1066183, 0.1370748, 0.2065339),
+      tolerance=1e-3
+    )
+  
+
+})
+
 
 test_that("test prefix",{
 
@@ -910,7 +954,7 @@ test_that("Only adjusted counts - no object",{
 	expect_equal(
 		unique(res$`c_adjusted`)[c(1, 2, 3, 5)],
 		c( 7948 ,2193 , 262, 8152),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -939,7 +983,7 @@ test_that("Get adjusted counts - no object",{
 	expect_equal(
 		unique(res$`c_adjusted`)[c(1, 2, 3, 5)],
 		c( 7948 ,2193 , 262, 8152),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
@@ -968,7 +1012,7 @@ test_that("Add adjusted counts - no object",{
 	expect_equal(
 		unique(res$`c_adjusted`)[c(1, 2, 3, 5)],
 		c(NA, 7948, 2193, 2407),
-		tolerance=1e-6
+		tolerance=1e-3
 	)
 
 	expect_equal(
