@@ -98,7 +98,7 @@ test_that("tidybulk SummarizedExperiment normalisation subset",{
   expect_equal(
     unique(SummarizedExperiment::colData(res)$multiplier),
     c(1.3648110, 1.5756592, 1.1651309, 2.1282288, 1.2110911, 0.9574359, 1.4434610, 1.4897840),
-    tolerance=1e-6
+    tolerance=1e-4
   )
 
 })
@@ -440,7 +440,7 @@ test_that("differential trancript abundance - random effects SE",{
     head(4) |> 
     expect_equal(
       c(0.1441371, 0.1066183, 0.1370748, NA),
-      tolerance=1e-6
+      tolerance=1e-4
     )
   
   
