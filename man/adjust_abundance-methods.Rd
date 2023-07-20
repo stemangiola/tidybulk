@@ -12,86 +12,104 @@
 \usage{
 adjust_abundance(
   .data,
-  .formula,
+  .formula = NULL,
+  .factor_unwanted = NULL,
+  .factor_of_interest = NULL,
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  transform = log1p,
-  inverse_transform = expm1,
+  method = "combat_seq",
   action = "add",
   ...,
-  log_transform = NULL
+  log_transform = NULL,
+  transform = NULL,
+  inverse_transform = NULL
 )
 
 \S4method{adjust_abundance}{spec_tbl_df}(
   .data,
-  .formula,
+  .formula = NULL,
+  .factor_unwanted = NULL,
+  .factor_of_interest = NULL,
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  transform = log1p,
-  inverse_transform = expm1,
+  method = "combat_seq",
   action = "add",
   ...,
-  log_transform = NULL
+  log_transform = NULL,
+  transform = NULL,
+  inverse_transform = NULL
 )
 
 \S4method{adjust_abundance}{tbl_df}(
   .data,
-  .formula,
+  .formula = NULL,
+  .factor_unwanted = NULL,
+  .factor_of_interest = NULL,
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  transform = log1p,
-  inverse_transform = expm1,
+  method = "combat_seq",
   action = "add",
   ...,
-  log_transform = NULL
+  log_transform = NULL,
+  transform = NULL,
+  inverse_transform = NULL
 )
 
 \S4method{adjust_abundance}{tidybulk}(
   .data,
-  .formula,
+  .formula = NULL,
+  .factor_unwanted = NULL,
+  .factor_of_interest = NULL,
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  transform = log1p,
-  inverse_transform = expm1,
+  method = "combat_seq",
   action = "add",
   ...,
-  log_transform = NULL
+  log_transform = NULL,
+  transform = NULL,
+  inverse_transform = NULL
 )
 
 \S4method{adjust_abundance}{SummarizedExperiment}(
   .data,
-  .formula,
+  .formula = NULL,
+  .factor_unwanted = NULL,
+  .factor_of_interest = NULL,
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  transform = log1p,
-  inverse_transform = expm1,
+  method = "combat_seq",
   action = "add",
   ...,
-  log_transform = NULL
+  log_transform = NULL,
+  transform = NULL,
+  inverse_transform = NULL
 )
 
 \S4method{adjust_abundance}{RangedSummarizedExperiment}(
   .data,
-  .formula,
+  .formula = NULL,
+  .factor_unwanted = NULL,
+  .factor_of_interest = NULL,
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  transform = log1p,
-  inverse_transform = expm1,
+  method = "combat_seq",
   action = "add",
   ...,
-  log_transform = NULL
+  log_transform = NULL,
+  transform = NULL,
+  inverse_transform = NULL
 )
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
-\item{.formula}{A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)}
+\item{.formula}{DEPRECATED - A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)}
 
 \item{.sample}{The name of the sample column}
 
@@ -99,15 +117,15 @@ adjust_abundance(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
-
-\item{inverse_transform}{A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.}
-
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function sva::ComBat}
 
 \item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+
+\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
+
+\item{inverse_transform}{A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.}
 }
 \value{
 A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`

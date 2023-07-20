@@ -725,6 +725,8 @@ setMethod("remove_redundancy",
 #' remove_redundancy
 #' @inheritParams remove_redundancy
 #'
+#' @importFrom rlang quo
+#'
 #' @docType methods
 #' @rdname remove_redundancy-methods
 #'
@@ -736,13 +738,29 @@ setMethod("remove_redundancy",
 
 
 .adjust_abundance_se = function(.data,
-																.formula,
-																transform = log1p,
-																inverse_transform = expm1,
-																...) {
+
+                                # DEPRECATED
+                                .formula = NULL,
+
+                                .factor_unwanted = NULL,
+                                .factor_of_interest = NULL,
+
+                                .abundance = NULL,
+
+                                method = "combat_seq",
+
+
+																...,
+
+																# DEPRECATED
+																transform = NULL,
+																inverse_transform = NULL
+																) {
 
   # Fix NOTEs
   . = NULL
+
+  .abundance = enquo(.abundance)
 
 	# Check if package is installed, otherwise install
 	if (find.package("sva", quiet = TRUE) %>% length %>% equals(0)) {
@@ -763,56 +781,106 @@ setMethod("remove_redundancy",
 	if (parse_formula(.formula) %>% length %>% gt(3))
 		warning("tidybulk says: Only the second covariate in the .formula is adjusted for, at the moment")
 
+  # DEPRECATION OF log_transform
+  if (
+    (is_present(transform) & !is.null(transform)) |
+    is_present(inverse_transform) & !is.null(inverse_transform)
+  ) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(transform = )", details = "The argument transform and inverse_transform is now deprecated, please use method argument instead specifying \"combat\" or \"combat_seq\".")
+
+  }
+
+  # Set column name for value scaled
+  value_adjusted = get_assay_scaled_if_exists_SE(.data) %>% paste0(adjusted_string)
+
+
+  # DEPRECATION OF .formula
+  if (is_present(.formula) & !is.null(.formula)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(.formula = )", details = "The argument .formula is now deprecated, please use factor_unwanted and factor_of_interest. Using the formula, the first factor is of interest and the second is unwanted")
+
+    # Check that .formula includes at least two covariates
+    if (parse_formula(.formula) %>% length %>% st(2))
+      stop(
+        "The .formula must contain two covariates, the first being the factor of interest, the second being the factor of unwanted variation"
+      )
+
+    # Check that .formula includes no more than two covariates at the moment
+    if (parse_formula(.formula) %>% length %>% gt(3))
+      warning("tidybulk says: Only the second covariate in the .formula is adjusted for")
+
+
+    .factor_of_interest = quo(!!as.symbol(parse_formula(.formula)[1]))
+    .factor_unwanted = quo(!!as.symbol(parse_formula(.formula)[2]))
+
+  } else {
+
+    .factor_of_interest = enquo(.factor_of_interest)
+    .factor_unwanted = enquo(.factor_unwanted)
+  }
+
 	# Create design matrix
-	design =
-		model.matrix(object = as.formula("~" %>% paste0(parse_formula(.formula)[1])),
-								 # get first argument of the .formula
-								 data = colData(.data))
+  design =
+    model.matrix(
+      object = as.formula(sprintf("~ %s", quo_names(.factor_of_interest) |> str_c(collapse = '+'))),
+      # get first argument of the .formula
+      data = colData(.data)
+    )
 
-	# Maybe not needed and causing trouble if more columns that in the formula
-	# %>%
-	#set_colnames(c("(Intercept)", parse_formula(.formula)[1]))
+	my_batch = colData(.data)[, quo_names(.factor_unwanted)]
 
+	# If no assay is specified take first
+	my_assay = ifelse(
+	  quo_is_symbol(.abundance),
+	  quo_name(.abundance),
+	  get_assay_scaled_if_exists_SE(.data)
+	)
 
+	if(tolower(method) == "combat"){
 
-	my_batch = colData(.data)[, parse_formula(.formula)[2]]
+	  my_assay_adjusted =
+	    .data %>%
 
+	    assay(my_assay) %>%
 
-	my_assay =
-		.data %>%
+	    # Check if log transform is needed
+	    log1p()  %>%
 
-		assays() %>%
-		as.list() %>%
-		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
+	    # Add little noise to avoid all 0s for a covariate that would error combat code (not statistics that would be fine)
+	    `+` (rnorm(length(.), 0, 0.000001)) %>%
 
-		# Check if log transform is needed
-	  transform()
+	    # Run combat
+	    sva::ComBat(batch = my_batch,
+	                mod = design,
+	                prior.plots = FALSE,
+	                ...)  %>%
 
+	    # Check if log transform needs to be reverted
+	    expm1()
 
-	# Set column name for value scaled
-	value_adjusted = get_assay_scaled_if_exists_SE(.data) %>% paste0(adjusted_string)
+	}
+	else if(tolower(method) == "combat_seq"){
 
-	# Calculate adjusted assay
-	my_assay_adjusted =
+	  my_assay_adjusted =
+	    .data %>%
 
-		my_assay %>%
+	    assay(my_assay) %>%
 
-		# Add little noise to avoid all 0s for a covariate that would error combat code (not statistics that would be fine)
-		`+` (rnorm(length(.), 0, 0.000001)) %>%
+	    # Run combat
+	    sva::ComBat_seq(batch = my_batch,
+	                    covar_mod = design,
+	                    ...)
 
-		# Run combat
-		sva::ComBat(batch = my_batch,
-								mod = design,
-								prior.plots = FALSE,
-								...)  %>%
-
-		# Check if log transform needs to be reverted
-	  inverse_transform()
+	} else {
+	  stop("tidybulk says: the argument \"method\" must be combat_seq or combat")
+	}
 
 
 	# Add the assay
-	my_assay_scaled =
-		list(my_assay_adjusted) %>% setNames(value_adjusted)
+	my_assay_scaled = list(my_assay_adjusted) %>% setNames(value_adjusted)
 
 	assays(.data) =  assays(.data) %>% c(my_assay_scaled)
 

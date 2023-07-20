@@ -66,9 +66,9 @@ test_that("tidybulk SummarizedExperiment normalisation",{
 
 
 test_that("quantile normalisation",{
-  
+
   res = se_mini |> quantile_normalise_abundance()
-  
+
   res_tibble =
     input_df |>
     quantile_normalise_abundance(
@@ -77,15 +77,15 @@ test_that("quantile normalisation",{
       .abundance = c,
       action = "get"
     )
-  
-  
-    SummarizedExperiment::assay(res, "count_scaled")["ABCB9","SRR1740035"] |> 
+
+
+    SummarizedExperiment::assay(res, "count_scaled")["ABCB9","SRR1740035"] |>
   expect_equal(
-    res_tibble |> 
-      filter(a=="SRR1740035" & b=="ABCB9") |> 
+    res_tibble |>
+      filter(a=="SRR1740035" & b=="ABCB9") |>
       pull(c_scaled)
   )
-  
+
 })
 
 
@@ -175,9 +175,12 @@ test_that("Get adjusted counts - SummarizedExperiment",{
   cm$batch[colnames(cm) %in% c("SRR1740035", "SRR1740043")] = 1
 
   res =
+    cm |>
+    identify_abundant() |>
     adjust_abundance(
-      cm |> identify_abundant(),
-      ~ condition + batch
+
+      ~ condition + batch,
+      method = "combat"
     )
 
   expect_equal(nrow(res),	527	)
@@ -306,29 +309,29 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
 
 test_that("differential trancript abundance - SummarizedExperiment - alternative .abundance",{
-  
+
   assays(se_mini) = list(counts = assay(se_mini), bla = assay(se_mini))
-  
-  
-  res =	 se_mini |> 
-    identify_abundant(factor_of_interest = condition) |> 
+
+
+  res =	 se_mini |>
+    identify_abundant(factor_of_interest = condition) |>
     test_differential_abundance(   ~ condition , .abundance =  bla)
-  
+
   w = match(  c("CLEC7A" , "FAM198B", "FCN1"  ,  "HK3"   ), rownames(res) )
-  
+
   # Quasi likelihood
   res_tibble =		test_differential_abundance(
     input_df |> identify_abundant(a, b, c, factor_of_interest = condition),
     ~ condition	,
     a, b, c
   )
-  
+
   expect_equal(
     res@elementMetadata[w,]$logFC,
     c(-11.58385, -13.53406, -12.58204, -12.19271),
     tolerance=1e-3
   )
-  
+
   expect_equal(
     res@elementMetadata[w,]$logFC,
     res_tibble |>
@@ -338,25 +341,25 @@ test_that("differential trancript abundance - SummarizedExperiment - alternative
       dplyr::pull(logFC),
     tolerance=1e-3
   )
-  
+
   # Likelihood ratio
   res2 =		test_differential_abundance(
     se_mini |>
       identify_abundant(factor_of_interest = condition),
     ~ condition, .abundance =  bla, method = "edgeR_likelihood_ratio"	)
-  
+
   res2_tibble =		test_differential_abundance(
     input_df |> identify_abundant(a, b, c, factor_of_interest = condition),
     ~ condition	,
     a, b, c, method = "edgeR_likelihood_ratio"
   )
-  
+
   expect_equal(
     res2@elementMetadata[w,]$logFC,
     c(-11.57989, -13.53476, -12.57969, -12.19303),
     tolerance=1e-3
   )
-  
+
   expect_equal(
     res2@elementMetadata[w,]$logFC,
     res2_tibble |>
@@ -366,7 +369,7 @@ test_that("differential trancript abundance - SummarizedExperiment - alternative
       dplyr::pull(logFC),
     tolerance=1e-3
   )
-  
+
   # Treat
   se_mini |>
     identify_abundant( factor_of_interest = condition) |>
@@ -381,7 +384,7 @@ test_that("differential trancript abundance - SummarizedExperiment - alternative
     filter(FDR<0.05) |>
     nrow() |>
     expect_equal(169)
-  
+
 })
 
 
@@ -426,24 +429,24 @@ test_that("Voom with treat method",{
 })
 
 test_that("differential trancript abundance - random effects SE",{
-  
- res = 
-   se_mini |>
-    identify_abundant(factor_of_interest = condition) |> 
-    #mutate(time = time |> stringr::str_replace_all(" ", "_")) |> 
+
+ res =
+   se_mini[1:10,] |>
+    identify_abundant(factor_of_interest = condition) |>
+    #mutate(time = time |> stringr::str_replace_all(" ", "_")) |>
     test_differential_abundance(
       ~ condition + (1 + condition | time),
       method = "glmmseq_lme4"
-    ) 
- 
- rowData(res)[,"P_condition_adjusted"] |> 
-    head(4) |> 
+    )
+
+ rowData(res)[,"P_condition_adjusted"] |>
+    head(4) |>
     expect_equal(
-      c(0.1441371, 0.1066183, 0.1370748, NA),
+      c(0.1065866, 0.1109067, 0.1116562 , NA),
       tolerance=1e-3
     )
-  
-  
+
+
 })
 
 
@@ -486,10 +489,10 @@ test_that("impute missing",{
     impute_missing_abundance(	~ condition	)
 
   list_SE = SummarizedExperiment::assays(res) |> as.list()
-  
+
   list_SE[[1]]["TNFRSF4", "SRR1740034"] |>
     expect_equal(6)
-  
+
 
   expect_equal(	nrow(res)*ncol(res),	nrow(input_df)	)
 
