@@ -67,7 +67,7 @@ lmer_to_confidence_intervals_random_effects = function(fit){
 
 
 glmerCore = function (geneList, fullFormula, reduced, data, control, offset,
-          modelData, designMatrix, hyp.matrix, max_rows_for_matrix_multiplication = 20000, return_fit =FALSE, ...)
+          modelData, designMatrix, hyp.matrix, max_rows_for_matrix_multiplication = Inf, return_fit =FALSE, ...)
 {
   data[, "count"] <- geneList$y
   disp <- geneList$dispersion
@@ -158,7 +158,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                     sizeFactors = NULL, reduced = NULL, modelData = NULL, designMatrix = NULL,
                     method = c("lme4", "glmmTMB"), control = NULL, family = nbinom2,
                     cores = 1, removeSingles = FALSE, zeroCount = 0.125, verbose = TRUE,
-                    returnList = FALSE, progress = FALSE, max_rows_for_matrix_multiplication = 20000, ...)
+                    returnList = FALSE, progress = FALSE, max_rows_for_matrix_multiplication = Inf, ...)
 {
   glmmcall <- match.call(expand.dots = TRUE)
   method <- match.arg(method)
@@ -265,7 +265,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       list(y = countdata[i, ], dispersion = dispersion[i])
     })
     if (Sys.info()["sysname"] == "Windows" & cores > 1) {
-      cl <- paralle::makeCluster(cores)
+      cl <- parallel::makeCluster(cores)
       on.exit(stopCluster(cl))
       dots <- list(...)
       varlist <- c("glmerCore", "fullList", "fullFormula",
