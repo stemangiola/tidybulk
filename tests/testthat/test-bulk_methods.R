@@ -153,7 +153,7 @@ test_that("Scaled counts - subset",{
 })
 
 test_that("quantile normalisation",{
-  
+
   res =
     input_df |>
     quantile_normalise_abundance(
@@ -162,15 +162,15 @@ test_that("quantile normalisation",{
       .abundance = c,
       action = "get"
     )
-  
-  res |> 
-    pull(c_scaled) |> 
-    head() |> 
+
+  res |>
+    pull(c_scaled) |>
+    head() |>
   expect_equal(
     c(1052.8 ,  63.8 ,7229.0 ,   2.9, 2143.6, 9272.8),
     tolerance=1e-3
   )
-  
+
 })
 
 
@@ -822,14 +822,14 @@ test_that("DESeq2 differential trancript abundance - no object",{
         idx <- which(res_lfc$padj < .1)
         expect_true(all(abs(res_lfc$log2FoldChange[idx]) > 1))
 
-        
+
 })
 
 test_that("differential trancript abundance - random effects",{
-  
-  input_df |> 
-    identify_abundant(a, b, c, factor_of_interest = condition) |> 
-    mutate(time = time |> stringr::str_replace_all(" ", "_")) |> 
+
+  input_df |>
+    identify_abundant(a, b, c, factor_of_interest = condition) |>
+    mutate(time = time |> stringr::str_replace_all(" ", "_")) |>
     test_differential_abundance(
       ~ condition + (1 + condition | time),
       .sample = a,
@@ -837,14 +837,14 @@ test_that("differential trancript abundance - random effects",{
       .abundance = c,
       method = "glmmseq_lme4",
       action="only"
-    ) |> 
-    pull(P_condition_adjusted) |> 
-    head(4) |> 
+    ) |>
+    pull(P_condition_adjusted) |>
+    head(4) |>
     expect_equal(
       c(0.1441371, 0.1066183, 0.1370748, 0.2065339),
       tolerance=1e-3
     )
-  
+
 
 })
 
@@ -942,12 +942,14 @@ test_that("Only adjusted counts - no object",{
 	cm$batch[cm$a %in% c("SRR1740035", "SRR1740043")] = 1
 
 	res =
+	  cm |>
+	  identify_abundant(a, b, c) |>
 		adjust_abundance(
-			cm |> identify_abundant(a, b, c),
 			~ condition + batch,
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "combat",
 			action="only"
 		)
 
@@ -957,10 +959,7 @@ test_that("Only adjusted counts - no object",{
 		tolerance=1e-3
 	)
 
-	expect_equal(
-		ncol(res),
-		3
-	)
+	expect_equal( ncol(res), 3 )
 
 })
 
@@ -973,10 +972,11 @@ test_that("Get adjusted counts - no object",{
 	res =
 		adjust_abundance(
 			cm |> identify_abundant(a, b, c),
-			~ condition + batch,
+			 ~ condition + batch,
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "combat",
 			action="get"
 		)
 
@@ -1006,6 +1006,7 @@ test_that("Add adjusted counts - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "combat",
 			action="add"
 		)
 
