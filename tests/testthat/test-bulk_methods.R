@@ -1053,7 +1053,7 @@ test_that("Get adjusted counts multiple factors - SummarizedExperiment",{
 
   expect_equal(
     unique(res$`c_adjusted`)[c(1, 2, 3, 5)],
-    c(NA, 5107 2228 2834),
+    c(NA, 5107, 2228, 2834),
     tolerance=1e-3
   )
 
