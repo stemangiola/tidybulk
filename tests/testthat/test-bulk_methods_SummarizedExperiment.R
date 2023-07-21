@@ -178,7 +178,6 @@ test_that("Get adjusted counts - SummarizedExperiment",{
     cm |>
     identify_abundant() |>
     adjust_abundance(
-
       ~ condition + batch,
       method = "combat"
     )
@@ -186,6 +185,36 @@ test_that("Get adjusted counts - SummarizedExperiment",{
   expect_equal(nrow(res),	527	)
 
   expect_equal(	names(SummarizedExperiment::assays(res)),	c("count" ,"count_adjusted")	)
+
+
+})
+
+test_that("Get adjusted counts multiple factors - SummarizedExperiment",{
+
+  cm = se_mini
+  cm$batch = 0
+  cm$batch[colnames(cm) %in% c("SRR1740035", "SRR1740043")] = 1
+  cm =
+    cm |>
+    identify_abundant() |>
+    scale_abundance()
+  cm@assays@data$count_scaled  = apply(cm@assays@data$count_scaled, 2, as.integer)
+
+
+  res =
+    cm |>
+    adjust_abundance(.factor_unwanted = c(time, batch),
+                     .factor_of_interest = dead,
+                     .abundance = count_scaled,
+      method = "combat_seq",
+      shrink.disp = TRUE,
+      shrink = TRUE,
+      gene.subset.n = 100
+    )
+
+  expect_equal(nrow(res),	527	)
+
+  expect_equal(	names(SummarizedExperiment::assays(res)),	c("count" , "count_scaled", "count_scaled_adjusted")	)
 
 
 })

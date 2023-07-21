@@ -3328,8 +3328,6 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 					) %>%
 		distinct()
 
-
-
 	# Create design matrix
 	design =
 		model.matrix(
@@ -3340,9 +3338,9 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 
 	my_batch =
 		df_for_combat %>%
-		distinct(!!.sample,!!.factor_unwanted) %>%
-		arrange(!!.sample) %>%
-		pull(2)
+		select(!!.sample,!!.factor_unwanted) %>%
+	  distinct() |>
+		arrange(!!.sample)
 
 	mat =
 
@@ -3373,13 +3371,19 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 	    log1p() %>%
 
 	    # Add little noise to avoid all 0s for a covariate that would error combat code (not statistics that would be fine)
-	    `+` (rnorm(length(mat), 0, 0.000001)) %>%
+	    `+` (rnorm(length(mat), 0, 0.000001))
 
-	    # Run combat
-	    sva::ComBat(batch = my_batch,
-	                mod = design,
-	                prior.plots = FALSE,
-	                ...) %>%
+	  for(i in quo_names(.factor_unwanted)){
+	    adjusted_df =
+	      adjusted_df %>%
+	      sva::ComBat(batch = my_batch |> select(all_of(i)) |> pull(1),
+	                  mod = design,
+	                  prior.plots = FALSE,
+	                  ...)
+	  }
+
+	  adjusted_df =
+	    adjusted_df %>%
 
 	    as_tibble(rownames = quo_name(.transcript)) %>%
 	    gather(!!.sample,!!.abundance,-!!.transcript) %>%
@@ -3394,12 +3398,18 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 	}
 	else if(tolower(method) == "combat_seq"){
 
-	  adjusted_df =
-	    mat |>
-	    sva::ComBat_seq(batch = my_batch,
-	                covar_mod = design,
-	                ...) %>%
+	  adjusted_df = mat
 
+	  for(i in quo_names(.factor_unwanted)){
+	    adjusted_df =
+	      adjusted_df |>
+  	    sva::ComBat_seq(batch = my_batch |> select(all_of(i)) |> pull(1),
+  	                covar_mod = design,
+	                ...)
+	   }
+
+	  adjusted_df =
+	    adjusted_df %>%
 	    as_tibble(rownames = quo_name(.transcript)) %>%
 	    gather(!!.sample,!!.abundance,-!!.transcript)
 

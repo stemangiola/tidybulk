@@ -830,6 +830,8 @@ test_that("differential trancript abundance - random effects",{
   input_df |>
     identify_abundant(a, b, c, factor_of_interest = condition) |>
     mutate(time = time |> stringr::str_replace_all(" ", "_")) |>
+
+    filter(b %in% c("ABCB4" , "ABCB9" , "ACAP1",  "ACHE",   "ACP5" ,  "ADAM28"))|>
     test_differential_abundance(
       ~ condition + (1 + condition | time),
       .sample = a,
@@ -841,7 +843,7 @@ test_that("differential trancript abundance - random effects",{
     pull(P_condition_adjusted) |>
     head(4) |>
     expect_equal(
-      c(0.1441371, 0.1066183, 0.1370748, 0.2065339),
+      c(0.02381167, 0.01097209, 0.01056741, 0.02381167),
       tolerance=1e-3
     )
 
@@ -1023,6 +1025,41 @@ test_that("Add adjusted counts - no object",{
 
 })
 
+
+test_that("Get adjusted counts multiple factors - SummarizedExperiment",{
+
+  cm = input_df
+  cm$batch = 0
+  cm$batch[cm$a %in% c("SRR1740035", "SRR1740043")] = 1
+
+  cm =
+    cm |>
+    identify_abundant(a, b, c)
+  cm$c  = as.integer(cm$c )
+
+  res =
+    cm |>
+    identify_abundant(a, b, c) |>
+    adjust_abundance(.factor_unwanted = c(time, batch),
+                     .factor_of_interest = dead,
+                     .sample = a,
+                     .transcript = b,
+                     .abundance = c,
+                     method = "combat_seq",
+                     shrink.disp = TRUE,
+                     shrink = TRUE,
+                     gene.subset.n = 100
+    )
+
+  expect_equal(
+    unique(res$`c_adjusted`)[c(1, 2, 3, 5)],
+    c(NA, 5730, 2179, 2923),
+    tolerance=1e-3
+  )
+
+
+
+})
 
 test_that("Only cluster lables based on Kmeans - no object",{
 

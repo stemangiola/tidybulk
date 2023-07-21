@@ -771,16 +771,6 @@ setMethod("remove_redundancy",
 	}
 
 
-	# Check that .formula includes at least two covariates
-	if (parse_formula(.formula) %>% length %>% st(2))
-		stop(
-			"The .formula must contain two covariates, the first being the factor of interest, the second being the factor of unwanted variation"
-		)
-
-	# Check that .formula includes no more than two covariates at the moment
-	if (parse_formula(.formula) %>% length %>% gt(3))
-		warning("tidybulk says: Only the second covariate in the .formula is adjusted for, at the moment")
-
   # DEPRECATION OF log_transform
   if (
     (is_present(transform) & !is.null(transform)) |
@@ -830,7 +820,7 @@ setMethod("remove_redundancy",
       data = colData(.data)
     )
 
-	my_batch = colData(.data)[, quo_names(.factor_unwanted)]
+	my_batch = colData(.data)[, quo_names(.factor_unwanted), drop=FALSE]
 
 	# If no assay is specified take first
 	my_assay = ifelse(
@@ -842,23 +832,29 @@ setMethod("remove_redundancy",
 	if(tolower(method) == "combat"){
 
 	  my_assay_adjusted =
-	    .data %>%
-
-	    assay(my_assay) %>%
-
-	    # Check if log transform is needed
-	    log1p()  %>%
-
+	    .data |>
+	    assay(my_assay) |> # Check if log transform is needed
+	   log1p() %>%
 	    # Add little noise to avoid all 0s for a covariate that would error combat code (not statistics that would be fine)
-	    `+` (rnorm(length(.), 0, 0.000001)) %>%
+	    `+` (rnorm(length(.), 0, 0.000001))
 
-	    # Run combat
-	    sva::ComBat(batch = my_batch,
-	                mod = design,
-	                prior.plots = FALSE,
-	                ...)  %>%
 
-	    # Check if log transform needs to be reverted
+	  for(i in colnames(my_batch)){
+	    my_assay_adjusted =
+	      my_assay_adjusted %>%
+
+	      # Run combat
+	      sva::ComBat(
+	        batch = my_batch[,i],
+          mod = design,
+          prior.plots = FALSE,
+          ...
+	       )
+	  }
+
+	  # Tranfrom back
+	  my_assay_adjusted =
+	    my_assay_adjusted %>%
 	    expm1()
 
 	}
@@ -867,12 +863,17 @@ setMethod("remove_redundancy",
 	  my_assay_adjusted =
 	    .data %>%
 
-	    assay(my_assay) %>%
+	    assay(my_assay)
 
-	    # Run combat
-	    sva::ComBat_seq(batch = my_batch,
+	  for(i in ncol(my_batch)){
+
+	    my_assay_adjusted =
+	      my_assay_adjusted |>
+	      sva::ComBat_seq(batch = my_batch[,i],
 	                    covar_mod = design,
+	                    full_mod=TRUE,
 	                    ...)
+	  }
 
 	} else {
 	  stop("tidybulk says: the argument \"method\" must be combat_seq or combat")
