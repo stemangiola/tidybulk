@@ -3331,7 +3331,7 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 	# Create design matrix
 	design =
 		model.matrix(
-			object = as.formula(sprintf("~ %s", quo_names(.factor_of_interest) |> str_c(collapse = '+'))),
+			object = as.formula(sprintf("~ %s",  .data |> select(!!.factor_of_interest) |> colnames() |>  str_c(collapse = '+'))),
 			# get first argument of the .formula
 			data = df_for_combat %>% select(!!.sample, !!.factor_of_interest) %>% distinct %>% arrange(!!.sample)
 		)
@@ -3413,8 +3413,37 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 	    as_tibble(rownames = quo_name(.transcript)) %>%
 	    gather(!!.sample,!!.abundance,-!!.transcript)
 
+	}
+	else if(tolower(method) == "limma_remove_batch_effect") {
+
+	  unwanted_covariate_matrix =
+	    model.matrix(
+	      object = as.formula(sprintf("~ 0 + %s", .data |> select(!!.factor_unwanted) |> colnames() |> str_c(collapse = '+'))),
+	      # get first argument of the .formula
+	      data = df_for_combat %>% select(!!.sample, !!.factor_unwanted) %>% distinct %>% arrange(!!.sample)
+	    )
+
+	  adjusted_df =
+	    mat |>
+	    edgeR::cpm(log = T) |>
+	    limma::removeBatchEffect(
+	      design = design,
+	      covariates = unwanted_covariate_matrix,
+	      ...
+	    ) |>
+
+	    as_tibble(rownames = quo_name(.transcript)) %>%
+	    gather(!!.sample,!!.abundance,-!!.transcript) %>%
+
+	    # Reverse-Log transform if transformed in the first place
+	    dplyr::mutate(!!.abundance := expm1(!!.abundance)) %>%
+
+	    # In case the inverse tranform produces negative counts
+	    dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0,!!.abundance)) %>%
+	    dplyr::mutate(!!.abundance := !!.abundance %>% as.integer)
+
 	} else {
-	  stop("tidybulk says: the argument \"method\" must be combat_seq or combat")
+	  stop("tidybulk says: the argument \"method\" must be combat_seq, combat, or limma_remove_batch_effect")
 	}
 
 

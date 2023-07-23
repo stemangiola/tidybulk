@@ -1758,7 +1758,7 @@ setGeneric("adjust_abundance", function(.data,
     ) {
 
     # Signal the deprecation to the user
-    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(transform = )", details = "The argument transform and inverse_transform is now deprecated, please use method argument instead specifying \"combat\" or \"combat_seq\".")
+    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(transform = )", details = "The argument transform and inverse_transform is now deprecated, please use method argument instead specifying \"combat\", \"combat_seq\" or \"limma_remove_batch_effect\".")
 
   }
 

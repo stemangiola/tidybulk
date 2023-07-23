@@ -815,12 +815,14 @@ setMethod("remove_redundancy",
 	# Create design matrix
   design =
     model.matrix(
-      object = as.formula(sprintf("~ %s", quo_names(.factor_of_interest) |> str_c(collapse = '+'))),
+      object = as.formula(sprintf("~ %s", colData(.data) |> as_tibble() |> select(!!.factor_of_interest) |> colnames() |> str_c(collapse = '+'))),
       # get first argument of the .formula
       data = colData(.data)
     )
 
-	my_batch = colData(.data)[, quo_names(.factor_unwanted), drop=FALSE]
+	my_batch = colData(.data) |> as_tibble() |> select(!!.factor_unwanted)
+
+
 
 	# If no assay is specified take first
 	my_assay = ifelse(
@@ -855,7 +857,8 @@ setMethod("remove_redundancy",
 	  # Tranfrom back
 	  my_assay_adjusted =
 	    my_assay_adjusted %>%
-	    expm1()
+	    expm1() |>
+	    apply(2, pmax, 0)
 
 	}
 	else if(tolower(method) == "combat_seq"){
@@ -875,8 +878,30 @@ setMethod("remove_redundancy",
 	                    ...)
 	  }
 
+	}
+	else if(tolower(method) == "limma_remove_batch_effect") {
+
+	  unwanted_covariate_matrix =
+	    model.matrix(
+	      object = as.formula(sprintf("~ 0 + %s", colData(.data) |> as_tibble() |> select(!!.factor_unwanted) |> colnames() |> str_c(collapse = '+'))),
+	      # get first argument of the .formula
+	      data = colData(.data)
+	    )
+
+	  my_assay_adjusted =
+	    .data |>
+	    assay(my_assay) |>
+	    edgeR::cpm(log = T) |>
+	    limma::removeBatchEffect(
+	      design = design,
+	      covariates = unwanted_covariate_matrix,
+	      ...
+	    ) |>
+	    expm1() |>
+	    apply(2, pmax, 0)
+
 	} else {
-	  stop("tidybulk says: the argument \"method\" must be combat_seq or combat")
+	  stop("tidybulk says: the argument \"method\" must be combat_seq, combat, or limma_remove_batch_effect")
 	}
 
 
