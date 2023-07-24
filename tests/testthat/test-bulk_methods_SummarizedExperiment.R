@@ -203,8 +203,8 @@ test_that("Get adjusted counts multiple factors - SummarizedExperiment",{
 
   res =
     cm |>
-    adjust_abundance(.factor_unwanted = c(time, batch),
-                     .factor_of_interest = dead,
+    adjust_abundance(.factor_unwanted = c(batch),
+                     .factor_of_interest = time,
                      .abundance = count_scaled,
       method = "combat_seq",
       shrink.disp = TRUE,

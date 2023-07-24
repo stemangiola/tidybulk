@@ -872,7 +872,7 @@ setMethod("remove_redundancy",
 
 	    my_assay_adjusted =
 	      my_assay_adjusted |>
-	      sva::ComBat_seq(batch = my_batch[,i],
+	      sva::ComBat_seq(batch = my_batch[,i] |> pull(1),
 	                    covar_mod = design,
 	                    full_mod=TRUE,
 	                    ...)
