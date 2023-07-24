@@ -1645,16 +1645,19 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' @name adjust_abundance
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+#' @param .factor_unwanted A tidy select, e.g. column names without double quotation. c(batch, country) These are the factor that we want to adjust for, including unwanted batcheffect, and unwanted biological effects.
+#' @param .factor_of_interest A tidy select, e.g. column names without double quotation. c(treatment) These are the factor that we want to preserve.
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param method A character string. Methods include combat_seq (default), combat and limma_remove_batch_effect.
 #'
-#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
-#' @param inverse_transform A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function sva::ComBat
 #'
 #' @param .formula DEPRECATED - A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)
+#' @param transform DEPRECATED - A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param inverse_transform DEPRECATED - A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.
 #' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details This function adjusts the abundance for (known) unwanted variation.
@@ -1676,9 +1679,9 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' cm$batch = 0
 #' cm$batch[colnames(cm) %in% c("SRR1740035", "SRR1740043")] = 1
 #'
-#'  cm |>
-#'  identify_abundant() |>
-#' 	adjust_abundance(	~ condition + batch	)
+#' cm |>
+#' identify_abundant() |>
+#'	adjust_abundance(	.factor_unwanted = batch, .factor_of_interest =  condition, method="combat"	)
 #'
 #'
 #' @docType methods
