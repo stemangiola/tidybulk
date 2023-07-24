@@ -847,7 +847,7 @@ setMethod("remove_redundancy",
 
 	      # Run combat
 	      sva::ComBat(
-	        batch = my_batch[,i],
+	        batch = my_batch[,i] |> pull(1),
           mod = design,
           prior.plots = FALSE,
           ...

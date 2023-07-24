@@ -487,7 +487,7 @@ We may want to adjust `counts` for (known) unwanted variation. `adjust_abundance
 TidyTranscriptomics
 ```{r adjust, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
 counts_SE.norm.adj =
-	counts_SE.norm %>% adjust_abundance(	~ factor_of_interest + batch)
+	counts_SE.norm %>% adjust_abundance(	.factor_unwanted = batch, .factor_of_interest = factor_of_interest)
 
 ```
 </div>

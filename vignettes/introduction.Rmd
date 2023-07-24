@@ -475,13 +475,14 @@ se_mini.de =
 
 ## Adjust `counts`
 
-We may want to adjust `counts` for (known) unwanted variation. `adjust_abundance` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation, and returns a tibble with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`. At the moment just an unwanted covariated is allowed at a time.
+We may want to adjust `counts` for (known) unwanted variation. `adjust_abundance` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation, and returns a tibble with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`. At the moment just an unwanted covariates is allowed at a time.
 
 <div class="column-left">
 TidyTranscriptomics
 ```{r adjust, message=FALSE, warning=FALSE, results='hide'}
 se_mini.norm.adj =
-	se_mini.norm |> adjust_abundance(	~ condition + time)
+	se_mini.norm 	|> adjust_abundance(	.factor_unwanted = time, .factor_of_interest = condition, method="combat")
+
 
 ```
 </div>
