@@ -36,7 +36,7 @@ setOldClass("tidybulk")
 #'
 #' @docType methods
 #' @rdname tidybulk-methods
-#' 
+#'
 #' @export
 #'
 setGeneric("tidybulk", function(.data,
@@ -78,9 +78,9 @@ setGeneric("tidybulk", function(.data,
 														 !!.abundance_scaled)
 }
 #' tidybulk
-#' 
+#'
 #' @export
-#' 
+#'
 #' @inheritParams tidybulk
 #'
 #' @docType methods
@@ -93,7 +93,7 @@ setMethod("tidybulk", "spec_tbl_df", .tidybulk)
 #' tidybulk
 #'
 #' @export
-#' 
+#'
 #' @importFrom purrr map2
 #'
 #' @inheritParams tidybulk
@@ -136,7 +136,7 @@ setGeneric("as_SummarizedExperiment", function(.data,
 																						.sample = NULL,
 																						.transcript = NULL,
 																						.abundance = NULL) {
-  
+
   # Fix NOTEs
   . = NULL
 
@@ -256,9 +256,9 @@ setGeneric("as_SummarizedExperiment", function(.data,
 }
 
 #' as_SummarizedExperiment
-#' 
+#'
 #' @export
-#' 
+#'
 #' @inheritParams as_SummarizedExperiment
 #'
 #' @docType methods
@@ -269,9 +269,9 @@ setGeneric("as_SummarizedExperiment", function(.data,
 setMethod("as_SummarizedExperiment", "spec_tbl_df", .as_SummarizedExperiment)
 
 #' as_SummarizedExperiment
-#' 
+#'
 #' @export
-#' 
+#'
 #' @inheritParams as_SummarizedExperiment
 #'
 #' @docType methods
@@ -282,7 +282,7 @@ setMethod("as_SummarizedExperiment", "spec_tbl_df", .as_SummarizedExperiment)
 setMethod("as_SummarizedExperiment", "tbl_df", .as_SummarizedExperiment)
 
 #' as_SummarizedExperiment
-#' 
+#'
 #' @export
 #'
 #' @inheritParams as_SummarizedExperiment
@@ -332,9 +332,9 @@ setGeneric("tidybulk_SAM_BAM", function(file_names, genome = "hg38", ...)
 	standardGeneric("tidybulk_SAM_BAM"))
 
 #' tidybulk_SAM_BAM
-#' 
+#'
 #' @export
-#' 
+#'
 #' @inheritParams tidybulk_SAM_BAM-methods
 #'
 #' @docType methods
@@ -421,10 +421,10 @@ setGeneric("scale_abundance", function(.data,
 														 # DEPRECATED
 														 reference_selection_function = NULL)
 {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -529,9 +529,9 @@ setGeneric("scale_abundance", function(.data,
 
 
 #' scale_abundance
-#' 
+#'
 #' @export
-#' 
+#'
 #' @inheritParams scale_abundance
 #'
 #' @docType methods
@@ -542,9 +542,9 @@ setGeneric("scale_abundance", function(.data,
 setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
 
 #' scale_abundance
-#' 
+#'
 #' @export
-#' 
+#'
 #' @inheritParams scale_abundance
 #'
 #' @docType methods
@@ -555,9 +555,9 @@ setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
 setMethod("scale_abundance", "tbl_df", .scale_abundance)
 
 #' scale_abundance
-#' 
+#'
 #' @export
-#' 
+#'
 #' @inheritParams scale_abundance
 #'
 #' @docType methods
@@ -632,10 +632,10 @@ setGeneric("quantile_normalise_abundance", function(.data,
                                           .subset_for_scaling = NULL,
                                           action = "add")
 {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
   # Get column names
   .sample = enquo(.sample)
   .transcript = enquo(.transcript)
@@ -644,12 +644,12 @@ setGeneric("quantile_normalise_abundance", function(.data,
   .sample = col_names$.sample
   .transcript = col_names$.transcript
   .abundance = col_names$.abundance
-  
+
   .subset_for_scaling = enquo(.subset_for_scaling)
-  
+
   # Set column name for value scaled
   value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
-  
+
 
   # Check if package is installed, otherwise install
   if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
@@ -658,22 +658,22 @@ setGeneric("quantile_normalise_abundance", function(.data,
       install.packages("BiocManager", repos = "https://cloud.r-project.org")
     BiocManager::install("limma", ask = FALSE)
   }
-  
+
   # Reformat input data set
   .data_norm <-
     .data %>%
-    
+
     # Rename
     dplyr::select(!!.sample,!!.transcript,!!.abundance) %>%
-    
+
     # Set samples and genes as factors
-    dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript))  |> 
-    pivot_wider(names_from = !!.sample, values_from = !!.abundance) |> 
-    as_matrix(rownames=!!.transcript) |> 
-    limma::normalizeQuantiles() |> 
-    as_tibble(rownames = quo_name(.transcript)) |> 
-    pivot_longer(-!!.transcript, names_to = quo_name(.sample), values_to = quo_names(value_scaled)) |> 
-    
+    dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript))  |>
+    pivot_wider(names_from = !!.sample, values_from = !!.abundance) |>
+    as_matrix(rownames=!!.transcript) |>
+    limma::normalizeQuantiles() |>
+    as_tibble(rownames = quo_name(.transcript)) |>
+    pivot_longer(-!!.transcript, names_to = quo_name(.sample), values_to = quo_names(value_scaled)) |>
+
 
     # Attach column internals
     add_tt_columns(
@@ -682,20 +682,20 @@ setGeneric("quantile_normalise_abundance", function(.data,
       !!.abundance,
       !!(function(x, v)	enquo(v))(x,!!value_scaled)
     )
-  
-  
+
+
   if (action %in% c( "add", "get")){
-    
+
     .data %>%
-      
+
       left_join(.data_norm, by= join_by(!!.sample, !!.transcript)) %>%
 
       # Attach attributes
-      reattach_internals(.data_norm) |> 
-      
+      reattach_internals(.data_norm) |>
+
       # Add methods
-      memorise_methods_used(c("quantile")) 
-    
+      memorise_methods_used(c("quantile"))
+
   }
   else if (action == "only") .data_norm
   else
@@ -705,9 +705,9 @@ setGeneric("quantile_normalise_abundance", function(.data,
 }
 
 #' quantile_normalise_abundance
-#' 
+#'
 #' @export
-#' 
+#'
 #' @inheritParams quantile_normalise_abundance
 #'
 #' @docType methods
@@ -718,9 +718,9 @@ setGeneric("quantile_normalise_abundance", function(.data,
 setMethod("quantile_normalise_abundance", "spec_tbl_df", .quantile_normalise_abundance)
 
 #' quantile_normalise_abundance
-#' 
+#'
 #' @export
-#' 
+#'
 #' @inheritParams quantile_normalise_abundance
 #'
 #' @docType methods
@@ -731,9 +731,9 @@ setMethod("quantile_normalise_abundance", "spec_tbl_df", .quantile_normalise_abu
 setMethod("quantile_normalise_abundance", "tbl_df", .quantile_normalise_abundance)
 
 #' quantile_normalise_abundance
-#' 
+#'
 #' @export
-#' 
+#'
 #' @inheritParams quantile_normalise_abundance
 #'
 #' @docType methods
@@ -833,7 +833,7 @@ setGeneric("cluster_elements", function(.data,
 
   # Fix NOTEs
   . = NULL
-  
+
   # DEPRECATION OF log_transform
   if (is_present(log_transform) & !is.null(log_transform)) {
 
@@ -1084,10 +1084,10 @@ setGeneric("reduce_dimensions", function(.data,
 
 																)
 {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 
   # DEPRECATION OF log_transform
   if (is_present(log_transform) & !is.null(log_transform)) {
@@ -1312,10 +1312,10 @@ setGeneric("rotate_dimensions", function(.data,
 																dimension_2_column_rotated = NULL,
 																action =	"add")
 {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Get column names
 	.element = enquo(.element)
 	col_names = get_elements(.data, .element)
@@ -1548,7 +1548,7 @@ setGeneric("remove_redundancy", function(.data,
 
   # Fix NOTEs
   . = NULL
-  
+
   # DEPRECATION OF log_transform
   if (is_present(log_transform) & !is.null(log_transform)) {
 
@@ -1645,16 +1645,19 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' @name adjust_abundance
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
-#' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)
+#' @param .factor_unwanted A tidy select, e.g. column names without double quotation. c(batch, country) These are the factor that we want to adjust for, including unwanted batcheffect, and unwanted biological effects.
+#' @param .factor_of_interest A tidy select, e.g. column names without double quotation. c(treatment) These are the factor that we want to preserve.
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#' @param method A character string. Methods include combat_seq (default), combat and limma_remove_batch_effect.
 #'
-#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
-#' @param inverse_transform A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function sva::ComBat
 #'
+#' @param .formula DEPRECATED - A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)
+#' @param transform DEPRECATED - A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param inverse_transform DEPRECATED - A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.
 #' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details This function adjusts the abundance for (known) unwanted variation.
@@ -1676,9 +1679,9 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' cm$batch = 0
 #' cm$batch[colnames(cm) %in% c("SRR1740035", "SRR1740043")] = 1
 #'
-#'  cm |>
-#'  identify_abundant() |>
-#' 	adjust_abundance(	~ condition + batch	)
+#' cm |>
+#' identify_abundant() |>
+#'	adjust_abundance(	.factor_unwanted = batch, .factor_of_interest =  condition, method="combat"	)
 #'
 #'
 #' @docType methods
@@ -1687,62 +1690,114 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #'
 #'
 setGeneric("adjust_abundance", function(.data,
-																				.formula,
+
+                                        # DEPRECATED
+                                        .formula = NULL,
+                                        .factor_unwanted =NULL,
+                                        .factor_of_interest = NULL,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance = NULL,
-																				transform = log1p,
-																				inverse_transform = expm1,
+																				method = "combat_seq",
 
 																				action = "add",
 																				...,
 
 																				# DEPRECATED
-																				log_transform = NULL
+																				log_transform = NULL,
+																				transform = NULL,
+																				inverse_transform = NULL
+
 																				)
 	standardGeneric("adjust_abundance"))
 
 # Set internal
 .adjust_abundance = 	function(.data,
-                              .formula,
+
+                              # DEPRECATED
+                              .formula = NULL,
+                              .factor_unwanted = NULL,
+                              .factor_of_interest = NULL,
                               .sample = NULL,
                               .transcript = NULL,
                               .abundance = NULL,
-                              transform = log1p,
-                              inverse_transform = expm1,
+                              method = "combat_seq",
                               action = "add",
                               ...,
 
                               # DEPRECATED
-                              log_transform = NULL)
+                              log_transform = NULL,
+                              transform = NULL,
+                              inverse_transform = NULL
+                              )
 {
 
   # Fix NOTEs
   . = NULL
-  
+
+  # Get column names
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  col_names = get_sample_transcript(.data, .sample, .transcript)
+  .sample = col_names$.sample
+  .transcript = col_names$.transcript
+
   # DEPRECATION OF log_transform
   if (is_present(log_transform) & !is.null(log_transform)) {
 
     # Signal the deprecation to the user
     deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
 
-    if(log_transform == TRUE){
+    if(log_transform){
       transform = log1p
       inverse_transform = expm1
     }
   }
 
-	# Get column names
-	.sample = enquo(.sample)
-	.transcript = enquo(.transcript)
-	col_names = get_sample_transcript(.data, .sample, .transcript)
-	.sample = col_names$.sample
-	.transcript = col_names$.transcript
+  # DEPRECATION OF log_transform
+  if (
+    (is_present(transform) & !is.null(transform)) |
+    is_present(inverse_transform) & !is.null(inverse_transform)
+    ) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(transform = )", details = "The argument transform and inverse_transform is now deprecated, please use method argument instead specifying \"combat\", \"combat_seq\" or \"limma_remove_batch_effect\".")
+
+  }
+
+  # DEPRECATION OF .formula
+  if (is_present(.formula) & !is.null(.formula)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(.formula = )", details = "The argument .formula is now deprecated, please use factor_unwanted and factor_of_interest. Using the formula, the first factor is of interest and the second is unwanted")
+
+    # Check that .formula includes at least two covariates
+    if (parse_formula(.formula) %>% length %>% st(2))
+      stop(
+        "The .formula must contain two covariates, the first being the factor of interest, the second being the factor of unwanted variation"
+      )
+
+    # Check that .formula includes no more than two covariates at the moment
+    if (parse_formula(.formula) %>% length %>% gt(3))
+      warning("tidybulk says: Only the second covariate in the .formula is adjusted for")
+
+
+      .factor_of_interest = quo(!!as.symbol(parse_formula(.formula)[1]))
+      .factor_unwanted = quo(!!as.symbol(parse_formula(.formula)[2]))
+
+  } else {
+
+    .factor_of_interest = enquo(.factor_of_interest)
+    .factor_unwanted = enquo(.factor_unwanted)
+  }
+
+
 
 	# Get scaled abundance if present, otherwise get abundance (if present get scaled one)
 	.abundance =
 		enquo(.abundance) %>%
-		when(!quo_is_symbol(.) ~ get_abundance_norm_if_exists(.data, .)$.abundance, ~ (.))
+		when(!quo_is_symbol(.) ~
+		       get_abundance_norm_if_exists(.data, .)$.abundance, ~ (.))
 
 	# Validate data frame
 	if(do_validate()) {
@@ -1764,12 +1819,12 @@ setGeneric("adjust_abundance", function(.data,
 		) |>
 
 		get_adjusted_counts_for_unwanted_variation_bulk(
-			.formula,
+		  .factor_unwanted = !!.factor_unwanted,
+		  .factor_of_interest = !!.factor_of_interest,
 			.sample = !!.sample,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
-			transform = transform,
-			inverse_transform = inverse_transform,
+			method = method,
 			...
 		)
 
@@ -1911,10 +1966,10 @@ setGeneric("aggregate_duplicates", function(.data,
 																	.abundance = NULL,
 																	aggregation_function = sum,
 																	keep_integer = TRUE)  {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Make col names
   # Get column names
   .sample = enquo(.sample)
@@ -2054,10 +2109,10 @@ setGeneric("deconvolve_cellularity", function(.data,
 																		 prefix = "",
 																		 action = "add",
 																		 ...)  {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2180,10 +2235,10 @@ setMethod("deconvolve_cellularity",
 symbol_to_entrez = function(.data,
 														.transcript = NULL,
 														.sample = NULL) {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Get column names
 	.transcript = enquo(.transcript)
 	.sample = enquo(.sample)
@@ -2252,7 +2307,7 @@ setGeneric("describe_transcript", function(.data,
 
   # Fix NOTEs
   . = NULL
-  
+
 	# Get column names
 	.transcript = enquo(.transcript)
 	col_names = get_transcript(.data, .transcript)
@@ -2377,7 +2432,7 @@ setMethod("describe_transcript", "tidybulk", .describe_transcript)
 #'
 #' @examples
 #'
-#' 
+#'
 #'
 #' # This function was designed for data.frame
 #' # Convert from SummarizedExperiment for this example. It is NOT reccomended.
@@ -2401,10 +2456,10 @@ setGeneric("ensembl_to_symbol", function(.data,
 															.ensembl,
 															action = "add")
 {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Make col names
 	.ensembl = enquo(.ensembl)
 
@@ -2486,6 +2541,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
+#'
 #' @param contrasts This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights"
 #' @param test_above_log2_fold_change A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
@@ -2577,15 +2633,15 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'         test_differential_abundance( ~ condition, method="deseq2",
 #'             fitType="local",
 #'             test_above_log2_fold_change=4 )
-#'             
-#' # Use random intercept and random effect models 
-#' 
+#'
+#' # Use random intercept and random effect models
+#'
 #'  se_mini[1:50,] |>
-#'   identify_abundant(factor_of_interest = condition) |> 
+#'   identify_abundant(factor_of_interest = condition) |>
 #'   test_differential_abundance(
 #'     ~ condition + (1 + condition | time),
 #'     method = "glmmseq_lme4", cores = 1
-#'   ) 
+#'   )
 #'
 #' # confirm that lfcThreshold was used
 #' \dontrun{
@@ -2594,7 +2650,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'         DESeq2::DESeqResults() |>
 #'         DESeq2::plotMA()
 #' }
-#' 
+#'
 #' # The function `test_differential_abundance` operates with contrasts too
 #'
 #'  my_se_mini |>
@@ -2654,10 +2710,10 @@ setGeneric("test_differential_abundance", function(.data,
 																					.contrasts = NULL
 																				)
 {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2766,13 +2822,13 @@ such as batch effects (if applicable) in the formula.
 				.abundance = !!.abundance,
 				.contrasts = contrasts,
 				method = method,
-				test_above_log2_fold_change = test_above_log2_fold_change,                                
+				test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
 				prefix = prefix,
 				...
 			),
-			
+
 			# glmmseq
 			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmTMB") ~ get_differential_transcript_abundance_glmmSeq(
 			  .,
@@ -2782,7 +2838,7 @@ such as batch effects (if applicable) in the formula.
 			  .abundance = !!.abundance,
 			  .contrasts = contrasts,
 			  method = method,
-			  test_above_log2_fold_change = test_above_log2_fold_change,                                
+			  test_above_log2_fold_change = test_above_log2_fold_change,
 			  scaling_method = scaling_method,
 			  omit_contrast_in_colnames = omit_contrast_in_colnames,
 			  prefix = prefix,
@@ -2929,7 +2985,7 @@ setGeneric("keep_variable", function(.data,
 
   # Fix NOTEs
   . = NULL
-  
+
   # DEPRECATION OF log_transform
   if (is_present(log_transform) & !is.null(log_transform)) {
 
@@ -3057,7 +3113,7 @@ setGeneric("identify_abundant", function(.data,
 
   # Fix NOTEs
   . = NULL
-  
+
   factor_of_interest = enquo(factor_of_interest)
 
 	# Get column names
@@ -3073,18 +3129,18 @@ setGeneric("identify_abundant", function(.data,
 	  stop("The parameter minimum_counts must be > 0")
 	if (minimum_proportion < 0 |	minimum_proportion > 1)
 	  stop("The parameter minimum_proportion must be between 0 and 1")
-	
-	
+
+
 	# Validate data frame
 	if(do_validate()) {
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 	}
 
-	
+
 	if(	".abundant" %in% colnames(.data) ) return( .data	|>	  reattach_internals(.data)	)
 
-	  
+
   # Check if package is installed, otherwise install
   if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
     message("Installing edgeR needed for differential transcript abundance analyses")
@@ -3092,73 +3148,73 @@ setGeneric("identify_abundant", function(.data,
       install.packages("BiocManager", repos = "https://cloud.r-project.org")
     BiocManager::install("edgeR", ask = FALSE)
   }
-	
+
 	# If character fail
 	if(
 	  !is.null(factor_of_interest) &&
 	  !factor_of_interest |> quo_is_null() &&
 	  !factor_of_interest |> quo_is_symbolic()
 	) stop("tidybulk says: factor_of_interest must be symbolic (i.e. column name/s not surrounded by single or double quotes) and not a character.")
-	
-	
+
+
 	if(
-	  !is.null(factor_of_interest) && 
+	  !is.null(factor_of_interest) &&
 	  ( enquo(factor_of_interest) |> quo_is_symbolic() | is.character(factor_of_interest) )
 	){
-	  
+
 	  # DEPRECATION OF symbolic factor_of_interest
-	  # factor_of_interest must be a character now because we identified 
-	  # a edge case for which if the column name is the same as an existing function, 
-	  # such as time the column name would not be registered as such but would be 
+	  # factor_of_interest must be a character now because we identified
+	  # a edge case for which if the column name is the same as an existing function,
+	  # such as time the column name would not be registered as such but would be
 	  # registered as that function
-	  
+
     # # Signal the deprecation to the user
     # warning(
-    #   "The `factor_of_interest` argument of `test_differential_abundance() is changed as of tidybulk 1.11.5", 
+    #   "The `factor_of_interest` argument of `test_differential_abundance() is changed as of tidybulk 1.11.5",
     #   details = "The argument factor_of_interest must now be a character array. This because we identified a edge case for which if the column name is the same as an existing function, such as time the column name would not be registered as such but would be registered as that function"
     # )
-	    
+
 	 factor_of_interest = factor_of_interest |> enquo() |> quo_names()
-	    
+
 
 	    # If is numeric ERROR
 	    if(
 	      .data |>
-	      select(factor_of_interest) |> 
+	      select(factor_of_interest) |>
 	      lapply(class) |>
-	      unlist() |>	
+	      unlist() |>
 	      as.character()%in% c("numeric", "integer", "double") |>
 	      any()
-	    ) 
+	    )
 	      stop("tidybulk says: The factor(s) of interest must not include continuous variables (e.g., integer,numeric, double).")
-	    
-	    string_factor_of_interest = 
+
+	    string_factor_of_interest =
 	      .data %>%
-	      select(!!.sample, factor_of_interest) |> 
+	      select(!!.sample, factor_of_interest) |>
 	      distinct() |>
 	      arrange(!!.sample) |>
 	      select(factor_of_interest) |>
 	      pull(1)
-	  
-	  
+
+
 	} else {
 	  string_factor_of_interest = NULL
 	}
-	
+
 	gene_to_exclude =
 	.data %>%
 	  select(!!.sample,!!.transcript, !!.abundance) |>
 	  spread(!!.sample, !!.abundance) |>
-	  
+
 	  # Drop if transcript have missing value
 	  drop_na() %>%
-	  
+
 	  # If I don't have any transcript with all samples give meaningful error
 	  when(
 	    nrow(.) == 0 ~ stop("tidybulk says: you don't have any transcript that is in all samples. Please consider using impute_missing_abundance."),
 	    ~ (.)
 	  ) %>%
-	  
+
 	  # Call edgeR
 	  as_matrix(rownames = !!.transcript) |>
 	  edgeR::filterByExpr(
@@ -3169,13 +3225,13 @@ setGeneric("identify_abundant", function(.data,
 	  not() |>
 	  which() |>
 	  names()
-	
+
 	.data |>
 	  dplyr::mutate(.abundant := (!!.transcript %in% gene_to_exclude) |> not()) |>
-	  
+
 	  # Attach attributes
 	  reattach_internals(.data)
-	
+
 }
 
 #' keep_abundant
@@ -3272,10 +3328,10 @@ setGeneric("keep_abundant", function(.data,
 															minimum_counts = 10,
 															minimum_proportion = 0.7)
 {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -3468,7 +3524,7 @@ setGeneric("test_gene_enrichment", function(.data,
 
   # Fix NOTEs
   . = NULL
-  
+
 	# DEPRECATION OF reference function
 	if (is_present(method) & !is.null(method)) {
 
@@ -3617,7 +3673,7 @@ setMethod("test_gene_enrichment",
 #' @examples
 #'
 #' print("Not run for build time.")
-#' 
+#'
 #' #se_mini = aggregate_duplicates(tidybulk::se_mini, .transcript = entrez)
 #' #df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #'
@@ -3786,7 +3842,7 @@ setMethod("test_gene_overrepresentation",
 #' @examples
 #'
 #' print("Not run for build time.")
-#' 
+#'
 #' \dontrun{
 #'
 #' df_entrez = tidybulk::se_mini
@@ -4135,7 +4191,7 @@ setMethod("pivot_transcript",
 #' @examples
 #'
 #' print("Not run for build time.")
-#' 
+#'
 #' # tidybulk::se_mini |>  fill_missing_abundance( fill_with = 0)
 #'
 #'
@@ -4275,10 +4331,10 @@ setGeneric("impute_missing_abundance", function(.data,
 															suffix = "",
 															force_scaling = FALSE)
 {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -4354,7 +4410,7 @@ setMethod("impute_missing_abundance", "tidybulk", .impute_missing_abundance)
 #'
 #' @importFrom rlang enquo
 #' @importFrom stringr str_detect
-#' 
+#'
 #' @name test_differential_cellularity
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
@@ -4448,10 +4504,10 @@ setGeneric("test_differential_cellularity", function(.data,
 																						significance_threshold = 0.05,
 																						...)
 {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -4591,10 +4647,10 @@ setGeneric("test_stratification_cellularity", function(.data,
 																							reference = X_cibersort,
 																							...)
 {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -4694,7 +4750,7 @@ setGeneric("get_bibliography", function(.data)
 
   # Fix NOTEs
   . = NULL
-  
+
 	default_methods = c("tidybulk", "tidyverse")
 
 	# If there is not attributes parameter
@@ -4759,8 +4815,8 @@ setMethod("get_bibliography",
 #' Get matrix from tibble
 #'
 #'
-#' 
-#' 
+#'
+#'
 #' @importFrom magrittr set_rownames
 #' @importFrom rlang quo_is_null
 #'
@@ -4779,10 +4835,10 @@ setMethod("get_bibliography",
 as_matrix <- function(tbl,
                       rownames = NULL,
                       do_check = TRUE) {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
   rownames = enquo(rownames)
   tbl %>%
 
