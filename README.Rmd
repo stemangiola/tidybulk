@@ -20,15 +20,13 @@ knitr::include_graphics("man/figures/logo.png")
 ```
   
 website: [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
-
+[Third party tutorials](https://rstudio-pubs-static.s3.amazonaws.com/792462_f948e766b15d4ee5be5c860493bda0b3.html)
 Please have a look also to 
 
 - [tidySummarizedExperiment](https://github.com/stemangiola/tidySummarizedExperiment) for bulk data tidy representation
 - [tidySingleCellExperiment](https://github.com/stemangiola/tidySingleCellExperiment) for single-cell data tidy representation
 - [tidyseurat](https://github.com/stemangiola/tidyseurat) for single-cell data tidy representation
 - [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for heatmaps produced with tidy principles
-analysis and manipulation 
-- [nanny](https://github.com/stemangiola/nanny) for tidy high-level data
 analysis and manipulation 
 - [tidygate](https://github.com/stemangiola/tidygate) for adding custom
 gate information to your tibble 

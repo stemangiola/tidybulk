@@ -355,8 +355,6 @@ get_scaled_counts_bulk <- function(.data,
 
 }
 
-
-
 #' Get differential transcription information to a tibble using edgeR.
 #'
 #' @keywords internal
@@ -643,6 +641,158 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		}
 }
 
+#' Get differential transcription information to a tibble using glmmSeq
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' 
+#' 
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom utils install.packages
+#' @importFrom purrr when
+#' @importFrom rlang inform
+#' @importFrom tidyr spread
+#' @importFrom tidyr pivot_wider
+#' @importFrom dplyr slice
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .contrasts A character vector. Not used for this method
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param test_above_log2_fold_change A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param .sample_total_read_count
+#'
+#' @return A tibble with glmmSeq results
+#'
+get_differential_transcript_abundance_glmmSeq <- function(.data,
+                                                               .formula,
+                                                               .sample = NULL,
+                                                               .transcript = NULL,
+                                                               .abundance = NULL,
+                                                               .contrasts = NULL,
+                                                               method ,
+                                                               test_above_log2_fold_change = NULL,
+                                                               scaling_method = NULL,
+                                                               omit_contrast_in_colnames = FALSE,
+                                                               prefix = "",
+                                                               .sample_total_read_count = NULL,
+                                                          ...) {
+  # Get column names
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+  .sample_total_read_count = enquo(.sample_total_read_count)
+  
+  # Check if omit_contrast_in_colnames is correctly setup
+  if(omit_contrast_in_colnames & length(.contrasts) > 1){
+    warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+    omit_contrast_in_colnames = FALSE
+  }
+  
+  # # Specify the design column tested
+  # if(is.null(.contrasts))
+  #   message(
+  #     sprintf(
+  #       "tidybulk says: The design column being tested is %s",
+  #       design %>% colnames %>% .[1]
+  #     )
+  #   )
+  
+  # # If I don't have intercept or I have categorical factor of interest BUT I don't have contrasts
+  # if(
+  #   is.null(.contrasts) &
+  #   (
+  #     (
+  #       ! .data |> pull(parse_formula(.formula)[1]) |> is("numeric") &
+  #       .data |> pull(parse_formula(.formula)[1]) |> unique() |> length() |> gt(2)
+  #     ) |
+  #     colnames(design)[1] != "(Intercept)"
+  #   )
+  # )
+  #   warning("tidybulk says: If you have (i) an intercept-free design (i.e. ~ 0 + factor) or you have a categorical factor of interest with more than 2 values you should use the `contrasts` argument.")
+  # 
+  # my_contrasts =
+  #   .contrasts %>%
+  #   ifelse_pipe(length(.) > 0,
+  #               ~ limma::makeContrasts(contrasts = .x, levels = design),
+  #               ~ NULL)
+  
+  # Check if package is installed, otherwise install
+  if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing edgeR needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("edgeR", ask = FALSE)
+  }
+  
+  # Check if package is installed, otherwise install
+  if (find.package("glmmSeq", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing glmmSeq needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("glmmSeq", ask = FALSE)
+  }
+  
+  metadata = 
+    .data |> 
+    pivot_sample(!!.sample) |> 
+    as_data_frame(rownames = !!.sample)
+  
+  counts = 
+    .data %>%
+    select(!!.transcript,!!.sample,!!.abundance) %>%
+    spread(!!.sample,!!.abundance) %>%
+    as_matrix(rownames = !!.transcript)
+  
+  # Reorder counts
+  counts = counts[,rownames(metadata),drop=FALSE]
+  
+  glmmSeq_object = 
+    glmmSeq( .formula,
+          countdata = counts ,
+          metadata =   metadata,
+          dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts)),
+          progress = TRUE, 
+          method = method |> str_remove("(?i)^glmmSeq_"),
+          ...
+  ) 
+  
+  glmmSeq_object |> 
+    summary() |> 
+    as_tibble(rownames = "gene") |>
+    mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |> 
+    
+    # Attach attributes
+    reattach_internals(.data) %>%
+    
+    # select method
+    memorise_methods_used("glmmSeq") |> 
+    
+    # Add raw object
+    attach_to_internals(glmmSeq_object, "glmmSeq") %>%
+    # Communicate the attribute added
+    {
+      
+      rlang::inform("\ntidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
+      
+      (.)
+    }  %>%
+    
+    # Attach prefix
+    setNames(c(
+      colnames(.)[1],
+      sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
+    ))
+}
 
 #' Get differential transcription information to a tibble using voom.
 #'

@@ -3,10 +3,10 @@
 												.transcript,
 												.abundance,
 												.abundance_scaled = NULL) {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	# Check if package is installed, otherwise install
 	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing SummarizedExperiment")
@@ -46,7 +46,7 @@
 #'
 #' @importFrom tibble as_tibble
 #' @importFrom purrr reduce
-#' 
+#'
 #' @export
 #'
 #'
@@ -60,9 +60,9 @@
 setMethod("tidybulk", "SummarizedExperiment", .tidybulk_se)
 
 #' tidybulk
-#' 
+#'
 #' @export
-#' 
+#'
 #' @inheritParams tidybulk
 #'
 #' @docType methods
@@ -97,7 +97,7 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 
   # Fix NOTEs
   . = NULL
-  
+
 	# Check if package is installed, otherwise install
 	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing edgeR needed for analyses")
@@ -235,6 +235,97 @@ setMethod("scale_abundance",
 					.scale_abundance_se)
 
 
+
+#' @importFrom magrittr multiply_by
+#' @importFrom magrittr divide_by
+#' @importFrom SummarizedExperiment assays
+#' @importFrom SummarizedExperiment colData
+#' @importFrom utils tail
+#' @importFrom stats na.omit
+#'
+.quantile_normalise_abundance_se = function(.data,
+                               .sample = NULL,
+                               .transcript = NULL,
+                               .abundance = NULL,
+                               .subset_for_scaling = NULL,
+                               action = NULL) {
+
+
+  # Fix NOTEs
+  . = NULL
+
+  .abundance = enquo(.abundance)
+  .subset_for_scaling = enquo(.subset_for_scaling)
+
+  # Set column name for value scaled
+
+  # If no assay is specified take first
+  my_assay = ifelse(
+    quo_is_symbol(.abundance),
+    quo_name(.abundance),
+    .data |>
+      assayNames() |>
+      extract2(1)
+  )
+
+  # Set column name for value scaled
+  value_scaled = my_assay %>% paste0(scaled_string)
+
+  # Check if package is installed, otherwise install
+  if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing limma needed for analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("limma", ask = FALSE)
+  }
+
+  # Reformat input data set
+  .data_norm <-
+    .data %>%
+    assay(my_assay) |>
+    limma::normalizeQuantiles() |>
+    list() |>
+    setNames(value_scaled)
+
+  # Add the assay
+  assays(.data) =  assays(.data) %>% c(.data_norm)
+
+  .data %>%
+
+    # Add methods
+    memorise_methods_used(c("quantile")) %>%
+
+    # Attach column internals
+    add_tt_columns(.abundance_scaled = !!(function(x, v)	enquo(v))(x,!!as.symbol(value_scaled)))
+
+}
+
+#' quantile_normalise_abundance
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("quantile_normalise_abundance",
+          "SummarizedExperiment",
+          .quantile_normalise_abundance_se)
+
+#' quantile_normalise_abundance
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("quantile_normalise_abundance",
+          "RangedSummarizedExperiment",
+          .quantile_normalise_abundance_se)
+
+
+
 .cluster_elements_se = function(.data,
 																method ,
 																of_samples = TRUE,
@@ -243,7 +334,7 @@ setMethod("scale_abundance",
 
   # Fix NOTEs
   . = NULL
-  
+
 	my_assay =
 		.data %>%
 		# Filter abundant if performed
@@ -328,7 +419,7 @@ setMethod("cluster_elements",
 
   # Fix NOTEs
   . = NULL
-  
+
 	my_assay =
 		.data %>%
 
@@ -439,7 +530,7 @@ setMethod("reduce_dimensions",
 
   # Fix NOTEs
   . = NULL
-  
+
 	# Parse other colnames
 	dimension_1_column = enquo(dimension_1_column)
 	dimension_2_column = enquo(dimension_2_column)
@@ -542,7 +633,7 @@ setMethod("rotate_dimensions",
 
   # Fix NOTEs
   . = NULL
-  
+
 	Dim_a_column = enquo(Dim_a_column)
 	Dim_b_column = enquo(Dim_b_column)
 
@@ -652,7 +743,7 @@ setMethod("remove_redundancy",
 
   # Fix NOTEs
   . = NULL
-  
+
 	# Check if package is installed, otherwise install
 	if (find.package("sva", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing sva - Combat needed for adjustment for unwanted variation")
@@ -774,10 +865,10 @@ setMethod("adjust_abundance",
 																		.abundance = NULL,
 																		aggregation_function = sum,
 																		keep_integer = TRUE) {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
   # Make col names
   .transcript = enquo(.transcript)
 
@@ -964,7 +1055,7 @@ setMethod("aggregate_duplicates",
 
   # Fix NOTEs
   . = NULL
-  
+
   .transcript = enquo(.transcript)
   .sample = s_(.data)$symbol
 
@@ -1130,6 +1221,7 @@ setMethod(
 #' @importFrom rlang inform
 .test_differential_abundance_se = function(.data,
 																					 .formula,
+																					 .abundance = NULL,
 																					 contrasts = NULL,
 																					 method = "edgeR_quasi_likelihood",
 																					 test_above_log2_fold_change = NULL,
@@ -1139,9 +1231,11 @@ setMethod(
 																					 ...)
 {
 
+  .abundance = enquo(.abundance)
+
   # Fix NOTEs
   . = NULL
-  
+
   # DEPRECATION OF .constrasts
   if (is_present(.contrasts) & !is.null(.contrasts)) {
 
@@ -1179,8 +1273,9 @@ such as batch effects (if applicable) in the formula.
 				get_differential_transcript_abundance_bulk_SE(
 					.,
 					.formula,
+					.abundance = !!.abundance,
 					.contrasts = contrasts,
-					colData(.data),
+					sample_annotation = colData(.data),
 					method = method,
 					test_above_log2_fold_change = test_above_log2_fold_change,
 					scaling_method = scaling_method,
@@ -1193,8 +1288,9 @@ such as batch effects (if applicable) in the formula.
 			grepl("voom", method) ~ get_differential_transcript_abundance_bulk_voom_SE(
 				.,
 				.formula,
+				.abundance = !!.abundance,
 				.contrasts = contrasts,
-				colData(.data),
+				sample_annotation = colData(.data),
 				method = method,
 				test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
@@ -1207,13 +1303,29 @@ such as batch effects (if applicable) in the formula.
 			tolower(method)=="deseq2" ~ get_differential_transcript_abundance_deseq2_SE(
 				.,
 				.formula,
+				.abundance = !!.abundance,
 				.contrasts = contrasts,
 				method = method,
-                                test_above_log2_fold_change = test_above_log2_fold_change,
+        test_above_log2_fold_change = test_above_log2_fold_change,
 				scaling_method = scaling_method,
 				omit_contrast_in_colnames = omit_contrast_in_colnames,
 				prefix = prefix,
-                                ...
+         ...
+			),
+
+			# glmmseq
+			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmTMB") ~ get_differential_transcript_abundance_glmmSeq_SE(
+			  .,
+			  .formula,
+			  .abundance = !!.abundance,
+			  .contrasts = contrasts,
+			  sample_annotation = colData(.data),
+			  method = method,
+			  test_above_log2_fold_change = test_above_log2_fold_change,
+			  scaling_method = scaling_method,
+			  omit_contrast_in_colnames = omit_contrast_in_colnames,
+			  prefix = prefix,
+			  ...
 			),
 
 			# Else error
@@ -1239,6 +1351,7 @@ such as batch effects (if applicable) in the formula.
 			tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
 			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights"),
 			tolower(method) == "deseq2" ~ (.) %>% memorise_methods_used("deseq2"),
+			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmTMB") ~ (.) %>% memorise_methods_used("glmmseq"),
 			~ stop("tidybulk says: method not supported")
 		) %>%
 
@@ -1297,7 +1410,7 @@ setMethod(
 
   # Fix NOTEs
   . = NULL
-  
+
 
 	variable_transcripts =
 		.data %>%
@@ -1358,9 +1471,17 @@ setMethod("keep_variable",
 
   # Fix NOTEs
   . = NULL
-  
+
 
 	factor_of_interest = enquo(factor_of_interest)
+	.abundance = enquo(.abundance)
+
+	# If character fail
+	if(
+	  !is.null(factor_of_interest) &&
+	  !factor_of_interest |> quo_is_null() &&
+	  !factor_of_interest |> quo_is_symbolic()
+	) stop("tidybulk says: factor_of_interest must be symbolic (i.e. column name/s not surrounded by single or double quotes) and not a character.")
 
 
 	# Check factor_of_interest
@@ -1385,29 +1506,49 @@ setMethod("keep_variable",
 		return(.data)
 	}
 
+	if(
+	  !is.null(factor_of_interest) &&
+	  ( enquo(factor_of_interest) |> quo_is_symbolic() | is.character(factor_of_interest) )
+	){
 
-	string_factor_of_interest =
+	  # DEPRECATION OF symbolic factor_of_interest
+	  # factor_of_interest must be a character now because we identified
+	  # a edge case for which if the column name is the same as an existing function,
+	  # such as time the column name would not be registered as such but would be
+	  # registered as that function
 
-		factor_of_interest %>%
-		when(
-			quo_is_symbolic(factor_of_interest) &&
-				(
-					colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
-					  as_tibble() |>
-						map_chr(~class(.x)) %in% c("numeric", "integer", "double") |>
-					  any()
-				) ~
-				{
-					message("tidybulk says: The factor(s) of interest include continuous variable (e.g., integer,numeric, double). The data will be filtered without grouping.")
-					NULL
-				},
-			quo_is_symbolic(factor_of_interest) ~
-				colData(.data)[, quo_names(factor_of_interest), drop=FALSE] |>
-			  as_tibble() |>
-			  unite("factor_of_interest") |>
-			  pull(factor_of_interest),
-			~ NULL
-		)
+	  # # Signal the deprecation to the user
+	  # warning(
+	  #   "The `factor_of_interest` argument of `test_differential_abundance() is changed as of tidybulk 1.11.5",
+	  #   details = "The argument factor_of_interest must now be a character array. This because we identified a edge case for which if the column name is the same as an existing function, such as time the column name would not be registered as such but would be registered as that function"
+	  # )
+
+	  factor_of_interest = factor_of_interest |> enquo() |> quo_names()
+
+
+	  # If is numeric ERROR
+	  if(
+	    colData(.data)[, factor_of_interest, drop=FALSE] |>
+	          as_tibble() |>
+	          map(~class(.x)) |>
+	          unlist() %in% c("numeric", "integer", "double") |>
+	          any()
+	  )
+	    stop("tidybulk says: The factor(s) of interest must not include continuous variables (e.g., integer,numeric, double).")
+
+	  string_factor_of_interest =
+	    colData(.data)[, factor_of_interest, drop=FALSE] |>
+	    as_tibble() |>
+	    unite("factor_of_interest") |>
+	    select(factor_of_interest) |>
+	    pull(1)
+
+
+	} else {
+	  string_factor_of_interest = NULL
+	}
+
+
 
 	# Check if package is installed, otherwise install
 	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
@@ -1417,14 +1558,19 @@ setMethod("keep_variable",
 		BiocManager::install("edgeR", ask = FALSE)
 	}
 
+	# If no assay is specified take first
+	my_assay = ifelse(
+	  quo_is_symbol(.abundance),
+	  quo_name(.abundance),
+	  .data |>
+	    assayNames() |>
+	    extract2(1)
+	)
+
 	# Get gene to exclude
 	gene_to_exclude =
-		.data %>%
-
-		# Extract assay
-		assays() %>%
-		as.list() %>%
-		.[[1]] %>%
+	  .data |>
+	  assay(my_assay) %>%
 
 		# Call edgeR
 		edgeR::filterByExpr(
@@ -1483,8 +1629,10 @@ setMethod("identify_abundant",
 
   # Fix NOTEs
   . = NULL
-  
-	factor_of_interest = enquo(factor_of_interest)
+
+
+    factor_of_interest = factor_of_interest |> enquo()
+    .abundance = enquo(.abundance)
 
 	.data =
 		.data %>%
@@ -1493,7 +1641,8 @@ setMethod("identify_abundant",
 		identify_abundant(
 			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion
+			minimum_proportion = minimum_proportion,
+			.abundance = !!.abundance
 		)
 
 	.data[rowData(.data)$.abundant,]
@@ -1529,9 +1678,9 @@ setMethod("keep_abundant",
 #' @importFrom lifecycle deprecate_warn
 #' @importFrom stringr str_replace
 #' @importFrom dplyr everything
-#' 
-#' 
-#' 
+#'
+#'
+#'
 .test_gene_enrichment_SE = 		function(.data,
 																			.formula,
 																			.sample = NULL,
@@ -1550,7 +1699,7 @@ setMethod("keep_abundant",
 
   # Fix NOTEs
   . = NULL
-  
+
 	# DEPRECATION OF reference function
 	if (is_present(method) & !is.null(method)) {
 
@@ -2054,7 +2203,7 @@ setMethod("pivot_sample",
 
   # Fix NOTEs
   . = NULL
-  
+
 	range_info <-
 		get_special_datasets(.data) %>%
 		reduce(left_join, by=feature__$name)
@@ -2111,7 +2260,7 @@ setMethod("pivot_transcript",
 
   # Fix NOTEs
   . = NULL
-  
+
   .abundance = enquo(.abundance)
 
   .assay_to_impute =
@@ -2221,10 +2370,10 @@ setMethod("impute_missing_abundance",
 																						 reference = X_cibersort,
 																						 ...)
 {
-  
+
   # Fix NOTEs
   . = NULL
-  
+
 	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing broom needed for analyses")
 		install.packages("broom", repos = "https://cloud.r-project.org")
@@ -2383,7 +2532,7 @@ setMethod(
 
   # Fix NOTEs
   . = NULL
-  
+
 	# Validate formula
 	if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
 		stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
@@ -2490,7 +2639,7 @@ setMethod("get_bibliography",
 
   # Fix NOTEs
   . = NULL
-  
+
 	# Check if package is installed, otherwise install
 	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
 		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")

@@ -527,6 +527,7 @@ setGeneric("scale_abundance", function(.data,
 		)
 }
 
+
 #' scale_abundance
 #' 
 #' @export
@@ -565,6 +566,182 @@ setMethod("scale_abundance", "tbl_df", .scale_abundance)
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 #'
 setMethod("scale_abundance", "tidybulk", .scale_abundance)
+
+
+
+#' Normalise by quantiles the counts of transcripts/genes
+#'
+#' `r lifecycle::badge("maturing")`
+#'
+#' @description quantile_normalise_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#' @importFrom stats median
+#' @importFrom dplyr join_by
+#'
+#' @name quantile_normalise_abundance
+#'
+#' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param .subset_for_scaling A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example
+#' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
+#'
+#'
+#' @details Scales transcript abundance compensating for sequencing depth
+#' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+#' Lowly transcribed transcripts/genes (defined with minimum_counts and minimum_proportion parameters)
+#' are filtered out from the scaling procedure.
+#' The scaling inference is then applied back to all unfiltered data.
+#'
+#' Underlying method
+#' edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))
+#'
+#'
+#'
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+#'
+#'
+#' @examples
+#'
+#'
+#'  tidybulk::se_mini |>
+#'    quantile_normalise_abundance()
+#'
+#'
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#' @export
+
+setGeneric("quantile_normalise_abundance", function(.data,
+                                                    .sample = NULL,
+                                                    .transcript = NULL,
+                                                    .abundance = NULL,
+                                                    .subset_for_scaling = NULL,
+                                                    action = "add")
+  standardGeneric("quantile_normalise_abundance"))
+
+# Set internal
+.quantile_normalise_abundance = 	function(.data,
+                                          .sample = NULL,
+                                          .transcript = NULL,
+                                          .abundance = NULL,
+                                          .subset_for_scaling = NULL,
+                                          action = "add")
+{
+  
+  # Fix NOTEs
+  . = NULL
+  
+  # Get column names
+  .sample = enquo(.sample)
+  .transcript = enquo(.transcript)
+  .abundance = enquo(.abundance)
+  col_names = get_sample_transcript_counts(.data, .sample, .transcript, .abundance)
+  .sample = col_names$.sample
+  .transcript = col_names$.transcript
+  .abundance = col_names$.abundance
+  
+  .subset_for_scaling = enquo(.subset_for_scaling)
+  
+  # Set column name for value scaled
+  value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
+  
+
+  # Check if package is installed, otherwise install
+  if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing limma needed for analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("limma", ask = FALSE)
+  }
+  
+  # Reformat input data set
+  .data_norm <-
+    .data %>%
+    
+    # Rename
+    dplyr::select(!!.sample,!!.transcript,!!.abundance) %>%
+    
+    # Set samples and genes as factors
+    dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript))  |> 
+    pivot_wider(names_from = !!.sample, values_from = !!.abundance) |> 
+    as_matrix(rownames=!!.transcript) |> 
+    limma::normalizeQuantiles() |> 
+    as_tibble(rownames = quo_name(.transcript)) |> 
+    pivot_longer(-!!.transcript, names_to = quo_name(.sample), values_to = quo_names(value_scaled)) |> 
+    
+
+    # Attach column internals
+    add_tt_columns(
+      !!.sample,
+      !!.transcript,
+      !!.abundance,
+      !!(function(x, v)	enquo(v))(x,!!value_scaled)
+    )
+  
+  
+  if (action %in% c( "add", "get")){
+    
+    .data %>%
+      
+      left_join(.data_norm, by= join_by(!!.sample, !!.transcript)) %>%
+
+      # Attach attributes
+      reattach_internals(.data_norm) |> 
+      
+      # Add methods
+      memorise_methods_used(c("quantile")) 
+    
+  }
+  else if (action == "only") .data_norm
+  else
+    stop(
+      "tidybulk says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+    )
+}
+
+#' quantile_normalise_abundance
+#' 
+#' @export
+#' 
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+#'
+setMethod("quantile_normalise_abundance", "spec_tbl_df", .quantile_normalise_abundance)
+
+#' quantile_normalise_abundance
+#' 
+#' @export
+#' 
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+#'
+setMethod("quantile_normalise_abundance", "tbl_df", .quantile_normalise_abundance)
+
+#' quantile_normalise_abundance
+#' 
+#' @export
+#' 
+#' @inheritParams quantile_normalise_abundance
+#'
+#' @docType methods
+#' @rdname quantile_normalise_abundance-methods
+#'
+#' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+#'
+setMethod("quantile_normalise_abundance", "tidybulk", .quantile_normalise_abundance)
 
 
 #' Get clusters of elements (e.g., samples or transcripts)
@@ -2378,7 +2555,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' 	# The function `test_differential_abundance` operates with contrasts too
 #'
 #'  tidybulk::se_mini |>
-#'  identify_abundant() |>
+#'  identify_abundant(factor_of_interest = condition) |>
 #'  test_differential_abundance(
 #' 	    ~ 0 + condition,
 #' 	    contrasts = c( "conditionTRUE - conditionFALSE")
@@ -2391,15 +2568,24 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #' # demontrating with `fitType` that you can access any arguments to DESeq()
 #' my_se_mini  |>
-#'    identify_abundant() |>
+#'    identify_abundant(factor_of_interest = condition) |>
 #'        test_differential_abundance( ~ condition, method="deseq2", fitType="local")
 #'
 #' # testing above a log2 threshold, passes along value to lfcThreshold of results()
 #' res <- my_se_mini  |>
-#'    identify_abundant() |>
+#'    identify_abundant(factor_of_interest = condition) |>
 #'         test_differential_abundance( ~ condition, method="deseq2",
 #'             fitType="local",
 #'             test_above_log2_fold_change=4 )
+#'             
+#' # Use random intercept and random effect models 
+#' 
+#'  se_mini[1:50,] |>
+#'   identify_abundant(factor_of_interest = condition) |> 
+#'   test_differential_abundance(
+#'     ~ condition + (1 + condition | time),
+#'     method = "glmmseq_lme4", cores = 1
+#'   ) 
 #'
 #' # confirm that lfcThreshold was used
 #' \dontrun{
@@ -2586,6 +2772,22 @@ such as batch effects (if applicable) in the formula.
 				prefix = prefix,
 				...
 			),
+			
+			# glmmseq
+			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmTMB") ~ get_differential_transcript_abundance_glmmSeq(
+			  .,
+			  .formula,
+			  .sample = !!.sample,
+			  .transcript = !!.transcript,
+			  .abundance = !!.abundance,
+			  .contrasts = contrasts,
+			  method = method,
+			  test_above_log2_fold_change = test_above_log2_fold_change,                                
+			  scaling_method = scaling_method,
+			  omit_contrast_in_colnames = omit_contrast_in_colnames,
+			  prefix = prefix,
+			  ...
+			),
 
 			# Else error
 			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\"")
@@ -2694,10 +2896,7 @@ setMethod("test_differential_abundance",
 #'
 #'
 #'
-#' 	keep_variable(
-#' 	tidybulk::se_mini,
-#' 	    top = 500
-#' 	)
+#' 	keep_variable(tidybulk::se_mini, top = 500)
 #'
 #'
 #' @docType methods
@@ -2797,6 +2996,7 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #' @importFrom dplyr filter
+#' @importFrom tidyr drop_na
 #'
 #' @name identify_abundant
 #'
@@ -2854,10 +3054,12 @@ setGeneric("identify_abundant", function(.data,
 														minimum_counts = 10,
 														minimum_proportion = 0.7)
 {
-  
+
   # Fix NOTEs
   . = NULL
   
+  factor_of_interest = enquo(factor_of_interest)
+
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -2867,39 +3069,113 @@ setGeneric("identify_abundant", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
-	factor_of_interest = enquo(factor_of_interest)
-
+	if (minimum_counts < 0)
+	  stop("The parameter minimum_counts must be > 0")
+	if (minimum_proportion < 0 |	minimum_proportion > 1)
+	  stop("The parameter minimum_proportion must be between 0 and 1")
+	
+	
 	# Validate data frame
 	if(do_validate()) {
 	validation(.data, !!.sample, !!.transcript, !!.abundance)
 	warning_if_data_is_not_rectangular(.data, !!.sample, !!.transcript, !!.abundance)
 	}
 
+	
+	if(	".abundant" %in% colnames(.data) ) return( .data	|>	  reattach_internals(.data)	)
+
+	  
+  # Check if package is installed, otherwise install
+  if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+    message("Installing edgeR needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("edgeR", ask = FALSE)
+  }
+	
+	# If character fail
+	if(
+	  !is.null(factor_of_interest) &&
+	  !factor_of_interest |> quo_is_null() &&
+	  !factor_of_interest |> quo_is_symbolic()
+	) stop("tidybulk says: factor_of_interest must be symbolic (i.e. column name/s not surrounded by single or double quotes) and not a character.")
+	
+	
+	if(
+	  !is.null(factor_of_interest) && 
+	  ( enquo(factor_of_interest) |> quo_is_symbolic() | is.character(factor_of_interest) )
+	){
+	  
+	  # DEPRECATION OF symbolic factor_of_interest
+	  # factor_of_interest must be a character now because we identified 
+	  # a edge case for which if the column name is the same as an existing function, 
+	  # such as time the column name would not be registered as such but would be 
+	  # registered as that function
+	  
+    # # Signal the deprecation to the user
+    # warning(
+    #   "The `factor_of_interest` argument of `test_differential_abundance() is changed as of tidybulk 1.11.5", 
+    #   details = "The argument factor_of_interest must now be a character array. This because we identified a edge case for which if the column name is the same as an existing function, such as time the column name would not be registered as such but would be registered as that function"
+    # )
+	    
+	 factor_of_interest = factor_of_interest |> enquo() |> quo_names()
+	    
+
+	    # If is numeric ERROR
+	    if(
+	      .data |>
+	      select(factor_of_interest) |> 
+	      lapply(class) |>
+	      unlist() |>	
+	      as.character()%in% c("numeric", "integer", "double") |>
+	      any()
+	    ) 
+	      stop("tidybulk says: The factor(s) of interest must not include continuous variables (e.g., integer,numeric, double).")
+	    
+	    string_factor_of_interest = 
+	      .data %>%
+	      select(!!.sample, factor_of_interest) |> 
+	      distinct() |>
+	      arrange(!!.sample) |>
+	      select(factor_of_interest) |>
+	      pull(1)
+	  
+	  
+	} else {
+	  string_factor_of_interest = NULL
+	}
+	
+	gene_to_exclude =
 	.data %>%
-
-		# Filter
-		when(
-
-			# If column is present use this instead of doing more work
-			".abundant" %in% colnames(.) |> not() ~  {
-					gene_to_exclude =
-						add_scaled_counts_bulk.get_low_expressed(
-							.data,
-							.sample = !!.sample,
-							.transcript = !!.transcript,
-							.abundance = !!.abundance,
-							factor_of_interest = !!factor_of_interest,
-							minimum_counts = minimum_counts,
-							minimum_proportion = minimum_proportion
-						)
-
-					dplyr::mutate(., .abundant := (!!.transcript %in% gene_to_exclude) |> not())
-				},
-			~ (.)
-		)	|>
-
-		# Attach attributes
-		reattach_internals(.data)
+	  select(!!.sample,!!.transcript, !!.abundance) |>
+	  spread(!!.sample, !!.abundance) |>
+	  
+	  # Drop if transcript have missing value
+	  drop_na() %>%
+	  
+	  # If I don't have any transcript with all samples give meaningful error
+	  when(
+	    nrow(.) == 0 ~ stop("tidybulk says: you don't have any transcript that is in all samples. Please consider using impute_missing_abundance."),
+	    ~ (.)
+	  ) %>%
+	  
+	  # Call edgeR
+	  as_matrix(rownames = !!.transcript) |>
+	  edgeR::filterByExpr(
+	    min.count = minimum_counts,
+	    group = string_factor_of_interest,
+	    min.prop = minimum_proportion
+	  ) %>%
+	  not() |>
+	  which() |>
+	  names()
+	
+	.data |>
+	  dplyr::mutate(.abundant := (!!.transcript %in% gene_to_exclude) |> not()) |>
+	  
+	  # Attach attributes
+	  reattach_internals(.data)
+	
 }
 
 #' keep_abundant
@@ -3099,7 +3375,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	) %>%
 #'
 #' 	# Make sure transcript names are adjacent
-#' 	[...] |>
+#' 	[...] %>%
 #' 	as_matrix(rownames = !!.entrez) %>%
 #' 	edgeR::DGEList(counts = .)
 #'
@@ -4539,3 +4815,5 @@ as_matrix <- function(tbl,
     # Convert to matrix
     as.matrix()
 }
+
+
