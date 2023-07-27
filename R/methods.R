@@ -3727,7 +3727,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 		stop("tidybulk says: the .entrez parameter appears to no be set")
 
 	# Check column type
-	if (.data |> distinct(!!.do_test) |> sapply(class) %in% c("logical") |> not() |> any())
+	if (.data %>% mutate(my_do_test = !!.do_test) %>% pull(my_do_test)  |> is("logical") |> not() )
 		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
 
 	# Check packages msigdbr
