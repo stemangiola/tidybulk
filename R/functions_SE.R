@@ -3,8 +3,8 @@
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom stats kmeans
 #' @importFrom rlang :=
@@ -55,8 +55,8 @@ get_clusters_kmeans_bulk_SE <-
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom utils install.packages
@@ -113,8 +113,8 @@ get_clusters_SNN_bulk_SE <-
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom purrr map_dfr
 #' @importFrom rlang :=
@@ -207,8 +207,8 @@ get_reduced_dimensions_MDS_bulk_SE <-
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats prcomp
@@ -309,8 +309,8 @@ we suggest to partition the dataset for sample clusters.
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
@@ -392,8 +392,8 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 #'
 #' @keywords internal
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
@@ -564,8 +564,8 @@ keep_variable_transcripts_SE = function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
 #'
@@ -694,8 +694,8 @@ remove_redundancy_elements_though_reduced_dimensions_SE <-
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -727,7 +727,7 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 																											 ...) {
 
   .abundance = enquo(.abundance)
-  
+
 	# Check if omit_contrast_in_colnames is correctly setup
 	if(omit_contrast_in_colnames & length(.contrasts) > 1){
 		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
@@ -765,16 +765,16 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 
 	# If no assay is specified take first
 	my_assay = ifelse(
-	  quo_is_symbol(.abundance), 
-	  quo_name(.abundance), 
+	  quo_is_symbol(.abundance),
+	  quo_name(.abundance),
 	  .data |>
 	    assayNames() |>
 	    extract2(1)
 	 )
-	
+
 	edgeR_object =
-		.data |> 
-	  assay(my_assay) |> 
+		.data |>
+	  assay(my_assay) |>
 		edgeR::DGEList() %>%
 
 		# Scale data if method is not "none"
@@ -869,8 +869,8 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -938,17 +938,17 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 
 	# If no assay is specified take first
 	my_assay = ifelse(
-	  quo_is_symbol(.abundance), 
-	  quo_name(.abundance), 
+	  quo_is_symbol(.abundance),
+	  quo_name(.abundance),
 	  .data |>
 	    assayNames() |>
 	    extract2(1)
 	)
-	
+
 	voom_object =
 		.data %>%
 
-	  assay(my_assay) |> 
+	  assay(my_assay) |>
 	  edgeR::DGEList() %>%
 
 		# Scale data if method is not "none"
@@ -1050,8 +1050,8 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -1074,30 +1074,32 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
                                                             .abundance = NULL,
                                                             .contrasts = NULL,
                                                             sample_annotation ,
-                                                            method = "deseq2",
-                                                            
+                                                            method,
+
                                                             test_above_log2_fold_change = NULL,
-                                                            
+
                                                             scaling_method = "TMM",
                                                             omit_contrast_in_colnames = FALSE,
                                                             prefix = "",
+                                                            .dispersion = NULL,
                                                             ...) {
-  
+
   .abundance = enquo(.abundance)
-  
+  .dispersion = enquo(.dispersion)
+
   # Check if contrasts are of the same form
   if(
     .contrasts %>% is.null %>% not() &
     .contrasts %>% class %>% equals("list") %>% not()
   )
     stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
-  
+
   # Check if omit_contrast_in_colnames is correctly setup
   if(omit_contrast_in_colnames & length(.contrasts) > 1){
     warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
     omit_contrast_in_colnames = FALSE
   }
-  
+
   # Check if package is installed, otherwise install
   if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
     message("tidybulk says: Installing edgeR needed for differential transcript abundance analyses")
@@ -1105,7 +1107,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
       install.packages("BiocManager", repos = "https://cloud.r-project.org")
     BiocManager::install("edgeR", ask = FALSE)
   }
-  
+
   # Check if package is installed, otherwise install
   if (find.package("glmmSeq", quiet = TRUE) %>% length %>% equals(0)) {
     message("tidybulk says: Installing glmmSeq needed for differential transcript abundance analyses")
@@ -1113,65 +1115,79 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
       install.packages("BiocManager", repos = "https://cloud.r-project.org")
     BiocManager::install("glmmSeq", ask = FALSE)
   }
-  
+
   # If no assay is specified take first
   my_assay = ifelse(
-    quo_is_symbol(.abundance), 
-    quo_name(.abundance), 
+    quo_is_symbol(.abundance),
+    quo_name(.abundance),
     .data |>
       assayNames() |>
       extract2(1)
   )
-  
-  metadata = 
-    .data |> 
-    colData() 
-  
-  counts = 
+
+  metadata =
+    .data |>
+    colData()
+
+  counts =
     .data %>%
     assay(my_assay)
-  
-  glmmSeq_object = 
+
+  if(quo_is_symbolic(.dispersion))
+    dispersion = rowData(.data)[,quo_name(.dispersion),drop=FALSE] |> as_tibble(rownames = feature__$name) |> deframe()
+  else
+    dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts))
+
+  # # Check dispersion
+  # if(!names(dispersion) |> sort() |> identical(
+  #   rownames(counts) |>
+  #   sort()
+  # )) stop("tidybulk says: The features in the dispersion vector do not overlap with the feature in the assay")
+
+  # Make sure the order matches the counts
+  dispersion = dispersion[rownames(counts)]
+
+  glmmSeq_object =
     glmmSeq( .formula,
                       countdata = counts ,
                       metadata =   metadata |> as.data.frame(),
-                      dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts)),
-                      progress = TRUE, 
+                      dispersion = dispersion,
+                      progress = TRUE,
                       method = method |> str_remove("(?i)^glmmSeq_" ),
                       ...
-    ) 
-  
-  glmmSeq_object |> 
-    summary() |> 
+    )
+
+  glmmSeq_object |>
+    summary() |>
     as_tibble(rownames = "transcript") |>
-    mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |> 
-    
+    mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |>
+
     # Attach attributes
     reattach_internals(.data) %>%
-    
+
     # select method
-    memorise_methods_used("glmmSeq") %>% 
-    
+    memorise_methods_used("glmmSeq") %>%
+
     # # Add raw object
     # attach_to_internals(glmmSeq_object, "glmmSeq") %>%
-    
+
     # Communicate the attribute added
     {
       rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
       (.)
     }  %>%
-    
+
     # Attach prefix
     setNames(c(
       colnames(.)[1],
       sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
-    )) |> 
-    
-    list() |> 
-    setNames("result") |> 
+    )) |>
+
+    list() |>
+    setNames("result") |>
     c(list(result_raw = glmmSeq_object))
-  
-  
+
+
 }
 
 
@@ -1180,8 +1196,8 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -1213,7 +1229,7 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
                                                             ...) {
 
   .abundance = enquo(.abundance)
-  
+
 	# Check if contrasts are of the same form
 	if(
 		.contrasts %>% is.null %>% not() &
@@ -1238,20 +1254,20 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
         if (is.null(test_above_log2_fold_change)) {
           test_above_log2_fold_change <- 0
         }
-  
+
 	my_contrasts = .contrasts
 
 	# If no assay is specified take first
 	my_assay = ifelse(
-	  quo_is_symbol(.abundance), 
-	  quo_name(.abundance), 
+	  quo_is_symbol(.abundance),
+	  quo_name(.abundance),
 	  .data |>
 	    assayNames() |>
 	    extract2(1)
 	)
-	
+
 	deseq2_object =
-	  
+
 		# DESeq2
 		DESeq2::DESeqDataSetFromMatrix(
 		  countData = .data |> assay(my_assay),
