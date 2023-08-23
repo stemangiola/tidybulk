@@ -185,7 +185,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
   fullFormula <- update.formula(modelFormula, count ~ ., simplify = FALSE)
   subFormula <- lme4::subbars(modelFormula)
   variables <- rownames(attr(terms(subFormula), "factors"))
-  subsetMetadata <- metadata[, variables]
+  subsetMetadata <- metadata[, variables, drop=FALSE]
   if (is.null(id)) {
     fb <- lme4::findbars(modelFormula)
     id <- sub(".*[|]", "", fb)
@@ -195,9 +195,9 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
   if (removeSingles) {
     nonSingles <- names(table(ids))[table(ids) > 1]
     nonSingleIDs <- ids %in% nonSingles
-    countdata <- countdata[, nonSingleIDs]
+    countdata <- countdata[, nonSingleIDs, drop=FALSE]
     sizeFactors <- sizeFactors[nonSingleIDs]
-    subsetMetadata <- subsetMetadata[nonSingleIDs, ]
+    subsetMetadata <- subsetMetadata[nonSingleIDs, , drop=FALSE]
     ids <- ids[nonSingleIDs]
   }
   if (!is.null(sizeFactors))
