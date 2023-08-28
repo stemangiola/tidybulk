@@ -20,6 +20,7 @@ Imports:
     dplyr (>= 1.1.0),
     magrittr,
     tidyr,
+    ggplot2,
     stringi,
     stringr,
     rlang,
@@ -35,7 +36,8 @@ Imports:
     GenomicRanges,
     methods,
     S4Vectors,
-    crayon
+    crayon,
+    pkgconfig
 Suggests:
     BiocStyle,
     testthat,
@@ -56,7 +58,6 @@ Suggests:
     Seurat,
     KernSmooth,
     Rtsne,
-    ggplot2,
     widyr,
     clusterProfiler,
     msigdbr,

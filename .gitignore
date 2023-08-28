@@ -20,3 +20,4 @@ egsea_report_*
 /doc/
 _targets.R
 _targets*
+.DS_Store
