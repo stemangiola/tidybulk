@@ -1430,7 +1430,7 @@ such as batch effects (if applicable) in the formula.
 	rowData(.data) = rowData(.data) %>% cbind(
 		my_differential_abundance$result %>%
 			as_matrix(rownames = "transcript") %>%
-			.[match(rownames(rowData(.data)), rownames(.)),]
+			.[match(rownames(rowData(.data)), rownames(.)),,drop=FALSE]
 	)
 
 
