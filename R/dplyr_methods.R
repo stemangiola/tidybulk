@@ -38,7 +38,8 @@ arrange.tidybulk <- function(.data, ..., .by_group = FALSE) {
 #' @importFrom ttservice bind_rows
 #' @export
 bind_rows.tidybulk <- function(..., .id = NULL) {
-	tts <- flatten_if(dots_values(...), is_spliced) # Original that fails Bioconductor dplyr:::flatten_bindable(rlang::dots_values(...))
+  # Original that fails Bioconductor dplyr:::flatten_bindable(rlang::dots_values(...))
+	tts <- flatten_if(dots_values(...), is_spliced)
 
 	par1 <- tts[[1]] |> get_tt_columns() |> unlist()
 	par2 <- tts[[2]] |> get_tt_columns() |> unlist()
@@ -60,7 +61,7 @@ bind_rows.tidybulk <- function(..., .id = NULL) {
 #' @importFrom rlang is_spliced
 #' @export
 bind_cols.tidybulk <- function(..., .id = NULL) {
-	tts <- tts <- flatten_if(dots_values(...), is_spliced) # Original that fails Bioconductor dplyr:::flatten_bindable(rlang::dots_values(...))
+	tts <- tts <- flatten_if(dots_values(...), is_spliced) 
 
 	dplyr::bind_cols(..., .id = .id) |>
 		# Attach attributes
@@ -120,7 +121,8 @@ filter.tidybulk <- function (.data, ..., .preserve = FALSE) {
 #' @seealso \code{}
 #' @importFrom dplyr group_by group_by_drop_default
 #' @export
-group_by.tidybulk <- function (.data, ..., .add = FALSE, .drop = group_by_drop_default(.data)) {
+group_by.tidybulk <- function (.data, ..., .add = FALSE, 
+                               .drop = group_by_drop_default(.data)) {
 	.data |>
 		drop_class(c("tidybulk", "tt")) |>
 		dplyr::group_by( ..., .drop = .drop) |>
@@ -260,13 +262,14 @@ rowwise.tidybulk <- function(data, ...) {
 #' @rdname left_join
 #' @inherit dplyr::left_join
 #' @examples
-#' annotation <- tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' annotation <- tidybulk::se_mini |> tidybulk() |> as_tibble() |> 
+#'                 distinct(.sample) |> mutate(source = "AU")
 #' tidybulk::se_mini |> tidybulk() |> as_tibble() |> left_join(annotation)
 #'
 #' @importFrom dplyr left_join
 #' @export
-left_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-															...) {
+left_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, 
+                                suffix = c(".x", ".y"), ...) {
 	x |>
 		drop_class(c("tidybulk", "tt")) |>
 		dplyr::left_join(y, by = by, copy = copy, suffix = suffix, ...) |>
@@ -284,12 +287,14 @@ left_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", 
 #' @inherit dplyr::inner_join
 #'
 #' @examples
-#' annotation <- tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' annotation <- tidybulk::se_mini |> tidybulk() |> as_tibble() |> 
+#'                 distinct(.sample) |> mutate(source = "AU")
 #' tidybulk::se_mini |> tidybulk() |> as_tibble() |> inner_join(annotation)
 #'
 #' @importFrom dplyr inner_join
 #' @export
-inner_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),		 ...) {
+inner_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, 
+                                 suffix = c(".x", ".y"), ...) {
 	x |>
 		drop_class(c("tidybulk", "tt")) |>
 		dplyr::inner_join(y, by = by, copy = copy, suffix = suffix, ...) |>
@@ -307,13 +312,14 @@ inner_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #' @inherit dplyr::right_join
 #' 
 #' @examples
-#' annotation <- tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' annotation <- tidybulk::se_mini |> tidybulk() |> as_tibble() |> 
+#'                 distinct(.sample) |> mutate(source = "AU")
 #' tidybulk::se_mini |> tidybulk() |> as_tibble() |> right_join(annotation)
 #'
 #' @importFrom dplyr right_join
 #' @export
-right_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-															 ...) {
+right_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, 
+                                 suffix = c(".x", ".y"), ...) {
 	x |>
 		drop_class(c("tidybulk", "tt")) |>
 		dplyr::right_join(y, by = by, copy = copy, suffix = suffix, ...) |>
@@ -332,13 +338,14 @@ right_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x",
 #' @inherit dplyr::full_join
 #' 
 #' @examples
-#' annotation <- tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+#' annotation <- tidybulk::se_mini |> tidybulk() |> as_tibble() |> 
+#'                distinct(.sample) |> mutate(source = "AU")
 #' tidybulk::se_mini |> tidybulk() |> as_tibble() |> full_join(annotation)
 #'
 #' @importFrom dplyr full_join
 #' @export
-full_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-															 ...) {
+full_join.tidybulk <- function (x, y, by = NULL, copy = FALSE, 
+                                suffix = c(".x", ".y"), ...) {
 	x |>
 		drop_class(c("tidybulk", "tt")) |>
 		dplyr::full_join(y, by = by, copy = copy, suffix = suffix, ...) |>

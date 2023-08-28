@@ -158,7 +158,8 @@ Methods available in currently loaded packages:
 }
 
 \examples{
-annotation <- tidybulk::se_mini |> tidybulk() |> as_tibble() |> distinct(.sample) |> mutate(source = "AU")
+annotation <- tidybulk::se_mini |> tidybulk() |> as_tibble() |> 
+                distinct(.sample) |> mutate(source = "AU")
 tidybulk::se_mini |> tidybulk() |> as_tibble() |> left_join(annotation)
 
 }
