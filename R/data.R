@@ -28,11 +28,6 @@
 #'
 "se_mini"
 
-#' SummarizedExperiment mini for vignette
-#'
-#'
-"test_deseq2_df"
-
 #' Needed for vignette vignette_manuscript_signature_tsne
 #'
 #'
