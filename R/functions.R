@@ -755,13 +755,27 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
 
   # Reorder counts
   counts = counts[,rownames(metadata),drop=FALSE]
-
-  glmmSeq_object =
+  
+  if(quo_is_symbolic(.dispersion))
+    dispersion = .data |> pivot_transcript() |> select(!!feature__$symbol, !!.dispersion) |> deframe()
+  else
+    dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts))
+  
+  # # Check dispersion
+  # if(!names(dispersion) |> sort() |> identical(
+  #   rownames(counts) |>
+  #   sort()
+  # )) stop("tidybulk says: The features in the dispersion vector do not overlap with the feature in the assay")
+  
+  # Make sure the order matches the counts
+  dispersion = dispersion[rownames(counts)]
+  
+  glmmSeq_object = 
     glmmSeq( .formula,
           countdata = counts ,
           metadata =   metadata,
-          dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts)),
-          progress = TRUE,
+          dispersion = dispersion,
+          progress = TRUE, 
           method = method |> str_remove("(?i)^glmmSeq_"),
           ...
   )
