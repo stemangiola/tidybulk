@@ -151,8 +151,8 @@ create_tt_from_bam_sam_bulk <-
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
@@ -236,8 +236,8 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr equals
 #' @importFrom rlang :=
@@ -360,8 +360,8 @@ get_scaled_counts_bulk <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -646,8 +646,8 @@ get_differential_transcript_abundance_bulk <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -691,13 +691,13 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   .transcript = enquo(.transcript)
   .abundance = enquo(.abundance)
   .sample_total_read_count = enquo(.sample_total_read_count)
-  
+
   # Check if omit_contrast_in_colnames is correctly setup
   if(omit_contrast_in_colnames & length(.contrasts) > 1){
     warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
     omit_contrast_in_colnames = FALSE
   }
-  
+
   # # Specify the design column tested
   # if(is.null(.contrasts))
   #   message(
@@ -706,7 +706,7 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   #       design %>% colnames %>% .[1]
   #     )
   #   )
-  
+
   # # If I don't have intercept or I have categorical factor of interest BUT I don't have contrasts
   # if(
   #   is.null(.contrasts) &
@@ -719,13 +719,13 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   #   )
   # )
   #   warning("tidybulk says: If you have (i) an intercept-free design (i.e. ~ 0 + factor) or you have a categorical factor of interest with more than 2 values you should use the `contrasts` argument.")
-  # 
+  #
   # my_contrasts =
   #   .contrasts %>%
   #   ifelse_pipe(length(.) > 0,
   #               ~ limma::makeContrasts(contrasts = .x, levels = design),
   #               ~ NULL)
-  
+
   # Check if package is installed, otherwise install
   if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
     message("tidybulk says: Installing edgeR needed for differential transcript abundance analyses")
@@ -733,7 +733,7 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
       install.packages("BiocManager", repos = "https://cloud.r-project.org")
     BiocManager::install("edgeR", ask = FALSE)
   }
-  
+
   # Check if package is installed, otherwise install
   if (find.package("glmmSeq", quiet = TRUE) %>% length %>% equals(0)) {
     message("tidybulk says: Installing glmmSeq needed for differential transcript abundance analyses")
@@ -741,52 +741,52 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
       install.packages("BiocManager", repos = "https://cloud.r-project.org")
     BiocManager::install("glmmSeq", ask = FALSE)
   }
-  
-  metadata = 
-    .data |> 
-    pivot_sample(!!.sample) |> 
+
+  metadata =
+    .data |>
+    pivot_sample(!!.sample) |>
     as_data_frame(rownames = !!.sample)
-  
-  counts = 
+
+  counts =
     .data %>%
     select(!!.transcript,!!.sample,!!.abundance) %>%
     spread(!!.sample,!!.abundance) %>%
     as_matrix(rownames = !!.transcript)
-  
+
   # Reorder counts
   counts = counts[,rownames(metadata),drop=FALSE]
-  
-  glmmSeq_object = 
+
+  glmmSeq_object =
     glmmSeq( .formula,
           countdata = counts ,
           metadata =   metadata,
           dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts)),
-          progress = TRUE, 
+          progress = TRUE,
           method = method |> str_remove("(?i)^glmmSeq_"),
           ...
-  ) 
-  
-  glmmSeq_object |> 
-    summary() |> 
+  )
+
+  glmmSeq_object |>
+    summary() |>
     as_tibble(rownames = "gene") |>
-    mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |> 
-    
+    mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |>
+
     # Attach attributes
     reattach_internals(.data) %>%
-    
+
     # select method
-    memorise_methods_used("glmmSeq") |> 
-    
+    memorise_methods_used("glmmSeq") |>
+
     # Add raw object
     attach_to_internals(glmmSeq_object, "glmmSeq") %>%
     # Communicate the attribute added
     {
-      
+
       rlang::inform("\ntidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
-      
+
       (.)
     }  %>%
-    
+
     # Attach prefix
     setNames(c(
       colnames(.)[1],
@@ -799,8 +799,8 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -1007,8 +1007,8 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -1072,7 +1072,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
         if (is.null(test_above_log2_fold_change)) {
           test_above_log2_fold_change <- 0
         }
-  
+
 	# # Print the design column names in case I want contrasts
 	# message(
 	# 	sprintf(
@@ -1188,8 +1188,8 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -1301,7 +1301,7 @@ test_differential_cellularity_ <- function(.data,
 	      colnames() %>%
 	      gsub(sprintf("%s:", method), "", .) %>%
 	      str_replace_all("[ \\(\\)]", "___")
-	    
+
 	    # Parse formula
 	    .my_formula =
 	      .formula %>%
@@ -1313,29 +1313,29 @@ test_differential_cellularity_ <- function(.data,
 	                      sprintf(
 	                        "\\1%s", paste(covariates, collapse = " + ")
 	                      )),
-	        
+
 	        # If normal formula
 	        ~ sprintf(".proportion_0_corrected%s", format(.))
 	      ) %>%
-	      
+
 	      as.formula
-	    
+
 	    # Test
 	   result =  multivariable_differential_tissue_composition(deconvoluted,
 	                                                  method,
 	                                                  .my_formula,
 	                                                  min_detected_proportion) %>%
-	      
+
 	      # Attach attributes
 	      reattach_internals(.data) %>%
-	      
+
 	      # Add methods used
 	      when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot"), object_containing_methods = .data),
 	           ~ (.))
-	    
+
 	  }
-				
-	
+
+
 	result |>
 
 		# Eliminate prefix
@@ -1350,8 +1350,8 @@ test_differential_cellularity_ <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -1441,8 +1441,8 @@ test_stratification_cellularity_ <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom purrr map2_dfr
@@ -1689,8 +1689,8 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom stats kmeans
 #' @importFrom rlang :=
@@ -1757,8 +1757,8 @@ get_clusters_kmeans_bulk <-
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom utils install.packages
@@ -1838,8 +1838,8 @@ get_clusters_SNN_bulk <-
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom purrr map_dfr
 #' @importFrom rlang :=
@@ -1953,8 +1953,8 @@ get_reduced_dimensions_MDS_bulk <-
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats prcomp
@@ -2099,8 +2099,8 @@ we suggest to partition the dataset for sample clusters.
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
@@ -2212,8 +2212,8 @@ get_reduced_dimensions_TSNE_bulk <-
 #'
 #' @keywords internal
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
@@ -2337,8 +2337,8 @@ get_reduced_dimensions_UMAP_bulk <-
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang quo_is_null
 #' @importFrom dplyr between
@@ -2702,8 +2702,8 @@ aggregate_duplicated_transcripts_DT =
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom dplyr anti_join
@@ -3269,14 +3269,15 @@ get_cell_type_proportions = function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
 #' @importFrom utils install.packages
 #' @importFrom stats rnorm
+#' @importFrom stringr str_c
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, of the kind ~ factor_of_interest + batch
@@ -3290,27 +3291,28 @@ get_cell_type_proportions = function(.data,
 #'
 #'
 get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
-																														.formula,
-																														.sample = NULL,
+                                                            .factor_unwanted,
+                                                            .factor_of_interest,
+                                                            .sample = NULL,
 																														.transcript = NULL,
 																														.abundance = NULL,
-																														transform = transform,
-																														inverse_transform = inverse_transform,
+																														method = "combat_seq",
 																														...) {
 	# Get column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	.factor_of_interest = enquo(.factor_of_interest)
+	.factor_unwanted = enquo(.factor_unwanted)
 
-	# Check that .formula includes at least two covariates
-	if (parse_formula(.formula) %>% length %>% st(2))
-		stop(
-			"The .formula must contain two covariates, the first being the factor of interest, the second being the factor of unwanted variation"
-		)
+	# Check if package is installed, otherwise install
+	if (find.package("sva", quiet = TRUE) %>% length %>% equals(0)) {
+	  message("tidybulk says: Installing sva - Combat needed for adjustment for unwanted variation")
+	  if (!requireNamespace("BiocManager", quietly = TRUE))
+	    install.packages("BiocManager", repos = "https://cloud.r-project.org")
+	  BiocManager::install("sva", ask = FALSE)
+	}
 
-	# Check that .formula includes no more than two covariates at the moment
-	if (parse_formula(.formula) %>% length %>% gt(3))
-		warning("tidybulk says: Only the second covariate in the .formula is adjusted for, at the moment")
 
 	# New column name
 	value_adjusted = as.symbol(sprintf("%s%s",  quo_name(.abundance), adjusted_string))
@@ -3321,41 +3323,28 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		select(!!.transcript,
 					 !!.sample,
 					 !!.abundance,
-					 one_of(parse_formula(.formula))) %>%
-		distinct() %>%
-
-		# Apply (log by default) transformation
-	  dplyr::mutate(!!.abundance := transform(!!.abundance))
-
-
+					 !!.factor_of_interest,
+					 !!.factor_unwanted
+					) %>%
+		distinct()
 
 	# Create design matrix
 	design =
 		model.matrix(
-			object = as.formula("~" %>% paste0(parse_formula(.formula)[1])),
+			object = as.formula(sprintf("~ %s",  .data |> select(!!.factor_of_interest) |> colnames() |>  str_c(collapse = '+'))),
 			# get first argument of the .formula
-			data = df_for_combat %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
+			data = df_for_combat %>% select(!!.sample, !!.factor_of_interest) %>% distinct %>% arrange(!!.sample)
 		)
-
-	# Maybe not needed and causing trouble if more columns that in the formula
-	  # %>%
-		#set_colnames(c("(Intercept)", parse_formula(.formula)[1]))
-
-	# Check if package is installed, otherwise install
-	if (find.package("sva", quiet = TRUE) %>% length %>% equals(0)) {
-		message("tidybulk says: Installing sva - Combat needed for adjustment for unwanted variation")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("sva", ask = FALSE)
-	}
 
 	my_batch =
 		df_for_combat %>%
-		distinct(!!.sample,!!as.symbol(parse_formula(.formula)[2])) %>%
-		arrange(!!.sample) %>%
-		pull(2)
+		select(!!.sample,!!.factor_unwanted) %>%
+	  distinct() |>
+		arrange(!!.sample)
 
-	mat = df_for_combat %>%
+	mat =
+
+	  df_for_combat %>%
 		# Select relevant info
 		distinct(!!.transcript,!!.sample,!!.abundance) %>%
 
@@ -3368,26 +3357,97 @@ get_adjusted_counts_for_unwanted_variation_bulk <- function(.data,
 		spread(!!.sample,!!.abundance) %>%
 		as_matrix(rownames = !!.transcript,
 							do_check = FALSE)
-	mat %>%
 
-		# Add little noise to avoid all 0s for a covariate that would error combat code (not statistics that would be fine)
-		`+` (rnorm(length(mat), 0, 0.000001)) %>%
+	# Clear memory
+	rm(df_for_combat)
+	gc(verbose = FALSE)
 
-		# Run combat
-		sva::ComBat(batch = my_batch,
-								mod = design,
-								prior.plots = FALSE,
-								...) %>%
+	if(tolower(method) == "combat"){
 
-		as_tibble(rownames = quo_name(.transcript)) %>%
-		gather(!!.sample,!!.abundance,-!!.transcript) %>%
+	  adjusted_df =
+	    mat |>
 
-		# Reverse-Log transform if transformed in the first place
-	  dplyr::mutate(!!.abundance := inverse_transform(!!.abundance)) %>%
+	    # Tranform
+	    log1p() %>%
 
-	  # In case the inverse tranform produces negative counts
-	  dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0,!!.abundance)) %>%
-	  dplyr::mutate(!!.abundance := !!.abundance %>% as.integer) %>%
+	    # Add little noise to avoid all 0s for a covariate that would error combat code (not statistics that would be fine)
+	    `+` (rnorm(length(mat), 0, 0.000001))
+
+	  for(i in quo_names(.factor_unwanted)){
+	    adjusted_df =
+	      adjusted_df %>%
+	      sva::ComBat(batch = my_batch |> select(all_of(i)) |> pull(1),
+	                  mod = design,
+	                  prior.plots = FALSE,
+	                  ...)
+	  }
+
+	  adjusted_df =
+	    adjusted_df %>%
+
+	    as_tibble(rownames = quo_name(.transcript)) %>%
+	    gather(!!.sample,!!.abundance,-!!.transcript) %>%
+
+	    # Reverse-Log transform if transformed in the first place
+	    dplyr::mutate(!!.abundance := expm1(!!.abundance)) %>%
+
+	    # In case the inverse tranform produces negative counts
+	    dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0,!!.abundance)) %>%
+	    dplyr::mutate(!!.abundance := !!.abundance %>% as.integer)
+
+	}
+	else if(tolower(method) == "combat_seq"){
+
+	  adjusted_df = mat
+
+	  for(i in quo_names(.factor_unwanted)){
+	    adjusted_df =
+	      adjusted_df |>
+  	    sva::ComBat_seq(batch = my_batch |> select(all_of(i)) |> pull(1),
+  	                covar_mod = design,
+	                ...)
+	   }
+
+	  adjusted_df =
+	    adjusted_df %>%
+	    as_tibble(rownames = quo_name(.transcript)) %>%
+	    gather(!!.sample,!!.abundance,-!!.transcript)
+
+	}
+	else if(tolower(method) == "limma_remove_batch_effect") {
+
+	  unwanted_covariate_matrix =
+	    model.matrix(
+	      object = as.formula(sprintf("~ 0 + %s", .data |> select(!!.factor_unwanted) |> colnames() |> str_c(collapse = '+'))),
+	      # get first argument of the .formula
+	      data = df_for_combat %>% select(!!.sample, !!.factor_unwanted) %>% distinct %>% arrange(!!.sample)
+	    )
+
+	  adjusted_df =
+	    mat |>
+	    edgeR::cpm(log = T) |>
+	    limma::removeBatchEffect(
+	      design = design,
+	      covariates = unwanted_covariate_matrix,
+	      ...
+	    ) |>
+
+	    as_tibble(rownames = quo_name(.transcript)) %>%
+	    gather(!!.sample,!!.abundance,-!!.transcript) %>%
+
+	    # Reverse-Log transform if transformed in the first place
+	    dplyr::mutate(!!.abundance := expm1(!!.abundance)) %>%
+
+	    # In case the inverse tranform produces negative counts
+	    dplyr::mutate(!!.abundance := ifelse(!!.abundance < 0, 0,!!.abundance)) %>%
+	    dplyr::mutate(!!.abundance := !!.abundance %>% as.integer)
+
+	} else {
+	  stop("tidybulk says: the argument \"method\" must be combat_seq, combat, or limma_remove_batch_effect")
+	}
+
+
+	adjusted_df %>%
 
 		# Reset column names
 		dplyr::rename(!!value_adjusted := !!.abundance)  %>%
@@ -3558,8 +3618,8 @@ tidybulk_to_SummarizedExperiment = function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
@@ -3744,8 +3804,8 @@ fill_NA_using_formula = function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#' 
-#' 
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
