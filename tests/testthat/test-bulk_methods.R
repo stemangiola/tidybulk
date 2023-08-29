@@ -661,8 +661,10 @@ test_that("DESeq2 differential trancript abundance - no object",{
     BiocManager::install("DESeq2", ask = FALSE)
   }
   
-	res_deseq2 =
-		test_deseq2_df |>
+  test_deseq2_df = DESeq2::DESeqDataSet(se_mini,design=~condition)
+	
+  res_deseq2 =
+	  test_deseq2_df |> 
 		DESeq2::DESeq() |>
 		DESeq2::results()
 
