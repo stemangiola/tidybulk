@@ -655,15 +655,23 @@ test_that("New method choice",{
 
 test_that("DESeq2 differential trancript abundance - no object",{
 
-	res_deseq2 =
-		test_deseq2_df |>
+  if (find.package("DESeq2", quiet = TRUE) |> length() |> equals(0)) {
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("DESeq2", ask = FALSE)
+  }
+  
+  test_deseq2_df = DESeq2::DESeqDataSet(se_mini,design=~condition)
+  colData(test_deseq2_df)$condition = factor(colData(test_deseq2_df)$condition)
+  
+  res_deseq2 =
+	  test_deseq2_df |> 
 		DESeq2::DESeq() |>
 		DESeq2::results()
 
 	res_tidybulk =
 		test_deseq2_df |>
 		tidybulk() |>
-		 identify_abundant(factor_of_interest = condition) |>
 		test_differential_abundance(~condition, method="DESeq2", action="get")
 
 
@@ -853,7 +861,6 @@ test_that("differential trancript abundance - random effects",{
 
 test_that("test prefix",{
 
-	library(DESeq2)
   library(stringr)
 
 	df = input_df |> tidybulk(a, b, c, ) |> identify_abundant(factor_of_interest = condition)
