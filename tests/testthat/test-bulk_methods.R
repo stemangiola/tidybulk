@@ -662,7 +662,8 @@ test_that("DESeq2 differential trancript abundance - no object",{
   }
   
   test_deseq2_df = DESeq2::DESeqDataSet(se_mini,design=~condition)
-	
+  colData(test_deseq2_df)$condition = factor(colData(test_deseq2_df)$condition)
+  
   res_deseq2 =
 	  test_deseq2_df |> 
 		DESeq2::DESeq() |>
@@ -671,7 +672,6 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	res_tidybulk =
 		test_deseq2_df |>
 		tidybulk() |>
-		 identify_abundant(factor_of_interest = condition) |>
 		test_differential_abundance(~condition, method="DESeq2", action="get")
 
 
