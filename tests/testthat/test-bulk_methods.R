@@ -853,7 +853,6 @@ test_that("differential trancript abundance - random effects",{
 
 test_that("test prefix",{
 
-	library(DESeq2)
   library(stringr)
 
 	df = input_df |> tidybulk(a, b, c, ) |> identify_abundant(factor_of_interest = condition)
