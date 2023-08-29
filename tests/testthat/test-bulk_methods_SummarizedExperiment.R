@@ -443,7 +443,30 @@ test_that("differential trancript abundance - random effects SE",{
       tolerance=1e-3
     )
   
-  
+ # Custom dispersion
+ se_mini = 
+   se_mini |>
+   identify_abundant(factor_of_interest = condition)
+ 
+ rowData(se_mini)$disp_ = rnorm(nrow(se_mini))
+ 
+ res = 
+   se_mini |>
+   identify_abundant(factor_of_interest = condition) |> 
+   #mutate(time = time |> stringr::str_replace_all(" ", "_")) |> 
+   test_differential_abundance(
+     ~ condition + (1 + condition | time),
+     method = "glmmseq_lme4", 
+     dispersion = disp_
+   ) 
+ 
+ rowData(res)[,"P_condition_adjusted"] |> 
+   head(4) |> 
+   expect_equal(
+     c(0.1441371, 0.1066183, 0.1370748, NA),
+     tolerance=1e-3
+   )
+ 
 })
 
 
