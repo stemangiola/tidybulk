@@ -835,18 +835,22 @@ test_that("DESeq2 differential trancript abundance - no object",{
 
 test_that("differential trancript abundance - random effects",{
 
-  input_df |>
+  my_input = 
+    input_df |>
     identify_abundant(a, b, c, factor_of_interest = condition) |>
     mutate(time = time |> stringr::str_replace_all(" ", "_")) |>
-
-    filter(b %in% c("ABCB4" , "ABCB9" , "ACAP1",  "ACHE",   "ACP5" ,  "ADAM28"))|>
+    
+    filter(b %in% c("ABCB4" , "ABCB9" , "ACAP1",  "ACHE",   "ACP5" ,  "ADAM28"))
+  
+  my_input |>
     test_differential_abundance(
       ~ condition + (1 + condition | time),
       .sample = a,
       .transcript = b,
       .abundance = c,
       method = "glmmseq_lme4",
-      action="only"
+      action="only", 
+      cores = 1
     ) |>
     pull(P_condition_adjusted) |>
     head(4) |>
@@ -855,6 +859,32 @@ test_that("differential trancript abundance - random effects",{
       tolerance=1e-3
     )
 
+  # Custom dispersion
+  my_input = 
+    my_input |>
+    left_join(
+      my_input |> pivot_transcript(b) |> mutate(disp_ = 2 ), 
+      by = join_by(b, entrez, .abundant)
+    )
+   
+
+    my_input |>
+    test_differential_abundance(
+      ~ condition + (1 + condition | time),
+      .sample = a,
+      .transcript = b,
+      .abundance = c,
+      method = "glmmseq_lme4",
+      action="only", 
+      cores = 1, 
+      .dispersion = disp_
+    ) |>
+    pull(P_condition_adjusted) |>
+    head(4) |>
+    expect_equal(
+      c(0.1081176, 0.1303558, 0.1303558, 0.1693276),
+      tolerance=1e-3
+    )
 
 })
 

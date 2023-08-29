@@ -685,13 +685,15 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
                                                                omit_contrast_in_colnames = FALSE,
                                                                prefix = "",
                                                                .sample_total_read_count = NULL,
+                                                          .dispersion = NULL,
                                                           ...) {
   # Get column names
   .sample = enquo(.sample)
   .transcript = enquo(.transcript)
   .abundance = enquo(.abundance)
   .sample_total_read_count = enquo(.sample_total_read_count)
-
+  .dispersion = enquo(.dispersion)
+  
   # Check if omit_contrast_in_colnames is correctly setup
   if(omit_contrast_in_colnames & length(.contrasts) > 1){
     warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
@@ -757,7 +759,7 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   counts = counts[,rownames(metadata),drop=FALSE]
   
   if(quo_is_symbolic(.dispersion))
-    dispersion = .data |> pivot_transcript() |> select(!!feature__$symbol, !!.dispersion) |> deframe()
+    dispersion = .data |> pivot_transcript(!!.transcript) |> select(!!.transcript, !!.dispersion) |> deframe()
   else
     dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts))
   
