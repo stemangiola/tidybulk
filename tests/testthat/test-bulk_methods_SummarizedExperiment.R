@@ -83,8 +83,29 @@ test_that("quantile normalisation",{
   expect_equal(
     res_tibble |>
       filter(a=="SRR1740035" & b=="ABCB9") |>
-      pull(c_scaled)
+      dplyr::pull(c_scaled)
   )
+
+    # preprocessCore
+    res = se_mini |> quantile_normalise_abundance(method = "preprocesscore_normalize_quantiles_use_target")
+
+    res_tibble =
+      input_df |>
+      quantile_normalise_abundance(
+        .sample = a,
+        .transcript = b,
+        .abundance = c,
+        method = "preprocesscore_normalize_quantiles_use_target",
+        action = "get"
+      )
+
+
+    SummarizedExperiment::assay(res, "count_scaled")["ABCB9","SRR1740035"] |>
+      expect_equal(
+        res_tibble |>
+          filter(a=="SRR1740035" & b=="ABCB9") |>
+          dplyr::pull(c_scaled)
+      )
 
 })
 
@@ -465,7 +486,7 @@ test_that("differential trancript abundance - random effects SE",{
     #mutate(time = time |> stringr::str_replace_all(" ", "_")) |>
     test_differential_abundance(
       ~ condition + (1 + condition | time),
-      method = "glmmseq_lme4", 
+      method = "glmmseq_lme4",
       cores = 1
     )
 
@@ -475,31 +496,31 @@ test_that("differential trancript abundance - random effects SE",{
       c(0.1065866, 0.1109067, 0.1116562 , NA),
       tolerance=1e-2
     )
-  
+
  # Custom dispersion
- se_mini = 
+ se_mini =
    se_mini |>
    identify_abundant(factor_of_interest = condition)
- 
+
  rowData(se_mini)$disp_ = rep(2,nrow(se_mini))
- 
- res = 
+
+ res =
    se_mini[1:10,] |>
-   #mutate(time = time |> stringr::str_replace_all(" ", "_")) |> 
+   #mutate(time = time |> stringr::str_replace_all(" ", "_")) |>
    test_differential_abundance(
      ~ condition + (1 + condition | time),
-     method = "glmmseq_lme4", 
-     .dispersion = disp_, 
+     method = "glmmseq_lme4",
+     .dispersion = disp_,
      cores = 1
-   ) 
- 
- rowData(res)[,"P_condition_adjusted"] |> 
-   head(4) |> 
+   )
+
+ rowData(res)[,"P_condition_adjusted"] |>
+   head(4) |>
    expect_equal(
      c(0.1153254, 0.1668555, 0.1668555 ,       NA),
      tolerance=1e-3
    )
- 
+
 })
 
 

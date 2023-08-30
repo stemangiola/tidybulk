@@ -15,7 +15,7 @@ quantile_normalise_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .subset_for_scaling = NULL,
+  method = "limma_normalize_quantiles",
   action = "add"
 )
 
@@ -24,7 +24,7 @@ quantile_normalise_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .subset_for_scaling = NULL,
+  method = "limma_normalize_quantiles",
   action = "add"
 )
 
@@ -33,7 +33,7 @@ quantile_normalise_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .subset_for_scaling = NULL,
+  method = "limma_normalize_quantiles",
   action = "add"
 )
 
@@ -42,7 +42,7 @@ quantile_normalise_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .subset_for_scaling = NULL,
+  method = "limma_normalize_quantiles",
   action = "add"
 )
 
@@ -51,7 +51,7 @@ quantile_normalise_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .subset_for_scaling = NULL,
+  method = "limma_normalize_quantiles",
   action = NULL
 )
 
@@ -60,7 +60,7 @@ quantile_normalise_abundance(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  .subset_for_scaling = NULL,
+  method = "limma_normalize_quantiles",
   action = NULL
 )
 }
@@ -73,7 +73,7 @@ quantile_normalise_abundance(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{.subset_for_scaling}{A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example}
+\item{method}{A character string. Either "limma_normalize_quantiles" for limma::normalizeQuantiles or "preprocesscore_normalize_quantiles_use_target" for preprocessCore::normalize.quantiles.use.target for large-scale dataset, where limmma could not be compatible.}
 
 \item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
 }
