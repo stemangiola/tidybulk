@@ -270,8 +270,15 @@ setMethod("scale_abundance",
   # Set column name for value scaled
   value_scaled = my_assay %>% paste0(scaled_string)
 
+  # Check if the matrix is empty and avoid error
+  if(.data |> assay(my_assay) |> dim() |> min() == 0)
+    .data_norm =
+      .data |>
+      assay(my_assay) |>
+      list() |>
+      setNames(value_scaled)
 
-  if(tolower(method) == "limma_normalize_quantiles"){
+  else if(tolower(method) == "limma_normalize_quantiles"){
 
     # Check if package is installed, otherwise install
     if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
