@@ -247,7 +247,7 @@ setMethod("scale_abundance",
                                .sample = NULL,
                                .transcript = NULL,
                                .abundance = NULL,
-                               .subset_for_scaling = NULL,
+                               method = "limma_normalize_quantiles",
                                action = NULL) {
 
 
@@ -255,7 +255,6 @@ setMethod("scale_abundance",
   . = NULL
 
   .abundance = enquo(.abundance)
-  .subset_for_scaling = enquo(.subset_for_scaling)
 
   # Set column name for value scaled
 
@@ -271,21 +270,55 @@ setMethod("scale_abundance",
   # Set column name for value scaled
   value_scaled = my_assay %>% paste0(scaled_string)
 
-  # Check if package is installed, otherwise install
-  if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
-    message("tidybulk says: Installing limma needed for analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("limma", ask = FALSE)
-  }
 
-  # Reformat input data set
-  .data_norm <-
-    .data %>%
-    assay(my_assay) |>
-    limma::normalizeQuantiles() |>
-    list() |>
-    setNames(value_scaled)
+  if(tolower(method) == "limma_normalize_quantiles"){
+
+    # Check if package is installed, otherwise install
+    if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
+      message("tidybulk says: Installing limma needed for analyses")
+      if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager", repos = "https://cloud.r-project.org")
+      BiocManager::install("limma", ask = FALSE)
+    }
+
+    .data_norm <-
+      .data %>%
+      assay(my_assay) |>
+      limma::normalizeQuantiles() |>
+      list() |>
+      setNames(value_scaled)
+
+  }
+  else if(tolower(method) == "preprocesscore_normalize_quantiles_use_target"){
+
+    # Check if package is installed, otherwise install
+    if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
+      message("tidybulk says: Installing preprocessCore needed for analyses")
+      if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager", repos = "https://cloud.r-project.org")
+      BiocManager::install("preprocessCore", ask = FALSE)
+    }
+
+    .data_norm =
+      .data |>
+      assay(my_assay) |>
+      as.matrix()
+
+    .data_norm =
+      .data_norm |>
+      preprocessCore::normalize.quantiles.use.target(
+        target = preprocessCore::normalize.quantiles.determine.target(.data_norm)
+      )
+
+    colnames(.data_norm) = .data |> assay(my_assay) |> colnames()
+    rownames(.data_norm) = .data |> assay(my_assay) |> rownames()
+
+    .data_norm =
+      .data_norm |>
+      list() |>
+      setNames(value_scaled)
+
+  } else stop("tidybulk says: the methods must be limma_normalize_quantiles or preprocesscore")
 
   # Add the assay
   assays(.data) =  assays(.data) %>% c(.data_norm)

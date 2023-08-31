@@ -586,7 +586,7 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param .subset_for_scaling A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example
+#' @param method A character string. Either "limma_normalize_quantiles" for limma::normalizeQuantiles or "preprocesscore_normalize_quantiles_use_target" for preprocessCore::normalize.quantiles.use.target for large-scale dataset, where limmma could not be compatible.
 #' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
 #'
 #'
@@ -620,7 +620,7 @@ setGeneric("quantile_normalise_abundance", function(.data,
                                                     .sample = NULL,
                                                     .transcript = NULL,
                                                     .abundance = NULL,
-                                                    .subset_for_scaling = NULL,
+                                                    method = "limma_normalize_quantiles",
                                                     action = "add")
   standardGeneric("quantile_normalise_abundance"))
 
@@ -629,7 +629,7 @@ setGeneric("quantile_normalise_abundance", function(.data,
                                           .sample = NULL,
                                           .transcript = NULL,
                                           .abundance = NULL,
-                                          .subset_for_scaling = NULL,
+                                          method = "limma_normalize_quantiles",
                                           action = "add")
 {
 
@@ -645,19 +645,8 @@ setGeneric("quantile_normalise_abundance", function(.data,
   .transcript = col_names$.transcript
   .abundance = col_names$.abundance
 
-  .subset_for_scaling = enquo(.subset_for_scaling)
-
   # Set column name for value scaled
   value_scaled = as.symbol(sprintf("%s%s",  quo_name(.abundance), scaled_string))
-
-
-  # Check if package is installed, otherwise install
-  if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
-    message("tidybulk says: Installing limma needed for analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("limma", ask = FALSE)
-  }
 
   # Reformat input data set
   .data_norm <-
@@ -669,8 +658,49 @@ setGeneric("quantile_normalise_abundance", function(.data,
     # Set samples and genes as factors
     dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript))  |>
     pivot_wider(names_from = !!.sample, values_from = !!.abundance) |>
-    as_matrix(rownames=!!.transcript) |>
-    limma::normalizeQuantiles() |>
+    as_matrix(rownames=!!.transcript)
+
+
+  if(tolower(method) == "limma_normalize_quantiles"){
+
+    # Check if package is installed, otherwise install
+    if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
+      message("tidybulk says: Installing limma needed for analyses")
+      if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager", repos = "https://cloud.r-project.org")
+      BiocManager::install("limma", ask = FALSE)
+    }
+
+    .data_norm =
+      .data_norm |>
+      limma::normalizeQuantiles()
+  }
+  else if(tolower(method) == "preprocesscore_normalize_quantiles_use_target"){
+
+    # Check if package is installed, otherwise install
+    if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
+      message("tidybulk says: Installing preprocessCore needed for analyses")
+      if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager", repos = "https://cloud.r-project.org")
+      BiocManager::install("preprocessCore", ask = FALSE)
+    }
+
+    .data_norm_quant =
+      .data_norm |>
+      preprocessCore::normalize.quantiles.use.target(
+        target = preprocessCore::normalize.quantiles.determine.target(.data_norm)
+      )
+
+    colnames(.data_norm_quant) = .data_norm |> colnames()
+    rownames(.data_norm_quant) = .data_norm |> rownames()
+
+    .data_norm = .data_norm_quant
+    rm(.data_norm_quant)
+
+  } else stop("tidybulk says: the methods must be limma_normalize_quantiles or preprocesscore")
+
+  .data_norm =
+    .data_norm |>
     as_tibble(rownames = quo_name(.transcript)) |>
     pivot_longer(-!!.transcript, names_to = quo_name(.sample), values_to = quo_names(value_scaled)) |>
 
