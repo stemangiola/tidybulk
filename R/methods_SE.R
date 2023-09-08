@@ -1584,6 +1584,7 @@ setMethod("keep_variable",
 #'
 #' @importFrom purrr map_chr
 #' @importFrom tidyr unite
+#' @importFrom Matrix colSums
 #'
 #' @docType methods
 #' @rdname keep_variable-methods
@@ -1711,7 +1712,7 @@ setMethod("keep_variable",
 			min.count = minimum_counts,
 			group = string_factor_of_interest,
 			min.prop = minimum_proportion,
-			lib.size = colSums(., na.rm=TRUE)
+			lib.size = Matrix::colSums(., na.rm=TRUE)
 		) %>%
 		not() %>%
 		which %>%
