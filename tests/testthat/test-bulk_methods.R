@@ -892,6 +892,12 @@ test_that("differential trancript abundance - random effects",{
 test_that("test prefix",{
 
   library(stringr)
+  
+  if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("DESeq2", ask = FALSE)
+  }
 
 	df = input_df |> tidybulk(a, b, c, ) |> identify_abundant(factor_of_interest = condition)
 
