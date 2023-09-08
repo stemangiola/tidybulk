@@ -693,7 +693,7 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   .abundance = enquo(.abundance)
   .sample_total_read_count = enquo(.sample_total_read_count)
   .dispersion = enquo(.dispersion)
-  
+
   # Check if omit_contrast_in_colnames is correctly setup
   if(omit_contrast_in_colnames & length(.contrasts) > 1){
     warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
@@ -757,27 +757,27 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
 
   # Reorder counts
   counts = counts[,rownames(metadata),drop=FALSE]
-  
+
   if(quo_is_symbolic(.dispersion))
     dispersion = .data |> pivot_transcript(!!.transcript) |> select(!!.transcript, !!.dispersion) |> deframe()
   else
     dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts))
-  
+
   # # Check dispersion
   # if(!names(dispersion) |> sort() |> identical(
   #   rownames(counts) |>
   #   sort()
   # )) stop("tidybulk says: The features in the dispersion vector do not overlap with the feature in the assay")
-  
+
   # Make sure the order matches the counts
   dispersion = dispersion[rownames(counts)]
-  
-  glmmSeq_object = 
+
+  glmmSeq_object =
     glmmSeq( .formula,
           countdata = counts ,
           metadata =   metadata,
           dispersion = dispersion,
-          progress = TRUE, 
+          progress = TRUE,
           method = method |> str_remove("(?i)^glmmSeq_"),
           ...
   )
@@ -3974,6 +3974,10 @@ fill_NA_using_value = function(.data,
 # 	filter(how_many_bimod == 0)
 
 
+#' @details
+#' This function plots the GSEA for gene overrepresentation
+#'
+#'
 #' @keywords internal
 #' @noRd
 #'
@@ -4031,6 +4035,8 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 }
 
 
+#' @details
+#' This function plots the GSEA for gene overrepresentation
 #'
 #' @keywords internal
 #' @noRd
@@ -4066,20 +4072,21 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 	}
 
   # Get gene sets signatures
-  my_gene_collection =
-    gene_collections %>%
-    when(
-      is.null(gene_collections ) ~  msigdbr::msigdbr(species = species) ,
-      is(., "character") ~  msigdbr::msigdbr(species = species) %>%  filter( gs_cat %in% gene_collections ),
-      is(., "list") ~
-        tibble(gs_name=names(.), entrez_gene = . ) %>% unnest(entrez_gene) %>% mutate(gs_cat = "user_defined"),
-      ~ stop("tidybulk says: the gene sets should be either a character vector or a named list")
-    )
-   my_gene_collection %>%
+  if(is.null(gene_collections ) )
+    my_gene_collection = msigdbr::msigdbr(species = species)
+  else if(gene_collections |> is("character"))
+    my_gene_collection = msigdbr::msigdbr(species = species) %>%  filter( tolower(gs_cat) %in% tolower(gene_collections) )
+  else if(gene_collections |> is("list"))
+    my_gene_collection = tibble(gs_name=names(.), entrez_gene = . ) %>% unnest(entrez_gene) %>% mutate(gs_cat = "user_defined")
+ else
+   stop("tidybulk says: the gene sets should be either a character vector or a named list")
+
+
+   my_gene_collection |>
 
 
 		# Execute calculation
-		nest(data = -gs_cat) %>%
+		nest(data = -gs_cat) |>
 		mutate(fit =
 					 	map(
 					 		data,
@@ -4089,18 +4096,18 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 					 				pvalueCutoff = 1
 					 		)
 
-					 	)) %>%
+					 	)) |>
 			mutate(test =
 					 	map(
 					 		fit,
-					 		~ .x %>%
-					 			ggplot2::fortify(showCategory=Inf) %>%
-					 			as_tibble() %>%
+					 		~ .x |>
+					 			# ggplot2::fortify(showCategory=Inf) %>%
+					 			as_tibble() |>
 					 			rowid_to_column(var = "idx_for_plotting")
 					 			#%>%
 					 			#	mutate(plot = future_imap(ID, ~ enrichplot::gseaplot2(fit, geneSetID = .y, title = .x)))
 
-					 	)) %>%
+					 	)) |>
 		select(-data)
 
 
