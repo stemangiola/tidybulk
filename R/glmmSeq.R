@@ -1,3 +1,16 @@
+## Source car:::relatives
+car_relatives <- function (term, names, factors)
+{
+  is.relative <- function(term1, term2) {
+    all(!(factors[, term1] & (!factors[, term2])))
+  }
+  if (length(names) == 1)
+    return(NULL)
+  which.term <- which(term == names)
+  (1:length(names))[-which.term][sapply(names[-which.term],
+                                        function(term2) is.relative(term, term2))]
+}
+
 #' @importFrom stats pchisq
 organiseStats = function (resultList, test.stat)
 {
