@@ -1,6 +1,6 @@
 
 # From https://github.com/easystats/parameters
-standard_error = function  (model)
+lme4_standard_error = function  (model)
 {
   rand.se <- lme4::ranef(model, condVar = TRUE)
   n.groupings <- length(rand.se)
@@ -19,6 +19,69 @@ standard_error = function  (model)
   rand.se
 }
 
+glmmTMB_standard_error = function (model){
+  rand.se <- glmmTMB::ranef(model, condVar = TRUE)$cond
+  n.groupings <- length(rand.se)
+  for (m in 1:n.groupings) {
+    vars.m <- attr(rand.se[[m]], "condVar")
+    K <- dim(vars.m)[1]
+    J <- dim(vars.m)[3]
+    names.full <- dimnames(rand.se[[m]])
+    rand.se[[m]] <- array(NA, c(J, K))
+    for (j in 1:J) {
+      rand.se[[m]][j, ] <- sqrt(diag(as.matrix(vars.m[,
+                                                      , j])))
+    }
+    dimnames(rand.se[[m]]) <- list(names.full[[1]], names.full[[2]])
+  }
+  rand.se
+}
+
+#' Get matrix from tibble
+#'
+#' @importFrom purrr map2_dfc
+#' @importFrom tidyr pivot_longer
+#' @importFrom tidyr pivot_wider
+#' @importFrom dplyr join_by
+#'
+#' @keywords internal
+#' @noRd
+#'
+glmmTMB_to_confidence_intervals_random_effects = function(fit){
+
+
+  ster = glmmTMB_standard_error(fit)
+  ster = map2_dfr(
+    ster, names(ster),
+    ~ .x |>
+      as_tibble(rownames = "group_id") |>
+      setNames(
+        "group_id" |>
+          c(sprintf("%s__%s", .y, colnames(.x)))
+      ) |>
+      pivot_longer(-group_id, names_to = "parameter", values_to = "CI")
+  )
+
+  mod = glmmTMB::ranef(fit, condVar=T)$cond
+  mod = map2_dfr(
+    mod, names(mod),
+    ~ .x |>
+      as_tibble(rownames = "group_id") |>
+      setNames(
+        "group_id" |>
+          c(sprintf("%s__%s", .y, colnames(.x)))
+      ) |>
+      pivot_longer(-group_id, names_to = "parameter", values_to = "mode")
+  )
+
+  mod |>
+    left_join(ster, join_by(group_id, parameter)) |>
+    mutate(lower = mode - CI, upper = mode + CI) |>
+    select(-CI) |>
+    tidyr::unite("parameter", c(group_id, parameter), sep="_") |>
+    pivot_wider(names_from = parameter, values_from = c(lower, mode, upper), names_glue = "{parameter}__{.value}")
+}
+
 
 #' Get matrix from tibble
 #'
@@ -33,7 +96,7 @@ standard_error = function  (model)
 lmer_to_confidence_intervals_random_effects = function(fit){
 
 
-  ster = standard_error(fit)
+  ster = lme4_standard_error(fit)
   ster = map2_dfr(
     ster, names(ster),
     ~ .x |>
@@ -65,6 +128,67 @@ lmer_to_confidence_intervals_random_effects = function(fit){
     pivot_wider(names_from = parameter, values_from = c(lower, mode, upper), names_glue = "{parameter}__{.value}")
 }
 
+glmmTMBcore = function (geneList, fullFormula, reduced, data, family, control,
+          offset, modelData, designMatrix, hyp.matrix, ...)
+{
+  data[, "count"] <- geneList
+  fit <- try(suppressMessages(suppressWarnings(glmmTMB::glmmTMB(fullFormula,
+                                                       data, family, control = control, offset = offset, ...))),
+             silent = TRUE)
+  if (!inherits(fit, "try-error")) {
+    singular <- conv <- NA
+    stdErr <- suppressWarnings(coef(summary(fit))$cond[, 2])
+    vcov. <- vcov(fit)$cond
+    fixedEffects <- glmmTMB::fixef(fit)$cond
+    disp <- glmmTMB::sigma(fit)
+    msg <- fit$fit$message
+    stats <- setNames(c(disp, AIC(fit), as.numeric(logLik(fit))),
+                      c("Dispersion", "AIC", "logLik"))
+    if (is.null(reduced)) {
+      test <- glmmSeq:::lmer_wald(fixedEffects, hyp.matrix, vcov.)
+    }
+    else {
+      fit2 <- try(suppressMessages(suppressWarnings(glmmTMB::glmmTMB(reduced,
+                                                            data, family, control = control, offset = offset,
+                                                            ...))), silent = TRUE)
+      if (!inherits(fit2, "try-error")) {
+        lrt <- anova(fit, fit2)
+        test <- list(chisq = setNames(lrt$Chisq[2], "LRT"),
+                     df = lrt[2, "Chi Df"])
+      }
+      else {
+        test <- list(chisq = NA, df = NA)
+      }
+    }
+    newY <- predict(fit, newdata = modelData, re.form = NA)
+    a <- designMatrix %*% vcov.
+    b <- as.matrix(a %*% t(designMatrix))
+    predVar <- diag(b)
+    newSE <- suppressWarnings(sqrt(predVar))
+    newLCI <- exp(newY - newSE * 1.96)
+    newUCI <- exp(newY + newSE * 1.96)
+    predictdf <- c(exp(newY), newLCI, newUCI)
+
+    ci_random_effect_df = glmmTMB_to_confidence_intervals_random_effects(fit)
+
+
+    return(list(
+      stats = stats,
+      coef = fixedEffects,
+      stdErr = stdErr,
+      chisq = test$chisq,
+      df = test$df,
+      predict = predictdf,
+      optinfo = c(singular, conv),
+      ci_random_effect_df = ci_random_effect_df,
+      message = msg,
+      tryErrors = ""))
+  }
+  else {
+    return(list(stats = NA, coef = NA, stdErr = NA, chisq = NA,
+                df = NA, predict = NA, optinfo = NA, ci_random_effect_df = NA, tryErrors = fit[1]))
+  }
+}
 
 glmerCore = function (geneList, fullFormula, reduced, data, control, offset,
           modelData, designMatrix, hyp.matrix, max_rows_for_matrix_multiplication = Inf, return_fit =FALSE, ...)
@@ -156,7 +280,7 @@ glmerCore = function (geneList, fullFormula, reduced, data, control, offset,
 
 glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = NA,
                     sizeFactors = NULL, reduced = NULL, modelData = NULL, designMatrix = NULL,
-                    method = c("lme4", "glmmTMB"), control = NULL, family = nbinom2,
+                    method = c("lme4", "glmmTMB"), control = NULL, family = glmmTMB::nbinom2,
                     cores = 1, removeSingles = FALSE, zeroCount = 0.125, verbose = TRUE,
                     returnList = FALSE, progress = FALSE, max_rows_for_matrix_multiplication = Inf, ...)
 {
@@ -164,7 +288,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
   method <- match.arg(method)
   if (is.null(control)) {
     control <- switch(method, lme4 = lme4::glmerControl(optimizer = "bobyqa"),
-                      glmmTMB = glmmTMBControl())
+                      glmmTMB = glmmTMB::glmmTMBControl())
   }
   countdata <- as.matrix(countdata)
   if (length(lme4::findbars(modelFormula)) == 0) {
@@ -220,9 +344,9 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
     modelData <- expand.grid(varLevels)
     colnames(modelData) <- reducedVars
     if (method == "glmmTMB") {
-      modelData <- cbind(modelData, .id = NA)
-      colnames(modelData)[which(colnames(modelData) ==
-                                  ".id")] <- id
+      na_matrix = rep(NA, nrow(modelData) * length(id)) |> matrix(ncol = length(id))
+      colnames(na_matrix) = id
+      modelData <- modelData |> cbind(na_matrix)
     }
   }
   if (is.null(designMatrix)) {
@@ -258,13 +382,24 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
 
 
   if (method == "lme4") {
+
+    # FASTER - Stefano
+    control$calc.derivs = FALSE
+
     if (!all(rownames(countdata) %in% names(dispersion))) {
       stop("Some dispersion values are missing")
     }
     fullList <- lapply(rownames(countdata), function(i) {
       list(y = countdata[i, ], dispersion = dispersion[i])
     })
-    if (Sys.info()["sysname"] == "Windows" & cores > 1) {
+    if(cores == 1){
+      resultList <- lapply(fullList, function(geneList) {
+        glmerCore(geneList, fullFormula, reduced,
+                  subsetMetadata, control, offset, modelData,
+                  designMatrix, hyp.matrix,, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
+      })
+    }
+    else if (Sys.info()["sysname"] == "Windows" & cores > 1) {
       cl <- parallel::makeCluster(cores)
       on.exit(stopCluster(cl))
       dots <- list(...)
@@ -340,10 +475,22 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
     }
   }
   else {
+
+    # FASTER - Stefano
+    control$profile=TRUE
+
     fullList <- lapply(rownames(countdata), function(i) {
       countdata[i, ]
     })
-    if (Sys.info()["sysname"] == "Windows" & cores > 1) {
+
+    if(cores == 1){
+      resultList <- lapply(fullList, function(geneList) {
+        glmmTMBcore(geneList, fullFormula, reduced,
+                              subsetMetadata, family, control, offset,
+                              modelData, designMatrix, hyp.matrix, ...)
+      })
+    }
+    else if (Sys.info()["sysname"] == "Windows" & cores > 1) {
       cl <- makeCluster(cores)
       on.exit(stopCluster(cl))
       dots <- list(...)
@@ -368,7 +515,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                          family = family, control = control, offset = offset,
                          modelData = modelData, designMatrix = designMatrix,
                          hyp.matrix = hyp.matrix), dots)
-          do.call(glmmSeq:::glmmTMBcore, args)
+          do.call(glmmTMBcore, args)
         }, cl = cl)
 
       }
@@ -379,7 +526,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                          family = family, control = control, offset = offset,
                          modelData = modelData, designMatrix = designMatrix,
                          hyp.matrix = hyp.matrix), dots)
-          do.call(glmmSeq:::glmmTMBcore, args)
+          do.call(glmmTMBcore, args)
         })
 
       }
@@ -396,7 +543,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
         }
 
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
-          glmmSeq:::glmmTMBcore(geneList, fullFormula, reduced,
+          glmmTMBcore(geneList, fullFormula, reduced,
                       subsetMetadata, family, control, offset,
                       modelData, designMatrix, hyp.matrix, ...)
         }, mc.cores = cores)
@@ -405,7 +552,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       }
       else {
         resultList <- mclapply(fullList, function(geneList) {
-          glmmSeq:::glmmTMBcore(geneList, fullFormula, reduced,
+          glmmTMBcore(geneList, fullFormula, reduced,
                       subsetMetadata, family, control, offset,
                       modelData, designMatrix, hyp.matrix, ...)
         }, mc.cores = cores)
