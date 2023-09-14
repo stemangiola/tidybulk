@@ -47,7 +47,7 @@ organiseStats = function (resultList, test.stat)
 
 hyp_matrix = function (fullFormula, metadata, LHS)
 {
-  reduced2 <- nobars(fullFormula)
+  reduced2 <- lme4::nobars(fullFormula)
   fac <- attr(terms(reduced2), "factors")
   data2 <- metadata
   data2[, LHS] <- rep(0, nrow(data2))
