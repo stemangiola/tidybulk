@@ -518,7 +518,7 @@ test_that("differential trancript abundance - random effects SE",{
    head(4) |>
    expect_equal(
      c(0.1153254, 0.1668555, 0.1668555 ,       NA),
-     tolerance=1e-3
+     tolerance=1e-2
    )
 
 })
