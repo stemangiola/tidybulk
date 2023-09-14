@@ -1,3 +1,104 @@
+#' @importFrom stats pchisq
+organiseStats = function (resultList, test.stat)
+{
+  statsList <- lapply(resultList, "[[", "stats")
+  s <- do.call(rbind, statsList)
+  coefList <- lapply(resultList, "[[", "coef")
+  cf <- do.call(rbind, coefList)
+  SEList <- lapply(resultList, "[[", "stdErr")
+  stdErr <- do.call(rbind, SEList)
+  if (test.stat == "Wald") {
+    chisqList <- lapply(resultList, "[[", "chisq")
+    chisq <- do.call(rbind, chisqList)
+    dfList <- lapply(resultList, "[[", "df")
+    df <- do.call(rbind, dfList)
+    pvals <- pchisq(chisq, df = df, lower.tail = FALSE)
+    colnames(df) <- colnames(chisq)
+    colnames(pvals) <- colnames(chisq)
+    s <- list(res = s, coef = cf, stdErr = stdErr, Chisq = chisq,
+              Df = df, pvals = pvals)
+  }
+  else if (test.stat == "F") {
+    NumDF <- lapply(resultList, function(x) x$test[, 1])
+    NumDF <- do.call(rbind, NumDF)
+    DenDF <- lapply(resultList, function(x) x$test[, 2])
+    DenDF <- do.call(rbind, DenDF)
+    Fval <- lapply(resultList, function(x) x$test[, 3])
+    Fval <- do.call(rbind, Fval)
+    pvals <- lapply(resultList, function(x) x$test[, 4])
+    pvals <- do.call(rbind, pvals)
+    if (ncol(NumDF) == 1) {
+      colnames(NumDF) <- colnames(DenDF) <- colnames(Fval) <- colnames(pvals) <- rownames(resultList[[1]]$test)
+    }
+    s <- list(res = s, coef = cf, stdErr = stdErr, NumDF = NumDF,
+              DenDF = DenDF, Fval = Fval, pvals = pvals)
+  }
+  else {
+    LRT <- lapply(resultList, "[[", "test")
+    LRT <- do.call(rbind, LRT)
+    chisq <- LRT[, 1, drop = FALSE]
+    df <- LRT[, 2, drop = FALSE]
+    pvals <- LRT[, 3, drop = FALSE]
+    colnames(chisq) <- colnames(df) <- colnames(pvals) <- "LRT"
+    s <- list(res = s, coef = cf, stdErr = stdErr, Chisq = chisq,
+              Df = df, pvals = pvals)
+  }
+}
+
+hyp_matrix = function (fullFormula, metadata, LHS)
+{
+  reduced2 <- nobars(fullFormula)
+  fac <- attr(terms(reduced2), "factors")
+  data2 <- metadata
+  data2[, LHS] <- rep(0, nrow(data2))
+  dm2 <- model.matrix(reduced2, data2)
+  assign <- attr(dm2, "assign")
+  term.labels <- attr(terms(reduced2), "term.labels")
+  p <- length(assign)
+  I.p <- diag(p)
+  n.terms <- length(term.labels)
+  hyp.matrix.1 <- hyp.matrix.2 <- list()
+  for (i in seq_len(n.terms)) {
+    which.term <- i
+    subs.term <- which(assign == which.term)
+    relatives <- car_relatives(term.labels[i], term.labels,
+                               fac)
+    subs.relatives <- NULL
+    for (relative in relatives) subs.relatives <- c(subs.relatives,
+                                                    which(assign == relative))
+    hyp.matrix.1[[i]] <- I.p[subs.relatives, , drop = FALSE]
+    hyp.matrix.2[[i]] <- I.p[c(subs.relatives, subs.term),
+                             , drop = FALSE]
+  }
+  names(hyp.matrix.1) <- term.labels
+  return(list(hyp.matrix.1 = hyp.matrix.1, hyp.matrix.2 = hyp.matrix.2))
+}
+
+lmer_wald  = function (fixef, hyp.matrix, vcov.)
+{
+  hyp.matrix.1 <- hyp.matrix[[1]]
+  hyp.matrix.2 <- hyp.matrix[[2]]
+  hyp.list <- lapply(seq_along(hyp.matrix.1), function(i) {
+    hyp.matrix.term <- if (nrow(hyp.matrix.1[[i]]) == 0) {
+      hyp.matrix.2[[i]]
+    }
+    else t(car_ConjComp(t(hyp.matrix.1[[i]]), t(hyp.matrix.2[[i]]),
+                        vcov.))
+    hyp.matrix.term <- hyp.matrix.term[!apply(hyp.matrix.term,
+                                              1, function(x) all(x == 0)), , drop = FALSE]
+    hyp.matrix.term
+  })
+  b <- fixef
+  V <- vcov.
+  chi_val <- lapply(hyp.list, function(L) {
+    as.vector(t(L %*% b) %*% solve(L %*% V %*% t(L)) %*%
+                (L %*% b))
+  })
+  df <- unlist(lapply(hyp.list, NROW))
+  list(chisq = setNames(unlist(chi_val), names(hyp.matrix.1)),
+       df = df)
+}
+
 
 # From https://github.com/easystats/parameters
 lme4_standard_error = function  (model)
@@ -145,7 +246,7 @@ glmmTMBcore = function (geneList, fullFormula, reduced, data, family, control,
     stats <- setNames(c(disp, AIC(fit), as.numeric(logLik(fit))),
                       c("Dispersion", "AIC", "logLik"))
     if (is.null(reduced)) {
-      test <- glmmSeq:::lmer_wald(fixedEffects, hyp.matrix, vcov.)
+      test <- lmer_wald(fixedEffects, hyp.matrix, vcov.)
     }
     else {
       fit2 <- try(suppressMessages(suppressWarnings(glmmTMB::glmmTMB(reduced,
@@ -218,7 +319,7 @@ glmerCore = function (geneList, fullFormula, reduced, data, control, offset,
   stats <- setNames(c(disp, AIC(fit), as.numeric(logLik(fit))),
                     c("Dispersion", "AIC", "logLik"))
   if (is.null(reduced)) {
-    test <- glmmSeq:::lmer_wald(fixedEffects, hyp.matrix, vcov.)
+    test <- lmer_wald(fixedEffects, hyp.matrix, vcov.)
   }
   else {
     fit2 <- try(suppressMessages(suppressWarnings(lme4::glmer(reduced,
@@ -354,7 +455,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
   }
   if (is.null(reduced)) {
     test.stat <- "Wald"
-    hyp.matrix <- glmmSeq:::hyp_matrix(fullFormula, metadata, "count")
+    hyp.matrix <- hyp_matrix(fullFormula, metadata, "count")
   }
   else {
     if (length(lme4::findbars(reduced)) == 0) {
@@ -586,7 +687,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
   optInfo <- t(vapply(resultList[noErr], function(x) {
     setNames(x$optinfo, c("Singular", "Conv"))
   }, FUN.VALUE = c(1, 1)))
-  s <- glmmSeq:::organiseStats(resultList[noErr], "Wald")
+  s <- organiseStats(resultList[noErr], "Wald")
   meanExp <- rowMeans(log2(countdata[noErr, , drop = FALSE] + 1))
 
   # Add coeff for random effects
