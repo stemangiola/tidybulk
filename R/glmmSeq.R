@@ -1,3 +1,11 @@
+## Source car:::ConjComp
+car_ConjComp <- function (X, Z = diag(nrow(X)), ip = diag(nrow(X))){
+  xq <- qr(t(Z) %*% ip %*% X)
+  if (xq$rank == 0)
+    return(Z)
+  Z %*% qr.Q(xq, complete = TRUE)[, -(1:xq$rank)]
+}
+
 ## Source car:::relatives
 car_relatives <- function (term, names, factors)
 {
@@ -300,7 +308,7 @@ glmmTMBcore = function (geneList, fullFormula, reduced, data, family, control,
   }
   else {
     return(list(stats = NA, coef = NA, stdErr = NA, chisq = NA,
-                df = NA, predict = NA, optinfo = NA, ci_random_effect_df = NA, tryErrors = fit[1]))
+                df = NA, predict = NA, optinfo = NA, ci_random_effect_df = NA, message = "COMPLETE FIT ERROR", tryErrors = fit[1]))
   }
 }
 
