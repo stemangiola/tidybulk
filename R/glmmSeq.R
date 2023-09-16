@@ -260,7 +260,14 @@ glmmTMBcore = function (geneList, fullFormula, reduced, data, family, control,
   if (!inherits(fit, "try-error")) {
     singular <- conv <- NA
     stdErr <- suppressWarnings(coef(summary(fit))$cond[, 2])
+
     vcov. <- vcov(fit)$cond
+
+    if(vcov. |> as.numeric() |> is.nan() |> all())
+      return(list(stats = NA, coef = NA, stdErr = NA, chisq = NA,
+                  df = NA, predict = NA, optinfo = NA, ci_random_effect_df = NA,
+                  message = "vcov. failed to calculate", tryErrors = fit[1]))
+
     fixedEffects <- glmmTMB::fixef(fit)$cond
     disp <- glmmTMB::sigma(fit)
     msg <- fit$fit$message
