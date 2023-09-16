@@ -4,7 +4,10 @@ setOldClass("tidybulk")
 #'
 #' `r lifecycle::badge("maturing")`
 #'
-#' @description tidybulk() creates an annotated `tidybulk` tibble from a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+#' @description tidybulk() creates an annotated `tidybulk` tibble from a `tbl` 
+#' (with at least three columns for sample, feature and transcript abundance) 
+#' or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+#' library(tidySummarizedExperiment))
 #'
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_missing
@@ -1271,7 +1274,9 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 #'
 #' `r lifecycle::badge("maturing")`
 #'
-#' @description rotate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
+#' @description rotate_dimensions() takes as input a `tbl` formatted as
+#'  | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated 
+#'  dimensional space of the transcript abundance.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1313,7 +1318,9 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 #'  identify_abundant() |>
 #'  reduce_dimensions( method="MDS", .dims = 3)
 #'
-#' counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
+#' counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, 
+#'   rotation_degrees = 45, 
+#'   .element = sample)
 #'
 #'
 #' @docType methods
@@ -1667,7 +1674,12 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #'
 #' `r lifecycle::badge("maturing")`
 #'
-#' @description adjust_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with an additional adjusted abundance column. This method uses scaled counts if present.
+#' @description adjust_abundance() takes as input A `tbl` 
+#' (with at least three columns for sample, feature and transcript abundance) 
+#' or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+#' library(tidySummarizedExperiment)) and returns a consistent object 
+#' (to the input) with an additional adjusted abundance column. 
+#' This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1711,7 +1723,9 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #'
 #' cm |>
 #' identify_abundant() |>
-#'	adjust_abundance(	.factor_unwanted = batch, .factor_of_interest =  condition, method="combat"	)
+#'	adjust_abundance(.factor_unwanted = batch,
+#'	                 .factor_of_interest = condition,
+#'	                 method="combat")
 #'
 #'
 #' @docType methods
@@ -1776,7 +1790,8 @@ setGeneric("adjust_abundance", function(.data,
   if (is_present(log_transform) & !is.null(log_transform)) {
 
     # Signal the deprecation to the user
-    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", details = "The argument log_transform is now deprecated, please use transform.")
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(log_transform = )", 
+                   details = "The argument log_transform is now deprecated, please use transform.")
 
     if(log_transform){
       transform = log1p
@@ -2257,8 +2272,9 @@ setMethod("deconvolve_cellularity",
 #'
 #' # This function was designed for data.frame
 #' # Convert from SummarizedExperiment for this example. It is NOT reccomended.
-#'
-#' tidybulk::se_mini |> tidybulk() |> as_tibble() |> symbol_to_entrez(.transcript = .feature, .sample = .sample)
+#' data(se_mini)
+#' se_mini |> tidybulk() |> as_tibble() |> 
+#'   symbol_to_entrez(.transcript = .feature, .sample = .sample)
 #'
 #' @export
 #'
@@ -3429,7 +3445,10 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #'
 #' `r lifecycle::badge("maturing")`
 #'
-#' @description test_gene_enrichment() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` of gene set information
+#' @description test_gene_enrichment() takes as input a `tbl` 
+#' (with at least three columns for sample, feature and transcript abundance) 
+#' or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+#' library(tidySummarizedExperiment)) and returns a `tbl` of gene set information
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -3453,7 +3472,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @details This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 #'
 #'
-#' dge =
+#' dge <-
 #' 	data |>
 #' 	keep_abundant(
 #' 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
@@ -3465,11 +3484,11 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	as_matrix(rownames = !!.entrez) %>%
 #' 	edgeR::DGEList(counts = .)
 #'
-#' idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets,
+#' idx <- buildIdx(entrezIDs = rownames(dge), species = species, 
+#'                 msigdb.gsets = msigdb.gsets,
 #'	               kegg.exclude = kegg.exclude)
 #'
 #' dge |>
-#'
 #' 	# Calculate weights
 #' 	limma::voom(design, plot = FALSE) |>
 #'
@@ -3484,17 +3503,15 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' 	)
 #'
 #' @return A consistent object (to the input)
-#'
-#'
-#'
+
 #'
 #' @examples
 #' \dontrun{
 #'
 #' library(SummarizedExperiment)
-#' se = tidybulk::se_mini
-#' rowData( se)$entrez = rownames(se )
-#' df_entrez = aggregate_duplicates(se,.transcript = entrez )
+#' se <- tidybulk::se_mini
+#' rowData(se)$entrez <- rownames(se)
+#' df_entrez <- aggregate_duplicates(se, .transcript = entrez)
 #'
 #' library("EGSEA")
 #'
@@ -3504,8 +3521,10 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #'			.sample = sample,
 #'			.entrez = entrez,
 #'			.abundance = count,
-#'          methods = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
-#'          gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+#'          methods = c("roast", "safe", "gage", 
+#'                      "padog", "globaltest", "ora"),
+#'          gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", 
+#'                        "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 #'			species="human",
 #'			cores = 2
 #'		)
@@ -3517,40 +3536,47 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @export
 #'
 #'
-setGeneric("test_gene_enrichment", function(.data,
-																							 .formula,
-																							 .sample = NULL,
-																							 .entrez,
-																							 .abundance = NULL,
-																							 contrasts = NULL,
-																							 methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
-																							 gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
-																							 species,
-																							 cores = 10,
+setGeneric("test_gene_enrichment", function(
+    .data,
+    .formula,
+    .sample = NULL,
+    .entrez,
+    .abundance = NULL,
+    contrasts = NULL,
+    methods = c("camera", "roast", "safe", "gage", 
+                "padog", "globaltest", "ora"),
+    gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", 
+                  "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+    species,
+    cores = 10,
+  
+  	 # DEPRECATED
+    method = NULL,
+    .contrasts = NULL)
+  standardGeneric("test_gene_enrichment")
+)
 
-																							 # DEPRECATED
-																						method = NULL,
-																						.contrasts = NULL
-																						)
-	standardGeneric("test_gene_enrichment"))
 
 # Set internal
 #' @importFrom lifecycle deprecate_warn
-.test_gene_enrichment = 		function(.data,
-																			.formula,
-																			.sample = NULL,
-																			.entrez,
-																			.abundance = NULL,
-																			contrasts = NULL,
-																	    methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
-																			gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
-																			species,
-																			cores = 10,
-
-																			# DEPRECATED
-																	 method = NULL,
-																	 .contrasts = NULL
-																	 )	{
+.test_gene_enrichment <- function(
+    .data,
+    .formula,
+    .sample = NULL,
+    .entrez,
+    .abundance = NULL,
+    contrasts = NULL,
+    methods = c("camera" , "roast" , "safe", "gage", 
+                "padog", "globaltest", "ora" ),
+    gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", 
+                  "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+    species,
+    cores = 10,
+    
+    # DEPRECATED
+    method = NULL,
+    .contrasts = NULL
+)	{
 
   # Fix NOTEs
   . = NULL
@@ -3559,7 +3585,8 @@ setGeneric("test_gene_enrichment", function(.data,
 	if (is_present(method) & !is.null(method)) {
 
 		# Signal the deprecation to the user
-		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", details = "The argument method is now deprecated please use methods")
+		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", 
+		               details = "The argument method is now deprecated please use methods")
 		methods = method
 	}
 
@@ -3567,7 +3594,8 @@ setGeneric("test_gene_enrichment", function(.data,
   if (is_present(.contrasts) & !is.null(.contrasts)) {
 
     # Signal the deprecation to the user
-    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", 
+                   details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
 
     contrasts = .contrasts
   }

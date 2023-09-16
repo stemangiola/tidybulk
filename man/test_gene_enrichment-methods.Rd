@@ -145,7 +145,10 @@ A consistent object (to the input)
 A consistent object (to the input)
 }
 \description{
-test_gene_enrichment() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` of gene set information
+test_gene_enrichment() takes as input a `tbl` 
+(with at least three columns for sample, feature and transcript abundance) 
+or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a `tbl` of gene set information
 }
 \details{
 `r lifecycle::badge("maturing")`
@@ -153,7 +156,7 @@ test_gene_enrichment() takes as input a `tbl` (with at least three columns for s
 This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 
 
-dge =
+dge <-
 	data |>
 	keep_abundant(
 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
@@ -165,11 +168,11 @@ dge =
 	as_matrix(rownames = !!.entrez) %>%
 	edgeR::DGEList(counts = .)
 
-idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets,
+idx <- buildIdx(entrezIDs = rownames(dge), species = species, 
+                msigdb.gsets = msigdb.gsets,
                kegg.exclude = kegg.exclude)
 
 dge |>
-
 	# Calculate weights
 	limma::voom(design, plot = FALSE) |>
 
@@ -187,9 +190,9 @@ dge |>
 \dontrun{
 
 library(SummarizedExperiment)
-se = tidybulk::se_mini
-rowData( se)$entrez = rownames(se )
-df_entrez = aggregate_duplicates(se,.transcript = entrez )
+se <- tidybulk::se_mini
+rowData(se)$entrez <- rownames(se)
+df_entrez <- aggregate_duplicates(se, .transcript = entrez)
 
 library("EGSEA")
 
@@ -199,8 +202,10 @@ library("EGSEA")
 		.sample = sample,
 		.entrez = entrez,
 		.abundance = count,
-         methods = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
-         gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+         methods = c("roast", "safe", "gage", 
+                     "padog", "globaltest", "ora"),
+         gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", 
+                       "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 		species="human",
 		cores = 2
 	)

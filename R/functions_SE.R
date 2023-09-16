@@ -360,10 +360,11 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 		}
 
 		# Set perprexity to not be too high
-		if (!"perplexity" %in% names(arguments))
-		  arguments = arguments %>% c(perplexity = ((
-		    .data %>% ncol() %>% sum(-1)
-		  ) / 3 / 2) %>% floor() %>% min(30))
+		if (!"perplexity" %in% names(arguments)) {
+		  perplexity_value <- (ncol(.data) - 1 / 3 / 2)
+		  perplexity_value <- pmin(floor(perplexity_value), 30)
+		  arguments$perplexity <- perplexity_value
+		}
 
 		# If not enough samples stop
 		if (arguments$perplexity <= 2)
@@ -371,8 +372,6 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 
 		# Calculate the most variable genes, from plotMDS Limma
 		tsne_obj = do.call(Rtsne::Rtsne, c(list(t(.data)), arguments))
-
-
 
 		list(
 			raw_result = tsne_obj,

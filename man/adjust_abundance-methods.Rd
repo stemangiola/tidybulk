@@ -147,7 +147,12 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-adjust_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with an additional adjusted abundance column. This method uses scaled counts if present.
+adjust_abundance() takes as input A `tbl` 
+(with at least three columns for sample, feature and transcript abundance) 
+or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a consistent object 
+(to the input) with an additional adjusted abundance column. 
+This method uses scaled counts if present.
 }
 \details{
 `r lifecycle::badge("maturing")`
@@ -168,7 +173,9 @@ cm$batch[colnames(cm) \%in\% c("SRR1740035", "SRR1740043")] = 1
 
 cm |>
 identify_abundant() |>
-adjust_abundance(	.factor_unwanted = batch, .factor_of_interest =  condition, method="combat"	)
+adjust_abundance(.factor_unwanted = batch,
+                 .factor_of_interest = condition,
+                 method="combat")
 
 
 }

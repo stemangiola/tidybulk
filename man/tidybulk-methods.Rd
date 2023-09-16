@@ -42,7 +42,10 @@ A `tidybulk` object
 A `tidybulk` object
 }
 \description{
-tidybulk() creates an annotated `tidybulk` tibble from a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+tidybulk() creates an annotated `tidybulk` tibble from a `tbl` 
+(with at least three columns for sample, feature and transcript abundance) 
+or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment))
 }
 \details{
 `r lifecycle::badge("maturing")`

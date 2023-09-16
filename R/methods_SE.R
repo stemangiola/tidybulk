@@ -871,8 +871,7 @@ setMethod("remove_redundancy",
 	  get_assay_scaled_if_exists_SE(.data)
 	)
 
-	if(tolower(method) == "combat"){
-
+	if(tolower(method) == "combat") {
 	  my_assay_adjusted =
 	    .data |>
 	    assay(my_assay) |> # Check if log transform is needed
@@ -881,8 +880,8 @@ setMethod("remove_redundancy",
 	    `+` (rnorm(length(.), 0, 0.000001))
 
 
-	  for(i in colnames(my_batch)){
-	    my_assay_adjusted =
+	  for (i in colnames(my_batch)) {
+	    my_assay_adjusted <-
 	      my_assay_adjusted %>%
 
 	      # Run combat
@@ -895,11 +894,9 @@ setMethod("remove_redundancy",
 	  }
 
 	  # Tranfrom back
-	  my_assay_adjusted =
+	  my_assay_adjusted <- 
 	    my_assay_adjusted %>%
-	    expm1() |>
-	    apply(2, pmax, 0)
-
+	    apply(MARGIN=2, FUN=function(col) pmax(expm1(col), 0))
 	}
 	else if(tolower(method) == "combat_seq"){
 
@@ -919,16 +916,15 @@ setMethod("remove_redundancy",
 	  }
 
 	}
-	else if(tolower(method) == "limma_remove_batch_effect") {
-
-	  unwanted_covariate_matrix =
+	else if (tolower(method) == "limma_remove_batch_effect") {
+	  unwanted_covariate_matrix <-
 	    model.matrix(
 	      object = as.formula(sprintf("~ 0 + %s", colData(.data) |> as_tibble() |> select(!!.factor_unwanted) |> colnames() |> str_c(collapse = '+'))),
 	      # get first argument of the .formula
 	      data = colData(.data)
 	    )
 
-	  my_assay_adjusted =
+	  my_assay_adjusted <-
 	    .data |>
 	    assay(my_assay) |>
 	    edgeR::cpm(log = T) |>
@@ -937,25 +933,21 @@ setMethod("remove_redundancy",
 	      covariates = unwanted_covariate_matrix,
 	      ...
 	    ) |>
-	    expm1() |>
-	    apply(2, pmax, 0)
-
+	    apply(MARGIN=2, FUN=function(col) pmax(expm1(col), 0))
 	} else {
 	  stop("tidybulk says: the argument \"method\" must be combat_seq, combat, or limma_remove_batch_effect")
 	}
 
 
 	# Add the assay
-	my_assay_scaled = list(my_assay_adjusted) %>% setNames(value_adjusted)
+	my_assay_scaled <- list(my_assay_adjusted) %>% setNames(value_adjusted)
 
-	assays(.data) =  assays(.data) %>% c(my_assay_scaled)
+	assays(.data) <- assays(.data) %>% c(my_assay_scaled)
 
 	# Return
 	.data %>%
-
 		# Add methods
 		memorise_methods_used("sva") %>%
-
 		# Attach column internals
 		add_tt_columns(.abundance_adjusted = !!(function(x, v)
 			enquo(v))(x, !!as.symbol(value_adjusted)))

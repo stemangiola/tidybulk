@@ -2,7 +2,15 @@
 % Please edit documentation in R/dplyr_methods.R
 \name{bind_rows}
 \alias{bind_rows}
-\title{Efficiently bind multiple data frames by row and column}
+\alias{bind_rows.tidybulk}
+\alias{bind_cols.tidybulk}
+\alias{bind_cols}
+\title{#' Efficiently bind multiple data frames by row and column}
+\usage{
+\method{bind_rows}{tidybulk}(..., .id = NULL)
+
+\method{bind_cols}{tidybulk}(..., .id = NULL)
+}
 \arguments{
 \item{...}{Data frames to combine.
 
@@ -24,10 +32,11 @@
   list of data frames is supplied, the labels are taken from the
   names of the list. If no names are found a numeric sequence is
   used instead.}
-
-\item{add.cell.ids}{from Seurat 3.0 A character vector of length(x = c(x, y)). Appends the corresponding values to the start of each objects' cell names.}
 }
 \value{
+`bind_rows()` and `bind_cols()` return the same type as
+  the first input, either a data frame, `tbl_df`, or `grouped_df`.
+
 `bind_rows()` and `bind_cols()` return the same type as
   the first input, either a data frame, `tbl_df`, or `grouped_df`.
 }
@@ -35,18 +44,25 @@
 This is an efficient implementation of the common pattern of
 `do.call(rbind, dfs)` or `do.call(cbind, dfs)` for binding many
 data frames into one.
+
+This is an efficient implementation of the common pattern of
+`do.call(rbind, dfs)` or `do.call(cbind, dfs)` for binding many
+data frames into one.
 }
 \details{
+The output of `bind_rows()` will contain a column if that column
+appears in any of the inputs.
+
 The output of `bind_rows()` will contain a column if that column
 appears in any of the inputs.
 }
 \examples{
 data(se_mini)
 
-se_mini_tidybulk = se_mini |> tidybulk()
-bind_rows(    se_mini_tidybulk, se_mini_tidybulk  )
+se_mini_tidybulk <- se_mini |> tidybulk()
+bind_rows(se_mini_tidybulk, se_mini_tidybulk)
 
-tt_bind = se_mini_tidybulk |> select(time, condition)
+tt_bind <- se_mini_tidybulk |> select(time, condition)
 se_mini_tidybulk |> bind_cols(tt_bind)
 
 }

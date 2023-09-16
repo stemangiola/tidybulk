@@ -35,7 +35,8 @@ Imports:
     GenomicRanges,
     methods,
     S4Vectors,
-    crayon
+    crayon,
+    pkgconfig
 Suggests:
     BiocStyle,
     testthat,

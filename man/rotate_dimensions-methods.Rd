@@ -115,7 +115,9 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-rotate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
+rotate_dimensions() takes as input a `tbl` formatted as
+ | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated 
+ dimensional space of the transcript abundance.
 }
 \details{
 `r lifecycle::badge("maturing")`
@@ -140,7 +142,9 @@ counts.MDS =
  identify_abundant() |>
  reduce_dimensions( method="MDS", .dims = 3)
 
-counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
+counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, 
+  rotation_degrees = 45, 
+  .element = sample)
 
 
 }
