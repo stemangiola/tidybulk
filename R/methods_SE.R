@@ -449,6 +449,8 @@ setMethod("cluster_elements",
 
 
 .reduce_dimensions_se = function(.data,
+                                 .abundance = NULL,
+
 																 method,
 																 .dims = 2,
 																 top = 500,
@@ -460,15 +462,18 @@ setMethod("cluster_elements",
   # Fix NOTEs
   . = NULL
 
+  .abundance = enquo(.abundance)
+
+  if(.abundance |> quo_is_symbolic()) my_assay = quo_name(.abundance)
+  else my_assay = get_assay_scaled_if_exists_SE(.data)
+
 	my_assay =
 		.data %>%
 
 		# Filter abundant if performed
 		filter_if_abundant_were_identified() %>%
 
-		assays() %>%
-		as.list() %>%
-		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
+		assay(my_assay) %>%
 
 		# Filter most variable genes
 		keep_variable_transcripts_SE(top = top, transform = transform) %>%
@@ -941,7 +946,7 @@ setMethod("remove_redundancy",
 	    apply(2, pmax, 0)
 
 	} else {
-	  stop("tidybulk says: the argument \"method\" must be combat_seq, combat, or limma_remove_batch_effect")
+	  stop("tidybulk says: the argument \"method\" must be \"combat_seq\", \"combat\", or \"limma_remove_batch_effect\"")
 	}
 
 
