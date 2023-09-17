@@ -407,6 +407,20 @@ glmerCore = function (geneList, fullFormula, reduced, data, control, offset,
 
 }
 
+setClass("GlmmSeq", slots = list(
+  info = "list",
+  formula = "formula",
+  stats = "list_or_matrix",
+  predict = "df_or_matrix",
+  reduced = "formulaOrNULL",
+  countdata = "df_or_matrix",
+  metadata = "df_or_matrix",
+  modelData = "df_or_matrix",
+  optInfo = "matrix",
+  errors = "character_or_list",
+  vars = "list"
+))
+
 glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = NA,
                     sizeFactors = NULL, reduced = NULL, modelData = NULL, designMatrix = NULL,
                     method = c("lme4", "glmmTMB"), control = NULL, family = glmmTMB::nbinom2,
