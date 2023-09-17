@@ -84,6 +84,7 @@ Suggests:
     pbapply,
     pbmcapply,
     lme4,
+    glmmTMB,
     MASS
 VignetteBuilder: 
     knitr

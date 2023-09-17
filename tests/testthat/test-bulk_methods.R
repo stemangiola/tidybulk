@@ -660,12 +660,12 @@ test_that("DESeq2 differential trancript abundance - no object",{
       install.packages("BiocManager", repos = "https://cloud.r-project.org")
     BiocManager::install("DESeq2", ask = FALSE)
   }
-  
+
   test_deseq2_df = DESeq2::DESeqDataSet(se_mini,design=~condition)
   colData(test_deseq2_df)$condition = factor(colData(test_deseq2_df)$condition)
-  
+
   res_deseq2 =
-	  test_deseq2_df |> 
+	  test_deseq2_df |>
 		DESeq2::DESeq() |>
 		DESeq2::results()
 
@@ -835,13 +835,13 @@ test_that("DESeq2 differential trancript abundance - no object",{
 
 test_that("differential trancript abundance - random effects",{
 
-  my_input = 
+  my_input =
     input_df |>
     identify_abundant(a, b, c, factor_of_interest = condition) |>
     mutate(time = time |> stringr::str_replace_all(" ", "_")) |>
-    
+
     filter(b %in% c("ABCB4" , "ABCB9" , "ACAP1",  "ACHE",   "ACP5" ,  "ADAM28"))
-  
+
   my_input |>
     test_differential_abundance(
       ~ condition + (1 + condition | time),
@@ -849,7 +849,7 @@ test_that("differential trancript abundance - random effects",{
       .transcript = b,
       .abundance = c,
       method = "glmmseq_lme4",
-      action="only", 
+      action="only",
       cores = 1
     ) |>
     pull(P_condition_adjusted) |>
@@ -860,13 +860,13 @@ test_that("differential trancript abundance - random effects",{
     )
 
   # Custom dispersion
-  my_input = 
+  my_input =
     my_input |>
     left_join(
-      my_input |> pivot_transcript(b) |> mutate(disp_ = 2 ), 
+      my_input |> pivot_transcript(b) |> mutate(disp_ = 2 ),
       by = join_by(b, entrez, .abundant)
     )
-   
+
 
     my_input |>
     test_differential_abundance(
@@ -875,8 +875,8 @@ test_that("differential trancript abundance - random effects",{
       .transcript = b,
       .abundance = c,
       method = "glmmseq_lme4",
-      action="only", 
-      cores = 1, 
+      action="only",
+      cores = 1,
       .dispersion = disp_
     ) |>
     pull(P_condition_adjusted) |>
