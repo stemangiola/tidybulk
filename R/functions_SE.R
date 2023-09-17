@@ -1158,7 +1158,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     )
 
   glmmSeq_object |>
-    summary() |>
+    summary_lmmSeq() |>
     as_tibble(rownames = "transcript") |>
     mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |>
 

@@ -2860,7 +2860,7 @@ such as batch effects (if applicable) in the formula.
 			),
 
 			# glmmseq
-			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmTMB") ~ get_differential_transcript_abundance_glmmSeq(
+			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmtmb") ~ get_differential_transcript_abundance_glmmSeq(
 			  .,
 			  .formula,
 			  .sample = !!.sample,
@@ -2876,7 +2876,7 @@ such as batch effects (if applicable) in the formula.
 			),
 
 			# Else error
-			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\"")
+			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\", \"glmmseq_lme4\", \"glmmseq_glmmTMB\"")
 		)
 
 

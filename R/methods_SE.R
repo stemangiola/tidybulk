@@ -449,6 +449,8 @@ setMethod("cluster_elements",
 
 
 .reduce_dimensions_se = function(.data,
+                                 .abundance = NULL,
+
 																 method,
 																 .dims = 2,
 																 top = 500,
@@ -460,15 +462,18 @@ setMethod("cluster_elements",
   # Fix NOTEs
   . = NULL
 
+  .abundance = enquo(.abundance)
+
+  if(.abundance |> quo_is_symbolic()) my_assay = quo_name(.abundance)
+  else my_assay = get_assay_scaled_if_exists_SE(.data)
+
 	my_assay =
 		.data %>%
 
 		# Filter abundant if performed
 		filter_if_abundant_were_identified() %>%
 
-		assays() %>%
-		as.list() %>%
-		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
+		assay(my_assay) %>%
 
 		# Filter most variable genes
 		keep_variable_transcripts_SE(top = top, transform = transform) %>%
@@ -941,7 +946,7 @@ setMethod("remove_redundancy",
 	    apply(2, pmax, 0)
 
 	} else {
-	  stop("tidybulk says: the argument \"method\" must be combat_seq, combat, or limma_remove_batch_effect")
+	  stop("tidybulk says: the argument \"method\" must be \"combat_seq\", \"combat\", or \"limma_remove_batch_effect\"")
 	}
 
 
@@ -1448,7 +1453,7 @@ such as batch effects (if applicable) in the formula.
 			),
 
 			# glmmseq
-			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmTMB") ~ get_differential_transcript_abundance_glmmSeq_SE(
+			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmtmb") ~ get_differential_transcript_abundance_glmmSeq_SE(
 			  .,
 			  .formula,
 			  .abundance = !!.abundance,
@@ -1463,7 +1468,7 @@ such as batch effects (if applicable) in the formula.
 			),
 
 			# Else error
-			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\"")
+			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\", \"glmmseq_lme4\", \"glmmseq_glmmTMB\"")
 		)
 
 	# Add results
@@ -1485,7 +1490,7 @@ such as batch effects (if applicable) in the formula.
 			tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
 			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights"),
 			tolower(method) == "deseq2" ~ (.) %>% memorise_methods_used("deseq2"),
-			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmTMB") ~ (.) %>% memorise_methods_used("glmmseq"),
+			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmtmb") ~ (.) %>% memorise_methods_used("glmmseq"),
 			~ stop("tidybulk says: method not supported")
 		) %>%
 
