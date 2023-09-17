@@ -1,4 +1,4 @@
-core <- c("dplyr", "tidyr", "ttservice", "ggplot2")
+core <- c("dplyr", "tidyr", "ttservice")
 
 core_unloaded <- function() {
   search <- paste0("package:", core)
