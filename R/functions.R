@@ -693,7 +693,7 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   .abundance = enquo(.abundance)
   .sample_total_read_count = enquo(.sample_total_read_count)
   .dispersion = enquo(.dispersion)
-  
+
   # Check if omit_contrast_in_colnames is correctly setup
   if(omit_contrast_in_colnames & length(.contrasts) > 1){
     warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
@@ -757,33 +757,33 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
 
   # Reorder counts
   counts = counts[,rownames(metadata),drop=FALSE]
-  
+
   if(quo_is_symbolic(.dispersion))
     dispersion = .data |> pivot_transcript(!!.transcript) |> select(!!.transcript, !!.dispersion) |> deframe()
   else
     dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts))
-  
+
   # # Check dispersion
   # if(!names(dispersion) |> sort() |> identical(
   #   rownames(counts) |>
   #   sort()
   # )) stop("tidybulk says: The features in the dispersion vector do not overlap with the feature in the assay")
-  
+
   # Make sure the order matches the counts
   dispersion = dispersion[rownames(counts)]
-  
-  glmmSeq_object = 
+
+  glmmSeq_object =
     glmmSeq( .formula,
           countdata = counts ,
           metadata =   metadata,
           dispersion = dispersion,
-          progress = TRUE, 
+          progress = TRUE,
           method = method |> str_remove("(?i)^glmmSeq_"),
           ...
   )
 
   glmmSeq_object |>
-    summary() |>
+    summary_lmmSeq() |>
     as_tibble(rownames = "gene") |>
     mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |>
 
