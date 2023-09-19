@@ -36,7 +36,8 @@ Imports:
     methods,
     S4Vectors,
     crayon,
-    Matrix
+    Matrix,
+    pkgconfig
 Suggests:
     BiocStyle,
     testthat,
