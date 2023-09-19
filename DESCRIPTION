@@ -12,8 +12,8 @@ Description: This is a collection of utility functions that allow
     a modular, pipe-friendly and tidy fashion.
 License: GPL-3
 Depends:
-    R (>= 4.1.0),
-    ttservice (>= 0.3.6)
+    R (>= 4.3.0),
+    ttservice
 Imports:
     tibble,
     readr,
