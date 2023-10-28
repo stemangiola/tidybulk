@@ -419,7 +419,7 @@ get_reduced_dimensions_UMAP_bulk_SE <-
            of_samples = TRUE,
            transform = log1p,
            scale = NULL, # This is only a dummy argument for making it compatibble with PCA
-           calculate_for_pca_dimensions = 20,
+           calculate_for_pca_dimensions = min(20, top),
            ...) {
     # Comply with CRAN NOTES
     . = NULL
