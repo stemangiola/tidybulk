@@ -1140,6 +1140,17 @@ setGeneric("reduce_dimensions", function(.data,
 	col_names = get_abundance_norm_if_exists(.data, .abundance)
 	.abundance = col_names$.abundance
 
+	# adjust top for the max number of features I have
+	if(top > .data |> distinct(!!.feature) |> nrow()){
+	  warning(sprintf(
+	    "tidybulk says: the \"top\" argument %s is higher than the number of features %s", 
+	    top, 
+	    .data |> distinct(!!.feature) |> nrow()
+	  ))
+	  
+	  top = min(top, .data |> distinct(!!.feature) |> nrow())
+	}
+	
 	# Validate data frame
 	if(do_validate()) {
 	validation(.data, !!.element, !!.feature, !!.abundance)

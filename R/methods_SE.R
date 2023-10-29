@@ -467,6 +467,17 @@ setMethod("cluster_elements",
   if(.abundance |> quo_is_symbolic()) my_assay = quo_name(.abundance)
   else my_assay = get_assay_scaled_if_exists_SE(.data)
 
+  # adjust top for the max number of features I have
+  if(top > nrow(.data)){
+    warning(sprintf(
+      "tidybulk says: the \"top\" argument %s is higher than the number of features %s", 
+      top, 
+      nrow(.data)
+    ))
+    
+    top = min(top, nrow(.data))
+  }
+  
 	my_assay =
 		.data %>%
 
