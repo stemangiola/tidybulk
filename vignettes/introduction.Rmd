@@ -209,7 +209,7 @@ We can easily plot the scaled density to check the scaling outcome. On the x axi
 
 ```{r plot_normalise}
 se_mini.norm |>
-	ggplot(aes(count_scaled + 1, group=sample, color=`Cell.type`)) +
+	ggplot(aes(count_scaled + 1, group=.sample, color=`Cell.type`)) +
 	geom_density() +
 	scale_x_log10() +
 	my_theme
