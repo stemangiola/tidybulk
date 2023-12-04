@@ -85,7 +85,8 @@ Suggests:
     pbmcapply,
     lme4,
     glmmTMB,
-    MASS
+    MASS,
+    pkgconfig
 VignetteBuilder: 
     knitr
 RdMacros:
