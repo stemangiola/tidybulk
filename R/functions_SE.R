@@ -1171,11 +1171,11 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     # # Add raw object
     # attach_to_internals(glmmSeq_object, "glmmSeq") %>%
 
-    # Communicate the attribute added
-    {
-      rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
-      (.)
-    }  %>%
+    # # Communicate the attribute added
+    # {
+    #   rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
+    #   (.)
+    # }  %>%
 
     # Attach prefix
     setNames(c(
