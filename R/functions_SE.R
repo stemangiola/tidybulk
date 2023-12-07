@@ -1133,10 +1133,17 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     .data %>%
     assay(my_assay)
 
+  # Create design matrix for dispersion, removing random effects
+  design =
+    model.matrix(
+      object = .formula |> eliminate_random_effects(),
+      data = metadata
+    )
+  
   if(quo_is_symbolic(.dispersion))
     dispersion = rowData(.data)[,quo_name(.dispersion),drop=FALSE] |> as_tibble(rownames = feature__$name) |> deframe()
   else
-    dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts))
+    dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
 
   # # Check dispersion
   # if(!names(dispersion) |> sort() |> identical(
@@ -1171,11 +1178,11 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     # # Add raw object
     # attach_to_internals(glmmSeq_object, "glmmSeq") %>%
 
-    # Communicate the attribute added
-    {
-      rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
-      (.)
-    }  %>%
+    # # Communicate the attribute added
+    # {
+    #   rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
+    #   (.)
+    # }  %>%
 
     # Attach prefix
     setNames(c(

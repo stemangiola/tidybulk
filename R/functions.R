@@ -758,10 +758,17 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   # Reorder counts
   counts = counts[,rownames(metadata),drop=FALSE]
 
+  # Create design matrix for dispersion, removing random effects
+  design =
+    model.matrix(
+      object = .formula |> eliminate_random_effects(),
+      data = metadata
+    )
+  
   if(quo_is_symbolic(.dispersion))
     dispersion = .data |> pivot_transcript(!!.transcript) |> select(!!.transcript, !!.dispersion) |> deframe()
   else
-    dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts))
+    dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
 
   # # Check dispersion
   # if(!names(dispersion) |> sort() |> identical(
