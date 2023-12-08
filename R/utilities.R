@@ -1524,4 +1524,32 @@ feature__ =  get_special_column_name_symbol(".feature")
 sample__ = get_special_column_name_symbol(".sample")
 
 
-
+#' Produced using ChatGPT - Eliminate Random Effects from a Formula
+#'
+#' This function takes a mixed-effects model formula and returns a modified
+#' formula with all random effects removed, leaving only the fixed effects.
+#'
+#' @param formula An object of class \code{formula}, representing a mixed-effects model formula.
+#' @return A formula object with random effects parts removed.
+#' @examples
+#' eliminate_random_effects(~ age_days * sex + (1 | file_id) + ethnicity_simplified + assay_simplified + .aggregated_cells + (1 + age_days * sex | tissue))
+#' @noRd
+#' @importFrom stats as.formula
+eliminate_random_effects <- function(formula) {
+  # Convert the formula to a string
+  formula_str <- deparse(formula)
+  
+  # Split the string by '+' while keeping the brackets content together
+  split_str <- unlist(strsplit(formula_str, "(?<=\\))\\s*\\+\\s*|\\+\\s*(?=\\()", perl = TRUE))
+  
+  # Filter out the random effects parts
+  fixed_effects <- grep("\\|", split_str, value = TRUE, invert = TRUE)
+  
+  # Combine the fixed effects parts back into a single string
+  modified_str <- paste(fixed_effects, collapse = " + ")
+  
+  # Convert the modified string back to a formula
+  modified_formula <- as.formula(modified_str)
+  
+  return(modified_formula)
+}

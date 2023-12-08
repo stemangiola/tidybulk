@@ -2600,6 +2600,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.
 #'
 #' Underlying method for edgeR framework:
+#' 
 #' 	.data |>
 #'
 #' 	# Filter
@@ -2623,7 +2624,10 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'			edgeR::glmQLFit(design) |> // or glmFit according to choice
 #'			edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
 #'
+#'
+#'
 #'	Underlying method for DESeq2 framework:
+#'	
 #'	keep_abundant(
 #'			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 #'			minimum_counts = minimum_counts,
@@ -2636,6 +2640,31 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'	DESeq2::results()
 #'
 #'
+#'
+#' Underlying method for glmmSeq framework:
+#'
+#' counts =
+#' .data %>%
+#'   assay(my_assay)
+#' 
+#' # Create design matrix for dispersion, removing random effects
+#' design =
+#'   model.matrix(
+#'     object = .formula |> eliminate_random_effects(),
+#'     data = metadata
+#'   )
+#' 
+#' dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
+#' 
+#'   glmmSeq( .formula,
+#'            countdata = counts ,
+#'            metadata =   metadata |> as.data.frame(),
+#'            dispersion = dispersion,
+#'            progress = TRUE,
+#'            method = method |> str_remove("(?i)^glmmSeq_" ),
+#'   )
+#'   
+#' 
 #' @return A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
 #'
 #'

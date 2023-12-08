@@ -180,6 +180,7 @@ This function provides the option to use edgeR \url{https://doi.org/10.1093/bioi
 All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.
 
 Underlying method for edgeR framework:
+
 	.data |>
 
 	# Filter
@@ -203,7 +204,10 @@ keep_abundant(
 		edgeR::glmQLFit(design) |> // or glmFit according to choice
 		edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
 
+
+
 Underlying method for DESeq2 framework:
+
 keep_abundant(
 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 		minimum_counts = minimum_counts,
@@ -214,6 +218,31 @@ keep_abundant(
 DESeq2::DESeqDataSet(design = .formula) |>
 DESeq2::DESeq() |>
 DESeq2::results()
+
+
+
+Underlying method for glmmSeq framework:
+
+counts =
+.data %>%
+  assay(my_assay)
+
+# Create design matrix for dispersion, removing random effects
+design =
+  model.matrix(
+    object = .formula |> eliminate_random_effects(),
+    data = metadata
+  )
+
+dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
+
+  glmmSeq( .formula,
+           countdata = counts ,
+           metadata =   metadata |> as.data.frame(),
+           dispersion = dispersion,
+           progress = TRUE,
+           method = method |> str_remove("(?i)^glmmSeq_" ),
+  )
 }
 \examples{
 
