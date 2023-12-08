@@ -1100,13 +1100,13 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     omit_contrast_in_colnames = FALSE
   }
 
-  # Check if package is installed, otherwise install
-  if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-    message("tidybulk says: Installing edgeR needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("edgeR", ask = FALSE)
-  }
+  # # Check if package is installed, otherwise install
+  # if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+  #   message("tidybulk says: Installing edgeR needed for differential transcript abundance analyses")
+  #   if (!requireNamespace("BiocManager", quietly = TRUE))
+  #     install.packages("BiocManager", repos = "https://cloud.r-project.org")
+  #   BiocManager::install("edgeR", ask = FALSE)
+  # }
 
   # Check if package is installed, otherwise install
   if (find.package("glmmSeq", quiet = TRUE) %>% length %>% equals(0)) {
@@ -1136,7 +1136,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   # Create design matrix for dispersion, removing random effects
   design =
     model.matrix(
-      object = .formula |> eliminate_random_effects(),
+      object = .formula |> lme4::nobars(),
       data = metadata
     )
   
