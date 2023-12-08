@@ -1154,11 +1154,16 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   # Make sure the order matches the counts
   dispersion = dispersion[rownames(counts)]
 
+  # Scaling
+  sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
+  
+  
   glmmSeq_object =
     glmmSeq( .formula,
                       countdata = counts ,
                       metadata =   metadata |> as.data.frame(),
                       dispersion = dispersion,
+             sizeFactors = sizeFactors,
                       progress = TRUE,
                       method = method |> str_remove("(?i)^glmmSeq_" ),
                       ...
