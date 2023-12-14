@@ -4956,3 +4956,30 @@ as_matrix <- function(tbl,
 }
 
 
+#' Resolve Complete Confounders of Non-Interest
+#'
+#' This generic function processes a SummarizedExperiment object to handle confounders
+#' that are not of interest in the analysis. It dynamically handles combinations
+#' of provided factors, adjusting the data by nesting and summarizing over these factors.
+#'
+#'
+#' @param se A SummarizedExperiment object that contains the data to be processed.
+#' @param ... Arbitrary number of factor variables represented as symbols or quosures
+#'            to be considered for resolving confounders. These factors are processed
+#'            in combinations of two.
+#'
+#' @rdname resolve_complete_confounders_of_non_interest-methods
+#'
+#' @return A modified SummarizedExperiment object with confounders resolved.
+#'
+#' @examples
+#' # Not run:
+#' # se is a SummarizedExperiment object
+#' # resolve_complete_confounders_of_non_interest(se, factor1, factor2, factor3)
+#' @export
+setGeneric("resolve_complete_confounders_of_non_interest", function(se, ...) {
+  standardGeneric("resolve_complete_confounders_of_non_interest")
+})
+
+
+
