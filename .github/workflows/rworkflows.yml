@@ -1,17 +1,7 @@
 name: rworkflows
-'on':
+on:
   push:
-    branches:
-    - master
-    - main
-    - devel
-    - RELEASE_**
   pull_request:
-    branches:
-    - master
-    - main
-    - devel
-    - RELEASE_**
 jobs:
   rworkflows:
     permissions: write-all
