@@ -52,9 +52,21 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: ubuntu-latest, r: '4.3', bioc: '3.18', cont: "bioconductor/bioconductor_docker:devel", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
-          - { os: macOS-latest, r: '4.3', bioc: '3.18'}
-          - { os: windows-latest, r: '4.3', bioc: '3.18'}
+        - os: ubuntu-latest
+          bioc: devel
+          r: auto
+          cont: ghcr.io/bioconductor/bioconductor_docker:devel
+          rspm: ~
+        - os: macOS-latest
+          bioc: release
+          r: auto
+          cont: ~
+          rspm: ~
+        - os: windows-latest
+          bioc: release
+          r: auto
+          cont: ~
+          rspm: ~
           ## Check https://github.com/r-lib/actions/tree/master/examples
           ## for examples using the http-user-agent
     env:
