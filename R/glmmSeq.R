@@ -420,6 +420,13 @@ setClassUnion("formulaOrNULL", c("formula", "NULL"))
 #'
 #' @keywords internal
 #' @noRd
+#' 
+#' @import lme4
+#' @importFrom glmmTMB glmmTMBControl
+#' @importFrom parallel makeCluster
+#' @importFrom parallel clusterExport
+#' @importFrom pbapply pblapply
+#' @importFrom pbmcapply pbmclapply
 #'
 #' @slot info List including the matched call, dispersions, offset, designMatrix
 #' @slot formula The model formula
@@ -580,14 +587,6 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       clusterExport(cl, varlist = varlist, envir = environment())
       if (progress) {
 
-        # Check if package is installed, otherwise install
-        if (find.package("pblapply", quiet = TRUE) %>% length %>% equals(0)) {
-          message("tidybulk says: Installing pblapply needed for differential transcript abundance analyses")
-          if (!requireNamespace("BiocManager", quietly = TRUE))
-            install.packages("BiocManager", repos = "https://cloud.r-project.org")
-          BiocManager::install("pblapply", ask = FALSE)
-        }
-
         resultList <- pbapply::pblapply(fullList, function(geneList) {
           args <- c(list(geneList = geneList, fullFormula = fullFormula,
                          reduced = reduced, data = subsetMetadata,
@@ -618,14 +617,6 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
     }
     else {
       if (progress) {
-
-        # Check if package is installed, otherwise install
-        if (find.package("pbmcapply", quiet = TRUE) %>% length %>% equals(0)) {
-          message("tidybulk says: Installing pbmcapply needed for differential transcript abundance analyses")
-          if (!requireNamespace("BiocManager", quietly = TRUE))
-            install.packages("BiocManager", repos = "https://cloud.r-project.org")
-          BiocManager::install("pbmcapply", ask = FALSE)
-        }
 
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
           glmerCore(geneList, fullFormula, reduced,
@@ -672,14 +663,6 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       parallel::clusterExport(cl, varlist = varlist, envir = environment())
       if (progress) {
 
-        # Check if package is installed, otherwise install
-        if (find.package("pblapply", quiet = TRUE) %>% length %>% equals(0)) {
-          message("tidybulk says: Installing pblapply needed for differential transcript abundance analyses")
-          if (!requireNamespace("BiocManager", quietly = TRUE))
-            install.packages("BiocManager", repos = "https://cloud.r-project.org")
-          BiocManager::install("pblapply", ask = FALSE)
-        }
-
         resultList <- pbapply::pblapply(fullList, function(geneList) {
           args <- c(list(geneList = geneList, fullFormula = fullFormula,
                          reduced = reduced, data = subsetMetadata,
@@ -704,14 +687,6 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
     }
     else {
       if (progress) {
-
-        # Check if package is installed, otherwise install
-        if (find.package("pbmcapply", quiet = TRUE) %>% length %>% equals(0)) {
-          message("tidybulk says: Installing pbmcapply needed for differential transcript abundance analyses")
-          if (!requireNamespace("BiocManager", quietly = TRUE))
-            install.packages("BiocManager", repos = "https://cloud.r-project.org")
-          BiocManager::install("pbmcapply", ask = FALSE)
-        }
 
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
           glmmTMBcore(geneList, fullFormula, reduced,

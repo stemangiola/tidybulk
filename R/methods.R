@@ -113,7 +113,8 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 #'
 #' @description as_SummarizedExperiment() creates a `SummarizedExperiment` object from a `tbl` or `tidybulk` tbl formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
-#'
+#' @import SummarizedExperiment
+#' @import S4Vectors
 #' @importFrom utils data
 #' @importFrom tidyr pivot_longer
 #'
@@ -151,20 +152,6 @@ setGeneric("as_SummarizedExperiment", function(.data,
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
-
-	# Check if package is installed, otherwise install
-	if (find.package("SummarizedExperiment", quiet = TRUE) |> length() |> equals(0)) {
-		message("Installing SummarizedExperiment")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("SummarizedExperiment", ask = FALSE)
-	}
-	if (find.package("S4Vectors", quiet = TRUE) |> length() %>% equals(0)) {
-		message("Installing S4Vectors")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("S4Vectors", ask = FALSE)
-	}
 
 	# If present get the scaled abundance
 	.abundance_scaled =
@@ -582,7 +569,10 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 #' @importFrom magrittr "%>%"
 #' @importFrom stats median
 #' @importFrom dplyr join_by
-#'
+#' @importFrom limma normalizeQuantiles
+#' @importFrom preprocessCore normalize.quantiles.use.target
+#' @importFrom preprocessCore normalize.quantiles.determine.target
+#' 
 #' @name quantile_normalise_abundance
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
@@ -591,7 +581,6 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A character string. Either "limma_normalize_quantiles" for limma::normalizeQuantiles or "preprocesscore_normalize_quantiles_use_target" for preprocessCore::normalize.quantiles.use.target for large-scale dataset, where limmma could not be compatible.
 #' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
-#'
 #'
 #' @details Scales transcript abundance compensating for sequencing depth
 #' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
@@ -602,18 +591,12 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 #' Underlying method
 #' edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))
 #'
-#'
-#'
 #' @return A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
-#'
 #'
 #' @examples
 #'
-#'
 #'  tidybulk::se_mini |>
 #'    quantile_normalise_abundance()
-#'
-#'
 #'
 #' @docType methods
 #' @rdname quantile_normalise_abundance-methods
@@ -662,31 +645,14 @@ setGeneric("quantile_normalise_abundance", function(.data,
     dplyr::mutate(!!.sample := factor(!!.sample),!!.transcript := factor(!!.transcript))  |>
     pivot_wider(names_from = !!.sample, values_from = !!.abundance) |>
     as_matrix(rownames=!!.transcript)
-
-
+  
   if(tolower(method) == "limma_normalize_quantiles"){
-
-    # Check if package is installed, otherwise install
-    if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
-      message("tidybulk says: Installing limma needed for analyses")
-      if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager", repos = "https://cloud.r-project.org")
-      BiocManager::install("limma", ask = FALSE)
-    }
 
     .data_norm =
       .data_norm |>
       limma::normalizeQuantiles()
   }
   else if(tolower(method) == "preprocesscore_normalize_quantiles_use_target"){
-
-    # Check if package is installed, otherwise install
-    if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
-      message("tidybulk says: Installing preprocessCore needed for analyses")
-      if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager", repos = "https://cloud.r-project.org")
-      BiocManager::install("preprocessCore", ask = FALSE)
-    }
 
     .data_norm_quant =
       .data_norm |>
@@ -2261,7 +2227,9 @@ setMethod("deconvolve_cellularity",
 
 
 #' Get ENTREZ id from gene SYMBOL
-#'
+#' 
+#' @importFrom org.Hs.eg.db org.Hs.eg.db
+#' 
 #' @param .data A tt or tbl object.
 #' @param .transcript A character. The name of the gene symbol column.
 #' @param .sample The name of the sample column
@@ -2290,14 +2258,6 @@ symbol_to_entrez = function(.data,
 	.sample = enquo(.sample)
 	col_names = get_sample_transcript(.data, .sample, .transcript)
 	.transcript = col_names$.transcript
-
-	# Check if package is installed, otherwise install
-	if (find.package("org.Hs.eg.db", quiet = TRUE) |> length() |> equals(0)) {
-		message("Installing org.Hs.eg.db needed for annotation")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Hs.eg.db", ask = FALSE)
-	}
 
 	.data |>
 
@@ -2332,6 +2292,10 @@ symbol_to_entrez = function(.data,
 #' @param .data A tt or tbl object.
 #' @param .transcript A character. The name of the gene symbol column.
 #'
+#' @importFrom org.Hs.eg.db org.Hs.eg.db
+#' @importFrom org.Mm.eg.db org.Mm.eg.db
+#' @importFrom AnnotationDbi mapIds
+#' 
 #' @return A tbl
 #'
 #' @examples
@@ -2358,31 +2322,6 @@ setGeneric("describe_transcript", function(.data,
 	.transcript = enquo(.transcript)
 	col_names = get_transcript(.data, .transcript)
 	.transcript = col_names$.transcript
-
-
-	# Check if package is installed, otherwise install
-	if (find.package("org.Hs.eg.db", quiet = TRUE) |> length() |> equals(0)) {
-		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Hs.eg.db", ask = FALSE)
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("org.Mm.eg.db", quiet = TRUE) |> length() |> equals(0)) {
-		message("Installing org.Mm.eg.db needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Mm.eg.db", ask = FALSE)
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("AnnotationDbi", quiet = TRUE) |> length() |> equals(0)) {
-		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("AnnotationDbi", ask = FALSE)
-	}
 
 	description_df =
 
@@ -3099,6 +3038,7 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 #' @importFrom magrittr "%>%"
 #' @importFrom dplyr filter
 #' @importFrom tidyr drop_na
+#' @importFrom edgeR filterByExpr
 #'
 #' @name identify_abundant
 #'
@@ -3185,15 +3125,6 @@ setGeneric("identify_abundant", function(.data,
 
 
 	if(	".abundant" %in% colnames(.data) ) return( .data	|>	  reattach_internals(.data)	)
-
-
-  # Check if package is installed, otherwise install
-  if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-    message("Installing edgeR needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("edgeR", ask = FALSE)
-  }
 
 	# If character fail
 	if(
@@ -3695,6 +3626,7 @@ setMethod("test_gene_enrichment",
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_missing
 #' @importFrom magrittr "%>%"
+#' @importFrom msigdbr msigdbr_species
 #'
 #' @name test_gene_overrepresentation
 #'
@@ -3788,13 +3720,6 @@ setGeneric("test_gene_overrepresentation", function(.data,
 	if (.data %>% mutate(my_do_test = !!.do_test) %>% pull(my_do_test)  |> is("logical") |> not() )
 		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
 
-	# Check packages msigdbr
-	# Check if package is installed, otherwise install
-	if (find.package("msigdbr", quiet = TRUE) |> length() |> equals(0)) {
-		message("msigdbr not installed. Installing.")
-		BiocManager::install("msigdbr", ask = FALSE)
-	}
-
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name |> not())
 		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
@@ -3854,6 +3779,7 @@ setMethod("test_gene_overrepresentation",
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_missing
 #' @importFrom magrittr "%>%"
+#' @importFrom msigdbr msigdbr_species
 #'
 #' @name test_gene_rank
 #'
@@ -3968,13 +3894,6 @@ setGeneric("test_gene_rank", function(.data,
 	# Check if entrez is set
 	if(quo_is_missing(.entrez))
 		stop("tidybulk says: the .entrez parameter appears to no be set")
-
-	# Check packages msigdbr
-	# Check if package is installed, otherwise install
-	if (find.package("msigdbr", quiet = TRUE) |> length() |> equals(0)) {
-		message("msigdbr not installed. Installing.")
-		BiocManager::install("msigdbr", ask = FALSE)
-	}
 
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name |> not())

@@ -1,3 +1,4 @@
+#' @importFrom SummarizedExperiment assays
 .tidybulk_se = function(.data,
 												.sample,
 												.transcript,
@@ -6,14 +7,6 @@
 
   # Fix NOTEs
   . = NULL
-
-	# Check if package is installed, otherwise install
-	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing SummarizedExperiment")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("SummarizedExperiment", ask = FALSE)
-	}
 
 	# Make col names
 	.sample = enquo(.sample)
@@ -37,9 +30,6 @@
 		!!as.symbol(SummarizedExperiment::assays(.data)[1] %>%  names	),
 		!!norm_col # scaled counts if any
 	)
-
-
-
 }
 
 #' tidybulk
@@ -72,15 +62,13 @@ setMethod("tidybulk", "SummarizedExperiment", .tidybulk_se)
 #'
 setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 
-
-
-
 #' @importFrom magrittr multiply_by
 #' @importFrom magrittr divide_by
 #' @importFrom SummarizedExperiment assays
 #' @importFrom SummarizedExperiment colData
 #' @importFrom utils tail
 #' @importFrom stats na.omit
+#' @importFrom edgeR calcNormFactors
 #'
 .scale_abundance_se = function(.data,
                                .sample = NULL,
@@ -97,14 +85,6 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 
   # Fix NOTEs
   . = NULL
-
-	# Check if package is installed, otherwise install
-	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing edgeR needed for analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("edgeR", ask = FALSE)
-	}
 
   # DEPRECATION OF reference function
   if (is_present(reference_selection_function) & !is.null(reference_selection_function)) {
@@ -242,6 +222,9 @@ setMethod("scale_abundance",
 #' @importFrom SummarizedExperiment colData
 #' @importFrom utils tail
 #' @importFrom stats na.omit
+#' @importFrom limma normalizeQuantiles
+#' @importFrom preprocessCore normalize.quantiles.use.target
+#' @importFrom preprocessCore normalize.quantiles.determine.target
 #'
 .quantile_normalise_abundance_se = function(.data,
                                .sample = NULL,
@@ -249,7 +232,6 @@ setMethod("scale_abundance",
                                .abundance = NULL,
                                method = "limma_normalize_quantiles",
                                action = NULL) {
-
 
   # Fix NOTEs
   . = NULL
@@ -280,14 +262,6 @@ setMethod("scale_abundance",
 
   else if(tolower(method) == "limma_normalize_quantiles"){
 
-    # Check if package is installed, otherwise install
-    if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
-      message("tidybulk says: Installing limma needed for analyses")
-      if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager", repos = "https://cloud.r-project.org")
-      BiocManager::install("limma", ask = FALSE)
-    }
-
     .data_norm <-
       .data %>%
       assay(my_assay) |>
@@ -297,14 +271,6 @@ setMethod("scale_abundance",
 
   }
   else if(tolower(method) == "preprocesscore_normalize_quantiles_use_target"){
-
-    # Check if package is installed, otherwise install
-    if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
-      message("tidybulk says: Installing preprocessCore needed for analyses")
-      if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager", repos = "https://cloud.r-project.org")
-      BiocManager::install("preprocessCore", ask = FALSE)
-    }
 
     .data_norm =
       .data |>
@@ -771,6 +737,8 @@ setMethod("remove_redundancy",
 #' @inheritParams remove_redundancy
 #'
 #' @importFrom rlang quo
+#' @importFrom sva ComBat
+#' @importFrom sva ComBat_seq
 #'
 #' @docType methods
 #' @rdname remove_redundancy-methods
@@ -806,15 +774,6 @@ setMethod("remove_redundancy",
   . = NULL
 
   .abundance = enquo(.abundance)
-
-	# Check if package is installed, otherwise install
-	if (find.package("sva", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing sva - Combat needed for adjustment for unwanted variation")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("sva", ask = FALSE)
-	}
-
 
   # DEPRECATION OF log_transform
   if (
@@ -1176,7 +1135,6 @@ setMethod("aggregate_duplicates",
 					.aggregate_duplicates_se)
 
 
-
 #' @importFrom rlang quo_is_symbolic
 .deconvolve_cellularity_se = function(.data,
 																			reference = X_cibersort,
@@ -1218,27 +1176,6 @@ setMethod("aggregate_duplicates",
 			# Execute do.call because I have to deal with ...
 			method %>% tolower %>% equals("cibersort") 	~ {
 
-				# Check if package is installed, otherwise install
-				if (find.package("class", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing class needed for Cibersort")
-					install.packages("class", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
-				}
-
-				# Check if package is installed, otherwise install
-				if (find.package("e1071", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing e1071 needed for Cibersort")
-					install.packages("e1071", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
-				}
-
-				# Check if package is installed, otherwise install
-				if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing preprocessCore needed for Cibersort")
-					if (!requireNamespace("BiocManager", quietly = TRUE))
-						install.packages("BiocManager", repos = "https://cloud.r-project.org")
-					BiocManager::install("preprocessCore", ask = FALSE)
-
-				}
-
 				# Choose reference
 				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
 
@@ -1278,12 +1215,6 @@ setMethod("aggregate_duplicates",
 
 			# Other (hidden for the moment) methods using third party wrapper https://icbi-lab.github.io/immunedeconv
 			method %>% tolower %in% c("mcp_counter", "quantiseq", "xcell") ~ {
-
-				# Check if package is installed, otherwise install
-				if (find.package("immunedeconv", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing immunedeconv")
-					devtools::install_github("icbi-lab/immunedeconv", upgrade = FALSE)
-				}
 
 				if(method %in% c("mcp_counter", "quantiseq", "xcell") & !"immunedeconv" %in% (.packages()))
 					stop("tidybulk says: for xcell, mcp_counter, or quantiseq deconvolution you should have the package immunedeconv attached. Please execute library(immunedeconv)")
@@ -1582,6 +1513,7 @@ setMethod("keep_variable",
 #' @importFrom purrr map_chr
 #' @importFrom tidyr unite
 #' @importFrom Matrix colSums
+#' @importFrom edgeR filterByExpr
 #'
 #' @docType methods
 #' @rdname keep_variable-methods
@@ -1678,16 +1610,6 @@ setMethod("keep_variable",
 
 	} else {
 	  string_factor_of_interest = NULL
-	}
-
-
-
-	# Check if package is installed, otherwise install
-	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing edgeR needed for analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("edgeR", ask = FALSE)
 	}
 
 	# If no assay is specified take first
@@ -2093,6 +2015,7 @@ setMethod("test_gene_enrichment",
 
 #' test_gene_enrichment
 #' @inheritParams test_gene_enrichment
+#' @importFrom msigdbr msigdbr_species
 #'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
@@ -2140,13 +2063,6 @@ setMethod("test_gene_enrichment",
 	if (.data %>% rowData() %>% as_tibble(rownames = f_(.data)$name) %>% mutate(my_do_test = !!.do_test) %>% pull(my_do_test) |> is("logical") %>% not())
 		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
 
-	# Check packages msigdbr
-	# Check if package is installed, otherwise install
-	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
-		message("msigdbr not installed. Installing.")
-		BiocManager::install("msigdbr", ask = FALSE)
-	}
-
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
 		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
@@ -2167,7 +2083,6 @@ setMethod("test_gene_enrichment",
 	  # Add methods used
 	  memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"), object_containing_methods = .data)
 
-
 }
 
 #' test_gene_overrepresentation
@@ -2183,7 +2098,8 @@ setMethod("test_gene_overrepresentation",
 
 #' test_gene_overrepresentation
 #' @inheritParams test_gene_overrepresentation
-#'
+#' @importFrom msigdbr msigdbr_species
+#' 
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
 #'
@@ -2226,13 +2142,6 @@ setMethod("test_gene_overrepresentation",
 	# Check if entrez is set
 	if(quo_is_missing(.entrez))
 		stop("tidybulk says: the .entrez parameter appears to no be set")
-
-	# Check packages msigdbr
-	# Check if package is installed, otherwise install
-	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
-		message("msigdbr not installed. Installing.")
-		BiocManager::install("msigdbr", ask = FALSE)
-	}
 
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
@@ -2487,7 +2396,6 @@ setMethod("impute_missing_abundance",
 #'
 #' @importFrom stringr str_replace
 #'
-#'
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("impute_missing_abundance",
@@ -2505,11 +2413,6 @@ setMethod("impute_missing_abundance",
 
   # Fix NOTEs
   . = NULL
-
-	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing broom needed for analyses")
-		install.packages("broom", repos = "https://cloud.r-project.org")
-	}
 
 	deconvoluted =
 		.data %>%
@@ -2757,6 +2660,9 @@ setMethod("get_bibliography",
 #'
 #' @importFrom SummarizedExperiment rowData
 #' @importFrom tibble enframe
+#' @importFrom AnnotationDbi mapIds
+#' @importFrom org.Hs.eg.db org.Hs.eg.db
+#' @importFrom org.Mm.eg.db org.Mm.eg.db
 #'
 #' @inheritParams describe_transcript
 #'
@@ -2771,30 +2677,6 @@ setMethod("get_bibliography",
 
   # Fix NOTEs
   . = NULL
-
-	# Check if package is installed, otherwise install
-	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Hs.eg.db", ask = FALSE)
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("org.Mm.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing org.Mm.eg.db needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Mm.eg.db", ask = FALSE)
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("AnnotationDbi", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("AnnotationDbi", ask = FALSE)
-	}
 
 	.transcript = enquo(.transcript)
 
