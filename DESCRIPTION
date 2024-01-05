@@ -106,7 +106,6 @@ Suggests:
     uwot,
     matrixStats,
     igraph,
-    EGSEA,
     IRanges,
     here,
     glmmSeq,
@@ -114,7 +113,10 @@ Suggests:
     pbmcapply,
     lme4,
     glmmTMB,
-    MASS
+    MASS,
+    EGSEA
+Remotes:
+    GfellerLab/EPIC
 VignetteBuilder: 
     knitr
 RdMacros:
