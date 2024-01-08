@@ -1557,7 +1557,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
         	limma::voom(design, plot = FALSE) %>%
 
         	# Execute EGSEA
-    	  EGSEA::egsea(
+    	  egsea(
         		contrasts = my_contrasts,
         		gs.annots = nonkegg_genesets,
         		baseGSEAs = methods,

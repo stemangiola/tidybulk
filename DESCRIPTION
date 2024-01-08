@@ -86,9 +86,7 @@ Suggests:
     igraph,
     IRanges,
     here,
-    MASS,
-    EGSEA,
-    qpdf
+    MASS
 Remotes:
     GfellerLab/EPIC
 VignetteBuilder: 
