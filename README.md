@@ -17,62 +17,59 @@ License.
 
 website:
 [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
-
+[Third party
+tutorials](https://rstudio-pubs-static.s3.amazonaws.com/792462_f948e766b15d4ee5be5c860493bda0b3.html)
 Please have a look also to
 
--   [tidySummarizedExperiment](https://github.com/stemangiola/tidySummarizedExperiment)
-    for bulk data tidy representation
--   [tidySingleCellExperiment](https://github.com/stemangiola/tidySingleCellExperiment)
-    for single-cell data tidy representation
--   [tidyseurat](https://github.com/stemangiola/tidyseurat) for
-    single-cell data tidy representation
--   [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for
-    heatmaps produced with tidy principles analysis and manipulation
--   [nanny](https://github.com/stemangiola/nanny) for tidy high-level
-    data analysis and manipulation
--   [tidygate](https://github.com/stemangiola/tidygate) for adding
-    custom gate information to your tibble
+- [tidySummarizedExperiment](https://github.com/stemangiola/tidySummarizedExperiment)
+  for bulk data tidy representation
+- [tidySingleCellExperiment](https://github.com/stemangiola/tidySingleCellExperiment)
+  for single-cell data tidy representation
+- [tidyseurat](https://github.com/stemangiola/tidyseurat) for
+  single-cell data tidy representation
+- [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for heatmaps
+  produced with tidy principles analysis and manipulation
+- [tidygate](https://github.com/stemangiola/tidygate) for adding custom
+  gate information to your tibble
 
 <!---
-
-[![Build Status](https://travis-ci.org/stemangiola/tidybulk.svg?branch=master)](https://travis-ci.org/stemangiola/tidybulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/tidybulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/tidybulk?branch=master)
-
--->
+&#10;[![Build Status](https://travis-ci.org/stemangiola/tidybulk.svg?branch=master)](https://travis-ci.org/stemangiola/tidybulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/tidybulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/tidybulk?branch=master)
+&#10;-->
 
 <img src="man/figures/new_SE_usage-01.png" width="800px" />
 
 ## Functions/utilities available
 
-| Function                            | Description                                                                        |
-|-------------------------------------|------------------------------------------------------------------------------------|
-| `aggregate_duplicates`              | Aggregate abundance and annotation of duplicated transcripts in a robust way       |
-| `identify_abundant` `keep_abundant` | identify or keep the abundant genes                                                |
-| `keep_variable`                     | Filter for top variable features                                                   |
-| `scale_abundance`                   | Scale (normalise) abundance for RNA sequencing depth                               |
-| `reduce_dimensions`                 | Perform dimensionality reduction (PCA, MDS, tSNE, UMAP)                            |
-| `cluster_elements`                  | Labels elements with cluster identity (kmeans, SNN)                                |
-| `remove_redundancy`                 | Filter out elements with highly correlated features                                |
-| `adjust_abundance`                  | Remove known unwanted variation (Combat)                                           |
-| `test_differential_abundance`       | Differential transcript abundance testing (DESeq2, edgeR, voom)                    |
-| `deconvolve_cellularity`            | Estimated tissue composition (Cibersort, llsr, epic, xCell, mcp_counter, quantiseq |
-| `test_differential_cellularity`     | Differential cell-type abundance testing                                           |
-| `test_stratification_cellularity`   | Estimate Kaplan-Meier survival differences                                         |
-| `test_gene_enrichment`              | Gene enrichment analyses (EGSEA)                                                   |
-| `test_gene_overrepresentation`      | Gene enrichment on list of transcript names (no rank)                              |
-| `test_gene_rank`                    | Gene enrichment on list of transcript (GSEA)                                       |
-| `impute_missing_abundance`          | Impute abundance for missing data points using sample groupings                    |
+| Function                        | Description                                                                  |
+|---------------------------------|------------------------------------------------------------------------------|
+| `identify_abundant`             | identify the abundant genes                                                  |
+| `aggregate_duplicates`          | Aggregate abundance and annotation of duplicated transcripts in a robust way |
+| `scale_abundance`               | Scale (normalise) abundance for RNA sequencing depth                         |
+| `reduce_dimensions`             | Perform dimensionality reduction (PCA, MDS, tSNE)                            |
+| `cluster_elements`              | Labels elements with cluster identity (kmeans, SNN)                          |
+| `remove_redundancy`             | Filter out elements with highly correlated features                          |
+| `adjust_abundance`              | Remove known unwanted variation (Combat)                                     |
+| `test_differential_abundance`   | Differential transcript abundance testing (DE)                               |
+| `deconvolve_cellularity`        | Estimated tissue composition (Cibersort or llsr)                             |
+| `test_differential_cellularity` | Differential cell-type abundance testing                                     |
+| `keep_variable`                 | Filter for top variable features                                             |
+| `keep_abundant`                 | Filter out lowly abundant transcripts                                        |
+| `test_gene_enrichment`          | Gene enrichment analyses (EGSEA)                                             |
+| `test_gene_overrepresentation`  | Gene enrichment on list of transcript names (no rank)                        |
 
-| Utilities             | Description                                |
-|-----------------------|--------------------------------------------|
-| `get_bibliography`    | Get the bibliography of your workflow      |
-| `tidybulk`            | add tidybulk attributes to a tibble object |
-| `tidybulk_SAM_BAM`    | Convert SAM BAM files into tidybulk tibble |
-| `pivot_sample`        | Select sample-wise columns/information     |
-| `pivot_transcript`    | Select transcript-wise columns/information |
-| `rotate_dimensions`   | Rotate two dimensions of a degree          |
-| `ensembl_to_symbol`   | Add gene symbol from ensembl IDs           |
-| `symbol_to_entrez`    | Add entrez ID from gene symbol             |
-| `describe_transcript` | Add gene description from gene symbol      |
+| Utilities                  | Description                                                     |
+|----------------------------|-----------------------------------------------------------------|
+| `get_bibliography`         | Get the bibliography of your workflow                           |
+| `tidybulk`                 | add tidybulk attributes to a tibble object                      |
+| `tidybulk_SAM_BAM`         | Convert SAM BAM files into tidybulk tibble                      |
+| `pivot_sample`             | Select sample-wise columns/information                          |
+| `pivot_transcript`         | Select transcript-wise columns/information                      |
+| `rotate_dimensions`        | Rotate two dimensions of a degree                               |
+| `ensembl_to_symbol`        | Add gene symbol from ensembl IDs                                |
+| `symbol_to_entrez`         | Add entrez ID from gene symbol                                  |
+| `describe_transcript`      | Add gene description from gene symbol                           |
+| `impute_missing_abundance` | Impute abundance for missing data points using sample groupings |
+| `fill_missing_abundance`   | Fill abundance for missing data points using an arbitrary value |
 
 All functions are directly compatibble with `SummarizedExperiment`
 object.
@@ -96,25 +93,24 @@ devtools::install_github("stemangiola/tidybulk")
 We will use a `SummarizedExperiment` object
 
 ``` r
-counts_SE
+se_mini
 ```
 
-    ## # A SummarizedExperiment-tibble abstraction: 408,624 × 48
-    ## # [90mFeatures=8513 | Samples=48 | Assays=count[0m
-    ##    .feature .sample    count Cell.type time  condition batch factor_of_interest
-    ##    <chr>    <chr>      <dbl> <fct>     <fct> <lgl>     <fct> <lgl>             
-    ##  1 A1BG     SRR1740034   153 b_cell    0 d   TRUE      0     TRUE              
-    ##  2 A1BG-AS1 SRR1740034    83 b_cell    0 d   TRUE      0     TRUE              
-    ##  3 AAAS     SRR1740034   868 b_cell    0 d   TRUE      0     TRUE              
-    ##  4 AACS     SRR1740034   222 b_cell    0 d   TRUE      0     TRUE              
-    ##  5 AAGAB    SRR1740034   590 b_cell    0 d   TRUE      0     TRUE              
-    ##  6 AAMDC    SRR1740034    48 b_cell    0 d   TRUE      0     TRUE              
-    ##  7 AAMP     SRR1740034  1257 b_cell    0 d   TRUE      0     TRUE              
-    ##  8 AANAT    SRR1740034   284 b_cell    0 d   TRUE      0     TRUE              
-    ##  9 AAR2     SRR1740034   379 b_cell    0 d   TRUE      0     TRUE              
-    ## 10 AARS2    SRR1740034   685 b_cell    0 d   TRUE      0     TRUE              
-    ## # … with 40 more rows
-    ## # ℹ Use `print(n = ...)` to see more rows
+    ## # A SummarizedExperiment-tibble abstraction: 2,635 × 9
+    ## # [90mFeatures=527 | Samples=5 | Assays=count[0m
+    ##    .feature .sample    count Cell.type time  condition  days  dead entrez
+    ##    <chr>    <chr>      <dbl> <chr>     <chr> <lgl>     <dbl> <dbl> <chr> 
+    ##  1 ABCB4    SRR1740034  1035 b_cell    0 d   TRUE          1     1 5244  
+    ##  2 ABCB9    SRR1740034    45 b_cell    0 d   TRUE          1     1 23457 
+    ##  3 ACAP1    SRR1740034  7151 b_cell    0 d   TRUE          1     1 9744  
+    ##  4 ACHE     SRR1740034     2 b_cell    0 d   TRUE          1     1 43    
+    ##  5 ACP5     SRR1740034  2278 b_cell    0 d   TRUE          1     1 54    
+    ##  6 ADAM28   SRR1740034 11156 b_cell    0 d   TRUE          1     1 10863 
+    ##  7 ADAMDEC1 SRR1740034    72 b_cell    0 d   TRUE          1     1 27299 
+    ##  8 ADAMTS3  SRR1740034     0 b_cell    0 d   TRUE          1     1 9508  
+    ##  9 ADRB2    SRR1740034   298 b_cell    0 d   TRUE          1     1 154   
+    ## 10 AIF1     SRR1740034     8 b_cell    0 d   TRUE          1     1 199   
+    ## # ℹ 40 more rows
 
 Loading `tidySummarizedExperiment` will automatically abstract this
 object as `tibble`, so we can display it and manipulate it with tidy
@@ -122,7 +118,7 @@ tools. Although it looks different, and more tools (tidyverse) are
 available to us, this object is in fact a `SummarizedExperiment` object.
 
 ``` r
-class(counts_SE)
+class(se_mini)
 ```
 
     ## [1] "SummarizedExperiment"
@@ -135,7 +131,7 @@ First of all, you can cite all articles utilised within your workflow
 automatically from any tidybulk tibble
 
 ``` r
-counts_SE %>%   get_bibliography()
+se_mini |>  get_bibliography()
 ```
 
 ## Aggregate duplicated `transcripts`
@@ -154,8 +150,8 @@ factors and boolean are appended as characters.
 TidyTranscriptomics
 
 ``` r
-rowData(counts_SE)$gene_name = rownames(counts_SE)
-counts_SE.aggr = counts_SE %>% aggregate_duplicates(.transcript = gene_name)
+rowData(se_mini)$gene_name = rownames(se_mini)
+se_mini.aggr = se_mini |> aggregate_duplicates(.transcript = gene_name)
 ```
 
 </div>
@@ -198,8 +194,10 @@ scaled data as `<NAME OF COUNT COLUMN>_scaled`.
 TidyTranscriptomics
 
 ``` r
-counts_SE.norm = counts_SE.aggr %>% identify_abundant(factor_of_interest = condition) %>% scale_abundance()
+se_mini.norm = se_mini.aggr |> identify_abundant(factor_of_interest = condition) |> scale_abundance()
 ```
+
+    ## tidybulk says: the sample with largest library size SRR1740035 was chosen as reference for scaling
 
 </div>
 
@@ -229,8 +227,8 @@ the x axis we have the log scaled counts, on the y axes we have the
 density, data is grouped by sample and coloured by cell type.
 
 ``` r
-counts_SE.norm %>%
-    ggplot(aes(count_scaled + 1, group=sample, color=`Cell.type`)) +
+se_mini.norm |>
+    ggplot(aes(count_scaled + 1, group=.sample, color=`Cell.type`)) +
     geom_density() +
     scale_x_log10() +
     my_theme
@@ -247,8 +245,10 @@ We may want to identify and filter variable transcripts.
 TidyTranscriptomics
 
 ``` r
-counts_SE.norm.variable = counts_SE.norm %>% keep_variable()
+se_mini.norm.variable = se_mini.norm |> keep_variable()
 ```
+
+    ## Getting the 393 most variable genes
 
 </div>
 
@@ -297,10 +297,14 @@ the reduced dimensions.
 TidyTranscriptomics
 
 ``` r
-counts_SE.norm.MDS =
-  counts_SE.norm %>%
-  reduce_dimensions(method="MDS", .dims = 6)
+se_mini.norm.MDS =
+  se_mini.norm |>
+  reduce_dimensions(method="MDS", .dims = 3)
 ```
+
+    ## Getting the 393 most variable genes
+
+    ## tidybulk says: to access the raw results do `attr(..., "internals")$MDS`
 
 </div>
 
@@ -315,7 +319,7 @@ count_m_log = log(count_m + 1)
 cmds = limma::plotMDS(ndim = .dims, plot = FALSE)
 
 cmds = cmds %$% 
-    cmdscale.out %>%
+    cmdscale.out |>
     setNames(sprintf("Dim%s", 1:6))
 
 cmds$cell_type = tibble_counts[
@@ -334,34 +338,12 @@ On the x and y axes axis we have the reduced dimensions 1 to 3, data is
 coloured by cell type.
 
 ``` r
-counts_SE.norm.MDS %>% pivot_sample()  %>% select(contains("Dim"), everything())
+se_mini.norm.MDS |> pivot_sample()  |> select(contains("Dim"), everything())
+
+se_mini.norm.MDS |>
+    pivot_sample() |>
+  GGally::ggpairs(columns = 9:11, ggplot2::aes(colour=`Cell.type`))
 ```
-
-    ## # A tibble: 48 × 14
-    ##      Dim1   Dim2   Dim3     Dim4    Dim5    Dim6 .sample   Cell.…¹ time  condi…²
-    ##     <dbl>  <dbl>  <dbl>    <dbl>   <dbl>   <dbl> <chr>     <fct>   <fct> <lgl>  
-    ##  1 -1.46   0.220 -1.68   0.0553   0.0658 -0.126  SRR17400… b_cell  0 d   TRUE   
-    ##  2 -1.46   0.226 -1.71   0.0300   0.0454 -0.137  SRR17400… b_cell  1 d   TRUE   
-    ##  3 -1.44   0.193 -1.60   0.0890   0.0503 -0.121  SRR17400… b_cell  3 d   TRUE   
-    ##  4 -1.44   0.198 -1.67   0.0891   0.0543 -0.110  SRR17400… b_cell  7 d   TRUE   
-    ##  5  0.243 -1.42   0.182  0.00642 -0.503  -0.131  SRR17400… dendri… 0 d   FALSE  
-    ##  6  0.191 -1.42   0.195  0.0180  -0.457  -0.130  SRR17400… dendri… 1 d   FALSE  
-    ##  7  0.257 -1.42   0.152  0.0130  -0.582  -0.0927 SRR17400… dendri… 3 d   FALSE  
-    ##  8  0.162 -1.43   0.189  0.0232  -0.452  -0.109  SRR17400… dendri… 7 d   FALSE  
-    ##  9  0.516 -1.47   0.240 -0.251    0.457  -0.119  SRR17400… monocy… 0 d   FALSE  
-    ## 10  0.514 -1.41   0.231 -0.219    0.458  -0.131  SRR17400… monocy… 1 d   FALSE  
-    ## # … with 38 more rows, 4 more variables: batch <fct>, factor_of_interest <lgl>,
-    ## #   TMM <dbl>, multiplier <dbl>, and abbreviated variable names ¹​Cell.type,
-    ## #   ²​condition
-    ## # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
-
-``` r
-counts_SE.norm.MDS %>%
-    pivot_sample() %>%
-  GGally::ggpairs(columns = 6:(6+5), ggplot2::aes(colour=`Cell.type`))
-```
-
-![](man/figures/plot_mds-1.png)<!-- -->
 
 **PCA**
 
@@ -370,9 +352,9 @@ counts_SE.norm.MDS %>%
 TidyTranscriptomics
 
 ``` r
-counts_SE.norm.PCA =
-  counts_SE.norm %>%
-  reduce_dimensions(method="PCA", .dims = 6)
+se_mini.norm.PCA =
+  se_mini.norm |>
+  reduce_dimensions(method="PCA", .dims = 3)
 ```
 
 </div>
@@ -383,7 +365,7 @@ Standard procedure (comparative purpose)
 
 ``` r
 count_m_log = log(count_m + 1)
-pc = count_m_log %>% prcomp(scale = TRUE)
+pc = count_m_log |> prcomp(scale = TRUE)
 variance = pc$sdev^2
 variance = (variance / sum(variance))[1:6]
 pc$cell_type = counts[
@@ -402,33 +384,12 @@ On the x and y axes axis we have the reduced dimensions 1 to 3, data is
 coloured by cell type.
 
 ``` r
-counts_SE.norm.PCA %>% pivot_sample() %>% select(contains("PC"), everything())
-```
+se_mini.norm.PCA |> pivot_sample() |> select(contains("PC"), everything())
 
-    ## # A tibble: 48 × 14
-    ##        PC1   PC2    PC3     PC4    PC5   PC6 .sample Cell.…¹ time  condi…² batch
-    ##      <dbl> <dbl>  <dbl>   <dbl>  <dbl> <dbl> <chr>   <fct>   <fct> <lgl>   <fct>
-    ##  1 -12.6   -2.52 -14.9  -0.424  -0.592 -1.22 SRR174… b_cell  0 d   TRUE    0    
-    ##  2 -12.6   -2.57 -15.2  -0.140  -0.388 -1.30 SRR174… b_cell  1 d   TRUE    1    
-    ##  3 -12.6   -2.41 -14.5  -0.714  -0.344 -1.10 SRR174… b_cell  3 d   TRUE    1    
-    ##  4 -12.5   -2.34 -14.9  -0.816  -0.427 -1.00 SRR174… b_cell  7 d   TRUE    1    
-    ##  5   0.189 13.0    1.66 -0.0269  4.64  -1.35 SRR174… dendri… 0 d   FALSE   0    
-    ##  6  -0.293 12.9    1.76 -0.0727  4.21  -1.28 SRR174… dendri… 1 d   FALSE   0    
-    ##  7   0.407 13.0    1.42 -0.0529  5.37  -1.01 SRR174… dendri… 3 d   FALSE   1    
-    ##  8  -0.620 13.0    1.73 -0.201   4.17  -1.07 SRR174… dendri… 7 d   FALSE   0    
-    ##  9   2.56  13.5    2.32  2.03   -4.32  -1.22 SRR174… monocy… 0 d   FALSE   1    
-    ## 10   2.65  13.1    2.21  1.80   -4.29  -1.30 SRR174… monocy… 1 d   FALSE   1    
-    ## # … with 38 more rows, 3 more variables: factor_of_interest <lgl>, TMM <dbl>,
-    ## #   multiplier <dbl>, and abbreviated variable names ¹​Cell.type, ²​condition
-    ## # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
-
-``` r
-counts_SE.norm.PCA %>%
-     pivot_sample() %>%
+se_mini.norm.PCA |>
+     pivot_sample() |>
   GGally::ggpairs(columns = 11:13, ggplot2::aes(colour=`Cell.type`))
 ```
-
-![](man/figures/plot_pca-1.png)<!-- -->
 
 **tSNE**
 
@@ -437,9 +398,9 @@ counts_SE.norm.PCA %>%
 TidyTranscriptomics
 
 ``` r
-counts_SE.norm.tSNE =
-    breast_tcga_mini_SE %>%
-    identify_abundant() %>%
+se_mini.norm.tSNE =
+    breast_tcga_mini_SE |>
+    identify_abundant() |>
     reduce_dimensions(
         method = "tSNE",
         perplexity=10,
@@ -476,30 +437,29 @@ tsne$cell_type = tibble_counts[
 Plot
 
 ``` r
-counts_SE.norm.tSNE %>%
-    pivot_sample() %>%
+se_mini.norm.tSNE |>
+    pivot_sample() |>
     select(contains("tSNE"), everything()) 
 ```
 
     ## # A tibble: 251 × 4
     ##     tSNE1  tSNE2 .sample                      Call 
     ##     <dbl>  <dbl> <chr>                        <fct>
-    ##  1  -5.25  10.2  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2   6.41   2.79 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3  -9.28   6.63 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4  -1.76   4.82 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5  -1.41  12.2  TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6  -1.89  -3.60 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7  18.5  -13.4  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8  -4.03 -10.4  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9  -2.84 -10.8  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10 -19.3    5.03 TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
-    ## # … with 241 more rows
-    ## # ℹ Use `print(n = ...)` to see more rows
+    ##  1  4.09   11.4  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2  1.86   -7.80 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3 -1.95   13.6  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4 10.8     4.07 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5 13.8     2.69 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  0.239  11.9  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7 -2.12  -35.1  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8 16.7     8.65 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9 15.3     8.97 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10 -3.35   22.6  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ## # ℹ 241 more rows
 
 ``` r
-counts_SE.norm.tSNE %>%
-    pivot_sample() %>%
+se_mini.norm.tSNE |>
+    pivot_sample() |>
     ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
 ```
 
@@ -520,8 +480,8 @@ specified in the input arguments.
 TidyTranscriptomics
 
 ``` r
-counts_SE.norm.MDS.rotated =
-  counts_SE.norm.MDS %>%
+se_mini.norm.MDS.rotated =
+  se_mini.norm.MDS |>
     rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, action="get")
 ```
 
@@ -537,9 +497,9 @@ rotation = function(m, d) {
     ((bind_rows(
         c(`1` = cos(r), `2` = -sin(r)),
         c(`1` = sin(r), `2` = cos(r))
-    ) %>% as_matrix) %*% m)
+    ) |> as_matrix()) %*% m)
 }
-mds_r = pca %>% rotation(rotation_degrees)
+mds_r = pca |> rotation(rotation_degrees)
 mds_r$cell_type = counts[
     match(counts$sample, rownames(mds_r)),
     "Cell.type"
@@ -556,7 +516,7 @@ mds_r$cell_type = counts[
 dimensions, data is coloured by cell type.
 
 ``` r
-counts_SE.norm.MDS.rotated %>%
+se_mini.norm.MDS.rotated |>
     ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type` )) +
   geom_point() +
   my_theme
@@ -568,8 +528,8 @@ counts_SE.norm.MDS.rotated %>%
 dimensions rotated of 45 degrees, data is coloured by cell type.
 
 ``` r
-counts_SE.norm.MDS.rotated %>%
-    pivot_sample() %>%
+se_mini.norm.MDS.rotated |>
+    pivot_sample() |>
     ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`Cell.type` )) +
   geom_point() +
   my_theme
@@ -592,10 +552,10 @@ false discovery rate).
 TidyTranscriptomics
 
 ``` r
-counts_SE.de =
-    counts_SE %>%
+se_mini.de =
+    se_mini |>
     test_differential_abundance( ~ condition, action="get")
-counts_SE.de
+se_mini.de
 ```
 
 </div>
@@ -629,9 +589,9 @@ The constrasts hve the name of the design matrix (generally
 <NAME_COLUMN_COVARIATE><VALUES_OF_COVARIATE>)
 
 ``` r
-counts_SE.de =
-    counts_SE %>%
-    identify_abundant(factor_of_interest = condition) %>%
+se_mini.de =
+    se_mini |>
+    identify_abundant(factor_of_interest = condition) |>
     test_differential_abundance(
         ~ 0 + condition,                  
         .contrasts = c( "conditionTRUE - conditionFALSE"),
@@ -647,7 +607,7 @@ symbols; for `sample`, `transcript` and `count`) and a formula
 representing the desired linear model where the first covariate is the
 factor of interest and the second covariate is the unwanted variation,
 and returns a tibble with additional columns for the adjusted counts as
-`<COUNT COLUMN>_adjusted`. At the moment just an unwanted covariated is
+`<COUNT COLUMN>_adjusted`. At the moment just an unwanted covariates is
 allowed at a time.
 
 <div class="column-left">
@@ -655,8 +615,8 @@ allowed at a time.
 TidyTranscriptomics
 
 ``` r
-counts_SE.norm.adj =
-    counts_SE.norm %>% adjust_abundance(    ~ factor_of_interest + batch)
+se_mini.norm.adj =
+    se_mini.norm    |> adjust_abundance(    .factor_unwanted = time, .factor_of_interest = condition, method="combat")
 ```
 
 </div>
@@ -709,14 +669,10 @@ with additional columns for the adjusted cell type proportions.
 TidyTranscriptomics
 
 ``` r
-counts_SE.cibersort =
-    counts_SE %>%
+se_mini.cibersort =
+    se_mini |>
     deconvolve_cellularity(action="get", cores=1, prefix = "cibersort__") 
 ```
-
-    ## 
-    ## The downloaded binary packages are in
-    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIi5KN6/downloaded_packages
 
 </div>
 
@@ -726,7 +682,7 @@ Standard procedure (comparative purpose)
 
 ``` r
 source(‘CIBERSORT.R’)
-count_m %>% write.table("mixture_file.txt")
+count_m |> write.table("mixture_file.txt")
 results <- CIBERSORT(
     "sig_matrix_file.txt",
     "mixture_file.txt",
@@ -752,21 +708,19 @@ proportions. The data is facetted and coloured by nominal cell types
 (annotation given by the researcher after FACS sorting).
 
 ``` r
-counts_SE.cibersort %>%
+se_mini.cibersort |>
     pivot_longer(
         names_to= "Cell_type_inferred", 
         values_to = "proportion", 
         names_prefix ="cibersort__", 
         cols=contains("cibersort__")
-    ) %>%
-  ggplot(aes(x=`Cell_type_inferred`, y=proportion, fill=`Cell.type`)) +
+    ) |>
+  ggplot(aes(x=Cell_type_inferred, y=proportion, fill=`Cell.type`)) +
   geom_boxplot() +
   facet_wrap(~`Cell.type`) +
   my_theme +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
 ```
-
-![](man/figures/plot_cibersort-1.png)<!-- -->
 
 ## Test differential cell-type abundance
 
@@ -774,107 +728,16 @@ We can also perform a statistical test on the differential cell-type
 abundance across conditions
 
 ``` r
-    counts_SE %>%
+    se_mini |>
     test_differential_cellularity(. ~ condition )
 ```
-
-    ## 
-    ## The downloaded binary packages are in
-    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIi5KN6/downloaded_packages
-
-    ## # A tibble: 22 × 7
-    ##    .cell_type                  cell_t…¹ estim…² estim…³ std.e…⁴ stati…⁵ p.valu…⁶
-    ##    <chr>                       <list>     <dbl>   <dbl>   <dbl>   <dbl>    <dbl>
-    ##  1 cibersort.B.cells.naive     <tibble>   -2.94   2.25    0.367   6.13  8.77e-10
-    ##  2 cibersort.B.cells.memory    <tibble>   -4.86   1.48    0.436   3.40  6.77e- 4
-    ##  3 cibersort.Plasma.cells      <tibble>   -5.33  -0.487   0.507  -0.960 3.37e- 1
-    ##  4 cibersort.T.cells.CD8       <tibble>   -2.33   0.924   0.475   1.94  5.18e- 2
-    ##  5 cibersort.T.cells.CD4.naive <tibble>   -2.83  -0.620   0.531  -1.17  2.43e- 1
-    ##  6 cibersort.T.cells.CD4.memo… <tibble>   -2.46   0.190   0.500   0.380 7.04e- 1
-    ##  7 cibersort.T.cells.CD4.memo… <tibble>   -3.67   2.23    0.427   5.22  1.80e- 7
-    ##  8 cibersort.T.cells.follicul… <tibble>   -5.68  -0.217   0.507  -0.427 6.69e- 1
-    ##  9 cibersort.T.cells.regulato… <tibble>   -5.04   1.94    0.360   5.39  6.86e- 8
-    ## 10 cibersort.T.cells.gamma.de… <tibble>   -4.78  -0.250   0.514  -0.486 6.27e- 1
-    ## # … with 12 more rows, and abbreviated variable names ¹​cell_type_proportions,
-    ## #   ²​`estimate_(Intercept)`, ³​estimate_conditionTRUE, ⁴​std.error_conditionTRUE,
-    ## #   ⁵​statistic_conditionTRUE, ⁶​p.value_conditionTRUE
-    ## # ℹ Use `print(n = ...)` to see more rows
 
 We can also perform regression analysis with censored data (coxph).
 
 ``` r
-    # Add survival data
-
-counts_SE_survival = 
-    counts_SE %>%
-    nest(data = -sample) %>%
-        mutate(
-            days = sample(1:1000, size = n()),
-            dead = sample(c(0,1), size = n(), replace = TRUE)
-        ) %>%
-    unnest(data) 
-
-# Test
-counts_SE_survival %>%
-    test_differential_cellularity(survival::Surv(days, dead) ~ .)
+    se_mini |>
+    test_differential_cellularity(survival::Surv(time, dead) ~ .)
 ```
-
-    ## # A tibble: 22 × 6
-    ##    .cell_type                           cell_t…¹ estim…² std.e…³ stati…⁴ p.value
-    ##    <chr>                                <list>     <dbl>   <dbl>   <dbl>   <dbl>
-    ##  1 cibersort.B.cells.naive              <tibble>  -0.224   0.415  -0.540  0.589 
-    ##  2 cibersort.B.cells.memory             <tibble>   0.510   0.346   1.48   0.140 
-    ##  3 cibersort.Plasma.cells               <tibble>   0.892   0.449   1.99   0.0467
-    ##  4 cibersort.T.cells.CD8                <tibble>   0.531   0.639   0.831  0.406 
-    ##  5 cibersort.T.cells.CD4.naive          <tibble>   0.112   0.386   0.290  0.772 
-    ##  6 cibersort.T.cells.CD4.memory.resting <tibble>   0.498   0.540   0.921  0.357 
-    ##  7 cibersort.T.cells.CD4.memory.activa… <tibble>   2.37    0.939   2.52   0.0117
-    ##  8 cibersort.T.cells.follicular.helper  <tibble>  -0.544   0.421  -1.29   0.197 
-    ##  9 cibersort.T.cells.regulatory..Tregs. <tibble>   1.59    0.656   2.42   0.0157
-    ## 10 cibersort.T.cells.gamma.delta        <tibble>   0.510   0.688   0.741  0.459 
-    ## # … with 12 more rows, and abbreviated variable names ¹​cell_type_proportions,
-    ## #   ²​estimate, ³​std.error, ⁴​statistic
-    ## # ℹ Use `print(n = ...)` to see more rows
-
-We can also perform test of Kaplan-Meier curves.
-
-``` r
-counts_stratified = 
-    counts_SE_survival %>%
-
-    # Test
-    test_stratification_cellularity(
-        survival::Surv(days, dead) ~ .,
-        sample, transcript, count
-    )
-
-counts_stratified
-```
-
-    ## # A tibble: 22 × 6
-    ##    .cell_type                         cell_t…¹ .low_…² .high…³ pvalue plot      
-    ##    <chr>                              <list>     <dbl>   <dbl>  <dbl> <list>    
-    ##  1 cibersort.B.cells.naive            <tibble>   14.4     7.56  0.506 <ggsrvplt>
-    ##  2 cibersort.B.cells.memory           <tibble>   17.2     4.77  0.500 <ggsrvplt>
-    ##  3 cibersort.Plasma.cells             <tibble>   13.3     8.73  0.903 <ggsrvplt>
-    ##  4 cibersort.T.cells.CD8              <tibble>   13.9     8.06  0.369 <ggsrvplt>
-    ##  5 cibersort.T.cells.CD4.naive        <tibble>   12.8     9.15  0.407 <ggsrvplt>
-    ##  6 cibersort.T.cells.CD4.memory.rest… <tibble>    7.65   14.4   0.105 <ggsrvplt>
-    ##  7 cibersort.T.cells.CD4.memory.acti… <tibble>   15.7     6.26  0.392 <ggsrvplt>
-    ##  8 cibersort.T.cells.follicular.help… <tibble>   17.1     4.88  0.949 <ggsrvplt>
-    ##  9 cibersort.T.cells.regulatory..Tre… <tibble>   13.7     8.35  0.771 <ggsrvplt>
-    ## 10 cibersort.T.cells.gamma.delta      <tibble>   16.2     5.76  0.379 <ggsrvplt>
-    ## # … with 12 more rows, and abbreviated variable names ¹​cell_type_proportions,
-    ## #   ²​.low_cellularity_expected, ³​.high_cellularity_expected
-    ## # ℹ Use `print(n = ...)` to see more rows
-
-Plot Kaplan-Meier curves
-
-``` r
-counts_stratified$plot[[1]]
-```
-
-![](man/figures/unnamed-chunk-19-1.png)<!-- -->
 
 ## Cluster `samples`
 
@@ -892,7 +755,7 @@ clustering methods.
 TidyTranscriptomics
 
 ``` r
-counts_SE.norm.cluster = counts_SE.norm.MDS %>%
+se_mini.norm.cluster = se_mini.norm.MDS |>
   cluster_elements(method="kmeans", centers = 2, action="get" )
 ```
 
@@ -924,7 +787,7 @@ We can add cluster annotation to the MDS dimension reduced data set and
 plot.
 
 ``` r
- counts_SE.norm.cluster %>%
+ se_mini.norm.cluster |>
     ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster_kmeans`)) +
   geom_point() +
   my_theme
@@ -943,8 +806,8 @@ option in unaviable.
 TidyTranscriptomics
 
 ``` r
-counts_SE.norm.SNN =
-    counts_SE.norm.tSNE %>%
+se_mini.norm.SNN =
+    se_mini.norm.tSNE |>
     cluster_elements(method = "SNN")
 ```
 
@@ -982,20 +845,20 @@ snn$cell_type = tibble_counts[
 </div>
 
 ``` r
-counts_SE.norm.SNN %>%
-    pivot_sample() %>%
+se_mini.norm.SNN |>
+    pivot_sample() |>
     select(contains("tSNE"), everything()) 
 
-counts_SE.norm.SNN %>%
-    pivot_sample() %>%
-    gather(source, Call, c("cluster_SNN", "Call")) %>%
-    distinct() %>%
+se_mini.norm.SNN |>
+    pivot_sample() |>
+    gather(source, Call, c("cluster_SNN", "Call")) |>
+    distinct() |>
     ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
 
 
 # Do differential transcription between clusters
-counts_SE.norm.SNN %>%
-    mutate(factor_of_interest = `cluster_SNN` == 3) %>%
+se_mini.norm.SNN |>
+    mutate(factor_of_interest = `cluster_SNN` == 3) |>
     test_differential_abundance(
     ~ factor_of_interest,
     action="get"
@@ -1012,10 +875,9 @@ symbols; for `sample`, `transcript` and `count`) and returns a tibble
 with redundant elements removed (e.g., samples). Two redundancy
 estimation approaches are supported:
 
--   removal of highly correlated clusters of elements (keeping a
-    representative) with method=“correlation”
--   removal of most proximal element pairs in a reduced dimensional
-    space.
+- removal of highly correlated clusters of elements (keeping a
+  representative) with method=“correlation”
+- removal of most proximal element pairs in a reduced dimensional space.
 
 **Approach 1**
 
@@ -1024,14 +886,12 @@ estimation approaches are supported:
 TidyTranscriptomics
 
 ``` r
-counts_SE.norm.non_redundant =
-    counts_SE.norm.MDS %>%
+se_mini.norm.non_redundant =
+    se_mini.norm.MDS |>
   remove_redundancy(    method = "correlation" )
 ```
 
-    ## 
-    ## The downloaded binary packages are in
-    ##  /var/folders/zn/m_qvr9zd7tq0wdtsbq255f8xypj_zg/T//RtmpIi5KN6/downloaded_packages
+    ## Getting the 393 most variable genes
 
 </div>
 
@@ -1051,14 +911,14 @@ library(widyr)
         sort = TRUE,
         diag = FALSE,
         upper = FALSE
-    ) %>%
-    filter(correlation > correlation_threshold) %>%
-    distinct(item1) %>%
+    ) |>
+    filter(correlation > correlation_threshold) |>
+    distinct(item1) |>
     rename(!!.element := item1)
 
 # Return non redudant data frame
-counts %>% anti_join(.data.correlated) %>%
-    spread(sample, rc, - transcript) %>%
+counts |> anti_join(.data.correlated) |>
+    spread(sample, rc, - transcript) |>
     left_join(annotation)
 ```
 
@@ -1072,8 +932,8 @@ We can visualise how the reduced redundancy with the reduced dimentions
 look like
 
 ``` r
-counts_SE.norm.non_redundant %>%
-    pivot_sample() %>%
+se_mini.norm.non_redundant |>
+    pivot_sample() |>
     ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
   geom_point() +
   my_theme
@@ -1084,8 +944,8 @@ counts_SE.norm.non_redundant %>%
 **Approach 2**
 
 ``` r
-counts_SE.norm.non_redundant =
-    counts_SE.norm.MDS %>%
+se_mini.norm.non_redundant =
+    se_mini.norm.MDS |>
   remove_redundancy(
     method = "reduced_dimensions",
     Dim_a_column = `Dim1`,
@@ -1093,12 +953,20 @@ counts_SE.norm.non_redundant =
   )
 ```
 
+    ## Found more than one class "dist" in cache; using the first, from namespace 'BiocGenerics'
+
+    ## Also defined by 'spam'
+
+    ## Found more than one class "dist" in cache; using the first, from namespace 'BiocGenerics'
+
+    ## Also defined by 'spam'
+
 We can visualise MDS reduced dimensions of the samples with the closest
 pair removed.
 
 ``` r
-counts_SE.norm.non_redundant %>%
-    pivot_sample() %>%
+se_mini.norm.non_redundant |>
+    pivot_sample() |>
     ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
   geom_point() +
   my_theme
@@ -1135,26 +1003,26 @@ different resources use ensembl IDs while others use gene symbol IDs.
 This currently works for human and mouse.
 
 ``` r
-counts_ensembl %>% ensembl_to_symbol(ens)
+counts_ensembl |> ensembl_to_symbol(ens)
 ```
 
     ## # A tibble: 119 × 8
-    ##    ens             iso   `read count` sample     cases…¹ cases…² trans…³ ref_g…⁴
-    ##    <chr>           <chr>        <dbl> <chr>      <chr>   <chr>   <chr>   <chr>  
-    ##  1 ENSG00000000003 13             144 TARGET-20… Acute … Primar… TSPAN6  hg38   
-    ##  2 ENSG00000000003 13              72 TARGET-20… Acute … Primar… TSPAN6  hg38   
-    ##  3 ENSG00000000003 13               0 TARGET-20… Acute … Primar… TSPAN6  hg38   
-    ##  4 ENSG00000000003 13            1099 TARGET-20… Acute … Primar… TSPAN6  hg38   
-    ##  5 ENSG00000000003 13              11 TARGET-20… Acute … Primar… TSPAN6  hg38   
-    ##  6 ENSG00000000003 13               2 TARGET-20… Acute … Primar… TSPAN6  hg38   
-    ##  7 ENSG00000000003 13               3 TARGET-20… Acute … Primar… TSPAN6  hg38   
-    ##  8 ENSG00000000003 13            2678 TARGET-20… Acute … Primar… TSPAN6  hg38   
-    ##  9 ENSG00000000003 13             751 TARGET-20… Acute … Primar… TSPAN6  hg38   
-    ## 10 ENSG00000000003 13               1 TARGET-20… Acute … Primar… TSPAN6  hg38   
-    ## # … with 109 more rows, and abbreviated variable names
-    ## #   ¹​cases_0_project_disease_type, ²​cases_0_samples_0_sample_type, ³​transcript,
-    ## #   ⁴​ref_genome
-    ## # ℹ Use `print(n = ...)` to see more rows
+    ##    ens   iso   `read count` sample cases_0_project_dise…¹ cases_0_samples_0_sa…²
+    ##    <chr> <chr>        <dbl> <chr>  <chr>                  <chr>                 
+    ##  1 ENSG… 13             144 TARGE… Acute Myeloid Leukemia Primary Blood Derived…
+    ##  2 ENSG… 13              72 TARGE… Acute Myeloid Leukemia Primary Blood Derived…
+    ##  3 ENSG… 13               0 TARGE… Acute Myeloid Leukemia Primary Blood Derived…
+    ##  4 ENSG… 13            1099 TARGE… Acute Myeloid Leukemia Primary Blood Derived…
+    ##  5 ENSG… 13              11 TARGE… Acute Myeloid Leukemia Primary Blood Derived…
+    ##  6 ENSG… 13               2 TARGE… Acute Myeloid Leukemia Primary Blood Derived…
+    ##  7 ENSG… 13               3 TARGE… Acute Myeloid Leukemia Primary Blood Derived…
+    ##  8 ENSG… 13            2678 TARGE… Acute Myeloid Leukemia Primary Blood Derived…
+    ##  9 ENSG… 13             751 TARGE… Acute Myeloid Leukemia Primary Blood Derived…
+    ## 10 ENSG… 13               1 TARGE… Acute Myeloid Leukemia Primary Blood Derived…
+    ## # ℹ 109 more rows
+    ## # ℹ abbreviated names: ¹​cases_0_project_disease_type,
+    ## #   ²​cases_0_samples_0_sample_type
+    ## # ℹ 2 more variables: transcript <chr>, ref_genome <chr>
 
 ## From gene symbol to gene description (gene name in full)
 
@@ -1162,25 +1030,31 @@ We can add gene full name (and in future description) from symbol
 identifiers. This currently works for human and mouse.
 
 ``` r
-counts_SE %>% 
-    describe_transcript() %>% 
+se_mini |> 
+    describe_transcript() |> 
     select(feature, description, everything())
 ```
 
-    ## # A SummarizedExperiment-tibble abstraction: 408,624 × 48
-    ## # [90mFeatures=8513 | Samples=48 | Assays=count[0m
-    ##    feature  sample     count Cell.…¹ time  condi…² batch facto…³ descr…⁴ gene_…⁵
-    ##    <chr>    <chr>      <dbl> <fct>   <fct> <lgl>   <fct> <lgl>   <chr>   <chr>  
-    ##  1 A1BG     SRR1740034   153 b_cell  0 d   TRUE    0     TRUE    alpha-… A1BG   
-    ##  2 A1BG-AS1 SRR1740034    83 b_cell  0 d   TRUE    0     TRUE    A1BG a… A1BG-A…
-    ##  3 AAAS     SRR1740034   868 b_cell  0 d   TRUE    0     TRUE    aladin… AAAS   
-    ##  4 AACS     SRR1740034   222 b_cell  0 d   TRUE    0     TRUE    acetoa… AACS   
-    ##  5 AAGAB    SRR1740034   590 b_cell  0 d   TRUE    0     TRUE    alpha … AAGAB  
-    ##  6 AAMDC    SRR1740034    48 b_cell  0 d   TRUE    0     TRUE    adipog… AAMDC  
-    ##  7 AAMP     SRR1740034  1257 b_cell  0 d   TRUE    0     TRUE    angio … AAMP   
-    ##  8 AANAT    SRR1740034   284 b_cell  0 d   TRUE    0     TRUE    aralky… AANAT  
-    ##  9 AAR2     SRR1740034   379 b_cell  0 d   TRUE    0     TRUE    AAR2 s… AAR2   
-    ## 10 AARS2    SRR1740034   685 b_cell  0 d   TRUE    0     TRUE    alanyl… AARS2  
-    ## # … with 40 more rows, and abbreviated variable names ¹​Cell.type, ²​condition,
-    ## #   ³​factor_of_interest, ⁴​description, ⁵​gene_name
-    ## # ℹ Use `print(n = ...)` to see more rows
+    ## Warning in is_sample_feature_deprecated_used(.data, .cols):
+    ## tidySummarizedExperiment says: from version 1.3.1, the special columns
+    ## including sample/feature id (colnames(se), rownames(se)) has changed to
+    ## ".sample" and ".feature". This dataset is returned with the old-style
+    ## vocabulary (feature and sample), however we suggest to update your workflow to
+    ## reflect the new vocabulary (.feature, .sample)
+
+    ## # A SummarizedExperiment-tibble abstraction: 2,635 × 11
+    ## # [90mFeatures=527 | Samples=5 | Assays=count[0m
+    ##    feature sample count Cell.type time  condition  days  dead description entrez
+    ##    <chr>   <chr>  <dbl> <chr>     <chr> <lgl>     <dbl> <dbl> <chr>       <chr> 
+    ##  1 ABCB4   SRR17…  1035 b_cell    0 d   TRUE          1     1 ATP bindin… 5244  
+    ##  2 ABCB9   SRR17…    45 b_cell    0 d   TRUE          1     1 ATP bindin… 23457 
+    ##  3 ACAP1   SRR17…  7151 b_cell    0 d   TRUE          1     1 ArfGAP wit… 9744  
+    ##  4 ACHE    SRR17…     2 b_cell    0 d   TRUE          1     1 acetylchol… 43    
+    ##  5 ACP5    SRR17…  2278 b_cell    0 d   TRUE          1     1 acid phosp… 54    
+    ##  6 ADAM28  SRR17… 11156 b_cell    0 d   TRUE          1     1 ADAM metal… 10863 
+    ##  7 ADAMDE… SRR17…    72 b_cell    0 d   TRUE          1     1 ADAM like … 27299 
+    ##  8 ADAMTS3 SRR17…     0 b_cell    0 d   TRUE          1     1 ADAM metal… 9508  
+    ##  9 ADRB2   SRR17…   298 b_cell    0 d   TRUE          1     1 adrenocept… 154   
+    ## 10 AIF1    SRR17…     8 b_cell    0 d   TRUE          1     1 allograft … 199   
+    ## # ℹ 40 more rows
+    ## # ℹ 1 more variable: gene_name <chr>
