@@ -1,10 +1,11 @@
 ---
-title: "tidybulk - part of tidyTranscriptomics"
+title: "tidybulk - part of _tidyomics_"
 output: github_document
 ---
 
 <!-- badges: start -->
-[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing) [![R build status](https://github.com/stemangiola/tidybulk/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/stemangiola/tidybulk/actions)
+[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing) [![R build status](https://github.com/stemangiola/tidybulk/workflows/rworkflows/badge.svg)](https://github.com/stemangiola/tidybulk/actions)
+
 <!-- badges: end -->
 
 ```{r echo=FALSE}
@@ -19,24 +20,37 @@ The code is released under the version 3 of the GNU General Public License.
 knitr::include_graphics("man/figures/logo.png")
 ```
   
-website: [stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
-[Third party tutorials](https://rstudio-pubs-static.s3.amazonaws.com/792462_f948e766b15d4ee5be5c860493bda0b3.html)
-Please have a look also to 
+Resources to help you get started with _tidyomics_ and tidybulk:
 
-- [tidySummarizedExperiment](https://github.com/stemangiola/tidySummarizedExperiment) for bulk data tidy representation
-- [tidySingleCellExperiment](https://github.com/stemangiola/tidySingleCellExperiment) for single-cell data tidy representation
-- [tidyseurat](https://github.com/stemangiola/tidyseurat) for single-cell data tidy representation
-- [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for heatmaps produced with tidy principles
+*   [The tidyomics blog](https://tidyomics.github.io/tidyomicsBlog/)
+*   [The tidybulk website](http://stemangiola.github.io/tidybulk/)
+*   [Third party tutorials](https://rstudio-pubs-static.s3.amazonaws.com/792462_f948e766b15d4ee5be5c860493bda0b3.html)
+  
+The _tidyomics_ ecosystem includes packages for:
+
+*   Working with genomic features:
+
+    * [plyranges](https://github.com/sa-lee/plyranges), for tidy manipulation of genomic range data. 
+    * [nullranges](https://github.com/nullranges/nullranges), for tidy generation of genomic ranges representing the null hypothesis.
+    * [plyinteractions](https://github.com/tidyomics/plyinteractions), for tidy manipulation of genomic interaction data.
+    
+*  Working with transcriptomic features:
+
+    * [tidySummarizedExperiment](https://github.com/stemangiola/tidySummarizedExperiment), for tidy manipulation of SummarizedExperiment objects.
+    * [tidySingleCellExperiment](https://github.com/stemangiola/tidySingleCellExperiment), for tidy manipulation of SingleCellExperiment objects.
+    * [tidySpatialExperiment](https://github.com/william-hutchison/tidySpatialExperiment), for tidy manipulation of SpatialExperiment objects.
+    * [tidyseurat](https://github.com/stemangiola/tidyseurat), for tidy manipulation of Seurat objects.
+    * [tidybulk](https://github.com/stemangiola/tidybulk), for tidy bulk RNA-seq data analysis.
+
+*   Working with cytometry features:
+
+    * [tidytof](https://github.com/keyes-timothy/tidytof), for tidy manipulation of high-dimensional cytometry data.
+
+A few more tidy tools for data manipulation and plotting:
+
+*   [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap), for producing heatmaps with tidy principles.
 analysis and manipulation 
-- [tidygate](https://github.com/stemangiola/tidygate) for adding custom
-gate information to your tibble 
-
-
-<!---
-
-[![Build Status](https://travis-ci.org/stemangiola/tidybulk.svg?branch=master)](https://travis-ci.org/stemangiola/tidybulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/tidybulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/tidybulk?branch=master)
-
--->
+*   [tidygate](https://github.com/stemangiola/tidygate), for interactive plotting and gating.
 
 ```{r, echo=FALSE, out.width = "800px"}
 knitr::include_graphics("man/figures/new_SE_usage-01.png")

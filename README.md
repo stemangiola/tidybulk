@@ -1,11 +1,12 @@
-tidybulk - part of tidyTranscriptomics
+tidybulk - part of *tidyomics*
 ================
 
 <!-- badges: start -->
 
 [![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![R build
-status](https://github.com/stemangiola/tidybulk/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/stemangiola/tidybulk/actions)
+status](https://github.com/stemangiola/tidybulk/workflows/rworkflows/badge.svg)](https://github.com/stemangiola/tidybulk/actions)
+
 <!-- badges: end -->
 
 **Brings transcriptomics to the tidyverse!**
@@ -15,26 +16,48 @@ License.
 
 <img src="man/figures/logo.png" width="120px" height="139px" />
 
-website:
-[stemangiola.github.io/tidybulk/](http://stemangiola.github.io/tidybulk/)
-[Third party
-tutorials](https://rstudio-pubs-static.s3.amazonaws.com/792462_f948e766b15d4ee5be5c860493bda0b3.html)
-Please have a look also to
+Resources to help you get started with *tidyomics* and tidybulk:
 
-- [tidySummarizedExperiment](https://github.com/stemangiola/tidySummarizedExperiment)
-  for bulk data tidy representation
-- [tidySingleCellExperiment](https://github.com/stemangiola/tidySingleCellExperiment)
-  for single-cell data tidy representation
-- [tidyseurat](https://github.com/stemangiola/tidyseurat) for
-  single-cell data tidy representation
-- [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for heatmaps
-  produced with tidy principles analysis and manipulation
-- [tidygate](https://github.com/stemangiola/tidygate) for adding custom
-  gate information to your tibble
+- [The tidyomics blog](https://tidyomics.github.io/tidyomicsBlog/)
+- [The tidybulk website](http://stemangiola.github.io/tidybulk/)
+- [Third party
+  tutorials](https://rstudio-pubs-static.s3.amazonaws.com/792462_f948e766b15d4ee5be5c860493bda0b3.html)
 
-<!---
-&#10;[![Build Status](https://travis-ci.org/stemangiola/tidybulk.svg?branch=master)](https://travis-ci.org/stemangiola/tidybulk) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/tidybulk/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/tidybulk?branch=master)
-&#10;-->
+The *tidyomics* ecosystem includes packages for:
+
+- Working with genomic features:
+
+  - [plyranges](https://github.com/sa-lee/plyranges), for tidy
+    manipulation of genomic range data.
+  - [nullranges](https://github.com/nullranges/nullranges), for tidy
+    generation of genomic ranges representing the null hypothesis.
+  - [plyinteractions](https://github.com/tidyomics/plyinteractions), for
+    tidy manipulation of genomic interaction data.
+
+- Working with transcriptomic features:
+
+  - [tidySummarizedExperiment](https://github.com/stemangiola/tidySummarizedExperiment),
+    for tidy manipulation of SummarizedExperiment objects.
+  - [tidySingleCellExperiment](https://github.com/stemangiola/tidySingleCellExperiment),
+    for tidy manipulation of SingleCellExperiment objects.
+  - [tidySpatialExperiment](https://github.com/william-hutchison/tidySpatialExperiment),
+    for tidy manipulation of SpatialExperiment objects.
+  - [tidyseurat](https://github.com/stemangiola/tidyseurat), for tidy
+    manipulation of Seurat objects.
+  - [tidybulk](https://github.com/stemangiola/tidybulk), for tidy bulk
+    RNA-seq data analysis.
+
+- Working with cytometry features:
+
+  - [tidytof](https://github.com/keyes-timothy/tidytof), for tidy
+    manipulation of high-dimensional cytometry data.
+
+A few more tidy tools for data manipulation and plotting:
+
+- [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap), for
+  producing heatmaps with tidy principles. analysis and manipulation
+- [tidygate](https://github.com/stemangiola/tidygate), for interactive
+  plotting and gating.
 
 <img src="man/figures/new_SE_usage-01.png" width="800px" />
 
@@ -445,16 +468,16 @@ se_mini.norm.tSNE |>
     ## # A tibble: 251 × 4
     ##     tSNE1  tSNE2 .sample                      Call 
     ##     <dbl>  <dbl> <chr>                        <fct>
-    ##  1  4.09   11.4  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2  1.86   -7.80 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3 -1.95   13.6  TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4 10.8     4.07 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5 13.8     2.69 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6  0.239  11.9  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7 -2.12  -35.1  TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8 16.7     8.65 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9 15.3     8.97 TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10 -3.35   22.6  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##  1 -13.4    7.56 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2   5.25   5.35 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3 -18.4   -5.26 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4 -10.4    6.87 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5  -8.31   2.81 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6   2.22  -3.15 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7  33.3    6.52 TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8   5.38 -13.9  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9   4.11 -12.7  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10 -23.9   -2.77 TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # ℹ 241 more rows
 
 ``` r
