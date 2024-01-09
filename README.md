@@ -44,8 +44,6 @@ The *tidyomics* ecosystem includes packages for:
     for tidy manipulation of SpatialExperiment objects.
   - [tidyseurat](https://github.com/stemangiola/tidyseurat), for tidy
     manipulation of Seurat objects.
-  - [tidybulk](https://github.com/stemangiola/tidybulk), for tidy bulk
-    RNA-seq data analysis.
 
 - Working with cytometry features:
 
@@ -468,16 +466,16 @@ se_mini.norm.tSNE |>
     ## # A tibble: 251 × 4
     ##     tSNE1  tSNE2 .sample                      Call 
     ##     <dbl>  <dbl> <chr>                        <fct>
-    ##  1 -13.4    7.56 TCGA-A1-A0SD-01A-11R-A115-07 LumA 
-    ##  2   5.25   5.35 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
-    ##  3 -18.4   -5.26 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
-    ##  4 -10.4    6.87 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
-    ##  5  -8.31   2.81 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
-    ##  6   2.22  -3.15 TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
-    ##  7  33.3    6.52 TCGA-A1-A0SK-01A-12R-A084-07 Basal
-    ##  8   5.38 -13.9  TCGA-A1-A0SM-01A-11R-A084-07 LumA 
-    ##  9   4.11 -12.7  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
-    ## 10 -23.9   -2.77 TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
+    ##  1  -2.14  11.2  TCGA-A1-A0SD-01A-11R-A115-07 LumA 
+    ##  2  -5.49  -3.46 TCGA-A1-A0SF-01A-11R-A144-07 LumA 
+    ##  3  14.0    4.69 TCGA-A1-A0SG-01A-11R-A144-07 LumA 
+    ##  4 -10.5    7.69 TCGA-A1-A0SH-01A-11R-A084-07 LumA 
+    ##  5  -6.06   9.23 TCGA-A1-A0SI-01A-11R-A144-07 LumB 
+    ##  6  -3.57  13.0  TCGA-A1-A0SJ-01A-11R-A084-07 LumA 
+    ##  7  -5.93 -31.0  TCGA-A1-A0SK-01A-12R-A084-07 Basal
+    ##  8  17.8    1.86 TCGA-A1-A0SM-01A-11R-A084-07 LumA 
+    ##  9 -11.6   13.4  TCGA-A1-A0SN-01A-11R-A144-07 LumB 
+    ## 10  11.7   23.1  TCGA-A1-A0SQ-01A-21R-A144-07 LumA 
     ## # ℹ 241 more rows
 
 ``` r
@@ -975,14 +973,6 @@ se_mini.norm.non_redundant =
     Dim_b_column = `Dim2`
   )
 ```
-
-    ## Found more than one class "dist" in cache; using the first, from namespace 'BiocGenerics'
-
-    ## Also defined by 'spam'
-
-    ## Found more than one class "dist" in cache; using the first, from namespace 'BiocGenerics'
-
-    ## Also defined by 'spam'
 
 We can visualise MDS reduced dimensions of the samples with the closest
 pair removed.

@@ -40,8 +40,7 @@ The _tidyomics_ ecosystem includes packages for:
     * [tidySingleCellExperiment](https://github.com/stemangiola/tidySingleCellExperiment), for tidy manipulation of SingleCellExperiment objects.
     * [tidySpatialExperiment](https://github.com/william-hutchison/tidySpatialExperiment), for tidy manipulation of SpatialExperiment objects.
     * [tidyseurat](https://github.com/stemangiola/tidyseurat), for tidy manipulation of Seurat objects.
-    * [tidybulk](https://github.com/stemangiola/tidybulk), for tidy bulk RNA-seq data analysis.
-
+    
 *   Working with cytometry features:
 
     * [tidytof](https://github.com/keyes-timothy/tidytof), for tidy manipulation of high-dimensional cytometry data.
