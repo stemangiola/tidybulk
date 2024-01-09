@@ -40,7 +40,6 @@ Imports:
     pkgconfig,
     AnnotationDbi,
     DESeq2,
-    EPIC,
     Rtsne,
     Seurat,
     betareg,
@@ -87,8 +86,6 @@ Suggests:
     IRanges,
     here,
     MASS
-Remotes:
-    GfellerLab/EPIC
 VignetteBuilder: 
     knitr
 RdMacros:

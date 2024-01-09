@@ -2697,7 +2697,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		# Apply (log by default) transformation
 	  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
 
-		distinct::distinct() %>%
+		dplyr::distinct() %>%
 
 # NO NEED OF RECTANGULAR
 # 		spread(!!.element,!!.abundance) %>%
@@ -2742,7 +2742,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 			upper = FALSE
 		) %>%
 		filter(correlation > correlation_threshold) %>%
-		distinct(item1) %>%
+		dplyr::distinct(item1) %>%
 		dplyr::rename(!!.element := item1)
 
 	# Return non redundant data frame
@@ -2995,7 +2995,6 @@ run_llsr = function(mix, reference = X_cibersort,  intercept= TRUE) {
 #' @noRd
 #'
 #' @importFrom stats lsfit
-#' @importFrom EPIC EPIC
 #'
 #' @param mix A data frame
 #' @param reference A data frame
@@ -3022,8 +3021,19 @@ run_epic = function(mix, reference = NULL) {
   # Check if it is not matrix or data.frame, for example DelayedMatrix
   if(!is(Y, "matrix") & !is(Y, "data.frame"))
     Y = as.matrix(Y)
+  
+  # Check if package is installed, otherwise install
+  if (find.package("EPIC", quiet = TRUE) %>% length %>% equals(0)) {
+    stop("
+				 EPIC not installed. Please install it. EPIC requires manual installation as it is not on Bioconductor or CRAN.
+				 BiocManager::install(\"EPIC\", ask = FALSE)
+				 ")
+  }
+  if (!"EPIC" %in% (.packages())) {
+    stop("EPIC package not loaded. Please run library(\"EPIC\"). With this setup, EPIC requires manual loading.")
+  }
 
-	results <- EPIC::EPIC(Y, reference = reference)$cellFractions %>% data.frame()
+	results <- EPIC(Y, reference = reference)$cellFractions %>% data.frame()
 	#results[results < 0] <- 0
 	#results <- results / apply(results, 1, sum)
 	rownames(results) = colnames(Y)
