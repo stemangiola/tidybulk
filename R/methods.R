@@ -114,7 +114,7 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 #' @description as_SummarizedExperiment() creates a `SummarizedExperiment` object from a `tbl` or `tidybulk` tbl formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
 #'
 #' @import SummarizedExperiment
-#' @import S4Vectors
+#' @importFrom S4Vectors DataFrame
 #' @importFrom utils data
 #' @importFrom tidyr pivot_longer
 #'

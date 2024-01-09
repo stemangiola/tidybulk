@@ -54,8 +54,13 @@ get_clusters_kmeans_bulk_SE <-
 #' @noRd
 #'
 #' @import tibble
-#' @import Seurat
 #' @importFrom rlang :=
+#' @importFrom Seurat CreateSeuratObject
+#' @importFrom Seurat ScaleData
+#' @importFrom Seurat FindVariableFeatures
+#' @importFrom Seurat RunPCA
+#' @importFrom Seurat FindNeighbors
+#' @importFrom Seurat FindClusters
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -1123,7 +1128,10 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
 #'
 #'
 #' @import tibble
-#' @import DESeq2
+#' @importFrom DESeq2 DESeqDataSet
+#' @importFrom DESeq2 DESeq
+#' @importFrom DESeq2 results
+#' @importFrom DESeq2 DESeqDataSetFromMatrix
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom purrr when

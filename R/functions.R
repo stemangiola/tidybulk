@@ -980,7 +980,9 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 #' @noRd
 #'
 #' @import tibble
-#' @import DESeq2
+#' @importFrom DESeq2 DESeqDataSet
+#' @importFrom DESeq2 DESeq
+#' @importFrom DESeq2 results
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom purrr when
@@ -1706,8 +1708,13 @@ get_clusters_kmeans_bulk <-
 #'
 #'
 #' @import tibble
-#' @import Seurat
 #' @importFrom rlang :=
+#' @importFrom Seurat CreateSeuratObject
+#' @importFrom Seurat ScaleData
+#' @importFrom Seurat FindVariableFeatures
+#' @importFrom Seurat RunPCA
+#' @importFrom Seurat FindNeighbors
+#' @importFrom Seurat FindClusters
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -3389,7 +3396,7 @@ keep_variable_transcripts = function(.data,
 #' @noRd
 #'
 #' @import SummarizedExperiment 
-#' @import S4Vectors
+#' @importFrom S4Vectors DataFrame
 #' @importFrom utils data
 #' @importFrom tidyr pivot_longer
 #'
