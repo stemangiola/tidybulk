@@ -14,7 +14,7 @@ get_reduced_dimensions_UMAP_bulk(
   of_samples = TRUE,
   transform = log1p,
   scale = TRUE,
-  calculate_for_pca_dimensions = 20,
+  calculate_for_pca_dimensions = min(20, top),
   ...
 )
 }

@@ -1109,6 +1109,17 @@ setGeneric("reduce_dimensions", function(.data,
 	col_names = get_abundance_norm_if_exists(.data, .abundance)
 	.abundance = col_names$.abundance
 
+	# adjust top for the max number of features I have
+	if(top > .data |> distinct(!!.feature) |> nrow()){
+	  warning(sprintf(
+	    "tidybulk says: the \"top\" argument %s is higher than the number of features %s", 
+	    top, 
+	    .data |> distinct(!!.feature) |> nrow()
+	  ))
+	  
+	  top = min(top, .data |> distinct(!!.feature) |> nrow())
+	}
+	
 	# Validate data frame
 	if(do_validate()) {
 	validation(.data, !!.element, !!.feature, !!.abundance)
@@ -2544,6 +2555,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.
 #'
 #' Underlying method for edgeR framework:
+#' 
 #' 	.data |>
 #'
 #' 	# Filter
@@ -2567,7 +2579,10 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'			edgeR::glmQLFit(design) |> // or glmFit according to choice
 #'			edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
 #'
+#'
+#'
 #'	Underlying method for DESeq2 framework:
+#'	
 #'	keep_abundant(
 #'			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 #'			minimum_counts = minimum_counts,
@@ -2580,6 +2595,31 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'	DESeq2::results()
 #'
 #'
+#'
+#' Underlying method for glmmSeq framework:
+#'
+#' counts =
+#' .data %>%
+#'   assay(my_assay)
+#' 
+#' # Create design matrix for dispersion, removing random effects
+#' design =
+#'   model.matrix(
+#'     object = .formula |> eliminate_random_effects(),
+#'     data = metadata
+#'   )
+#' 
+#' dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
+#' 
+#'   glmmSeq( .formula,
+#'            countdata = counts ,
+#'            metadata =   metadata |> as.data.frame(),
+#'            dispersion = dispersion,
+#'            progress = TRUE,
+#'            method = method |> str_remove("(?i)^glmmSeq_" ),
+#'   )
+#'   
+#' 
 #' @return A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
 #'
 #'
@@ -3881,11 +3921,17 @@ setGeneric("test_gene_rank", function(.data,
 
 	}
 
+	# DEPRECATION OF reference function
+	if (is_present(.sample) & !is.null(.sample)) {
+	  
+	  # Signal the deprecation to the user
+	  deprecate_warn("1.13.2", "tidybulk::test_gene_rank(.sample = )", details = "The argument .sample is now deprecated and not needed anymore.")
+
+	}
+	
 	# Get column names
-  	.sample = enquo(.sample)
-  	.sample =  get_sample(.data, .sample)$.sample
-  	.arrange_desc = enquo(.arrange_desc)
-  	.entrez = enquo(.entrez)
+	.arrange_desc = enquo(.arrange_desc)
+	.entrez = enquo(.entrez)
 
 	# Check if ranking is set
 	if(quo_is_missing(.arrange_desc))
@@ -3902,19 +3948,26 @@ setGeneric("test_gene_rank", function(.data,
 	# Check if missing entrez
 	if(.data |> filter(is.na(!!.entrez)) |> nrow() > 0 ){
 		warning("tidybulk says: there are .entrez that are NA. Those will be removed")
-		.data = .data |>	filter(!!.entrez |> is.na() |> not())
+		.data = .data |>	filter(is.na(!!.entrez) |> not())
 	}
 
 	# Check if missing .arrange_desc
 	if(.data |> filter(is.na(!!.arrange_desc)) |> nrow() > 0 ){
 		warning("tidybulk says: there are .arrange_desc that are NA. Those will be removed")
-		.data = .data |>	filter(!!.arrange_desc |> is.na() |> not())
+		.data = .data |>	filter(is.na(!!.arrange_desc ) |> not())
 	}
 
 	.data |>
-		pivot_transcript(!!.entrez) |>
-		arrange(desc(!!.arrange_desc)) |>
 		select(!!.entrez, !!.arrange_desc) |>
+	  distinct() |> 
+	  
+	  # Select one entrez - NEEDED?
+	  with_groups(c(!!.entrez,!!.arrange_desc ), slice, 1) |> 
+
+	  # arrange 
+	  arrange(desc(!!.arrange_desc)) |>
+	  
+	  # Format
 		deframe() |>
 		entrez_rank_to_gsea(species, gene_collections  = gene_sets ) |>
 

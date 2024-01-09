@@ -733,10 +733,17 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   # Reorder counts
   counts = counts[,rownames(metadata),drop=FALSE]
 
+  # Create design matrix for dispersion, removing random effects
+  design =
+    model.matrix(
+      object = .formula |> eliminate_random_effects(),
+      data = metadata
+    )
+  
   if(quo_is_symbolic(.dispersion))
     dispersion = .data |> pivot_transcript(!!.transcript) |> select(!!.transcript, !!.dispersion) |> deframe()
   else
-    dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts))
+    dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
 
   # # Check dispersion
   # if(!names(dispersion) |> sort() |> identical(
@@ -747,11 +754,16 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   # Make sure the order matches the counts
   dispersion = dispersion[rownames(counts)]
 
+  # Scaling
+  sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
+  
+  
   glmmSeq_object =
     glmmSeq::glmmSeq( .formula,
           countdata = counts ,
           metadata =   metadata,
           dispersion = dispersion,
+          sizeFactors = sizeFactors,
           progress = TRUE,
           method = method |> str_remove("(?i)^glmmSeq_"),
           ...
@@ -2185,7 +2197,7 @@ get_reduced_dimensions_UMAP_bulk <-
            of_samples = TRUE,
            transform = log1p,
            scale = TRUE,
-           calculate_for_pca_dimensions = 20,
+           calculate_for_pca_dimensions = min(20, top),
            ...) {
 
     if(!is.null(calculate_for_pca_dimensions) & (

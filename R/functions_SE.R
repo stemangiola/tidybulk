@@ -398,7 +398,7 @@ get_reduced_dimensions_UMAP_bulk_SE <-
            of_samples = TRUE,
            transform = log1p,
            scale = NULL, # This is only a dummy argument for making it compatibble with PCA
-           calculate_for_pca_dimensions = 20,
+           calculate_for_pca_dimensions = min(20, top),
            ...) {
     # Comply with CRAN NOTES
     . = NULL
@@ -1046,6 +1046,24 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     omit_contrast_in_colnames = FALSE
   }
 
+
+  # # Check if package is installed, otherwise install
+  # if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+  #   message("tidybulk says: Installing edgeR needed for differential transcript abundance analyses")
+  #   if (!requireNamespace("BiocManager", quietly = TRUE))
+  #     install.packages("BiocManager", repos = "https://cloud.r-project.org")
+  #   BiocManager::install("edgeR", ask = FALSE)
+  # }
+
+  # Check if package is installed, otherwise install
+  if (find.package("glmmSeq", quiet = TRUE) %>% length %>% equals(0)) {
+    message("tidybulk says: Installing glmmSeq needed for differential transcript abundance analyses")
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager", repos = "https://cloud.r-project.org")
+    BiocManager::install("glmmSeq", ask = FALSE)
+  }
+
+
   # If no assay is specified take first
   my_assay = ifelse(
     quo_is_symbol(.abundance),
@@ -1063,10 +1081,17 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     .data %>%
     assay(my_assay)
 
+  # Create design matrix for dispersion, removing random effects
+  design =
+    model.matrix(
+      object = .formula |> lme4::nobars(),
+      data = metadata
+    )
+  
   if(quo_is_symbolic(.dispersion))
     dispersion = rowData(.data)[,quo_name(.dispersion),drop=FALSE] |> as_tibble(rownames = feature__$name) |> deframe()
   else
-    dispersion = setNames(edgeR::estimateDisp(counts)$tagwise.dispersion, rownames(counts))
+    dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
 
   # # Check dispersion
   # if(!names(dispersion) |> sort() |> identical(
@@ -1077,11 +1102,16 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   # Make sure the order matches the counts
   dispersion = dispersion[rownames(counts)]
 
+  # Scaling
+  sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
+  
+  
   glmmSeq_object =
     glmmSeq::glmmSeq( .formula,
                       countdata = counts ,
                       metadata =   metadata |> as.data.frame(),
                       dispersion = dispersion,
+             sizeFactors = sizeFactors,
                       progress = TRUE,
                       method = method |> str_remove("(?i)^glmmSeq_" ),
                       ...
@@ -1101,11 +1131,11 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     # # Add raw object
     # attach_to_internals(glmmSeq_object, "glmmSeq") %>%
 
-    # Communicate the attribute added
-    {
-      rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
-      (.)
-    }  %>%
+    # # Communicate the attribute added
+    # {
+    #   rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
+    #   (.)
+    # }  %>%
 
     # Attach prefix
     setNames(c(

@@ -433,6 +433,17 @@ setMethod("cluster_elements",
   if(.abundance |> quo_is_symbolic()) my_assay = quo_name(.abundance)
   else my_assay = get_assay_scaled_if_exists_SE(.data)
 
+  # adjust top for the max number of features I have
+  if(top > nrow(.data)){
+    warning(sprintf(
+      "tidybulk says: the \"top\" argument %s is higher than the number of features %s",
+      top,
+      nrow(.data)
+    ))
+
+    top = min(top, nrow(.data))
+  }
+
 	my_assay =
 		.data %>%
 
@@ -1307,7 +1318,6 @@ setMethod(
     contrasts = .contrasts
   }
 
-	# Clearly state what counts are used
   # Clearly state what counts are used
   rlang::inform("=====================================
 tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance
@@ -1320,86 +1330,86 @@ such as batch effects (if applicable) in the formula.
 	if(!is.null(test_above_log2_fold_change) && test_above_log2_fold_change < 0)
 		stop("tidybulk says: test_above_log2_fold_change should be a positive real or NULL")
 
+  # Filter abundant if performed
+  .data = filter_if_abundant_were_identified(.data)
 
-	my_differential_abundance =
-		.data %>%
-
-		# Filter abundant if performed
-		filter_if_abundant_were_identified() %>%
-
-		# Choose method
-		when(
-
-			# edgeR
-			tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~
-				get_differential_transcript_abundance_bulk_SE(
-					.,
-					.formula,
-					.abundance = !!.abundance,
-					.contrasts = contrasts,
-					sample_annotation = colData(.data),
-					method = method,
-					test_above_log2_fold_change = test_above_log2_fold_change,
-					scaling_method = scaling_method,
-					omit_contrast_in_colnames = omit_contrast_in_colnames,
-					prefix = prefix,
-					...
-				),
-
-			# Voom
-			grepl("voom", method) ~ get_differential_transcript_abundance_bulk_voom_SE(
-				.,
-				.formula,
-				.abundance = !!.abundance,
-				.contrasts = contrasts,
-				sample_annotation = colData(.data),
-				method = method,
-				test_above_log2_fold_change = test_above_log2_fold_change,
-				scaling_method = scaling_method,
-				omit_contrast_in_colnames = omit_contrast_in_colnames,
-                                prefix = prefix,
-                                ...
-			),
-
-			# DESeq2
-			tolower(method)=="deseq2" ~ get_differential_transcript_abundance_deseq2_SE(
-				.,
-				.formula,
-				.abundance = !!.abundance,
-				.contrasts = contrasts,
-				method = method,
+  if(tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio", "edger_robust_likelihood_ratio"))
+  	my_differential_abundance =
+      get_differential_transcript_abundance_bulk_SE(
+        .data,
+        .formula,
+        .abundance = !!.abundance,
+        .contrasts = contrasts,
+        sample_annotation = colData(.data),
+        method = method,
         test_above_log2_fold_change = test_above_log2_fold_change,
-				scaling_method = scaling_method,
-				omit_contrast_in_colnames = omit_contrast_in_colnames,
-				prefix = prefix,
-         ...
-			),
+        scaling_method = scaling_method,
+        omit_contrast_in_colnames = omit_contrast_in_colnames,
+        prefix = prefix,
+        ...
+      )
 
-			# glmmseq
-			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmtmb") ~ get_differential_transcript_abundance_glmmSeq_SE(
-			  .,
-			  .formula,
-			  .abundance = !!.abundance,
-			  .contrasts = contrasts,
-			  sample_annotation = colData(.data),
-			  method = method,
-			  test_above_log2_fold_change = test_above_log2_fold_change,
-			  scaling_method = scaling_method,
-			  omit_contrast_in_colnames = omit_contrast_in_colnames,
-			  prefix = prefix,
-			  ...
-			),
+  else if (grepl("voom", method))
+  my_differential_abundance =
+  get_differential_transcript_abundance_bulk_voom_SE(
+    .data,
+    .formula,
+    .abundance = !!.abundance,
+    .contrasts = contrasts,
+    sample_annotation = colData(.data),
+    method = method,
+    test_above_log2_fold_change = test_above_log2_fold_change,
+    scaling_method = scaling_method,
+    omit_contrast_in_colnames = omit_contrast_in_colnames,
+    prefix = prefix,
+    ...
+  )
 
-			# Else error
-			TRUE ~  stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\", \"glmmseq_lme4\", \"glmmseq_glmmTMB\"")
-		)
+  else if(tolower(method)=="deseq2")
+  my_differential_abundance =
+    get_differential_transcript_abundance_deseq2_SE(
+      .data,
+      .formula,
+      .abundance = !!.abundance,
+      .contrasts = contrasts,
+      method = method,
+      test_above_log2_fold_change = test_above_log2_fold_change,
+      scaling_method = scaling_method,
+      omit_contrast_in_colnames = omit_contrast_in_colnames,
+      prefix = prefix,
+      ...
+    )
+
+
+  else if(	tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmtmb"))
+  my_differential_abundance =
+    get_differential_transcript_abundance_glmmSeq_SE(
+      .data,
+    .formula,
+    .abundance = !!.abundance,
+    .contrasts = contrasts,
+    sample_annotation = colData(.data),
+    method = method,
+    test_above_log2_fold_change = test_above_log2_fold_change,
+    scaling_method = scaling_method,
+    omit_contrast_in_colnames = omit_contrast_in_colnames,
+    prefix = prefix,
+    ...
+  )
+  else
+    stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\", \"glmmseq_lme4\", \"glmmseq_glmmTMB\"")
+
+
+  statistics =
+    my_differential_abundance$result %>%
+    as_matrix(rownames = "transcript") %>%
+    .[match(rownames(rowData(.data)), rownames(.)),,drop=FALSE]
+
+  # If action is get just return the statistics
+  if(action == "get") return(statistics)
 
 	# Add results
-	rowData(.data) = rowData(.data) %>% cbind(
-		my_differential_abundance$result %>%
-			as_matrix(rownames = "transcript") %>%
-			.[match(rownames(rowData(.data)), rownames(.)),,drop=FALSE]
-	)
+	rowData(.data) = rowData(.data) %>% cbind(statistics)
 
 
 	.data %>%

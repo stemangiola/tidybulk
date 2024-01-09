@@ -462,7 +462,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                     sizeFactors = NULL, reduced = NULL, modelData = NULL, designMatrix = NULL,
                     method = c("lme4", "glmmTMB"), control = NULL, family = glmmTMB::nbinom2,
                     cores = 1, removeSingles = FALSE, zeroCount = 0.125, verbose = TRUE,
-                    returnList = FALSE, progress = FALSE, max_rows_for_matrix_multiplication = Inf, ...)
+                    returnList = FALSE, progress = FALSE, max_rows_for_matrix_multiplication = Inf, avoid_forking = FALSE, ...)
 {
   glmmcall <- match.call(expand.dots = TRUE)
   method <- match.arg(method)
@@ -618,7 +618,32 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       }
     }
     else {
-      if (progress) {
+
+      if(avoid_forking){
+        library(parallel)
+        cl = parallel::makeCluster(cores, type = "PSOCK")
+        #parallel::clusterEvalQ(cl,c(library(dplyr),library(glmmSeq)))
+        #clusterExport(cl, list("varname1", "varname2"),envir=environment())
+        resultList <- parallel::clusterApply(
+          cl,
+          fullList,
+          function(geneList) {
+            glmerCore(geneList, fullFormula, reduced,
+                      subsetMetadata, control, offset, modelData,
+                      designMatrix, hyp.matrix,, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
+          }
+        )
+      } 
+      else if (progress) {
+        
+        # Check if package is installed, otherwise install
+        if (find.package("pbmcapply", quiet = TRUE) %>% length %>% equals(0)) {
+          message("tidybulk says: Installing pbmcapply needed for differential transcript abundance analyses")
+          if (!requireNamespace("BiocManager", quietly = TRUE))
+            install.packages("BiocManager", repos = "https://cloud.r-project.org")
+          BiocManager::install("pbmcapply", ask = FALSE)
+        }
+        
 
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
           glmerCore(geneList, fullFormula, reduced,
@@ -626,7 +651,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                     designMatrix, hyp.matrix, , max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
         }, mc.cores = cores)
         if ("value" %in% names(resultList)) resultList <- resultList$value
-
+        
       }
       else {
         resultList <- mclapply(fullList, function(geneList) {
