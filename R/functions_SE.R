@@ -373,6 +373,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 #'
 #'
 #' @import tibble
+#' @importFrom dplyr mutate
 #' @importFrom rlang :=
 #' @importFrom stats setNames
 #' @importFrom uwot tumap

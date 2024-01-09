@@ -164,7 +164,9 @@ glmmTMB_standard_error = function (model){
 #' @importFrom purrr map2_dfc
 #' @importFrom tidyr pivot_longer
 #' @importFrom tidyr pivot_wider
+#' @importFrom dplyr left_join
 #' @importFrom dplyr join_by
+#' @importFrom dplyr select
 #'
 #' @keywords internal
 #' @noRd
@@ -181,7 +183,7 @@ glmmTMB_to_confidence_intervals_random_effects = function(fit){
         "group_id" |>
           c(sprintf("%s__%s", .y, colnames(.x)))
       ) |>
-      pivot_longer(-group_id, names_to = "parameter", values_to = "CI")
+      tidyr::pivot_longer(-group_id, names_to = "parameter", values_to = "CI")
   )
 
   mod = glmmTMB::ranef(fit, condVar=T)$cond
@@ -193,15 +195,15 @@ glmmTMB_to_confidence_intervals_random_effects = function(fit){
         "group_id" |>
           c(sprintf("%s__%s", .y, colnames(.x)))
       ) |>
-      pivot_longer(-group_id, names_to = "parameter", values_to = "mode")
+      tidyr::pivot_longer(-group_id, names_to = "parameter", values_to = "mode")
   )
 
   mod |>
-    left_join(ster, join_by(group_id, parameter)) |>
-    mutate(lower = mode - CI, upper = mode + CI) |>
-    select(-CI) |>
+    dplyr::left_join(ster, dplyr::join_by(group_id, parameter)) |>
+    dplyr::mutate(lower = mode - CI, upper = mode + CI) |>
+    dplyr::select(-CI) |>
     tidyr::unite("parameter", c(group_id, parameter), sep="_") |>
-    pivot_wider(names_from = parameter, values_from = c(lower, mode, upper), names_glue = "{parameter}__{.value}")
+    tidyr::pivot_wider(names_from = parameter, values_from = c(lower, mode, upper), names_glue = "{parameter}__{.value}")
 }
 
 

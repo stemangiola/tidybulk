@@ -154,7 +154,11 @@ create_tt_from_bam_sam_bulk <-
 #'
 #'
 #' @import tibble
-#' @import dplyr
+#' @importFrom dplyr select
+#' @importFrom dplyr left_join
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarise
+#' @importFrom dplyr mutate
 #' @importFrom rlang :=
 #' @importFrom stats setNames
 #' @importFrom edgeR calcNormFactors
@@ -241,7 +245,12 @@ add_scaled_counts_bulk.calcNormFactor <- function(.data,
 #'
 #'
 #' @import tibble
-#' @import dplyr
+#' @importFrom dplyr select
+#' @importFrom dplyr left_join
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarise
+#' @importFrom dplyr mutate
+#' @importFrom dplyr rename
 #' @importFrom magrittr equals
 #' @importFrom rlang :=
 #' @importFrom stats median
@@ -287,8 +296,8 @@ get_scaled_counts_bulk <- function(.data,
 
 			# If not specified take most abundance sample
 			df %>%
-				group_by(!!.sample) %>%
-				summarise(sum = median(!!.abundance)) %>%
+			  dplyr::group_by(!!.sample) %>%
+			  dplyr::summarise(sum = median(!!.abundance)) %>%
 				mutate(med = max(sum)) %>%
 				mutate(diff = abs(sum - med)) %>%
 				arrange(diff) %>%
@@ -2629,12 +2638,14 @@ aggregate_duplicated_transcripts_DT =
 #' @keywords internal
 #' @noRd
 #'
-#'
-#'
 #' @import tibble
-#' @import dplyr
 #' @importFrom rlang :=
 #' @importFrom dplyr anti_join
+#' @importFrom dplyr mutate
+#' @importFrom dplyr rename
+#' @importFrom dplyr left_join
+#' @importFrom dplyr select
+#' @importFrom dplyr distinct
 #' @importFrom widyr pairwise_cor
 #'
 #' @param .data A tibble
@@ -2678,7 +2689,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		.data %>%
 
 		# Prepare the data frame
-		select(!!.feature,!!.element,!!.abundance) %>%
+		dplyr::select(!!.feature,!!.element,!!.abundance) %>%
 
 		# Filter variable genes
 		keep_variable_transcripts(!!.element,!!.feature,!!.abundance, top = top) %>%
@@ -2686,7 +2697,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		# Apply (log by default) transformation
 	  dplyr::mutate(!!.abundance := transform(!!.abundance)) %>%
 
-		distinct() %>%
+		distinct::distinct() %>%
 
 # NO NEED OF RECTANGULAR
 # 		spread(!!.element,!!.abundance) %>%
