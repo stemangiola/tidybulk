@@ -1046,24 +1046,6 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     omit_contrast_in_colnames = FALSE
   }
 
-
-  # # Check if package is installed, otherwise install
-  # if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-  #   message("tidybulk says: Installing edgeR needed for differential transcript abundance analyses")
-  #   if (!requireNamespace("BiocManager", quietly = TRUE))
-  #     install.packages("BiocManager", repos = "https://cloud.r-project.org")
-  #   BiocManager::install("edgeR", ask = FALSE)
-  # }
-
-  # Check if package is installed, otherwise install
-  if (find.package("glmmSeq", quiet = TRUE) %>% length %>% equals(0)) {
-    message("tidybulk says: Installing glmmSeq needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("glmmSeq", ask = FALSE)
-  }
-
-
   # If no assay is specified take first
   my_assay = ifelse(
     quo_is_symbol(.abundance),

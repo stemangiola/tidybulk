@@ -1494,17 +1494,8 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		ifelse_pipe(length(.) > 0,
 								~ limma::makeContrasts(contrasts = .x, levels = design),
 								~ NULL)
-
-	# Check if package is installed, otherwise install
-	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
-		stop("
-				 EGSEA not installed. Please install it. EGSEA requires manual installation to not overwhelm the user in case it is not needed.
-				 BiocManager::install(\"EGSEA\", ask = FALSE)
-				 ")
-	}
-	if (!"EGSEA" %in% (.packages())) {
-		stop("EGSEA package not loaded. Please run library(\"EGSEA\"). With this setup, EGSEA require manual loading, for technical reasons.")
-	}
+	
+	check_package_availablility("EGSEA")
 
 	dge =
 		df_for_edgeR %>%
@@ -3034,16 +3025,7 @@ run_epic = function(mix, reference = NULL) {
   if(!is(Y, "matrix") & !is(Y, "data.frame"))
     Y = as.matrix(Y)
   
-  # Check if package is installed, otherwise install
-  if (find.package("EPIC", quiet = TRUE) %>% length %>% equals(0)) {
-    stop("
-				 EPIC not installed. Please install it. EPIC requires manual installation as it is not on Bioconductor or CRAN.
-				 BiocManager::install(\"EPIC\", ask = FALSE)
-				 ")
-  }
-  if (!"EPIC" %in% (.packages())) {
-    stop("EPIC package not loaded. Please run library(\"EPIC\"). With this setup, EPIC requires manual loading.")
-  }
+  check_package_availablility("EPIC")
 
 	results <- EPIC(Y, reference = reference)$cellFractions %>% data.frame()
 	#results[results < 0] <- 0

@@ -1470,6 +1470,23 @@ get_special_column_name_symbol = function(name){
   list(name = name, symbol = as.symbol(name))
 }
 
+check_package_availablility <- function(package_name) {
+  
+  # Check if package is installed
+  if (length(find.package(package_name, quiet = TRUE)) == 0) {
+    stop("
+This operation requires ", package_name, ", which is not currently installed. To install it, please run:
+BiocManager::install(\"", package_name, "\")
+To install all such optional dependencies, please run:
+BiocManager::install(\"tidybulk\", dependencies = TRUE)")
+  }
+  if (!package_name %in% (.packages())) {
+    stop("
+This operation requires ", package_name, ", which is installed but not currently loaded. To load it, please run:
+library(\"", package_name, "\")")
+  }
+}
+
 feature__ =  get_special_column_name_symbol(".feature")
 sample__ = get_special_column_name_symbol(".sample")
 

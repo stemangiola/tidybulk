@@ -635,15 +635,6 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
         )
       } 
       else if (progress) {
-        
-        # Check if package is installed, otherwise install
-        if (find.package("pbmcapply", quiet = TRUE) %>% length %>% equals(0)) {
-          message("tidybulk says: Installing pbmcapply needed for differential transcript abundance analyses")
-          if (!requireNamespace("BiocManager", quietly = TRUE))
-            install.packages("BiocManager", repos = "https://cloud.r-project.org")
-          BiocManager::install("pbmcapply", ask = FALSE)
-        }
-        
 
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
           glmerCore(geneList, fullFormula, reduced,

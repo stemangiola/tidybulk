@@ -1834,16 +1834,7 @@ setMethod("keep_abundant",
 			~ NULL
 			)
 
-	# Check if package is installed, otherwise install
-	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
-		stop("
-				 EGSEA not installed. Please install it. EGSEA require manual installation for not overwelming the user in case it is not needed.
-				 BiocManager::install(\"EGSEA\", ask = FALSE)
-				 ")
-	}
-	if (!"EGSEA" %in% (.packages())) {
-		stop("EGSEA package not loaded. Please run library(\"EGSEA\"). With this setup, EGSEA require manual loading, for technical reasons.")
-	}
+	check_package_availablility("EGSEA")
 
 	dge =
 		.data %>%
