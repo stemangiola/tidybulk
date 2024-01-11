@@ -3041,7 +3041,6 @@ run_epic = function(mix, reference = NULL) {
 #' @keywords internal
 #' @noRd
 #'
-#' @import parallel
 #' @import preprocessCore
 #' @import class
 #' @import e1071
@@ -3842,15 +3841,16 @@ fill_NA_using_value = function(.data,
 #' @noRd
 #'
 #' @importFrom stats p.adjust
-#' @importFrom msigdbr msigdbr
 #' @importFrom clusterProfiler enricher
 entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
 
 	# From the page
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
-
+  
+  check_package_availablility("msigdbr")
+  
 	# Get gene sets signatures
-	msigdbr::msigdbr(species = species) %>%
+	msigdbr(species = species) %>%
 
 		# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
 		when(
@@ -3892,15 +3892,16 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 #' @importFrom stats p.adjust
 #' @importFrom purrr map
 #' @importFrom clusterProfiler GSEA
-#' @importFrom msigdbr msigdbr
 #'
 entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
+  
+  check_package_availablility("msigdbr")
 
   # Get gene sets signatures
   if(is.null(gene_collections ) )
-    my_gene_collection = msigdbr::msigdbr(species = species)
+    my_gene_collection = msigdbr(species = species)
   else if(gene_collections |> is("character"))
-    my_gene_collection = msigdbr::msigdbr(species = species) %>%  filter( tolower(gs_cat) %in% tolower(gene_collections) )
+    my_gene_collection = msigdbr(species = species) %>%  filter( tolower(gs_cat) %in% tolower(gene_collections) )
   else if(gene_collections |> is("list"))
     my_gene_collection = tibble(gs_name=names(.), entrez_gene = . ) %>% unnest(entrez_gene) %>% mutate(gs_cat = "user_defined")
  else

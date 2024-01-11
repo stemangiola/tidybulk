@@ -620,7 +620,6 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
     else {
 
       if(avoid_forking){
-        library(parallel)
         cl = parallel::makeCluster(cores, type = "PSOCK")
         #parallel::clusterEvalQ(cl,c(library(dplyr),library(glmmSeq)))
         #clusterExport(cl, list("varname1", "varname2"),envir=environment())

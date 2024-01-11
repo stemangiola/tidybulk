@@ -2239,8 +2239,6 @@ setMethod("deconvolve_cellularity",
 
 #' Get ENTREZ id from gene SYMBOL
 #' 
-#' @importFrom org.Hs.eg.db org.Hs.eg.db
-#' 
 #' @param .data A tt or tbl object.
 #' @param .transcript A character. The name of the gene symbol column.
 #' @param .sample The name of the sample column
@@ -2260,6 +2258,8 @@ setMethod("deconvolve_cellularity",
 symbol_to_entrez = function(.data,
 														.transcript = NULL,
 														.sample = NULL) {
+  
+  check_package_availablility("org.Hs.eg.db")
 
   # Fix NOTEs
   . = NULL
@@ -2269,7 +2269,7 @@ symbol_to_entrez = function(.data,
 	.sample = enquo(.sample)
 	col_names = get_sample_transcript(.data, .sample, .transcript)
 	.transcript = col_names$.transcript
-
+	
 	.data |>
 
 		# Solve the lower case
@@ -2279,7 +2279,7 @@ symbol_to_entrez = function(.data,
 		dplyr::left_join(
 			# Get entrez mapping 1:1
 			AnnotationDbi::mapIds(
-				org.Hs.eg.db::org.Hs.eg.db,
+				org.Hs.eg.db,
 				(.) |> pull(transcript_upper) |> as.character() |> unique(),
 				'ENTREZID',
 				'SYMBOL'
@@ -2303,8 +2303,6 @@ symbol_to_entrez = function(.data,
 #' @param .data A tt or tbl object.
 #' @param .transcript A character. The name of the gene symbol column.
 #'
-#' @importFrom org.Hs.eg.db org.Hs.eg.db
-#' @importFrom org.Mm.eg.db org.Mm.eg.db
 #' @importFrom AnnotationDbi mapIds
 #' 
 #' @return A tbl
@@ -2325,6 +2323,9 @@ setGeneric("describe_transcript", function(.data,
 #'
 .describe_transcript = function(.data,
 														.transcript = NULL) {
+  
+  check_package_availablility("org.Hs.eg.db")
+  check_package_availablility("org.Mm.eg.db")
 
   # Fix NOTEs
   . = NULL
@@ -2339,7 +2340,7 @@ setGeneric("describe_transcript", function(.data,
 
 		# Human
 		tryCatch(suppressMessages(AnnotationDbi::mapIds(
-			org.Hs.eg.db::org.Hs.eg.db,
+		  org.Hs.eg.db,
 			keys = pull(.data, !!.transcript) |> unique() |> as.character(),  #ensembl_symbol_mapping$transcript %>% unique,
 			column = "GENENAME",
 			keytype = "SYMBOL",
@@ -2350,7 +2351,7 @@ setGeneric("describe_transcript", function(.data,
 		# Mouse
 		c(
 			tryCatch(suppressMessages(AnnotationDbi::mapIds(
-				org.Mm.eg.db::org.Mm.eg.db,
+				org.Mm.eg.db,
 				keys = pull(.data, !!.transcript) |> unique() |> as.character(),  #ensembl_symbol_mapping$transcript %>% unique,
 				column = "GENENAME",
 				keytype = "SYMBOL",
@@ -3666,7 +3667,6 @@ setMethod("test_gene_enrichment",
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_missing
 #' @importFrom magrittr "%>%"
-#' @importFrom msigdbr msigdbr_species
 #'
 #' @name test_gene_overrepresentation
 #'
@@ -3742,6 +3742,8 @@ setGeneric("test_gene_overrepresentation", function(.data,
 																					 gene_sets  = NULL,
 																					 gene_set = NULL  # DEPRECATED
 																					 )	{
+  
+  check_package_availablility("msigdbr")
 
 	# Comply with CRAN NOTES
 	. = NULL
@@ -3761,8 +3763,8 @@ setGeneric("test_gene_overrepresentation", function(.data,
 		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
 
 	# Check is correct species name
-	if(species %in% msigdbr::msigdbr_species()$species_name |> not())
-		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+	if(species %in% msigdbr_species()$species_name |> not())
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr_species()$species_name, collapse=", ")))
 
 	.data |>
 		#filter(!!.entrez %in% unique(m_df$entrez_gene)) |>
@@ -3819,7 +3821,6 @@ setMethod("test_gene_overrepresentation",
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_missing
 #' @importFrom magrittr "%>%"
-#' @importFrom msigdbr msigdbr_species
 #'
 #' @name test_gene_rank
 #'
@@ -3909,6 +3910,8 @@ setGeneric("test_gene_rank", function(.data,
 														 gene_set = NULL  # DEPRECATED
 														 )	{
 
+  check_package_availablility("msigdbr")
+  
 	# Comply with CRAN NOTES
 	. = NULL
 
@@ -3942,8 +3945,8 @@ setGeneric("test_gene_rank", function(.data,
 		stop("tidybulk says: the .entrez parameter appears to no be set")
 
 	# Check is correct species name
-	if(species %in% msigdbr::msigdbr_species()$species_name |> not())
-		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+	if(species %in% msigdbr_species()$species_name |> not())
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr_species()$species_name, collapse=", ")))
 
 	# Check if missing entrez
 	if(.data |> filter(is.na(!!.entrez)) |> nrow() > 0 ){

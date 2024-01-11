@@ -2016,7 +2016,6 @@ setMethod("test_gene_enrichment",
 
 #' test_gene_enrichment
 #' @inheritParams test_gene_enrichment
-#' @importFrom msigdbr msigdbr_species
 #'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
@@ -2037,7 +2036,9 @@ setMethod("test_gene_enrichment",
 																					 gene_set = NULL  # DEPRECATED
 																					 )	{
 
-	# Comply with CRAN NOTES
+  check_package_availablility("msigdbr")
+  
+  # Comply with CRAN NOTES
 	. = NULL
 
 	# DEPRECATION OF reference function
@@ -2065,8 +2066,8 @@ setMethod("test_gene_enrichment",
 		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
 
 	# Check is correct species name
-	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
-		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+	if(species %in% msigdbr_species()$species_name %>% not())
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr_species()$species_name, collapse=", ")))
 
 	# # Check if missing entrez
 	# if(.data %>% filter(!!.entrez %>% is.na) %>% nrow() %>% gt(0) ){
@@ -2099,7 +2100,6 @@ setMethod("test_gene_overrepresentation",
 
 #' test_gene_overrepresentation
 #' @inheritParams test_gene_overrepresentation
-#' @importFrom msigdbr msigdbr_species
 #' 
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
@@ -2119,7 +2119,9 @@ setMethod("test_gene_overrepresentation",
 																gene_sets = NULL,
 																gene_set = NULL  # DEPRECATED
 																)	{
-
+  
+  check_package_availablility("msigdbr")
+  
 	# Comply with CRAN NOTES
 	. = NULL
 
@@ -2145,8 +2147,8 @@ setMethod("test_gene_overrepresentation",
 		stop("tidybulk says: the .entrez parameter appears to no be set")
 
 	# Check is correct species name
-	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
-		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+	if(species %in% msigdbr_species()$species_name %>% not())
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr_species()$species_name, collapse=", ")))
 
 	.data %>%
 		pivot_transcript() %>%
@@ -2662,8 +2664,6 @@ setMethod("get_bibliography",
 #' @importFrom SummarizedExperiment rowData
 #' @importFrom tibble enframe
 #' @importFrom AnnotationDbi mapIds
-#' @importFrom org.Hs.eg.db org.Hs.eg.db
-#' @importFrom org.Mm.eg.db org.Mm.eg.db
 #'
 #' @inheritParams describe_transcript
 #'
@@ -2675,6 +2675,9 @@ setMethod("get_bibliography",
 #'
 .describe_transcript_SE = function(.data,
 															 .transcript = NULL) {
+  
+  check_package_availablility("org.Hs.eg.db")
+  check_package_availablility("org.Mm.eg.db")
 
   # Fix NOTEs
   . = NULL
@@ -2692,7 +2695,7 @@ setMethod("get_bibliography",
 	description_df =
 		# Human
 		tryCatch(suppressMessages(AnnotationDbi::mapIds(
-			org.Hs.eg.db::org.Hs.eg.db,
+			org.Hs.eg.db,
 			keys = my_transcripts,  #ensembl_symbol_mapping$transcript %>% unique,
 			column = "GENENAME",
 			keytype = "SYMBOL",
@@ -2703,7 +2706,7 @@ setMethod("get_bibliography",
 		# Mouse
 		c(
 			tryCatch(suppressMessages(AnnotationDbi::mapIds(
-				org.Mm.eg.db::org.Mm.eg.db,
+				org.Mm.eg.db,
 				keys = my_transcripts,  #ensembl_symbol_mapping$transcript %>% unique,
 				column = "GENENAME",
 				keytype = "SYMBOL",

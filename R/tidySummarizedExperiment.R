@@ -211,7 +211,7 @@ subset_tibble_output = function(.data, count_info, sample_info, gene_info, range
 
 }
 
-
+#' @importFrom pkgconfig get_config
 .as_tibble_optimised = function(x, skip_GRanges = FALSE, .subset = NULL,
                                 .name_repair=c("check_unique", "unique", "universal", "minimal"),
                                 rownames=pkgconfig::get_config("tibble::rownames", NULL)){

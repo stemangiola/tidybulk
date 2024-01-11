@@ -55,9 +55,6 @@ Imports:
     limma, 
     lme4, 
     matrixStats,
-    msigdbr, 
-    org.Hs.eg.db,
-    org.Mm.eg.db, 
     pbapply, 
     pbmcapply,
     survival,
@@ -85,7 +82,10 @@ Suggests:
     igraph,
     IRanges,
     here,
-    MASS
+    MASS,
+    org.Hs.eg.db,
+    org.Mm.eg.db,
+    msigdbr
 VignetteBuilder: 
     knitr
 RdMacros:
