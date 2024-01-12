@@ -1834,7 +1834,7 @@ setMethod("keep_abundant",
 			~ NULL
 			)
 
-	check_package_availablility("EGSEA")
+	check_package_availability("EGSEA")
 
 	dge =
 		.data %>%
@@ -2036,7 +2036,7 @@ setMethod("test_gene_enrichment",
 																					 gene_set = NULL  # DEPRECATED
 																					 )	{
 
-  check_package_availablility("msigdbr")
+  check_package_availability("msigdbr")
   
   # Comply with CRAN NOTES
 	. = NULL
@@ -2120,7 +2120,7 @@ setMethod("test_gene_overrepresentation",
 																gene_set = NULL  # DEPRECATED
 																)	{
   
-  check_package_availablility("msigdbr")
+  check_package_availability("msigdbr")
   
 	# Comply with CRAN NOTES
 	. = NULL
@@ -2676,8 +2676,8 @@ setMethod("get_bibliography",
 .describe_transcript_SE = function(.data,
 															 .transcript = NULL) {
   
-  check_package_availablility("org.Hs.eg.db")
-  check_package_availablility("org.Mm.eg.db")
+  check_package_availability("org.Hs.eg.db")
+  check_package_availability("org.Mm.eg.db")
 
   # Fix NOTEs
   . = NULL

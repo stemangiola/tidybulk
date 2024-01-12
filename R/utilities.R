@@ -1470,7 +1470,7 @@ get_special_column_name_symbol = function(name){
   list(name = name, symbol = as.symbol(name))
 }
 
-check_package_availablility <- function(package_name) {
+check_package_availability <- function(package_name) {
   
   # Check if package is installed
   if (length(find.package(package_name, quiet = TRUE)) == 0) {

@@ -1495,7 +1495,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 								~ limma::makeContrasts(contrasts = .x, levels = design),
 								~ NULL)
 	
-	check_package_availablility("EGSEA")
+	check_package_availability("EGSEA")
 
 	dge =
 		df_for_edgeR %>%
@@ -3025,7 +3025,7 @@ run_epic = function(mix, reference = NULL) {
   if(!is(Y, "matrix") & !is(Y, "data.frame"))
     Y = as.matrix(Y)
   
-  check_package_availablility("EPIC")
+  check_package_availability("EPIC")
 
 	results <- EPIC(Y, reference = reference)$cellFractions %>% data.frame()
 	#results[results < 0] <- 0
@@ -3847,7 +3847,7 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 	# From the page
 	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
   
-  check_package_availablility("msigdbr")
+  check_package_availability("msigdbr")
   
 	# Get gene sets signatures
 	msigdbr(species = species) %>%
@@ -3895,7 +3895,7 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 #'
 entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
   
-  check_package_availablility("msigdbr")
+  check_package_availability("msigdbr")
 
   # Get gene sets signatures
   if(is.null(gene_collections ) )

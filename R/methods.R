@@ -2259,7 +2259,7 @@ symbol_to_entrez = function(.data,
 														.transcript = NULL,
 														.sample = NULL) {
   
-  check_package_availablility("org.Hs.eg.db")
+  check_package_availability("org.Hs.eg.db")
 
   # Fix NOTEs
   . = NULL
@@ -2324,8 +2324,8 @@ setGeneric("describe_transcript", function(.data,
 .describe_transcript = function(.data,
 														.transcript = NULL) {
   
-  check_package_availablility("org.Hs.eg.db")
-  check_package_availablility("org.Mm.eg.db")
+  check_package_availability("org.Hs.eg.db")
+  check_package_availability("org.Mm.eg.db")
 
   # Fix NOTEs
   . = NULL
@@ -3743,7 +3743,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 																					 gene_set = NULL  # DEPRECATED
 																					 )	{
   
-  check_package_availablility("msigdbr")
+  check_package_availability("msigdbr")
 
 	# Comply with CRAN NOTES
 	. = NULL
@@ -3910,7 +3910,7 @@ setGeneric("test_gene_rank", function(.data,
 														 gene_set = NULL  # DEPRECATED
 														 )	{
 
-  check_package_availablility("msigdbr")
+  check_package_availability("msigdbr")
   
 	# Comply with CRAN NOTES
 	. = NULL
