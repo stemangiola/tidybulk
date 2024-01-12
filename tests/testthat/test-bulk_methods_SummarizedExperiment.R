@@ -1,5 +1,11 @@
 context('Bulk methods SummarizedExperiment')
 
+# Install and load packages required for testing
+BiocManager::install("msigdbr")
+BiocManager::install("org.Hs.eg.db")
+library("msigdbr")
+library("org.Hs.eg.db")
+
 data("se_mini")
 data("breast_tcga_mini_SE")
 
@@ -710,6 +716,8 @@ test_that("pivot",{
 })
 
 test_that("gene over representation",{
+  
+
 
   df_entrez = aggregate_duplicates(input_df, aggregation_function = sum, .sample = a, .transcript = entrez, .abundance = c)
   df_entrez = mutate(df_entrez, do_test = b %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
