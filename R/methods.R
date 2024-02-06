@@ -8,7 +8,7 @@ setOldClass("tidybulk")
 #'
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_missing
-#' @importFrom magrittr "%>%"
+#'
 #' @import readr
 #' @import SummarizedExperiment
 #' @import methods
@@ -302,7 +302,7 @@ setMethod("as_SummarizedExperiment", "tidybulk", .as_SummarizedExperiment)
 #' @description tidybulk_SAM_BAM() creates a `tt` object from A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name tidybulk_SAM_BAM
 #'
@@ -352,7 +352,7 @@ setMethod("tidybulk_SAM_BAM", c(file_names = "character", genome = "character"),
 #' @description scale_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #' @importFrom stats median
 #'
 #' @name scale_abundance
@@ -576,7 +576,7 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 #' @description quantile_normalise_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #' @importFrom stats median
 #' @importFrom dplyr join_by
 #'
@@ -781,7 +781,7 @@ setMethod("quantile_normalise_abundance", "tidybulk", .quantile_normalise_abunda
 #' @description cluster_elements() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and identify clusters in the data.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name cluster_elements
 #'
@@ -998,7 +998,7 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 #' @description reduce_dimensions() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and calculates the reduced dimensional space of the transcript abundance.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name reduce_dimensions
 #'
@@ -1285,7 +1285,7 @@ setMethod("reduce_dimensions", "tidybulk", .reduce_dimensions)
 #' @description rotate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name rotate_dimensions
 #'
@@ -1464,7 +1464,7 @@ setMethod("rotate_dimensions", "tidybulk", .rotate_dimensions)
 #' @description remove_redundancy() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a consistent object (to the input) with dropped elements (e.g., samples).
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name remove_redundancy
 #'
@@ -1681,7 +1681,7 @@ setMethod("remove_redundancy", "tidybulk", .remove_redundancy)
 #' @description adjust_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with an additional adjusted abundance column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name adjust_abundance
 #'
@@ -1943,7 +1943,7 @@ setMethod("adjust_abundance", "tidybulk", .adjust_abundance)
 #' @description aggregate_duplicates() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with aggregated transcripts that were duplicated.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name aggregate_duplicates
 #'
@@ -2093,7 +2093,7 @@ setMethod("aggregate_duplicates", "tidybulk", .aggregate_duplicates)
 #' @description deconvolve_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with the estimated cell type abundance for each sample
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name deconvolve_cellularity
 #'
@@ -2455,7 +2455,7 @@ setMethod("describe_transcript", "tidybulk", .describe_transcript)
 #' @description ensembl_to_symbol() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with the additional transcript symbol column
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name ensembl_to_symbol
 #'
@@ -2573,7 +2573,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @description test_differential_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name test_differential_abundance
 #'
@@ -2993,7 +2993,7 @@ setMethod("test_differential_abundance",
 #' @description keep_variable() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name keep_variable
 #'
@@ -3120,7 +3120,7 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 #' @description identify_abundant() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #' @importFrom dplyr filter
 #' @importFrom tidyr drop_na
 #'
@@ -3339,7 +3339,7 @@ setMethod("identify_abundant", "tidybulk", .identify_abundant)
 #' @description keep_abundant() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #' @importFrom dplyr filter
 #'
 #' @name keep_abundant
@@ -3472,7 +3472,7 @@ setMethod("keep_abundant", "tidybulk", .keep_abundant)
 #' @description test_gene_enrichment() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` of gene set information
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name test_gene_enrichment
 #'
@@ -3706,7 +3706,7 @@ setMethod("test_gene_enrichment",
 #'
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_missing
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name test_gene_overrepresentation
 #'
@@ -3865,7 +3865,7 @@ setMethod("test_gene_overrepresentation",
 #'
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_missing
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name test_gene_rank
 #'
@@ -4074,7 +4074,7 @@ setMethod("test_gene_rank",
 #'
 #' @description pivot_sample() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` with only sample-related columns
 #'
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name pivot_sample
 #'
@@ -4163,7 +4163,7 @@ setMethod("pivot_sample",
 #'
 #' @description pivot_transcript() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` with only transcript-related columns
 #'
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name pivot_transcript
 #'
@@ -4254,7 +4254,7 @@ setMethod("pivot_transcript",
 #' @description fill_missing_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with new observations
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name fill_missing_abundance
 #'
@@ -4361,7 +4361,7 @@ setMethod("fill_missing_abundance", "tidybulk", .fill_missing_abundance)
 #' @description impute_missing_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional sample-transcript pairs with imputed transcript abundance.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name impute_missing_abundance
 #'
@@ -4658,7 +4658,7 @@ setMethod("test_differential_cellularity",
 #' @description test_stratification_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #' @importFrom stringr str_detect
 #'
 #' @name test_stratification_cellularity
@@ -4802,7 +4802,7 @@ setMethod("test_stratification_cellularity",
 #' @description get_bibliography() takes as input a `tidybulk`
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
+#'
 #'
 #' @name get_bibliography
 #'
