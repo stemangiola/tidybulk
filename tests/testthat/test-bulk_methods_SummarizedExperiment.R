@@ -64,7 +64,6 @@ test_that("tidybulk SummarizedExperiment normalisation",{
 
 })
 
-
 test_that("quantile normalisation",{
 
   res = se_mini |> quantile_normalise_abundance()
@@ -109,7 +108,6 @@ test_that("quantile normalisation",{
 
 })
 
-
 test_that("tidybulk SummarizedExperiment normalisation subset",{
 
   res = se |> identify_abundant() |> scale_abundance(
@@ -123,10 +121,6 @@ test_that("tidybulk SummarizedExperiment normalisation subset",{
   )
 
 })
-
-
-
-
 
 test_that("tidybulk SummarizedExperiment clustering",{
 
@@ -357,7 +351,6 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
 })
 
-
 test_that("differential trancript abundance - SummarizedExperiment - alternative .abundance",{
 
   assays(se_mini) = list(counts = assay(se_mini), bla = assay(se_mini))
@@ -437,6 +430,20 @@ test_that("differential trancript abundance - SummarizedExperiment - alternative
 
 })
 
+test_that("DE interaction effects", {
+  
+  # Att interaction factor
+  col_data = colData(breast_tcga_mini_SE)
+  set.seed(42)
+  col_data$interaction_term = sample(c(0,1), size = nrow(col_data), replace = TRUE)
+  colData(breast_tcga_mini_SE) = col_data
+  
+  res =	 
+    breast_tcga_mini_SE |> 
+    identify_abundant(factor_of_interest = Call) |>
+    test_differential_abundance(   ~ Call * interaction_term, contrasts = "CallHer2" )
+  
+})
 
 test_that("Voom with treat method",{
 
@@ -522,8 +529,6 @@ test_that("differential trancript abundance - random effects SE",{
    )
 
 })
-
-
 
 test_that("filter abundant - SummarizedExperiment",{
 

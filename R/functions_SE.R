@@ -741,6 +741,12 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 			data = sample_annotation
 		)
 
+	# Replace `:` with ___ because it creates error with edgeR
+	if(design |> colnames() |> str_detect(":") |> any()) {
+	  message("tidybulk says: the interaction term `:` has been replaced with `___` in the design matrix, in order to work with edgeR.")
+	  colnames(design) = design |> colnames() |> str_replace(":", "___") 
+	}
+	
 	# Print the design column names in case I want contrasts
 	message(
 		sprintf(
