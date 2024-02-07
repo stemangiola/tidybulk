@@ -439,7 +439,7 @@ TidyTranscriptomics
 ```{r de, message=FALSE, warning=FALSE, results='hide'}
 se_mini.de =
 	se_mini |>
-	test_differential_abundance( ~ condition, action="get")
+	test_differential_abundance( ~ condition, method = "edgeR_quasi_likelihood", action="get")
 se_mini.de
 ```
 </div>
@@ -468,6 +468,7 @@ se_mini.de =
 	identify_abundant(factor_of_interest = condition) |>
 	test_differential_abundance(
 		~ 0 + condition,                  
+		method = "edgeR_quasi_likelihood",
 		.contrasts = c( "conditionTRUE - conditionFALSE"),
 		action="get"
 	)
@@ -681,6 +682,7 @@ se_mini.norm.SNN |>
 	mutate(factor_of_interest = `cluster_SNN` == 3) |>
 	test_differential_abundance(
     ~ factor_of_interest,
+    method = "edgeR_quasi_likelihood",
     action="get"
    )
 ```

@@ -17,7 +17,7 @@ test_differential_abundance(
   .transcript = NULL,
   .abundance = NULL,
   contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
+  method = NULL,
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -36,7 +36,7 @@ test_differential_abundance(
   .transcript = NULL,
   .abundance = NULL,
   contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
+  method = NULL,
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -55,7 +55,7 @@ test_differential_abundance(
   .transcript = NULL,
   .abundance = NULL,
   contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
+  method = NULL,
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -74,7 +74,7 @@ test_differential_abundance(
   .transcript = NULL,
   .abundance = NULL,
   contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
+  method = NULL,
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -93,7 +93,7 @@ test_differential_abundance(
   .transcript = NULL,
   .abundance = NULL,
   contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
+  method = NULL,
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -112,7 +112,7 @@ test_differential_abundance(
   .transcript = NULL,
   .abundance = NULL,
   contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
+  method = NULL,
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -250,7 +250,7 @@ dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersi
 
  tidybulk::se_mini |>
  identify_abundant() |>
-	test_differential_abundance( ~ condition )
+	test_differential_abundance( ~ condition, method = "edgeR_quasi_likelihood" )
 
 	# The function `test_differential_abundance` operates with contrasts too
 
@@ -258,6 +258,7 @@ dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersi
  identify_abundant(factor_of_interest = condition) |>
  test_differential_abundance(
 	    ~ 0 + condition,
+	    method = "edgeR_quasi_likelihood",
 	    contrasts = c( "conditionTRUE - conditionFALSE")
  )
 

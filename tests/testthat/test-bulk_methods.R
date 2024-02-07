@@ -807,6 +807,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 			.sample = a,
 			.transcript = b,
 			.abundance = c,
+			method = "edgeR_quasi_likelihood",
 			contrasts = "conditionTRUE - conditionFALSE",
 			action="only"
 		)
