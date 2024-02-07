@@ -576,7 +576,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       resultList <- lapply(fullList, function(geneList) {
         glmerCore(geneList, fullFormula, reduced,
                   subsetMetadata, control, offset, modelData,
-                  designMatrix, hyp.matrix,, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
+                  designMatrix, hyp.matrix, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
       })
     }
     else if (Sys.info()["sysname"] == "Windows" & cores > 1) {
@@ -620,7 +620,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
     else {
 
       if(avoid_forking){
-        library(parallel)
+        #library(parallel)
         cl = parallel::makeCluster(cores, type = "PSOCK")
         #parallel::clusterEvalQ(cl,c(library(dplyr),library(glmmSeq)))
         #clusterExport(cl, list("varname1", "varname2"),envir=environment())
@@ -630,7 +630,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
           function(geneList) {
             glmerCore(geneList, fullFormula, reduced,
                       subsetMetadata, control, offset, modelData,
-                      designMatrix, hyp.matrix,, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
+                      designMatrix, hyp.matrix, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
           }
         )
       } 
@@ -648,7 +648,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
           glmerCore(geneList, fullFormula, reduced,
                     subsetMetadata, control, offset, modelData,
-                    designMatrix, hyp.matrix, , max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
+                    designMatrix, hyp.matrix, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
         }, mc.cores = cores)
         if ("value" %in% names(resultList)) resultList <- resultList$value
         
@@ -657,7 +657,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
         resultList <- mclapply(fullList, function(geneList) {
           glmerCore(geneList, fullFormula, reduced,
                     subsetMetadata, control, offset, modelData,
-                    designMatrix, hyp.matrix,, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
+                    designMatrix, hyp.matrix, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
         }, mc.cores = cores)
 
       }
