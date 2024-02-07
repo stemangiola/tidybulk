@@ -440,7 +440,11 @@ test_that("DE interaction effects", {
   
   breast_tcga_mini_SE |> 
     identify_abundant(factor_of_interest = Call) |>
-    test_differential_abundance(   ~ Call * interaction_term, contrasts = "CallHer2___interaction_term" ) |> 
+    test_differential_abundance( 
+      ~ Call * interaction_term, 
+      contrasts = "CallHer2___interaction_term",
+      method="edgeR_quasi_likelihood" 
+    ) |> 
     expect_no_error()
   
 })
