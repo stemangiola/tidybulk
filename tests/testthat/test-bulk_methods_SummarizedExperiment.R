@@ -438,10 +438,10 @@ test_that("DE interaction effects", {
   col_data$interaction_term = sample(c(0,1), size = nrow(col_data), replace = TRUE)
   colData(breast_tcga_mini_SE) = col_data
   
-  res =	 
-    breast_tcga_mini_SE |> 
+  breast_tcga_mini_SE |> 
     identify_abundant(factor_of_interest = Call) |>
-    test_differential_abundance(   ~ Call * interaction_term, contrasts = "CallHer2" )
+    test_differential_abundance(   ~ Call * interaction_term, contrasts = "CallHer2___interaction_term" ) |> 
+    expect_no_error()
   
 })
 
