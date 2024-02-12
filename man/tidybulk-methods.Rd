@@ -7,7 +7,8 @@
 \alias{tidybulk,tbl_df-method}
 \alias{tidybulk,SummarizedExperiment-method}
 \alias{tidybulk,RangedSummarizedExperiment-method}
-\title{Creates an annotated `tidybulk` tibble from a `tbl` or `SummarizedExperiment` object}
+\title{Creates an annotated `tidybulk` tibble from a `tbl` or 
+`SummarizedExperiment` object}
 \usage{
 tidybulk(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
 
@@ -20,7 +21,9 @@ tidybulk(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
 \S4method{tidybulk}{RangedSummarizedExperiment}(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature 
+and transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 
@@ -28,7 +31,8 @@ tidybulk(.data, .sample, .transcript, .abundance, .abundance_scaled = NULL)
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{.abundance_scaled}{The name of the transcript/gene scaled abundance column}
+\item{.abundance_scaled}{The name of the transcript/gene scaled 
+abundance column}
 }
 \value{
 A `tidybulk` object
@@ -42,10 +46,10 @@ A `tidybulk` object
 A `tidybulk` object
 }
 \description{
-tidybulk() creates an annotated `tidybulk` tibble from a `tbl` 
-(with at least three columns for sample, feature and transcript abundance) 
-or `SummarizedExperiment` (more convenient if abstracted to tibble with 
-library(tidySummarizedExperiment))
+tidybulk() creates an annotated `tidybulk` tibble from a 
+  `tbl` (with at least three columns for sample, feature and transcript 
+  abundance) or `SummarizedExperiment` (more convenient if abstracted to 
+  tibble with library(tidySummarizedExperiment))
 }
 \details{
 `r lifecycle::badge("maturing")`
@@ -53,7 +57,8 @@ library(tidySummarizedExperiment))
 This function creates a tidybulk object and is useful if you want
 to avoid to specify .sample, .transcript and .abundance arguments all the times.
 The tidybulk object have an attribute called internals where these three
-arguments are stored as metadata. They can be extracted as attr(<object>, "internals").
+arguments are stored as metadata. They can be extracted as 
+attr(<object>, "internals").
 }
 \examples{
 

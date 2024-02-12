@@ -71,7 +71,9 @@ identify_abundant(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and 
+transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 
@@ -79,27 +81,45 @@ identify_abundant(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{factor_of_interest}{The name of the column of the factor of interest. This is used for defining sample groups for the filtering process. It uses the filterByExpr function from edgeR.}
+\item{factor_of_interest}{The name of the column of the factor of interest. 
+This is used for defining sample groups for the filtering process. It uses 
+the filterByExpr function from edgeR.}
 
-\item{minimum_counts}{A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.}
+\item{minimum_counts}{A real positive number. It is the threshold of count 
+per million that is used to filter transcripts/genes out from the scaling procedure.}
 
-\item{minimum_proportion}{A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.}
+\item{minimum_proportion}{A real positive number between 0 and 1. It is the 
+threshold of proportion of samples for each transcripts/genes that have to 
+be characterised by a cmp bigger than the threshold to be included for 
+scaling procedure.}
 }
 \value{
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-identify_abundant() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
+identify_abundant() takes as input A `tbl` (with at least three 
+columns for sample, feature and transcript abundance) or 
+`SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a consistent object 
+(to the input) with additional columns for the statistics from the hypothesis test.
 }
 \details{
 `r lifecycle::badge("maturing")`
@@ -115,8 +135,6 @@ At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
 )
 }
 \examples{
-
-
 
 	identify_abundant(
 	tidybulk::se_mini

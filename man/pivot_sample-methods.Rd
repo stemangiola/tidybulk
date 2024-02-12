@@ -23,7 +23,9 @@ pivot_sample(.data, .sample = NULL)
 \S4method{pivot_sample}{RangedSummarizedExperiment}(.data, .sample = NULL)
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and 
+transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 }
@@ -35,12 +37,17 @@ A consistent object (to the input)
 A consistent object (to the input)
 }
 \description{
-pivot_sample() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` with only sample-related columns
+pivot_sample() takes as input a `tbl` 
+(with at least three columns for sample, feature and transcript abundance) 
+or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a `tbl` with only sample-related columns
 }
 \details{
 `r lifecycle::badge("maturing")`
 
-This functon extracts only sample-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to tidybulk function.
+This functon extracts only sample-related information for 
+downstream analysis (e.g., visualisation). It is disruptive in the sense 
+that it cannot be passed anymore to tidybulk function.
 }
 \examples{
 

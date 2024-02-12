@@ -83,7 +83,9 @@ rotate_dimensions(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and 
+transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{dimension_1_column}{A character string. The column of the dimension 1}
 
@@ -93,31 +95,48 @@ rotate_dimensions(
 
 \item{.element}{The name of the element column (normally samples).}
 
-\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, 
+it indicates Whether the element column will be sample or transcript column}
 
-\item{dimension_1_column_rotated}{A character string. The column of the rotated dimension 1 (optional)}
+\item{dimension_1_column_rotated}{A character string. The column of the 
+rotated dimension 1 (optional)}
 
-\item{dimension_2_column_rotated}{A character string. The column of the rotated dimension 2 (optional)}
+\item{dimension_2_column_rotated}{A character string. The column of the 
+rotated dimension 2 (optional)}
 
-\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+\item{action}{A character string. Whether to join the new information to the 
+input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
 \value{
-A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
+A tbl object with additional columns for the reduced dimensions. 
+ additional columns for the rotated dimensions. The rotated dimensions will 
+ be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` 
+ by default, or as specified in the input arguments.
 
-A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
+A tbl object with additional columns for the reduced dimensions. 
+  additional columns for the rotated dimensions. The rotated dimensions will 
+  be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` 
+  by default, or as specified in the input arguments.
 
-A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
+A tbl object with additional columns for the reduced dimensions. 
+  additional columns for the rotated dimensions. The rotated dimensions will 
+  be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` 
+  by default, or as specified in the input arguments.
 
-A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
+A tbl object with additional columns for the reduced dimensions. 
+  additional columns for the rotated dimensions. The rotated dimensions 
+  will be added to the original data set as 
+  `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as 
+  specified in the input arguments.
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-rotate_dimensions() takes as input a `tbl` formatted as
- | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated 
- dimensional space of the transcript abundance.
+rotate_dimensions() takes as input a `tbl` formatted as 
+  | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated 
+  dimensional space of the transcript abundance.
 }
 \details{
 `r lifecycle::badge("maturing")`
@@ -136,15 +155,12 @@ Underlying custom method:
  }
 }
 \examples{
-
 counts.MDS =
  tidybulk::se_mini |>
  identify_abundant() |>
  reduce_dimensions( method="MDS", .dims = 3)
 
 counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, 
-  rotation_degrees = 45, 
-  .element = sample)
-
+  rotation_degrees = 45, .element = sample)
 
 }

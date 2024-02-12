@@ -21,23 +21,30 @@ get_reduced_dimensions_UMAP_bulk(
 \arguments{
 \item{.data}{A tibble}
 
-\item{.element}{A column symbol. The column that is used to calculate distance (i.e., normally samples)}
+\item{.element}{A column symbol. The column that is used to calculate 
+distance (i.e., normally samples)}
 
-\item{.feature}{A column symbol. The column that is represents entities to cluster (i.e., normally genes)}
+\item{.feature}{A column symbol. The column that is represents entities 
+to cluster (i.e., normally genes)}
 
-\item{.abundance}{A column symbol with the value the clustering is based on (e.g., `count`)}
+\item{.abundance}{A column symbol with the value the clustering 
+is based on (e.g., `count`)}
 
-\item{.dims}{A integer vector corresponding to principal components of interest (e.g., 1:6)}
+\item{.dims}{A integer vector corresponding to principal components 
+of interest (e.g., 1:6)}
 
 \item{top}{An integer. How many top genes to select}
 
 \item{of_samples}{A boolean}
 
-\item{calculate_for_pca_dimensions}{An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered}
+\item{calculate_for_pca_dimensions}{An integer of length one. The number of 
+PCA dimensions to based the UMAP calculatio on. 
+If NULL all variable features are considered}
 
 \item{...}{Further parameters passed to the function uwot}
 
-\item{log_transform}{A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{log_transform}{A boolean, whether the value should be log-transformed 
+(e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A tibble with additional columns

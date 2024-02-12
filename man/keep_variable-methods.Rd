@@ -55,7 +55,9 @@ keep_variable(
 \S4method{keep_variable}{RangedSummarizedExperiment}(.data, top = 500, transform = log1p)
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature 
+and transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 
@@ -65,12 +67,17 @@ keep_variable(
 
 \item{top}{Integer. Number of top transcript to consider}
 
-\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
+\item{transform}{A function that will tranform the counts, by default it is 
+log1p for RNA sequencing data, but for avoinding tranformation you can use 
+identity}
 
-\item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{log_transform}{DEPRECATED - A boolean, whether the value should be 
+log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
 Underlying method:
 	s <- rowMeans((x - rowMeans(x)) ^ 2)
@@ -78,27 +85,37 @@ o <- order(s, decreasing = TRUE)
 x <- x[o[1L:top], , drop = FALSE]
 variable_trancripts = rownames(x)
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for 
+the statistics from the hypothesis test (e.g.,  log fold change, p-value 
+and false discovery rate).
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-keep_variable() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
+keep_variable() takes as input A `tbl` (with at least three 
+columns for sample, feature and transcript abundance) or 
+`SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a consistent object 
+(to the input) with additional columns for the statistics from the 
+hypothesis test.
 }
 \details{
 `r lifecycle::badge("maturing")`
 
-At the moment this function uses edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}
+At the moment this function uses edgeR 
+\url{https://doi.org/10.1093/bioinformatics/btp616}
 }
 \examples{
-
-
 
 	keep_variable(tidybulk::se_mini, top = 500)
 

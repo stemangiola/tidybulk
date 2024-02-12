@@ -16,7 +16,7 @@
 #'
 #' @return A tbl
 #'
-check_if_wrong_input = function(.data, list_input, expected_type) {
+check_if_wrong_input <- function(.data, list_input, expected_type) {
 	# Do the check
 	if (list_input %>%
 			map( ~ .x %>% class() %>% `[` (1)) %>%
@@ -119,11 +119,12 @@ check_if_attribute_present = function(.data) {
 	"tt_columns" %in% (.data %>% attr("internals")  %>% names)
 }
 
-eliminate_sparse_transcripts = function(.data, .transcript){
+eliminate_sparse_transcripts <- function(.data, .transcript){
 	# Parse column names
 	.transcript = enquo(.transcript)
-
-	warning("tidybulk says: Some transcripts have been omitted from the analysis because not present in every sample.")
+  
+	warning("tidybulk says: Some transcripts have been omitted from the analysis ",
+	        "because not present in every sample.")
 
 	.data %>%
 		add_count(!!.transcript, name = "my_n") %>%
@@ -132,7 +133,6 @@ eliminate_sparse_transcripts = function(.data, .transcript){
 }
 
 check_if_data_rectangular = function(.data, .sample, .transcript, .abundance){
-
 	# Parse column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -150,15 +150,15 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance){
 
 }
 
-warning_if_data_is_not_rectangular = function(.data, .sample, .transcript, .abundance){
-
+warning_if_data_is_not_rectangular <- function(.data, .sample, .transcript, .abundance) {
 	# Parse column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 
 	if(!check_if_data_rectangular(.data, !!.sample, !!.transcript, !!.abundance))
-		warning("tidybulk says: the data does not have the same number of transcript per sample. The data set is not rectangular.")
+		warning("tidybulk says: the data does not have the same number of transcript ",
+		"per sample. The data set is not rectangular.")
 
 }
 
@@ -170,14 +170,17 @@ error_if_data_is_not_rectangular = function(.data, .sample, .transcript, .abunda
 	.abundance = enquo(.abundance)
 
 	if(!check_if_data_rectangular(.data, !!.sample, !!.transcript, !!.abundance))
-		stop("tidybulk says: the data must have the same number of transcript per sample. Check again that you have not filtered single observations accidentally. If you have missing data you can use fill_missing_abundance() or impute_missing_abundance()")
+		stop("tidybulk says: the data must have the same number of transcript per sample. ",
+		"Check again that you have not filtered single observations accidentally. ",
+		"If you have missing data you can use fill_missing_abundance() or impute_missing_abundance()")
 }
 
 tidybulk_to_tbl = function(.data) {
 	.data %>%	drop_class(c("tidybulk", "tt"))
 }
 
-validation_default = function(.data,
+
+validation_default <- function(.data,
 															.sample,
 															.transcript,
 															.abundance,
@@ -193,11 +196,14 @@ validation_default = function(.data,
 	if (type == "hard" &
 			!is_missing)
 		stop(
-			"tidybulk says: One or more columns that should include sample identifier, transcript identified or transcript abundance are missing from your data frame."
+			"tidybulk says: One or more columns that should include sample identifier, ",
+			"transcript identified or transcript abundance are missing from your data frame."
 		)
 	if (type == "soft" & !is_missing) {
 		warning(
-			"tidybulk says: One or more columns that should include sample identifier, transcript identified or transcript abundance are missing from your data frame. The tidybulk object has been converted to a `tbl`"
+			"tidybulk says: One or more columns that should include sample identifier, ",
+			"transcript identified or transcript abundance are missing from your data frame. ",
+			"The tidybulk object has been converted to a `tbl`"
 		)
 		return(.data %>% tidybulk_to_tbl)
 	}
@@ -207,11 +213,13 @@ validation_default = function(.data,
 	if (type == "hard" &
 			!is_type)
 		stop(
-			"tidybulk says: The column provided as .sample .transcript or .abundance do not comply with the required types (<FACTOR/CHARACTER>, <FACTOR/CHARACTER>, <NUMERIC>)."
+			"tidybulk says: The column provided as .sample .transcript or .abundance do not ",
+			"comply with the required types (<FACTOR/CHARACTER>, <FACTOR/CHARACTER>, <NUMERIC>)."
 		)
 	if (type == "soft" & !is_type) {
 		warning(
-			"tidybulk says: The column provided as .sample .transcript or .abundance do not comply with the required types. The tidybulk object has been converted to a `tbl`"
+			"tidybulk says: The column provided as .sample .transcript or .abundance do not ",
+			"comply with the required types. The tidybulk object has been converted to a `tbl`"
 		)
 		return(.data %>% tidybulk_to_tbl)
 	}
@@ -262,9 +270,9 @@ validation <- function(.data,
 	UseMethod("validation", .data)
 }
 
-validation.default = validation_default
+validation.default <- validation_default
 
-validation.tidybulk = function(.data,
+validation.tidybulk <- function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
@@ -275,11 +283,16 @@ validation.tidybulk = function(.data,
 	if (type == "hard" &
 			!is_attr)
 		stop(
-			"tidybulk says: The object provided has tidybulk class but no attribute containing the column names (attr(., \"internals\")). You must have used an external function that eliminated the attributes. Insert a valid tidybulk object or provide `.sample`, `.transcript`, `.abundance` column names as arguments "
+			"tidybulk says: The object provided has tidybulk class but no attribute ",
+			"containing the column names (attr(., \"internals\")). You must have used ",
+			"an external function that eliminated the attributes. Insert a valid ",
+			"tidybulk object or provide `.sample`, `.transcript`, `.abundance` column names as arguments "
 		)
 	if (type == "soft" & !is_attr) {
 		warning(
-			"tidybulk says: The object provided has tidybulk class but no attribute containing the column names (attr(., \"internals\")). You must have used an external function that eliminated the attributes. The tidybulk object has been converted to a `tbl`"
+			"tidybulk says: The object provided has tidybulk class but no attribute ",
+			"containing the column names (attr(., \"internals\")). You must have used an ",
+			"external function that eliminated the attributes. The tidybulk object has been converted to a `tbl`"
 		)
 		return(.data %>% tidybulk_to_tbl)
 	}
@@ -312,12 +325,14 @@ validate_signature = function(.data, reference, .transcript){
 
 	if(length(overlapping_genes) == 0  )
 	  stop(sprintf(
-	    "\ntidybulk says: You have NO genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
+	    "\ntidybulk says: You have NO genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", 
+	    paste(rownames(reference)[1:10], collapse = ", ")
 	  ))
 
 	if ( length(overlapping_genes) %>%	st(50) )
 	  warning(sprintf(
-	    "\ntidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
+	    "\ntidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", 
+	    paste(rownames(reference)[1:10], collapse = ", ")
 	  ))
 
 	# Check if rownames exist
@@ -327,18 +342,19 @@ validate_signature = function(.data, reference, .transcript){
 
 }
 
-validate_signature_SE = function(assay, reference){
-
+validate_signature_SE <- function(assay, reference) {
   overlapping_genes = (rownames(assay)  %in% rownames(reference)) %>%  which
 
   if(length(overlapping_genes) == 0  )
     stop(sprintf(
-      "\ntidybulk says: You have NO genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
+      "\ntidybulk says: You have NO genes in common between the query data and ",
+      "the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
     ))
 
 	if ( length(overlapping_genes) %>%	st(50) )
 	  warning(sprintf(
-			"\ntidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
+			"\ntidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", 
+			paste(rownames(reference)[1:10], collapse = ", ")
 		))
 
 	# Check if rownames exist

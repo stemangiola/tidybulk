@@ -107,31 +107,45 @@ reduce_dimensions(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, 
+feature and transcript abundance) or `SummarizedExperiment` (more 
+convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.element}{The name of the element column (normally samples).}
 
 \item{.feature}{The name of the feature column (normally transcripts/genes)}
 
-\item{.abundance}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
+\item{.abundance}{The name of the column including the numerical value 
+the clustering is based on (normally transcript abundance)}
 
-\item{method}{A character string. The dimension reduction algorithm to use (PCA, MDS, tSNE).}
+\item{method}{A character string. The dimension reduction algorithm to 
+use (PCA, MDS, tSNE).}
 
-\item{.dims}{An integer. The number of dimensions your are interested in (e.g., 4 for returning the first four principal components).}
+\item{.dims}{An integer. The number of dimensions your are interested in 
+(e.g., 4 for returning the first four principal components).}
 
 \item{top}{An integer. How many top genes to select for dimensionality reduction}
 
-\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, 
+it indicates Whether the element column will be sample or transcript column}
 
-\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
+\item{transform}{A function that will tranform the counts, by default 
+it is log1p for RNA sequencing data, but for avoinding tranformation you 
+can use identity}
 
-\item{scale}{A boolean for method="PCA", this will be passed to the `prcomp` function. It is not included in the ... argument because although the default for `prcomp` if FALSE, it is advisable to set it as TRUE.}
+\item{scale}{A boolean for method="PCA", this will be passed to the `prcomp`
+function. It is not included in the ... argument because although the 
+default for `prcomp` if FALSE, it is advisable to set it as TRUE.}
 
-\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+\item{action}{A character string. Whether to join the new information to 
+the input tbl (add), or just get the non-redundant tbl with the new 
+information (get).}
 
-\item{...}{Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"}
+\item{...}{Further parameters passed to the function prcomp if you choose 
+method="PCA" or Rtsne if you choose method="tSNE"}
 
-\item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{log_transform}{DEPRECATED - A boolean, whether the value should be 
+log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A tbl object with additional columns for the reduced dimensions
@@ -147,7 +161,11 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-reduce_dimensions() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and calculates the reduced dimensional space of the transcript abundance.
+reduce_dimensions() takes as input A `tbl` (with at least 
+  three columns for sample, feature and transcript abundance) or 
+  `SummarizedExperiment` (more convenient if abstracted to tibble with 
+  library(tidySummarizedExperiment)) and calculates the reduced dimensional 
+  space of the transcript abundance.
 }
 \details{
 `r lifecycle::badge("maturing")`

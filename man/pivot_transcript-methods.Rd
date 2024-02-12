@@ -23,7 +23,9 @@ pivot_transcript(.data, .transcript = NULL)
 \S4method{pivot_transcript}{RangedSummarizedExperiment}(.data, .transcript = NULL)
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and 
+transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.transcript}{The name of the transcript column}
 }
@@ -35,12 +37,18 @@ A consistent object (to the input)
 A consistent object (to the input)
 }
 \description{
-pivot_transcript() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` with only transcript-related columns
+pivot_transcript() takes as input a `tbl` (with at least three 
+columns for sample, feature and transcript abundance) or 
+`SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a `tbl` with only 
+transcript-related columns
 }
 \details{
 `r lifecycle::badge("maturing")`
 
-This functon extracts only transcript-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to tidybulk function.
+This functon extracts only transcript-related information for 
+downstream analysis (e.g., visualisation). It is disruptive in the sense 
+that it cannot be passed anymore to tidybulk function.
 }
 \examples{
 

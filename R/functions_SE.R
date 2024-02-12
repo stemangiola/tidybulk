@@ -3,16 +3,22 @@
 #' @keywords internal
 #' @noRd
 #'
+#'
+#'
 #' @import tibble
 #' @importFrom stats kmeans
 #' @importFrom rlang :=
 #'
 #' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
+#' @param .abundance A column symbol with the value the clustering is based on 
+#' (e.g., `count`)
+#' @param .feature A column symbol. The column that is represents entities to 
+#' cluster (i.e., normally samples)
+#' @param .element A column symbol. The column that is used to calculate 
+#' distance (i.e., normally genes)
 #' @param of_samples A boolean
-#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param transform A function that will tranform the counts, by default it is 
+#' log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param ... Further parameters passed to the function kmeans
 #'
 #' @return A tibble with additional columns
@@ -53,21 +59,22 @@ get_clusters_kmeans_bulk_SE <-
 #' @keywords internal
 #' @noRd
 #'
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
-#' @importFrom Seurat CreateSeuratObject
-#' @importFrom Seurat ScaleData
-#' @importFrom Seurat FindVariableFeatures
-#' @importFrom Seurat RunPCA
-#' @importFrom Seurat FindNeighbors
-#' @importFrom Seurat FindClusters
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
+#' @param .abundance A column symbol with the value the clustering is based on 
+#' (e.g., `count`)
+#' @param .feature A column symbol. The column that is represents entities to 
+#' cluster (i.e., normally samples)
+#' @param .element A column symbol. The column that is used to calculate 
+#' distance (i.e., normally genes)
 #' @param of_samples A boolean
-#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param transform A function that will tranform the counts, by default it is 
+#' log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param ... Further parameters passed to the function kmeans
 #'
 #' @return A tibble with additional columns
@@ -77,6 +84,21 @@ get_clusters_SNN_bulk_SE <-
 					 of_samples = TRUE,
 					 transform = log1p,
 					 ...) {
+
+
+		# Check if package is installed, otherwise install
+		if (find.package("cluster", quiet = TRUE) %>% length %>% equals(0)) {
+			message("Installing cluster")
+			install.packages("cluster", repos = "https://cloud.r-project.org")
+		}
+		if (find.package("Seurat", quiet = TRUE) %>% length %>% equals(0)) {
+			message("Installing Seurat")
+			install.packages("Seurat", repos = "https://cloud.r-project.org")
+		}
+		if (find.package("KernSmooth", quiet = TRUE) %>% length %>% equals(0)) {
+			message("Installing KernSmooth")
+			install.packages("KernSmooth", repos = "https://cloud.r-project.org")
+		}
 
 		ndims = min(c(nrow(.data), ncol(.data), 30))-1
 
@@ -107,13 +129,18 @@ get_clusters_SNN_bulk_SE <-
 #' @importFrom stats setNames
 #'
 #' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param .abundance A column symbol with the value the clustering is based 
+#' on (e.g., `count`)
+#' @param .dims A integer vector corresponding to principal components of 
+#' interest (e.g., 1:6)
+#' @param .feature A column symbol. The column that is represents entities to 
+#' cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate 
+#' distance (i.e., normally samples)
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
-#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param transform A function that will tranform the counts, by default it 
+#' is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param scale A boolean
 #'
 #' @return A tibble with additional columns
@@ -202,13 +229,19 @@ get_reduced_dimensions_MDS_bulk_SE <-
 #' @importFrom magrittr divide_by
 #'
 #' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param .abundance A column symbol with the value the clustering is 
+#' based on (e.g., `count`)
+#' @param .dims A integer vector corresponding to principal components of 
+#' interest (e.g., 1:6)
+#' @param .feature A column symbol. The column that is represents entities 
+#' to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate 
+#' distance (i.e., normally samples)
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
-#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param transform A function that will tranform the counts, by default it 
+#' is log1p for RNA sequencing data, but for avoinding tranformation you can 
+#' use identity
 #' @param scale A boolean
 #' @param ... Further parameters passed to the function prcomp
 #'
@@ -300,16 +333,21 @@ we suggest to partition the dataset for sample clusters.
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
-#' @importFrom Rtsne Rtsne
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param .abundance A column symbol with the value the clustering is 
+#' based on (e.g., `count`)
+#' @param .dims A integer vector corresponding to principal components of 
+#' interest (e.g., 1:6)
+#' @param .feature A column symbol. The column that is represents entities to 
+#' cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate 
+#' distance (i.e., normally samples)
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
-#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param transform A function that will tranform the counts, by default it is 
+#' log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param scale A boolean
 #' @param ... Further parameters passed to the function Rtsne
 #'
@@ -338,11 +376,18 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 		if (!"dims" %in% names(arguments))
 			arguments = arguments %>% c(dims = .dims)
 
+
+		# Check if package is installed, otherwise install
+		if (find.package("Rtsne", quiet = TRUE) %>% length %>% equals(0)) {
+			message("Installing Rtsne")
+			install.packages("Rtsne", repos = "https://cloud.r-project.org")
+		}
+
 		# Set perprexity to not be too high
 		if (!"perplexity" %in% names(arguments)) {
-		  perplexity_value <- (ncol(.data) - 1 / 3 / 2)
-		  perplexity_value <- pmin(floor(perplexity_value), 30)
-		  arguments$perplexity <- perplexity_value
+		  arguments <- arguments %>% c(perplexity = ((
+		    .data %>% distinct(!!.element) %>% nrow() %>% sum(-1)
+		  ) / 3 / 2) %>% floor(.) %>% min(30))
 		}
 
 		# If not enough samples stop
@@ -351,6 +396,8 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 
 		# Calculate the most variable genes, from plotMDS Limma
 		tsne_obj = do.call(Rtsne::Rtsne, c(list(t(.data)), arguments))
+
+
 
 		list(
 			raw_result = tsne_obj,
@@ -373,20 +420,26 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 #'
 #'
 #' @import tibble
-#' @importFrom dplyr mutate
 #' @importFrom rlang :=
 #' @importFrom stats setNames
-#' @importFrom uwot tumap
+#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param .abundance A column symbol with the value the clustering is 
+#' based on (e.g., `count`)
+#' @param .dims A integer vector corresponding to principal components of 
+#' interest (e.g., 1:6)
+#' @param .feature A column symbol. The column that is represents entities to 
+#' cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate 
+#' distance (i.e., normally samples)
 #' @param top An integer. How many top genes to select
 #' @param of_samples A boolean
-#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
-#' @param calculate_for_pca_dimensions An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered
+#' @param transform A function that will tranform the counts, by default it is 
+#' log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param calculate_for_pca_dimensions An integer of length one. The number of 
+#' PCA dimensions to based the UMAP calculatio on. If NULL all variable 
+#' features are considered
 #' @param ... Further parameters passed to the function uwot
 #'
 #' @return A tibble with additional columns
@@ -413,6 +466,14 @@ get_reduced_dimensions_UMAP_bulk_SE <-
       arguments = arguments %>% c(n_components = .dims)
     if (!"init" %in% names(arguments))
       arguments = arguments %>% c(init = "spca")
+
+
+    # Check if package is installed, otherwise install
+    if (find.package("uwot", quiet = TRUE) %>% length %>% equals(0)) {
+      message("tidybulk says: Installing uwot")
+      install.packages("uwot", repos = "https://cloud.r-project.org")
+    }
+
 
     # Calculate based on PCA
     if(!is.null(calculate_for_pca_dimensions))
@@ -483,7 +544,10 @@ filter_if_abundant_were_identified = function(.data){
 		when(
 			".abundant" %in% (rowData(.data) %>% colnames()) ~ .data[rowData(.data)[,".abundant"],],
 			~ {
-				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+				warning("tidybulk says: highly abundant transcripts were not identified ",
+				"(i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore ",
+				"this operation will be performed on unfiltered data. In rare occasions ",
+				"this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
 				(.)
 			}
 		)
@@ -499,7 +563,8 @@ filter_if_abundant_were_identified = function(.data){
 #' @param .transcript A character name of the transcript/gene column
 #' @param .abundance A character name of the read count column
 #' @param top An integer. How many top genes to select
-#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param transform A function that will tranform the counts, by default it is 
+#' log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #'
 #' @return A tibble filtered genes
 #'
@@ -530,14 +595,16 @@ keep_variable_transcripts_SE = function(.data,
 }
 
 
-#' Drop redundant elements (e.g., samples) for which feature (e.g., genes) aboundances are correlated
+#' Drop redundant elements (e.g., samples) for which feature (e.g., genes) 
+#' aboundances are correlated
 #'
 #' @keywords internal
 #' @noRd
 #'
+#'
+#'
 #' @import tibble
 #' @importFrom rlang :=
-#' @importFrom widyr pairwise_cor
 #'
 #' @param .data A tibble
 #' @param correlation_threshold A real number between 0 and 1
@@ -548,10 +615,16 @@ keep_variable_transcripts_SE = function(.data,
 #'
 #'
 remove_redundancy_elements_through_correlation_SE <- function(.data,
-																													 correlation_threshold = 0.9,
-																													 of_samples = TRUE) {
+																									 correlation_threshold = 0.9,
+																									 of_samples = TRUE) {
 	# Comply with CRAN NOTES
 	. = NULL
+
+	# Check if package is installed, otherwise install
+	if (find.package("widyr", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing widyr needed for correlation analyses")
+		install.packages("widyr", repos = "https://cloud.r-project.org")
+	}
 
 	# Get the redundant data frame
 	.data %>%
@@ -661,35 +734,44 @@ remove_redundancy_elements_though_reduced_dimensions_SE <-
 #'
 #'
 #' @import tibble
-#' @import edgeR
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
+#' @importFrom utils install.packages
 #' @importFrom purrr when
 #' @importFrom magrittr extract2
-#' @importFrom limma makeContrasts
 #'
 #'
 #' @param .data A tibble
-#' @param .formula a formula with no response variable, referring only to numeric variables
-#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
-#' @param test_above_log2_fold_change A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
-#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param .formula a formula with no response variable, referring only to 
+#' numeric variables
+#' @param .contrasts A character vector. See edgeR makeContrasts specification 
+#' for the parameter `contrasts`. If contrasts are not present the first 
+#' covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., 
+#' QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param test_above_log2_fold_change A positive real value. This works for 
+#' edgeR and limma_voom methods. It uses the `treat` function, which tests that 
+#' the difference in abundance is bigger than this threshold rather than zero 
+#' \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
+#' @param scaling_method A character string. The scaling method passed to the 
+#' backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE",
+#' "upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can 
+#' choose to omit the contrast label in the colnames.
 #'
 #' @return A tibble with edgeR results
 #'
 get_differential_transcript_abundance_bulk_SE <- function(.data,
-																											 .formula,
-																											 .abundance = NULL,
-																											 sample_annotation,
-																											 .contrasts = NULL,
-																											 method = "edgeR_quasi_likelihood",
-																											 test_above_log2_fold_change = NULL,
-																											 scaling_method = "TMM",
-																											 omit_contrast_in_colnames = FALSE,
-																											 prefix = "",
-																											 ...) {
+																						 .formula,
+																						 .abundance = NULL,
+																						 sample_annotation,
+																						 .contrasts = NULL,
+																						 method = "edgeR_quasi_likelihood",
+																						 test_above_log2_fold_change = NULL,
+																						 scaling_method = "TMM",
+																						 omit_contrast_in_colnames = FALSE,
+																						 prefix = "",
+																						 ...) {
 
   .abundance = enquo(.abundance)
 
@@ -708,7 +790,8 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 
 	# Replace `:` with ___ because it creates error with edgeR
 	if(design |> colnames() |> str_detect(":") |> any()) {
-	  message("tidybulk says: the interaction term `:` has been replaced with `___` in the design matrix, in order to work with edgeR.")
+	  message("tidybulk says: the interaction term `:` has been replaced ",
+	    "with `___` in the design matrix, in order to work with edgeR.")
 	  colnames(design) = design |> colnames() |> str_replace(":", "___") 
 	}
 	
@@ -726,6 +809,13 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 								~ limma::makeContrasts(contrasts = .x, levels = design),
 								~ NULL)
 
+	# Check if package is installed, otherwise install
+	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing edgeR needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("edgeR", ask = FALSE)
+	}
 
 	# If no assay is specified take first
 	my_assay = ifelse(
@@ -749,9 +839,12 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 
 		# select method
 		when(
-			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmFit(design),
-			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmQLFit(design),
-			tolower(method) == "edger_robust_likelihood_ratio" ~ (.) %>% edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
+			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% 	
+			  edgeR::estimateDisp(design) %>% edgeR::glmFit(design),
+			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% 	
+			  edgeR::estimateDisp(design) %>% edgeR::glmQLFit(design),
+			tolower(method) == "edger_robust_likelihood_ratio" ~ (.) %>% 
+			  edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
 		)
 
 	# Return
@@ -769,9 +862,14 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 
 					# select method
 					when(
-						!is.null(test_above_log2_fold_change) ~ (.) %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change),
-						tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
-						tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
+						!is.null(test_above_log2_fold_change) ~ (.) %>% 
+						  edgeR::glmTreat(coef = 2, contrast = my_contrasts, 
+						                  lfc=test_above_log2_fold_change),
+						tolower(method) %in%  c("edger_likelihood_ratio",
+						                        "edger_robust_likelihood_ratio") ~ (.) %>% 
+						  edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
+						tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% 
+						  edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
 					)	%>%
 
 					# Convert to tibble
@@ -795,9 +893,14 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 
 								# select method
 								when(
-								    !is.null(test_above_log2_fold_change) ~ (.) %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts[, .x], lfc=test_above_log2_fold_change),
-									tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
-									tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
+								    !is.null(test_above_log2_fold_change) ~ (.) %>% 
+								      edgeR::glmTreat(coef = 2, contrast = my_contrasts[, .x], 
+								                      lfc=test_above_log2_fold_change),
+									tolower(method) %in%  c("edger_likelihood_ratio", 
+									                        "edger_robust_likelihood_ratio") ~ (.) %>% 
+									  edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
+									tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% 
+									  edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
 								)	%>%
 
 								# Convert to tibble
@@ -821,10 +924,6 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 				sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
 			))
 	)
-
-
-
-
 }
 
 
@@ -834,31 +933,36 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 #' @noRd
 #'
 #' @import tibble
-#' @import limma
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
+#' @importFrom utils install.packages
 #' @importFrom purrr when
-#' @importFrom edgeR DGEList
+#'
 #'
 #' @param .data A tibble
-#' @param .formula a formula with no response variable, referring only to numeric variables
-#' @param .contrasts A character vector. See voom makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param .formula a formula with no response variable, 
+#' referring only to numeric variables
+#' @param .contrasts A character vector. See voom makeContrasts specification 
+#' for the parameter `contrasts`. If contrasts are not present the first 
+#' covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "limma_voom", "limma_voom_sample_weights"
-#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param scaling_method A character string. The scaling method passed to the 
+#' backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can 
+#' choose to omit the contrast label in the colnames.
 #'
 #' @return A tibble with voom results
 #'
 get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
-																														.formula,
-																														.abundance = NULL,
-																														sample_annotation,
-																														.contrasts = NULL,
-																														method = NULL,
-																														test_above_log2_fold_change = NULL,
-																														scaling_method = "TMM",
-																														omit_contrast_in_colnames = FALSE,
-																														prefix = "") {
+																						.formula,
+																						.abundance = NULL,
+																						sample_annotation,
+																						.contrasts = NULL,
+																						method = NULL,
+																						test_above_log2_fold_change = NULL,
+																						scaling_method = "TMM",
+																						omit_contrast_in_colnames = FALSE,
+																						prefix = "") {
 
   .abundance = enquo(.abundance)
 
@@ -889,6 +993,14 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 		ifelse_pipe(length(.) > 0,
 								~ limma::makeContrasts(contrasts = .x, levels = design),
 								~ NULL)
+
+	# Check if package is installed, otherwise install
+	if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing limma needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("limma", ask = FALSE)
+	}
 
 	# If no assay is specified take first
 	my_assay = ifelse(
@@ -914,7 +1026,8 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 		# select method
 		when(
 			tolower(method) == "limma_voom" ~ (.) %>% limma::voom(design, plot=FALSE),
-			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% limma::voomWithQualityWeights(design, plot=FALSE)
+			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% 
+			  limma::voomWithQualityWeights(design, plot=FALSE)
 		) %>%
 
 		limma::lmFit(design)
@@ -933,7 +1046,8 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 				~ .x %>%
 
 					# Contrasts
-					limma::contrasts.fit(contrasts=my_contrasts, coefficients =  when(my_contrasts, is.null(.) ~ 2)) %>%
+					limma::contrasts.fit(contrasts=my_contrasts, 
+					                     coefficients = when(my_contrasts, is.null(.) ~ 2)) %>%
 					limma::eBayes() %>%
 
 			        when(
@@ -1004,37 +1118,45 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
+#'
+#'
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
+#' @importFrom utils install.packages
 #' @importFrom purrr when
-#' @importFrom edgeR estimateDisp
-#' @importFrom glmmSeq glmmSeq
+#'
 #'
 #' @param .data A tibble
-#' @param .formula a formula with no response variable, referring only to numeric variables
-#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
-#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param .formula a formula with no response variable, referring only to 
+#' numeric variables
+#' @param .contrasts A character vector. See edgeR makeContrasts specification 
+#' for the parameter `contrasts`. If contrasts are not present the first 
+#' covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), 
+#' "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param scaling_method A character string. The scaling method passed to the 
+#' backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can 
+#' choose to omit the contrast label in the colnames.
 #' @param ... Additional arguments for glmmSeq
 #'
 #' @return A tibble with glmmSeq results
 #'
 get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
-                                                            .formula,
-                                                            .abundance = NULL,
-                                                            .contrasts = NULL,
-                                                            sample_annotation ,
-                                                            method,
+                                            .formula,
+                                            .abundance = NULL,
+                                            .contrasts = NULL,
+                                            sample_annotation ,
+                                            method,
 
-                                                            test_above_log2_fold_change = NULL,
+                                            test_above_log2_fold_change = NULL,
 
-                                                            scaling_method = "TMM",
-                                                            omit_contrast_in_colnames = FALSE,
-                                                            prefix = "",
-                                                            .dispersion = NULL,
-                                                            ...) {
+                                            scaling_method = "TMM",
+                                            omit_contrast_in_colnames = FALSE,
+                                            prefix = "",
+                                            .dispersion = NULL,
+                                            ...) {
 
   .abundance = enquo(.abundance)
   .dispersion = enquo(.dispersion)
@@ -1044,14 +1166,15 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     .contrasts %>% is.null %>% not() &
     .contrasts %>% class %>% equals("list") %>% not()
   )
-    stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
+    stop("tidybulk says: for DESeq2 the list of constrasts should be given in ",
+         "the form list(c(\"condition_column\",\"condition1\",\"condition2\")) ",
+         "i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
 
   # Check if omit_contrast_in_colnames is correctly setup
   if(omit_contrast_in_colnames & length(.contrasts) > 1){
     warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
     omit_contrast_in_colnames = FALSE
   }
-
 
   # # Check if package is installed, otherwise install
   # if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
@@ -1068,7 +1191,6 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
       install.packages("BiocManager", repos = "https://cloud.r-project.org")
     BiocManager::install("glmmSeq", ask = FALSE)
   }
-
 
   # If no assay is specified take first
   my_assay = ifelse(
@@ -1095,9 +1217,11 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     )
   
   if(quo_is_symbolic(.dispersion))
-    dispersion = rowData(.data)[,quo_name(.dispersion),drop=FALSE] |> as_tibble(rownames = feature__$name) |> deframe()
+    dispersion = rowData(.data)[,quo_name(.dispersion),drop=FALSE] |> 
+      as_tibble(rownames = feature__$name) |> deframe()
   else
-    dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
+    dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> 
+    setNames(rownames(counts))
 
   # # Check dispersion
   # if(!names(dispersion) |> sort() |> identical(
@@ -1113,7 +1237,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   
   
   glmmSeq_object =
-    glmmSeq::glmmSeq( .formula,
+    glmmSeq( .formula,
                       countdata = counts ,
                       metadata =   metadata |> as.data.frame(),
                       dispersion = dispersion,
@@ -1126,7 +1250,8 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   glmmSeq_object |>
     summary_lmmSeq() |>
     as_tibble(rownames = "transcript") |>
-    mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |>
+    mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), 
+                  .names = "{.col}_{.fn}")) |>
 
     # Attach attributes
     reattach_internals(.data) %>%
@@ -1162,39 +1287,41 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
 #' @keywords internal
 #' @noRd
 #'
-#'
-#'
 #' @import tibble
-#' @importFrom DESeq2 DESeqDataSet
-#' @importFrom DESeq2 DESeq
-#' @importFrom DESeq2 results
-#' @importFrom DESeq2 DESeqDataSetFromMatrix
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
+#' @importFrom utils install.packages
 #' @importFrom purrr when
 #'
+#'
 #' @param .data A tibble
-#' @param .formula a formula with no response variable, referring only to numeric variables
-#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
-#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
-#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param .formula a formula with no response variable, referring only to 
+#' numeric variables
+#' @param .contrasts A character vector. See edgeR makeContrasts specification 
+#' for the parameter `contrasts`. If contrasts are not present the first 
+#' covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), 
+#' "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param scaling_method A character string. The scaling method passed to the 
+#' backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can 
+#' choose to omit the contrast label in the colnames.
 #' @param ... Additional arguments for DESeq2
 #'
 #' @return A tibble with DESeq2 results
 #'
 get_differential_transcript_abundance_deseq2_SE <- function(.data,
-                                                            .formula,
-                                                            .abundance = NULL,
-                                                            .contrasts = NULL,
-                                                            method = "deseq2",
+                                            .formula,
+                                            .abundance = NULL,
+                                            .contrasts = NULL,
+                                            method = "deseq2",
 
-                                                            test_above_log2_fold_change = NULL,
+                                            test_above_log2_fold_change = NULL,
 
-                                                            scaling_method = "TMM",
-                                                            omit_contrast_in_colnames = FALSE,
-                                                            prefix = "",
-                                                            ...) {
+                                            scaling_method = "TMM",
+                                            omit_contrast_in_colnames = FALSE,
+                                            prefix = "",
+                                            ...) {
 
   .abundance = enquo(.abundance)
 
@@ -1203,12 +1330,22 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 		.contrasts %>% is.null %>% not() &
 		.contrasts %>% class %>% equals("list") %>% not()
 	)
-		stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
+		stop("tidybulk says: for DESeq2 the list of constrasts should be given in ",
+		     "the form list(c(\"condition_column\",\"condition1\",\"condition2\")) ",
+		     "i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
 
 	# Check if omit_contrast_in_colnames is correctly setup
 	if(omit_contrast_in_colnames & length(.contrasts) > 1){
 		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
 		omit_contrast_in_colnames = FALSE
+	}
+
+	# Check if package is installed, otherwise install
+	if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
+		message("Installing DESeq2 needed for differential transcript abundance analyses")
+		if (!requireNamespace("BiocManager", quietly = TRUE))
+			install.packages("BiocManager", repos = "https://cloud.r-project.org")
+		BiocManager::install("DESeq2", ask = FALSE)
 	}
 
         if (is.null(test_above_log2_fold_change)) {
@@ -1259,15 +1396,18 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 					(.) %>%
 					DESeq2::results(contrast = c(
 						parse_formula(.formula)[1],
-						deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels %>% .[2],
-						deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels %>% .[1]
+						deseq2_object@colData[,parse_formula(.formula)[1]] %>% 
+						  as.factor() %>% levels %>% .[2],
+						deseq2_object@colData[,parse_formula(.formula)[1]] %>% 
+						  as.factor() %>% levels %>% .[1]
 					), lfcThreshold=test_above_log2_fold_change) %>%
 					as_tibble(rownames = "transcript"),
 
 				# Simple comparison discrete
 				my_contrasts %>% is.null %>% not() & omit_contrast_in_colnames	~
 					(.) %>%
-					DESeq2::results(contrast = my_contrasts[[1]], lfcThreshold=test_above_log2_fold_change)%>%
+					DESeq2::results(contrast = my_contrasts[[1]], 
+					                lfcThreshold=test_above_log2_fold_change)%>%
 					as_tibble(rownames = "transcript"),
 
 				# Multiple comparisons NOT USED AT THE MOMENT
@@ -1279,11 +1419,13 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 							~ 	deseq2_obj %>%
 
 								# select method
-								DESeq2::results(contrast = my_contrasts[[.x]], lfcThreshold=test_above_log2_fold_change)	%>%
+								DESeq2::results(contrast = my_contrasts[[.x]], 
+								                lfcThreshold=test_above_log2_fold_change)	%>%
 
 								# Convert to tibble
 								as_tibble(rownames = "transcript") %>%
-								mutate(constrast = sprintf("%s %s-%s", my_contrasts[[.x]][1], my_contrasts[[.x]][2], my_contrasts[[.x]][3]) )
+								mutate(constrast = sprintf("%s %s-%s", my_contrasts[[.x]][1],
+								                           my_contrasts[[.x]][2], my_contrasts[[.x]][3]) )
 
 						) %>%
 						pivot_wider(values_from = -c(transcript, constrast),
@@ -1307,9 +1449,6 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 #'
 #' @importFrom stringr str_remove
 #' @importFrom stringr str_replace_all
-#' @importFrom broom tidy
-#' @importFrom survival coxph
-#' @importFrom betareg betareg
 #'
 multivariable_differential_tissue_composition_SE = function(
 	deconvoluted,
@@ -1334,6 +1473,16 @@ multivariable_differential_tissue_composition_SE = function(
 		# Beta or Cox
 		when(
 			grepl("Surv", .my_formula) %>% any ~ {
+				# Check if package is installed, otherwise install
+				if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing betareg needed for analyses")
+					install.packages("survival", repos = "https://cloud.r-project.org")
+				}
+
+				if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
+					message("Installing boot needed for analyses")
+					install.packages("boot", repos = "https://cloud.r-project.org")
+				}
 
 				(.) %>%
 					survival::coxph(.my_formula, .)	%>%
@@ -1394,6 +1543,16 @@ univariable_differential_tissue_composition_SE = function(
 				.x %>%
 					when(
 						grepl("Surv", .my_formula) %>% any ~ {
+							# Check if package is installed, otherwise install
+							if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
+								message("Installing betareg needed for analyses")
+								install.packages("survival", repos = "https://cloud.r-project.org")
+							}
+
+							if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
+								message("Installing boot needed for analyses")
+								install.packages("boot", repos = "https://cloud.r-project.org")
+							}
 
 							(.) %>%
 								mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
@@ -1402,6 +1561,11 @@ univariable_differential_tissue_composition_SE = function(
 								select(-term)
 						} ,
 						~ {
+							# Check if package is installed, otherwise install
+							if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
+								message("Installing betareg needed for analyses")
+								install.packages("betareg", repos = "https://cloud.r-project.org")
+							}
 							(.) %>%
 								betareg::betareg(.my_formula, .) %>%
 								broom::tidy() %>%

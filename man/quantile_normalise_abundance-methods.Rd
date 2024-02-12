@@ -65,7 +65,10 @@ quantile_normalise_abundance(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, 
+feature and transcript abundance) or `SummarizedExperiment` 
+(more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 
@@ -73,33 +76,48 @@ quantile_normalise_abundance(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{method}{A character string. Either "limma_normalize_quantiles" for limma::normalizeQuantiles or "preprocesscore_normalize_quantiles_use_target" for preprocessCore::normalize.quantiles.use.target for large-scale dataset, where limmma could not be compatible.}
+\item{method}{A character string. Either "limma_normalize_quantiles" 
+for limma::normalizeQuantiles or 
+"preprocesscore_normalize_quantiles_use_target" for 
+preprocessCore::normalize.quantiles.use.target for large-scale dataset, 
+where limmma could not be compatible.}
 
-\item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
+\item{action}{A character string between "add" (default) and "only". 
+"add" joins the new information to the input tbl (default), 
+"only" return a non-redundant tbl with the just new information.}
 }
 \value{
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+A tbl object with additional columns with scaled data as 
+  `<NAME OF COUNT COLUMN>_scaled`
 
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+A tbl object with additional columns with scaled data 
+as `<NAME OF COUNT COLUMN>_scaled`
 
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+A tbl object with additional columns with scaled data 
+ as `<NAME OF COUNT COLUMN>_scaled`
 
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
+A tbl object with additional columns with scaled data 
+as `<NAME OF COUNT COLUMN>_scaled`
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-quantile_normalise_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
+quantile_normalise_abundance() takes as input A `tbl`
+  (with at least three columns for sample, feature and transcript abundance) 
+  or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+  library(tidySummarizedExperiment)) and Scales transcript abundance 
+  compansating for sequencing depth (e.g., with TMM algorithm, Robinson 
+  and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 }
 \details{
 `r lifecycle::badge("maturing")`
 
 Scales transcript abundance compensating for sequencing depth
 (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
-Lowly transcribed transcripts/genes (defined with minimum_counts and minimum_proportion parameters)
-are filtered out from the scaling procedure.
+Lowly transcribed transcripts/genes (defined with minimum_counts and 
+minimum_proportion parameters) are filtered out from the scaling procedure.
 The scaling inference is then applied back to all unfiltered data.
 
 Underlying method
@@ -107,7 +125,10 @@ edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))
 }
 \examples{
 
+
  tidybulk::se_mini |>
    quantile_normalise_abundance()
+
+
 
 }

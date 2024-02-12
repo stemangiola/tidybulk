@@ -23,8 +23,8 @@ Get ENTREZ id from gene SYMBOL
 
 # This function was designed for data.frame
 # Convert from SummarizedExperiment for this example. It is NOT reccomended.
-data(se_mini)
-se_mini |> tidybulk() |> as_tibble() |> 
-  symbol_to_entrez(.transcript = .feature, .sample = .sample)
+
+tidybulk::se_mini |> tidybulk() |> as_tibble() |> 
+symbol_to_entrez(.transcript = .feature, .sample = .sample)
 
 }

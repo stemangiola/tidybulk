@@ -89,25 +89,35 @@ cluster_elements(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, 
+feature and transcript abundance) or `SummarizedExperiment` 
+(more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment))}
 
 \item{.element}{The name of the element column (normally samples).}
 
 \item{.feature}{The name of the feature column (normally transcripts/genes)}
 
-\item{.abundance}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
+\item{.abundance}{The name of the column including the numerical value the 
+clustering is based on (normally transcript abundance)}
 
-\item{method}{A character string. The cluster algorithm to use, at the moment k-means is the only algorithm included.}
+\item{method}{A character string. The cluster algorithm to use, at the 
+moment k-means is the only algorithm included.}
 
-\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, 
+it indicates Whether the element column will be sample or transcript column}
 
-\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
+\item{transform}{A function that will tranform the counts, by default it is 
+log1p for RNA sequencing data, but for avoinding tranformation you can 
+use identity}
 
-\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+\item{action}{A character string. Whether to join the new information to 
+the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function kmeans}
 
-\item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{log_transform}{DEPRECATED - A boolean, whether the value should be 
+log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A tbl object with additional columns with cluster labels
@@ -123,14 +133,19 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-cluster_elements() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and identify clusters in the data.
+cluster_elements() takes as input A `tbl` (with at least 
+ three columns for sample, feature and transcript abundance) or 
+ `SummarizedExperiment` (more convenient if abstracted to tibble with 
+ library(tidySummarizedExperiment)) and identify clusters in the data.
 }
 \details{
 `r lifecycle::badge("maturing")`
 
 identifies clusters in the data, normally of samples.
 This function returns a tibble with additional columns for the cluster annotation.
-At the moment only k-means (DOI: 10.2307/2346830) and SNN clustering (DOI:10.1016/j.cell.2019.05.031) is supported, the plan is to introduce more clustering methods.
+At the moment only k-means (DOI: 10.2307/2346830) and SNN clustering 
+(DOI:10.1016/j.cell.2019.05.031) is supported, the plan is to introduce more 
+clustering methods.
 
 Underlying method for kmeans
 do.call(kmeans(.data, iter.max = 1000, ...)

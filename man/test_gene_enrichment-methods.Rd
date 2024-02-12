@@ -107,9 +107,12 @@ test_gene_enrichment(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and 
+transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
-\item{.formula}{A formula with no response variable, representing the desired linear model}
+\item{.formula}{A formula with no response variable, representing the 
+desired linear model}
 
 \item{.sample}{The name of the sample column}
 
@@ -117,11 +120,22 @@ test_gene_enrichment(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{contrasts}{This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
+\item{contrasts}{This parameter takes the format of the contrast parameter 
+of the method of choice. For edgeR and limma-voom is a character vector. 
+For DESeq2 is a list including a character vector of length three. The first 
+covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
-\item{methods}{A character vector. One or 3 or more methods to use in the testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to see the supported GSE methods.}
+\item{methods}{A character vector. One or 3 or more methods to use in the 
+testing (currently EGSEA errors if 2 are used). Type EGSEA::egsea.base() to 
+see the supported GSE methods.}
 
-\item{gene_sets}{A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.}
+\item{gene_sets}{A character vector or a list. It can take one or more of 
+the following built-in collections as a character vector: c("h", "c1", "c2", 
+"c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", 
+"kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. 
+Alternatively, a list of user-supplied gene sets can be provided, to be used 
+with EGSEA buildCustomIdx. In that case, each gene set is a character vector
+of Entrez IDs and the names of the list are the gene set names.}
 
 \item{species}{A character. It can be human, mouse or rat.}
 
@@ -129,7 +143,10 @@ test_gene_enrichment(
 
 \item{method}{DEPRECATED. Please use methods.}
 
-\item{.contrasts}{DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
+\item{.contrasts}{DEPRECATED - This parameter takes the format of the 
+contrast parameter of the method of choice. For edgeR and limma-voom is a 
+character vector. For DESeq2 is a list including a character vector of length 
+three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 }
 \value{
 A consistent object (to the input)
@@ -145,18 +162,18 @@ A consistent object (to the input)
 A consistent object (to the input)
 }
 \description{
-test_gene_enrichment() takes as input a `tbl` 
-(with at least three columns for sample, feature and transcript abundance) 
-or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+test_gene_enrichment() takes as input a `tbl` (with at least 
+three columns for sample, feature and transcript abundance) or 
+`SummarizedExperiment` (more convenient if abstracted to tibble with 
 library(tidySummarizedExperiment)) and returns a `tbl` of gene set information
 }
 \details{
 `r lifecycle::badge("maturing")`
 
-This wrapper executes ensemble gene enrichment analyses of the dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
+This wrapper executes ensemble gene enrichment analyses of the 
+dataset using EGSEA (DOI:0.12688/f1000research.12544.1)
 
-
-dge <-
+dge =
 	data |>
 	keep_abundant(
 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
@@ -168,11 +185,11 @@ dge <-
 	as_matrix(rownames = !!.entrez) %>%
 	edgeR::DGEList(counts = .)
 
-idx <- buildIdx(entrezIDs = rownames(dge), species = species, 
-                msigdb.gsets = msigdb.gsets,
+idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets,
                kegg.exclude = kegg.exclude)
 
 dge |>
+
 	# Calculate weights
 	limma::voom(design, plot = FALSE) |>
 
@@ -190,9 +207,9 @@ dge |>
 \dontrun{
 
 library(SummarizedExperiment)
-se <- tidybulk::se_mini
-rowData(se)$entrez <- rownames(se)
-df_entrez <- aggregate_duplicates(se, .transcript = entrez)
+se = tidybulk::se_mini
+rowData( se)$entrez = rownames(se )
+df_entrez = aggregate_duplicates(se,.transcript = entrez )
 
 library("EGSEA")
 
@@ -202,10 +219,9 @@ library("EGSEA")
 		.sample = sample,
 		.entrez = entrez,
 		.abundance = count,
-         methods = c("roast", "safe", "gage", 
-                     "padog", "globaltest", "ora"),
-         gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", 
-                       "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+         methods = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+         gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", 
+          "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 		species="human",
 		cores = 2
 	)
