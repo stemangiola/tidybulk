@@ -1139,7 +1139,7 @@ setMethod("adjust_abundance",
     new_range_data = new_range_data %>%
 
       # I have to use this trick because rowRanges() and rowData() share @elementMetadata
-      select(-one_of(colnames(new_row_data) %>% outersect(quo_name(.transcript)))) %>%
+      select(-any_of(colnames(new_row_data) %>% outersect(quo_name(.transcript)))) %>%
       suppressWarnings()
 
 
