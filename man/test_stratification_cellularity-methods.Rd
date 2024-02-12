@@ -8,7 +8,8 @@
 \alias{test_stratification_cellularity,tidybulk-method}
 \alias{test_stratification_cellularity,SummarizedExperiment-method}
 \alias{test_stratification_cellularity,RangedSummarizedExperiment-method}
-\title{Test of stratification of biological replicates based on tissue composition, one cell-type at the time, using Kaplan-meier curves.}
+\title{Test of stratification of biological replicates based on tissue composition, 
+one cell-type at the time, using Kaplan-meier curves.}
 \usage{
 test_stratification_cellularity(
   .data,
@@ -77,9 +78,15 @@ test_stratification_cellularity(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and 
+transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
-\item{.formula}{A formula representing the desired linear model. The formula can be of two forms: multivariable (recommended) or univariable Respectively: \"factor_of_interest ~ .\" or \". ~ factor_of_interest\". The dot represents cell-type proportions, and it is mandatory. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ .\"}
+\item{.formula}{A formula representing the desired linear model. The formula 
+can be of two forms: multivariable (recommended) or univariable 
+Respectively: \"factor_of_interest ~ .\" or \". ~ factor_of_interest\". 
+The dot represents cell-type proportions, and it is mandatory. If censored 
+regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ .\"}
 
 \item{.sample}{The name of the sample column}
 
@@ -87,27 +94,43 @@ test_stratification_cellularity(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{method}{A string character. Either \"cibersort\", \"epic\" or \"llsr\". The regression method will be chosen based on being multivariable: lm or cox-regression (both on logit-transformed proportions); or univariable: beta or cox-regression (on logit-transformed proportions). See .formula for multi- or univariable choice.}
+\item{method}{A string character. Either \"cibersort\", \"epic\" or \"llsr\". 
+The regression method will be chosen based on being multivariable: lm or 
+cox-regression (both on logit-transformed proportions); or univariable: beta 
+or cox-regression (on logit-transformed proportions). See .formula for 
+multi- or univariable choice.}
 
-\item{reference}{A data frame. The transcript/cell_type data frame of integer transcript abundance}
+\item{reference}{A data frame. The transcript/cell_type data frame of integer 
+transcript abundance}
 
 \item{...}{Further parameters passed to the method deconvolve_cellularity}
 }
 \value{
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 }
 \description{
-test_stratification_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
+test_stratification_cellularity() takes as input A `tbl` 
+(with at least three columns for sample, feature and transcript abundance) 
+or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a consistent object 
+(to the input) with additional columns for the statistics from the hypothesis test.
 }
 \details{
 `r lifecycle::badge("maturing")`
 
 This routine applies a deconvolution method (e.g., Cibersort; DOI: 10.1038/nmeth.3337)
-and passes the proportions inferred into a generalised linear model (DOI:dx.doi.org/10.1007/s11749-010-0189-z)
+and passes the proportions inferred into a generalised linear model 
+(DOI:dx.doi.org/10.1007/s11749-010-0189-z)
 or a cox regression model (ISBN: 978-1-4757-3294-8)
 
 
@@ -125,8 +148,6 @@ deconvolve_cellularity(
 	survival::survdiff(data = data, .my_formula)
 }
 \examples{
-
-
 tidybulk::se_mini |>
 test_stratification_cellularity(
 	survival::Surv(days, dead) ~ .,

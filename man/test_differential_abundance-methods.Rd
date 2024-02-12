@@ -8,7 +8,9 @@
 \alias{test_differential_abundance,tidybulk-method}
 \alias{test_differential_abundance,SummarizedExperiment-method}
 \alias{test_differential_abundance,RangedSummarizedExperiment-method}
-\title{Perform differential transcription testing using edgeR quasi-likelihood (QLT), edgeR likelihood-ratio (LR), limma-voom, limma-voom-with-quality-weights or DESeq2}
+\title{Perform differential transcription testing using edgeR quasi-likelihood 
+(QLT), edgeR likelihood-ratio (LR), limma-voom, 
+limma-voom-with-quality-weights or DESeq2}
 \usage{
 test_differential_abundance(
   .data,
@@ -125,9 +127,13 @@ test_differential_abundance(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and 
+transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
-\item{.formula}{A formula representing the desired linear model. If there is more than one factor, they should be in the order factor of interest + additional factors.}
+\item{.formula}{A formula representing the desired linear model. If there 
+is more than one factor, they should be in the order factor of interest + 
+additional factors.}
 
 \item{.sample}{The name of the sample column}
 
@@ -135,49 +141,84 @@ test_differential_abundance(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{contrasts}{This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
+\item{contrasts}{This parameter takes the format of the contrast parameter 
+of the method of choice. For edgeR and limma-voom is a character vector. 
+For DESeq2 is a list including a character vector of length three. The first 
+covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
-\item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights"}
+\item{method}{A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), 
+"edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", 
+"DESeq2", "limma_voom", "limma_voom_sample_weights"}
 
-\item{test_above_log2_fold_change}{A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.}
+\item{test_above_log2_fold_change}{A positive real value. This works for edgeR 
+and limma_voom methods. It uses the `treat` function, which tests that the 
+difference in abundance is bigger than this threshold rather than zero 
+\url{https://pubmed.ncbi.nlm.nih.gov/19176553}.}
 
-\item{scaling_method}{A character string. The scaling method passed to the back-end functions: edgeR and limma-voom (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile"). Setting the parameter to \"none\" will skip the compensation for sequencing-depth for the method edgeR or limma-voom.}
+\item{scaling_method}{A character string. The scaling method passed to the 
+back-end functions: edgeR and limma-voom (i.e., edgeR::calcNormFactors; 
+"TMM","TMMwsp","RLE","upperquartile"). Setting the parameter to \"none\" 
+will skip the compensation for sequencing-depth for the method edgeR or limma-voom.}
 
-\item{omit_contrast_in_colnames}{If just one contrast is specified you can choose to omit the contrast label in the colnames.}
+\item{omit_contrast_in_colnames}{If just one contrast is specified you can 
+choose to omit the contrast label in the colnames.}
 
-\item{prefix}{A character string. The prefix you would like to add to the result columns. It is useful if you want to compare several methods.}
+\item{prefix}{A character string. The prefix you would like to add to the 
+result columns. It is useful if you want to compare several methods.}
 
-\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+\item{action}{A character string. Whether to join the new information to the 
+input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
-\item{...}{Further arguments passed to some of the internal functions. Currently, it is needed just for internal debug.}
+\item{...}{Further arguments passed to some of the internal functions. 
+Currently, it is needed just for internal debug.}
 
 \item{significance_threshold}{DEPRECATED - A real between 0 and 1 (usually 0.05).}
 
-\item{fill_missing_values}{DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
+\item{fill_missing_values}{DEPRECATED - A boolean. Whether to fill missing 
+sample/transcript values with the median of the transcript. This is rarely needed.}
 
-\item{.contrasts}{DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
+\item{.contrasts}{DEPRECATED - This parameter takes the format of the 
+contrast parameter of the method of choice. For edgeR and limma-voom is a 
+character vector. For DESeq2 is a list including a character vector of length 
+three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 }
 \value{
-A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
 
-A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-test_differential_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
+test_differential_abundance() takes as input A `tbl` 
+(with at least three columns for sample, feature and transcript abundance) 
+or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a consistent object (to the 
+input) with additional columns for the statistics from the hypothesis test.
 }
 \details{
 `r lifecycle::badge("maturing")`
 
-This function provides the option to use edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}, limma-voom \url{https://doi.org/10.1186/gb-2014-15-2-r29}, limma_voom_sample_weights \url{https://doi.org/10.1093/nar/gkv412} or  DESeq2 \url{https://doi.org/10.1186/s13059-014-0550-8} to perform the testing.
-All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.
+This function provides the option to use edgeR 
+\url{https://doi.org/10.1093/bioinformatics/btp616}, limma-voom 
+\url{https://doi.org/10.1186/gb-2014-15-2-r29}, limma_voom_sample_weights 
+\url{https://doi.org/10.1093/nar/gkv412} or  DESeq2 
+\url{https://doi.org/10.1186/s13059-014-0550-8} to perform the testing.
+All methods use raw counts, irrespective of if scale_abundance or 
+adjust_abundance have been calculated, therefore it is essential to add 
+covariates such as batch effects (if applicable) in the formula.
 
 Underlying method for edgeR framework:
 

@@ -8,7 +8,8 @@
 \alias{aggregate_duplicates,tidybulk-method}
 \alias{aggregate_duplicates,SummarizedExperiment-method}
 \alias{aggregate_duplicates,RangedSummarizedExperiment-method}
-\title{Aggregates multiple counts from the same samples (e.g., from isoforms), concatenates other character columns, and averages other numeric columns}
+\title{Aggregates multiple counts from the same samples (e.g., from isoforms), 
+concatenates other character columns, and averages other numeric columns}
 \usage{
 aggregate_duplicates(
   .data,
@@ -65,7 +66,9 @@ aggregate_duplicates(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and 
+transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 
@@ -73,25 +76,34 @@ aggregate_duplicates(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{aggregation_function}{A function for counts aggregation (e.g., sum,  median, or mean)}
+\item{aggregation_function}{A function for counts aggregation (e.g., sum,
+median, or mean)}
 
 \item{keep_integer}{A boolean. Whether to force the aggregated counts to integer}
 }
 \value{
-A consistent object (to the input) with aggregated transcript abundance and annotation
+A consistent object (to the input) with aggregated transcript 
+abundance and annotation
 
-A consistent object (to the input) with aggregated transcript abundance and annotation
+A consistent object (to the input) with aggregated transcript 
+abundance and annotation
 
-A consistent object (to the input) with aggregated transcript abundance and annotation
+A consistent object (to the input) with aggregated transcript 
+abundance and annotation
 
-A consistent object (to the input) with aggregated transcript abundance and annotation
+A consistent object (to the input) with aggregated transcript 
+abundance and annotation
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-aggregate_duplicates() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with aggregated transcripts that were duplicated.
+aggregate_duplicates() takes as input A `tbl` (with at least 
+three columns for sample, feature and transcript abundance) or 
+`SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a consistent object 
+(to the input) with aggregated transcripts that were duplicated.
 }
 \details{
 `r lifecycle::badge("maturing")`
