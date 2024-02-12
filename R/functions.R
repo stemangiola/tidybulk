@@ -120,7 +120,7 @@ create_tt_from_bam_sam_bulk <- function(file_names, genome = "hg38", ...) {
 							genes %>%
 							select(
 								suppressWarnings(
-									one_of("GeneID", "symbol")
+									any_of("GeneID", "symbol")
 								)
 								) %>%
 							as_tibble() %>%
@@ -434,7 +434,7 @@ get_differential_transcript_abundance_bulk <- function(data,
 		select(!!.transcript,
 					 !!.sample,
 					 !!.abundance,
-					 one_of(parse_formula(.formula))) %>%
+					 any_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
@@ -454,14 +454,14 @@ get_differential_transcript_abundance_bulk <- function(data,
 	# if (
 	# 	# If I have some discrete covariates
 	# 	df_for_edgeR %>%
-	# 	select(one_of(parse_formula(.formula))) %>%
+	# 	select(any_of(parse_formula(.formula))) %>%
 	# 	select_if(function(col)
 	# 		is.character(col) | is.factor(col) | is.logical(col)) %>%
 	# 	ncol %>% gt(0) &
 	#
 	# 	# If I have at least 2 samples per group
 	# 	df_for_edgeR %>%
-	# 	select(!!.sample, one_of(parse_formula(.formula))) %>%
+	# 	select(!!.sample, any_of(parse_formula(.formula))) %>%
 	# 	select_if(function(col) !is.numeric(col) & !is.integer(col) & !is.double(col) ) %>%
 	# 	distinct %>%
 	# 	group_by_at(vars(-!!.sample)) %>%
@@ -479,7 +479,7 @@ get_differential_transcript_abundance_bulk <- function(data,
 		model.matrix(
 			object = .formula,
 			data = df_for_edgeR %>% 
-			  select(!!.sample, one_of(parse_formula(.formula))) %>% 
+			  select(!!.sample, any_of(parse_formula(.formula))) %>% 
 			  distinct %>% arrange(!!.sample)
 		)
 
@@ -950,7 +950,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		select(!!.transcript,
 					 !!.sample,
 					 !!.abundance,
-					 one_of(parse_formula(.formula))) %>%
+					 any_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
@@ -962,7 +962,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		model.matrix(
 			object = .formula,
 			data = df_for_voom %>% 
-			  select(!!.sample, one_of(parse_formula(.formula))) %>% 
+			  select(!!.sample, any_of(parse_formula(.formula))) %>% 
 			  distinct %>% 
 			  arrange(!!.sample)
 		)
@@ -1215,7 +1215,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		select(!!.transcript,
 					 !!.sample,
 					 !!.abundance,
-					 one_of(parse_formula(.formula))) %>%
+					 any_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
@@ -1639,7 +1639,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 		# Prepare the data frame
 		select(!!.entrez, !!.sample, !!.abundance,
-					 one_of(parse_formula(.formula))) %>%
+					 any_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# Add entrez from symbol
@@ -1647,7 +1647,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	# Check if at least two samples for each group
 	if (df_for_edgeR %>%
-			select(!!.sample, one_of(parse_formula(.formula))) %>%
+			select(!!.sample, any_of(parse_formula(.formula))) %>%
 			distinct %>%
 			count(!!as.symbol(parse_formula(.formula))) %>%
 			distinct(n) %>%
@@ -1663,7 +1663,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 		model.matrix(
 			object = .formula,
 			data = df_for_edgeR %>% 
-			  select(!!.sample, one_of(parse_formula(.formula))) %>% 
+			  select(!!.sample, any_of(parse_formula(.formula))) %>% 
 			  distinct %>% 
 			  arrange(!!.sample)
 		)
