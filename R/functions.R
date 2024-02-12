@@ -767,7 +767,7 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   # Create design matrix for dispersion, removing random effects
   design =
     model.matrix(
-      object = .formula |> eliminate_random_effects(),
+      object = .formula |> lme4::nobars(),
       data = metadata
     )
   
