@@ -50,8 +50,6 @@
 #' @export
 #'
 #'
-#' @inheritParams tidybulk
-#'
 #' @docType methods
 #' @rdname tidybulk-methods
 #'
@@ -62,8 +60,6 @@ setMethod("tidybulk", "SummarizedExperiment", .tidybulk_se)
 #' tidybulk
 #'
 #' @export
-#'
-#' @inheritParams tidybulk
 #'
 #' @docType methods
 #' @rdname tidybulk-methods
@@ -213,7 +209,6 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 }
 
 #' scale_abundance
-#' @inheritParams scale_abundance
 #'
 #' @docType methods
 #' @rdname scale_abundance-methods
@@ -225,7 +220,6 @@ setMethod("scale_abundance",
 					.scale_abundance_se)
 
 #' scale_abundance
-#' @inheritParams scale_abundance
 #'
 #' @docType methods
 #' @rdname scale_abundance-methods
@@ -343,7 +337,6 @@ setMethod("scale_abundance",
 }
 
 #' quantile_normalise_abundance
-#' @inheritParams quantile_normalise_abundance
 #'
 #' @docType methods
 #' @rdname quantile_normalise_abundance-methods
@@ -355,7 +348,6 @@ setMethod("quantile_normalise_abundance",
           .quantile_normalise_abundance_se)
 
 #' quantile_normalise_abundance
-#' @inheritParams quantile_normalise_abundance
 #'
 #' @docType methods
 #' @rdname quantile_normalise_abundance-methods
@@ -425,7 +417,6 @@ setMethod("quantile_normalise_abundance",
 }
 
 #' cluster_elements
-#' @inheritParams cluster_elements
 #'
 #' @docType methods
 #' @rdname cluster_elements-methods
@@ -437,7 +428,6 @@ setMethod("cluster_elements",
 					.cluster_elements_se)
 
 #' cluster_elements
-#' @inheritParams cluster_elements
 #'
 #' @importFrom rlang inform
 #'
@@ -554,7 +544,6 @@ setMethod("cluster_elements",
 }
 
 #' reduce_dimensions
-#' @inheritParams reduce_dimensions
 #'
 #' @docType methods
 #' @rdname reduce_dimensions-methods
@@ -566,7 +555,6 @@ setMethod("reduce_dimensions",
 					.reduce_dimensions_se)
 
 #' reduce_dimensions
-#' @inheritParams reduce_dimensions
 #'
 #' @docType methods
 #' @rdname reduce_dimensions-methods
@@ -651,7 +639,6 @@ setMethod("reduce_dimensions",
 }
 
 #' rotate_dimensions
-#' @inheritParams rotate_dimensions
 #'
 #' @docType methods
 #' @rdname rotate_dimensions-methods
@@ -663,7 +650,6 @@ setMethod("rotate_dimensions",
 					.rotate_dimensions_se)
 
 #' rotate_dimensions
-#' @inheritParams rotate_dimensions
 #'
 #' @docType methods
 #' @rdname rotate_dimensions-methods
@@ -775,7 +761,6 @@ setMethod("rotate_dimensions",
 }
 
 #' remove_redundancy
-#' @inheritParams remove_redundancy
 #'
 #' @docType methods
 #' @rdname remove_redundancy-methods
@@ -787,7 +772,6 @@ setMethod("remove_redundancy",
 					.remove_redundancy_se)
 
 #' remove_redundancy
-#' @inheritParams remove_redundancy
 #'
 #' @importFrom rlang quo
 #'
@@ -991,7 +975,6 @@ setMethod("remove_redundancy",
 }
 
 #' adjust_abundance
-#' @inheritParams adjust_abundance
 #'
 #' @docType methods
 #' @rdname adjust_abundance-methods
@@ -1003,7 +986,6 @@ setMethod("adjust_abundance",
 					.adjust_abundance_se)
 
 #' adjust_abundance
-#' @inheritParams adjust_abundance
 #'
 #' @docType methods
 #' @rdname adjust_abundance-methods
@@ -1193,7 +1175,6 @@ setMethod("adjust_abundance",
 }
 
 #' aggregate_duplicates
-#' @inheritParams aggregate_duplicates
 #'
 #' @docType methods
 #' @rdname aggregate_duplicates-methods
@@ -1205,7 +1186,6 @@ setMethod("aggregate_duplicates",
 					.aggregate_duplicates_se)
 
 #' aggregate_duplicates
-#' @inheritParams aggregate_duplicates
 #'
 #' @docType methods
 #' @rdname aggregate_duplicates-methods
@@ -1366,7 +1346,6 @@ setMethod("aggregate_duplicates",
 }
 
 #' deconvolve_cellularity
-#' @inheritParams deconvolve_cellularity
 #'
 #' @docType methods
 #' @rdname deconvolve_cellularity-methods
@@ -1378,7 +1357,6 @@ setMethod("deconvolve_cellularity",
 					.deconvolve_cellularity_se)
 
 #' deconvolve_cellularity
-#' @inheritParams deconvolve_cellularity
 #'
 #' @importFrom rlang inform
 #'
@@ -1563,7 +1541,6 @@ such as batch effects (if applicable) in the formula.
 }
 
 #' test_differential_abundance
-#' @inheritParams test_differential_abundance
 #'
 #' @docType methods
 #' @rdname test_differential_abundance-methods
@@ -1577,7 +1554,6 @@ setMethod(
 )
 
 #' test_differential_abundance
-#' @inheritParams test_differential_abundance
 #'
 #' @docType methods
 #' @rdname test_differential_abundance-methods
@@ -1623,7 +1599,6 @@ setMethod(
 }
 
 #' keep_variable
-#' @inheritParams keep_variable
 #'
 #' @docType methods
 #' @rdname keep_variable-methods
@@ -1635,7 +1610,6 @@ setMethod("keep_variable",
 					.keep_variable_se)
 
 #' keep_variable
-#' @inheritParams keep_variable
 #'
 #' @importFrom purrr map_chr
 #' @importFrom tidyr unite
@@ -1785,7 +1759,6 @@ setMethod("keep_variable",
 
 
 #' identify_abundant
-#' @inheritParams identify_abundant
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
@@ -1797,7 +1770,6 @@ setMethod("identify_abundant",
 					.identify_abundant_se)
 
 #' identify_abundant
-#' @inheritParams identify_abundant
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
@@ -1843,7 +1815,6 @@ setMethod("identify_abundant",
 }
 
 #' keep_abundant
-#' @inheritParams keep_abundant
 #'
 #' @docType methods
 #' @rdname keep_abundant-methods
@@ -1855,7 +1826,6 @@ setMethod("keep_abundant",
 					.keep_abundant_se)
 
 #' keep_abundant
-#' @inheritParams keep_abundant
 #'
 #' @docType methods
 #' @rdname keep_abundant-methods
@@ -2152,7 +2122,6 @@ setMethod("keep_abundant",
 }
 
 #' test_gene_enrichment
-#' @inheritParams test_gene_enrichment
 #'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
@@ -2163,7 +2132,6 @@ setMethod("test_gene_enrichment",
 					.test_gene_enrichment_SE)
 
 #' test_gene_enrichment
-#' @inheritParams test_gene_enrichment
 #'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
@@ -2247,7 +2215,6 @@ setMethod("test_gene_enrichment",
 }
 
 #' test_gene_overrepresentation
-#' @inheritParams test_gene_overrepresentation
 #'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
@@ -2258,7 +2225,6 @@ setMethod("test_gene_overrepresentation",
 					.test_gene_overrepresentation_SE)
 
 #' test_gene_overrepresentation
-#' @inheritParams test_gene_overrepresentation
 #'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
@@ -2336,7 +2302,6 @@ setMethod("test_gene_overrepresentation",
 }
 
 #' test_gene_rank
-#' @inheritParams test_gene_rank
 #'
 #' @docType methods
 #' @rdname test_gene_rank-methods
@@ -2347,7 +2312,6 @@ setMethod("test_gene_rank",
 					.test_gene_rank_SE)
 
 #' test_gene_rank
-#' @inheritParams test_gene_rank
 #'
 #' @docType methods
 #' @rdname test_gene_rank-methods
@@ -2383,7 +2347,6 @@ setMethod("test_gene_rank",
 }
 
 #' pivot_sample
-#' @inheritParams pivot_sample
 #'
 #' @docType methods
 #' @rdname pivot_sample-methods
@@ -2394,7 +2357,6 @@ setMethod("pivot_sample",
 					.pivot_sample)
 
 #' pivot_sample
-#' @inheritParams pivot_sample
 #'
 #' @docType methods
 #' @rdname pivot_sample-methods
@@ -2440,7 +2402,6 @@ setMethod("pivot_sample",
 }
 
 #' pivot_transcript
-#' @inheritParams pivot_transcript
 #'
 #' @docType methods
 #' @rdname pivot_transcript-methods
@@ -2451,7 +2412,6 @@ setMethod("pivot_transcript",
 					.pivot_transcript)
 
 #' pivot_transcript
-#' @inheritParams pivot_transcript
 #'
 #' @docType methods
 #' @rdname pivot_transcript-methods
@@ -2550,7 +2510,6 @@ setMethod("pivot_transcript",
 
 
 #' impute_missing_abundance
-#' @inheritParams impute_missing_abundance
 #'
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
@@ -2565,7 +2524,6 @@ setMethod("impute_missing_abundance",
 					.impute_missing_abundance_se)
 
 #' impute_missing_abundance
-#' @inheritParams impute_missing_abundance
 #'
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
@@ -2710,7 +2668,6 @@ setMethod("impute_missing_abundance",
 }
 
 #' test_differential_cellularity
-#' @inheritParams test_differential_cellularity
 #'
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
@@ -2724,7 +2681,6 @@ setMethod(
 )
 
 #' test_differential_cellularity
-#' @inheritParams test_differential_cellularity
 #'
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
@@ -2794,7 +2750,6 @@ setMethod(
 }
 
 #' test_stratification_cellularity
-#' @inheritParams test_stratification_cellularity
 #'
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
@@ -2807,7 +2762,6 @@ setMethod("test_stratification_cellularity",
 					.test_stratification_cellularity_SE)
 
 #' test_stratification_cellularity
-#' @inheritParams test_stratification_cellularity
 #'
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
@@ -2821,7 +2775,6 @@ setMethod("test_stratification_cellularity",
 
 
 #' get_bibliography
-#' @inheritParams get_bibliography
 #'
 #' @docType methods
 #' @rdname get_bibliography-methods
@@ -2834,7 +2787,6 @@ setMethod("get_bibliography",
 					.get_bibliography)
 
 #' get_bibliography
-#' @inheritParams get_bibliography
 #'
 #' @docType methods
 #' @rdname get_bibliography-methods
@@ -2851,7 +2803,6 @@ setMethod("get_bibliography",
 #' @importFrom SummarizedExperiment rowData
 #' @importFrom tibble enframe
 #'
-#' @inheritParams describe_transcript
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods
@@ -2943,7 +2894,6 @@ setMethod("get_bibliography",
 }
 
 #' describe_transcript
-#' @inheritParams describe_transcript
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods
@@ -2954,7 +2904,6 @@ setMethod("describe_transcript", "SummarizedExperiment",
           .describe_transcript_SE)
 
 #' describe_transcript
-#' @inheritParams describe_transcript
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods

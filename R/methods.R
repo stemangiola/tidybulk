@@ -47,18 +47,18 @@ setOldClass("tidybulk")
 #' @export
 #'
 setGeneric("tidybulk", function(.data,
-																.sample,
-																.transcript,
-																.abundance,
-																.abundance_scaled = NULL)
-	standardGeneric("tidybulk"))
+    .sample,
+    .transcript,
+    .abundance,
+    .abundance_scaled = NULL)
+  standardGeneric("tidybulk"))
 
 # Set internal
-.tidybulk = function(.data,
-										 .sample,
-										 .transcript,
-										 .abundance,
-										 .abundance_scaled = NULL) {
+.tidybulk <- function(.data,
+                      .sample,
+                      .transcript,
+                      .abundance,
+                      .abundance_scaled = NULL) {
 	# Make col names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -89,8 +89,6 @@ setGeneric("tidybulk", function(.data,
 #'
 #' @export
 #'
-#' @inheritParams tidybulk
-#'
 #' @docType methods
 #' @rdname tidybulk-methods
 #'
@@ -103,8 +101,6 @@ setMethod("tidybulk", "spec_tbl_df", .tidybulk)
 #' @export
 #'
 #' @importFrom purrr map2
-#'
-#' @inheritParams tidybulk
 #'
 #' @docType methods
 #' @rdname tidybulk-methods
@@ -136,16 +132,16 @@ setMethod("tidybulk", "tbl_df", .tidybulk)
 #' @export
 #'
 setGeneric("as_SummarizedExperiment", function(.data,
-																							 .sample = NULL,
-																							 .transcript = NULL,
-																							 .abundance = NULL)
+                                               .sample = NULL,
+                                               .transcript = NULL,
+                                               .abundance = NULL)
 	standardGeneric("as_SummarizedExperiment"))
 
 
-.as_SummarizedExperiment = function(.data,
-																		.sample = NULL,
-																		.transcript = NULL,
-																		.abundance = NULL) {
+.as_SummarizedExperiment <- function(.data,
+                                     .sample = NULL,
+                                     .transcript = NULL,
+                                     .abundance = NULL) {
 
   # Fix NOTEs
   . = NULL
@@ -271,8 +267,6 @@ setGeneric("as_SummarizedExperiment", function(.data,
 #'
 #' @export
 #'
-#' @inheritParams as_SummarizedExperiment
-#'
 #' @docType methods
 #' @rdname as_SummarizedExperiment-methods
 #'
@@ -284,8 +278,6 @@ setMethod("as_SummarizedExperiment", "spec_tbl_df", .as_SummarizedExperiment)
 #'
 #' @export
 #'
-#' @inheritParams as_SummarizedExperiment
-#'
 #' @docType methods
 #' @rdname as_SummarizedExperiment-methods
 #'
@@ -296,8 +288,6 @@ setMethod("as_SummarizedExperiment", "tbl_df", .as_SummarizedExperiment)
 #' as_SummarizedExperiment
 #'
 #' @export
-#'
-#' @inheritParams as_SummarizedExperiment
 #'
 #' @docType methods
 #' @rdname as_SummarizedExperiment-methods
@@ -352,8 +342,6 @@ setGeneric("tidybulk_SAM_BAM", function(file_names, genome = "hg38", ...)
 #' tidybulk_SAM_BAM
 #'
 #' @export
-#'
-#' @inheritParams tidybulk_SAM_BAM-methods
 #'
 #' @docType methods
 #' @rdname tidybulk_SAM_BAM-methods
@@ -434,7 +422,7 @@ setGeneric("scale_abundance", function(.data,
 	standardGeneric("scale_abundance"))
 
 # Set internal
-.scale_abundance = 	function(.data,
+.scale_abundance <-	function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
@@ -442,7 +430,6 @@ setGeneric("scale_abundance", function(.data,
 														 reference_sample = NULL,
 														 .subset_for_scaling = NULL,
 														 action = "add",
-
 														 # DEPRECATED
 														 reference_selection_function = NULL) {
 
@@ -563,7 +550,6 @@ setGeneric("scale_abundance", function(.data,
 #' scale_abundance
 #'
 #' @export
-#' @inheritParams scale_abundance
 #' @docType methods
 #' @rdname scale_abundance-methods
 #'
@@ -575,7 +561,6 @@ setMethod("scale_abundance", "spec_tbl_df", .scale_abundance)
 #' scale_abundance
 #'
 #' @export
-#' @inheritParams scale_abundance
 #' @docType methods
 #' @rdname scale_abundance-methods
 #'
@@ -587,8 +572,6 @@ setMethod("scale_abundance", "tbl_df", .scale_abundance)
 #' scale_abundance
 #'
 #' @export
-#'
-#' @inheritParams scale_abundance
 #'
 #' @docType methods
 #' @rdname scale_abundance-methods
@@ -784,8 +767,6 @@ setGeneric("quantile_normalise_abundance", function(
 #'
 #' @export
 #'
-#' @inheritParams quantile_normalise_abundance
-#'
 #' @docType methods
 #' @rdname quantile_normalise_abundance-methods
 #'
@@ -799,8 +780,6 @@ setMethod("quantile_normalise_abundance", "spec_tbl_df",
 #'
 #' @export
 #'
-#' @inheritParams quantile_normalise_abundance
-#'
 #' @docType methods
 #' @rdname quantile_normalise_abundance-methods
 #'
@@ -812,8 +791,6 @@ setMethod("quantile_normalise_abundance", "tbl_df", .quantile_normalise_abundanc
 #' quantile_normalise_abundance
 #'
 #' @export
-#'
-#' @inheritParams quantile_normalise_abundance
 #'
 #' @docType methods
 #' @rdname quantile_normalise_abundance-methods
@@ -1027,7 +1004,6 @@ setGeneric("cluster_elements", function(.data,
 }
 
 #' cluster_elements
-#' @inheritParams cluster_elements
 #'
 #' @docType methods
 #' @rdname cluster_elements-methods
@@ -1037,7 +1013,6 @@ setGeneric("cluster_elements", function(.data,
 setMethod("cluster_elements", "spec_tbl_df", .cluster_elements)
 
 #' cluster_elements
-#' @inheritParams cluster_elements
 #'
 #' @docType methods
 #' @rdname cluster_elements-methods
@@ -1047,7 +1022,6 @@ setMethod("cluster_elements", "spec_tbl_df", .cluster_elements)
 setMethod("cluster_elements", "tbl_df", .cluster_elements)
 
 #' cluster_elements
-#' @inheritParams cluster_elements
 #'
 #' @docType methods
 #' @rdname cluster_elements-methods
@@ -1331,7 +1305,6 @@ setGeneric("reduce_dimensions", function(.data,
 }
 
 #' reduce_dimensions
-#' @inheritParams reduce_dimensions
 #'
 #' @docType methods
 #' @rdname reduce_dimensions-methods
@@ -1340,7 +1313,6 @@ setGeneric("reduce_dimensions", function(.data,
 setMethod("reduce_dimensions", "spec_tbl_df", .reduce_dimensions)
 
 #' reduce_dimensions
-#' @inheritParams reduce_dimensions
 #'
 #' @docType methods
 #' @rdname reduce_dimensions-methods
@@ -1349,7 +1321,6 @@ setMethod("reduce_dimensions", "spec_tbl_df", .reduce_dimensions)
 setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 
 #' reduce_dimensions
-#' @inheritParams reduce_dimensions
 #'
 #' @docType methods
 #' @rdname reduce_dimensions-methods
@@ -1513,7 +1484,6 @@ setGeneric("rotate_dimensions", function(.data,
 }
 
 #' rotate_dimensions
-#' @inheritParams rotate_dimensions
 #'
 #' @docType methods
 #' @rdname rotate_dimensions-methods
@@ -1525,7 +1495,6 @@ setGeneric("rotate_dimensions", function(.data,
 setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
 
 #' rotate_dimensions
-#' @inheritParams rotate_dimensions
 #'
 #' @docType methods
 #' @rdname rotate_dimensions-methods
@@ -1537,7 +1506,6 @@ setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
 setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 
 #' rotate_dimensions
-#' @inheritParams rotate_dimensions
 #'
 #' @docType methods
 #' @rdname rotate_dimensions-methods
@@ -1755,7 +1723,6 @@ setGeneric("remove_redundancy", function(.data,
 }
 
 #' remove_redundancy
-#' @inheritParams remove_redundancy
 #'
 #' @docType methods
 #' @rdname remove_redundancy-methods
@@ -1764,7 +1731,6 @@ setGeneric("remove_redundancy", function(.data,
 setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 
 #' remove_redundancy
-#' @inheritParams remove_redundancy
 #'
 #' @docType methods
 #' @rdname remove_redundancy-methods
@@ -1773,7 +1739,6 @@ setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 
 #' remove_redundancy
-#' @inheritParams remove_redundancy
 #'
 #' @docType methods
 #' @rdname remove_redundancy-methods
@@ -2039,7 +2004,6 @@ setGeneric("adjust_abundance", function(.data,
 }
 
 #' adjust_abundance
-#' @inheritParams adjust_abundance
 #'
 #' @docType methods
 #' @rdname adjust_abundance-methods
@@ -2049,7 +2013,6 @@ setGeneric("adjust_abundance", function(.data,
 setMethod("adjust_abundance", "spec_tbl_df", .adjust_abundance)
 
 #' adjust_abundance
-#' @inheritParams adjust_abundance
 #'
 #' @docType methods
 #' @rdname adjust_abundance-methods
@@ -2059,7 +2022,6 @@ setMethod("adjust_abundance", "spec_tbl_df", .adjust_abundance)
 setMethod("adjust_abundance", "tbl_df", .adjust_abundance)
 
 #' adjust_abundance
-#' @inheritParams adjust_abundance
 #'
 #' @docType methods
 #' @rdname adjust_abundance-methods
@@ -2199,7 +2161,6 @@ setGeneric("aggregate_duplicates", function(.data,
 }
 
 #' aggregate_duplicates
-#' @inheritParams aggregate_duplicates
 #'
 #' @docType methods
 #' @rdname aggregate_duplicates-methods
@@ -2209,7 +2170,6 @@ setGeneric("aggregate_duplicates", function(.data,
 setMethod("aggregate_duplicates", "spec_tbl_df", .aggregate_duplicates)
 
 #' aggregate_duplicates
-#' @inheritParams aggregate_duplicates
 #'
 #' @docType methods
 #' @rdname aggregate_duplicates-methods
@@ -2219,7 +2179,6 @@ setMethod("aggregate_duplicates", "spec_tbl_df", .aggregate_duplicates)
 setMethod("aggregate_duplicates", "tbl_df", .aggregate_duplicates)
 
 #' aggregate_duplicates
-#' @inheritParams aggregate_duplicates
 #'
 #' @docType methods
 #' @rdname aggregate_duplicates-methods
@@ -2376,7 +2335,6 @@ setGeneric("deconvolve_cellularity", function(.data,
 }
 
 #' deconvolve_cellularity
-#' @inheritParams deconvolve_cellularity
 #'
 #' @docType methods
 #' @rdname deconvolve_cellularity-methods
@@ -2388,7 +2346,6 @@ setMethod("deconvolve_cellularity",
 					.deconvolve_cellularity)
 
 #' deconvolve_cellularity
-#' @inheritParams deconvolve_cellularity
 #'
 #' @docType methods
 #' @rdname deconvolve_cellularity-methods
@@ -2398,7 +2355,6 @@ setMethod("deconvolve_cellularity",
 setMethod("deconvolve_cellularity", "tbl_df", .deconvolve_cellularity)
 
 #' deconvolve_cellularity
-#' @inheritParams deconvolve_cellularity
 #'
 #' @docType methods
 #' @rdname deconvolve_cellularity-methods
@@ -2576,7 +2532,6 @@ setGeneric("describe_transcript", function(.data,
 
 
 #' describe_transcript
-#' @inheritParams describe_transcript
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods
@@ -2585,7 +2540,6 @@ setGeneric("describe_transcript", function(.data,
 setMethod("describe_transcript", "spec_tbl_df", .describe_transcript)
 
 #' describe_transcript
-#' @inheritParams describe_transcript
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods
@@ -2594,7 +2548,6 @@ setMethod("describe_transcript", "spec_tbl_df", .describe_transcript)
 setMethod("describe_transcript", "tbl_df", .describe_transcript)
 
 #' describe_transcript
-#' @inheritParams describe_transcript
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods
@@ -2701,7 +2654,6 @@ setGeneric("ensembl_to_symbol", function(.data,
 }
 
 #' ensembl_to_symbol
-#' @inheritParams ensembl_to_symbol
 #'
 #' @docType methods
 #' @rdname ensembl_to_symbol-methods
@@ -2711,7 +2663,6 @@ setGeneric("ensembl_to_symbol", function(.data,
 setMethod("ensembl_to_symbol", "spec_tbl_df", .ensembl_to_symbol)
 
 #' ensembl_to_symbol
-#' @inheritParams ensembl_to_symbol
 #'
 #' @docType methods
 #' @rdname ensembl_to_symbol-methods
@@ -2721,7 +2672,6 @@ setMethod("ensembl_to_symbol", "spec_tbl_df", .ensembl_to_symbol)
 setMethod("ensembl_to_symbol", "tbl_df", .ensembl_to_symbol)
 
 #' ensembl_to_symbol
-#' @inheritParams ensembl_to_symbol
 #'
 #' @docType methods
 #' @rdname ensembl_to_symbol-methods
@@ -3157,7 +3107,6 @@ such as batch effects (if applicable) in the formula.
 }
 
 #' test_differential_abundance
-#' @inheritParams test_differential_abundance
 #'
 #' @docType methods
 #' @rdname test_differential_abundance-methods
@@ -3169,7 +3118,6 @@ setMethod("test_differential_abundance",
 					.test_differential_abundance)
 
 #' test_differential_abundance
-#' @inheritParams test_differential_abundance
 #'
 #' @docType methods
 #' @rdname test_differential_abundance-methods
@@ -3182,7 +3130,6 @@ setMethod("test_differential_abundance",
 					.test_differential_abundance)
 
 #' test_differential_abundance
-#' @inheritParams test_differential_abundance
 #'
 #' @docType methods
 #' @rdname test_differential_abundance-methods
@@ -3308,7 +3255,6 @@ setGeneric("keep_variable", function(.data,
 }
 
 #' keep_variable
-#' @inheritParams keep_variable
 #'
 #' @docType methods
 #' @rdname keep_variable-methods
@@ -3319,7 +3265,6 @@ setGeneric("keep_variable", function(.data,
 setMethod("keep_variable", "spec_tbl_df", .keep_variable)
 
 #' keep_variable
-#' @inheritParams keep_variable
 #'
 #' @docType methods
 #' @rdname keep_variable-methods
@@ -3330,7 +3275,6 @@ setMethod("keep_variable", "spec_tbl_df", .keep_variable)
 setMethod("keep_variable", "tbl_df", .keep_variable)
 
 #' keep_variable
-#' @inheritParams keep_variable
 #'
 #' @docType methods
 #' @rdname keep_variable-methods
@@ -3540,7 +3484,6 @@ setGeneric("identify_abundant", function(.data,
 }
 
 #' keep_abundant
-#' @inheritParams identify_abundant
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
@@ -3551,7 +3494,6 @@ setGeneric("identify_abundant", function(.data,
 setMethod("identify_abundant", "spec_tbl_df", .identify_abundant)
 
 #' identify_abundant
-#' @inheritParams identify_abundant
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
@@ -3562,7 +3504,6 @@ setMethod("identify_abundant", "spec_tbl_df", .identify_abundant)
 setMethod("identify_abundant", "tbl_df", .identify_abundant)
 
 #' identify_abundant
-#' @inheritParams identify_abundant
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
@@ -3686,7 +3627,6 @@ setGeneric("keep_abundant", function(.data,
 }
 
 #' keep_abundant
-#' @inheritParams keep_abundant
 #'
 #' @docType methods
 #' @rdname keep_abundant-methods
@@ -3697,7 +3637,6 @@ setGeneric("keep_abundant", function(.data,
 setMethod("keep_abundant", "spec_tbl_df", .keep_abundant)
 
 #' keep_abundant
-#' @inheritParams keep_abundant
 #'
 #' @docType methods
 #' @rdname keep_abundant-methods
@@ -3708,7 +3647,6 @@ setMethod("keep_abundant", "spec_tbl_df", .keep_abundant)
 setMethod("keep_abundant", "tbl_df", .keep_abundant)
 
 #' keep_abundant
-#' @inheritParams keep_abundant
 #'
 #' @docType methods
 #' @rdname keep_abundant-methods
@@ -3946,7 +3884,6 @@ setGeneric("test_gene_enrichment", function(.data,
 }
 
 #' test_gene_enrichment
-#' @inheritParams test_gene_enrichment
 #'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
@@ -3957,7 +3894,6 @@ setMethod("test_gene_enrichment",
 					.test_gene_enrichment)
 
 #' test_gene_enrichment
-#' @inheritParams test_gene_enrichment
 #'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
@@ -3968,7 +3904,6 @@ setMethod("test_gene_enrichment",
 					.test_gene_enrichment)
 
 #' test_gene_enrichment
-#' @inheritParams test_gene_enrichment
 #'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
@@ -4114,7 +4049,6 @@ setGeneric("test_gene_overrepresentation", function(.data,
 }
 
 #' test_gene_overrepresentation
-#' @inheritParams test_gene_overrepresentation
 #'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
@@ -4125,7 +4059,6 @@ setMethod("test_gene_overrepresentation",
 					.test_gene_overrepresentation)
 
 #' test_gene_overrepresentation
-#' @inheritParams test_gene_overrepresentation
 #'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
@@ -4136,7 +4069,6 @@ setMethod("test_gene_overrepresentation",
 					.test_gene_overrepresentation)
 
 #' test_gene_overrepresentation
-#' @inheritParams test_gene_overrepresentation
 #'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
@@ -4337,7 +4269,6 @@ setGeneric("test_gene_rank", function(.data,
 }
 
 #' test_gene_rank
-#' @inheritParams test_gene_rank
 #'
 #' @docType methods
 #' @rdname test_gene_rank-methods
@@ -4348,7 +4279,6 @@ setMethod("test_gene_rank",
 					.test_gene_rank)
 
 #' test_gene_rank
-#' @inheritParams test_gene_rank
 #'
 #' @docType methods
 #' @rdname test_gene_rank-methods
@@ -4359,7 +4289,6 @@ setMethod("test_gene_rank",
 					.test_gene_rank)
 
 #' test_gene_rank
-#' @inheritParams test_gene_rank
 #'
 #' @docType methods
 #' @rdname test_gene_rank-methods
@@ -4436,7 +4365,6 @@ setGeneric("pivot_sample", function(.data,
 }
 
 #' pivot_sample
-#' @inheritParams pivot_sample
 #'
 #' @docType methods
 #' @rdname pivot_sample-methods
@@ -4446,7 +4374,6 @@ setMethod("pivot_sample",
 					.pivot_sample)
 
 #' pivot_sample
-#' @inheritParams pivot_sample
 #'
 #' @docType methods
 #' @rdname pivot_sample-methods
@@ -4456,7 +4383,6 @@ setMethod("pivot_sample",
 					.pivot_sample)
 
 #' pivot_sample
-#' @inheritParams pivot_sample
 #'
 #' @docType methods
 #' @rdname pivot_sample-methods
@@ -4532,7 +4458,6 @@ setGeneric("pivot_transcript", function(.data,
 }
 
 #' pivot_transcript
-#' @inheritParams pivot_transcript
 #'
 #' @docType methods
 #' @rdname pivot_transcript-methods
@@ -4542,7 +4467,6 @@ setMethod("pivot_transcript",
 					.pivot_transcript)
 
 #' pivot_transcript
-#' @inheritParams pivot_transcript
 #'
 #' @docType methods
 #' @rdname pivot_transcript-methods
@@ -4552,7 +4476,6 @@ setMethod("pivot_transcript",
 					.pivot_transcript)
 
 #' pivot_transcript
-#' @inheritParams pivot_transcript
 #'
 #' @docType methods
 #' @rdname pivot_transcript-methods
@@ -4645,7 +4568,6 @@ setGeneric("fill_missing_abundance", function(.data,
 }
 
 #' fill_missing_abundance
-#' @inheritParams fill_missing_abundance
 #'
 #' @docType methods
 #' @rdname fill_missing_abundance-methods
@@ -4654,7 +4576,6 @@ setGeneric("fill_missing_abundance", function(.data,
 setMethod("fill_missing_abundance", "spec_tbl_df", .fill_missing_abundance)
 
 #' fill_missing_abundance
-#' @inheritParams fill_missing_abundance
 #'
 #' @docType methods
 #' @rdname fill_missing_abundance-methods
@@ -4663,7 +4584,6 @@ setMethod("fill_missing_abundance", "spec_tbl_df", .fill_missing_abundance)
 setMethod("fill_missing_abundance", "tbl_df", .fill_missing_abundance)
 
 #' fill_missing_abundance
-#' @inheritParams fill_missing_abundance
 #'
 #' @docType methods
 #' @rdname fill_missing_abundance-methods
@@ -4788,7 +4708,6 @@ setGeneric("impute_missing_abundance", function(.data,
 }
 
 #' impute_missing_abundance
-#' @inheritParams impute_missing_abundance
 #'
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
@@ -4797,7 +4716,6 @@ setGeneric("impute_missing_abundance", function(.data,
 setMethod("impute_missing_abundance", "spec_tbl_df", .impute_missing_abundance)
 
 #' impute_missing_abundance
-#' @inheritParams impute_missing_abundance
 #'
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
@@ -4806,7 +4724,6 @@ setMethod("impute_missing_abundance", "spec_tbl_df", .impute_missing_abundance)
 setMethod("impute_missing_abundance", "tbl_df", .impute_missing_abundance)
 
 #' impute_missing_abundance
-#' @inheritParams impute_missing_abundance
 #'
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
@@ -4971,7 +4888,6 @@ setGeneric("test_differential_cellularity", function(.data,
 }
 
 #' test_differential_cellularity
-#' @inheritParams test_differential_cellularity
 #'
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
@@ -4981,7 +4897,6 @@ setMethod("test_differential_cellularity",
 					.test_differential_cellularity)
 
 #' test_differential_cellularity
-#' @inheritParams test_differential_cellularity
 #'
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
@@ -4991,7 +4906,6 @@ setMethod("test_differential_cellularity",
 					.test_differential_cellularity)
 
 #' test_differential_cellularity
-#' @inheritParams test_differential_cellularity
 #'
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
@@ -5126,7 +5040,6 @@ setGeneric("test_stratification_cellularity", function(.data,
 }
 
 #' test_stratification_cellularity
-#' @inheritParams test_stratification_cellularity
 #'
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
@@ -5136,7 +5049,6 @@ setMethod("test_stratification_cellularity",
 					.test_stratification_cellularity)
 
 #' test_stratification_cellularity
-#' @inheritParams test_stratification_cellularity
 #'
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
@@ -5146,7 +5058,6 @@ setMethod("test_stratification_cellularity",
 					.test_stratification_cellularity)
 
 #' test_stratification_cellularity
-#' @inheritParams test_stratification_cellularity
 #'
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
@@ -5218,7 +5129,6 @@ setGeneric("get_bibliography", function(.data)
 }
 
 #' get_bibliography
-#' @inheritParams get_bibliography
 #'
 #' @docType methods
 #' @rdname get_bibliography-methods
@@ -5228,7 +5138,6 @@ setMethod("get_bibliography",
 					.get_bibliography)
 
 #' get_bibliography
-#' @inheritParams get_bibliography
 #'
 #' @docType methods
 #' @rdname get_bibliography-methods
@@ -5238,7 +5147,6 @@ setMethod("get_bibliography",
 					.get_bibliography)
 
 #' get_bibliography
-#' @inheritParams get_bibliography
 #'
 #' @docType methods
 #' @rdname get_bibliography-methods
@@ -5248,7 +5156,6 @@ setMethod("get_bibliography",
 					.get_bibliography)
 
 #' get_bibliography
-#' @inheritParams get_bibliography
 #'
 #' @docType methods
 #' @rdname get_bibliography-methods

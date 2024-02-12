@@ -179,7 +179,7 @@ tidybulk_to_tbl = function(.data) {
 	.data %>%	drop_class(c("tidybulk", "tt"))
 }
 
-
+#'@export
 validation_default <- function(.data,
 															.sample,
 															.transcript,
@@ -272,6 +272,7 @@ validation <- function(.data,
 
 validation.default <- validation_default
 
+#'@export
 validation.tidybulk <- function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,
