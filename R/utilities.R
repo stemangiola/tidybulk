@@ -306,7 +306,7 @@ scale_design = function(df, .formula) {
     ungroup() %>%
     spread(cov, value) %>%
     arrange(as.integer(sample_idx)) %>%
-    select(`(Intercept)`, one_of(parse_formula(.formula)))
+    select(`(Intercept)`, any_of(parse_formula(.formula)))
 }
 
 get_tt_columns = function(.data){
