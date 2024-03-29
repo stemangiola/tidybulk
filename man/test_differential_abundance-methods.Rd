@@ -230,7 +230,7 @@ counts =
 # Create design matrix for dispersion, removing random effects
 design =
   model.matrix(
-    object = .formula |> eliminate_random_effects(),
+    object = .formula |> lme4::nobars(),
     data = metadata
   )
 

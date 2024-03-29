@@ -2650,7 +2650,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' # Create design matrix for dispersion, removing random effects
 #' design =
 #'   model.matrix(
-#'     object = .formula |> eliminate_random_effects(),
+#'     object = .formula |> lme4::nobars(),
 #'     data = metadata
 #'   )
 #' 
