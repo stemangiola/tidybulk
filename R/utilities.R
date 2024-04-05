@@ -44,7 +44,7 @@ my_stop = function() {
   stop("
         tidybulk says: The function does not know what your sample, transcript and counts columns are.
 	You might need to specify the arguments .sample, .transcript and/or .abundance. 
-	Read the documentation of this function for more information.
+	Please read the documentation of this function for more information.
       ")
 }
 
@@ -592,7 +592,7 @@ get_transcript = function(.data, .transcript){
     stop("
         tidybulk says: The function does not know what your sample, transcript and counts columns are.
 	You might need to specify the arguments .sample, .transcript and/or .abundance. 
-	Read the documentation of this function for more information.
+	Please read the documentation of this function for more information.
       ")
   }
 
@@ -708,7 +708,7 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
       stop("
         tidybulk says: The function does not know what your sample, transcript and counts columns are.
 	You might need to specify the arguments .sample, .transcript and/or .abundance 
-	Read the documentation of this function for more information.
+	Please read the documentation of this function for more information.
       ")
   }
 }
@@ -735,7 +735,7 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
     stop("
           tidybulk says: The function does not know what your sample, transcript and counts columns are.
 	You might need to specify the arguments .sample, .transcript and/or .abundance 
-	Read the documentation of this function for more information.
+	Please read the documentation of this function for more information.
       ")
   }
 
@@ -801,7 +801,7 @@ get_elements = function(.data, .element, of_samples = TRUE){
       stop("
         tidybulk says: The function does not know what your sample, transcript and counts columns are.
 	You might need to specify the arguments .sample, .transcript and/or .abundance. 
-	Read the documentation of this function for more information.
+	Please read the documentation of this function for more information.
       ")
   }
 }
@@ -848,7 +848,7 @@ get_abundance_norm_if_exists = function(.data, .abundance){
       stop("
         tidybulk says: The function does not know what your sample, transcript and counts columns are.
 	You might need to specify the arguments .sample, .transcript and/or .abundance. 
-	Read the documentation of this function for more information.
+	Please read the documentation of this function for more information.
       ")
   }
 }
