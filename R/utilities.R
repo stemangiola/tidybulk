@@ -42,9 +42,9 @@ as_data_frame <- function(tbl,
 
 my_stop = function() {
   stop("
-        You should call tidybulk library *after* tidyverse libraries.
         tidybulk says: The function does not know what your sample, transcript and counts columns are.
-        You have to either enter those as arguments, or use the function tidybulk() to pass your column names that will be remembered.
+	You might need to specify the arguments .sample, .transcript and/or .abundance. 
+	Read the documentation of this function for more information.
       ")
 }
 
@@ -590,9 +590,9 @@ get_transcript = function(.data, .transcript){
 
   my_stop = function() {
     stop("
-        tidybulk says: The function does not know what your transcript, transcript and counts columns are.\n
-        You have to either enter those as symbols (e.g., `transcript`), \n
-        or use the function create_tt_from_tibble() to pass your column names that will be remembered.
+        tidybulk says: The function does not know what your sample, transcript and counts columns are.
+	You might need to specify the arguments .sample, .transcript and/or .abundance. 
+	Read the documentation of this function for more information.
       ")
   }
 
@@ -706,9 +706,9 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
     # Else through error
     else
       stop("
-        tidybulk says: The function does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
-        You have to either enter those as symbols (e.g., `sample`), \n
-        or use the function create_tt_from_tibble() to pass your column names that will be remembered.
+        tidybulk says: The function does not know what your sample, transcript and counts columns are.
+	You might need to specify the arguments .sample, .transcript and/or .abundance 
+	Read the documentation of this function for more information.
       ")
   }
 }
@@ -733,9 +733,9 @@ get_elements_features_abundance = function(.data, .element, .feature, .abundance
 
   my_stop = function() {
     stop("
-        tidybulk says: The function does not know what your elements (e.g., sample) and features (e.g., transcripts) are.\n
-        You have to either enter those as symbols (e.g., `sample`), \n
-        or use the function create_tt_from_tibble() to pass your column names that will be remembered.
+          tidybulk says: The function does not know what your sample, transcript and counts columns are.
+	You might need to specify the arguments .sample, .transcript and/or .abundance 
+	Read the documentation of this function for more information.
       ")
   }
 
@@ -799,9 +799,9 @@ get_elements = function(.data, .element, of_samples = TRUE){
     # Else through error
     else
       stop("
-        tidybulk says: The function does not know what your elements (e.g., sample) are.\n
-        You have to either enter those as symbols (e.g., `sample`), \n
-        or use the function create_tt_from_tibble() to pass your column names that will be remembered.
+        tidybulk says: The function does not know what your sample, transcript and counts columns are.
+	You might need to specify the arguments .sample, .transcript and/or .abundance. 
+	Read the documentation of this function for more information.
       ")
   }
 }
@@ -846,9 +846,9 @@ get_abundance_norm_if_exists = function(.data, .abundance){
     # Else through error
     else
       stop("
-        tidybulk says: The function does not know what your elements (e.g., sample) are.\n
-        You have to either enter those as symbols (e.g., `sample`), \n
-        or use the function create_tt_from_tibble() to pass your column names that will be remembered.
+        tidybulk says: The function does not know what your sample, transcript and counts columns are.
+	You might need to specify the arguments .sample, .transcript and/or .abundance. 
+	Read the documentation of this function for more information.
       ")
   }
 }
