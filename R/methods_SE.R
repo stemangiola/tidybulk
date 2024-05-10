@@ -1476,21 +1476,20 @@ such as batch effects (if applicable) in the formula.
   else
     stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\", \"glmmseq_lme4\", \"glmmseq_glmmTMB\"")
 
-
-  statistics =
-    my_differential_abundance$result %>%
-    as_matrix(rownames = "transcript") %>%
-    .[match(rownames(rowData(.data)), rownames(.)),,drop=FALSE]
-
   # If action is get just return the statistics
-  if(action == "get") return(statistics)
-
+  if(action == "get") return(my_differential_abundance$result)
+  
 	# Add results
-	rowData(.data) = rowData(.data) %>% cbind(statistics)
+	rowData(.data) = rowData(.data) %>% cbind(
+	  
+	  # Parse the statistics
+	  my_differential_abundance$result %>%
+	    as_matrix(rownames = "transcript") %>%
+	    .[match(rownames(rowData(.data)), rownames(.)),,drop=FALSE]
+	)
 
 
 	.data %>%
-
 
 		# Add bibliography
 		when(
