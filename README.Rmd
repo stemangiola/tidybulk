@@ -81,9 +81,7 @@ All functions are directly compatibble with `SummarizedExperiment` object.
 
 
 ```{r, echo=FALSE, include=FALSE, }
-library(knitr)
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
-                      message = FALSE, cache.lazy = FALSE)
+
 
 library(dplyr)
 library(tidyr)
