@@ -248,6 +248,7 @@ setMethod("scale_abundance",
                                .transcript = NULL,
                                .abundance = NULL,
                                method = "limma_normalize_quantiles",
+                               target_distribution = NULL,
                                action = NULL) {
 
 
@@ -311,10 +312,12 @@ setMethod("scale_abundance",
       assay(my_assay) |>
       as.matrix()
 
+    if(is.null(target_distribution)) target_distribution = preprocessCore::normalize.quantiles.determine.target(.data_norm)
+    
     .data_norm =
       .data_norm |>
       preprocessCore::normalize.quantiles.use.target(
-        target = preprocessCore::normalize.quantiles.determine.target(.data_norm)
+        target = target_distribution
       )
 
     colnames(.data_norm) = .data |> assay(my_assay) |> colnames()

@@ -105,7 +105,21 @@ test_that("quantile normalisation",{
           filter(a=="SRR1740035" & b=="ABCB9") |>
           dplyr::pull(c_scaled)
       )
+    
+    target_distribution = 
+      se_mini |> 
+      assay( "count") |> 
+      as.matrix() |> 
+      preprocessCore::normalize.quantiles.determine.target() 
 
+    se_mini |> 
+      quantile_normalise_abundance(
+        method = "preprocesscore_normalize_quantiles_use_target", 
+        target_distribution = target_distribution
+      ) |> 
+      expect_no_error()
+    
+    
 })
 
 test_that("tidybulk SummarizedExperiment normalisation subset",{
