@@ -1014,7 +1014,7 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 #' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param scale A boolean for method="PCA", this will be passed to the `prcomp` function. It is not included in the ... argument because although the default for `prcomp` if FALSE, it is advisable to set it as TRUE.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
-#' @param ... Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"
+#' @param ... Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE", or uwot::tumap if you choose method="umap"
 #'
 #' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
@@ -1143,14 +1143,14 @@ setGeneric("reduce_dimensions", function(.data,
 	# adjust top for the max number of features I have
 	if(top > .data |> distinct(!!.feature) |> nrow()){
 	  warning(sprintf(
-	    "tidybulk says: the \"top\" argument %s is higher than the number of features %s", 
-	    top, 
+	    "tidybulk says: the \"top\" argument %s is higher than the number of features %s",
+	    top,
 	    .data |> distinct(!!.feature) |> nrow()
 	  ))
-	  
+
 	  top = min(top, .data |> distinct(!!.feature) |> nrow())
 	}
-	
+
 	# Validate data frame
 	if(do_validate()) {
 	validation(.data, !!.element, !!.feature, !!.abundance)
@@ -2600,7 +2600,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.
 #'
 #' Underlying method for edgeR framework:
-#' 
+#'
 #' 	.data |>
 #'
 #' 	# Filter
@@ -2627,7 +2627,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #'
 #'	Underlying method for DESeq2 framework:
-#'	
+#'
 #'	keep_abundant(
 #'			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 #'			minimum_counts = minimum_counts,
@@ -2646,16 +2646,16 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' counts =
 #' .data %>%
 #'   assay(my_assay)
-#' 
+#'
 #' # Create design matrix for dispersion, removing random effects
 #' design =
 #'   model.matrix(
 #'     object = .formula |> eliminate_random_effects(),
 #'     data = metadata
 #'   )
-#' 
+#'
 #' dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
-#' 
+#'
 #'   glmmSeq( .formula,
 #'            countdata = counts ,
 #'            metadata =   metadata |> as.data.frame(),
@@ -2663,8 +2663,8 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'            progress = TRUE,
 #'            method = method |> str_remove("(?i)^glmmSeq_" ),
 #'   )
-#'   
-#' 
+#'
+#'
 #' @return A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
 #'
 #'
@@ -3969,12 +3969,12 @@ setGeneric("test_gene_rank", function(.data,
 
 	# DEPRECATION OF reference function
 	if (is_present(.sample) & !is.null(.sample)) {
-	  
+
 	  # Signal the deprecation to the user
 	  deprecate_warn("1.13.2", "tidybulk::test_gene_rank(.sample = )", details = "The argument .sample is now deprecated and not needed anymore.")
 
 	}
-	
+
 	# Get column names
 	.arrange_desc = enquo(.arrange_desc)
 	.entrez = enquo(.entrez)
@@ -4012,14 +4012,14 @@ setGeneric("test_gene_rank", function(.data,
 
 	.data |>
 		select(!!.entrez, !!.arrange_desc) |>
-	  distinct() |> 
-	  
-	  # Select one entrez - NEEDED?
-	  with_groups(c(!!.entrez,!!.arrange_desc ), slice, 1) |> 
+	  distinct() |>
 
-	  # arrange 
+	  # Select one entrez - NEEDED?
+	  with_groups(c(!!.entrez,!!.arrange_desc ), slice, 1) |>
+
+	  # arrange
 	  arrange(desc(!!.arrange_desc)) |>
-	  
+
 	  # Format
 		deframe() |>
 		entrez_rank_to_gsea(species, gene_collections  = gene_sets ) |>

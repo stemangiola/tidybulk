@@ -408,7 +408,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 #' @param of_samples A boolean
 #' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param calculate_for_pca_dimensions An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered
-#' @param ... Further parameters passed to the function uwot
+#' @param ... Further parameters passed to the function uwot::tumap
 #'
 #' @return A tibble with additional columns
 #'
