@@ -1,6 +1,6 @@
 eliminate_GRanges_metadata_columns_also_present_in_Rowdata = function(.my_data, se){
   .my_data %>%
-    select(-one_of(colnames(rowData(se)))) %>%
+    select(-any_of(colnames(rowData(se)))) %>%
 
     # In case there is not metadata column
     suppressWarnings()
@@ -8,7 +8,7 @@ eliminate_GRanges_metadata_columns_also_present_in_Rowdata = function(.my_data, 
 
 
 #' @importFrom dplyr select
-#' @importFrom tidyselect one_of
+#' @importFrom tidyselect any_of
 #' @importFrom tibble as_tibble
 #' @importFrom tibble tibble
 #' @importFrom SummarizedExperiment rowRanges
@@ -146,7 +146,7 @@ subset_tibble_output = function(.data, count_info, sample_info, gene_info, range
     sample_info %>%
     when(
       colnames(.) %>% intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
-      select(., one_of(s_(.data)$name, output_colnames)) %>%
+      select(., any_of(s_(.data)$name, output_colnames)) %>%
         suppressWarnings()
     )
 
@@ -155,7 +155,7 @@ subset_tibble_output = function(.data, count_info, sample_info, gene_info, range
     range_info %>%
     when(
       colnames(.) %>% intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
-      select(., one_of(f_(.data)$name, output_colnames)) %>%
+      select(., any_of(f_(.data)$name, output_colnames)) %>%
         suppressWarnings()
     )
 
@@ -164,7 +164,7 @@ subset_tibble_output = function(.data, count_info, sample_info, gene_info, range
     gene_info %>%
     when(
       colnames(.) %>% intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
-      select(., one_of(f_(.data)$name, output_colnames)) %>%
+      select(., any_of(f_(.data)$name, output_colnames)) %>%
         suppressWarnings()
     )
 
@@ -173,7 +173,7 @@ subset_tibble_output = function(.data, count_info, sample_info, gene_info, range
     count_info %>%
     when(
       colnames(.) %>% intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
-      select(., one_of(f_(.data)$name, s_(.data)$name, output_colnames)) %>%
+      select(., any_of(f_(.data)$name, s_(.data)$name, output_colnames)) %>%
         suppressWarnings()
     )
 
@@ -206,7 +206,7 @@ subset_tibble_output = function(.data, count_info, sample_info, gene_info, range
   output_df %>%
 
     # Cleanup
-    select(one_of(output_colnames)) %>%
+    select(any_of(output_colnames)) %>%
     suppressWarnings()
 
 }
