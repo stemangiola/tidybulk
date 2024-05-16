@@ -4,19 +4,10 @@
     <loc>/404.html</loc>
   </url>
   <url>
-    <loc>/articles/comparison_with_base_R.html</loc>
-  </url>
-  <url>
     <loc>/articles/index.html</loc>
   </url>
   <url>
     <loc>/articles/introduction.html</loc>
-  </url>
-  <url>
-    <loc>/articles/manuscript_differential_transcript_abundance.html</loc>
-  </url>
-  <url>
-    <loc>/articles/manuscript_transcriptional_signatures.html</loc>
   </url>
   <url>
     <loc>/authors.html</loc>
@@ -43,7 +34,7 @@
     <loc>/reference/as_matrix.html</loc>
   </url>
   <url>
-    <loc>/reference/bind-methods.html</loc>
+    <loc>/reference/bind_rows.html</loc>
   </url>
   <url>
     <loc>/reference/breast_tcga_mini_SE.html</loc>
@@ -59,9 +50,6 @@
   </url>
   <url>
     <loc>/reference/cluster_elements-methods.html</loc>
-  </url>
-  <url>
-    <loc>/reference/counts_SE.html</loc>
   </url>
   <url>
     <loc>/reference/counts_ensembl.html</loc>
@@ -145,6 +133,9 @@
     <loc>/reference/pivot_transcript-methods.html</loc>
   </url>
   <url>
+    <loc>/reference/quantile_normalise_abundance-methods.html</loc>
+  </url>
+  <url>
     <loc>/reference/reduce_dimensions-methods.html</loc>
   </url>
   <url>
@@ -176,9 +167,6 @@
   </url>
   <url>
     <loc>/reference/symbol_to_entrez.html</loc>
-  </url>
-  <url>
-    <loc>/reference/test_deseq2_df.html</loc>
   </url>
   <url>
     <loc>/reference/test_differential_abundance-methods.html</loc>
