@@ -118,7 +118,7 @@ create_tt_from_bam_sam_bulk <-
 							genes %>%
 							select(
 								suppressWarnings(
-									one_of("GeneID", "symbol")
+									any_of("GeneID", "symbol")
 								)
 								) %>%
 							as_tibble() %>%
@@ -418,7 +418,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 		select(!!.transcript,
 					 !!.sample,
 					 !!.abundance,
-					 one_of(parse_formula(.formula))) %>%
+					 any_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
@@ -438,14 +438,14 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	# if (
 	# 	# If I have some discrete covariates
 	# 	df_for_edgeR %>%
-	# 	select(one_of(parse_formula(.formula))) %>%
+	# 	select(any_of(parse_formula(.formula))) %>%
 	# 	select_if(function(col)
 	# 		is.character(col) | is.factor(col) | is.logical(col)) %>%
 	# 	ncol %>% gt(0) &
 	#
 	# 	# If I have at least 2 samples per group
 	# 	df_for_edgeR %>%
-	# 	select(!!.sample, one_of(parse_formula(.formula))) %>%
+	# 	select(!!.sample, any_of(parse_formula(.formula))) %>%
 	# 	select_if(function(col) !is.numeric(col) & !is.integer(col) & !is.double(col) ) %>%
 	# 	distinct %>%
 	# 	group_by_at(vars(-!!.sample)) %>%
@@ -462,7 +462,7 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	design =
 		model.matrix(
 			object = .formula,
-			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
+			data = df_for_edgeR %>% select(!!.sample, any_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
 
 	# # Print the design column names in case I want contrasts
@@ -472,6 +472,14 @@ get_differential_transcript_abundance_bulk <- function(.data,
 	# 		design %>% colnames %>% paste(collapse = ", ")
 	# 	)
 	# )
+
+	# Replace `:` with ___ because it creates error with edgeR
+	if(design |> colnames() |> str_detect(":") |> any()) {
+	  message("tidybulk says: the interaction term `:` has been replaced with `___` in the design matrix, in order to work with edgeR.")
+	  colnames(design) = design |> colnames() |> str_replace(":", "___") 
+	}
+	
+
 
 	# Specify the design column tested
 	if(is.null(.contrasts))
@@ -761,7 +769,7 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
   # Create design matrix for dispersion, removing random effects
   design =
     model.matrix(
-      object = .formula |> eliminate_random_effects(),
+      object = .formula |> lme4::nobars(),
       data = metadata
     )
 
@@ -878,7 +886,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 		select(!!.transcript,
 					 !!.sample,
 					 !!.abundance,
-					 one_of(parse_formula(.formula))) %>%
+					 any_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
@@ -889,7 +897,7 @@ get_differential_transcript_abundance_bulk_voom <- function(.data,
 	design =
 		model.matrix(
 			object = .formula,
-			data = df_for_voom %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
+			data = df_for_voom %>% select(!!.sample, any_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
 
 	# Print the design column names in case I want contrasts
@@ -1119,7 +1127,7 @@ get_differential_transcript_abundance_deseq2 <- function(.data,
 		select(!!.transcript,
 					 !!.sample,
 					 !!.abundance,
-					 one_of(parse_formula(.formula))) %>%
+					 any_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# drop factors as it can affect design matrix
@@ -1515,7 +1523,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 		# Prepare the data frame
 		select(!!.entrez, !!.sample, !!.abundance,
-					 one_of(parse_formula(.formula))) %>%
+					 any_of(parse_formula(.formula))) %>%
 		distinct() %>%
 
 		# Add entrez from symbol
@@ -1523,7 +1531,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 
 	# Check if at least two samples for each group
 	if (df_for_edgeR %>%
-			select(!!.sample, one_of(parse_formula(.formula))) %>%
+			select(!!.sample, any_of(parse_formula(.formula))) %>%
 			distinct %>%
 			count(!!as.symbol(parse_formula(.formula))) %>%
 			distinct(n) %>%
@@ -1537,7 +1545,7 @@ test_gene_enrichment_bulk_EGSEA <- function(.data,
 	design =
 		model.matrix(
 			object = .formula,
-			data = df_for_edgeR %>% select(!!.sample, one_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
+			data = df_for_edgeR %>% select(!!.sample, any_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
 
 	# Print the design column names in case I want contrasts

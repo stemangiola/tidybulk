@@ -64,7 +64,6 @@ test_that("tidybulk SummarizedExperiment normalisation",{
 
 })
 
-
 test_that("quantile normalisation",{
 
   res = se_mini |> quantile_normalise_abundance()
@@ -106,9 +105,22 @@ test_that("quantile normalisation",{
           filter(a=="SRR1740035" & b=="ABCB9") |>
           dplyr::pull(c_scaled)
       )
+    
+    target_distribution = 
+      se_mini |> 
+      assay( "count") |> 
+      as.matrix() |> 
+      preprocessCore::normalize.quantiles.determine.target() 
 
+    se_mini |> 
+      quantile_normalise_abundance(
+        method = "preprocesscore_normalize_quantiles_use_target", 
+        target_distribution = target_distribution
+      ) |> 
+      expect_no_error()
+    
+    
 })
-
 
 test_that("tidybulk SummarizedExperiment normalisation subset",{
 
@@ -123,10 +135,6 @@ test_that("tidybulk SummarizedExperiment normalisation subset",{
   )
 
 })
-
-
-
-
 
 test_that("tidybulk SummarizedExperiment clustering",{
 
@@ -357,7 +365,6 @@ test_that("differential trancript abundance - SummarizedExperiment",{
 
 })
 
-
 test_that("differential trancript abundance - SummarizedExperiment - alternative .abundance",{
 
   assays(se_mini) = list(counts = assay(se_mini), bla = assay(se_mini))
@@ -437,6 +444,24 @@ test_that("differential trancript abundance - SummarizedExperiment - alternative
 
 })
 
+test_that("DE interaction effects", {
+  
+  # Att interaction factor
+  col_data = colData(breast_tcga_mini_SE)
+  set.seed(42)
+  col_data$interaction_term = sample(c(0,1), size = nrow(col_data), replace = TRUE)
+  colData(breast_tcga_mini_SE) = col_data
+  
+  breast_tcga_mini_SE |> 
+    identify_abundant(factor_of_interest = Call) |>
+    test_differential_abundance( 
+      ~ Call * interaction_term, 
+      contrasts = "CallHer2___interaction_term",
+      method="edgeR_quasi_likelihood" 
+    ) |> 
+    expect_no_error()
+  
+})
 
 test_that("Voom with treat method",{
 
@@ -480,6 +505,7 @@ test_that("Voom with treat method",{
 
 test_that("differential trancript abundance - random effects SE",{
 
+  set.seed(42)
  res =
    se_mini[1:10,] |>
     identify_abundant(factor_of_interest = condition) |>
@@ -493,7 +519,7 @@ test_that("differential trancript abundance - random effects SE",{
  rowData(res)[,"P_condition_adjusted"] |>
     head(4) |>
     expect_equal(
-      c(0.03394914, 0.03394914, 0.03394914,  NA),
+      c(0.1578695, 0.1221392, 0.1221392, 0.2262688),
       tolerance=1e-2
     )
 
@@ -517,13 +543,11 @@ test_that("differential trancript abundance - random effects SE",{
  rowData(res)[,"P_condition_adjusted"] |>
    head(4) |>
    expect_equal(
-     c(0.1153254, 0.1668555, 0.1668555 ,       NA),
+     c(0.2633982, 0.2633982, 0.2633982, 0.5028348),
      tolerance=1e-2
    )
 
 })
-
-
 
 test_that("filter abundant - SummarizedExperiment",{
 

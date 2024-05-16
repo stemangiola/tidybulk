@@ -16,6 +16,7 @@ quantile_normalise_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "limma_normalize_quantiles",
+  target_distribution = NULL,
   action = "add"
 )
 
@@ -25,6 +26,7 @@ quantile_normalise_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "limma_normalize_quantiles",
+  target_distribution = NULL,
   action = "add"
 )
 
@@ -34,6 +36,7 @@ quantile_normalise_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "limma_normalize_quantiles",
+  target_distribution = NULL,
   action = "add"
 )
 
@@ -43,6 +46,7 @@ quantile_normalise_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "limma_normalize_quantiles",
+  target_distribution = NULL,
   action = "add"
 )
 
@@ -52,6 +56,7 @@ quantile_normalise_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "limma_normalize_quantiles",
+  target_distribution = NULL,
   action = NULL
 )
 
@@ -61,6 +66,7 @@ quantile_normalise_abundance(
   .transcript = NULL,
   .abundance = NULL,
   method = "limma_normalize_quantiles",
+  target_distribution = NULL,
   action = NULL
 )
 }
@@ -73,7 +79,9 @@ quantile_normalise_abundance(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{method}{A character string. Either "limma_normalize_quantiles" for limma::normalizeQuantiles or "preprocesscore_normalize_quantiles_use_target" for preprocessCore::normalize.quantiles.use.target for large-scale dataset, where limmma could not be compatible.}
+\item{method}{A character string. Either "limma_normalize_quantiles" for limma::normalizeQuantiles or "preprocesscore_normalize_quantiles_use_target" for preprocessCore::normalize.quantiles.use.target for large-scale datasets.}
+
+\item{target_distribution}{A numeric vector. If NULL the target distribution will be calculated by preprocessCore. This argument only affects the "preprocesscore_normalize_quantiles_use_target" method.}
 
 \item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
 }
@@ -96,14 +104,20 @@ quantile_normalise_abundance() takes as input A `tbl` (with at least three colum
 \details{
 `r lifecycle::badge("maturing")`
 
-Scales transcript abundance compensating for sequencing depth
-(e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
-Lowly transcribed transcripts/genes (defined with minimum_counts and minimum_proportion parameters)
-are filtered out from the scaling procedure.
-The scaling inference is then applied back to all unfiltered data.
+Tranform the feature abundance across samples so to have the same quantile distribution (using preprocessCore).
 
 Underlying method
-edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))
+
+If `limma_normalize_quantiles` is chosen
+
+.data |>limma::normalizeQuantiles()
+ 
+ If `preprocesscore_normalize_quantiles_use_target` is chosen
+ 
+.data |> 
+   preprocessCore::normalize.quantiles.use.target(
+      target = preprocessCore::normalize.quantiles.determine.target(.data)
+   )
 }
 \examples{
 

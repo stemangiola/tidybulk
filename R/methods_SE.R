@@ -248,6 +248,7 @@ setMethod("scale_abundance",
                                .transcript = NULL,
                                .abundance = NULL,
                                method = "limma_normalize_quantiles",
+                               target_distribution = NULL,
                                action = NULL) {
 
 
@@ -311,10 +312,12 @@ setMethod("scale_abundance",
       assay(my_assay) |>
       as.matrix()
 
+    if(is.null(target_distribution)) target_distribution = preprocessCore::normalize.quantiles.determine.target(.data_norm)
+    
     .data_norm =
       .data_norm |>
       preprocessCore::normalize.quantiles.use.target(
-        target = preprocessCore::normalize.quantiles.determine.target(.data_norm)
+        target = target_distribution
       )
 
     colnames(.data_norm) = .data |> assay(my_assay) |> colnames()
@@ -1135,7 +1138,7 @@ setMethod("adjust_abundance",
     new_range_data = new_range_data %>%
 
       # I have to use this trick because rowRanges() and rowData() share @elementMetadata
-      select(-one_of(colnames(new_row_data) %>% outersect(quo_name(.transcript)))) %>%
+      select(-any_of(colnames(new_row_data) %>% outersect(quo_name(.transcript)))) %>%
       suppressWarnings()
 
 
@@ -1476,21 +1479,20 @@ such as batch effects (if applicable) in the formula.
   else
     stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\", \"glmmseq_lme4\", \"glmmseq_glmmTMB\"")
 
-
-  statistics =
-    my_differential_abundance$result %>%
-    as_matrix(rownames = "transcript") %>%
-    .[match(rownames(rowData(.data)), rownames(.)),,drop=FALSE]
-
   # If action is get just return the statistics
-  if(action == "get") return(statistics)
-
+  if(action == "get") return(my_differential_abundance$result)
+  
 	# Add results
-	rowData(.data) = rowData(.data) %>% cbind(statistics)
+	rowData(.data) = rowData(.data) %>% cbind(
+	  
+	  # Parse the statistics
+	  my_differential_abundance$result %>%
+	    as_matrix(rownames = "transcript") %>%
+	    .[match(rownames(rowData(.data)), rownames(.)),,drop=FALSE]
+	)
 
 
 	.data %>%
-
 
 		# Add bibliography
 		when(
