@@ -81,8 +81,6 @@ All functions are directly compatibble with `SummarizedExperiment` object.
 
 
 ```{r, echo=FALSE, include=FALSE, }
-
-
 library(dplyr)
 library(tidyr)
 library(tibble)
@@ -108,9 +106,9 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
-
-counts_SE = here("dev/counts_SE.rda") |> load()
-tibble_counts = counts_SE %>% tidybulk() %>% as_tibble()
+utils::download.file("https://zenodo.org/records/11201167/files/counts_SE.rda?download=1", destfile = "counts_SE.rda") 
+counts_SE = here("counts_SE.rda") |> load()
+tibble_counts = counts_SE %>% as_tibble()
 
 ```
 
