@@ -465,26 +465,28 @@ get_differential_transcript_abundance_bulk <- function(.data,
 			data = df_for_edgeR %>% select(!!.sample, any_of(parse_formula(.formula))) %>% distinct %>% arrange(!!.sample)
 		)
 
+	# # Print the design column names in case I want contrasts
+	# message(
+	# 	sprintf(
+	# 		"tidybulk says: The design column names are \"%s\"",
+	# 		design %>% colnames %>% paste(collapse = ", ")
+	# 	)
+	# )
+
 	# Replace `:` with ___ because it creates error with edgeR
 	if(design |> colnames() |> str_detect(":") |> any()) {
 	  message("tidybulk says: the interaction term `:` has been replaced with `___` in the design matrix, in order to work with edgeR.")
 	  colnames(design) = design |> colnames() |> str_replace(":", "___") 
 	}
 	
-	# Print the design column names in case I want contrasts
-	message(
-		sprintf(
-			"tidybulk says: The design column names are \"%s\"",
-			design %>% colnames %>% paste(collapse = ", ")
-		)
-	)
+
 
 	# Specify the design column tested
 	if(is.null(.contrasts))
 	  message(
 	    sprintf(
 	      "tidybulk says: The design column being tested is %s",
-	      design %>% colnames %>% .[1]
+	      design %>% colnames %>% .[2]
 	    )
 	  )
 
@@ -770,7 +772,7 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
       object = .formula |> lme4::nobars(),
       data = metadata
     )
-  
+
   if(quo_is_symbolic(.dispersion))
     dispersion = .data |> pivot_transcript(!!.transcript) |> select(!!.transcript, !!.dispersion) |> deframe()
   else
@@ -787,8 +789,8 @@ get_differential_transcript_abundance_glmmSeq <- function(.data,
 
   # Scaling
   sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
-  
-  
+
+
   glmmSeq_object =
     glmmSeq( .formula,
           countdata = counts ,

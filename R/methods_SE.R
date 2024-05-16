@@ -2886,3 +2886,56 @@ setMethod("describe_transcript", "SummarizedExperiment", .describe_transcript_SE
 #'
 #' @return A consistent object (to the input) including additional columns for transcript symbol
 setMethod("describe_transcript", "RangedSummarizedExperiment", .describe_transcript_SE)
+
+
+#' @importFrom dplyr select
+#' @importFrom rlang set_names
+#' @importFrom tibble as_tibble
+.resolve_complete_confounders_of_non_interest <- function(se, ...){
+
+  combination_of_factors_of_NON_interest =
+    # Factors
+    se[1,1, drop=FALSE] |>
+    select(...) |>
+    suppressWarnings() |>
+    colnames() |>
+
+    # Combinations
+    combn(2) |>
+    t() |>
+    as_tibble() |>
+    set_names(c("factor_1", "factor_2"))
+
+  for(i in combination_of_factors_of_NON_interest |> nrow() |> seq_len()){
+    se =
+      se |>
+      resolve_complete_confounders_of_non_interest_pair_SE(
+        !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_1),
+        !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_2)
+      )
+  }
+
+  se
+}
+
+#' resolve_complete_confounders_of_non_interest
+#' @inheritParams resolve_complete_confounders_of_non_interest
+#'
+#' @docType methods
+#' @rdname resolve_complete_confounders_of_non_interest-methods
+#'
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("resolve_complete_confounders_of_non_interest",
+          "SummarizedExperiment",
+          .resolve_complete_confounders_of_non_interest)
+
+#' resolve_complete_confounders_of_non_interest
+#' @inheritParams resolve_complete_confounders_of_non_interest
+#'
+#' @docType methods
+#' @rdname resolve_complete_confounders_of_non_interest-methods
+#'
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("resolve_complete_confounders_of_non_interest",
+          "RangedSummarizedExperiment",
+          .resolve_complete_confounders_of_non_interest)
