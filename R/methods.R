@@ -594,14 +594,14 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 #' @details Tranform the feature abundance across samples so to have the same quantile distribution (using preprocessCore).
 #'
 #' Underlying method
-#' 
+#'
 #' If `limma_normalize_quantiles` is chosen
-#' 
+#'
 #' .data |>limma::normalizeQuantiles()
-#'  
+#'
 #'  If `preprocesscore_normalize_quantiles_use_target` is chosen
-#'  
-#' .data |> 
+#'
+#' .data |>
 #'    preprocessCore::normalize.quantiles.use.target(
 #'       target = preprocessCore::normalize.quantiles.determine.target(.data)
 #'    )
@@ -638,7 +638,7 @@ setGeneric("quantile_normalise_abundance", function(.data,
                                           .abundance = NULL,
                                           method = "limma_normalize_quantiles",
                                           target_distribution = NULL,
-                                          
+
                                           action = "add")
 {
 
@@ -695,7 +695,7 @@ setGeneric("quantile_normalise_abundance", function(.data,
     }
 
     if(is.null(target_distribution)) target_distribution = preprocessCore::normalize.quantiles.determine.target(.data_norm)
-    
+
     .data_norm_quant =
       .data_norm |>
       preprocessCore::normalize.quantiles.use.target(
@@ -1154,14 +1154,14 @@ setGeneric("reduce_dimensions", function(.data,
 	# adjust top for the max number of features I have
 	if(top > .data |> distinct(!!.feature) |> nrow()){
 	  warning(sprintf(
-	    "tidybulk says: the \"top\" argument %s is higher than the number of features %s", 
-	    top, 
+	    "tidybulk says: the \"top\" argument %s is higher than the number of features %s",
+	    top,
 	    .data |> distinct(!!.feature) |> nrow()
 	  ))
-	  
+
 	  top = min(top, .data |> distinct(!!.feature) |> nrow())
 	}
-	
+
 	# Validate data frame
 	if(do_validate()) {
 	validation(.data, !!.element, !!.feature, !!.abundance)
@@ -2604,14 +2604,14 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' @param significance_threshold DEPRECATED - A real between 0 and 1 (usually 0.05).
 #' @param fill_missing_values DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param .contrasts DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param ... Further arguments passed to some of the internal functions. Currently, it is needed just for internal debug.
+#' @param ... Further arguments passed to some of the internal experimental functions. For example for glmmSeq, it is possible to pass .dispersion, and .scaling_factor column tidyeval to skip the caluclation of dispersion and scaling and use precalculated values. This is helpful is you want to calculate those quantities on many genes and do DE testing on fewer genes. .scaling_factor is the TMM value that can be obtained with tidybulk::scale_abundance.
 #'
 #'
 #' @details This function provides the option to use edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}, limma-voom \url{https://doi.org/10.1186/gb-2014-15-2-r29}, limma_voom_sample_weights \url{https://doi.org/10.1093/nar/gkv412} or  DESeq2 \url{https://doi.org/10.1186/s13059-014-0550-8} to perform the testing.
 #' All methods use raw counts, irrespective of if scale_abundance or adjust_abundance have been calculated, therefore it is essential to add covariates such as batch effects (if applicable) in the formula.
 #'
 #' Underlying method for edgeR framework:
-#' 
+#'
 #' 	.data |>
 #'
 #' 	# Filter
@@ -2638,7 +2638,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #'
 #'	Underlying method for DESeq2 framework:
-#'	
+#'
 #'	keep_abundant(
 #'			factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 #'			minimum_counts = minimum_counts,
@@ -2657,16 +2657,16 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #' counts =
 #' .data %>%
 #'   assay(my_assay)
-#' 
+#'
 #' # Create design matrix for dispersion, removing random effects
 #' design =
 #'   model.matrix(
 #'     object = .formula |> lme4::nobars(),
 #'     data = metadata
 #'   )
-#' 
+#'
 #' dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
-#' 
+#'
 #'   glmmSeq( .formula,
 #'            countdata = counts ,
 #'            metadata =   metadata |> as.data.frame(),
@@ -2674,8 +2674,8 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'            progress = TRUE,
 #'            method = method |> str_remove("(?i)^glmmSeq_" ),
 #'   )
-#'   
-#' 
+#'
+#'
 #' @return A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
 #'
 #'
@@ -3980,12 +3980,12 @@ setGeneric("test_gene_rank", function(.data,
 
 	# DEPRECATION OF reference function
 	if (is_present(.sample) & !is.null(.sample)) {
-	  
+
 	  # Signal the deprecation to the user
 	  deprecate_warn("1.13.2", "tidybulk::test_gene_rank(.sample = )", details = "The argument .sample is now deprecated and not needed anymore.")
 
 	}
-	
+
 	# Get column names
 	.arrange_desc = enquo(.arrange_desc)
 	.entrez = enquo(.entrez)
@@ -4023,14 +4023,14 @@ setGeneric("test_gene_rank", function(.data,
 
 	.data |>
 		select(!!.entrez, !!.arrange_desc) |>
-	  distinct() |> 
-	  
-	  # Select one entrez - NEEDED?
-	  with_groups(c(!!.entrez,!!.arrange_desc ), slice, 1) |> 
+	  distinct() |>
 
-	  # arrange 
+	  # Select one entrez - NEEDED?
+	  with_groups(c(!!.entrez,!!.arrange_desc ), slice, 1) |>
+
+	  # arrange
 	  arrange(desc(!!.arrange_desc)) |>
-	  
+
 	  # Format
 		deframe() |>
 		entrez_rank_to_gsea(species, gene_collections  = gene_sets ) |>

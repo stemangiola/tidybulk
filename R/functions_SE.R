@@ -744,9 +744,9 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 	# Replace `:` with ___ because it creates error with edgeR
 	if(design |> colnames() |> str_detect(":") |> any()) {
 	  message("tidybulk says: the interaction term `:` has been replaced with `___` in the design matrix, in order to work with edgeR.")
-	  colnames(design) = design |> colnames() |> str_replace(":", "___") 
+	  colnames(design) = design |> colnames() |> str_replace(":", "___")
 	}
-	
+
 	# Print the design column names in case I want contrasts
 	message(
 		sprintf(
@@ -1070,6 +1070,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param .scaling_factor A tidyeval (column name) for the precalculated TMM scaling
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param ... Additional arguments for glmmSeq
 #'
@@ -1085,6 +1086,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
                                                             test_above_log2_fold_change = NULL,
 
                                                             scaling_method = "TMM",
+                                                            .scaling_factor = NULL,
                                                             omit_contrast_in_colnames = FALSE,
                                                             prefix = "",
                                                             .dispersion = NULL,
@@ -1092,6 +1094,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
 
   .abundance = enquo(.abundance)
   .dispersion = enquo(.dispersion)
+  .scaling_factor = enquo(.scaling_factor)
 
   # Check if contrasts are of the same form
   if(
@@ -1145,8 +1148,8 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
       object = .formula |> lme4::nobars(),
       data = metadata
     )
-  
-  if(quo_is_symbolic(.dispersion))
+
+  if(.dispersion |> quo_is_symbolic())
     dispersion = rowData(.data)[,quo_name(.dispersion),drop=FALSE] |> as_tibble(rownames = feature__$name) |> deframe()
   else
     dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
@@ -1161,9 +1164,13 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   dispersion = dispersion[rownames(counts)]
 
   # Scaling
-  sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
-  
-  
+  if(.scaling_factor |> quo_is_symbolic())
+    sizeFactors = .data |> pivot_sample() |> pull(!!.scaling_factor)
+  else
+    sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
+
+
+
   glmmSeq_object =
     glmmSeq( .formula,
                       countdata = counts ,

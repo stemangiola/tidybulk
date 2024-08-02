@@ -195,8 +195,6 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 		setNames(value_scaled)
   colnames(my_counts_scaled[[1]]) = assay(.data)  |> colnames()
 
-  as.list() %>%
-  .[[1]]colnames()
 
 	# Add the assay
 	assays(.data, withDimnames=FALSE) =  assays(.data) %>% c(my_counts_scaled)
