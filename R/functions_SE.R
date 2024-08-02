@@ -408,7 +408,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 #' @param of_samples A boolean
 #' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param calculate_for_pca_dimensions An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered
-#' @param ... Further parameters passed to the function uwot
+#' @param ... Further parameters passed to the function uwot::tumap
 #'
 #' @return A tibble with additional columns
 #'
@@ -1170,7 +1170,6 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
     sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
 
 
-
   glmmSeq_object =
     glmmSeq( .formula,
                       countdata = counts ,
@@ -1503,3 +1502,86 @@ univariable_differential_tissue_composition_SE = function(
 
 		unnest(surv_test, keep_empty = TRUE)
 }
+
+
+#' Resolve Complete Confounders of Non-Interest
+#'
+#' This function processes a SummarizedExperiment object to handle confounders
+#' that are not of interest in the analysis. It deals with two factors, adjusting
+#' the data by nesting and summarizing over these factors.
+#'
+#' @importFrom rlang enquo
+#' @importFrom rlang quo_name
+#' @importFrom rlang !!
+#' @importFrom tidyr unnest
+#' @importFrom tidyr nest
+#' @importFrom dplyr mutate
+#' @importFrom dplyr arrange
+#' @importFrom dplyr slice
+#' @importFrom dplyr pull
+#' @importFrom dplyr select
+#' @importFrom purrr map_int
+#' @importFrom dplyr if_else
+#'
+#' @param se A SummarizedExperiment object that contains the data to be processed.
+#' @param .factor_1 A symbol or quosure representing the first factor variable in `se`.
+#' @param .factor_2 A symbol or quosure representing the second factor variable in `se`.
+#' @return A modified SummarizedExperiment object with confounders resolved.
+#' @examples
+#' # Not run:
+#' # se is a SummarizedExperiment object
+#' resolve_complete_confounders_of_non_interest(se, .factor_1 = factor1, .factor_2 = factor2)
+#' @noRd
+resolve_complete_confounders_of_non_interest_pair_SE <- function(se, .factor_1, .factor_2){
+
+  .factor_1 <- enquo(.factor_1)
+  .factor_2 <- enquo(.factor_2)
+
+  cd =
+    colData(se) |>
+    as_tibble() |>
+    rowid_to_column() |>
+    distinct(rowid, !!.factor_1, !!.factor_2) |>
+
+    nest(se_data = -c(!!.factor_1, !!.factor_2)) |>
+    nest(data = -!!.factor_1) |>
+    mutate(n1 = map_int(data, ~ .x |> distinct(!!.factor_2) |> nrow())) |>
+    unnest(data) |>
+
+    # Nest data excluding .factor_2 and count distinct .factor_1 values
+    nest(data = -!!.factor_2) |>
+    mutate(n2 = map_int(data, ~ .x |> distinct(!!.factor_1) |> nrow())) |>
+    unnest(data)
+
+  # Choose a dummy value for .factor_2 based on sorting by n1 + n2
+  dummy_factor_2 <- cd |> arrange(desc(n1 + n2)) |> slice(1) |> pull(!!.factor_2)
+
+  # Messages if I have confounders
+  if(cd |> filter(n1 + n2 < 3) |> nrow() > 0){
+
+    message(sprintf("tidybulk says: IMPORTANT! the columns %s and %s, have been corrected for complete confounders and now are NOT interpretable, and cannot be used in hypothesis testing.", quo_name(.factor_1), quo_name(.factor_2)))
+
+    message(sprintf(
+      "tidybulk says: The value(s) %s in column %s from sample(s) %s, has been changed to %s.",
+      cd |> filter(n1 + n2 < 3) |> pull(!!.factor_2),
+      quo_name(.factor_2),
+      cd |> filter(n1 + n2 < 3) |> pull(se_data) |> map(colnames) |> unlist(),
+      dummy_factor_2
+    ))
+
+    # Replace .factor_2 with dummy_factor_2 where n1 + n2 is less than 3 and unnest
+    cd = cd |>
+      mutate(!!.factor_2 := if_else(n1 + n2 < 3, dummy_factor_2, !!.factor_2))
+  }
+
+  colData(se)[,c(quo_name(.factor_1), quo_name(.factor_2))] =
+    cd |>
+    unnest(se_data) |>
+    arrange(rowid) |>
+    select(!!.factor_1, !!.factor_2) |>
+    DataFrame()
+
+  se
+
+}
+

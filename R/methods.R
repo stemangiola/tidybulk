@@ -1025,7 +1025,7 @@ setMethod("cluster_elements", "tidybulk", .cluster_elements)
 #' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param scale A boolean for method="PCA", this will be passed to the `prcomp` function. It is not included in the ... argument because although the default for `prcomp` if FALSE, it is advisable to set it as TRUE.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
-#' @param ... Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"
+#' @param ... Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE", or uwot::tumap if you choose method="umap"
 #'
 #' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
@@ -4965,5 +4965,32 @@ as_matrix <- function(tbl,
     # Convert to matrix
     as.matrix()
 }
+
+
+#' Resolve Complete Confounders of Non-Interest
+#'
+#' This generic function processes a SummarizedExperiment object to handle confounders
+#' that are not of interest in the analysis. It dynamically handles combinations
+#' of provided factors, adjusting the data by nesting and summarizing over these factors.
+#'
+#'
+#' @param se A SummarizedExperiment object that contains the data to be processed.
+#' @param ... Arbitrary number of factor variables represented as symbols or quosures
+#'            to be considered for resolving confounders. These factors are processed
+#'            in combinations of two.
+#'
+#' @rdname resolve_complete_confounders_of_non_interest-methods
+#'
+#' @return A modified SummarizedExperiment object with confounders resolved.
+#'
+#' @examples
+#' # Not run:
+#' # se is a SummarizedExperiment object
+#' # resolve_complete_confounders_of_non_interest(se, factor1, factor2, factor3)
+#' @export
+setGeneric("resolve_complete_confounders_of_non_interest", function(se, ...) {
+  standardGeneric("resolve_complete_confounders_of_non_interest")
+})
+
 
 

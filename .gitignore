@@ -22,3 +22,4 @@ _targets.R
 _targets*
 .DS_Store
 ._.DS_Store
+counts_SE.rda
