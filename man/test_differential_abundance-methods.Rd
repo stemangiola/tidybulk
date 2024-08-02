@@ -149,7 +149,7 @@ test_differential_abundance(
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
-\item{...}{Further arguments passed to some of the internal functions. Currently, it is needed just for internal debug.}
+\item{...}{Further arguments passed to some of the internal experimental functions. For example for glmmSeq, it is possible to pass .dispersion, and .scaling_factor column tidyeval to skip the caluclation of dispersion and scaling and use precalculated values. This is helpful is you want to calculate those quantities on many genes and do DE testing on fewer genes. .scaling_factor is the TMM value that can be obtained with tidybulk::scale_abundance.}
 
 \item{significance_threshold}{DEPRECATED - A real between 0 and 1 (usually 0.05).}
 

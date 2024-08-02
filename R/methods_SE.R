@@ -188,17 +188,16 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 
 	my_counts_scaled =
 		list(
-			assays(.data) %>%
-				as.list() %>%
-				.[[1]] %>%
-				multiply_by(
-					rep(multiplier, rep(nrow(.),length(multiplier)))
-				)
+		  assay(.data) %*%
+				diag(multiplier)
+
 			) %>%
 		setNames(value_scaled)
+  colnames(my_counts_scaled[[1]]) = assay(.data)  |> colnames()
+
 
 	# Add the assay
-	assays(.data) =  assays(.data) %>% c(my_counts_scaled)
+	assays(.data, withDimnames=FALSE) =  assays(.data) %>% c(my_counts_scaled)
 
 	.data %>%
 
@@ -313,7 +312,7 @@ setMethod("scale_abundance",
       as.matrix()
 
     if(is.null(target_distribution)) target_distribution = preprocessCore::normalize.quantiles.determine.target(.data_norm)
-    
+
     .data_norm =
       .data_norm |>
       preprocessCore::normalize.quantiles.use.target(
