@@ -13,7 +13,9 @@ tidybulk_SAM_BAM(file_names, genome = "hg38", ...)
 \arguments{
 \item{file_names}{A character vector}
 
-\item{genome}{A character string specifying an in-built annotation used for read summarization. It has four possible values including "mm10", "mm9", "hg38" and "hg19"}
+\item{genome}{A character string specifying an in-built annotation used for 
+read summarization. It has four possible values including "mm10", "mm9", 
+"hg38" and "hg19"}
 
 \item{...}{Further parameters passed to the function Rsubread::featureCounts}
 }
@@ -23,15 +25,20 @@ A `tidybulk` object
 A `tidybulk` object
 }
 \description{
-tidybulk_SAM_BAM() creates a `tt` object from A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+tidybulk_SAM_BAM() creates a `tt` object from A `tbl` 
+  (with at least three columns for sample, feature and transcript abundance) 
+  or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+  library(tidySummarizedExperiment))
 }
 \details{
 `r lifecycle::badge("maturing")`
 
-This function is based on FeatureCounts package (DOI: 10.1093/bioinformatics/btt656). This function creates a tidybulk object and is useful if you want
-to avoid to specify .sample, .transcript and .abundance arguments all the times.
-The tidybulk object have an attribute called internals where these three
-arguments are stored as metadata. They can be extracted as attr(<object>, "internals").
+This function is based on FeatureCounts package 
+  (DOI: 10.1093/bioinformatics/btt656). This function creates a tidybulk 
+  object and is useful if you want to avoid to specify .sample, 
+  .transcript and .abundance arguments all the times. The tidybulk object 
+  have an attribute called internals where these three arguments are stored 
+  as metadata. They can be extracted as attr(<object>, "internals").
 
 Underlying core function
 Rsubread::featureCounts(annot.inbuilt = genome,nthreads = n_cores, ...)

@@ -61,12 +61,17 @@ A consistent object (to the input) with filled abundance
 A consistent object (to the input) with filled abundance
 }
 \description{
-fill_missing_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with new observations
+fill_missing_abundance() takes as input A `tbl` (with at least 
+three columns for sample, feature and transcript abundance) or 
+`SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a consistent object 
+(to the input) with new observations
 }
 \details{
 \lifecycle{questioning}
 
-This function fills the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
+This function fills the abundance of missing sample-transcript 
+pair using the median of the sample group defined by the formula
 }
 \examples{
 

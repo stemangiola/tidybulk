@@ -18,23 +18,30 @@ get_reduced_dimensions_UMAP_bulk_SE(
 \arguments{
 \item{.data}{A tibble}
 
-\item{.dims}{A integer vector corresponding to principal components of interest (e.g., 1:6)}
+\item{.dims}{A integer vector corresponding to principal components of 
+interest (e.g., 1:6)}
 
 \item{top}{An integer. How many top genes to select}
 
 \item{of_samples}{A boolean}
 
-\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
+\item{transform}{A function that will tranform the counts, by default it is 
+log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
 
-\item{calculate_for_pca_dimensions}{An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered}
+\item{calculate_for_pca_dimensions}{An integer of length one. The number of 
+PCA dimensions to based the UMAP calculatio on. If NULL all variable 
+features are considered}
 
 \item{...}{Further parameters passed to the function uwot}
 
-\item{.abundance}{A column symbol with the value the clustering is based on (e.g., `count`)}
+\item{.abundance}{A column symbol with the value the clustering is 
+based on (e.g., `count`)}
 
-\item{.feature}{A column symbol. The column that is represents entities to cluster (i.e., normally genes)}
+\item{.feature}{A column symbol. The column that is represents entities to 
+cluster (i.e., normally genes)}
 
-\item{.element}{A column symbol. The column that is used to calculate distance (i.e., normally samples)}
+\item{.element}{A column symbol. The column that is used to calculate 
+distance (i.e., normally samples)}
 }
 \value{
 A tibble with additional columns

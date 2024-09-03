@@ -26,14 +26,21 @@ get_bibliography(.data)
 \S4method{get_bibliography}{RangedSummarizedExperiment}(.data)
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature 
+and transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 }
 \value{
-NULL. It prints a list of bibliography references for the software used through the workflow.
+NULL. It prints a list of bibliography references for the software 
+used through the workflow.
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+A consistent object (to the input) with additional columns for the 
+statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+false discovery rate).
 }
 \description{
 get_bibliography() takes as input a `tidybulk`
@@ -41,13 +48,11 @@ get_bibliography() takes as input a `tidybulk`
 \details{
 `r lifecycle::badge("maturing")`
 
-This methods returns the bibliography list of your workflow from the internals of a tidybulk object (attr(., "internals"))
+This methods returns the bibliography list of your workflow from 
+the internals of a tidybulk object (attr(., "internals"))
 }
 \examples{
-
-
 get_bibliography(tidybulk::se_mini)
-
 
 
 }

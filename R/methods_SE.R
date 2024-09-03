@@ -50,8 +50,6 @@
 #' @export
 #'
 #'
-#' @inheritParams tidybulk
-#'
 #' @docType methods
 #' @rdname tidybulk-methods
 #'
@@ -62,8 +60,6 @@ setMethod("tidybulk", "SummarizedExperiment", .tidybulk_se)
 #' tidybulk
 #'
 #' @export
-#'
-#' @inheritParams tidybulk
 #'
 #' @docType methods
 #' @rdname tidybulk-methods
@@ -110,7 +106,8 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
   if (is_present(reference_selection_function) & !is.null(reference_selection_function)) {
 
     # Signal the deprecation to the user
-    deprecate_warn("1.1.8", "tidybulk::scale_abundance(reference_selection_function = )", details = "The argument reference_selection_function is now deprecated please use reference_sample. By default the reference selection function is max()")
+    deprecate_warn("1.1.8", "tidybulk::scale_abundance(reference_selection_function = )", 
+                   details = "The argument reference_selection_function is now deprecated please use reference_sample. By default the reference selection function is max()")
 
   }
 
@@ -158,8 +155,9 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 		)
 
 	# Communicate the reference if chosen by default
-	if(is.null(reference_sample)) message(sprintf("tidybulk says: the sample with largest library size %s was chosen as reference for scaling", reference))
-
+	if(is.null(reference_sample)) {
+	  message(sprintf("tidybulk says: the sample with largest library size %s was chosen as reference for scaling", reference))
+	}
 	# Calculate TMM
 	nf <-
 		edgeR::calcNormFactors(
@@ -206,12 +204,11 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 		memorise_methods_used(c("edger", "tmm")) %>%
 
 		# Attach column internals
-		add_tt_columns(.abundance_scaled = !!(function(x, v)	enquo(v))(x,!!as.symbol(value_scaled)))
+		add_tt_columns(.abundance_scaled = !!(function(x, v) enquo(v))(x,!!as.symbol(value_scaled)))
 
 }
 
 #' scale_abundance
-#' @inheritParams scale_abundance
 #'
 #' @docType methods
 #' @rdname scale_abundance-methods
@@ -223,7 +220,6 @@ setMethod("scale_abundance",
 					.scale_abundance_se)
 
 #' scale_abundance
-#' @inheritParams scale_abundance
 #'
 #' @docType methods
 #' @rdname scale_abundance-methods
@@ -344,7 +340,6 @@ setMethod("scale_abundance",
 }
 
 #' quantile_normalise_abundance
-#' @inheritParams quantile_normalise_abundance
 #'
 #' @docType methods
 #' @rdname quantile_normalise_abundance-methods
@@ -356,7 +351,6 @@ setMethod("quantile_normalise_abundance",
           .quantile_normalise_abundance_se)
 
 #' quantile_normalise_abundance
-#' @inheritParams quantile_normalise_abundance
 #'
 #' @docType methods
 #' @rdname quantile_normalise_abundance-methods
@@ -390,7 +384,9 @@ setMethod("quantile_normalise_abundance",
 		method %>%
 			when(
 				(.) == "kmeans" ~ get_clusters_kmeans_bulk_SE,
-				(.) == "SNN" ~  stop("tidybulk says: Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable."), #get_clusters_SNN_bulk_SE,
+				(.) == "SNN" ~  stop("tidybulk says: Matrix package (v1.3-3) causes an ",
+				"error with Seurat::FindNeighbors used in this method. We are trying to ",
+				"solve this issue. At the moment this option in unaviable."), #get_clusters_SNN_bulk_SE,
 				~ stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
 			)
 
@@ -424,7 +420,6 @@ setMethod("quantile_normalise_abundance",
 }
 
 #' cluster_elements
-#' @inheritParams cluster_elements
 #'
 #' @docType methods
 #' @rdname cluster_elements-methods
@@ -436,7 +431,6 @@ setMethod("cluster_elements",
 					.cluster_elements_se)
 
 #' cluster_elements
-#' @inheritParams cluster_elements
 #'
 #' @importFrom rlang inform
 #'
@@ -543,7 +537,8 @@ setMethod("cluster_elements",
 		# Communicate the attribute added
 		{
 
-		  rlang::inform(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access %s results", method),  .frequency = "always")
+		  rlang::inform(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method), 
+		                .frequency_id = sprintf("Access %s results", method),  .frequency = "always")
 
 			(.)
 		}
@@ -552,7 +547,6 @@ setMethod("cluster_elements",
 }
 
 #' reduce_dimensions
-#' @inheritParams reduce_dimensions
 #'
 #' @docType methods
 #' @rdname reduce_dimensions-methods
@@ -564,7 +558,6 @@ setMethod("reduce_dimensions",
 					.reduce_dimensions_se)
 
 #' reduce_dimensions
-#' @inheritParams reduce_dimensions
 #'
 #' @docType methods
 #' @rdname reduce_dimensions-methods
@@ -649,7 +642,6 @@ setMethod("reduce_dimensions",
 }
 
 #' rotate_dimensions
-#' @inheritParams rotate_dimensions
 #'
 #' @docType methods
 #' @rdname rotate_dimensions-methods
@@ -661,7 +653,6 @@ setMethod("rotate_dimensions",
 					.rotate_dimensions_se)
 
 #' rotate_dimensions
-#' @inheritParams rotate_dimensions
 #'
 #' @docType methods
 #' @rdname rotate_dimensions-methods
@@ -673,7 +664,7 @@ setMethod("rotate_dimensions",
 					.rotate_dimensions_se)
 
 
-.remove_redundancy_se = function(.data,
+.remove_redundancy_se <- function(.data,
 																 .element = NULL,
 																 .feature = NULL,
 																 .abundance = NULL,
@@ -748,7 +739,8 @@ setMethod("rotate_dimensions",
 				)
 			} ,
 			~ stop(
-				"tidybulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)"
+				"tidybulk says: method must be either \"correlation\" for dropping ",
+				"correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)"
 			)
 		)
 
@@ -764,13 +756,14 @@ setMethod("rotate_dimensions",
 			when(
 				method == "correlation" ~ memorise_methods_used(., "widyr"),
 				method == "reduced_dimensions" ~ (.),
-				~ stop("tidybulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)")
+				~ stop("tidybulk says: method must be either \"correlation\" for ",
+				       "dropping correlated elements or \"reduced_dimension\" to drop ",
+				       "the closest pair according to two dimensions (e.g., PCA)")
 			)
 
 }
 
 #' remove_redundancy
-#' @inheritParams remove_redundancy
 #'
 #' @docType methods
 #' @rdname remove_redundancy-methods
@@ -782,7 +775,6 @@ setMethod("remove_redundancy",
 					.remove_redundancy_se)
 
 #' remove_redundancy
-#' @inheritParams remove_redundancy
 #'
 #' @importFrom rlang quo
 #'
@@ -796,26 +788,19 @@ setMethod("remove_redundancy",
 					.remove_redundancy_se)
 
 
-.adjust_abundance_se = function(.data,
-
+.adjust_abundance_se <- function(.data,
                                 # DEPRECATED
                                 .formula = NULL,
-
                                 .factor_unwanted = NULL,
                                 .factor_of_interest = NULL,
-
                                 .abundance = NULL,
-
                                 method = "combat_seq",
-
-
 																...,
 
 																# DEPRECATED
 																transform = NULL,
 																inverse_transform = NULL
 																) {
-
   # Fix NOTEs
   . = NULL
 
@@ -837,7 +822,9 @@ setMethod("remove_redundancy",
   ) {
 
     # Signal the deprecation to the user
-    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(transform = )", details = "The argument transform and inverse_transform is now deprecated, please use method argument instead specifying \"combat\" or \"combat_seq\".")
+    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(transform = )", 
+      details = "The argument transform and inverse_transform is now deprecated, 
+      please use method argument instead specifying \"combat\" or \"combat_seq\".")
 
   }
 
@@ -849,12 +836,17 @@ setMethod("remove_redundancy",
   if (is_present(.formula) & !is.null(.formula)) {
 
     # Signal the deprecation to the user
-    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(.formula = )", details = "The argument .formula is now deprecated, please use factor_unwanted and factor_of_interest. Using the formula, the first factor is of interest and the second is unwanted")
+    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(.formula = )", 
+      details = "The argument .formula is now deprecated, 
+      please use factor_unwanted and factor_of_interest. 
+      Using the formula, the first factor is of interest and the second is unwanted")
 
     # Check that .formula includes at least two covariates
     if (parse_formula(.formula) %>% length %>% st(2))
       stop(
-        "The .formula must contain two covariates, the first being the factor of interest, the second being the factor of unwanted variation"
+        "The .formula must contain two covariates, 
+        the first being the factor of interest, 
+        the second being the factor of unwanted variation"
       )
 
     # Check that .formula includes no more than two covariates at the moment
@@ -874,7 +866,9 @@ setMethod("remove_redundancy",
 	# Create design matrix
   design =
     model.matrix(
-      object = as.formula(sprintf("~ %s", colData(.data) |> as_tibble() |> select(!!.factor_of_interest) |> colnames() |> str_c(collapse = '+'))),
+      object = as.formula(sprintf("~ %s", colData(.data) |> as_tibble() |> 
+                           select(!!.factor_of_interest) |> 
+                             colnames() |> str_c(collapse = '+'))),
       # get first argument of the .formula
       data = colData(.data)
     )
@@ -896,14 +890,14 @@ setMethod("remove_redundancy",
 	    .data |>
 	    assay(my_assay) |> # Check if log transform is needed
 	   log1p() %>%
-	    # Add little noise to avoid all 0s for a covariate that would error combat code (not statistics that would be fine)
+	    # Add little noise to avoid all 0s for a covariate that would error combat 
+	    # code (not statistics that would be fine)
 	    `+` (rnorm(length(.), 0, 0.000001))
 
 
 	  for(i in colnames(my_batch)){
 	    my_assay_adjusted =
 	      my_assay_adjusted %>%
-
 	      # Run combat
 	      sva::ComBat(
 	        batch = my_batch[,i] |> pull(1),
@@ -915,12 +909,11 @@ setMethod("remove_redundancy",
 
 	  # Tranfrom back
 	  my_assay_adjusted =
-	    my_assay_adjusted %>%
-	    expm1() |>
-	    apply(2, pmax, 0)
-
+	    my_assay_adjusted |>
+	      expm1() |>
+	      (\(x) apply(x, 2, pmax, 0))()
 	}
-	else if(tolower(method) == "combat_seq"){
+	else if (tolower(method) == "combat_seq"){
 
 	  my_assay_adjusted =
 	    .data %>%
@@ -942,7 +935,9 @@ setMethod("remove_redundancy",
 
 	  unwanted_covariate_matrix =
 	    model.matrix(
-	      object = as.formula(sprintf("~ 0 + %s", colData(.data) |> as_tibble() |> select(!!.factor_unwanted) |> colnames() |> str_c(collapse = '+'))),
+	      object = as.formula(sprintf("~ 0 + %s", colData(.data) |> as_tibble() |> 
+	                       select(!!.factor_unwanted) |> colnames() |> 
+	                       str_c(collapse = '+'))),
 	      # get first argument of the .formula
 	      data = colData(.data)
 	    )
@@ -960,7 +955,8 @@ setMethod("remove_redundancy",
 	    apply(2, pmax, 0)
 
 	} else {
-	  stop("tidybulk says: the argument \"method\" must be \"combat_seq\", \"combat\", or \"limma_remove_batch_effect\"")
+	  stop("tidybulk says: the argument \"method\" must be \"combat_seq\", 
+	       \"combat\", or \"limma_remove_batch_effect\"")
 	}
 
 
@@ -982,7 +978,6 @@ setMethod("remove_redundancy",
 }
 
 #' adjust_abundance
-#' @inheritParams adjust_abundance
 #'
 #' @docType methods
 #' @rdname adjust_abundance-methods
@@ -994,7 +989,6 @@ setMethod("adjust_abundance",
 					.adjust_abundance_se)
 
 #' adjust_abundance
-#' @inheritParams adjust_abundance
 #'
 #' @docType methods
 #' @rdname adjust_abundance-methods
@@ -1011,14 +1005,12 @@ setMethod("adjust_abundance",
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importFrom GenomicRanges makeGRangesListFromDataFrame
 #' @importFrom dplyr setdiff
-.aggregate_duplicates_se = function(.data,
-
+.aggregate_duplicates_se <- function(.data,
 																		.sample = NULL,
 																		.transcript = NULL,
 																		.abundance = NULL,
 																		aggregation_function = sum,
 																		keep_integer = TRUE) {
-
   # Fix NOTEs
   . = NULL
 
@@ -1026,12 +1018,19 @@ setMethod("adjust_abundance",
   .transcript = enquo(.transcript)
 
 
-  if(quo_is_null(.transcript)) stop("tidybulk says: using SummarizedExperiment with aggregate_duplicates, you need to specify .transcript parameter. It should be a feature-wise column (e.g. gene symbol) that you want to collapse he features with (e.g. ensembl). It cannot be the representation of rownames(SummarizedExperiment), as those are unique by definition, and not part of rowData per-se.")
+  if(quo_is_null(.transcript)) stop("tidybulk says: using SummarizedExperiment 
+     with aggregate_duplicates, you need to specify .transcript parameter. 
+     It should be a feature-wise column (e.g. gene symbol) that you want to 
+     collapse he features with (e.g. ensembl). It cannot be the representation 
+     of rownames(SummarizedExperiment), as those are unique by definition, 
+     and not part of rowData per-se.")
 
   if(!quo_name(.transcript) %in% colnames( .data %>% rowData()))
-    stop("tidybulk says: the .transcript argument must be a feature-wise column names. The feature-wise information can be found with rowData()")
+    stop("tidybulk says: the .transcript argument must be a feature-wise column 
+          names. The feature-wise information can be found with rowData()")
   if(!is.null(.sample) | !is.null(.abundance))
-    warning("tidybulk says: for SummarizedExperiment objects only the argument .transcript (feature ID to collapse) is considered")
+    warning("tidybulk says: for SummarizedExperiment objects only the argument 
+            .transcript (feature ID to collapse) is considered")
 
   collapse_function = function(x){ x %>% unique() %>% paste(collapse = "___")	}
 
@@ -1080,7 +1079,8 @@ setMethod("adjust_abundance",
 
   # If no duplicate exit
   if(!nrow(new_row_data)<nrow(rowData(.data))){
-    message(sprintf("tidybulk says: your object does not have duplicates along the %s column. The input dataset is returned.", quo_name(.transcript)))
+    message(sprintf("tidybulk says: your object does not have duplicates along 
+        the %s column. The input dataset is returned.", quo_name(.transcript)))
     return(.data)
   }
 
@@ -1099,7 +1099,8 @@ setMethod("adjust_abundance",
 
         # Combine
         if(rownames(.x) |> is.na() |> which() |> length() |> gt(0))
-          stop(sprintf("tidybulk says: you have some %s that are NAs", quo_name(.transcript)))
+          stop(sprintf("tidybulk says: you have some %s that are NAs", 
+                       quo_name(.transcript)))
 
         .x =  combineByRow(.x, aggregation_function)
         .x = .x[match(new_row_data[,quo_name(.transcript)], rownames(.x)),,drop=FALSE]
@@ -1128,9 +1129,12 @@ setMethod("adjust_abundance",
 
     # Through warning if there are logicals of factor in the data frame
     # because they cannot be merged if they are not unique
-    if (length(non_standard_columns)>0 & new_range_data %>%  pull(!!.transcript) %>% duplicated() %>% which() %>% length() %>% gt(0) ) {
+    if (length(non_standard_columns)>0 & new_range_data %>% 
+        pull(!!.transcript) %>% duplicated() %>% which() %>% length() %>% gt(0) ) {
       warning(paste(capture.output({
-        cat(crayon::blue("tidybulk says: If duplicates exist from the following columns, only the first instance was taken (lossy behaviour), as aggregating those classes with concatenation is not possible.\n"))
+        cat(crayon::blue("tidybulk says: If duplicates exist from the following 
+          columns, only the first instance was taken (lossy behaviour), 
+          as aggregating those classes with concatenation is not possible.\n"))
         print(rowData(.data)[1,non_standard_columns,drop=FALSE])
       }), collapse = "\n"))
     }
@@ -1174,7 +1178,6 @@ setMethod("adjust_abundance",
 }
 
 #' aggregate_duplicates
-#' @inheritParams aggregate_duplicates
 #'
 #' @docType methods
 #' @rdname aggregate_duplicates-methods
@@ -1186,7 +1189,6 @@ setMethod("aggregate_duplicates",
 					.aggregate_duplicates_se)
 
 #' aggregate_duplicates
-#' @inheritParams aggregate_duplicates
 #'
 #' @docType methods
 #' @rdname aggregate_duplicates-methods
@@ -1200,12 +1202,11 @@ setMethod("aggregate_duplicates",
 
 
 #' @importFrom rlang quo_is_symbolic
-.deconvolve_cellularity_se = function(.data,
+.deconvolve_cellularity_se <- function(.data,
 																			reference = X_cibersort,
 																			method = "cibersort",
 																			prefix = "",
 																			...) {
-
   # Fix NOTEs
   . = NULL
 
@@ -1243,13 +1244,15 @@ setMethod("aggregate_duplicates",
 				# Check if package is installed, otherwise install
 				if (find.package("class", quiet = TRUE) %>% length %>% equals(0)) {
 					message("Installing class needed for Cibersort")
-					install.packages("class", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
+					install.packages("class", repos = "https://cloud.r-project.org", 
+					                 dependencies = c("Depends", "Imports"))
 				}
 
 				# Check if package is installed, otherwise install
 				if (find.package("e1071", quiet = TRUE) %>% length %>% equals(0)) {
 					message("Installing e1071 needed for Cibersort")
-					install.packages("e1071", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
+					install.packages("e1071", repos = "https://cloud.r-project.org", 
+					                 dependencies = c("Depends", "Imports"))
 				}
 
 				# Check if package is installed, otherwise install
@@ -1267,7 +1270,8 @@ setMethod("aggregate_duplicates",
 				# Validate reference
 				validate_signature_SE(., reference)
 
-				do.call(my_CIBERSORT, list(Y = ., X = reference, QN=FALSE) %>% c(dots_args)) %$%
+				do.call(my_CIBERSORT, list(Y = ., X = reference, QN=FALSE) %>% 
+				  c(dots_args)) %$%
 					proportions %>%
 					as_tibble(rownames = quo_name(.sample)) %>%
 					select(-`P-value`,-Correlation,-RMSE)
@@ -1308,7 +1312,9 @@ setMethod("aggregate_duplicates",
 				}
 
 				if(method %in% c("mcp_counter", "quantiseq", "xcell") & !"immunedeconv" %in% (.packages()))
-					stop("tidybulk says: for xcell, mcp_counter, or quantiseq deconvolution you should have the package immunedeconv attached. Please execute library(immunedeconv)")
+					stop("tidybulk says: for xcell, mcp_counter, 
+					     or quantiseq deconvolution you should have the package 
+					     immunedeconv attached. Please execute library(immunedeconv)")
 
 				(.) %>%
 					deconvolute(method %>% tolower, tumor = FALSE) %>%
@@ -1343,7 +1349,6 @@ setMethod("aggregate_duplicates",
 }
 
 #' deconvolve_cellularity
-#' @inheritParams deconvolve_cellularity
 #'
 #' @docType methods
 #' @rdname deconvolve_cellularity-methods
@@ -1355,7 +1360,6 @@ setMethod("deconvolve_cellularity",
 					.deconvolve_cellularity_se)
 
 #' deconvolve_cellularity
-#' @inheritParams deconvolve_cellularity
 #'
 #' @importFrom rlang inform
 #'
@@ -1381,8 +1385,7 @@ setMethod(
 																					 scaling_method = "TMM",
 																					 omit_contrast_in_colnames = FALSE,
 																					 prefix = "",
-																					 ...)
-{
+																					 ...) {
 
   .abundance = enquo(.abundance)
 
@@ -1393,7 +1396,8 @@ setMethod(
   if (is_present(.contrasts) & !is.null(.contrasts)) {
 
     # Signal the deprecation to the user
-    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", 
+     details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
 
     contrasts = .contrasts
   }
@@ -1403,7 +1407,8 @@ setMethod(
 tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance
 or adjust_abundance have been calculated. Therefore, it is essential to add covariates
 such as batch effects (if applicable) in the formula.
-=====================================", .frequency_id = "All testing methods use raw counts",  .frequency = "once")
+=====================================", 
+    .frequency_id = "All testing methods use raw counts",  .frequency = "once")
 
 
 	# Test test_above_log2_fold_change
@@ -1413,7 +1418,8 @@ such as batch effects (if applicable) in the formula.
   # Filter abundant if performed
   .data = filter_if_abundant_were_identified(.data)
 
-  if(tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio", "edger_robust_likelihood_ratio"))
+  if(tolower(method) %in% c("edger_quasi_likelihood", "edger_likelihood_ratio", 
+                            "edger_robust_likelihood_ratio"))
   	my_differential_abundance =
       get_differential_transcript_abundance_bulk_SE(
         .data,
@@ -1477,7 +1483,10 @@ such as batch effects (if applicable) in the formula.
     ...
   )
   else
-    stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\", \"glmmseq_lme4\", \"glmmseq_glmmTMB\"")
+    stop("tidybulk says: the only methods supported at the moment are 
+         \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" 
+         (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\", 
+         \"glmmseq_lme4\", \"glmmseq_glmmTMB\"")
 
   # If action is get just return the statistics
   if(action == "get") return(my_differential_abundance$result)
@@ -1496,18 +1505,24 @@ such as batch effects (if applicable) in the formula.
 
 		# Add bibliography
 		when(
-			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
-			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_quasi_likelihood")),
-			tolower(method) ==  "edger_robust_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edger_robust_likelihood_ratio")),
+			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% 
+			  memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
+			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% 
+			  memorise_methods_used(c("edger", "edgeR_quasi_likelihood")),
+			tolower(method) ==  "edger_robust_likelihood_ratio" ~ (.) %>% 
+			  memorise_methods_used(c("edger", "edger_robust_likelihood_ratio")),
 			tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
-			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights"),
+			tolower(method) == "limma_voom_sample_weights" ~ (.) %>% 
+			  memorise_methods_used("voom_sample_weights"),
 			tolower(method) == "deseq2" ~ (.) %>% memorise_methods_used("deseq2"),
-			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmtmb") ~ (.) %>% memorise_methods_used("glmmseq"),
+			tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmtmb") ~ (.) %>% 
+			  memorise_methods_used("glmmseq"),
 			~ stop("tidybulk says: method not supported")
 		) %>%
 
 	    when(
-			!is.null(test_above_log2_fold_change) ~ (.) %>% memorise_methods_used("treat"),
+			!is.null(test_above_log2_fold_change) ~ (.) %>% 
+			  memorise_methods_used("treat"),
 			~ (.)
 		) %>%
 
@@ -1515,7 +1530,10 @@ such as batch effects (if applicable) in the formula.
 
 		# Communicate the attribute added
 		{
-		  rlang::inform(sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access DE results %s", method),  .frequency = "always")
+		  rlang::inform(sprintf("tidybulk says: to access the raw results (fitted GLM) 
+		      do `attr(..., \"internals\")$%s`", method), 
+		      .frequency_id = sprintf("Access DE results %s", method),  
+		      .frequency = "always")
 
 			(.)
 		}
@@ -1525,7 +1543,6 @@ such as batch effects (if applicable) in the formula.
 }
 
 #' test_differential_abundance
-#' @inheritParams test_differential_abundance
 #'
 #' @docType methods
 #' @rdname test_differential_abundance-methods
@@ -1539,7 +1556,6 @@ setMethod(
 )
 
 #' test_differential_abundance
-#' @inheritParams test_differential_abundance
 #'
 #' @docType methods
 #' @rdname test_differential_abundance-methods
@@ -1585,7 +1601,6 @@ setMethod(
 }
 
 #' keep_variable
-#' @inheritParams keep_variable
 #'
 #' @docType methods
 #' @rdname keep_variable-methods
@@ -1597,7 +1612,6 @@ setMethod("keep_variable",
 					.keep_variable_se)
 
 #' keep_variable
-#' @inheritParams keep_variable
 #'
 #' @importFrom purrr map_chr
 #' @importFrom tidyr unite
@@ -1612,15 +1626,13 @@ setMethod("keep_variable",
 					"RangedSummarizedExperiment",
 					.keep_variable_se)
 
-.identify_abundant_se = function(.data,
+.identify_abundant_se <- function(.data,
 																 .sample = NULL,
 																 .transcript = NULL,
 																 .abundance = NULL,
 																 factor_of_interest = NULL,
 																 minimum_counts = 10,
-																 minimum_proportion = 0.7)
-{
-
+																 minimum_proportion = 0.7) {
   # Fix NOTEs
   . = NULL
 
@@ -1633,7 +1645,9 @@ setMethod("keep_variable",
 	  !is.null(factor_of_interest) &&
 	  !factor_of_interest |> quo_is_null() &&
 	  !factor_of_interest |> quo_is_symbolic()
-	) stop("tidybulk says: factor_of_interest must be symbolic (i.e. column name/s not surrounded by single or double quotes) and not a character.")
+	) stop("tidybulk says: factor_of_interest must be symbolic 
+	  (i.e. column name/s not surrounded by single or double quotes) 
+	  and not a character.")
 
 
 	# Check factor_of_interest
@@ -1642,7 +1656,8 @@ setMethod("keep_variable",
 		quo_is_symbolic(factor_of_interest) &&
 		(quo_names(factor_of_interest) %in% colnames(colData(.data)) |> all() %>% not())
 	)
-		stop(sprintf("tidybulk says: the column %s is not present in colData", quo_names(factor_of_interest)))
+		stop(sprintf("tidybulk says: the column %s is not present in colData", 
+		             quo_names(factor_of_interest)))
 
 	if (minimum_counts < 0)
 		stop("The parameter minimum_counts must be > 0")
@@ -1652,7 +1667,8 @@ setMethod("keep_variable",
 
 	# If column is present use this instead of doing more work
 	if(".abundant" %in% colnames(colData(.data))){
-		message("tidybulk says: the column .abundant already exists in colData. Nothing was done")
+		message("tidybulk says: the column .abundant already exists in colData. 
+		        Nothing was done")
 
 		# Return
 		return(.data)
@@ -1686,7 +1702,8 @@ setMethod("keep_variable",
 	          unlist() %in% c("numeric", "integer", "double") |>
 	          any()
 	  )
-	    stop("tidybulk says: The factor(s) of interest must not include continuous variables (e.g., integer,numeric, double).")
+	    stop("tidybulk says: The factor(s) of interest must not include continuous 
+	         variables (e.g., integer,numeric, double).")
 
 	  string_factor_of_interest =
 	    colData(.data)[, factor_of_interest, drop=FALSE] |>
@@ -1744,7 +1761,6 @@ setMethod("keep_variable",
 
 
 #' identify_abundant
-#' @inheritParams identify_abundant
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
@@ -1756,7 +1772,6 @@ setMethod("identify_abundant",
 					.identify_abundant_se)
 
 #' identify_abundant
-#' @inheritParams identify_abundant
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
@@ -1802,7 +1817,6 @@ setMethod("identify_abundant",
 }
 
 #' keep_abundant
-#' @inheritParams keep_abundant
 #'
 #' @docType methods
 #' @rdname keep_abundant-methods
@@ -1814,7 +1828,6 @@ setMethod("keep_abundant",
 					.keep_abundant_se)
 
 #' keep_abundant
-#' @inheritParams keep_abundant
 #'
 #' @docType methods
 #' @rdname keep_abundant-methods
@@ -1833,21 +1846,23 @@ setMethod("keep_abundant",
 #'
 #'
 #'
-.test_gene_enrichment_SE = 		function(.data,
-																			.formula,
-																			.sample = NULL,
-																			.entrez,
-																			.abundance = NULL,
-																			contrasts = NULL,
-																			methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
-																			gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
-																			species,
-																			cores = 10,
+.test_gene_enrichment_SE <- function(
+    .data,
+		.formula,
+		.sample = NULL,
+		.entrez,
+		.abundance = NULL,
+		contrasts = NULL,
+		methods = c("camera", "roast", "safe", "gage", "padog", "globaltest","ora"),
+		gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", 
+		              "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+		species,
+		cores = 10,
 
-																			# DEPRECATED
-																			method = NULL,
-																			.contrasts = NULL
-																		)	{
+		# DEPRECATED
+		method = NULL,
+		.contrasts = NULL
+	)	{
 
   # Fix NOTEs
   . = NULL
@@ -1856,7 +1871,8 @@ setMethod("keep_abundant",
 	if (is_present(method) & !is.null(method)) {
 
 		# Signal the deprecation to the user
-		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", details = "The argument method is now deprecated please use methods")
+		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", 
+		      details = "The argument method is now deprecated please use methods")
 		methods = method
 	}
 
@@ -1864,7 +1880,8 @@ setMethod("keep_abundant",
   if (is_present(.contrasts) & !is.null(.contrasts)) {
 
     # Signal the deprecation to the user
-    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", 
+     details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
 
     contrasts = .contrasts
   }
@@ -1884,7 +1901,8 @@ setMethod("keep_abundant",
 
 	# Check if duplicated entrez
 	if(rowData(.data)[,quo_name(.entrez)] %>% duplicated() %>% any())
-		stop("tidybulk says: There are duplicated .entrez IDs. Please use aggregate_duplicates(.transcript = entrez).")
+		stop("tidybulk says: There are duplicated .entrez IDs. 
+		     Please use aggregate_duplicates(.transcript = entrez).")
 
 	# For use within when
 	.my_data = .data
@@ -1925,12 +1943,14 @@ setMethod("keep_abundant",
 	# Check if package is installed, otherwise install
 	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
 		stop("
-				 EGSEA not installed. Please install it. EGSEA require manual installation for not overwelming the user in case it is not needed.
-				 BiocManager::install(\"EGSEA\", ask = FALSE)
+		 EGSEA not installed. Please install it. EGSEA require manual installation 
+		   for not overwelming the user in case it is not needed.
+		 BiocManager::install(\"EGSEA\", ask = FALSE)
 				 ")
 	}
 	if (!"EGSEA" %in% (.packages())) {
-		stop("EGSEA package not loaded. Please run library(\"EGSEA\"). With this setup, EGSEA require manual loading, for technical reasons.")
+		stop("EGSEA package not loaded. Please run library(\"EGSEA\"). 
+		     With this setup, EGSEA require manual loading, for technical reasons.")
 	}
 
 	dge =
@@ -2000,7 +2020,8 @@ setMethod("keep_abundant",
     	}
 
 
-    	idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets,
+    	idx =  buildIdx(entrezIDs = rownames(dge), species = species, 
+    	                msigdb.gsets = msigdb.gsets,
     	                kegg.exclude = kegg.exclude)
 
     	# Due to a bug with kegg pathview overlays, this collection is run without report
@@ -2053,7 +2074,9 @@ setMethod("keep_abundant",
 	}
 
     if (length(kegg_genesets) != 0) {
-    	message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
+    	message("tidybulk says: due to a bug in the call to KEGG database 
+    	        (http://supportupgrade.bioconductor.org/p/122172/#122218), 
+    	        the analysis for this database is run without report production.")
 
     	res_kegg =
     		dge %>%
@@ -2101,7 +2124,6 @@ setMethod("keep_abundant",
 }
 
 #' test_gene_enrichment
-#' @inheritParams test_gene_enrichment
 #'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
@@ -2112,7 +2134,6 @@ setMethod("test_gene_enrichment",
 					.test_gene_enrichment_SE)
 
 #' test_gene_enrichment
-#' @inheritParams test_gene_enrichment
 #'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
@@ -2140,7 +2161,8 @@ setMethod("test_gene_enrichment",
 	if (is_present(gene_set) & !is.null(gene_set)) {
 
 		# Signal the deprecation to the user
-		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_sets.")
+		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", 
+		 details = "The argument gene_set is now deprecated please use gene_sets.")
 		gene_sets = gene_set
 	}
 
@@ -2157,7 +2179,8 @@ setMethod("test_gene_enrichment",
 		stop("tidybulk says: the .entrez parameter appears to no be set")
 
 	# Check column type
-	if (.data %>% rowData() %>% as_tibble(rownames = f_(.data)$name) %>% mutate(my_do_test = !!.do_test) %>% pull(my_do_test) |> is("logical") %>% not())
+	if (.data %>% rowData() %>% as_tibble(rownames = f_(.data)$name) %>% 
+	  mutate(my_do_test = !!.do_test) %>% pull(my_do_test) |> is("logical") %>% not())
 		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
 
 	# Check packages msigdbr
@@ -2169,7 +2192,9 @@ setMethod("test_gene_enrichment",
 
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
-		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species 
+		    names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, 
+		                             collapse=", ")))
 
 	# # Check if missing entrez
 	# if(.data %>% filter(!!.entrez %>% is.na) %>% nrow() %>% gt(0) ){
@@ -2185,13 +2210,13 @@ setMethod("test_gene_enrichment",
 		entrez_over_to_gsea(species, gene_collections = gene_sets) %>%
 
 	  # Add methods used
-	  memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"), object_containing_methods = .data)
+	  memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"), 
+	                        object_containing_methods = .data)
 
 
 }
 
 #' test_gene_overrepresentation
-#' @inheritParams test_gene_overrepresentation
 #'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
@@ -2202,7 +2227,6 @@ setMethod("test_gene_overrepresentation",
 					.test_gene_overrepresentation_SE)
 
 #' test_gene_overrepresentation
-#' @inheritParams test_gene_overrepresentation
 #'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
@@ -2230,7 +2254,8 @@ setMethod("test_gene_overrepresentation",
 	if (is_present(gene_set) & !is.null(gene_set)) {
 
 		# Signal the deprecation to the user
-		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", details = "The argument gene_set is now deprecated please use gene_sets.")
+		deprecate_warn("1.3.1", "tidybulk::test_gene_rank(gene_set = )", 
+		  details = "The argument gene_set is now deprecated please use gene_sets.")
 		gene_sets = gene_set
 
 	}
@@ -2256,7 +2281,9 @@ setMethod("test_gene_overrepresentation",
 
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
-		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the 
+		  latin species names (e.g., %s)", 
+		  paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
 
 	.data %>%
 		pivot_transcript() %>%
@@ -2266,7 +2293,8 @@ setMethod("test_gene_overrepresentation",
 		entrez_rank_to_gsea(species, gene_collections = gene_sets)%>%
 
 	  # Add methods used. It is here and not in functions because I need the original .data
-	  memorise_methods_used(c("clusterProfiler", "enrichplot"), object_containing_methods = .data) %>%
+	  memorise_methods_used(c("clusterProfiler", "enrichplot"), 
+	                        object_containing_methods = .data) %>%
 	  when(
 	    gene_sets %>% is("character") ~ (.) %>% memorise_methods_used("msigdbr"),
 	    ~ (.)
@@ -2276,7 +2304,6 @@ setMethod("test_gene_overrepresentation",
 }
 
 #' test_gene_rank
-#' @inheritParams test_gene_rank
 #'
 #' @docType methods
 #' @rdname test_gene_rank-methods
@@ -2287,7 +2314,6 @@ setMethod("test_gene_rank",
 					.test_gene_rank_SE)
 
 #' test_gene_rank
-#' @inheritParams test_gene_rank
 #'
 #' @docType methods
 #' @rdname test_gene_rank-methods
@@ -2323,7 +2349,6 @@ setMethod("test_gene_rank",
 }
 
 #' pivot_sample
-#' @inheritParams pivot_sample
 #'
 #' @docType methods
 #' @rdname pivot_sample-methods
@@ -2334,7 +2359,6 @@ setMethod("pivot_sample",
 					.pivot_sample)
 
 #' pivot_sample
-#' @inheritParams pivot_sample
 #'
 #' @docType methods
 #' @rdname pivot_sample-methods
@@ -2380,7 +2404,6 @@ setMethod("pivot_sample",
 }
 
 #' pivot_transcript
-#' @inheritParams pivot_transcript
 #'
 #' @docType methods
 #' @rdname pivot_transcript-methods
@@ -2391,7 +2414,6 @@ setMethod("pivot_transcript",
 					.pivot_transcript)
 
 #' pivot_transcript
-#' @inheritParams pivot_transcript
 #'
 #' @docType methods
 #' @rdname pivot_transcript-methods
@@ -2402,14 +2424,13 @@ setMethod("pivot_transcript",
 					.pivot_transcript)
 
 
-.impute_missing_abundance_se = function(.data,
+.impute_missing_abundance_se <- function(.data,
 																				.formula,
 																				.sample = NULL,
 																				.transcript = NULL,
 																				.abundance  = NULL,
 																				suffix = "",
 																				force_scaling = FALSE) {
-
   # Fix NOTEs
   . = NULL
 
@@ -2436,7 +2457,13 @@ setMethod("pivot_transcript",
             library_size = colSums(.x, na.rm = TRUE)
            .x = .x / library_size
         }
-        else message(sprintf("tidybulk says: %s appears not to be scaled for sequencing depth (missing _scaled suffix; if you think this column is idependent of sequencing depth ignore this message), therefore the imputation can produce non meaningful results if sequencing depth for samples are highly variable. If you use force_scaling = TRUE library size will be used for eliminatig some sequencig depth effect before imputation", .y))
+        else message(sprintf("tidybulk says: %s appears not to be scaled for 
+          sequencing depth (missing _scaled suffix; if you think this column is 
+          idependent of sequencing depth ignore this message), therefore the 
+          imputation can produce non meaningful results if sequencing depth for 
+          samples are highly variable. If you use force_scaling = TRUE library 
+          size will be used for eliminatig some sequencig depth effect before 
+          imputation", .y))
 
         # Log
         need_log = max(.x, na.rm=TRUE) > 50
@@ -2485,7 +2512,6 @@ setMethod("pivot_transcript",
 
 
 #' impute_missing_abundance
-#' @inheritParams impute_missing_abundance
 #'
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
@@ -2500,7 +2526,6 @@ setMethod("impute_missing_abundance",
 					.impute_missing_abundance_se)
 
 #' impute_missing_abundance
-#' @inheritParams impute_missing_abundance
 #'
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
@@ -2516,12 +2541,11 @@ setMethod("impute_missing_abundance",
 
 
 
-.test_differential_cellularity_se = function(.data,
+.test_differential_cellularity_se <- function(.data,
 																						 .formula,
 																						 method = "cibersort",
 																						 reference = X_cibersort,
-																						 ...)
-{
+																						 ...) {
 
   # Fix NOTEs
   . = NULL
@@ -2568,7 +2592,8 @@ setMethod("impute_missing_abundance",
 						.formula %>%
 						when(
 							# If I have the dot, needed definitely for censored
-							format(.) %>% grepl("\\.", .) %>% any ~ format(.) %>% str_replace("([-\\+\\*~ ]?)(\\.)", "\\1.proportion_0_corrected"),
+							format(.) %>% grepl("\\.", .) %>% any ~ format(.) %>% 
+							  str_replace("([-\\+\\*~ ]?)(\\.)", "\\1.proportion_0_corrected"),
 
 							# If normal formula
 							~ sprintf(".proportion_0_corrected%s", format(.))
@@ -2578,16 +2603,17 @@ setMethod("impute_missing_abundance",
 
 					# Test
 					univariable_differential_tissue_composition_SE(deconvoluted,
-																											method,
-																											.my_formula,
-																											min_detected_proportion) %>%
+																								method,
+																								.my_formula,
+																								min_detected_proportion) %>%
 
 						# Attach attributes
 						reattach_internals(.data) %>%
 
 						# Add methods used
 						when(
-							grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+							grepl("Surv", .my_formula) ~ (.) %>% 
+							  memorise_methods_used(c("survival", "boot")),
 							~ (.) %>% memorise_methods_used("betareg")
 						)
 				},
@@ -2623,15 +2649,16 @@ setMethod("impute_missing_abundance",
 
 				# Test
 				multivariable_differential_tissue_composition_SE(deconvoluted,
-																											method,
-																											.my_formula,
-																											min_detected_proportion) %>%
+																								method,
+																								.my_formula,
+																								min_detected_proportion) %>%
 
 					# Attach attributes
 					reattach_internals(.data) %>%
 
 					# Add methods used
-					when(grepl("Surv", .my_formula) ~ (.) %>% memorise_methods_used(c("survival", "boot")),
+					when(grepl("Surv", .my_formula) ~ (.) %>% 
+					       memorise_methods_used(c("survival", "boot")),
 							 ~ (.))
 
 			}) %>%
@@ -2643,7 +2670,6 @@ setMethod("impute_missing_abundance",
 }
 
 #' test_differential_cellularity
-#' @inheritParams test_differential_cellularity
 #'
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
@@ -2657,7 +2683,6 @@ setMethod(
 )
 
 #' test_differential_cellularity
-#' @inheritParams test_differential_cellularity
 #'
 #' @docType methods
 #' @rdname test_differential_cellularity-methods
@@ -2672,22 +2697,22 @@ setMethod(
 
 # Set internal
 #' @importFrom stringr str_replace
-.test_stratification_cellularity_SE = 		function(.data,
+.test_stratification_cellularity_SE <- function(.data,
 																							.formula,
 																							.sample = NULL,
 																							.transcript = NULL,
 																							.abundance = NULL,
 																							method = "cibersort",
 																							reference = X_cibersort,
-																							...)
-{
+																							...) {
 
   # Fix NOTEs
   . = NULL
 
 	# Validate formula
 	if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
-		stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
+		stop("tidybulk says: in the formula a dot must be present in either these 
+		forms \". ~\" or \"~ .\" with a white-space after or before respectively")
 
 	deconvoluted =
 		.data %>%
@@ -2727,48 +2752,50 @@ setMethod(
 }
 
 #' test_stratification_cellularity
-#' @inheritParams test_stratification_cellularity
 #'
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
 #'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the 
+#' statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+#' false discovery rate).
 setMethod("test_stratification_cellularity",
 					"SummarizedExperiment",
 					.test_stratification_cellularity_SE)
 
 #' test_stratification_cellularity
-#' @inheritParams test_stratification_cellularity
 #'
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
 #'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the 
+#' statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+#' false discovery rate).
 setMethod("test_stratification_cellularity",
 					"RangedSummarizedExperiment",
 					.test_stratification_cellularity_SE)
 
 
-
-
 #' get_bibliography
-#' @inheritParams get_bibliography
 #'
 #' @docType methods
 #' @rdname get_bibliography-methods
 #'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the 
+#' statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+#' false discovery rate).
 setMethod("get_bibliography",
 					"SummarizedExperiment",
 					.get_bibliography)
 
 #' get_bibliography
-#' @inheritParams get_bibliography
 #'
 #' @docType methods
 #' @rdname get_bibliography-methods
 #'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#' @return A consistent object (to the input) with additional columns for the 
+#' statistics from the hypothesis test (e.g.,  log fold change, p-value and 
+#' false discovery rate).
 setMethod("get_bibliography",
 					"RangedSummarizedExperiment",
 					.get_bibliography)
@@ -2778,7 +2805,6 @@ setMethod("get_bibliography",
 #' @importFrom SummarizedExperiment rowData
 #' @importFrom tibble enframe
 #'
-#' @inheritParams describe_transcript
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods
@@ -2786,7 +2812,7 @@ setMethod("get_bibliography",
 #' @return A `SummarizedExperiment` object
 #'
 #'
-.describe_transcript_SE = function(.data,
+.describe_transcript_SE <- function(.data,
 															 .transcript = NULL) {
 
   # Fix NOTEs
@@ -2870,20 +2896,21 @@ setMethod("get_bibliography",
 }
 
 #' describe_transcript
-#' @inheritParams describe_transcript
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods
 #'
-#' @return A consistent object (to the input) including additional columns for transcript symbol
-setMethod("describe_transcript", "SummarizedExperiment", .describe_transcript_SE)
+#' @return A consistent object (to the input) including additional 
+#' columns for transcript symbol
+setMethod("describe_transcript", "SummarizedExperiment", 
+          .describe_transcript_SE)
 
 #' describe_transcript
-#' @inheritParams describe_transcript
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods
 #'
+<<<<<<< HEAD
 #' @return A consistent object (to the input) including additional columns for transcript symbol
 setMethod("describe_transcript", "RangedSummarizedExperiment", .describe_transcript_SE)
 
@@ -2939,3 +2966,9 @@ setMethod("resolve_complete_confounders_of_non_interest",
 setMethod("resolve_complete_confounders_of_non_interest",
           "RangedSummarizedExperiment",
           .resolve_complete_confounders_of_non_interest)
+=======
+#' @return A consistent object (to the input) including additional columns 
+#' for transcript symbol
+setMethod("describe_transcript", "RangedSummarizedExperiment", 
+          .describe_transcript_SE)
+>>>>>>> chilampoon-improve-documentation

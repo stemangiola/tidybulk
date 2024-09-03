@@ -83,7 +83,9 @@ deconvolve_cellularity(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and 
+transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.sample}{The name of the sample column}
 
@@ -91,31 +93,48 @@ deconvolve_cellularity(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{reference}{A data frame. The methods cibersort and llsr can accept a custom rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. For exampler tidybulk::X_cibersort. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.}
+\item{reference}{A data frame. The methods cibersort and llsr can accept a 
+custom rectangular dataframe with genes as rows names, cell types as column 
+names and gene-transcript abundance as values. For exampler tidybulk::X_cibersort. 
+The transcript/cell_type data frame of integer transcript abundance. If NULL, 
+the default reference for each algorithm will be used. For llsr will be LM22.}
 
-\item{method}{A character string. The method to be used. At the moment Cibersort (default, can accept custom reference), epic (can accept custom reference) and llsr (linear least squares regression, can accept custom reference), mcp_counter, quantiseq, xcell are available.}
+\item{method}{A character string. The method to be used. At the moment 
+Cibersort (default, can accept custom reference), epic (can accept custom 
+reference) and llsr (linear least squares regression, can accept custom 
+reference), mcp_counter, quantiseq, xcell are available.}
 
-\item{prefix}{A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.}
+\item{prefix}{A character string. The prefix you would like to add to the 
+result columns. It is useful if you want to reshape data.}
 
-\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
+\item{action}{A character string. Whether to join the new information to the 
+input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function Cibersort}
 }
 \value{
-A consistent object (to the input) including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns 
+for each cell type estimated
 
-A consistent object (to the input) including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns 
+for each cell type estimated
 
-A consistent object (to the input) including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns 
+for each cell type estimated
 
-A consistent object (to the input) including additional columns for each cell type estimated
+A consistent object (to the input) including additional columns 
+for each cell type estimated
 
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object
 }
 \description{
-deconvolve_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with the estimated cell type abundance for each sample
+deconvolve_cellularity() takes as input A `tbl` (with at least 
+three columns for sample, feature and transcript abundance) or 
+`SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a consistent object (to the 
+input) with the estimated cell type abundance for each sample
 }
 \details{
 `r lifecycle::badge("maturing")`
@@ -127,7 +146,6 @@ Underlying method:
 CIBERSORT(Y = data, X = reference, ...)
 }
 \examples{
-
 
 # Subsetting for time efficiency
 tidybulk::se_mini |> deconvolve_cellularity(cores = 1)

@@ -71,9 +71,13 @@ impute_missing_abundance(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature 
+and transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
-\item{.formula}{A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)}
+\item{.formula}{A formula with no response variable, representing the 
+desired linear model where the first covariate is the factor of interest 
+and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)}
 
 \item{.sample}{The name of the sample column}
 
@@ -81,9 +85,13 @@ impute_missing_abundance(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{suffix}{A character string. This is added to the imputed count column names. If empty the count column are overwritten}
+\item{suffix}{A character string. This is added to the imputed count column 
+names. If empty the count column are overwritten}
 
-\item{force_scaling}{A boolean. In case a abundance-containing column is not scaled (columns with _scale suffix), setting force_scaling = TRUE will result in a scaling by library size, to compensating for a possible difference in sequencing depth.}
+\item{force_scaling}{A boolean. In case a abundance-containing column is not 
+scaled (columns with _scale suffix), setting force_scaling = TRUE will result 
+in a scaling by library size, to compensating for a possible difference in 
+sequencing depth.}
 }
 \value{
 A consistent object (to the input) non-sparse abundance
@@ -99,12 +107,18 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-impute_missing_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional sample-transcript pairs with imputed transcript abundance.
+impute_missing_abundance() takes as input A `tbl` (with at least 
+three columns for sample, feature and transcript abundance) or 
+`SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a consistent object 
+(to the input) with additional sample-transcript pairs with imputed 
+transcript abundance.
 }
 \details{
 `r lifecycle::badge("maturing")`
 
-This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
+This function imputes the abundance of missing sample-transcript 
+pair using the median of the sample group defined by the formula
 }
 \examples{
 
