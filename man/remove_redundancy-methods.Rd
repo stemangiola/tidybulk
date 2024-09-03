@@ -8,7 +8,8 @@
 \alias{remove_redundancy,tidybulk-method}
 \alias{remove_redundancy,SummarizedExperiment-method}
 \alias{remove_redundancy,RangedSummarizedExperiment-method}
-\title{Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) abundances are correlated}
+\title{Drop redundant elements (e.g., samples) for which feature (e.g., 
+transcript/gene) abundances are correlated}
 \usage{
 remove_redundancy(
   .data,
@@ -101,29 +102,40 @@ remove_redundancy(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature 
+and transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.element}{The name of the element column (normally samples).}
 
 \item{.feature}{The name of the feature column (normally transcripts/genes)}
 
-\item{.abundance}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
+\item{.abundance}{The name of the column including the numerical value the 
+clustering is based on (normally transcript abundance)}
 
-\item{method}{A character string. The method to use, correlation and reduced_dimensions are available. The latter eliminates one of the most proximar pairs of samples in PCA reduced dimensions.}
+\item{method}{A character string. The method to use, correlation and 
+reduced_dimensions are available. The latter eliminates one of the most 
+proximar pairs of samples in PCA reduced dimensions.}
 
-\item{of_samples}{A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column}
+\item{of_samples}{A boolean. In case the input is a tidybulk object, 
+it indicates Whether the element column will be sample or transcript column}
 
 \item{correlation_threshold}{A real number between 0 and 1. For correlation based calculation.}
 
 \item{top}{An integer. How many top genes to select for correlation based method}
 
-\item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
+\item{transform}{A function that will tranform the counts, by default it 
+is log1p for RNA sequencing data, but for avoinding tranformation you 
+can use identity}
 
-\item{Dim_a_column}{A character string. For reduced_dimension based calculation. The column of one principal component}
+\item{Dim_a_column}{A character string. For reduced_dimension based 
+calculation. The column of one principal component}
 
-\item{Dim_b_column}{A character string. For reduced_dimension based calculation. The column of another principal component}
+\item{Dim_b_column}{A character string. For reduced_dimension based 
+calculation. The column of another principal component}
 
-\item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+\item{log_transform}{DEPRECATED - A boolean, whether the value 
+should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A tbl object with with dropped redundant elements (e.g., samples).
@@ -139,20 +151,30 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-remove_redundancy() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a consistent object (to the input) with dropped elements (e.g., samples).
+remove_redundancy() takes as input A `tbl` (with at least 
+  three columns for sample, feature and transcript abundance) or 
+  `SummarizedExperiment` (more convenient if abstracted to tibble with 
+  library(tidySummarizedExperiment)) for correlation method or | 
+  <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, 
+  and returns a consistent object (to the input) with dropped 
+  elements (e.g., samples).
 }
 \details{
 `r lifecycle::badge("maturing")`
 
-This function removes redundant elements from the original data set (e.g., samples or transcripts).
-For example, if we want to define cell-type specific signatures with low sample redundancy.
+This function removes redundant elements from the original 
+  data set (e.g., samples or transcripts).
+For example, if we want to define cell-type specific signatures with 
+low sample redundancy.
 This function returns a tibble with dropped redundant elements (e.g., samples).
 Two redundancy estimation approaches are supported:
-(i) removal of highly correlated clusters of elements (keeping a representative) with method="correlation";
+(i) removal of highly correlated clusters of elements (keeping a 
+representative) with method="correlation";
 (ii) removal of most proximal element pairs in a reduced dimensional space.
 
 Underlying method for correlation:
-widyr::pairwise_cor(sample, transcript,count, sort = TRUE, diag = FALSE, upper = FALSE)
+widyr::pairwise_cor(sample, transcript,count, sort = TRUE, 
+                    diag = FALSE, upper = FALSE)
 
 Underlying custom method for reduced dimensions:
 select_closest_pairs = function(df) {
@@ -169,14 +191,10 @@ select_closest_pairs = function(df) {
 						!`sample 2` %in% (pair |> select(1:2) |> as.character())
 				)
 		}
-
 		couples
-
 	}
 }
 \examples{
-
-
  tidybulk::se_mini |>
  identify_abundant() |>
    remove_redundancy(

@@ -71,17 +71,22 @@ test_gene_overrepresentation(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and 
+transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.entrez}{The ENTREZ ID of the transcripts/genes}
 
 \item{.do_test}{A boolean column name symbol. It indicates the transcript to check}
 
-\item{species}{A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")}
+\item{species}{A character. For example, human or mouse. MSigDB uses the 
+latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")}
 
 \item{.sample}{The name of the sample column}
 
-\item{gene_sets}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
+\item{gene_sets}{A character vector. The subset of MSigDB datasets you want 
+to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). 
+This argument was added to avoid time overflow of the examples.}
 
 \item{gene_set}{DEPRECATED. Use gene_sets instead.}
 }
@@ -99,12 +104,16 @@ A `SummarizedExperiment` object
 A `RangedSummarizedExperiment` object
 }
 \description{
-test_gene_overrepresentation() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` with the GSEA statistics
+test_gene_overrepresentation() takes as input a `tbl` 
+(with at least three columns for sample, feature and transcript abundance) 
+or `SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a `tbl` with the GSEA statistics
 }
 \details{
 `r lifecycle::badge("maturing")`
 
-This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
+This wrapper execute gene enrichment analyses of the dataset using 
+a list of transcripts and GSEA.
 This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
 
 Undelying method:

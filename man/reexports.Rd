@@ -3,8 +3,8 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
-\alias{select}
 \alias{do}
+\alias{select}
 \alias{tibble}
 \alias{as_tibble}
 \title{Objects exported from other packages}
