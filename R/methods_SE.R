@@ -2910,7 +2910,6 @@ setMethod("describe_transcript", "SummarizedExperiment",
 #' @docType methods
 #' @rdname describe_transcript-methods
 #'
-<<<<<<< HEAD
 #' @return A consistent object (to the input) including additional columns for transcript symbol
 setMethod("describe_transcript", "RangedSummarizedExperiment", .describe_transcript_SE)
 
@@ -2966,9 +2965,3 @@ setMethod("resolve_complete_confounders_of_non_interest",
 setMethod("resolve_complete_confounders_of_non_interest",
           "RangedSummarizedExperiment",
           .resolve_complete_confounders_of_non_interest)
-=======
-#' @return A consistent object (to the input) including additional columns 
-#' for transcript symbol
-setMethod("describe_transcript", "RangedSummarizedExperiment", 
-          .describe_transcript_SE)
->>>>>>> chilampoon-improve-documentation
