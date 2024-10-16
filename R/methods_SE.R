@@ -2895,6 +2895,8 @@ setMethod("describe_transcript", "RangedSummarizedExperiment", .describe_transcr
   combination_of_factors_of_NON_interest =
     # Factors
     se[1,1, drop=FALSE] |>
+    colData() |> 
+    as_tibble(rownames = ".sample") |> 
     select(...) |>
     suppressWarnings() |>
     colnames() |>
