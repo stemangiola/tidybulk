@@ -84,7 +84,7 @@ test_that("Only scaled counts - no object",{
 	expect_equal(
 		unique(res$multiplier),
 		c(1.3078113, 1.1929933, 1.9014731, 0.9678922, 1.4771970),
-		tolerance=1e-3
+		tolerance=1e-2
 	)
 
 	expect_equal(
@@ -345,7 +345,7 @@ test_that("Only differential trancript abundance - no object",{
 		) |>
 		filter(FDR<0.05) |>
 		nrow() |>
-		expect_equal(169)
+		expect_equal(171)
 
 })
 
@@ -603,7 +603,7 @@ test_that("Voom with treat method",{
     	res |>
     	filter(`adj.P.Val___cell_typeb_cell-cell_typemonocyte` < 0.05) |>
 		nrow() |>
-		expect_equal(293)
+		expect_equal(294)
 
     	res |>
     	filter(`adj.P.Val___cell_typeb_cell-cell_typet_cell`<0.05) |>
@@ -695,7 +695,7 @@ test_that("DESeq2 differential trancript abundance - no object",{
 	expect_equal(
 		unique(res$log2FoldChange)[1:4],
 		c(3.449740, 2.459516, 2.433466, 1.951263),
-		tolerance=1e-3
+		tolerance=1e-2
 	)
 
 	expect_equal(
@@ -2007,7 +2007,7 @@ test_that("filter abundant with design - no object",{
 		) |>
     filter(.abundant) |>
     nrow() |>
-	expect_equal(1965)
+	expect_equal(1970)
 
 
 

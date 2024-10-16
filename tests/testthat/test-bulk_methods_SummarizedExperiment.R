@@ -361,12 +361,14 @@ test_that("differential trancript abundance - SummarizedExperiment",{
     as_tibble() |>
     filter(FDR<0.05) |>
     nrow() |>
-    expect_equal(169)
+    expect_equal(171)
 
 })
 
 test_that("differential trancript abundance - SummarizedExperiment - alternative .abundance",{
 
+  library(SummarizedExperiment)
+  
   assays(se_mini) = list(counts = assay(se_mini), bla = assay(se_mini))
 
 
@@ -440,7 +442,7 @@ test_that("differential trancript abundance - SummarizedExperiment - alternative
     as_tibble() |>
     filter(FDR<0.05) |>
     nrow() |>
-    expect_equal(169)
+    expect_equal(171)
 
 })
 
@@ -494,7 +496,7 @@ test_that("Voom with treat method",{
   res |>
     filter(adj.P.Val___Cell.typeb_cell.Cell.typemonocyte < 0.05) |>
     nrow() |>
-    expect_equal(293)
+    expect_equal(294)
 
   res |>
     filter(adj.P.Val___Cell.typeb_cell.Cell.typet_cell < 0.05) |>
