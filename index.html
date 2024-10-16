@@ -6,12 +6,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Brings transcriptomics to the tidyverse • tidybulk</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -26,7 +20,7 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -40,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.17.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.17.5</span>
       </span>
     </div>
 
@@ -52,7 +46,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -66,7 +60,7 @@
 <li>
   <a href="https://github.com/stemangiola/tidybulk/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -77,7 +71,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="contents col-md-9">
@@ -111,121 +105,121 @@
 </h2>
 <table class="table">
 <colgroup>
-<col width="30%">
-<col width="69%">
+<col width="50%">
+<col width="50%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Function</th>
 <th>Description</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><code>aggregate_duplicates</code></td>
 <td>Aggregate abundance and annotation of duplicated transcripts in a robust way</td>
 </tr>
-<tr class="even">
+<tr>
 <td>
 <code>identify_abundant</code> <code>keep_abundant</code>
 </td>
 <td>identify or keep the abundant genes</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>keep_variable</code></td>
 <td>Filter for top variable features</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>scale_abundance</code></td>
 <td>Scale (normalise) abundance for RNA sequencing depth</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>reduce_dimensions</code></td>
 <td>Perform dimensionality reduction (PCA, MDS, tSNE, UMAP)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>cluster_elements</code></td>
 <td>Labels elements with cluster identity (kmeans, SNN)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>remove_redundancy</code></td>
 <td>Filter out elements with highly correlated features</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>adjust_abundance</code></td>
 <td>Remove known unwanted variation (Combat)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>test_differential_abundance</code></td>
 <td>Differential transcript abundance testing (DESeq2, edgeR, voom)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>deconvolve_cellularity</code></td>
 <td>Estimated tissue composition (Cibersort, llsr, epic, xCell, mcp_counter, quantiseq</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>test_differential_cellularity</code></td>
 <td>Differential cell-type abundance testing</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>test_stratification_cellularity</code></td>
 <td>Estimate Kaplan-Meier survival differences</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>test_gene_enrichment</code></td>
 <td>Gene enrichment analyses (EGSEA)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>test_gene_overrepresentation</code></td>
 <td>Gene enrichment on list of transcript names (no rank)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>test_gene_rank</code></td>
 <td>Gene enrichment on list of transcript (GSEA)</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>impute_missing_abundance</code></td>
 <td>Impute abundance for missing data points using sample groupings</td>
 </tr>
 </tbody>
 </table>
 <table class="table">
-<thead><tr class="header">
+<thead><tr>
 <th>Utilities</th>
 <th>Description</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><code>get_bibliography</code></td>
 <td>Get the bibliography of your workflow</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>tidybulk</code></td>
 <td>add tidybulk attributes to a tibble object</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>tidybulk_SAM_BAM</code></td>
 <td>Convert SAM BAM files into tidybulk tibble</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>pivot_sample</code></td>
 <td>Select sample-wise columns/information</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>pivot_transcript</code></td>
 <td>Select transcript-wise columns/information</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>rotate_dimensions</code></td>
 <td>Rotate two dimensions of a degree</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>ensembl_to_symbol</code></td>
 <td>Add gene symbol from ensembl IDs</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>symbol_to_entrez</code></td>
 <td>Add entrez ID from gene symbol</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>describe_transcript</code></td>
 <td>Add gene description from gene symbol</td>
 </tr>
@@ -531,18 +525,18 @@
 <span>    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <div class="sourceCode" id="cb32"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="do">## [90m# A tibble: 251 × 4[39m</span></span>
-<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="do">##     tSNE1   tSNE2 .sample                      Call </span></span>
-<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="do">##     [3m[90m&lt;dbl&gt;[39m[23m   [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;chr&gt;[39m[23m                        [3m[90m&lt;fct&gt;[39m[23m</span></span>
-<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="do">## [90m 1[39m  -[31m1[39m[31m.[39m[31m35[39m -[31m13[39m[31m.[39m[31m5[39m   TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
-<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="do">## [90m 2[39m   1.08   5.48  TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
-<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="do">## [90m 3[39m  10.7   -[31m8[39m[31m.[39m[31m23[39m  TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
-<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a><span class="do">## [90m 4[39m -[31m12[39m[31m.[39m[31m2[39m   -[31m2[39m[31m.[39m[31m0[39m[31m7[39m  TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
-<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a><span class="do">## [90m 5[39m -[31m15[39m[31m.[39m[31m2[39m   -[31m3[39m[31m.[39m[31m36[39m  TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
-<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="do">## [90m 6[39m   6.36   0.421 TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
-<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a><span class="do">## [90m 7[39m  -[31m4[39m[31m.[39m[31m00[39m  30.3   TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
-<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a><span class="do">## [90m 8[39m -[31m15[39m[31m.[39m[31m3[39m    5.79  TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
-<span id="cb32-12"><a href="#cb32-12" tabindex="-1"></a><span class="do">## [90m 9[39m -[31m14[39m[31m.[39m[31m2[39m    6.78  TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
-<span id="cb32-13"><a href="#cb32-13" tabindex="-1"></a><span class="do">## [90m10[39m  15.9  -[31m14[39m[31m.[39m[31m6[39m   TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="do">##      tSNE1  tSNE2 .sample                      Call </span></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="do">##      [3m[90m&lt;dbl&gt;[39m[23m  [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;chr&gt;[39m[23m                        [3m[90m&lt;fct&gt;[39m[23m</span></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="do">## [90m 1[39m  -[31m9[39m[31m.[39m[31m0[39m[31m8[39m   -[31m4[39m[31m.[39m[31m37[39m TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="do">## [90m 2[39m   0.739   9.67 TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="do">## [90m 3[39m -[31m20[39m[31m.[39m[31m2[39m    -[31m4[39m[31m.[39m[31m56[39m TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a><span class="do">## [90m 4[39m  -[31m1[39m[31m.[39m[31m0[39m[31m9[39m   -[31m1[39m[31m.[39m[31m0[39m[31m2[39m TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a><span class="do">## [90m 5[39m  -[31m5[39m[31m.[39m[31m0[39m[31m2[39m   -[31m1[39m[31m.[39m[31m0[39m[31m6[39m TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
+<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="do">## [90m 6[39m   2.23    2.85 TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
+<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a><span class="do">## [90m 7[39m  30.0    17.2  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
+<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a><span class="do">## [90m 8[39m   7.12   -[31m2[39m[31m.[39m[31m29[39m TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
+<span id="cb32-12"><a href="#cb32-12" tabindex="-1"></a><span class="do">## [90m 9[39m   6.11   -[31m3[39m[31m.[39m[31m15[39m TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
+<span id="cb32-13"><a href="#cb32-13" tabindex="-1"></a><span class="do">## [90m10[39m -[31m17[39m[31m.[39m[31m8[39m   -[31m11[39m[31m.[39m[31m8[39m  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
 <span id="cb32-14"><a href="#cb32-14" tabindex="-1"></a><span class="do">## [90m# ℹ 241 more rows[39m</span></span></code></pre></div>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op">|&gt;</span></span>
@@ -788,16 +782,16 @@
 <div class="sourceCode" id="cb52"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="do">## [90m# A tibble: 22 × 6[39m</span></span>
 <span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a><span class="do">##    .cell_type         cell_type_proportions estimate std.error statistic p.value</span></span>
 <span id="cb52-3"><a href="#cb52-3" tabindex="-1"></a><span class="do">##    [3m[90m&lt;chr&gt;[39m[23m              [3m[90m&lt;list&gt;[39m[23m                   [3m[90m&lt;dbl&gt;[39m[23m     [3m[90m&lt;dbl&gt;[39m[23m     [3m[90m&lt;dbl&gt;[39m[23m   [3m[90m&lt;dbl&gt;[39m[23m</span></span>
-<span id="cb52-4"><a href="#cb52-4" tabindex="-1"></a><span class="do">## [90m 1[39m cibersort.B.cells… [90m&lt;tibble [48 × 9]&gt;[39m      -[31m2[39m[31m.[39m[31m95[39m       1.07    -[31m2[39m[31m.[39m[31m77[39m   0.005[4m6[24m[4m8[24m</span></span>
-<span id="cb52-5"><a href="#cb52-5" tabindex="-1"></a><span class="do">## [90m 2[39m cibersort.B.cells… [90m&lt;tibble [48 × 9]&gt;[39m      -[31m2[39m[31m.[39m[31m10[39m       0.837   -[31m2[39m[31m.[39m[31m51[39m   0.012[4m2[24m </span></span>
-<span id="cb52-6"><a href="#cb52-6" tabindex="-1"></a><span class="do">## [90m 3[39m cibersort.Plasma.… [90m&lt;tibble [48 × 9]&gt;[39m      -[31m1[39m[31m.[39m[31m86[39m       1.73    -[31m1[39m[31m.[39m[31m0[39m[31m7[39m   0.285  </span></span>
-<span id="cb52-7"><a href="#cb52-7" tabindex="-1"></a><span class="do">## [90m 4[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m      -[31m2[39m[31m.[39m[31m15[39m       2.40    -[31m0[39m[31m.[39m[31m897[39m  0.370  </span></span>
-<span id="cb52-8"><a href="#cb52-8" tabindex="-1"></a><span class="do">## [90m 5[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       1.05       0.711    1.47   0.140  </span></span>
-<span id="cb52-9"><a href="#cb52-9" tabindex="-1"></a><span class="do">## [90m 6[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       0.322      0.809    0.398  0.691  </span></span>
-<span id="cb52-10"><a href="#cb52-10" tabindex="-1"></a><span class="do">## [90m 7[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m      -[31m0[39m[31m.[39m[31m0[39m[31m43[4m6[24m[39m     1.31    -[31m0[39m[31m.[39m[31m0[39m[31m33[4m3[24m[39m 0.973  </span></span>
-<span id="cb52-11"><a href="#cb52-11" tabindex="-1"></a><span class="do">## [90m 8[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m      -[31m1[39m[31m.[39m[31m98[39m       0.673   -[31m2[39m[31m.[39m[31m94[39m   0.003[4m3[24m[4m1[24m</span></span>
-<span id="cb52-12"><a href="#cb52-12" tabindex="-1"></a><span class="do">## [90m 9[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m      -[31m1[39m[31m.[39m[31m30[39m       1.26    -[31m1[39m[31m.[39m[31m0[39m[31m4[39m   0.300  </span></span>
-<span id="cb52-13"><a href="#cb52-13" tabindex="-1"></a><span class="do">## [90m10[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m      -[31m0[39m[31m.[39m[31m577[39m      0.915   -[31m0[39m[31m.[39m[31m631[39m  0.528  </span></span>
+<span id="cb52-4"><a href="#cb52-4" tabindex="-1"></a><span class="do">## [90m 1[39m cibersort.B.cells… [90m&lt;tibble [48 × 9]&gt;[39m        3.57      1.29      2.77  0.005[4m6[24m[4m5[24m</span></span>
+<span id="cb52-5"><a href="#cb52-5" tabindex="-1"></a><span class="do">## [90m 2[39m cibersort.B.cells… [90m&lt;tibble [48 × 9]&gt;[39m       -[31m0[39m[31m.[39m[31m333[39m     0.523    -[31m0[39m[31m.[39m[31m638[39m 0.524  </span></span>
+<span id="cb52-6"><a href="#cb52-6" tabindex="-1"></a><span class="do">## [90m 3[39m cibersort.Plasma.… [90m&lt;tibble [48 × 9]&gt;[39m        0.269     0.538     0.499 0.618  </span></span>
+<span id="cb52-7"><a href="#cb52-7" tabindex="-1"></a><span class="do">## [90m 4[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m        5.10      2.95      1.73  0.083[4m5[24m </span></span>
+<span id="cb52-8"><a href="#cb52-8" tabindex="-1"></a><span class="do">## [90m 5[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m        4.66      1.88      2.47  0.013[4m5[24m </span></span>
+<span id="cb52-9"><a href="#cb52-9" tabindex="-1"></a><span class="do">## [90m 6[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m        0.994     1.23      0.811 0.418  </span></span>
+<span id="cb52-10"><a href="#cb52-10" tabindex="-1"></a><span class="do">## [90m 7[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m        1.12      1.45      0.772 0.440  </span></span>
+<span id="cb52-11"><a href="#cb52-11" tabindex="-1"></a><span class="do">## [90m 8[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m        2.02      0.755     2.67  0.007[4m5[24m[4m6[24m</span></span>
+<span id="cb52-12"><a href="#cb52-12" tabindex="-1"></a><span class="do">## [90m 9[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m        0.455     1.01      0.451 0.652  </span></span>
+<span id="cb52-13"><a href="#cb52-13" tabindex="-1"></a><span class="do">## [90m10[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       10.9       4.86      2.23  0.025[4m6[24m </span></span>
 <span id="cb52-14"><a href="#cb52-14" tabindex="-1"></a><span class="do">## [90m# ℹ 12 more rows[39m</span></span></code></pre></div>
 <p>We can also perform test of Kaplan-Meier curves.</p>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
@@ -814,16 +808,16 @@
 <div class="sourceCode" id="cb54"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="do">## [90m# A tibble: 22 × 6[39m</span></span>
 <span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a><span class="do">##    .cell_type                       cell_type_proportions .low_cellularity_exp…¹</span></span>
 <span id="cb54-3"><a href="#cb54-3" tabindex="-1"></a><span class="do">##    [3m[90m&lt;chr&gt;[39m[23m                            [3m[90m&lt;list&gt;[39m[23m                                 [3m[90m&lt;dbl&gt;[39m[23m</span></span>
-<span id="cb54-4"><a href="#cb54-4" tabindex="-1"></a><span class="do">## [90m 1[39m cibersort.B.cells.naive          [90m&lt;tibble [48 × 9]&gt;[39m                       11.2</span></span>
-<span id="cb54-5"><a href="#cb54-5" tabindex="-1"></a><span class="do">## [90m 2[39m cibersort.B.cells.memory         [90m&lt;tibble [48 × 9]&gt;[39m                       17.1</span></span>
-<span id="cb54-6"><a href="#cb54-6" tabindex="-1"></a><span class="do">## [90m 3[39m cibersort.Plasma.cells           [90m&lt;tibble [48 × 9]&gt;[39m                       15.3</span></span>
-<span id="cb54-7"><a href="#cb54-7" tabindex="-1"></a><span class="do">## [90m 4[39m cibersort.T.cells.CD8            [90m&lt;tibble [48 × 9]&gt;[39m                       13.2</span></span>
-<span id="cb54-8"><a href="#cb54-8" tabindex="-1"></a><span class="do">## [90m 5[39m cibersort.T.cells.CD4.naive      [90m&lt;tibble [48 × 9]&gt;[39m                       13.3</span></span>
-<span id="cb54-9"><a href="#cb54-9" tabindex="-1"></a><span class="do">## [90m 6[39m cibersort.T.cells.CD4.memory.re… [90m&lt;tibble [48 × 9]&gt;[39m                       12.3</span></span>
-<span id="cb54-10"><a href="#cb54-10" tabindex="-1"></a><span class="do">## [90m 7[39m cibersort.T.cells.CD4.memory.ac… [90m&lt;tibble [48 × 9]&gt;[39m                       14.6</span></span>
-<span id="cb54-11"><a href="#cb54-11" tabindex="-1"></a><span class="do">## [90m 8[39m cibersort.T.cells.follicular.he… [90m&lt;tibble [48 × 9]&gt;[39m                       14.7</span></span>
-<span id="cb54-12"><a href="#cb54-12" tabindex="-1"></a><span class="do">## [90m 9[39m cibersort.T.cells.regulatory..T… [90m&lt;tibble [48 × 9]&gt;[39m                       10.3</span></span>
-<span id="cb54-13"><a href="#cb54-13" tabindex="-1"></a><span class="do">## [90m10[39m cibersort.T.cells.gamma.delta    [90m&lt;tibble [48 × 9]&gt;[39m                       17.7</span></span>
+<span id="cb54-4"><a href="#cb54-4" tabindex="-1"></a><span class="do">## [90m 1[39m cibersort.B.cells.naive          [90m&lt;tibble [48 × 9]&gt;[39m                       8.77</span></span>
+<span id="cb54-5"><a href="#cb54-5" tabindex="-1"></a><span class="do">## [90m 2[39m cibersort.B.cells.memory         [90m&lt;tibble [48 × 9]&gt;[39m                      10.6 </span></span>
+<span id="cb54-6"><a href="#cb54-6" tabindex="-1"></a><span class="do">## [90m 3[39m cibersort.Plasma.cells           [90m&lt;tibble [48 × 9]&gt;[39m                      13.2 </span></span>
+<span id="cb54-7"><a href="#cb54-7" tabindex="-1"></a><span class="do">## [90m 4[39m cibersort.T.cells.CD8            [90m&lt;tibble [48 × 9]&gt;[39m                       9.32</span></span>
+<span id="cb54-8"><a href="#cb54-8" tabindex="-1"></a><span class="do">## [90m 5[39m cibersort.T.cells.CD4.naive      [90m&lt;tibble [48 × 9]&gt;[39m                      12.3 </span></span>
+<span id="cb54-9"><a href="#cb54-9" tabindex="-1"></a><span class="do">## [90m 6[39m cibersort.T.cells.CD4.memory.re… [90m&lt;tibble [48 × 9]&gt;[39m                       9.25</span></span>
+<span id="cb54-10"><a href="#cb54-10" tabindex="-1"></a><span class="do">## [90m 7[39m cibersort.T.cells.CD4.memory.ac… [90m&lt;tibble [48 × 9]&gt;[39m                      10.9 </span></span>
+<span id="cb54-11"><a href="#cb54-11" tabindex="-1"></a><span class="do">## [90m 8[39m cibersort.T.cells.follicular.he… [90m&lt;tibble [48 × 9]&gt;[39m                      15.7 </span></span>
+<span id="cb54-12"><a href="#cb54-12" tabindex="-1"></a><span class="do">## [90m 9[39m cibersort.T.cells.regulatory..T… [90m&lt;tibble [48 × 9]&gt;[39m                       7.30</span></span>
+<span id="cb54-13"><a href="#cb54-13" tabindex="-1"></a><span class="do">## [90m10[39m cibersort.T.cells.gamma.delta    [90m&lt;tibble [48 × 9]&gt;[39m                      15.3 </span></span>
 <span id="cb54-14"><a href="#cb54-14" tabindex="-1"></a><span class="do">## [90m# ℹ 12 more rows[39m</span></span>
 <span id="cb54-15"><a href="#cb54-15" tabindex="-1"></a><span class="do">## [90m# ℹ abbreviated name: ¹​.low_cellularity_expected[39m</span></span>
 <span id="cb54-16"><a href="#cb54-16" tabindex="-1"></a><span class="do">## [90m# ℹ 3 more variables: .high_cellularity_expected &lt;dbl&gt;, pvalue &lt;dbl&gt;,[39m</span></span>
@@ -1123,16 +1117,16 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>
