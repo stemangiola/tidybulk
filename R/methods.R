@@ -627,14 +627,14 @@ setMethod("scale_abundance", "tidybulk", .scale_abundance)
 #' The scaling inference is then applied back to all unfiltered data.
 #'
 #' Underlying method
-#' 
+#'
 #' If `limma_normalize_quantiles` is chosen
-#' 
+#'
 #' .data |>limma::normalizeQuantiles()
-#'  
+#'
 #'  If `preprocesscore_normalize_quantiles_use_target` is chosen
-#'  
-#' .data |> 
+#'
+#' .data |>
 #'    preprocessCore::normalize.quantiles.use.target(
 #'       target = preprocessCore::normalize.quantiles.determine.target(.data)
 #'    )
@@ -674,6 +674,7 @@ setGeneric("quantile_normalise_abundance", function(
                                           method = "limma_normalize_quantiles",
 										  target_distribution = NULL,
                                           action = "add") {
+
 
   # Fix NOTEs
   . = NULL
@@ -727,7 +728,7 @@ setGeneric("quantile_normalise_abundance", function(
       BiocManager::install("preprocessCore", ask = FALSE)
     }
     if(is.null(target_distribution)) target_distribution = preprocessCore::normalize.quantiles.determine.target(.data_norm)
-    
+
     .data_norm_quant =
       .data_norm |>
       preprocessCore::normalize.quantiles.use.target(

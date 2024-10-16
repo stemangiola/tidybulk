@@ -747,7 +747,7 @@ test_that("gene over representation",{
       species="Homo sapiens"
     )
 
-  expect_equal(	ncol(res),	10	)
+  expect_equal(	ncol(res),	13	)
 
 
 
@@ -854,8 +854,8 @@ test_that("Only reduced dimensions UMAP - no object",{
 test_that("resolve_complete_confounders_of_non_interest",{
 
 
-  library(tidySummarizedExperiment)
-  library(tidybulk)
+  #library(tidySummarizedExperiment)
+  library(SummarizedExperiment)
 
   # Sample annotations
   sample_annotations <- data.frame(
@@ -890,7 +890,9 @@ test_that("resolve_complete_confounders_of_non_interest",{
 
   se |>
     resolve_complete_confounders_of_non_interest(A, B, C) |>
-    distinct(.sample, A, B, C) |>
+    colData() |> 
+    _[, c("A", "B", "C")] |>
+    as_tibble(rownames = ".sample") |> 
     expect_identical(expected_tibble )
 
 

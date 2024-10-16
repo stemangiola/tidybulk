@@ -794,7 +794,7 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 	    "with `___` in the design matrix, in order to work with edgeR.")
 	  colnames(design) = design |> colnames() |> str_replace(":", "___") 
 	}
-	
+
 	# Print the design column names in case I want contrasts
 	message(
 		sprintf(
@@ -1137,6 +1137,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' "edgeR_likelihood_ratio" (i.e., LRT)
 #' @param scaling_method A character string. The scaling method passed to the 
 #' backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param .scaling_factor A tidyeval (column name) for the precalculated TMM scaling
 #' @param omit_contrast_in_colnames If just one contrast is specified you can 
 #' choose to omit the contrast label in the colnames.
 #' @param ... Additional arguments for glmmSeq
@@ -1151,15 +1152,16 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
                                             method,
 
                                             test_above_log2_fold_change = NULL,
-
-                                            scaling_method = "TMM",
-                                            omit_contrast_in_colnames = FALSE,
-                                            prefix = "",
-                                            .dispersion = NULL,
-                                            ...) {
+                                                            scaling_method = "TMM",
+                                                            .scaling_factor = NULL,
+                                                            omit_contrast_in_colnames = FALSE,
+                                                            prefix = "",
+                                                            .dispersion = NULL,
+                                                            ...) {
 
   .abundance = enquo(.abundance)
   .dispersion = enquo(.dispersion)
+  .scaling_factor = enquo(.scaling_factor)
 
   # Check if contrasts are of the same form
   if(
@@ -1233,7 +1235,10 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   dispersion = dispersion[rownames(counts)]
 
   # Scaling
-  sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
+  if(.scaling_factor |> quo_is_symbolic())
+    sizeFactors = .data |> pivot_sample() |> pull(!!.scaling_factor)
+  else
+    sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
 
 
   glmmSeq_object =
