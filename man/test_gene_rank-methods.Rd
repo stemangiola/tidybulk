@@ -71,17 +71,26 @@ test_gene_rank(
 )
 }
 \arguments{
-\item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+\item{.data}{A `tbl` (with at least three columns for sample, feature and 
+transcript abundance) or `SummarizedExperiment` (more convenient if 
+abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.entrez}{The ENTREZ ID of the transcripts/genes}
 
 \item{.arrange_desc}{A column name of the column to arrange in decreasing order}
 
-\item{species}{A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")}
+\item{species}{A character. For example, human or mouse. MSigDB uses the 
+latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")}
 
 \item{.sample}{The name of the sample column}
 
-\item{gene_sets}{A character vector or a list. It can take one or more of the following built-in collections as a character vector: c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. Alternatively, a list of user-supplied gene sets can be provided, to be used with EGSEA buildCustomIdx. In that case, each gene set is a character vector of Entrez IDs and the names of the list are the gene set names.}
+\item{gene_sets}{A character vector or a list. It can take one or more of 
+the following built-in collections as a character vector: c("h", "c1", "c2", 
+"c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", 
+"kegg_signaling"), to be used with EGSEA buildIdx. c1 is human specific. 
+Alternatively, a list of user-supplied gene sets can be provided, to be used 
+with EGSEA buildCustomIdx. In that case, each gene set is a character vector 
+of Entrez IDs and the names of the list are the gene set names.}
 
 \item{gene_set}{DEPRECATED. Use gene_sets instead.}
 }
@@ -99,19 +108,24 @@ A `SummarizedExperiment` object
 A `RangedSummarizedExperiment` object
 }
 \description{
-test_gene_rank() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` with the GSEA statistics
+test_gene_rank() takes as input a `tbl` (with at least three 
+columns for sample, feature and transcript abundance) or 
+`SummarizedExperiment` (more convenient if abstracted to tibble with 
+library(tidySummarizedExperiment)) and returns a `tbl` with the GSEA statistics
 }
 \details{
 \lifecycle{maturing}
 
-This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
+This wrapper execute gene enrichment analyses of the dataset using 
+a list of transcripts and GSEA.
 This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
 
 Undelying method:
 # Get gene sets signatures
 msigdbr::msigdbr(species = species) %>%
 
-# Filter specific gene_sets  if specified. This was introduced to speed up examples executionS
+# Filter specific gene_sets  if specified. This was introduced to speed up 
+examples executionS
 when(
 	!is.null(gene_sets ) ~ filter(., gs_cat %in% gene_sets ),
 	~ (.)

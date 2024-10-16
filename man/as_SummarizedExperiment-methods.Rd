@@ -55,5 +55,7 @@ A `SummarizedExperiment` object
 A `SummarizedExperiment` object
 }
 \description{
-as_SummarizedExperiment() creates a `SummarizedExperiment` object from a `tbl` or `tidybulk` tbl formatted as | <SAMPLE> | <TRANSCRIPT> | <COUNT> | <...> |
+as_SummarizedExperiment() creates a `SummarizedExperiment` 
+  object from a `tbl` or `tidybulk` tbl formatted as | <SAMPLE> | 
+  <TRANSCRIPT> | <COUNT> | <...> |
 }

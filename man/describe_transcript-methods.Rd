@@ -41,9 +41,11 @@ A consistent object (to the input) including additional columns for transcript s
 
 A `SummarizedExperiment` object
 
-A consistent object (to the input) including additional columns for transcript symbol
+A consistent object (to the input) including additional 
+columns for transcript symbol
 
-A consistent object (to the input) including additional columns for transcript symbol
+A consistent object (to the input) including additional columns 
+for transcript symbol
 }
 \description{
 Get DESCRIPTION from gene SYMBOL for Human and Mouse
