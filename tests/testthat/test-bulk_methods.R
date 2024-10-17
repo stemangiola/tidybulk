@@ -655,11 +655,8 @@ test_that("New method choice",{
 
 test_that("DESeq2 differential trancript abundance - no object",{
 
-  if (find.package("DESeq2", quiet = TRUE) |> length() |> equals(0)) {
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("DESeq2", ask = FALSE)
-  }
+  check_and_install_packages("DESeq2")
+  
 
   test_deseq2_df = DESeq2::DESeqDataSet(se_mini,design=~condition)
   colData(test_deseq2_df)$condition = factor(colData(test_deseq2_df)$condition)

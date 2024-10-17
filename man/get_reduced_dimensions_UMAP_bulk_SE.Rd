@@ -28,7 +28,7 @@ get_reduced_dimensions_UMAP_bulk_SE(
 
 \item{calculate_for_pca_dimensions}{An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered}
 
-\item{...}{Further parameters passed to the function uwot}
+\item{...}{Further parameters passed to the function uwot::tumap}
 
 \item{.abundance}{A column symbol with the value the clustering is based on (e.g., `count`)}
 

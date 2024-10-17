@@ -184,7 +184,7 @@ glmmTMB_to_confidence_intervals_random_effects = function(fit){
       pivot_longer(-group_id, names_to = "parameter", values_to = "CI")
   )
 
-  mod = glmmTMB::ranef(fit, condVar=T)$cond
+  mod = glmmTMB::ranef(fit, condVar=TRUE)$cond
   mod = map2_dfr(
     mod, names(mod),
     ~ .x |>
@@ -230,7 +230,7 @@ lmer_to_confidence_intervals_random_effects = function(fit){
       pivot_longer(-group_id, names_to = "parameter", values_to = "CI")
   )
 
-  mod = lme4::ranef(fit, condVar=T)
+  mod = lme4::ranef(fit, condVar=TRUE)
   mod = map2_dfr(
     mod, names(mod),
     ~ .x |>
@@ -581,12 +581,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       if (progress) {
 
         # Check if package is installed, otherwise install
-        if (find.package("pblapply", quiet = TRUE) %>% length %>% equals(0)) {
-          message("tidybulk says: Installing pblapply needed for differential transcript abundance analyses")
-          if (!requireNamespace("BiocManager", quietly = TRUE))
-            install.packages("BiocManager", repos = "https://cloud.r-project.org")
-          BiocManager::install("pblapply", ask = FALSE)
-        }
+        check_and_install_packages("pbapply")
 
         resultList <- pbapply::pblapply(fullList, function(geneList) {
           args <- c(list(geneList = geneList, fullFormula = fullFormula,
@@ -635,12 +630,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       else if (progress) {
         
         # Check if package is installed, otherwise install
-        if (find.package("pbmcapply", quiet = TRUE) %>% length %>% equals(0)) {
-          message("tidybulk says: Installing pbmcapply needed for differential transcript abundance analyses")
-          if (!requireNamespace("BiocManager", quietly = TRUE))
-            install.packages("BiocManager", repos = "https://cloud.r-project.org")
-          BiocManager::install("pbmcapply", ask = FALSE)
-        }
+        check_and_install_packages("pbmcapply")
         
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
           glmerCore(geneList, fullFormula, reduced,
@@ -688,12 +678,8 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       if (progress) {
 
         # Check if package is installed, otherwise install
-        if (find.package("pblapply", quiet = TRUE) %>% length %>% equals(0)) {
-          message("tidybulk says: Installing pblapply needed for differential transcript abundance analyses")
-          if (!requireNamespace("BiocManager", quietly = TRUE))
-            install.packages("BiocManager", repos = "https://cloud.r-project.org")
-          BiocManager::install("pblapply", ask = FALSE)
-        }
+        check_and_install_packages("pbapply")
+      
 
         resultList <- pbapply::pblapply(fullList, function(geneList) {
           args <- c(list(geneList = geneList, fullFormula = fullFormula,
@@ -721,12 +707,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
       if (progress) {
 
         # Check if package is installed, otherwise install
-        if (find.package("pbmcapply", quiet = TRUE) %>% length %>% equals(0)) {
-          message("tidybulk says: Installing pbmcapply needed for differential transcript abundance analyses")
-          if (!requireNamespace("BiocManager", quietly = TRUE))
-            install.packages("BiocManager", repos = "https://cloud.r-project.org")
-          BiocManager::install("pbmcapply", ask = FALSE)
-        }
+        check_and_install_packages("pbmcapply")
 
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
           glmmTMBcore(geneList, fullFormula, reduced,

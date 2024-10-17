@@ -1133,16 +1133,10 @@ multivariable_differential_tissue_composition = function(
 		# Beta or Cox
 		when(
 			grepl("Surv", .my_formula) %>% any ~ {
+			  
 				# Check if package is installed, otherwise install
-				if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing betareg needed for analyses")
-					install.packages("survival", repos = "https://cloud.r-project.org")
-				}
-
-				if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing boot needed for analyses")
-					install.packages("boot", repos = "https://cloud.r-project.org")
-				}
+			  check_and_install_packages(c("survival", "boot"))
+			  
 
 				(.) %>%
 					survival::coxph(.my_formula, .)	%>%
@@ -1202,15 +1196,8 @@ univariable_differential_tissue_composition = function(
 					when(
 						grepl("Surv", .my_formula) %>% any ~ {
 							# Check if package is installed, otherwise install
-							if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-								message("Installing betareg needed for analyses")
-								install.packages("survival", repos = "https://cloud.r-project.org")
-							}
-
-							if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
-								message("Installing boot needed for analyses")
-								install.packages("boot", repos = "https://cloud.r-project.org")
-							}
+						  check_and_install_packages(c("survival", "boot"))
+						  
 
 							(.) %>%
 								mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
@@ -1220,10 +1207,8 @@ univariable_differential_tissue_composition = function(
 						} ,
 						~ {
 							# Check if package is installed, otherwise install
-							if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
-								message("Installing betareg needed for analyses")
-								install.packages("betareg", repos = "https://cloud.r-project.org")
-							}
+						  check_and_install_packages("betareg")
+						  
 							(.) %>%
 								betareg::betareg(.my_formula, .) %>%
 								broom::tidy() %>%
@@ -1246,22 +1231,12 @@ univariable_differential_tissue_stratification = function(
 ){
 
 	# Check if package is installed, otherwise install
-	if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing survival needed for analyses")
-		install.packages("survival", repos = "https://cloud.r-project.org")
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("survminer", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing survminer needed for analyses")
-		install.packages("survminer", repos = "https://cloud.r-project.org")
-	}
+  check_and_install_packages(c("survival", "survminer"))
 
 
-	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing broom needed for analyses")
-		install.packages("broom", repos = "https://cloud.r-project.org")
-	}
+
+  check_and_install_packages("broom")
+  
 
 	deconvoluted %>%
 
@@ -1324,22 +1299,8 @@ univariable_differential_tissue_stratification_SE = function(
 ){
 
 	# Check if package is installed, otherwise install
-	if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing survival needed for analyses")
-		install.packages("survival", repos = "https://cloud.r-project.org")
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("survminer", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing survminer needed for analyses")
-		install.packages("survminer", repos = "https://cloud.r-project.org")
-	}
-
-
-	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing broom needed for analyses")
-		install.packages("broom", repos = "https://cloud.r-project.org")
-	}
+  check_and_install_packages(c("survival", "survminer", "broom"))
+  
 
 	deconvoluted %>%
 
@@ -1523,4 +1484,33 @@ get_special_column_name_symbol = function(name){
 feature__ =  get_special_column_name_symbol(".feature")
 sample__ = get_special_column_name_symbol(".sample")
 
-
+check_and_install_packages <- function(packages) {
+  # Separate GitHub packages from CRAN/Bioconductor packages
+  github_packages <- packages[grepl("/", packages)]
+  regular_packages <- packages[!grepl("/", packages)]
+  
+  # Check if regular packages are installed
+  missing_regular_packages <- regular_packages[!sapply(regular_packages, requireNamespace, quietly = TRUE)]
+  
+  # Check if GitHub packages are installed
+  missing_github_packages <- github_packages[!sapply(gsub(".*/", "", github_packages), requireNamespace, quietly = TRUE)]
+  
+  # Combine all missing packages
+  missing_packages <- c(missing_regular_packages, missing_github_packages)
+  
+  # If any packages are missing, print installation instructions
+  if (length(missing_packages) > 0) {
+    stop(
+      "tidybulk says: The following packages are required:\n",
+      paste("  -", missing_packages, collapse = "\n"), "\n",
+      "Please install them by running:\n",
+      "  if (!requireNamespace('BiocManager', quietly = TRUE))\n",
+      "    install.packages('BiocManager', repos = 'https://cloud.r-project.org')\n",
+      paste0(
+        "  BiocManager::install(c(", 
+        paste0("'", missing_packages, "'", collapse = ", "), 
+        "), ask = FALSE)"
+      )
+    )
+  }
+}

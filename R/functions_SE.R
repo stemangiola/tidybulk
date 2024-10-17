@@ -59,7 +59,6 @@ get_clusters_kmeans_bulk_SE <-
 #'
 #' @import tibble
 #' @importFrom rlang :=
-#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -79,18 +78,7 @@ get_clusters_SNN_bulk_SE <-
 
 
 		# Check if package is installed, otherwise install
-		if (find.package("cluster", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing cluster")
-			install.packages("cluster", repos = "https://cloud.r-project.org")
-		}
-		if (find.package("Seurat", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing Seurat")
-			install.packages("Seurat", repos = "https://cloud.r-project.org")
-		}
-		if (find.package("KernSmooth", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing KernSmooth")
-			install.packages("KernSmooth", repos = "https://cloud.r-project.org")
-		}
+	  check_and_install_packages(c("cluster", "Seurat", "KernSmooth"))
 
 		ndims = min(c(nrow(.data), ncol(.data), 30))-1
 
@@ -314,7 +302,6 @@ we suggest to partition the dataset for sample clusters.
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
-#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -354,10 +341,8 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 
 
 		# Check if package is installed, otherwise install
-		if (find.package("Rtsne", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing Rtsne")
-			install.packages("Rtsne", repos = "https://cloud.r-project.org")
-		}
+		check_and_install_packages("Rtsne")
+
 
 		# Set perprexity to not be too high
 		if (!"perplexity" %in% names(arguments))
@@ -397,7 +382,6 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
-#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -437,10 +421,7 @@ get_reduced_dimensions_UMAP_bulk_SE <-
 
 
     # Check if package is installed, otherwise install
-    if (find.package("uwot", quiet = TRUE) %>% length %>% equals(0)) {
-      message("tidybulk says: Installing uwot")
-      install.packages("uwot", repos = "https://cloud.r-project.org")
-    }
+    check_and_install_packages("uwot")
 
 
     # Calculate based on PCA
@@ -584,10 +565,8 @@ remove_redundancy_elements_through_correlation_SE <- function(.data,
 	. = NULL
 
 	# Check if package is installed, otherwise install
-	if (find.package("widyr", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing widyr needed for correlation analyses")
-		install.packages("widyr", repos = "https://cloud.r-project.org")
-	}
+	check_and_install_packages("widyr")
+
 
 	# Get the redundant data frame
 	.data %>%
@@ -699,7 +678,6 @@ remove_redundancy_elements_though_reduced_dimensions_SE <-
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
-#' @importFrom utils install.packages
 #' @importFrom purrr when
 #' @importFrom magrittr extract2
 #'
@@ -762,12 +740,7 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 								~ NULL)
 
 	# Check if package is installed, otherwise install
-	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing edgeR needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("edgeR", ask = FALSE)
-	}
+	check_and_install_packages("edgeR")
 
 	# If no assay is specified take first
 	my_assay = ifelse(
@@ -880,7 +853,6 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
-#' @importFrom utils install.packages
 #' @importFrom purrr when
 #'
 #'
@@ -928,19 +900,17 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 		)
 	)
 
+	# Check if package is installed, otherwise install
+	check_and_install_packages("limma")
+	
+	
 	my_contrasts =
 		.contrasts %>%
 		ifelse_pipe(length(.) > 0,
 								~ limma::makeContrasts(contrasts = .x, levels = design),
 								~ NULL)
 
-	# Check if package is installed, otherwise install
-	if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing limma needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("limma", ask = FALSE)
-	}
+
 
 	# If no assay is specified take first
 	my_assay = ifelse(
@@ -1061,7 +1031,6 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
-#' @importFrom utils install.packages
 #' @importFrom purrr when
 #'
 #'
@@ -1118,12 +1087,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   # }
 
   # Check if package is installed, otherwise install
-  if (find.package("glmmSeq", quiet = TRUE) %>% length %>% equals(0)) {
-    message("tidybulk says: Installing glmmSeq needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("glmmSeq", ask = FALSE)
-  }
+  check_and_install_packages("glmmSeq")
 
   # If no assay is specified take first
   my_assay = ifelse(
@@ -1225,7 +1189,6 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
-#' @importFrom utils install.packages
 #' @importFrom purrr when
 #'
 #'
@@ -1268,12 +1231,8 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 	}
 
 	# Check if package is installed, otherwise install
-	if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing DESeq2 needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("DESeq2", ask = FALSE)
-	}
+  check_and_install_packages("DESeq2")
+
 
         if (is.null(test_above_log2_fold_change)) {
           test_above_log2_fold_change <- 0
@@ -1396,15 +1355,8 @@ multivariable_differential_tissue_composition_SE = function(
 		when(
 			grepl("Surv", .my_formula) %>% any ~ {
 				# Check if package is installed, otherwise install
-				if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing betareg needed for analyses")
-					install.packages("survival", repos = "https://cloud.r-project.org")
-				}
-
-				if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing boot needed for analyses")
-					install.packages("boot", repos = "https://cloud.r-project.org")
-				}
+			  check_and_install_packages(c("survival", "boot"))
+			  
 
 				(.) %>%
 					survival::coxph(.my_formula, .)	%>%
@@ -1466,15 +1418,8 @@ univariable_differential_tissue_composition_SE = function(
 					when(
 						grepl("Surv", .my_formula) %>% any ~ {
 							# Check if package is installed, otherwise install
-							if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-								message("Installing betareg needed for analyses")
-								install.packages("survival", repos = "https://cloud.r-project.org")
-							}
-
-							if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
-								message("Installing boot needed for analyses")
-								install.packages("boot", repos = "https://cloud.r-project.org")
-							}
+						  check_and_install_packages(c("survival", "boot"))
+						
 
 							(.) %>%
 								mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
@@ -1484,10 +1429,8 @@ univariable_differential_tissue_composition_SE = function(
 						} ,
 						~ {
 							# Check if package is installed, otherwise install
-							if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
-								message("Installing betareg needed for analyses")
-								install.packages("betareg", repos = "https://cloud.r-project.org")
-							}
+						  check_and_install_packages("betareg")
+						  
 							(.) %>%
 								betareg::betareg(.my_formula, .) %>%
 								broom::tidy() %>%

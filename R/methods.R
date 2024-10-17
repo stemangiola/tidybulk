@@ -150,18 +150,7 @@ setGeneric("as_SummarizedExperiment", function(.data,
 	.abundance = col_names$.abundance
 
 	# Check if package is installed, otherwise install
-	if (find.package("SummarizedExperiment", quiet = TRUE) |> length() |> equals(0)) {
-		message("Installing SummarizedExperiment")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("SummarizedExperiment", ask = FALSE)
-	}
-	if (find.package("S4Vectors", quiet = TRUE) |> length() %>% equals(0)) {
-		message("Installing S4Vectors")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("S4Vectors", ask = FALSE)
-	}
+	check_and_install_packages(c("SummarizedExperiment", "S4Vectors"))
 
 	# If present get the scaled abundance
 	.abundance_scaled =
@@ -673,12 +662,8 @@ setGeneric("quantile_normalise_abundance", function(.data,
   if(tolower(method) == "limma_normalize_quantiles"){
 
     # Check if package is installed, otherwise install
-    if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
-      message("tidybulk says: Installing limma needed for analyses")
-      if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager", repos = "https://cloud.r-project.org")
-      BiocManager::install("limma", ask = FALSE)
-    }
+    check_and_install_packages("limma")
+
 
     .data_norm =
       .data_norm |>
@@ -687,12 +672,7 @@ setGeneric("quantile_normalise_abundance", function(.data,
   else if(tolower(method) == "preprocesscore_normalize_quantiles_use_target"){
 
     # Check if package is installed, otherwise install
-    if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
-      message("tidybulk says: Installing preprocessCore needed for analyses")
-      if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager", repos = "https://cloud.r-project.org")
-      BiocManager::install("preprocessCore", ask = FALSE)
-    }
+    check_and_install_packages("preprocessCore")
 
     if(is.null(target_distribution)) target_distribution = preprocessCore::normalize.quantiles.determine.target(.data_norm)
 
@@ -2298,12 +2278,7 @@ symbol_to_entrez = function(.data,
 	.transcript = col_names$.transcript
 
 	# Check if package is installed, otherwise install
-	if (find.package("org.Hs.eg.db", quiet = TRUE) |> length() |> equals(0)) {
-		message("Installing org.Hs.eg.db needed for annotation")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Hs.eg.db", ask = FALSE)
-	}
+	check_and_install_packages("org.Hs.eg.db")
 
 	.data |>
 
@@ -2367,28 +2342,7 @@ setGeneric("describe_transcript", function(.data,
 
 
 	# Check if package is installed, otherwise install
-	if (find.package("org.Hs.eg.db", quiet = TRUE) |> length() |> equals(0)) {
-		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Hs.eg.db", ask = FALSE)
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("org.Mm.eg.db", quiet = TRUE) |> length() |> equals(0)) {
-		message("Installing org.Mm.eg.db needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Mm.eg.db", ask = FALSE)
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("AnnotationDbi", quiet = TRUE) |> length() |> equals(0)) {
-		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("AnnotationDbi", ask = FALSE)
-	}
+	check_and_install_packages(c("org.Hs.eg.db", "org.Mm.eg.db", "AnnotationDbi"))
 
 	description_df =
 
@@ -3223,12 +3177,7 @@ setGeneric("identify_abundant", function(.data,
 
 
   # Check if package is installed, otherwise install
-  if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-    message("Installing edgeR needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("edgeR", ask = FALSE)
-  }
+	check_and_install_packages("edgeR")
 
 	# If character fail
 	if(
@@ -3813,10 +3762,8 @@ setGeneric("test_gene_overrepresentation", function(.data,
 
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
-	if (find.package("msigdbr", quiet = TRUE) |> length() |> equals(0)) {
-		message("msigdbr not installed. Installing.")
-		BiocManager::install("msigdbr", ask = FALSE)
-	}
+	check_and_install_packages("msigdbr")
+
 
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name |> not())
@@ -4000,10 +3947,8 @@ setGeneric("test_gene_rank", function(.data,
 
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
-	if (find.package("msigdbr", quiet = TRUE) |> length() |> equals(0)) {
-		message("msigdbr not installed. Installing.")
-		BiocManager::install("msigdbr", ask = FALSE)
-	}
+	check_and_install_packages("msigdbr")
+	
 
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name |> not())

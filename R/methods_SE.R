@@ -8,13 +8,8 @@
   . = NULL
 
 	# Check if package is installed, otherwise install
-	if (find.package("SummarizedExperiment", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing SummarizedExperiment")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("SummarizedExperiment", ask = FALSE)
-	}
-
+  check_and_install_packages("SummarizedExperiment")
+ 
 	# Make col names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -99,12 +94,8 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
   . = NULL
 
 	# Check if package is installed, otherwise install
-	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing edgeR needed for analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("edgeR", ask = FALSE)
-	}
+  check_and_install_packages("edgeR")
+  
 
   # DEPRECATION OF reference function
   if (is_present(reference_selection_function) & !is.null(reference_selection_function)) {
@@ -281,12 +272,8 @@ setMethod("scale_abundance",
   else if(tolower(method) == "limma_normalize_quantiles"){
 
     # Check if package is installed, otherwise install
-    if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
-      message("tidybulk says: Installing limma needed for analyses")
-      if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager", repos = "https://cloud.r-project.org")
-      BiocManager::install("limma", ask = FALSE)
-    }
+    check_and_install_packages("limma")
+    
 
     .data_norm <-
       .data %>%
@@ -299,12 +286,8 @@ setMethod("scale_abundance",
   else if(tolower(method) == "preprocesscore_normalize_quantiles_use_target"){
 
     # Check if package is installed, otherwise install
-    if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
-      message("tidybulk says: Installing preprocessCore needed for analyses")
-      if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager", repos = "https://cloud.r-project.org")
-      BiocManager::install("preprocessCore", ask = FALSE)
-    }
+    check_and_install_packages("preprocessCore")
+
 
     .data_norm =
       .data |>
@@ -821,12 +804,7 @@ setMethod("remove_redundancy",
   .abundance = enquo(.abundance)
 
 	# Check if package is installed, otherwise install
-	if (find.package("sva", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing sva - Combat needed for adjustment for unwanted variation")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("sva", ask = FALSE)
-	}
+  check_and_install_packages("sva")
 
 
   # DEPRECATION OF log_transform
@@ -949,7 +927,7 @@ setMethod("remove_redundancy",
 	  my_assay_adjusted =
 	    .data |>
 	    assay(my_assay) |>
-	    edgeR::cpm(log = T) |>
+	    edgeR::cpm(log = TRUE) |>
 	    limma::removeBatchEffect(
 	      design = design,
 	      covariates = unwanted_covariate_matrix,
@@ -1240,25 +1218,7 @@ setMethod("aggregate_duplicates",
 			method %>% tolower %>% equals("cibersort") 	~ {
 
 				# Check if package is installed, otherwise install
-				if (find.package("class", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing class needed for Cibersort")
-					install.packages("class", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
-				}
-
-				# Check if package is installed, otherwise install
-				if (find.package("e1071", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing e1071 needed for Cibersort")
-					install.packages("e1071", repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))
-				}
-
-				# Check if package is installed, otherwise install
-				if (find.package("preprocessCore", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing preprocessCore needed for Cibersort")
-					if (!requireNamespace("BiocManager", quietly = TRUE))
-						install.packages("BiocManager", repos = "https://cloud.r-project.org")
-					BiocManager::install("preprocessCore", ask = FALSE)
-
-				}
+			  check_and_install_packages(c("class", "e1071", "preprocessCore"))
 
 				# Choose reference
 				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
@@ -1301,11 +1261,8 @@ setMethod("aggregate_duplicates",
 			method %>% tolower %in% c("mcp_counter", "quantiseq", "xcell") ~ {
 
 				# Check if package is installed, otherwise install
-				if (find.package("immunedeconv", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing immunedeconv")
-					devtools::install_github("icbi-lab/immunedeconv", upgrade = FALSE)
-				}
-
+			  check_and_install_packages("immunedeconv")
+			  
 				if(method %in% c("mcp_counter", "quantiseq", "xcell") & !"immunedeconv" %in% (.packages()))
 					stop("tidybulk says: for xcell, mcp_counter, or quantiseq deconvolution you should have the package immunedeconv attached. Please execute library(immunedeconv)")
 
@@ -1702,12 +1659,8 @@ setMethod("keep_variable",
 
 
 	# Check if package is installed, otherwise install
-	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing edgeR needed for analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("edgeR", ask = FALSE)
-	}
+	check_and_install_packages("edgeR")
+
 
 	# If no assay is specified take first
 	my_assay = ifelse(
@@ -1922,12 +1875,8 @@ setMethod("keep_abundant",
 			)
 
 	# Check if package is installed, otherwise install
-	if (find.package("EGSEA", quiet = TRUE) %>% length %>% equals(0)) {
-		stop("
-				 EGSEA not installed. Please install it. EGSEA require manual installation for not overwelming the user in case it is not needed.
-				 BiocManager::install(\"EGSEA\", ask = FALSE)
-				 ")
-	}
+	check_and_install_packages("EGSEA")
+	
 	if (!"EGSEA" %in% (.packages())) {
 		stop("EGSEA package not loaded. Please run library(\"EGSEA\"). With this setup, EGSEA require manual loading, for technical reasons.")
 	}
@@ -2161,10 +2110,8 @@ setMethod("test_gene_enrichment",
 
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
-	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
-		message("msigdbr not installed. Installing.")
-		BiocManager::install("msigdbr", ask = FALSE)
-	}
+	check_and_install_packages("msigdbr")
+	
 
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
@@ -2248,10 +2195,8 @@ setMethod("test_gene_overrepresentation",
 
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
-	if (find.package("msigdbr", quiet = TRUE) %>% length %>% equals(0)) {
-		message("msigdbr not installed. Installing.")
-		BiocManager::install("msigdbr", ask = FALSE)
-	}
+	check_and_install_packages("msigdbr")
+	
 
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
@@ -2525,10 +2470,11 @@ setMethod("impute_missing_abundance",
   # Fix NOTEs
   . = NULL
 
-	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing broom needed for analyses")
-		install.packages("broom", repos = "https://cloud.r-project.org")
-	}
+#   
+# 	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
+# 		message("Installing broom needed for analyses")
+# 		install.packages("broom", repos = "https://cloud.r-project.org")
+# 	}
 
 	deconvoluted =
 		.data %>%
@@ -2792,29 +2738,9 @@ setMethod("get_bibliography",
   . = NULL
 
 	# Check if package is installed, otherwise install
-	if (find.package("org.Hs.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing org.Hs.eg.db needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Hs.eg.db", ask = FALSE)
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("org.Mm.eg.db", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing org.Mm.eg.db needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("org.Mm.eg.db", ask = FALSE)
-	}
-
-	# Check if package is installed, otherwise install
-	if (find.package("AnnotationDbi", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing AnnotationDbi needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("AnnotationDbi", ask = FALSE)
-	}
-
+  check_and_install_packages(c("org.Hs.eg.db", "org.Mm.eg.db", "AnnotationDbi"))
+  
+	
 	.transcript = enquo(.transcript)
 
 	# Transcript rownames by default

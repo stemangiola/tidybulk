@@ -255,12 +255,9 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
     ))
   Y=Y[,colSums(Y)>0, drop=FALSE]
 
-  # Check if package is installed, otherwise install
-  if (find.package("matrixStats", quiet = TRUE) %>% length %>% equals(0)) {
-    message("tidybulk says: Installing matrixStats needed for cibersort")
-    install.packages("matrixStats", repos = "https://cloud.r-project.org")
-  }
-
+  # Check if 'matrixStats' package is installed, otherwise stop with instructions
+  check_and_install_packages("matrixStats")
+  
   # Eliminate sd == 0
   if(length(which(matrixStats::colSds(Y)==0))>0)
     warning(sprintf(
