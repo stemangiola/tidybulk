@@ -2816,33 +2816,17 @@ setMethod("describe_transcript", "RangedSummarizedExperiment", .describe_transcr
 #' @importFrom dplyr select
 #' @importFrom rlang set_names
 #' @importFrom tibble as_tibble
+#' @importFrom SummarizedExperiment as.data.frame
 .resolve_complete_confounders_of_non_interest <- function(se, ...){
 
-  combination_of_factors_of_NON_interest =
-    # Factors
-    se[1,1, drop=FALSE] |>
-    colData() |> 
-    as_tibble(rownames = ".sample") |> 
-    select(...) |>
-    suppressWarnings() |>
-    colnames() |>
-
-    # Combinations
-    combn(2) |>
-    t() |>
-    as_tibble() |>
-    set_names(c("factor_1", "factor_2"))
-
-  for(i in combination_of_factors_of_NON_interest |> nrow() |> seq_len()){
-    se =
-      se |>
-      resolve_complete_confounders_of_non_interest_pair_SE(
-        !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_1),
-        !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_2)
-      )
-  }
-
+  colData(se) = 
+    colData(se) |> 
+    as.data.frame() |> 
+    .resolve_complete_confounders_of_non_interest_df(...) |> 
+    DataFrame()
+  
   se
+    
 }
 
 #' resolve_complete_confounders_of_non_interest

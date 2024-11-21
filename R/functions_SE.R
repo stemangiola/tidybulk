@@ -1446,6 +1446,33 @@ univariable_differential_tissue_composition_SE = function(
 		unnest(surv_test, keep_empty = TRUE)
 }
 
+.resolve_complete_confounders_of_non_interest_df <- function(df, ...){
+  
+  combination_of_factors_of_NON_interest =
+    # Factors
+    df |> 
+    as_tibble(rownames = ".sample") |> 
+    select(...) |>
+    suppressWarnings() |>
+    colnames() |>
+    
+    # Combinations
+    combn(2) |>
+    t() |>
+    as_tibble() |>
+    set_names(c("factor_1", "factor_2"))
+  
+  for(i in combination_of_factors_of_NON_interest |> nrow() |> seq_len()){
+    df =
+      df |>
+      resolve_complete_confounders_of_non_interest_pair_df(
+        !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_1),
+        !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_2)
+      )
+  }
+  
+  df
+}
 
 #' Resolve Complete Confounders of Non-Interest
 #'
@@ -1475,13 +1502,13 @@ univariable_differential_tissue_composition_SE = function(
 #' # se is a SummarizedExperiment object
 #' resolve_complete_confounders_of_non_interest(se, .factor_1 = factor1, .factor_2 = factor2)
 #' @noRd
-resolve_complete_confounders_of_non_interest_pair_SE <- function(se, .factor_1, .factor_2){
+resolve_complete_confounders_of_non_interest_pair_df <- function(df, .factor_1, .factor_2){
 
   .factor_1 <- enquo(.factor_1)
   .factor_2 <- enquo(.factor_2)
 
   cd =
-    colData(se) |>
+    df |>
     as_tibble() |>
     rowid_to_column() |>
     distinct(rowid, !!.factor_1, !!.factor_2) |>
@@ -1516,15 +1543,12 @@ resolve_complete_confounders_of_non_interest_pair_SE <- function(se, .factor_1, 
     cd = cd |>
       mutate(!!.factor_2 := if_else(n1 + n2 < 3, dummy_factor_2, !!.factor_2))
   }
-
-  colData(se)[,c(quo_name(.factor_1), quo_name(.factor_2))] =
+  
+  df[,c(quo_name(.factor_1), quo_name(.factor_2))] =
     cd |>
     unnest(se_data) |>
     arrange(rowid) |>
-    select(!!.factor_1, !!.factor_2) |>
-    DataFrame()
+    select(!!.factor_1, !!.factor_2) 
 
-  se
-
+  df
 }
-
