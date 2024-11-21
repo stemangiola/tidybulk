@@ -59,7 +59,6 @@ get_clusters_kmeans_bulk_SE <-
 #'
 #' @import tibble
 #' @importFrom rlang :=
-#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -79,18 +78,7 @@ get_clusters_SNN_bulk_SE <-
 
 
 		# Check if package is installed, otherwise install
-		if (find.package("cluster", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing cluster")
-			install.packages("cluster", repos = "https://cloud.r-project.org")
-		}
-		if (find.package("Seurat", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing Seurat")
-			install.packages("Seurat", repos = "https://cloud.r-project.org")
-		}
-		if (find.package("KernSmooth", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing KernSmooth")
-			install.packages("KernSmooth", repos = "https://cloud.r-project.org")
-		}
+	  check_and_install_packages(c("cluster", "Seurat", "KernSmooth"))
 
 		ndims = min(c(nrow(.data), ncol(.data), 30))-1
 
@@ -314,7 +302,6 @@ we suggest to partition the dataset for sample clusters.
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
-#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -354,10 +341,8 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 
 
 		# Check if package is installed, otherwise install
-		if (find.package("Rtsne", quiet = TRUE) %>% length %>% equals(0)) {
-			message("Installing Rtsne")
-			install.packages("Rtsne", repos = "https://cloud.r-project.org")
-		}
+		check_and_install_packages("Rtsne")
+
 
 		# Set perprexity to not be too high
 		if (!"perplexity" %in% names(arguments))
@@ -397,7 +382,6 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
-#' @importFrom utils install.packages
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -437,10 +421,7 @@ get_reduced_dimensions_UMAP_bulk_SE <-
 
 
     # Check if package is installed, otherwise install
-    if (find.package("uwot", quiet = TRUE) %>% length %>% equals(0)) {
-      message("tidybulk says: Installing uwot")
-      install.packages("uwot", repos = "https://cloud.r-project.org")
-    }
+    check_and_install_packages("uwot")
 
 
     # Calculate based on PCA
@@ -584,10 +565,8 @@ remove_redundancy_elements_through_correlation_SE <- function(.data,
 	. = NULL
 
 	# Check if package is installed, otherwise install
-	if (find.package("widyr", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing widyr needed for correlation analyses")
-		install.packages("widyr", repos = "https://cloud.r-project.org")
-	}
+	check_and_install_packages("widyr")
+
 
 	# Get the redundant data frame
 	.data %>%
@@ -699,7 +678,6 @@ remove_redundancy_elements_though_reduced_dimensions_SE <-
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
-#' @importFrom utils install.packages
 #' @importFrom purrr when
 #' @importFrom magrittr extract2
 #'
@@ -744,9 +722,9 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 	# Replace `:` with ___ because it creates error with edgeR
 	if(design |> colnames() |> str_detect(":") |> any()) {
 	  message("tidybulk says: the interaction term `:` has been replaced with `___` in the design matrix, in order to work with edgeR.")
-	  colnames(design) = design |> colnames() |> str_replace(":", "___") 
+	  colnames(design) = design |> colnames() |> str_replace(":", "___")
 	}
-	
+
 	# Print the design column names in case I want contrasts
 	message(
 		sprintf(
@@ -762,12 +740,7 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 								~ NULL)
 
 	# Check if package is installed, otherwise install
-	if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing edgeR needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("edgeR", ask = FALSE)
-	}
+	check_and_install_packages("edgeR")
 
 	# If no assay is specified take first
 	my_assay = ifelse(
@@ -880,7 +853,6 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
-#' @importFrom utils install.packages
 #' @importFrom purrr when
 #'
 #'
@@ -928,19 +900,17 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 		)
 	)
 
+	# Check if package is installed, otherwise install
+	check_and_install_packages("limma")
+	
+	
 	my_contrasts =
 		.contrasts %>%
 		ifelse_pipe(length(.) > 0,
 								~ limma::makeContrasts(contrasts = .x, levels = design),
 								~ NULL)
 
-	# Check if package is installed, otherwise install
-	if (find.package("limma", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing limma needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("limma", ask = FALSE)
-	}
+
 
 	# If no assay is specified take first
 	my_assay = ifelse(
@@ -1061,7 +1031,6 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
-#' @importFrom utils install.packages
 #' @importFrom purrr when
 #'
 #'
@@ -1070,6 +1039,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 #' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
 #' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param .scaling_factor A tidyeval (column name) for the precalculated TMM scaling
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param ... Additional arguments for glmmSeq
 #'
@@ -1085,6 +1055,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
                                                             test_above_log2_fold_change = NULL,
 
                                                             scaling_method = "TMM",
+                                                            .scaling_factor = NULL,
                                                             omit_contrast_in_colnames = FALSE,
                                                             prefix = "",
                                                             .dispersion = NULL,
@@ -1092,6 +1063,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
 
   .abundance = enquo(.abundance)
   .dispersion = enquo(.dispersion)
+  .scaling_factor = enquo(.scaling_factor)
 
   # Check if contrasts are of the same form
   if(
@@ -1115,12 +1087,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   # }
 
   # Check if package is installed, otherwise install
-  if (find.package("glmmSeq", quiet = TRUE) %>% length %>% equals(0)) {
-    message("tidybulk says: Installing glmmSeq needed for differential transcript abundance analyses")
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager", repos = "https://cloud.r-project.org")
-    BiocManager::install("glmmSeq", ask = FALSE)
-  }
+  check_and_install_packages("glmmSeq")
 
   # If no assay is specified take first
   my_assay = ifelse(
@@ -1146,7 +1113,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
       data = metadata
     )
 
-  if(quo_is_symbolic(.dispersion))
+  if(.dispersion |> quo_is_symbolic())
     dispersion = rowData(.data)[,quo_name(.dispersion),drop=FALSE] |> as_tibble(rownames = feature__$name) |> deframe()
   else
     dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
@@ -1161,7 +1128,10 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   dispersion = dispersion[rownames(counts)]
 
   # Scaling
-  sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
+  if(.scaling_factor |> quo_is_symbolic())
+    sizeFactors = .data |> pivot_sample() |> pull(!!.scaling_factor)
+  else
+    sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
 
 
   glmmSeq_object =
@@ -1219,7 +1189,6 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
 #' @import tibble
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
-#' @importFrom utils install.packages
 #' @importFrom purrr when
 #'
 #'
@@ -1262,12 +1231,8 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 	}
 
 	# Check if package is installed, otherwise install
-	if (find.package("DESeq2", quiet = TRUE) %>% length %>% equals(0)) {
-		message("Installing DESeq2 needed for differential transcript abundance analyses")
-		if (!requireNamespace("BiocManager", quietly = TRUE))
-			install.packages("BiocManager", repos = "https://cloud.r-project.org")
-		BiocManager::install("DESeq2", ask = FALSE)
-	}
+  check_and_install_packages("DESeq2")
+
 
         if (is.null(test_above_log2_fold_change)) {
           test_above_log2_fold_change <- 0
@@ -1390,15 +1355,8 @@ multivariable_differential_tissue_composition_SE = function(
 		when(
 			grepl("Surv", .my_formula) %>% any ~ {
 				# Check if package is installed, otherwise install
-				if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing betareg needed for analyses")
-					install.packages("survival", repos = "https://cloud.r-project.org")
-				}
-
-				if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
-					message("Installing boot needed for analyses")
-					install.packages("boot", repos = "https://cloud.r-project.org")
-				}
+			  check_and_install_packages(c("survival", "boot"))
+			  
 
 				(.) %>%
 					survival::coxph(.my_formula, .)	%>%
@@ -1460,15 +1418,8 @@ univariable_differential_tissue_composition_SE = function(
 					when(
 						grepl("Surv", .my_formula) %>% any ~ {
 							# Check if package is installed, otherwise install
-							if (find.package("survival", quiet = TRUE) %>% length %>% equals(0)) {
-								message("Installing betareg needed for analyses")
-								install.packages("survival", repos = "https://cloud.r-project.org")
-							}
-
-							if (find.package("boot", quiet = TRUE) %>% length %>% equals(0)) {
-								message("Installing boot needed for analyses")
-								install.packages("boot", repos = "https://cloud.r-project.org")
-							}
+						  check_and_install_packages(c("survival", "boot"))
+						
 
 							(.) %>%
 								mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
@@ -1478,10 +1429,8 @@ univariable_differential_tissue_composition_SE = function(
 						} ,
 						~ {
 							# Check if package is installed, otherwise install
-							if (find.package("betareg", quiet = TRUE) %>% length %>% equals(0)) {
-								message("Installing betareg needed for analyses")
-								install.packages("betareg", repos = "https://cloud.r-project.org")
-							}
+						  check_and_install_packages("betareg")
+						  
 							(.) %>%
 								betareg::betareg(.my_formula, .) %>%
 								broom::tidy() %>%
@@ -1497,6 +1446,33 @@ univariable_differential_tissue_composition_SE = function(
 		unnest(surv_test, keep_empty = TRUE)
 }
 
+.resolve_complete_confounders_of_non_interest_df <- function(df, ...){
+  
+  combination_of_factors_of_NON_interest =
+    # Factors
+    df |> 
+    as_tibble(rownames = ".sample") |> 
+    select(...) |>
+    suppressWarnings() |>
+    colnames() |>
+    
+    # Combinations
+    combn(2) |>
+    t() |>
+    as_tibble() |>
+    set_names(c("factor_1", "factor_2"))
+  
+  for(i in combination_of_factors_of_NON_interest |> nrow() |> seq_len()){
+    df =
+      df |>
+      resolve_complete_confounders_of_non_interest_pair_df(
+        !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_1),
+        !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_2)
+      )
+  }
+  
+  df
+}
 
 #' Resolve Complete Confounders of Non-Interest
 #'
@@ -1526,13 +1502,13 @@ univariable_differential_tissue_composition_SE = function(
 #' # se is a SummarizedExperiment object
 #' resolve_complete_confounders_of_non_interest(se, .factor_1 = factor1, .factor_2 = factor2)
 #' @noRd
-resolve_complete_confounders_of_non_interest_pair_SE <- function(se, .factor_1, .factor_2){
+resolve_complete_confounders_of_non_interest_pair_df <- function(df, .factor_1, .factor_2){
 
   .factor_1 <- enquo(.factor_1)
   .factor_2 <- enquo(.factor_2)
 
   cd =
-    colData(se) |>
+    df |>
     as_tibble() |>
     rowid_to_column() |>
     distinct(rowid, !!.factor_1, !!.factor_2) |>
@@ -1567,15 +1543,12 @@ resolve_complete_confounders_of_non_interest_pair_SE <- function(se, .factor_1, 
     cd = cd |>
       mutate(!!.factor_2 := if_else(n1 + n2 < 3, dummy_factor_2, !!.factor_2))
   }
-
-  colData(se)[,c(quo_name(.factor_1), quo_name(.factor_2))] =
+  
+  df[,c(quo_name(.factor_1), quo_name(.factor_2))] =
     cd |>
     unnest(se_data) |>
     arrange(rowid) |>
-    select(!!.factor_1, !!.factor_2) |>
-    DataFrame()
+    select(!!.factor_1, !!.factor_2) 
 
-  se
-
+  df
 }
-

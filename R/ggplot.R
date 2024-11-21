@@ -52,11 +52,7 @@ log10_reverse_trans <- function() {
 #' @export
 logit_trans <- function(){
 
-
-  if (find.package("functional", quiet = TRUE) %>% length %>% equals(0)) {
-    message("Installing functional needed for analyses")
-    install.packages("functional", repos = "https://cloud.r-project.org")
-  }
+  check_and_install_packages("functional")
 
   trans <- qlogis
   inv <- plogis

@@ -111,10 +111,10 @@ Underlying method
 If `limma_normalize_quantiles` is chosen
 
 .data |>limma::normalizeQuantiles()
- 
+
  If `preprocesscore_normalize_quantiles_use_target` is chosen
- 
-.data |> 
+
+.data |>
    preprocessCore::normalize.quantiles.use.target(
       target = preprocessCore::normalize.quantiles.determine.target(.data)
    )
