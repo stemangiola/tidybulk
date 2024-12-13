@@ -16,6 +16,7 @@ identify_abundant(
   .transcript = NULL,
   .abundance = NULL,
   factor_of_interest = NULL,
+  design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7
 )
@@ -26,6 +27,7 @@ identify_abundant(
   .transcript = NULL,
   .abundance = NULL,
   factor_of_interest = NULL,
+  design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7
 )
@@ -36,6 +38,7 @@ identify_abundant(
   .transcript = NULL,
   .abundance = NULL,
   factor_of_interest = NULL,
+  design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7
 )
@@ -46,6 +49,7 @@ identify_abundant(
   .transcript = NULL,
   .abundance = NULL,
   factor_of_interest = NULL,
+  design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7
 )
@@ -56,6 +60,7 @@ identify_abundant(
   .transcript = NULL,
   .abundance = NULL,
   factor_of_interest = NULL,
+  design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7
 )
@@ -66,6 +71,7 @@ identify_abundant(
   .transcript = NULL,
   .abundance = NULL,
   factor_of_interest = NULL,
+  design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7
 )

@@ -3132,6 +3132,7 @@ setGeneric("identify_abundant", function(.data,
 																		 .transcript = NULL,
 																		 .abundance = NULL,
 																		 factor_of_interest = NULL,
+																		 design = NULL,
 																		 minimum_counts = 10,
 																		 minimum_proportion = 0.7)
 	standardGeneric("identify_abundant"))
@@ -3142,6 +3143,7 @@ setGeneric("identify_abundant", function(.data,
 														.transcript = NULL,
 														.abundance = NULL,
 														factor_of_interest = NULL,
+														design = NULL,
 														minimum_counts = 10,
 														minimum_proportion = 0.7)
 {
@@ -3250,6 +3252,7 @@ setGeneric("identify_abundant", function(.data,
 	  edgeR::filterByExpr(
 	    min.count = minimum_counts,
 	    group = string_factor_of_interest,
+	    design = design,
 	    min.prop = minimum_proportion
 	  ) %>%
 	  not() |>
@@ -3345,6 +3348,7 @@ setGeneric("keep_abundant", function(.data,
 																			 .transcript = NULL,
 																			 .abundance = NULL,
 																			 factor_of_interest = NULL,
+																			 design = NULL,
 																			 minimum_counts = 10,
 																			 minimum_proportion = 0.7)
 	standardGeneric("keep_abundant"))
@@ -3355,6 +3359,7 @@ setGeneric("keep_abundant", function(.data,
 															.transcript = NULL,
 															.abundance = NULL,
 															factor_of_interest = NULL,
+															design = NULL,
 															minimum_counts = 10,
 															minimum_proportion = 0.7)
 {
@@ -3387,6 +3392,7 @@ setGeneric("keep_abundant", function(.data,
 			.transcript = !!.transcript,
 			.abundance = !!.abundance,
 			factor_of_interest = !!factor_of_interest,
+			design = design,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion
 		) |>

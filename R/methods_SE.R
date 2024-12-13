@@ -1572,6 +1572,7 @@ setMethod("keep_variable",
 																 .transcript = NULL,
 																 .abundance = NULL,
 																 factor_of_interest = NULL,
+																 design = NULL,
 																 minimum_counts = 10,
 																 minimum_proportion = 0.7)
 {
@@ -1679,6 +1680,7 @@ setMethod("keep_variable",
 		edgeR::filterByExpr(
 			min.count = minimum_counts,
 			group = string_factor_of_interest,
+			design = design,
 			min.prop = minimum_proportion,
 			lib.size = Matrix::colSums(., na.rm=TRUE)
 		) %>%
@@ -1726,6 +1728,7 @@ setMethod("identify_abundant",
 														 .transcript = NULL,
 														 .abundance = NULL,
 														 factor_of_interest = NULL,
+														 design = NULL,
 														 minimum_counts = 10,
 														 minimum_proportion = 0.7)
 {
@@ -1745,7 +1748,8 @@ setMethod("identify_abundant",
 			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion,
-			.abundance = !!.abundance
+			.abundance = !!.abundance,
+			design = design
 		)
 
 	.data[rowData(.data)$.abundant,]
@@ -2818,14 +2822,14 @@ setMethod("describe_transcript", "RangedSummarizedExperiment", .describe_transcr
 #' @importFrom SummarizedExperiment as.data.frame
 .resolve_complete_confounders_of_non_interest <- function(se, ...){
 
-  colData(se) = 
-    colData(se) |> 
-    as.data.frame() |> 
-    .resolve_complete_confounders_of_non_interest_df(...) |> 
+  colData(se) =
+    colData(se) |>
+    as.data.frame() |>
+    .resolve_complete_confounders_of_non_interest_df(...) |>
     DataFrame()
-  
+
   se
-    
+
 }
 
 #' resolve_complete_confounders_of_non_interest
