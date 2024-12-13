@@ -251,12 +251,20 @@ lmer_to_confidence_intervals_random_effects = function(fit){
 }
 
 glmmTMBcore = function (geneList, fullFormula, reduced, data, family, control,
-          offset, modelData, designMatrix, hyp.matrix, ...)
+          offset, modelData, designMatrix, hyp.matrix, return_fit = FALSE, ...)
 {
   data[, "count"] <- geneList
-  fit <- try(suppressMessages(suppressWarnings(glmmTMB::glmmTMB(fullFormula,
-                                                       data, family, control = control, offset = offset, ...))),
-             silent = TRUE)
+
+
+  fit <-
+    glmmTMB::glmmTMB(fullFormula,
+                    data, family, control = control, offset = offset, ...)
+
+  # |>
+  #   suppressWarnings() |>
+  #   suppressMessages() |>
+  #   try( silent = TRUE)
+
   if (!inherits(fit, "try-error")) {
     singular <- conv <- NA
     stdErr <- suppressWarnings(coef(summary(fit))$cond[, 2])
@@ -301,7 +309,7 @@ glmmTMBcore = function (geneList, fullFormula, reduced, data, family, control,
     ci_random_effect_df = glmmTMB_to_confidence_intervals_random_effects(fit)
 
 
-    return(list(
+    return_list = list(
       stats = stats,
       coef = fixedEffects,
       stdErr = stdErr,
@@ -311,7 +319,14 @@ glmmTMBcore = function (geneList, fullFormula, reduced, data, family, control,
       optinfo = c(singular, conv),
       ci_random_effect_df = ci_random_effect_df,
       message = msg,
-      tryErrors = ""))
+      tryErrors = "")
+
+    # If fit not needed do not return
+    if(return_fit) return_list$fit = fit
+    else return_list$fit = NULL
+
+    return_list
+
   }
   else {
     return(list(stats = NA, coef = NA, stdErr = NA, chisq = NA,
@@ -324,9 +339,16 @@ glmerCore = function (geneList, fullFormula, reduced, data, control, offset,
 {
   data[, "count"] <- geneList$y
   disp <- geneList$dispersion
-  fit <- try(suppressMessages(suppressWarnings(lme4::glmer(fullFormula,
-                                                           data = data, control = control, offset = offset, family = MASS::negative.binomial(theta = 1/disp),
-                                                           ...))), silent = TRUE)
+
+  fit <-
+    lme4::glmer(fullFormula,
+                data = data, control = control, offset = offset, family = MASS::negative.binomial(theta = 1/disp),
+                ...)
+  # |>
+  #   suppressWarnings() |>
+  #   suppressMessages() |>
+  #   try(silent = TRUE)
+
 
 
   # If errors return
@@ -390,19 +412,14 @@ glmerCore = function (geneList, fullFormula, reduced, data, control, offset,
       predict = predictdf,
       optinfo = c(singular, conv),
       ci_random_effect_df = ci_random_effect_df,
-      tryErrors = ""
+      tryErrors = "",
     )
 
   # If fit not needed do not return
-  if(!return_fit) {
-    rm(fit)
-    gc()
-  } else {
-    return_list$fit = fit
+  if(return_fit) return_list$fit = fit
+  else return_list$fit = NULL
 
-  }
-
-  return(return_list)
+  return_list
 
 
 }
@@ -626,19 +643,19 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
                       designMatrix, hyp.matrix, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
           }
         )
-      } 
+      }
       else if (progress) {
-        
+
         # Check if package is installed, otherwise install
         check_and_install_packages("pbmcapply")
-        
+
         resultList <- pbmcapply::pbmclapply(fullList, function(geneList) {
           glmerCore(geneList, fullFormula, reduced,
                     subsetMetadata, control, offset, modelData,
                     designMatrix, hyp.matrix, max_rows_for_matrix_multiplication = max_rows_for_matrix_multiplication, ...)
         }, mc.cores = cores)
         if ("value" %in% names(resultList)) resultList <- resultList$value
-        
+
       }
       else {
         resultList <- mclapply(fullList, function(geneList) {
@@ -679,7 +696,7 @@ glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = N
 
         # Check if package is installed, otherwise install
         check_and_install_packages("pbapply")
-      
+
 
         resultList <- pbapply::pblapply(fullList, function(geneList) {
           args <- c(list(geneList = geneList, fullFormula = fullFormula,
