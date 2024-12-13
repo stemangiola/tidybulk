@@ -1514,3 +1514,31 @@ check_and_install_packages <- function(packages) {
     )
   }
 }
+
+#' Drop Environment from a Quosure
+#'
+#' Takes a quosure and resets its environment to `emptyenv()` without altering
+#' its expression.
+#'
+#' @param q A quosure object to have its environment stripped.
+#' @return A quosure with the same expression but environment set to `emptyenv()`.
+#'
+#' @importFrom rlang is_quosure
+#' @importFrom rlang quo_set_env
+#'
+#' @examples
+#' library(rlang)
+#'
+#' q <- quo(x + y)
+#' environment(q)
+#'
+#' q_stripped <- drop_enquo_env(q)
+#' identical(quo_get_env(q_stripped), emptyenv()) # TRUE
+#'
+#' @noRd
+drop_enquo_env <- function(q) {
+  if (!rlang::is_quosure(q)) {
+    stop("`q` must be a quosure.")
+  }
+  rlang::quo_set_env(q, emptyenv())
+}

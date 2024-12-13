@@ -477,10 +477,10 @@ setGeneric("scale_abundance", function(.data,
 
 		# Attach column internals
 		add_tt_columns(
-			!!.sample,
-			!!.transcript,
-			!!.abundance,
-			!!(function(x, v)	enquo(v))(x,!!value_scaled)
+			!!(.sample |> drop_enquo_env()),
+			!!(.transcript |> drop_enquo_env()),
+			!!(.abundance |> drop_enquo_env()),
+			!!(((function(x, v)	enquo(v))(x,!!value_scaled)) |> drop_enquo_env())
 		)
 
 
@@ -698,10 +698,10 @@ setGeneric("quantile_normalise_abundance", function(.data,
 
     # Attach column internals
     add_tt_columns(
-      !!.sample,
-      !!.transcript,
-      !!.abundance,
-      !!(function(x, v)	enquo(v))(x,!!value_scaled)
+      !!(.sample |> drop_enquo_env()),
+      !!(.transcript |> drop_enquo_env()),
+      !!(.abundance |> drop_enquo_env()),
+      !!(((function(x, v)	enquo(v))(x,!!value_scaled)) |> drop_enquo_env())
     )
 
 
