@@ -196,7 +196,7 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 		memorise_methods_used(c("edger", "tmm")) %>%
 
 		# Attach column internals
-		add_tt_columns(.abundance_scaled = !!(function(x, v)	enquo(v))(x,!!as.symbol(value_scaled)))
+		add_tt_columns(.abundance_scaled = !!(((function(x, v)	enquo(v))(x,!!as.symbol(value_scaled))) |> drop_enquo_env()) )
 
 }
 
@@ -321,7 +321,7 @@ setMethod("scale_abundance",
     memorise_methods_used(c("quantile")) %>%
 
     # Attach column internals
-    add_tt_columns(.abundance_scaled = !!(function(x, v)	enquo(v))(x,!!as.symbol(value_scaled)))
+    add_tt_columns(.abundance_scaled = !!(((function(x, v)	enquo(v))(x,!!as.symbol(value_scaled))) |> drop_enquo_env()) )
 
 }
 
@@ -953,8 +953,7 @@ setMethod("remove_redundancy",
 		memorise_methods_used("sva") %>%
 
 		# Attach column internals
-		add_tt_columns(.abundance_adjusted = !!(function(x, v)
-			enquo(v))(x, !!as.symbol(value_adjusted)))
+	  add_tt_columns(.abundance_adjusted = !!(((function(x, v)	enquo(v))(x,!!as.symbol(value_adjusted))) |> drop_enquo_env()) )
 
 }
 
