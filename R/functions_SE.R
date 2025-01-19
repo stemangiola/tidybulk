@@ -202,6 +202,7 @@ get_reduced_dimensions_MDS_bulk_SE <-
 #' @importFrom stats prcomp
 #' @importFrom utils capture.output
 #' @importFrom magrittr divide_by
+#' @importFrom Matrix t
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -302,6 +303,7 @@ we suggest to partition the dataset for sample clusters.
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
+#' @importFrom Matrix t
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -354,8 +356,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 		if (arguments$perplexity <= 2)
 			stop("tidybulk says: You don't have enough samples to run tSNE")
 
-		# Calculate the most variable genes, from plotMDS Limma
-		tsne_obj = do.call(Rtsne::Rtsne, c(list(t(.data)), arguments))
+		tsne_obj = .data |> t() |> as.matrix() |>  list() |> c(arguments) |> do.call(Rtsne::Rtsne, args = _)
 
 
 
@@ -364,7 +365,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 			result = tsne_obj %$%
 				Y %>%
 				as_tibble(.name_repair = "minimal") %>%
-				setNames(c("tSNE1", "tSNE2")) %>%
+				setNames(paste0("tSNE", seq_len(ncol(tsne_obj$Y)))) %>%
 
 				# add element name
 				dplyr::mutate(sample = !!.data %>% colnames) %>%
@@ -440,7 +441,7 @@ get_reduced_dimensions_UMAP_bulk_SE <-
 
     # Calculate based on all features
     else
-      df_UMAP = .data
+      df_UMAP = .data |> t() |>  as.matrix()
 
     umap_obj = do.call(uwot::tumap, c(list(df_UMAP), arguments))
 
@@ -448,7 +449,7 @@ get_reduced_dimensions_UMAP_bulk_SE <-
       raw_result = umap_obj,
       result = umap_obj  %>%
         as_tibble(.name_repair = "minimal") %>%
-        setNames(c("UMAP1", "UMAP2")) %>%
+        setNames(paste0("UMAP", seq_len(ncol(umap_obj)))) %>%
 
         # add element name
         dplyr::mutate(sample = !!.data %>% colnames) %>%
@@ -503,6 +504,8 @@ filter_if_abundant_were_identified = function(.data){
 #'
 #' @keywords internal
 #' @noRd
+#'
+#' @importFrom Matrix rowMeans
 #'
 #' @param .data A tibble
 #' @param .sample A character name of the sample column
@@ -902,8 +905,8 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 
 	# Check if package is installed, otherwise install
 	check_and_install_packages("limma")
-	
-	
+
+
 	my_contrasts =
 		.contrasts %>%
 		ifelse_pipe(length(.) > 0,
@@ -1356,7 +1359,7 @@ multivariable_differential_tissue_composition_SE = function(
 			grepl("Surv", .my_formula) %>% any ~ {
 				# Check if package is installed, otherwise install
 			  check_and_install_packages(c("survival", "boot"))
-			  
+
 
 				(.) %>%
 					survival::coxph(.my_formula, .)	%>%
@@ -1419,7 +1422,7 @@ univariable_differential_tissue_composition_SE = function(
 						grepl("Surv", .my_formula) %>% any ~ {
 							# Check if package is installed, otherwise install
 						  check_and_install_packages(c("survival", "boot"))
-						
+
 
 							(.) %>%
 								mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
@@ -1430,7 +1433,7 @@ univariable_differential_tissue_composition_SE = function(
 						~ {
 							# Check if package is installed, otherwise install
 						  check_and_install_packages("betareg")
-						  
+
 							(.) %>%
 								betareg::betareg(.my_formula, .) %>%
 								broom::tidy() %>%
@@ -1447,21 +1450,21 @@ univariable_differential_tissue_composition_SE = function(
 }
 
 .resolve_complete_confounders_of_non_interest_df <- function(df, ...){
-  
+
   combination_of_factors_of_NON_interest =
     # Factors
-    df |> 
-    as_tibble(rownames = ".sample") |> 
+    df |>
+    as_tibble(rownames = ".sample") |>
     select(...) |>
     suppressWarnings() |>
     colnames() |>
-    
+
     # Combinations
     combn(2) |>
     t() |>
     as_tibble() |>
     set_names(c("factor_1", "factor_2"))
-  
+
   for(i in combination_of_factors_of_NON_interest |> nrow() |> seq_len()){
     df =
       df |>
@@ -1470,7 +1473,7 @@ univariable_differential_tissue_composition_SE = function(
         !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_2)
       )
   }
-  
+
   df
 }
 
@@ -1543,12 +1546,12 @@ resolve_complete_confounders_of_non_interest_pair_df <- function(df, .factor_1, 
     cd = cd |>
       mutate(!!.factor_2 := if_else(n1 + n2 < 3, dummy_factor_2, !!.factor_2))
   }
-  
+
   df[,c(quo_name(.factor_1), quo_name(.factor_2))] =
     cd |>
     unnest(se_data) |>
     arrange(rowid) |>
-    select(!!.factor_1, !!.factor_2) 
+    select(!!.factor_1, !!.factor_2)
 
   df
 }

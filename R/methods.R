@@ -3954,7 +3954,7 @@ setGeneric("test_gene_rank", function(.data,
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
 	check_and_install_packages("msigdbr")
-	
+
 
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name |> not())
@@ -4920,28 +4920,28 @@ as_matrix <- function(tbl,
 
 #' Resolve Complete Confounders of Non-Interest
 #'
-#' This function identifies and resolves complete confounders among specified factors of non-interest within a `SummarizedExperiment` object. 
-#' Complete confounders occur when the levels of one factor are entirely predictable based on the levels of another factor. 
+#' This function identifies and resolves complete confounders among specified factors of non-interest within a `SummarizedExperiment` object.
+#' Complete confounders occur when the levels of one factor are entirely predictable based on the levels of another factor.
 #' Such relationships can interfere with downstream analyses by introducing redundancy or collinearity.
 #'
-#' The function systematically examines pairs of specified factors and determines whether they are completely confounded. 
-#' If a pair of factors is found to be confounded, one of the factors is adjusted or removed to resolve the issue. 
+#' The function systematically examines pairs of specified factors and determines whether they are completely confounded.
+#' If a pair of factors is found to be confounded, one of the factors is adjusted or removed to resolve the issue.
 #' The adjusted `SummarizedExperiment` object is returned, preserving all assays and metadata except the resolved factors.
 #'
 #' @param se A `SummarizedExperiment` object. This object contains assay data, row data (e.g., gene annotations), and column data (e.g., sample annotations).
 #' @param ... Factors of non-interest (column names from `colData(se)`) to examine for complete confounders.
 #'
-#' @details 
-#' Complete confounders of non-interest can create dependencies between variables that may bias statistical models or violate their assumptions. 
+#' @details
+#' Complete confounders of non-interest can create dependencies between variables that may bias statistical models or violate their assumptions.
 #' This function systematically addresses this by:
 #' 1. Identifying pairs of factors in the specified columns that are fully confounded.
 #' 2. Resolving confounding by adjusting or removing one of the factors from the `colData` slot.
 #'
-#' The resolution strategy depends on the analysis context and can be modified in the helper function 
+#' The resolution strategy depends on the analysis context and can be modified in the helper function
 #' `resolve_complete_confounders_of_non_interest_pair_SE()`. By default, the function removes one of the confounded factors.
 #'
-#' @return 
-#' A `SummarizedExperiment` object with resolved confounders. The object retains its structure, including assays and metadata, 
+#' @return
+#' A `SummarizedExperiment` object with resolved confounders. The object retains its structure, including assays and metadata,
 #' but the column data (`colData`) is updated to reflect the resolved factors.
 #'
 #' @examples
@@ -4978,7 +4978,7 @@ as_matrix <- function(tbl,
 #' # View the updated column data
 #' colData(se_resolved)
 #'
-#' @seealso 
+#' @seealso
 #' \code{\link[SummarizedExperiment]{SummarizedExperiment}} for creating and handling `SummarizedExperiment` objects.
 #'
 #' @importFrom dplyr select
