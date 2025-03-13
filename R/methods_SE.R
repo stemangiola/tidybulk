@@ -9,7 +9,7 @@
 
 	# Check if package is installed, otherwise install
   check_and_install_packages("SummarizedExperiment")
- 
+
 	# Make col names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
@@ -95,7 +95,7 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 
 	# Check if package is installed, otherwise install
   check_and_install_packages("edgeR")
-  
+
 
   # DEPRECATION OF reference function
   if (is_present(reference_selection_function) & !is.null(reference_selection_function)) {
@@ -273,7 +273,7 @@ setMethod("scale_abundance",
 
     # Check if package is installed, otherwise install
     check_and_install_packages("limma")
-    
+
 
     .data_norm <-
       .data %>%
@@ -1261,7 +1261,7 @@ setMethod("aggregate_duplicates",
 
 				# Check if package is installed, otherwise install
 			  check_and_install_packages("immunedeconv")
-			  
+
 				if(method %in% c("mcp_counter", "quantiseq", "xcell") & !"immunedeconv" %in% (.packages()))
 					stop("tidybulk says: for xcell, mcp_counter, or quantiseq deconvolution you should have the package immunedeconv attached. Please execute library(immunedeconv)")
 
@@ -1436,10 +1436,10 @@ such as batch effects (if applicable) in the formula.
 
   # If action is get just return the statistics
   if(action == "get") return(my_differential_abundance$result)
-  
+
 	# Add results
 	rowData(.data) = rowData(.data) %>% cbind(
-	  
+
 	  # Parse the statistics
 	  my_differential_abundance$result %>%
 	    as_matrix(rownames = "transcript") %>%
@@ -1879,7 +1879,7 @@ setMethod("keep_abundant",
 
 	# Check if package is installed, otherwise install
 	check_and_install_packages("EGSEA")
-	
+
 	if (!"EGSEA" %in% (.packages())) {
 		stop("EGSEA package not loaded. Please run library(\"EGSEA\"). With this setup, EGSEA require manual loading, for technical reasons.")
 	}
@@ -2114,7 +2114,7 @@ setMethod("test_gene_enrichment",
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
 	check_and_install_packages("msigdbr")
-	
+
 
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
@@ -2199,7 +2199,7 @@ setMethod("test_gene_overrepresentation",
 	# Check packages msigdbr
 	# Check if package is installed, otherwise install
 	check_and_install_packages("msigdbr")
-	
+
 
 	# Check is correct species name
 	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
@@ -2473,7 +2473,7 @@ setMethod("impute_missing_abundance",
   # Fix NOTEs
   . = NULL
 
-#   
+#
 # 	if (find.package("broom", quiet = TRUE) %>% length %>% equals(0)) {
 # 		message("Installing broom needed for analyses")
 # 		install.packages("broom", repos = "https://cloud.r-project.org")
@@ -2742,8 +2742,8 @@ setMethod("get_bibliography",
 
 	# Check if package is installed, otherwise install
   check_and_install_packages(c("org.Hs.eg.db", "org.Mm.eg.db", "AnnotationDbi"))
-  
-	
+
+
 	.transcript = enquo(.transcript)
 
 	# Transcript rownames by default
