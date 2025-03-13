@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.17.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.17.9</span>
       </span>
     </div>
 
@@ -78,9 +78,9 @@
                         <h4 data-toc-skip class="author">Stefano
 Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2024-10-19</h4>
+            <h4 data-toc-skip class="date">2025-03-13</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/master/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/comply-with-breaking-changes-for-msigdbr/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
 
     </div>
@@ -444,7 +444,7 @@ the reduced dimensions.</p>
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data
 is coloured by cell type.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">se_mini.norm.MDS</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span>  <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">se_mini.norm.MDS</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span>  <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"Dim"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">se_mini.norm.MDS</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -475,7 +475,7 @@ is coloured by cell type.</p>
 <p>On the x and y axes axis we have the reduced dimensions 1 to 3, data
 is coloured by cell type.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">se_mini.norm.PCA</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"PC"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">se_mini.norm.PCA</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"PC"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">se_mini.norm.PCA</span> <span class="op">|&gt;</span></span>
 <span>     <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -515,20 +515,20 @@ is coloured by cell type.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se_mini.norm.tSNE</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 251 × 4</span></span></span>
 <span><span class="co">##      tSNE1  tSNE2 .sample                      Call </span></span>
 <span><span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>   5.96   -<span style="color: #BB0000;">6.47</span> TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>  -<span style="color: #BB0000;">9.39</span>    1.28 TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>  -<span style="color: #BB0000;">0.812</span> -<span style="color: #BB0000;">12.9</span>  TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>   5.84    2.20 TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>  -<span style="color: #BB0000;">7.54</span>   -<span style="color: #BB0000;">7.70</span> TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> -<span style="color: #BB0000;">11.1</span>    -<span style="color: #BB0000;">3.76</span> TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> -<span style="color: #BB0000;">13.8</span>    20.9  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>   5.69    5.39 TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> -<span style="color: #BB0000;">14.4</span>    -<span style="color: #BB0000;">4.61</span> TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span>  -<span style="color: #BB0000;">3.81</span>  -<span style="color: #BB0000;">23.4</span>  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>   0.769  -<span style="color: #BB0000;">8.96</span> TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>   7.38    5.86 TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>   0.313 -<span style="color: #BB0000;">15.3</span>  TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>  -<span style="color: #BB0000;">5.40</span>   -<span style="color: #BB0000;">2.71</span> TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>  -<span style="color: #BB0000;">1.30</span>   -<span style="color: #BB0000;">4.84</span> TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>   4.18   12.4  TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>  -<span style="color: #BB0000;">5.31</span>   27.6  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> -<span style="color: #BB0000;">10.7</span>     2.40 TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> -<span style="color: #BB0000;">11.4</span>     1.40 TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>   2.58  -<span style="color: #BB0000;">22.0</span>  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 241 more rows</span></span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se_mini.norm.tSNE</span> <span class="op">|&gt;</span></span>
@@ -735,7 +735,7 @@ proportions. The data is facetted and coloured by nominal cell types
 <span>        names_to<span class="op">=</span> <span class="st">"Cell_type_inferred"</span>, </span>
 <span>        values_to <span class="op">=</span> <span class="st">"proportion"</span>, </span>
 <span>        names_prefix <span class="op">=</span><span class="st">"cibersort__"</span>, </span>
-<span>        cols<span class="op">=</span><span class="fu">contains</span><span class="op">(</span><span class="st">"cibersort__"</span><span class="op">)</span></span>
+<span>        cols<span class="op">=</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"cibersort__"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">Cell_type_inferred</span>, y<span class="op">=</span><span class="va">proportion</span>, fill<span class="op">=</span><span class="va">`Cell.type`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -836,7 +836,7 @@ this option in unaviable.</p>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se_mini.norm.SNN</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="va">se_mini.norm.SNN</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -898,7 +898,7 @@ space.</li>
 <span>    <span class="fu"><a href="../reference/rename-methods.html">rename</a></span><span class="op">(</span><span class="op">!</span><span class="op">!</span><span class="va">.element</span> <span class="op">:=</span> <span class="va">item1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Return non redudant data frame</span></span>
-<span><span class="va">counts</span> <span class="op">|&gt;</span> <span class="fu">anti_join</span><span class="op">(</span><span class="va">.data.correlated</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="va">counts</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter-joins.html" class="external-link">anti_join</a></span><span class="op">(</span><span class="va">.data.correlated</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">spread</span><span class="op">(</span><span class="va">sample</span>, <span class="va">rc</span>, <span class="op">-</span> <span class="va">transcript</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/dplyr-methods.html">left_join</a></span><span class="op">(</span><span class="va">annotation</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -989,7 +989,7 @@ identifiers. This currently works for human and mouse.</p>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se_mini</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="../reference/describe_transcript-methods.html">describe_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">feature</span>, <span class="va">description</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">feature</span>, <span class="va">description</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span></code></pre>
 <pre><code><span><span class="co">## </span></span></code></pre>
 <pre><code><span><span class="co">## Warning in is_sample_feature_deprecated_used(.data, .cols):</span></span>
@@ -1020,13 +1020,13 @@ identifiers. This currently works for human and mouse.</p>
 </h3>
 <div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
+<pre><code><span><span class="co">## R Under development (unstable) (2025-03-04 r87880)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">## Running under: Ubuntu 22.04.5 LTS</span></span>
+<span><span class="co">## Running under: Ubuntu 24.04.1 LTS</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
-<span><span class="co">## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0</span></span>
+<span><span class="co">## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## locale:</span></span>
 <span><span class="co">##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              </span></span>
@@ -1044,55 +1044,55 @@ identifiers. This currently works for human and mouse.</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] tidySummarizedExperiment_1.15.1 SummarizedExperiment_1.35.4    </span></span>
-<span><span class="co">##  [3] Biobase_2.65.1                  GenomicRanges_1.57.2           </span></span>
-<span><span class="co">##  [5] GenomeInfoDb_1.41.2             IRanges_2.39.2                 </span></span>
-<span><span class="co">##  [7] S4Vectors_0.43.2                BiocGenerics_0.51.3            </span></span>
-<span><span class="co">##  [9] MatrixGenerics_1.17.0           matrixStats_1.4.1              </span></span>
-<span><span class="co">## [11] tidybulk_1.17.7                 ttservice_0.4.1                </span></span>
-<span><span class="co">## [13] ggrepel_0.9.6                   ggplot2_3.5.1                  </span></span>
-<span><span class="co">## [15] magrittr_2.0.3                  tibble_3.2.1                   </span></span>
-<span><span class="co">## [17] tidyr_1.3.1                     dplyr_1.1.4                    </span></span>
-<span><span class="co">## [19] knitr_1.48                      BiocStyle_2.33.1               </span></span>
+<span><span class="co">##  [1] tidySummarizedExperiment_1.17.0 SummarizedExperiment_1.37.0    </span></span>
+<span><span class="co">##  [3] Biobase_2.67.0                  GenomicRanges_1.59.1           </span></span>
+<span><span class="co">##  [5] GenomeInfoDb_1.43.4             IRanges_2.41.3                 </span></span>
+<span><span class="co">##  [7] S4Vectors_0.45.4                BiocGenerics_0.53.6            </span></span>
+<span><span class="co">##  [9] generics_0.1.3                  MatrixGenerics_1.19.1          </span></span>
+<span><span class="co">## [11] matrixStats_1.5.0               tidybulk_1.17.9                </span></span>
+<span><span class="co">## [13] ttservice_0.4.1                 ggrepel_0.9.6                  </span></span>
+<span><span class="co">## [15] ggplot2_3.5.1                   magrittr_2.0.3                 </span></span>
+<span><span class="co">## [17] tibble_3.2.1                    tidyr_1.3.1                    </span></span>
+<span><span class="co">## [19] dplyr_1.1.4                     knitr_1.49                     </span></span>
+<span><span class="co">## [21] BiocStyle_2.35.0               </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##   [1] jsonlite_1.8.9          farver_2.1.2            rmarkdown_2.28         </span></span>
-<span><span class="co">##   [4] fs_1.6.4                zlibbioc_1.51.1         ragg_1.3.3             </span></span>
-<span><span class="co">##   [7] vctrs_0.6.5             memoise_2.0.1           htmltools_0.5.8.1      </span></span>
-<span><span class="co">##  [10] S4Arrays_1.5.11         broom_1.0.7             janeaustenr_1.0.0      </span></span>
-<span><span class="co">##  [13] SparseArray_1.5.45      sass_0.4.9              bslib_0.8.0            </span></span>
-<span><span class="co">##  [16] htmlwidgets_1.6.4       tokenizers_0.3.0        desc_1.4.3             </span></span>
-<span><span class="co">##  [19] plyr_1.8.9              plotly_4.10.4           cachem_1.1.0           </span></span>
-<span><span class="co">##  [22] lifecycle_1.0.4         pkgconfig_2.0.3         Matrix_1.7-0           </span></span>
-<span><span class="co">##  [25] R6_2.5.1                fastmap_1.2.0           GenomeInfoDbData_1.2.13</span></span>
-<span><span class="co">##  [28] digest_0.6.37           tidytext_0.4.2          colorspace_2.1-1       </span></span>
-<span><span class="co">##  [31] AnnotationDbi_1.67.0    textshaping_0.4.0       SnowballC_0.7.1        </span></span>
-<span><span class="co">##  [34] RSQLite_2.3.7           org.Hs.eg.db_3.20.0     labeling_0.4.3         </span></span>
-<span><span class="co">##  [37] org.Mm.eg.db_3.20.0     fansi_1.0.6             httr_1.4.7             </span></span>
-<span><span class="co">##  [40] abind_1.4-8             mgcv_1.9-1              compiler_4.4.1         </span></span>
-<span><span class="co">##  [43] proxy_0.4-27            bit64_4.5.2             withr_3.0.1            </span></span>
-<span><span class="co">##  [46] backports_1.5.0         BiocParallel_1.39.0     DBI_1.2.3              </span></span>
-<span><span class="co">##  [49] highr_0.11              DelayedArray_0.31.14    tools_4.4.1            </span></span>
-<span><span class="co">##  [52] glue_1.8.0              nlme_3.1-166            grid_4.4.1             </span></span>
-<span><span class="co">##  [55] Rtsne_0.17              reshape2_1.4.4          generics_0.1.3         </span></span>
-<span><span class="co">##  [58] sva_3.53.0              gtable_0.3.5            tzdb_0.4.0             </span></span>
-<span><span class="co">##  [61] class_7.3-22            preprocessCore_1.67.1   data.table_1.16.2      </span></span>
-<span><span class="co">##  [64] hms_1.1.3               utf8_1.2.4              XVector_0.45.0         </span></span>
-<span><span class="co">##  [67] pillar_1.9.0            stringr_1.5.1           limma_3.61.12          </span></span>
-<span><span class="co">##  [70] genefilter_1.87.0       splines_4.4.1           lattice_0.22-6         </span></span>
-<span><span class="co">##  [73] survival_3.7-0          bit_4.5.0               annotate_1.83.0        </span></span>
-<span><span class="co">##  [76] tidyselect_1.2.1        locfit_1.5-9.10         Biostrings_2.73.2      </span></span>
-<span><span class="co">##  [79] bookdown_0.41           edgeR_4.3.19            xfun_0.48              </span></span>
-<span><span class="co">##  [82] statmod_1.5.0           stringi_1.8.4           UCSC.utils_1.1.0       </span></span>
-<span><span class="co">##  [85] lazyeval_0.2.2          yaml_2.3.10             evaluate_1.0.1         </span></span>
-<span><span class="co">##  [88] codetools_0.2-20        widyr_0.1.5             BiocManager_1.30.25    </span></span>
-<span><span class="co">##  [91] cli_3.6.3               xtable_1.8-4            systemfonts_1.1.0      </span></span>
-<span><span class="co">##  [94] munsell_0.5.1           jquerylib_0.1.4         Rcpp_1.0.13            </span></span>
-<span><span class="co">##  [97] png_0.1-8               XML_3.99-0.17           parallel_4.4.1         </span></span>
-<span><span class="co">## [100] ellipsis_0.3.2          pkgdown_2.1.1           readr_2.1.5            </span></span>
-<span><span class="co">## [103] blob_1.2.4              viridisLite_0.4.2       scales_1.3.0           </span></span>
-<span><span class="co">## [106] e1071_1.7-16            purrr_1.0.2             crayon_1.5.3           </span></span>
-<span><span class="co">## [109] rlang_1.1.4             KEGGREST_1.45.1</span></span></code></pre>
+<span><span class="co">##   [1] jsonlite_1.9.1          farver_2.1.2            rmarkdown_2.29         </span></span>
+<span><span class="co">##   [4] fs_1.6.5                ragg_1.3.3              vctrs_0.6.5            </span></span>
+<span><span class="co">##   [7] memoise_2.0.1           htmltools_0.5.8.1       S4Arrays_1.7.3         </span></span>
+<span><span class="co">##  [10] broom_1.0.7             janeaustenr_1.0.0       SparseArray_1.7.6      </span></span>
+<span><span class="co">##  [13] sass_0.4.9              bslib_0.9.0             htmlwidgets_1.6.4      </span></span>
+<span><span class="co">##  [16] tokenizers_0.3.0        desc_1.4.3              plyr_1.8.9             </span></span>
+<span><span class="co">##  [19] plotly_4.10.4           cachem_1.1.0            lifecycle_1.0.4        </span></span>
+<span><span class="co">##  [22] pkgconfig_2.0.3         Matrix_1.7-2            R6_2.6.1               </span></span>
+<span><span class="co">##  [25] fastmap_1.2.0           GenomeInfoDbData_1.2.14 digest_0.6.37          </span></span>
+<span><span class="co">##  [28] tidytext_0.4.2          colorspace_2.1-1        AnnotationDbi_1.69.0   </span></span>
+<span><span class="co">##  [31] textshaping_1.0.0       SnowballC_0.7.1         RSQLite_2.3.9          </span></span>
+<span><span class="co">##  [34] org.Hs.eg.db_3.21.0     labeling_0.4.3          org.Mm.eg.db_3.21.0    </span></span>
+<span><span class="co">##  [37] fansi_1.0.6             httr_1.4.7              abind_1.4-8            </span></span>
+<span><span class="co">##  [40] mgcv_1.9-1              compiler_4.5.0          proxy_0.4-27           </span></span>
+<span><span class="co">##  [43] bit64_4.6.0-1           withr_3.0.2             backports_1.5.0        </span></span>
+<span><span class="co">##  [46] BiocParallel_1.41.2     DBI_1.2.3               DelayedArray_0.33.6    </span></span>
+<span><span class="co">##  [49] tools_4.5.0             glue_1.8.0              nlme_3.1-167           </span></span>
+<span><span class="co">##  [52] grid_4.5.0              Rtsne_0.17              reshape2_1.4.4         </span></span>
+<span><span class="co">##  [55] sva_3.55.0              gtable_0.3.6            tzdb_0.4.0             </span></span>
+<span><span class="co">##  [58] class_7.3-23            preprocessCore_1.69.0   data.table_1.17.0      </span></span>
+<span><span class="co">##  [61] hms_1.1.3               utf8_1.2.4              XVector_0.47.2         </span></span>
+<span><span class="co">##  [64] pillar_1.10.1           stringr_1.5.1           limma_3.63.9           </span></span>
+<span><span class="co">##  [67] genefilter_1.89.0       splines_4.5.0           lattice_0.22-6         </span></span>
+<span><span class="co">##  [70] survival_3.8-3          bit_4.6.0               annotate_1.85.0        </span></span>
+<span><span class="co">##  [73] tidyselect_1.2.1        locfit_1.5-9.12         Biostrings_2.75.4      </span></span>
+<span><span class="co">##  [76] bookdown_0.42           edgeR_4.5.9             xfun_0.51              </span></span>
+<span><span class="co">##  [79] statmod_1.5.0           stringi_1.8.4           UCSC.utils_1.3.1       </span></span>
+<span><span class="co">##  [82] lazyeval_0.2.2          yaml_2.3.10             evaluate_1.0.3         </span></span>
+<span><span class="co">##  [85] codetools_0.2-20        widyr_0.1.5             BiocManager_1.30.25    </span></span>
+<span><span class="co">##  [88] cli_3.6.4               xtable_1.8-4            systemfonts_1.2.1      </span></span>
+<span><span class="co">##  [91] munsell_0.5.1           jquerylib_0.1.4         Rcpp_1.0.14            </span></span>
+<span><span class="co">##  [94] png_0.1-8               XML_3.99-0.18           parallel_4.5.0         </span></span>
+<span><span class="co">##  [97] ellipsis_0.3.2          pkgdown_2.1.1           readr_2.1.5            </span></span>
+<span><span class="co">## [100] blob_1.2.4              viridisLite_0.4.2       scales_1.3.0           </span></span>
+<span><span class="co">## [103] e1071_1.7-16            purrr_1.0.4             crayon_1.5.3           </span></span>
+<span><span class="co">## [106] rlang_1.1.5             KEGGREST_1.47.0</span></span></code></pre>
 </div>
 </div>
   </div>

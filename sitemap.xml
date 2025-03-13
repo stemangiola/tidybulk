@@ -27,8 +27,6 @@
 <url><loc>/reference/filter-methods.html</loc></url>
 <url><loc>/reference/flybaseIDs.html</loc></url>
 <url><loc>/reference/get_bibliography-methods.html</loc></url>
-<url><loc>/reference/get_reduced_dimensions_UMAP_bulk.html</loc></url>
-<url><loc>/reference/get_reduced_dimensions_UMAP_bulk_SE.html</loc></url>
 <url><loc>/reference/group_by-methods.html</loc></url>
 <url><loc>/reference/identify_abundant-methods.html</loc></url>
 <url><loc>/reference/impute_missing_abundance-methods.html</loc></url>
@@ -49,6 +47,7 @@
 <url><loc>/reference/remove_redundancy-methods.html</loc></url>
 <url><loc>/reference/rename-methods.html</loc></url>
 <url><loc>/reference/resolve_complete_confounders_of_non_interest-methods.html</loc></url>
+<url><loc>/reference/resolve_complete_confounders_of_non_interest.html</loc></url>
 <url><loc>/reference/rotate_dimensions-methods.html</loc></url>
 <url><loc>/reference/rowwise-methods.html</loc></url>
 <url><loc>/reference/scale_abundance-methods.html</loc></url>
