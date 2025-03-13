@@ -107,18 +107,27 @@ test_gene_overrepresentation() takes as input a `tbl` (with at least three colum
 This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
 This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
 
-Undelying method:
- msigdbr::msigdbr(species = species) |>
-	nest(data = -gs_cat) |>
-	mutate(test =
-			map(
-				data,
-				~ clusterProfiler::enricher(
-					my_entrez_rank,
-				 	TERM2GENE=.x |> select(gs_name, entrez_gene),
-					pvalueCutoff = 1
-					) |>	as_tibble()
-			))
+# Get MSigDB data
+msigdb_data = msigdbr::msigdbr(species = species)
+
+# Filter for specific gene collections if provided
+if (!is.null(gene_collections)) {
+  msigdb_data = filter(msigdb_data, gs_collection %in% gene_collections)
+}
+
+# Process the data
+msigdb_data |>
+  nest(data = -gs_collection) |>
+  mutate(test =
+           map(
+             data,
+             ~ clusterProfiler::enricher(
+               my_entrez_rank,
+               TERM2GENE=.x |> select(gs_name, ncbi_gene),
+               pvalueCutoff = 1
+             ) |>
+               as_tibble()
+           ))
 }
 \examples{
 
