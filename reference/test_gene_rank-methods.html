@@ -51,7 +51,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>analyse gene rank with GSEA</h1>
-    <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/master/R/methods.R" class="external-link"><code>R/methods.R</code></a>, <a href="https://github.com/stemangiola/tidybulk/blob/master/R/methods_SE.R" class="external-link"><code>R/methods_SE.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/comply-with-breaking-changes-for-msigdbr/R/methods.R" class="external-link"><code>R/methods.R</code></a>, <a href="https://github.com/stemangiola/tidybulk/blob/comply-with-breaking-changes-for-msigdbr/R/methods_SE.R" class="external-link"><code>R/methods_SE.R</code></a></small>
     <div class="hidden name"><code>test_gene_rank-methods.Rd</code></div>
     </div>
 
@@ -176,17 +176,17 @@ This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the ba
 msigdbr::msigdbr(species = species) <!-- %&gt;% --></p>
 <p># Filter specific gene_sets  if specified. This was introduced to speed up examples executionS
 when(
-	!is.null(gene_sets ) ~ filter(., gs_cat <!-- %in% gene_sets ), -->
+	!is.null(gene_sets ) ~ filter(., gs_collection <!-- %in% gene_sets ), -->
 	~ (.)
 ) |&gt;</p>
 <p># Execute calculation
-nest(data = -gs_cat) |&gt;
+nest(data = -gs_collection) |&gt;
 mutate(fit =
 			 	map(
 			 		data,
 			 		~ 	clusterProfiler::GSEA(
 			 			my_entrez_rank,
-			 			TERM2GENE=.x |&gt; select(gs_name, entrez_gene),
+			 			TERM2GENE=.x |&gt; select(gs_name, ncbi_gene),
 			 			pvalueCutoff = 1
 			 		)</p>
 <p>))</p>

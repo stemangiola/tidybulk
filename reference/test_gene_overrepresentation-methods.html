@@ -51,7 +51,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>analyse gene over-representation with GSEA</h1>
-    <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/master/R/methods.R" class="external-link"><code>R/methods.R</code></a>, <a href="https://github.com/stemangiola/tidybulk/blob/master/R/methods_SE.R" class="external-link"><code>R/methods_SE.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/comply-with-breaking-changes-for-msigdbr/R/methods.R" class="external-link"><code>R/methods.R</code></a>, <a href="https://github.com/stemangiola/tidybulk/blob/comply-with-breaking-changes-for-msigdbr/R/methods_SE.R" class="external-link"><code>R/methods_SE.R</code></a></small>
     <div class="hidden name"><code>test_gene_overrepresentation-methods.Rd</code></div>
     </div>
 
@@ -172,18 +172,24 @@
     <p>`r lifecycle::badge("maturing")`</p>
 <p>This wrapper execute gene enrichment analyses of the dataset using a list of transcripts and GSEA.
 This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.</p>
-<p>Undelying method:
- msigdbr::msigdbr(species = species) |&gt;
-	nest(data = -gs_cat) |&gt;
-	mutate(test =
-			map(
-				data,
-				~ clusterProfiler::enricher(
-					my_entrez_rank,
-				 	TERM2GENE=.x |&gt; select(gs_name, entrez_gene),
-					pvalueCutoff = 1
-					) |&gt;	as_tibble()
-			))</p>
+<p># Get MSigDB data
+msigdb_data = msigdbr::msigdbr(species = species)</p>
+<p># Filter for specific gene collections if provided
+if (!is.null(gene_collections))
+  msigdb_data = filter(msigdb_data, gs_collection <!-- %in% gene_collections) --></p>
+<p># Process the data
+msigdb_data |&gt;
+  nest(data = -gs_collection) |&gt;
+  mutate(test =
+           map(
+             data,
+             ~ clusterProfiler::enricher(
+               my_entrez_rank,
+               TERM2GENE=.x |&gt; select(gs_name, ncbi_gene),
+               pvalueCutoff = 1
+             ) |&gt;
+               as_tibble()
+           ))</p>
     </div>
 
     <div id="ref-examples">
