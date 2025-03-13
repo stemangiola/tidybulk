@@ -3900,37 +3900,42 @@ entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 	# Check if package is installed, otherwise install
   check_and_install_packages(c("fastmatch", "clusterProfiler"))
 
+	# Check msigdbr version
+	if(packageVersion("msigdbr") < "10.0.0") {
+		stop("tidybulk says: msigdbr version must be >= 10.0.0")
+	}
 
 
 	# Get gene sets signatures
-	msigdbr::msigdbr(species = species) %>%
+	# Get MSigDB data
+	msigdb_data = msigdbr::msigdbr(species = species)
 
-		# Filter specific gene_collections  if specified. This was introduced to speed up examples executionS
-		when(
-			!is.null(gene_collections ) ~ filter(., gs_cat %in% gene_collections ),
-			~ (.)
-		) %>%
+	# Filter for specific gene collections if provided
+	if (!is.null(gene_collections)) {
+		msigdb_data = filter(msigdb_data, gs_collection %in% gene_collections)
+	}
 
-		# Execute calculation
-		nest(data = -gs_cat) %>%
+	# Process the data
+	msigdb_data |>
+		nest(data = -gs_collection) |>
 		mutate(test =
 					 	map(
 					 		data,
 					 		~ clusterProfiler::enricher(
 					 			my_entrez_rank,
-					 			TERM2GENE=.x %>% select(gs_name, entrez_gene),
+					 			TERM2GENE=.x |> select(gs_name, ncbi_gene),
 					 			pvalueCutoff = 1
-					 		) %>%
-					 			as_tibble
-					 	)) %>%
-		select(-data) %>%
-		unnest(test) %>%
+					 		) |>
+					 			as_tibble()
+					 	)) |>
+		select(-data) |>
+		unnest(test) |>
 
 		# Order
-		arrange(`p.adjust`) %>%
+		arrange(`p.adjust`) |>
 
 		# format transcripts
-		mutate(entrez = strsplit(geneID, "/")) %>%
+		mutate(entrez = strsplit(geneID, "/")) |>
 		select(-geneID)
 
 }

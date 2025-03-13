@@ -2065,7 +2065,7 @@ test_that("gene over representation",{
 	res |>
 	  pull(pvalue) |>
 	  magrittr::extract2(1) |>
-	  expect_equal(0.0004572092, tolerance = 0.0001	)
+	  expect_equal(0.000150468, tolerance = 0.0001	)
 
 
 
