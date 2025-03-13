@@ -373,28 +373,28 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 
 	}
 
-#' Get UMAP
+#' Get UMAP reduced dimensions
 #'
 #' @keywords internal
-#'
-#'
+#' @noRd
 #'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
 #'
-#' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
-#' @param top An integer. How many top genes to select
-#' @param of_samples A boolean
-#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
-#' @param calculate_for_pca_dimensions An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered
-#' @param ... Further parameters passed to the function uwot::tumap
+#' @param .data A SummarizedExperiment object containing the data to be reduced
+#' @param .dims An integer specifying the number of UMAP dimensions to return (default = 2)
+#' @param top An integer specifying how many top variable features to select
+#' @param of_samples A boolean indicating whether to calculate for samples (TRUE) or features (FALSE)
+#' @param transform A function to transform the abundance values (default = log1p)
+#' @param scale A boolean indicating whether to scale the data before UMAP (default = NULL, only used for PCA compatibility)
+#' @param calculate_for_pca_dimensions An integer specifying the number of PCA dimensions to use as UMAP input. 
+#'                                    If NULL, variable features are used directly without PCA reduction.
+#' @param ... Additional arguments passed to uwot::tumap()
 #'
-#' @return A tibble with additional columns
+#' @return A list containing:
+#'   \item{raw_result}{The raw UMAP object from uwot}
+#'   \item{result}{A tibble with UMAP coordinates (UMAP1, UMAP2, etc.)}
 #'
 get_reduced_dimensions_UMAP_bulk_SE <-
   function(.data,

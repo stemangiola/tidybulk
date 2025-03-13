@@ -2183,28 +2183,28 @@ get_reduced_dimensions_TSNE_bulk <-
 
 	}
 
-#' Get UMAP
+#' Get UMAP reduced dimensions
 #'
 #' @keywords internal
-#'
-#'
+#' @noRd
 #'
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
 #'
 #' @param .data A tibble
-#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
-#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
-#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
-#' @param top An integer. How many top genes to select
-#' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
-#' @param calculate_for_pca_dimensions An integer of length one. The number of PCA dimensions to based the UMAP calculatio on. If NULL all variable features are considered
-#' @param ... Further parameters passed to the function uwot
+#' @param .feature A column symbol. The column that represents features to use (i.e., normally genes)
+#' @param .abundance A column symbol with the abundance values (e.g., counts)
+#' @param .dims An integer specifying the number of dimensions to return (default = 2)
+#' @param top An integer. How many top variable features to select
+#' @param of_samples A boolean indicating whether to calculate for samples (TRUE) or features (FALSE)
+#' @param transform A function to transform the abundance values (default = log1p)
+#' @param scale A boolean indicating whether to scale the data before UMAP (default = TRUE)
+#' @param calculate_for_pca_dimensions An integer specifying the number of PCA dimensions to use for UMAP calculation. If NULL, all variable features are used directly.
+#' @param ... Additional arguments passed to uwot::umap()
 #'
-#' @return A tibble with additional columns
+#' @return A tibble with UMAP reduced dimensions
 #'
 get_reduced_dimensions_UMAP_bulk <-
   function(.data,

@@ -2590,7 +2590,6 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'			edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
 #'
 #'
-#'
 #'	Underlying method for DESeq2 framework:
 #'
 #'	keep_abundant(
@@ -3078,55 +3077,61 @@ setMethod("keep_variable", "tbl_df", .keep_variable)
 #' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("keep_variable", "tidybulk", .keep_variable)
 
-#' find abundant transcripts
+#' Identify abundant transcripts/genes
 #'
 #' `r lifecycle::badge("maturing")`
 #'
-#' @description identify_abundant() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
+#' @description 
+#' Identifies transcripts/genes that are consistently expressed above a threshold across samples. 
+#' This function adds a logical column `.abundant` to indicate which features pass the filtering criteria.
 #'
-#' @importFrom rlang enquo
-#'
-#' @importFrom dplyr filter
-#' @importFrom tidyr drop_na
-#'
-#' @name identify_abundant
-#'
-#' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+#' @param .data A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param factor_of_interest The name of the column of the factor of interest. This is used for defining sample groups for the filtering process. It uses the filterByExpr function from edgeR.
-#' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param factor_of_interest The name of the column containing groups/conditions for filtering. 
+#'        Used by edgeR's filterByExpr to define sample groups.
+#' @param design A design matrix for more complex experimental designs. If provided, 
+#'        this is passed to filterByExpr instead of factor_of_interest.
+#' @param minimum_counts A positive number specifying the minimum counts per million (CPM) threshold
+#'        for a transcript to be considered abundant (default = 10)
+#' @param minimum_proportion A number between 0 and 1 specifying the minimum proportion of samples
+#'        that must exceed the minimum_counts threshold (default = 0.7)
 #'
-#' @details At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
+#' @details 
+#' This function uses edgeR's filterByExpr() function to identify consistently expressed features.
+#' A feature is considered abundant if it has CPM > minimum_counts in at least minimum_proportion 
+#' of samples in at least one experimental group (defined by factor_of_interest or design).
 #'
-#'  Underlying method:
-#'  edgeR::filterByExpr(
-#'    data,
-#'		min.count = minimum_counts,
-#'		group = string_factor_of_interest,
-#'		min.prop = minimum_proportion
-#'	)
-#'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-#'
-#'
-#'
+#' @return 
+#' Returns the input object with an additional logical column `.abundant` indicating which 
+#' features passed the abundance threshold criteria.
 #'
 #' @examples
+#' # Basic usage
+#' se_mini |> identify_abundant()
 #'
+#' # With custom thresholds
+#' se_mini |> identify_abundant(
+#'   minimum_counts = 5,
+#'   minimum_proportion = 0.5
+#' )
 #'
+#' # Using a factor of interest
+#' se_mini |> identify_abundant(factor_of_interest = condition)
 #'
-#' 	identify_abundant(
-#' 	tidybulk::se_mini
-#' 	)
+#' @references
+#' McCarthy, D. J., Chen, Y., & Smyth, G. K. (2012). Differential expression analysis of 
+#' multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research, 
+#' 40(10), 4288-4297. DOI: 10.1093/bioinformatics/btp616
 #'
+#' @importFrom rlang enquo
+#' @importFrom dplyr filter
+#' @importFrom tidyr drop_na
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
 #' @export
-#'
 setGeneric("identify_abundant", function(.data,
 																		 .sample = NULL,
 																		 .transcript = NULL,
@@ -3295,54 +3300,64 @@ setMethod("identify_abundant", "tbl_df", .identify_abundant)
 setMethod("identify_abundant", "tidybulk", .identify_abundant)
 
 
-#' Keep abundant transcripts
+#' Filter to keep only abundant transcripts/genes
 #'
 #' \lifecycle{questioning}
 #'
-#' @description keep_abundant() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
+#' @description 
+#' Filters the data to keep only transcripts/genes that are consistently expressed above 
+#' a threshold across samples. This is a filtering version of identify_abundant() that 
+#' removes low-abundance features instead of just marking them.
 #'
-#' @importFrom rlang enquo
-#'
-#' @importFrom dplyr filter
-#'
-#' @name keep_abundant
-#'
-#' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+#' @param .data A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param factor_of_interest The name of the column of the factor of interest. This is used for defining sample groups for the filtering process. It uses the filterByExpr function from edgeR.
-#' @param minimum_counts A real positive number. It is the threshold of count per million that is used to filter transcripts/genes out from the scaling procedure.
-#' @param minimum_proportion A real positive number between 0 and 1. It is the threshold of proportion of samples for each transcripts/genes that have to be characterised by a cmp bigger than the threshold to be included for scaling procedure.
+#' @param factor_of_interest The name of the column containing groups/conditions for filtering. 
+#'        Used by edgeR's filterByExpr to define sample groups.
+#' @param design A design matrix for more complex experimental designs. If provided, 
+#'        this is passed to filterByExpr instead of factor_of_interest.
+#' @param minimum_counts A positive number specifying the minimum counts per million (CPM) threshold
+#'        for a transcript to be kept (default = 10)
+#' @param minimum_proportion A number between 0 and 1 specifying the minimum proportion of samples
+#'        that must exceed the minimum_counts threshold (default = 0.7)
 #'
-#' @details At the moment this function uses edgeR (DOI: 10.1093/bioinformatics/btp616)
+#' @details 
+#' This function uses edgeR's filterByExpr() function to identify and keep consistently expressed features.
+#' A feature is kept if it has CPM > minimum_counts in at least minimum_proportion of samples
+#' in at least one experimental group (defined by factor_of_interest or design).
+#' 
+#' This function is similar to identify_abundant() but instead of adding an .abundant column,
+#' it filters out the low-abundance features directly.
 #'
-#'  Underlying method:
-#'  edgeR::filterByExpr(
-#'    data,
-#'		min.count = minimum_counts,
-#'		group = string_factor_of_interest,
-#'		min.prop = minimum_proportion
-#'	)
-#'
-#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-#'
-#'
-#'
+#' @return 
+#' Returns a filtered version of the input object containing only the features that passed
+#' the abundance threshold criteria.
 #'
 #' @examples
+#' # Basic usage
+#' se_mini |> keep_abundant()
 #'
+#' # With custom thresholds
+#' se_mini |> keep_abundant(
+#'   minimum_counts = 5,
+#'   minimum_proportion = 0.5
+#' )
 #'
+#' # Using a factor of interest
+#' se_mini |> keep_abundant(factor_of_interest = condition)
 #'
-#' 	keep_abundant(
-#' 	tidybulk::se_mini
-#' 	)
+#' @references
+#' McCarthy, D. J., Chen, Y., & Smyth, G. K. (2012). Differential expression analysis of 
+#' multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research, 
+#' 40(10), 4288-4297. DOI: 10.1093/bioinformatics/btp616
 #'
+#' @importFrom rlang enquo
+#' @importFrom dplyr filter
 #'
 #' @docType methods
 #' @rdname keep_abundant-methods
 #' @export
-#'
 setGeneric("keep_abundant", function(.data,
 																			 .sample = NULL,
 																			 .transcript = NULL,
@@ -3846,7 +3861,7 @@ setMethod("test_gene_overrepresentation",
 #' This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
 #'
 #' Undelying method:
-#'# Get gene sets signatures
+## Get gene sets signatures
 #'msigdbr::msigdbr(species = species) %>%
 #'
 #'	# Filter specific gene_sets  if specified. This was introduced to speed up examples executionS
