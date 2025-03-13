@@ -893,8 +893,9 @@ test_that("resolve_complete_confounders_of_non_interest",{
   se |>
     resolve_complete_confounders_of_non_interest(A, B, C) |>
     colData() |> 
-    _[, c("A", "B", "C")] |>
+    _[, c("A___altered", "B___altered", "C___altered")] |>
     as_tibble(rownames = ".sample") |> 
+    setNames(c(".sample", "A", "B", "C")) |> 
     expect_identical(expected_tibble )
 
 

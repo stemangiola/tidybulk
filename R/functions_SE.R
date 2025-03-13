@@ -1449,15 +1449,35 @@ univariable_differential_tissue_composition_SE = function(
 		unnest(surv_test, keep_empty = TRUE)
 }
 
+#' Resolve complete confounders of non-interest
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom stringr str_remove
+#' @importFrom stringr str_subset
+#' @importFrom dplyr across
+#' @importFrom dplyr n_distinct
+#' @importFrom tibble as_tibble
+#' @importFrom rlang as.symbol
+#'
+#' @param df A data frame
+#' @param ... Column names to consider as confounders
+#'
+#' @return A data frame with resolved confounders (added columns with ___altered suffix)
+#'
 .resolve_complete_confounders_of_non_interest_df <- function(df, ...){
+
+  # Create altered columns with ___altered prefix
+  df = df |>
+    as_tibble(rownames = ".sample") |>
+    mutate(across(c(...), ~ .x, .names = "{col}___altered"))
 
   combination_of_factors_of_NON_interest =
     # Factors
     df |>
-    as_tibble(rownames = ".sample") |>
-    select(...) |>
-    suppressWarnings() |>
-    colnames() |>
+    select(ends_with("___altered")) |>
+    colnames() |> 
 
     # Combinations
     combn(2) |>
@@ -1473,7 +1493,22 @@ univariable_differential_tissue_composition_SE = function(
         !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_2)
       )
   }
+  message("tidybulk says: New columns created with resolved confounders: ", 
+          paste0(colnames(df) |> str_subset("___altered"), collapse = ", "))
+		  
+	  # Check for columns with only one unique value
+  single_value_cols = df |>
+    select(ends_with("___altered")) |>
+    summarise(across(everything(), ~ n_distinct(.x))) |>
+    pivot_longer(everything()) |>
+    filter(value == 1) |>
+    pull(name)
 
+  if(length(single_value_cols) > 0) {
+    warning("tidybulk says: The following columns have only one unique value and cannot be estimated by a linear model: ",
+            paste(single_value_cols, collapse = ", "))
+  }
+  
   df
 }
 

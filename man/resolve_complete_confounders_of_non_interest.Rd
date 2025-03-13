@@ -12,27 +12,30 @@ resolve_complete_confounders_of_non_interest(se, ...)
 \item{...}{Factors of non-interest (column names from `colData(se)`) to examine for complete confounders.}
 }
 \value{
-A `SummarizedExperiment` object with resolved confounders. The object retains its structure, including assays and metadata, 
-but the column data (`colData`) is updated to reflect the resolved factors.
+A `SummarizedExperiment` object with resolved confounders. The object retains its structure, including assays and metadata,
+but the column data (`colData`) is updated with new "___altered" columns containing the resolved factors.
 }
 \description{
-This function identifies and resolves complete confounders among specified factors of non-interest within a `SummarizedExperiment` object. 
-Complete confounders occur when the levels of one factor are entirely predictable based on the levels of another factor. 
+This function identifies and resolves complete confounders among specified factors of non-interest within a `SummarizedExperiment` object.
+Complete confounders occur when the levels of one factor are entirely predictable based on the levels of another factor.
 Such relationships can interfere with downstream analyses by introducing redundancy or collinearity.
 }
 \details{
-The function systematically examines pairs of specified factors and determines whether they are completely confounded. 
-If a pair of factors is found to be confounded, one of the factors is adjusted or removed to resolve the issue. 
+The function systematically examines pairs of specified factors and determines whether they are completely confounded.
+If a pair of factors is found to be confounded, one of the factors is adjusted or removed to resolve the issue.
 The adjusted `SummarizedExperiment` object is returned, preserving all assays and metadata except the resolved factors.
 
 
-Complete confounders of non-interest can create dependencies between variables that may bias statistical models or violate their assumptions. 
+Complete confounders of non-interest can create dependencies between variables that may bias statistical models or violate their assumptions.
 This function systematically addresses this by:
-1. Identifying pairs of factors in the specified columns that are fully confounded.
-2. Resolving confounding by adjusting or removing one of the factors from the `colData` slot.
+1. Creating new columns with the suffix "___altered" for each specified factor to preserve original values
+2. Identifying pairs of factors in the specified columns that are fully confounded
+3. Resolving confounding by adjusting one of the factors in the "___altered" columns
 
-The resolution strategy depends on the analysis context and can be modified in the helper function 
-`resolve_complete_confounders_of_non_interest_pair_SE()`. By default, the function removes one of the confounded factors.
+The function creates new columns with the "___altered" suffix to store the modified values while preserving the original data. This allows users to compare the original and adjusted values if needed.
+
+The resolution strategy depends on the analysis context and can be modified in the helper function
+`resolve_complete_confounders_of_non_interest_pair_SE()`. By default, the function adjusts one of the confounded factors in the "___altered" columns.
 }
 \examples{
 # Load necessary libraries
