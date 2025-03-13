@@ -205,7 +205,6 @@ keep_abundant(
 		edgeR::glmQLFTest(coef = 2, contrast = my_contrasts) // or glmLRT according to choice
 
 
-
 Underlying method for DESeq2 framework:
 
 keep_abundant(

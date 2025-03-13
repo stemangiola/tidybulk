@@ -108,7 +108,6 @@ This wrapper execute gene enrichment analyses of the dataset using a list of tra
 This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
 
 Undelying method:
-# Get gene sets signatures
 msigdbr::msigdbr(species = species) %>%
 
 # Filter specific gene_sets  if specified. This was introduced to speed up examples executionS
