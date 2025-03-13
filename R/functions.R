@@ -3963,9 +3963,9 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
   if(is.null(gene_collections ) )
     my_gene_collection = msigdbr::msigdbr(species = species)
   else if(gene_collections |> is("character"))
-    my_gene_collection = msigdbr::msigdbr(species = species) %>%  filter( tolower(gs_cat) %in% tolower(gene_collections) )
+    my_gene_collection = msigdbr::msigdbr(species = species) %>%  filter( tolower(gs_collection) %in% tolower(gene_collections) )
   else if(gene_collections |> is("list"))
-    my_gene_collection = tibble(gs_name=names(.), entrez_gene = . ) %>% unnest(entrez_gene) %>% mutate(gs_cat = "user_defined")
+    my_gene_collection = tibble(gs_name=names(.), ncbi_gene = . ) %>% unnest(ncbi_gene) %>% mutate(gs_collection = "user_defined")
  else
    stop("tidybulk says: the gene sets should be either a character vector or a named list")
 
@@ -3974,13 +3974,13 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 
 
 		# Execute calculation
-		nest(data = -gs_cat) |>
+		nest(data = -gs_collection) |>
 		mutate(fit =
 					 	map(
 					 		data,
 					 		~ 	clusterProfiler::GSEA(
 					 				my_entrez_rank,
-					 				TERM2GENE=.x %>% select(gs_name, entrez_gene),
+					 				TERM2GENE=.x %>% select(gs_name, ncbi_gene),
 					 				pvalueCutoff = 1
 					 		)
 

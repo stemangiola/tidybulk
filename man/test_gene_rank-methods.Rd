@@ -112,18 +112,18 @@ msigdbr::msigdbr(species = species) %>%
 
 # Filter specific gene_sets  if specified. This was introduced to speed up examples executionS
 when(
-	!is.null(gene_sets ) ~ filter(., gs_cat %in% gene_sets ),
+	!is.null(gene_sets ) ~ filter(., gs_collection %in% gene_sets ),
 	~ (.)
 ) |>
 
 # Execute calculation
-nest(data = -gs_cat) |>
+nest(data = -gs_collection) |>
 mutate(fit =
 			 	map(
 			 		data,
 			 		~ 	clusterProfiler::GSEA(
 			 			my_entrez_rank,
-			 			TERM2GENE=.x |> select(gs_name, entrez_gene),
+			 			TERM2GENE=.x |> select(gs_name, ncbi_gene),
 			 			pvalueCutoff = 1
 			 		)
 
