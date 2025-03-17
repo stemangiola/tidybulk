@@ -2686,7 +2686,8 @@ aggregate_duplicated_transcripts_DT =
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
 #' @param of_samples A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function for transforming abundance values before correlation calculation 
+#'        (e.g., log1p for RNA sequencing data, identity for no transformation)
 #'
 #' @return A tibble with redundant elements removed
 #'
@@ -2985,17 +2986,25 @@ get_symbol_from_ensembl <-
 
 	}
 
-#' Perform linear equation system analysis through llsr
+#' Perform linear equation system analysis through linear least squares regression
 #'
 #' @keywords internal
 #' @noRd
 #'
 #' @importFrom stats lsfit
 #'
-#' @param mix A data frame
-#' @param reference A data frame
+#' @param mix A data frame containing mixture expression profiles
+#' @param reference A data frame containing reference expression profiles for cell types (default = X_cibersort)
+#' @param intercept Logical indicating whether to include intercept in the regression model (default = TRUE)
 #'
-#' @return A data frame
+#' @details
+#' Performs cell type deconvolution using linear least squares regression. The function:
+#' 1. Identifies common markers between mixture and reference
+#' 2. Normalizes expression data
+#' 3. Fits linear model with or without intercept
+#' 4. Constrains results to non-negative values and normalizes to sum to 1
+#'
+#' @return A data frame containing estimated cell type proportions
 #'
 #'
 run_llsr = function(mix, reference = X_cibersort,  intercept= TRUE) {
