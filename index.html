@@ -525,18 +525,18 @@
 <span>    <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"tSNE"</span><span class="op">)</span>, <span class="fu">everything</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <div class="sourceCode" id="cb32"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="do">## [90m# A tibble: 251 × 4[39m</span></span>
-<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="do">##      tSNE1   tSNE2 .sample                      Call </span></span>
-<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="do">##      [3m[90m&lt;dbl&gt;[39m[23m   [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;chr&gt;[39m[23m                        [3m[90m&lt;fct&gt;[39m[23m</span></span>
-<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="do">## [90m 1[39m   0.367  10.5   TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
-<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="do">## [90m 2[39m   7.90   -[31m1[39m[31m.[39m[31m89[39m  TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
-<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="do">## [90m 3[39m -[31m10[39m[31m.[39m[31m5[39m    15.0   TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
-<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a><span class="do">## [90m 4[39m  -[31m6[39m[31m.[39m[31m57[39m   -[31m1[39m[31m.[39m[31m35[39m  TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
-<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a><span class="do">## [90m 5[39m   2.02    6.48  TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
-<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="do">## [90m 6[39m  14.7    -[31m0[39m[31m.[39m[31m561[39m TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
-<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a><span class="do">## [90m 7[39m  -[31m4[39m[31m.[39m[31m60[39m  -[31m33[39m[31m.[39m[31m0[39m   TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
-<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a><span class="do">## [90m 8[39m -[31m11[39m[31m.[39m[31m1[39m    -[31m8[39m[31m.[39m[31m76[39m  TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
-<span id="cb32-12"><a href="#cb32-12" tabindex="-1"></a><span class="do">## [90m 9[39m -[31m11[39m[31m.[39m[31m2[39m    -[31m7[39m[31m.[39m[31m25[39m  TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
-<span id="cb32-13"><a href="#cb32-13" tabindex="-1"></a><span class="do">## [90m10[39m  -[31m5[39m[31m.[39m[31m0[39m[31m6[39m   21.7   TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="do">##     tSNE1  tSNE2 .sample                      Call </span></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="do">##     [3m[90m&lt;dbl&gt;[39m[23m  [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;chr&gt;[39m[23m                        [3m[90m&lt;fct&gt;[39m[23m</span></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="do">## [90m 1[39m  -[31m7[39m[31m.[39m[31m96[39m   7.68 TCGA-A1-A0SD-01A-11R-A115-07 LumA </span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="do">## [90m 2[39m   2.70  -[31m2[39m[31m.[39m[31m18[39m TCGA-A1-A0SF-01A-11R-A144-07 LumA </span></span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="do">## [90m 3[39m -[31m14[39m[31m.[39m[31m6[39m   -[31m3[39m[31m.[39m[31m60[39m TCGA-A1-A0SG-01A-11R-A144-07 LumA </span></span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a><span class="do">## [90m 4[39m   7.42  13.6  TCGA-A1-A0SH-01A-11R-A084-07 LumA </span></span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a><span class="do">## [90m 5[39m  -[31m4[39m[31m.[39m[31m59[39m   5.83 TCGA-A1-A0SI-01A-11R-A144-07 LumB </span></span>
+<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="do">## [90m 6[39m   6.79   2.03 TCGA-A1-A0SJ-01A-11R-A084-07 LumA </span></span>
+<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a><span class="do">## [90m 7[39m  15.3  -[31m25[39m[31m.[39m[31m7[39m  TCGA-A1-A0SK-01A-12R-A084-07 Basal</span></span>
+<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a><span class="do">## [90m 8[39m  13.1    9.33 TCGA-A1-A0SM-01A-11R-A084-07 LumA </span></span>
+<span id="cb32-12"><a href="#cb32-12" tabindex="-1"></a><span class="do">## [90m 9[39m  11.6    8.62 TCGA-A1-A0SN-01A-11R-A144-07 LumB </span></span>
+<span id="cb32-13"><a href="#cb32-13" tabindex="-1"></a><span class="do">## [90m10[39m -[31m15[39m[31m.[39m[31m5[39m   14.6  TCGA-A1-A0SQ-01A-21R-A144-07 LumA </span></span>
 <span id="cb32-14"><a href="#cb32-14" tabindex="-1"></a><span class="do">## [90m# ℹ 241 more rows[39m</span></span></code></pre></div>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts_SE.norm.tSNE</span> <span class="op">|&gt;</span></span>
@@ -782,16 +782,16 @@
 <div class="sourceCode" id="cb52"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="do">## [90m# A tibble: 22 × 6[39m</span></span>
 <span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a><span class="do">##    .cell_type         cell_type_proportions estimate std.error statistic p.value</span></span>
 <span id="cb52-3"><a href="#cb52-3" tabindex="-1"></a><span class="do">##    [3m[90m&lt;chr&gt;[39m[23m              [3m[90m&lt;list&gt;[39m[23m                   [3m[90m&lt;dbl&gt;[39m[23m     [3m[90m&lt;dbl&gt;[39m[23m     [3m[90m&lt;dbl&gt;[39m[23m   [3m[90m&lt;dbl&gt;[39m[23m</span></span>
-<span id="cb52-4"><a href="#cb52-4" tabindex="-1"></a><span class="do">## [90m 1[39m cibersort.B.cells… [90m&lt;tibble [48 × 9]&gt;[39m       1.82       0.772    2.35   1.86[90me[39m[31m-2[39m</span></span>
-<span id="cb52-5"><a href="#cb52-5" tabindex="-1"></a><span class="do">## [90m 2[39m cibersort.B.cells… [90m&lt;tibble [48 × 9]&gt;[39m      -[31m0[39m[31m.[39m[31m405[39m      0.435   -[31m0[39m[31m.[39m[31m929[39m  3.53[90me[39m[31m-1[39m</span></span>
-<span id="cb52-6"><a href="#cb52-6" tabindex="-1"></a><span class="do">## [90m 3[39m cibersort.Plasma.… [90m&lt;tibble [48 × 9]&gt;[39m       0.613      0.472    1.30   1.94[90me[39m[31m-1[39m</span></span>
-<span id="cb52-7"><a href="#cb52-7" tabindex="-1"></a><span class="do">## [90m 4[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       4.64       1.36     3.41   6.42[90me[39m[31m-4[39m</span></span>
-<span id="cb52-8"><a href="#cb52-8" tabindex="-1"></a><span class="do">## [90m 5[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m      -[31m1[39m[31m.[39m[31m34[39m       0.728   -[31m1[39m[31m.[39m[31m84[39m   6.51[90me[39m[31m-2[39m</span></span>
-<span id="cb52-9"><a href="#cb52-9" tabindex="-1"></a><span class="do">## [90m 6[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       0.036[4m9[24m     0.795    0.046[4m5[24m 9.63[90me[39m[31m-1[39m</span></span>
-<span id="cb52-10"><a href="#cb52-10" tabindex="-1"></a><span class="do">## [90m 7[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       1.28       0.689    1.85   6.41[90me[39m[31m-2[39m</span></span>
-<span id="cb52-11"><a href="#cb52-11" tabindex="-1"></a><span class="do">## [90m 8[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       0.624      0.343    1.82   6.90[90me[39m[31m-2[39m</span></span>
-<span id="cb52-12"><a href="#cb52-12" tabindex="-1"></a><span class="do">## [90m 9[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       0.812      0.880    0.923  3.56[90me[39m[31m-1[39m</span></span>
-<span id="cb52-13"><a href="#cb52-13" tabindex="-1"></a><span class="do">## [90m10[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       0.750      0.756    0.991  3.21[90me[39m[31m-1[39m</span></span>
+<span id="cb52-4"><a href="#cb52-4" tabindex="-1"></a><span class="do">## [90m 1[39m cibersort.B.cells… [90m&lt;tibble [48 × 9]&gt;[39m        2.85      1.75      1.63   0.103 </span></span>
+<span id="cb52-5"><a href="#cb52-5" tabindex="-1"></a><span class="do">## [90m 2[39m cibersort.B.cells… [90m&lt;tibble [48 × 9]&gt;[39m        0.128     0.487     0.263  0.792 </span></span>
+<span id="cb52-6"><a href="#cb52-6" tabindex="-1"></a><span class="do">## [90m 3[39m cibersort.Plasma.… [90m&lt;tibble [48 × 9]&gt;[39m        1.37      0.734     1.87   0.061[4m1[24m</span></span>
+<span id="cb52-7"><a href="#cb52-7" tabindex="-1"></a><span class="do">## [90m 4[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m        1.98      1.42      1.39   0.164 </span></span>
+<span id="cb52-8"><a href="#cb52-8" tabindex="-1"></a><span class="do">## [90m 5[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m        4.01      2.08      1.93   0.053[4m6[24m</span></span>
+<span id="cb52-9"><a href="#cb52-9" tabindex="-1"></a><span class="do">## [90m 6[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       -[31m0[39m[31m.[39m[31m627[39m     0.552    -[31m1[39m[31m.[39m[31m14[39m   0.256 </span></span>
+<span id="cb52-10"><a href="#cb52-10" tabindex="-1"></a><span class="do">## [90m 7[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       -[31m4[39m[31m.[39m[31m24[39m      3.21     -[31m1[39m[31m.[39m[31m32[39m   0.186 </span></span>
+<span id="cb52-11"><a href="#cb52-11" tabindex="-1"></a><span class="do">## [90m 8[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       -[31m0[39m[31m.[39m[31m365[39m     1.04     -[31m0[39m[31m.[39m[31m349[39m  0.727 </span></span>
+<span id="cb52-12"><a href="#cb52-12" tabindex="-1"></a><span class="do">## [90m 9[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m        0.698     0.659     1.06   0.289 </span></span>
+<span id="cb52-13"><a href="#cb52-13" tabindex="-1"></a><span class="do">## [90m10[39m cibersort.T.cells… [90m&lt;tibble [48 × 9]&gt;[39m       -[31m0[39m[31m.[39m[31m853[39m     0.774    -[31m1[39m[31m.[39m[31m10[39m   0.271 </span></span>
 <span id="cb52-14"><a href="#cb52-14" tabindex="-1"></a><span class="do">## [90m# ℹ 12 more rows[39m</span></span></code></pre></div>
 <p>We can also perform test of Kaplan-Meier curves.</p>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
@@ -808,16 +808,16 @@
 <div class="sourceCode" id="cb54"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="do">## [90m# A tibble: 22 × 6[39m</span></span>
 <span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a><span class="do">##    .cell_type                       cell_type_proportions .low_cellularity_exp…¹</span></span>
 <span id="cb54-3"><a href="#cb54-3" tabindex="-1"></a><span class="do">##    [3m[90m&lt;chr&gt;[39m[23m                            [3m[90m&lt;list&gt;[39m[23m                                 [3m[90m&lt;dbl&gt;[39m[23m</span></span>
-<span id="cb54-4"><a href="#cb54-4" tabindex="-1"></a><span class="do">## [90m 1[39m cibersort.B.cells.naive          [90m&lt;tibble [48 × 9]&gt;[39m                       15.0</span></span>
-<span id="cb54-5"><a href="#cb54-5" tabindex="-1"></a><span class="do">## [90m 2[39m cibersort.B.cells.memory         [90m&lt;tibble [48 × 9]&gt;[39m                       19.3</span></span>
-<span id="cb54-6"><a href="#cb54-6" tabindex="-1"></a><span class="do">## [90m 3[39m cibersort.Plasma.cells           [90m&lt;tibble [48 × 9]&gt;[39m                       14.5</span></span>
-<span id="cb54-7"><a href="#cb54-7" tabindex="-1"></a><span class="do">## [90m 4[39m cibersort.T.cells.CD8            [90m&lt;tibble [48 × 9]&gt;[39m                       14.7</span></span>
-<span id="cb54-8"><a href="#cb54-8" tabindex="-1"></a><span class="do">## [90m 5[39m cibersort.T.cells.CD4.naive      [90m&lt;tibble [48 × 9]&gt;[39m                       12.4</span></span>
-<span id="cb54-9"><a href="#cb54-9" tabindex="-1"></a><span class="do">## [90m 6[39m cibersort.T.cells.CD4.memory.re… [90m&lt;tibble [48 × 9]&gt;[39m                       14.2</span></span>
-<span id="cb54-10"><a href="#cb54-10" tabindex="-1"></a><span class="do">## [90m 7[39m cibersort.T.cells.CD4.memory.ac… [90m&lt;tibble [48 × 9]&gt;[39m                       16.5</span></span>
-<span id="cb54-11"><a href="#cb54-11" tabindex="-1"></a><span class="do">## [90m 8[39m cibersort.T.cells.follicular.he… [90m&lt;tibble [48 × 9]&gt;[39m                       19.9</span></span>
-<span id="cb54-12"><a href="#cb54-12" tabindex="-1"></a><span class="do">## [90m 9[39m cibersort.T.cells.regulatory..T… [90m&lt;tibble [48 × 9]&gt;[39m                       13.4</span></span>
-<span id="cb54-13"><a href="#cb54-13" tabindex="-1"></a><span class="do">## [90m10[39m cibersort.T.cells.gamma.delta    [90m&lt;tibble [48 × 9]&gt;[39m                       19.7</span></span>
+<span id="cb54-4"><a href="#cb54-4" tabindex="-1"></a><span class="do">## [90m 1[39m cibersort.B.cells.naive          [90m&lt;tibble [48 × 9]&gt;[39m                       7.44</span></span>
+<span id="cb54-5"><a href="#cb54-5" tabindex="-1"></a><span class="do">## [90m 2[39m cibersort.B.cells.memory         [90m&lt;tibble [48 × 9]&gt;[39m                      14.6 </span></span>
+<span id="cb54-6"><a href="#cb54-6" tabindex="-1"></a><span class="do">## [90m 3[39m cibersort.Plasma.cells           [90m&lt;tibble [48 × 9]&gt;[39m                      14.1 </span></span>
+<span id="cb54-7"><a href="#cb54-7" tabindex="-1"></a><span class="do">## [90m 4[39m cibersort.T.cells.CD8            [90m&lt;tibble [48 × 9]&gt;[39m                      12.1 </span></span>
+<span id="cb54-8"><a href="#cb54-8" tabindex="-1"></a><span class="do">## [90m 5[39m cibersort.T.cells.CD4.naive      [90m&lt;tibble [48 × 9]&gt;[39m                      13.6 </span></span>
+<span id="cb54-9"><a href="#cb54-9" tabindex="-1"></a><span class="do">## [90m 6[39m cibersort.T.cells.CD4.memory.re… [90m&lt;tibble [48 × 9]&gt;[39m                       6.53</span></span>
+<span id="cb54-10"><a href="#cb54-10" tabindex="-1"></a><span class="do">## [90m 7[39m cibersort.T.cells.CD4.memory.ac… [90m&lt;tibble [48 × 9]&gt;[39m                      13.1 </span></span>
+<span id="cb54-11"><a href="#cb54-11" tabindex="-1"></a><span class="do">## [90m 8[39m cibersort.T.cells.follicular.he… [90m&lt;tibble [48 × 9]&gt;[39m                      13.5 </span></span>
+<span id="cb54-12"><a href="#cb54-12" tabindex="-1"></a><span class="do">## [90m 9[39m cibersort.T.cells.regulatory..T… [90m&lt;tibble [48 × 9]&gt;[39m                      10.3 </span></span>
+<span id="cb54-13"><a href="#cb54-13" tabindex="-1"></a><span class="do">## [90m10[39m cibersort.T.cells.gamma.delta    [90m&lt;tibble [48 × 9]&gt;[39m                      13.2 </span></span>
 <span id="cb54-14"><a href="#cb54-14" tabindex="-1"></a><span class="do">## [90m# ℹ 12 more rows[39m</span></span>
 <span id="cb54-15"><a href="#cb54-15" tabindex="-1"></a><span class="do">## [90m# ℹ abbreviated name: ¹​.low_cellularity_expected[39m</span></span>
 <span id="cb54-16"><a href="#cb54-16" tabindex="-1"></a><span class="do">## [90m# ℹ 3 more variables: .high_cellularity_expected &lt;dbl&gt;, pvalue &lt;dbl&gt;,[39m</span></span>
