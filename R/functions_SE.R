@@ -1485,6 +1485,9 @@ univariable_differential_tissue_composition_SE = function(
     as_tibble() |>
     set_names(c("factor_1", "factor_2"))
 
+  message("tidybulk says: New columns created with resolved confounders: ", 
+          paste0(colnames(df) |> str_subset("___altered"), collapse = ", "))
+  
   for(i in combination_of_factors_of_NON_interest |> nrow() |> seq_len()){
     df =
       df |>
@@ -1493,8 +1496,7 @@ univariable_differential_tissue_composition_SE = function(
         !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_2)
       )
   }
-  message("tidybulk says: New columns created with resolved confounders: ", 
-          paste0(colnames(df) |> str_subset("___altered"), collapse = ", "))
+
 		  
 	  # Check for columns with only one unique value
   single_value_cols = df |>
@@ -1567,7 +1569,7 @@ resolve_complete_confounders_of_non_interest_pair_df <- function(df, .factor_1, 
   # Messages if I have confounders
   if(cd |> filter(n1 + n2 < 3) |> nrow() > 0){
 
-    message(sprintf("tidybulk says: IMPORTANT! the columns %s and %s, have been corrected for complete confounders and now are NOT interpretable, and cannot be used in hypothesis testing.", quo_name(.factor_1), quo_name(.factor_2)))
+    message(sprintf("tidybulk says: IMPORTANT! the columns %s and %s, have been corrected for complete confounders and now are NOT interpretable. \n      They cannot be used in hypothesis testing. However they can be used in the model to capture the unwanted variability in the data.", quo_name(.factor_1), quo_name(.factor_2)))
 
     message(sprintf(
       "tidybulk says: The value(s) %s in column %s from sample(s) %s, has been changed to %s.",
