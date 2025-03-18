@@ -2820,6 +2820,7 @@ setMethod("describe_transcript", "RangedSummarizedExperiment", .describe_transcr
 #' @importFrom rlang set_names
 #' @importFrom tibble as_tibble
 #' @importFrom SummarizedExperiment as.data.frame
+#' @importFrom S4Vectors DataFrame
 .resolve_complete_confounders_of_non_interest <- function(se, ...){
 
   colData(se) =
