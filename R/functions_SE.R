@@ -1470,7 +1470,7 @@ univariable_differential_tissue_composition_SE = function(
 
   # Create altered columns with ___altered prefix
   df = df |>
-    as_tibble(rownames = ".sample") |>
+    #as_tibble(rownames = ".sample") |>
     mutate(across(c(...), ~ .x, .names = "{col}___altered"))
 
   combination_of_factors_of_NON_interest =
@@ -1511,7 +1511,7 @@ univariable_differential_tissue_composition_SE = function(
             paste(single_value_cols, collapse = ", "))
   }
   
-  df
+  df 
 }
 
 #' Resolve Complete Confounders of Non-Interest

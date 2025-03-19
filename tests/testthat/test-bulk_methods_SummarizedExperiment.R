@@ -890,8 +890,11 @@ test_that("resolve_complete_confounders_of_non_interest",{
       C = rep("c1", 9)
     ) |> arrange(.sample)
 
-  se |>
-    resolve_complete_confounders_of_non_interest(A, B, C) |>
+  se_deconfounded = 
+    se |>
+    resolve_complete_confounders_of_non_interest(A, B, C) 
+  
+  se_deconfounded |>
     colData() |> 
     _[, c("A___altered", "B___altered", "C___altered")] |>
     as_tibble(rownames = ".sample") |> 
@@ -899,4 +902,9 @@ test_that("resolve_complete_confounders_of_non_interest",{
     expect_identical(expected_tibble )
 
 
+  se_deconfounded |>
+    colData() |> 
+    ncol() |> 
+    expect_equal(se |> colData() |> ncol() + 3 )
+  
 })
