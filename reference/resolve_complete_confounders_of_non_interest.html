@@ -19,7 +19,7 @@ Such relationships can interfere with downstream analyses by introducing redunda
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidybulk</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.19.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.19.3</span>
       </span>
     </div>
 
@@ -261,29 +261,29 @@ This function systematically addresses this by:
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># View the updated column data</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">se_resolved</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DataFrame with 9 rows and 9 columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       .sample   sample_id factor_of_interest           A           B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   &lt;character&gt; &lt;character&gt;        &lt;character&gt; &lt;character&gt; &lt;character&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           1     Sample1            treated          a1          b1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2           2     Sample2            treated          a2          b1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3           3     Sample3            treated          a1          b2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4           4     Sample4            treated          a2          b1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5           5     Sample5          untreated          a1          b1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6           6     Sample6          untreated          a2          b1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7           7     Sample7          untreated          a1          b2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8           8     Sample8          untreated          a2          b1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9           9     Sample9          untreated          a3          b3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             C A___altered B___altered C___altered</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   &lt;character&gt; &lt;character&gt; &lt;character&gt; &lt;character&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          c1          a1          b1          c1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          c1          a2          b1          c1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          c1          a1          b2          c1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          c1          a2          b1          c1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          c1          a1          b1          c1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          c1          a2          b1          c1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7          c1          a1          b2          c1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8          c1          a2          b1          c1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9          c3          a3          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DataFrame with 9 rows and 8 columns</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     sample_id factor_of_interest           A           B           C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   &lt;character&gt;        &lt;character&gt; &lt;character&gt; &lt;character&gt; &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     Sample1            treated          a1          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     Sample2            treated          a2          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     Sample3            treated          a1          b2          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     Sample4            treated          a2          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     Sample5          untreated          a1          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     Sample6          untreated          a2          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7     Sample7          untreated          a1          b2          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8     Sample8          untreated          a2          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9     Sample9          untreated          a3          b3          c3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   A___altered B___altered C___altered</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   &lt;character&gt; &lt;character&gt; &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          a1          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          a2          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          a1          b2          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          a2          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          a1          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          a2          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7          a1          b2          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8          a2          b1          c1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9          a3          b1          c1</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
