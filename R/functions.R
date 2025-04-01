@@ -2171,7 +2171,8 @@ get_reduced_dimensions_TSNE_bulk <-
 		do.call(Rtsne::Rtsne, c(list(df_tsne), arguments)) %$%
 			Y %>%
 			as_tibble(.name_repair = "minimal") %>%
-			setNames(c("tSNE1", "tSNE2")) %>%
+			setNames(paste0("tSNE", seq_len(ncol(.)))) %>%
+			#setNames(c("tSNE1", "tSNE2")) %>%
 
 			# add element name
 			dplyr::mutate(!!.element := df_tsne %>% rownames) %>%
@@ -2291,7 +2292,8 @@ get_reduced_dimensions_UMAP_bulk <-
 
     do.call(uwot::tumap, c(list(df_UMAP), arguments)) %>%
       as_tibble(.name_repair = "minimal") %>%
-      setNames(c("UMAP1", "UMAP2")) %>%
+      setNames(paste0("UMAP", seq_len(ncol(.)))) %>%
+      #setNames(c("UMAP1", "UMAP2"))
 
       # add element name
       dplyr::mutate(!!.element := df_UMAP %>% rownames) %>%
