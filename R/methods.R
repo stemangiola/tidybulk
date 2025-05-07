@@ -2640,7 +2640,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'
 #'  tidybulk::se_mini |>
 #'  identify_abundant() |>
-#' 	test_differential_abundance( ~ condition )
+#' 	test_differential_abundance( ~ condition, method = "edgeR_quasi_likelihood" )
 #'
 #' 	# The function `test_differential_abundance` operates with contrasts too
 #'
@@ -2648,6 +2648,7 @@ setMethod("ensembl_to_symbol", "tidybulk", .ensembl_to_symbol)
 #'  identify_abundant(factor_of_interest = condition) |>
 #'  test_differential_abundance(
 #' 	    ~ 0 + condition,
+#' 	    method = "edgeR_quasi_likelihood",
 #' 	    contrasts = c( "conditionTRUE - conditionFALSE")
 #'  )
 #'
@@ -2706,7 +2707,7 @@ setGeneric("test_differential_abundance", function(.data,
 																									 .transcript = NULL,
 																									 .abundance = NULL,
 																									 contrasts = NULL,
-																									 method = "edgeR_quasi_likelihood",
+																									 method = NULL,
 																									 test_above_log2_fold_change = NULL,
 																									 scaling_method = "TMM",
 																									 omit_contrast_in_colnames = FALSE,
@@ -2729,7 +2730,7 @@ setGeneric("test_differential_abundance", function(.data,
 																					.transcript = NULL,
 																					.abundance = NULL,
 																					contrasts = NULL,
-																					method = "edgeR_quasi_likelihood",
+																					method = NULL,
 																					test_above_log2_fold_change = NULL,
 																					scaling_method = "TMM",
 																					omit_contrast_in_colnames = FALSE,
@@ -2757,11 +2758,23 @@ setGeneric("test_differential_abundance", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+
+
+
+	# DEPRECATION OF method = "edgeR_quasi_likelihood"
+	if (is.null(method)) {
+
+	  # Signal the deprecation to the user
+	  warning("In Jannuary 2024 the `method` argument will need to be specified and must NOT be empty. Until then method = NULL will be defaulted to \"edgeR_quasi_likelihood\" as for consistency with old version.")
+
+	  method = "edgeR_quasi_likelihood"
+	}
+
 	# DEPRECATION OF significance_threshold
 	if (is_present(significance_threshold) & !is.null(significance_threshold)) {
 
 		# Signal the deprecation to the user
-		deprecate_warn("1.1.7", "tidybulk::test_differential_abundance(significance_threshold = )", details = "The argument significance_threshold is now deprecated, tigether with the column significance.")
+		deprecate_warn("1.1.7", "tidybulk::test_differential_abundance(significance_threshold = )", details = "The argument significance_threshold is now deprecated, together with the column significance.")
 
 	}
 

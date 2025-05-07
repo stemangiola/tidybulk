@@ -156,7 +156,7 @@ tt_mds_adj_mds %>%
 ```
 
 ```{r}
-tt_test <- tt_adj %>% test_differential_abundance(~ condition + type)
+tt_test <- tt_adj %>% test_differential_abundance(~ condition + type, method = "edgeR_quasi_likelihood")
 
 # MA plot
 tt_test %>%
