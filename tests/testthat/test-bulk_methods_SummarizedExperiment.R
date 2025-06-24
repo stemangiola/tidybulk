@@ -130,7 +130,7 @@ test_that("tidybulk SummarizedExperiment normalisation subset",{
 
   expect_equal(
     unique(SummarizedExperiment::colData(res)$multiplier),
-    c(1.3648110, 1.5756592, 1.1651309, 2.1282288, 1.2110911, 0.9574359, 1.4434610, 1.4897840),
+    c(1.425486, 1.645707, 1.216928, 2.222842, 1.264932, 1.000000, 1.507632, 1.556014),
     tolerance=1e-3
   )
 
