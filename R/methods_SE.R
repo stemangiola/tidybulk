@@ -161,11 +161,12 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 
 	# Calculate multiplier
 	multiplier =
-		1 %>%
-		divide_by(library_size_filtered * nf) %>%
+		# Relecting the ratio of effective library size of the reference sample to the effective library size of each sample
+  		(library_size_filtered[reference] * nf[reference]) %>%
+  		divide_by(library_size_filtered * nf) 
 
 		# NOT HELPING - Put everything to the reference sample scale
-		multiply_by(library_size_filtered[reference])
+		# multiply_by(library_size_filtered[reference])
 
 		# At the moment no because would be different from TIBBLE behaviour
 		# %>%
