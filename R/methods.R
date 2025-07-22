@@ -31,8 +31,6 @@ setOldClass("tidybulk")
 #'
 #' @examples
 #'
-#' tidybulk(tidybulk::se_mini)
-#'
 #'
 #' @docType methods
 #' @rdname tidybulk-methods
@@ -3097,6 +3095,7 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 #'        for a transcript to be considered abundant (default = 10)
 #' @param minimum_proportion A number between 0 and 1 specifying the minimum proportion of samples
 #'        that must exceed the minimum_counts threshold (default = 0.7)
+#' @param formula_design A formula to construct the design matrix from colData. If provided, overrides the design argument. Default is NULL.
 #'
 #' @details 
 #' This function uses edgeR's filterByExpr() function to identify consistently expressed features.
@@ -3139,6 +3138,7 @@ setGeneric("identify_abundant", function(.data,
 																		 .abundance = NULL,
 																		 factor_of_interest = NULL,
 																		 design = NULL,
+																		 formula_design = NULL,
 																		 minimum_counts = 10,
 																		 minimum_proportion = 0.7,
 																		 minimum_count_per_million = NULL,
@@ -3152,6 +3152,7 @@ setGeneric("identify_abundant", function(.data,
 														.abundance = NULL,
 														factor_of_interest = NULL,
 														design = NULL,
+														formula_design = NULL,
 														minimum_counts = 10,
 														minimum_proportion = 0.7,
 														minimum_count_per_million = NULL)
@@ -3168,7 +3169,7 @@ setGeneric("identify_abundant", function(.data,
 	.sample = col_names$.sample
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
-
+	
 	if (minimum_counts < 0)
 	  stop("The parameter minimum_counts must be > 0")
 	if (minimum_proportion < 0 |	minimum_proportion > 1)
@@ -3296,6 +3297,7 @@ setMethod("identify_abundant", "tidybulk", .identify_abundant)
 #'        that must exceed the minimum_counts threshold (default = 0.7)
 #' @param minimum_count_per_million A positive number specifying the minimum CPM cutoff for filtering.
 #'        If provided, this will override the minimum_counts parameter (default = NULL)
+#' @param formula_design A formula to construct the design matrix from colData. If provided, overrides the design argument. Default is NULL.
 #'
 #' @details 
 #' This function uses edgeR's filterByExpr() function to identify and keep consistently expressed features.
@@ -3340,6 +3342,7 @@ setGeneric("keep_abundant", function(.data,
 																			 .abundance = NULL,
 																			 factor_of_interest = NULL,
 																			 design = NULL,
+																			 formula_design = NULL,
 																			 minimum_counts = 10,
 																			 minimum_proportion = 0.7,
 																			 minimum_count_per_million = NULL)
@@ -3352,6 +3355,7 @@ setGeneric("keep_abundant", function(.data,
 															.abundance = NULL,
 															factor_of_interest = NULL,
 															design = NULL,
+															formula_design = NULL,
 															minimum_counts = 10,
 															minimum_proportion = 0.7,
 															minimum_count_per_million = NULL)
@@ -3369,6 +3373,8 @@ setGeneric("keep_abundant", function(.data,
 	.transcript = col_names$.transcript
 	.abundance = col_names$.abundance
 
+	browser()
+	
 	factor_of_interest = enquo(factor_of_interest)
 
 	# Validate data frame
@@ -3386,6 +3392,7 @@ setGeneric("keep_abundant", function(.data,
 			.abundance = !!.abundance,
 			factor_of_interest = !!factor_of_interest,
 			design = design,
+			formula_design = formula_design,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion,
 			minimum_count_per_million = minimum_count_per_million

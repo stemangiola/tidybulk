@@ -26,11 +26,31 @@ filterByExpr.DGEList <- function(y, design=NULL, group=NULL, lib.size=NULL, ...)
 }
 
 #' @exportS3Method
-filterByExpr_SE <- function(y, design=NULL, group=NULL, lib.size=NULL, ...)
+filterByExpr_SE <- function(y, design=NULL, group=NULL, lib.size=NULL, assay_name=NULL, ...)
 #	Created 19 March 2020. Last revised 19 March 2020.
 {
-	y <- edgeR::SE2DGEList(y)
-	filterByExpr.DGEList(y, design=design, group=group, lib.size=lib.size, ...)
+  browser()
+     # If assay_name is provided, temporarily rename that assay to 'counts'
+    if (!is.null(assay_name)) {
+        original_assay_names <- SummarizedExperiment::assayNames(y)
+        assay_idx <- which(original_assay_names == assay_name)
+        if (length(assay_idx) == 0) stop("Assay not found: ", assay_name)
+        new_names <- original_assay_names
+        new_names[assay_idx] <- "counts"
+        other_idx <- setdiff(seq_along(original_assay_names), assay_idx)
+        new_names[other_idx] <- paste0("assay", seq_along(other_idx))
+        SummarizedExperiment::assayNames(y) <- new_names
+        write(paste0("[DEBUG] Assay names after renaming: ", paste(SummarizedExperiment::assayNames(y), collapse=", ")), debug_file, append=TRUE); flush.console()
+    }
+    write(paste0("[DEBUG] Assay names before SE2DGEList: ", paste(SummarizedExperiment::assayNames(y), collapse=", ")), debug_file, append=TRUE); flush.console()
+    write(paste0("[DEBUG] Class of y before SE2DGEList: ", paste(class(y), collapse=", ")), debug_file, append=TRUE); flush.console()
+    capture.output(str(y), file=debug_file, append=TRUE); flush.console()
+    y <- edgeR::SE2DGEList(y)
+    # Restore original assay names if changed
+    if (!is.null(assay_name)) {
+        SummarizedExperiment::assayNames(y) <- original_assay_names
+    }
+    filterByExpr.DGEList(y, design=design, group=group, lib.size=lib.size, ...)
 }
 
 #' @exportS3Method

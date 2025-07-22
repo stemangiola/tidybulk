@@ -17,6 +17,7 @@ identify_abundant(
   .abundance = NULL,
   factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
@@ -30,6 +31,7 @@ identify_abundant(
   .abundance = NULL,
   factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL
@@ -42,6 +44,7 @@ identify_abundant(
   .abundance = NULL,
   factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL
@@ -54,6 +57,7 @@ identify_abundant(
   .abundance = NULL,
   factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL
@@ -64,8 +68,8 @@ identify_abundant(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL
@@ -76,8 +80,8 @@ identify_abundant(
   .sample = NULL,
   .transcript = NULL,
   .abundance = NULL,
-  factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL
@@ -97,6 +101,8 @@ Used by edgeR's filterByExpr to define sample groups.}
 
 \item{design}{A design matrix for more complex experimental designs. If provided, 
 this is passed to filterByExpr instead of factor_of_interest.}
+
+\item{formula_design}{A formula to construct the design matrix from colData. If provided, overrides the design argument. Default is NULL.}
 
 \item{minimum_counts}{A positive number specifying the minimum counts per million (CPM) threshold
 for a transcript to be considered abundant (default = 10)}

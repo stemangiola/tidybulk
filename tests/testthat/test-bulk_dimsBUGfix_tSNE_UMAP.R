@@ -12,7 +12,7 @@ test_that("Get reduced dimensions tSNE - no object",{
 
   res =
     input_df_breast |>
-    identify_abundant(a, b, c) |>
+    identify_abundant(.sample = a, .transcript = b, .abundance = c) |>
 
     reduce_dimensions(
       method="tSNE",

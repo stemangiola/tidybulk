@@ -122,3 +122,41 @@ test_that("identify_abundant and keep_abundant work with design argument", {
   se_keep_both <- tidybulk::keep_abundant(se, minimum_counts = 100, minimum_count_per_million = 100, design = design)
   expect_equal(nrow(se_keep_both), nrow(se_keep_cpm100))
 }) 
+
+test_that("identify_abundant and keep_abundant work with formula_design argument", {
+  se = tidybulk::se
+  # Use a formula for design
+  formula <- ~ dex + cell
+
+  # identify_abundant with formula_design
+  se_abundant_10 <- tidybulk::identify_abundant(se, minimum_counts = 10, formula_design = formula)
+  se_abundant_100 <- tidybulk::identify_abundant(se, minimum_counts = 100, formula_design = formula)
+  expect_true(sum(rowData(se_abundant_100)$.abundant) <= sum(rowData(se_abundant_10)$.abundant))
+
+  se_abundant_cpm10 <- tidybulk::identify_abundant(se, minimum_count_per_million = 10, formula_design = formula)
+  se_abundant_cpm100 <- tidybulk::identify_abundant(se, minimum_count_per_million = 100, formula_design = formula)
+  expect_true(sum(rowData(se_abundant_cpm100)$.abundant) <= sum(rowData(se_abundant_cpm10)$.abundant))
+
+  se_abundant_both <- tidybulk::identify_abundant(se, minimum_counts = 100, minimum_count_per_million = 100, formula_design = formula)
+  expect_equal(sum(rowData(se_abundant_both)$.abundant), sum(rowData(se_abundant_cpm100)$.abundant))
+
+  # keep_abundant with formula_design
+  se_keep_10 <- tidybulk::keep_abundant(se, minimum_counts = 10, formula_design = formula)
+  se_keep_100 <- tidybulk::keep_abundant(se, minimum_counts = 100, formula_design = formula)
+  expect_true(nrow(se_keep_100) <= nrow(se_keep_10))
+
+  se_keep_cpm10 <- tidybulk::keep_abundant(se, minimum_count_per_million = 10, formula_design = formula)
+  se_keep_cpm100 <- tidybulk::keep_abundant(se, minimum_count_per_million = 100, formula_design = formula)
+  expect_true(nrow(se_keep_cpm100) <= nrow(se_keep_cpm10))
+
+  se_keep_both <- tidybulk::keep_abundant(se, minimum_counts = 100, minimum_count_per_million = 100, formula_design = formula)
+  expect_equal(nrow(se_keep_both), nrow(se_keep_cpm100))
+
+  # Precedence: formula_design overrides design
+  design <- model.matrix(~ dex, data = colData(se))
+  expect_warning(
+    se_abundant_precedence <- tidybulk::identify_abundant(se, minimum_counts = 10, design = design, formula_design = formula),
+    "Both formula_design and design provided; formula_design will be used."
+  )
+  expect_equal(sum(rowData(se_abundant_precedence)$.abundant), sum(rowData(se_abundant_10)$.abundant))
+}) 

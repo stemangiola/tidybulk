@@ -52,9 +52,3 @@ to avoid to specify .sample, .transcript and .abundance arguments all the times.
 The tidybulk object have an attribute called internals where these three
 arguments are stored as metadata. They can be extracted as attr(<object>, "internals").
 }
-\examples{
-
-tidybulk(tidybulk::se_mini)
-
-
-}

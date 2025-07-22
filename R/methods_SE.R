@@ -123,17 +123,21 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 	  # Check I have genes left
 	  when(nrow(.) == 0 ~ stop("tidybulk says: there are 0 genes that passes the filters (.abundant and/or .subset_for_scaling). Please check your filtering or your data."), ~ (.))
 
-	my_assay = assays(.data_filtered) %>% as.list() %>% .[1]
+	# Determine the correct assay name
+	if (is.null(.abundance) || (rlang::quo_is_symbol(.abundance) && rlang::as_name(.abundance) == ".abundance")) {
+	  my_assay <- assayNames(.data)[1]
+	} else {
+	  my_assay <- rlang::as_name(.abundance)
+	}
 
-	# Drop genes with NAs, as edgeR::calcNormFactors does not accept them
-	my_counts_filtered = my_assay[[1]] %>% na.omit()
+	my_counts_filtered = assays(.data_filtered)[[my_assay]] %>% na.omit()
 	library_size_filtered = my_counts_filtered %>% colSums(na.rm  = TRUE)
 
 	# If not enough genes, warning
 	if(nrow(my_counts_filtered)<100) warning(warning_for_scaling_with_few_genes)
 
 	# Set column name for value scaled
-	value_scaled = my_assay %>% names() %>% paste0(scaled_string)
+	value_scaled = my_assay %>% paste0(scaled_string)
 
 	# Get reference
 	reference <-
@@ -865,7 +869,9 @@ setMethod("remove_redundancy",
 	my_assay = ifelse(
 	  quo_is_symbol(.abundance),
 	  quo_name(.abundance),
-	  get_assay_scaled_if_exists_SE(.data)
+	  .data |>
+	    assayNames() |>
+	    extract2(1)
 	)
 
 	if(tolower(method) == "combat"){
@@ -1573,6 +1579,7 @@ setMethod("keep_variable",
 																 .transcript = NULL,
 																 .abundance = NULL,
 																 design = NULL,
+																 formula_design = NULL,
 																 minimum_counts = 10,
 																 minimum_proportion = 0.7,
 																 minimum_count_per_million = NULL) {
@@ -1580,7 +1587,12 @@ setMethod("keep_variable",
   # Fix NOTEs
   . = NULL
 
-
+	# If formula_design is provided, use it to create the design matrix
+	if (!is.null(formula_design)) {
+		if (!is.null(design)) warning("Both formula_design and design provided; formula_design will be used.")
+		design <- model.matrix(formula_design, data = colData(.data))
+	}
+  
 	.abundance = enquo(.abundance)
 
 	if (minimum_counts < 0)
@@ -1613,6 +1625,7 @@ setMethod("keep_variable",
 	    assayNames() |>
 	    extract2(1)
 	)
+
 	# Get gene to exclude
 	# If minimum_count_per_million is provided, use it and ignore minimum_counts
 	if (!is.null(minimum_count_per_million)) {
@@ -1621,7 +1634,8 @@ setMethod("keep_variable",
 			tidybulk:::filterByExpr_SE(
 				design = design,
 				min.prop = minimum_proportion,
-				CPM.Cutoff = minimum_count_per_million
+				CPM.Cutoff = minimum_count_per_million,
+				assay_name = my_assay
 			) %>%
 			not() %>%
 			which %>%
@@ -1632,7 +1646,8 @@ setMethod("keep_variable",
 			tidybulk:::filterByExpr_SE(
 				min.count = minimum_counts,
 				design = design,
-				min.prop = minimum_proportion
+				min.prop = minimum_proportion,
+				assay_name = my_assay
 			) %>%
 			not() %>%
 			which %>%
@@ -1658,13 +1673,14 @@ setMethod("keep_variable",
 #'
 setMethod("identify_abundant",
                     "SummarizedExperiment",
-                    function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL, factor_of_interest = NULL, design = NULL, minimum_counts = 10, minimum_proportion = 0.7, minimum_count_per_million = NULL) {
+                    function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL, design = NULL, formula_design = NULL, minimum_counts = 10, minimum_proportion = 0.7, minimum_count_per_million = NULL) {
                       .identify_abundant_se(
                         .data = .data,
                         .sample = .sample,
                         .transcript = .transcript,
                         .abundance = .abundance,
                         design = design,
+                        formula_design = formula_design,
                         minimum_counts = minimum_counts,
                         minimum_proportion = minimum_proportion,
                         minimum_count_per_million = minimum_count_per_million
@@ -1682,13 +1698,14 @@ setMethod("identify_abundant",
 #'
 setMethod("identify_abundant",
                     "RangedSummarizedExperiment",
-                    function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL, factor_of_interest = NULL, design = NULL, minimum_counts = 10, minimum_proportion = 0.7, minimum_count_per_million = NULL) {
+                    function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL, design = NULL, formula_design = NULL, minimum_counts = 10, minimum_proportion = 0.7, minimum_count_per_million = NULL) {
                       .identify_abundant_se(
                         .data = .data,
                         .sample = .sample,
                         .transcript = .transcript,
                         .abundance = .abundance,
                         design = design,
+                        formula_design = formula_design,
                         minimum_counts = minimum_counts,
                         minimum_proportion = minimum_proportion,
                         minimum_count_per_million = minimum_count_per_million
@@ -1702,8 +1719,8 @@ setMethod("identify_abundant",
 														 .sample = NULL,
 														 .transcript = NULL,
 														 .abundance = NULL,
-														 factor_of_interest = NULL,
 														 design = NULL,
+														 formula_design = NULL,
 														 minimum_counts = 10,
 														 minimum_proportion = 0.7,
 														 minimum_count_per_million = NULL)
@@ -1711,6 +1728,12 @@ setMethod("identify_abundant",
 
   # Fix NOTEs
   . = NULL
+
+	# If formula_design is provided, use it to create the design matrix
+	if (!is.null(formula_design)) {
+		if (!is.null(design)) warning("Both formula_design and design provided; formula_design will be used.")
+		design <- model.matrix(formula_design, data = colData(.data))
+	}
 
     .abundance = enquo(.abundance)
 
@@ -1740,7 +1763,9 @@ setMethod("identify_abundant",
 #'
 setMethod("keep_abundant",
 					"SummarizedExperiment",
-					.keep_abundant_se)
+					function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL, design = NULL, formula_design = NULL, minimum_counts = 10, minimum_proportion = 0.7, minimum_count_per_million = NULL) {
+						.keep_abundant_se(.data, .sample = .sample, .transcript = .transcript, .abundance = .abundance, design = design, formula_design = formula_design, minimum_counts = minimum_counts, minimum_proportion = minimum_proportion, minimum_count_per_million = minimum_count_per_million)
+					})
 
 #' keep_abundant
 #' @inheritParams keep_abundant
@@ -1752,7 +1777,9 @@ setMethod("keep_abundant",
 #'
 setMethod("keep_abundant",
 					"RangedSummarizedExperiment",
-					.keep_abundant_se)
+					function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL, design = NULL, formula_design = NULL, minimum_counts = 10, minimum_proportion = 0.7, minimum_count_per_million = NULL) {
+						.keep_abundant_se(.data, .sample = .sample, .transcript = .transcript, .abundance = .abundance, design = design, formula_design = formula_design, minimum_counts = minimum_counts, minimum_proportion = minimum_proportion, minimum_count_per_million = minimum_count_per_million)
+					})
 
 
 
