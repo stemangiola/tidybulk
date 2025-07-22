@@ -254,8 +254,8 @@ setGeneric("get_bibliography", function(.data)
 #'
 setGeneric("test_stratification_cellularity", function(.data,
                                                        .formula,
-                                                       .sample = NULL,
-                                                       .transcript = NULL,
+                                                       
+                                                       
                                                        .abundance = NULL,
                                                        method = "cibersort",
                                                        reference = X_cibersort,
@@ -345,8 +345,8 @@ setGeneric("test_stratification_cellularity", function(.data,
 #'
 setGeneric("test_differential_cellularity", function(.data,
                                                      .formula,
-                                                     .sample = NULL,
-                                                     .transcript = NULL,
+                                                     
+                                                     
                                                      .abundance = NULL,
                                                      method = "cibersort",
                                                      reference = X_cibersort,
@@ -399,8 +399,8 @@ setGeneric("test_differential_cellularity", function(.data,
 #'
 setGeneric("impute_missing_abundance", function(.data,
                                                 .formula,
-                                                .sample = NULL,
-                                                .transcript = NULL,
+                                                
+                                                
                                                 .abundance = NULL,
                                                 suffix = "",
                                                 force_scaling = FALSE)
@@ -409,8 +409,8 @@ setGeneric("impute_missing_abundance", function(.data,
 # Set internal
 .impute_missing_abundance = 	function(.data,
                                       .formula,
-                                      .sample = NULL,
-                                      .transcript = NULL,
+                                      
+                                      
                                       .abundance = NULL,
                                       suffix = "",
                                       force_scaling = FALSE)
@@ -534,8 +534,8 @@ setGeneric("fill_missing_abundance", function(.data,
 #' @export
 #'
 #'
-setGeneric("pivot_transcript", function(.data,
-                                        .transcript = NULL)
+setGeneric("pivot_transcript", function(.data
+                                        )
   standardGeneric("pivot_transcript"))
 
 #' Extract sample-wise information
@@ -570,8 +570,8 @@ setGeneric("pivot_transcript", function(.data,
 #' @export
 #'
 #'
-setGeneric("pivot_sample", function(.data,
-                                    .sample = NULL)
+setGeneric("pivot_sample", function(.data
+                                    )
   standardGeneric("pivot_sample"))
 
 
@@ -657,7 +657,7 @@ setGeneric("test_gene_rank", function(.data,
                                       .entrez,
                                       .arrange_desc,
                                       species,
-                                      .sample = NULL,
+                                      
                                       gene_sets  = NULL,
                                       gene_set = NULL  # DEPRECATED
 )
@@ -742,7 +742,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
                                                     .entrez,
                                                     .do_test,
                                                     species,
-                                                    .sample = NULL,
+                                                    
                                                     gene_sets  = NULL,
                                                     gene_set = NULL # DEPRECATED
 )
@@ -843,7 +843,7 @@ setGeneric("test_gene_overrepresentation", function(.data,
 #'
 setGeneric("test_gene_enrichment", function(.data,
                                             .formula,
-                                            .sample = NULL,
+                                            
                                             .entrez,
                                             .abundance = NULL,
                                             contrasts = NULL,
@@ -918,8 +918,8 @@ standardGeneric("test_gene_enrichment"))
 #' @rdname keep_abundant-methods
 #' @export
 setGeneric("keep_abundant", function(.data,
-                                     .sample = NULL,
-                                     .transcript = NULL,
+                                     
+                                     
                                      .abundance = NULL,
                                      factor_of_interest = NULL,
                                      design = NULL,
@@ -983,8 +983,8 @@ setGeneric("keep_abundant", function(.data,
 #' @rdname identify_abundant-methods
 #' @export
 setGeneric("identify_abundant", function(.data,
-                                         .sample = NULL,
-                                         .transcript = NULL,
+                                         
+                                         
                                          .abundance = NULL,
                                          factor_of_interest = NULL,
                                          design = NULL,
@@ -1037,8 +1037,8 @@ setGeneric("identify_abundant", function(.data,
 #' @export
 #'
 setGeneric("keep_variable", function(.data,
-                                     .sample = NULL,
-                                     .transcript = NULL,
+                                     
+                                     
                                      .abundance = NULL,
                                      top = 500,
                                      transform = log1p,
@@ -1220,8 +1220,8 @@ setGeneric("keep_variable", function(.data,
 #'
 setGeneric("test_differential_abundance", function(.data,
                                                    .formula,
-                                                   .sample = NULL,
-                                                   .transcript = NULL,
+                                                   
+                                                   
                                                    .abundance = NULL,
                                                    contrasts = NULL,
                                                    method = "edgeR_quasi_likelihood",
@@ -1255,8 +1255,7 @@ standardGeneric("test_differential_abundance"))
 #' @export
 #'
 #'
-setGeneric("describe_transcript", function(.data,
-                                           .transcript = NULL)
+setGeneric("describe_transcript", function(.data )
   standardGeneric("describe_transcript"))
 
 
@@ -1304,8 +1303,8 @@ setGeneric("describe_transcript", function(.data,
 #' @export
 #'
 setGeneric("deconvolve_cellularity", function(.data,
-                                              .sample = NULL,
-                                              .transcript = NULL,
+                                              
+                                              
                                               .abundance = NULL,
                                               reference = NULL,
                                               method = "cibersort",
@@ -1371,8 +1370,8 @@ setGeneric("deconvolve_cellularity", function(.data,
 #'
 setGeneric("aggregate_duplicates", function(.data,
                                             
-                                            .sample = NULL,
-                                            .transcript = NULL,
+                                            
+                                            
                                             .abundance = NULL,
                                             aggregation_function = sum,
                                             keep_integer = TRUE)
@@ -1441,8 +1440,8 @@ setGeneric("adjust_abundance", function(.data,
                                         .formula = NULL,
                                         .factor_unwanted =NULL,
                                         .factor_of_interest = NULL,
-                                        .sample = NULL,
-                                        .transcript = NULL,
+                                        
+                                        
                                         .abundance = NULL,
                                         method = "combat_seq",
                                         
@@ -1862,8 +1861,8 @@ standardGeneric("cluster_elements"))
 #' @export
 
 setGeneric("quantile_normalise_abundance", function(.data,
-                                                    .sample = NULL,
-                                                    .transcript = NULL,
+                                                    
+                                                    
                                                     .abundance = NULL,
                                                     method = "limma_normalize_quantiles",
                                                     target_distribution = NULL,
@@ -1922,8 +1921,8 @@ setGeneric("quantile_normalise_abundance", function(.data,
 #' @export
 
 setGeneric("scale_abundance", function(.data,
-                                       .sample = NULL,
-                                       .transcript = NULL,
+                                       
+                                       
                                        .abundance = NULL,
                                        method = "TMM",
                                        reference_sample = NULL,
@@ -1955,15 +1954,15 @@ setGeneric("scale_abundance", function(.data,
 #' @export
 #'
 setGeneric("as_SummarizedExperiment", function(.data,
-                                               .sample = NULL,
-                                               .transcript = NULL,
+                                               
+                                               
                                                .abundance = NULL)
   standardGeneric("as_SummarizedExperiment"))
 
 
 .as_SummarizedExperiment = function(.data,
-                                    .sample = NULL,
-                                    .transcript = NULL,
+                                    
+                                    
                                     .abundance = NULL) {
   
   # Fix NOTEs

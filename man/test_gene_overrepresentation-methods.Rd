@@ -12,7 +12,6 @@ test_gene_overrepresentation(
   .entrez,
   .do_test,
   species,
-  .sample = NULL,
   gene_sets = NULL,
   gene_set = NULL
 )
@@ -22,7 +21,6 @@ test_gene_overrepresentation(
   .entrez,
   .do_test,
   species,
-  .sample = NULL,
   gene_sets = NULL,
   gene_set = NULL
 )
@@ -32,7 +30,6 @@ test_gene_overrepresentation(
   .entrez,
   .do_test,
   species,
-  .sample = NULL,
   gene_sets = NULL,
   gene_set = NULL
 )
@@ -46,11 +43,11 @@ test_gene_overrepresentation(
 
 \item{species}{A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")}
 
-\item{.sample}{The name of the sample column}
-
 \item{gene_sets}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
 
 \item{gene_set}{DEPRECATED. Use gene_sets instead.}
+
+\item{.sample}{The name of the sample column}
 }
 \value{
 A consistent object (to the input)

@@ -9,8 +9,6 @@
 \usage{
 scale_abundance(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   method = "TMM",
   reference_sample = NULL,
@@ -21,8 +19,6 @@ scale_abundance(
 
 \S4method{scale_abundance}{SummarizedExperiment}(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   method = "TMM",
   reference_sample = NULL,
@@ -33,8 +29,6 @@ scale_abundance(
 
 \S4method{scale_abundance}{RangedSummarizedExperiment}(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   method = "TMM",
   reference_sample = NULL,
@@ -45,10 +39,6 @@ scale_abundance(
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
-
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
@@ -61,6 +51,10 @@ scale_abundance(
 \item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
 
 \item{reference_selection_function}{DEPRECATED. please use reference_sample.}
+
+\item{.sample}{The name of the sample column}
+
+\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`

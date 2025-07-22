@@ -10,7 +10,6 @@
 test_gene_enrichment(
   .data,
   .formula,
-  .sample = NULL,
   .entrez,
   .abundance = NULL,
   contrasts = NULL,
@@ -26,7 +25,6 @@ test_gene_enrichment(
 \S4method{test_gene_enrichment}{SummarizedExperiment}(
   .data,
   .formula,
-  .sample = NULL,
   .entrez,
   .abundance = NULL,
   contrasts = NULL,
@@ -42,7 +40,6 @@ test_gene_enrichment(
 \S4method{test_gene_enrichment}{RangedSummarizedExperiment}(
   .data,
   .formula,
-  .sample = NULL,
   .entrez,
   .abundance = NULL,
   contrasts = NULL,
@@ -59,8 +56,6 @@ test_gene_enrichment(
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
 \item{.formula}{A formula with no response variable, representing the desired linear model}
-
-\item{.sample}{The name of the sample column}
 
 \item{.entrez}{The ENTREZ ID of the transcripts/genes}
 
@@ -79,6 +74,8 @@ test_gene_enrichment(
 \item{method}{DEPRECATED. Please use methods.}
 
 \item{.contrasts}{DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
+
+\item{.sample}{The name of the sample column}
 }
 \value{
 A consistent object (to the input)

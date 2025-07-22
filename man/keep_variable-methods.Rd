@@ -9,8 +9,6 @@
 \usage{
 keep_variable(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   top = 500,
   transform = log1p,
@@ -24,10 +22,6 @@ keep_variable(
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
-
 \item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{top}{Integer. Number of top transcript to consider}
@@ -35,6 +29,10 @@ keep_variable(
 \item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
 
 \item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
+
+\item{.sample}{The name of the sample column}
+
+\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).

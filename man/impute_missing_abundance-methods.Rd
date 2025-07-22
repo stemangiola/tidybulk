@@ -10,8 +10,6 @@
 impute_missing_abundance(
   .data,
   .formula,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   suffix = "",
   force_scaling = FALSE
@@ -20,8 +18,6 @@ impute_missing_abundance(
 \S4method{impute_missing_abundance}{SummarizedExperiment}(
   .data,
   .formula,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   suffix = "",
   force_scaling = FALSE
@@ -30,8 +26,6 @@ impute_missing_abundance(
 \S4method{impute_missing_abundance}{RangedSummarizedExperiment}(
   .data,
   .formula,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   suffix = "",
   force_scaling = FALSE
@@ -42,15 +36,15 @@ impute_missing_abundance(
 
 \item{.formula}{A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)}
 
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
-
 \item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{suffix}{A character string. This is added to the imputed count column names. If empty the count column are overwritten}
 
 \item{force_scaling}{A boolean. In case a abundance-containing column is not scaled (columns with _scale suffix), setting force_scaling = TRUE will result in a scaling by library size, to compensating for a possible difference in sequencing depth.}
+
+\item{.sample}{The name of the sample column}
+
+\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A consistent object (to the input) non-sparse abundance

@@ -9,8 +9,6 @@
 \usage{
 keep_abundant(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   factor_of_interest = NULL,
   design = NULL,
@@ -20,8 +18,6 @@ keep_abundant(
 
 \S4method{keep_abundant}{SummarizedExperiment}(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   factor_of_interest = NULL,
   design = NULL,
@@ -31,8 +27,6 @@ keep_abundant(
 
 \S4method{keep_abundant}{RangedSummarizedExperiment}(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   factor_of_interest = NULL,
   design = NULL,
@@ -42,10 +36,6 @@ keep_abundant(
 }
 \arguments{
 \item{.data}{A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data}
-
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
@@ -60,6 +50,10 @@ for a transcript to be kept (default = 10)}
 
 \item{minimum_proportion}{A number between 0 and 1 specifying the minimum proportion of samples
 that must exceed the minimum_counts threshold (default = 0.7)}
+
+\item{.sample}{The name of the sample column}
+
+\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 Returns a filtered version of the input object containing only the features that passed

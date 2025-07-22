@@ -7,35 +7,20 @@
 \alias{as_SummarizedExperiment,tbl_df-method}
 \title{as_SummarizedExperiment}
 \usage{
-as_SummarizedExperiment(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL
-)
+as_SummarizedExperiment(.data, .abundance = NULL)
 
-\S4method{as_SummarizedExperiment}{spec_tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL
-)
+\S4method{as_SummarizedExperiment}{spec_tbl_df}(.data, .abundance = NULL)
 
-\S4method{as_SummarizedExperiment}{tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL
-)
+\S4method{as_SummarizedExperiment}{tbl_df}(.data, .abundance = NULL)
 }
 \arguments{
 \item{.data}{A tibble}
 
+\item{.abundance}{The name of the transcript/gene abundance column}
+
 \item{.sample}{The name of the sample column}
 
 \item{.transcript}{The name of the transcript/gene column}
-
-\item{.abundance}{The name of the transcript/gene abundance column}
 }
 \value{
 A `SummarizedExperiment` object

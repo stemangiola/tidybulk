@@ -10,8 +10,6 @@
 test_stratification_cellularity(
   .data,
   .formula,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
@@ -21,8 +19,6 @@ test_stratification_cellularity(
 \S4method{test_stratification_cellularity}{SummarizedExperiment}(
   .data,
   .formula,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
@@ -32,8 +28,6 @@ test_stratification_cellularity(
 \S4method{test_stratification_cellularity}{RangedSummarizedExperiment}(
   .data,
   .formula,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   method = "cibersort",
   reference = X_cibersort,
@@ -45,10 +39,6 @@ test_stratification_cellularity(
 
 \item{.formula}{A formula representing the desired linear model. The formula can be of two forms: multivariable (recommended) or univariable Respectively: \"factor_of_interest ~ .\" or \". ~ factor_of_interest\". The dot represents cell-type proportions, and it is mandatory. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ .\"}
 
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
-
 \item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{method}{A string character. Either \"cibersort\", \"epic\" or \"llsr\". The regression method will be chosen based on being multivariable: lm or cox-regression (both on logit-transformed proportions); or univariable: beta or cox-regression (on logit-transformed proportions). See .formula for multi- or univariable choice.}
@@ -56,6 +46,10 @@ test_stratification_cellularity(
 \item{reference}{A data frame. The transcript/cell_type data frame of integer transcript abundance}
 
 \item{...}{Further parameters passed to the method deconvolve_cellularity}
+
+\item{.sample}{The name of the sample column}
+
+\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).

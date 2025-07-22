@@ -7,11 +7,11 @@
 \alias{pivot_transcript,RangedSummarizedExperiment-method}
 \title{Extract transcript-wise information}
 \usage{
-pivot_transcript(.data, .transcript = NULL)
+pivot_transcript(.data)
 
-\S4method{pivot_transcript}{SummarizedExperiment}(.data, .transcript = NULL)
+\S4method{pivot_transcript}{SummarizedExperiment}(.data)
 
-\S4method{pivot_transcript}{RangedSummarizedExperiment}(.data, .transcript = NULL)
+\S4method{pivot_transcript}{RangedSummarizedExperiment}(.data)
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}

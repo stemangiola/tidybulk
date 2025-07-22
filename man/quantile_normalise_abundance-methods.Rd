@@ -9,8 +9,6 @@
 \usage{
 quantile_normalise_abundance(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   method = "limma_normalize_quantiles",
   target_distribution = NULL,
@@ -19,8 +17,6 @@ quantile_normalise_abundance(
 
 \S4method{quantile_normalise_abundance}{SummarizedExperiment}(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   method = "limma_normalize_quantiles",
   target_distribution = NULL,
@@ -29,8 +25,6 @@ quantile_normalise_abundance(
 
 \S4method{quantile_normalise_abundance}{RangedSummarizedExperiment}(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   method = "limma_normalize_quantiles",
   target_distribution = NULL,
@@ -40,10 +34,6 @@ quantile_normalise_abundance(
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
-
 \item{.abundance}{The name of the transcript/gene abundance column}
 
 \item{method}{A character string. Either "limma_normalize_quantiles" for limma::normalizeQuantiles or "preprocesscore_normalize_quantiles_use_target" for preprocessCore::normalize.quantiles.use.target for large-scale datasets.}
@@ -51,6 +41,10 @@ quantile_normalise_abundance(
 \item{target_distribution}{A numeric vector. If NULL the target distribution will be calculated by preprocessCore. This argument only affects the "preprocesscore_normalize_quantiles_use_target" method.}
 
 \item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
+
+\item{.sample}{The name of the sample column}
+
+\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`

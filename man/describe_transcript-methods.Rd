@@ -8,13 +8,13 @@
 \alias{describe_transcript,RangedSummarizedExperiment-method}
 \title{Get DESCRIPTION from gene SYMBOL for Human and Mouse}
 \usage{
-describe_transcript(.data, .transcript = NULL)
+describe_transcript(.data)
 
-.describe_transcript_SE(.data, .transcript = NULL)
+.describe_transcript_SE(.data)
 
-\S4method{describe_transcript}{SummarizedExperiment}(.data, .transcript = NULL)
+\S4method{describe_transcript}{SummarizedExperiment}(.data)
 
-\S4method{describe_transcript}{RangedSummarizedExperiment}(.data, .transcript = NULL)
+\S4method{describe_transcript}{RangedSummarizedExperiment}(.data)
 }
 \arguments{
 \item{.data}{A tt or tbl object.}

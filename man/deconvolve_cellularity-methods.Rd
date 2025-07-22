@@ -9,8 +9,6 @@
 \usage{
 deconvolve_cellularity(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   reference = NULL,
   method = "cibersort",
@@ -21,8 +19,6 @@ deconvolve_cellularity(
 
 \S4method{deconvolve_cellularity}{SummarizedExperiment}(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   reference = NULL,
   method = "cibersort",
@@ -33,8 +29,6 @@ deconvolve_cellularity(
 
 \S4method{deconvolve_cellularity}{RangedSummarizedExperiment}(
   .data,
-  .sample = NULL,
-  .transcript = NULL,
   .abundance = NULL,
   reference = NULL,
   method = "cibersort",
@@ -45,10 +39,6 @@ deconvolve_cellularity(
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
-
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
@@ -61,6 +51,10 @@ deconvolve_cellularity(
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function Cibersort}
+
+\item{.sample}{The name of the sample column}
+
+\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A consistent object (to the input) including additional columns for each cell type estimated

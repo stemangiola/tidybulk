@@ -6,8 +6,8 @@
 #' @importFrom stats na.omit
 #'
 .scale_abundance_se = function(.data,
-                               .sample = NULL,
-                               .transcript = NULL,
+                              
+                               
                                .abundance = NULL,
 															 method = "TMM",
 															 reference_sample = NULL,
@@ -161,8 +161,8 @@ setMethod("scale_abundance",
 #' @importFrom stats na.omit
 #'
 .quantile_normalise_abundance_se = function(.data,
-                               .sample = NULL,
-                               .transcript = NULL,
+                              
+                               
                                .abundance = NULL,
                                method = "limma_normalize_quantiles",
                                target_distribution = NULL,
@@ -904,8 +904,8 @@ setMethod("adjust_abundance",
 #' @importFrom dplyr setdiff
 .aggregate_duplicates_se = function(.data,
 
-																		.sample = NULL,
-																		.transcript = NULL,
+																		
+																		
 																		.abundance = NULL,
 																		aggregation_function = sum,
 																		keep_integer = TRUE) {
@@ -1475,8 +1475,8 @@ setMethod("keep_variable",
 					.keep_variable_se)
 
 .identify_abundant_se = function(.data,
-																 .sample = NULL,
-																 .transcript = NULL,
+																
+																 
 																 .abundance = NULL,
 																 factor_of_interest = NULL,
 																 design = NULL,
@@ -1629,8 +1629,8 @@ setMethod("identify_abundant",
 
 
 .keep_abundant_se = function(.data,
-														 .sample = NULL,
-														 .transcript = NULL,
+														
+														 
 														 .abundance = NULL,
 														 factor_of_interest = NULL,
 														 design = NULL,
@@ -1693,7 +1693,7 @@ setMethod("keep_abundant",
 #'
 .test_gene_enrichment_SE = 		function(.data,
 																			.formula,
-																			.sample = NULL,
+																			
 																			.entrez,
 																			.abundance = NULL,
 																			contrasts = NULL,
@@ -1980,7 +1980,7 @@ setMethod("test_gene_enrichment",
 																					 .entrez,
 																					 .do_test,
 																					 species,
-																					 .sample = NULL,
+																					
 																					 gene_sets = NULL,
 																					 gene_set = NULL  # DEPRECATED
 																					 )	{
@@ -2066,7 +2066,7 @@ setMethod("test_gene_overrepresentation",
 																.entrez,
 																.arrange_desc,
 																species,
-																.sample = NULL,
+																
 																gene_sets = NULL,
 																gene_set = NULL  # DEPRECATED
 																)	{
@@ -2147,8 +2147,7 @@ setMethod("test_gene_rank",
 
 
 # Set internal
-.pivot_sample = 		function(.data,
-													 .sample = NULL)	{
+.pivot_sample = 		function(.data)	{
 
 	colData(.data) %>%
 
@@ -2192,8 +2191,8 @@ setMethod("pivot_sample",
 
 
 # Set internal
-.pivot_transcript = 		function(.data,
-															 .transcript = NULL)	{
+.pivot_transcript = 		function(.data
+															 )	{
 
   # Fix NOTEs
   . = NULL
@@ -2244,8 +2243,8 @@ setMethod("pivot_transcript",
 
 .impute_missing_abundance_se = function(.data,
 																				.formula,
-																				.sample = NULL,
-																				.transcript = NULL,
+																				
+																				
 																				.abundance  = NULL,
 																				suffix = "",
 																				force_scaling = FALSE) {
@@ -2511,8 +2510,8 @@ setMethod(
 #' @importFrom stringr str_replace
 .test_stratification_cellularity_SE = 		function(.data,
 																							.formula,
-																							.sample = NULL,
-																							.transcript = NULL,
+																							
+																							
 																							.abundance = NULL,
 																							method = "cibersort",
 																							reference = X_cibersort,
@@ -2618,8 +2617,7 @@ setMethod("get_bibliography",
 #' @return A `SummarizedExperiment` object
 #'
 #'
-.describe_transcript_SE = function(.data,
-															 .transcript = NULL) {
+.describe_transcript_SE = function(.data ) {
 
   # Fix NOTEs
   . = NULL
