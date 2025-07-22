@@ -29,7 +29,7 @@ filterByExpr.DGEList <- function(y, design=NULL, group=NULL, lib.size=NULL, ...)
 filterByExpr_SE <- function(y, design=NULL, group=NULL, lib.size=NULL, assay_name=NULL, ...)
 #	Created 19 March 2020. Last revised 19 March 2020.
 {
-  browser()
+  
      # If assay_name is provided, temporarily rename that assay to 'counts'
     if (!is.null(assay_name)) {
         original_assay_names <- SummarizedExperiment::assayNames(y)
@@ -40,16 +40,10 @@ filterByExpr_SE <- function(y, design=NULL, group=NULL, lib.size=NULL, assay_nam
         other_idx <- setdiff(seq_along(original_assay_names), assay_idx)
         new_names[other_idx] <- paste0("assay", seq_along(other_idx))
         SummarizedExperiment::assayNames(y) <- new_names
-        write(paste0("[DEBUG] Assay names after renaming: ", paste(SummarizedExperiment::assayNames(y), collapse=", ")), debug_file, append=TRUE); flush.console()
     }
-    write(paste0("[DEBUG] Assay names before SE2DGEList: ", paste(SummarizedExperiment::assayNames(y), collapse=", ")), debug_file, append=TRUE); flush.console()
-    write(paste0("[DEBUG] Class of y before SE2DGEList: ", paste(class(y), collapse=", ")), debug_file, append=TRUE); flush.console()
-    capture.output(str(y), file=debug_file, append=TRUE); flush.console()
     y <- edgeR::SE2DGEList(y)
-    # Restore original assay names if changed
-    if (!is.null(assay_name)) {
-        SummarizedExperiment::assayNames(y) <- original_assay_names
-    }
+
+    
     filterByExpr.DGEList(y, design=design, group=group, lib.size=lib.size, ...)
 }
 

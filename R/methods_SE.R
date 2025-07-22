@@ -81,17 +81,22 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
                                .sample = NULL,
                                .transcript = NULL,
                                .abundance = NULL,
-															 method = "TMM",
-															 reference_sample = NULL,
-															 .subset_for_scaling = NULL,
-															 action = NULL,
-
-															 # DEPRECATED
-															 reference_selection_function = NULL) {
-
+                               method = "TMM",
+                               reference_sample = NULL,
+                               .subset_for_scaling = NULL,
+                               action = NULL,
+                               # DEPRECATED
+                               reference_selection_function = NULL) {
 
   # Fix NOTEs
   . = NULL
+
+  # Set .abundance default if NULL
+  if (is.null(.abundance)) {
+    .abundance <- rlang::quo(assayNames(.data)[1])
+  } else {
+    .abundance <- rlang::enquo(.abundance)
+  }
 
 	# Check if package is installed, otherwise install
   check_and_install_packages("edgeR")
@@ -124,11 +129,7 @@ setMethod("tidybulk", "RangedSummarizedExperiment", .tidybulk_se)
 	  when(nrow(.) == 0 ~ stop("tidybulk says: there are 0 genes that passes the filters (.abundant and/or .subset_for_scaling). Please check your filtering or your data."), ~ (.))
 
 	# Determine the correct assay name
-	if (is.null(.abundance) || (rlang::quo_is_symbol(.abundance) && rlang::as_name(.abundance) == ".abundance")) {
-	  my_assay <- assayNames(.data)[1]
-	} else {
-	  my_assay <- rlang::as_name(.abundance)
-	}
+	my_assay <- rlang::as_name(.abundance)
 
 	my_counts_filtered = assays(.data_filtered)[[my_assay]] %>% na.omit()
 	library_size_filtered = my_counts_filtered %>% colSums(na.rm  = TRUE)
@@ -246,11 +247,15 @@ setMethod("scale_abundance",
                                target_distribution = NULL,
                                action = NULL) {
 
-
   # Fix NOTEs
   . = NULL
 
-  .abundance = enquo(.abundance)
+  # Set .abundance default if NULL
+  if (is.null(.abundance)) {
+    .abundance <- rlang::quo(assayNames(.data)[1])
+  } else {
+    .abundance <- rlang::enquo(.abundance)
+  }
 
   # Set column name for value scaled
 
@@ -866,13 +871,7 @@ setMethod("remove_redundancy",
 
 
 	# If no assay is specified take first
-	my_assay = ifelse(
-	  quo_is_symbol(.abundance),
-	  quo_name(.abundance),
-	  .data |>
-	    assayNames() |>
-	    extract2(1)
-	)
+	my_assay = quo_name(.abundance)
 
 	if(tolower(method) == "combat"){
 
@@ -1575,90 +1574,82 @@ setMethod("keep_variable",
 					.keep_variable_se)
 
 .identify_abundant_se = function(.data,
-																 .sample = NULL,
-																 .transcript = NULL,
-																 .abundance = NULL,
-																 design = NULL,
-																 formula_design = NULL,
-																 minimum_counts = 10,
-																 minimum_proportion = 0.7,
-																 minimum_count_per_million = NULL) {
+                                 .sample = NULL,
+                                 .transcript = NULL,
+                                 .abundance = NULL,
+                                 design = NULL,
+                                 formula_design = NULL,
+                                 minimum_counts = 10,
+                                 minimum_proportion = 0.7,
+                                 minimum_count_per_million = NULL,
+                                 ...) {
 
   # Fix NOTEs
   . = NULL
 
-	# If formula_design is provided, use it to create the design matrix
-	if (!is.null(formula_design)) {
-		if (!is.null(design)) warning("Both formula_design and design provided; formula_design will be used.")
-		design <- model.matrix(formula_design, data = colData(.data))
-	}
-  
-	.abundance = enquo(.abundance)
+  # If formula_design is provided, use it to create the design matrix
+  if (!is.null(formula_design)) {
+    if (!is.null(design)) warning("Both formula_design and design provided; formula_design will be used.")
+    design <- model.matrix(formula_design, data = colData(.data))
+  }
 
-	if (minimum_counts < 0)
-		stop("The parameter minimum_counts must be > 0")
+  # Handle .abundance as quosure
+  .abundance <- rlang::enquo(.abundance)
 
-	if (minimum_proportion < 0 |	minimum_proportion > 1)
-		stop("The parameter minimum_proportion must be between 0 and 1")
+  # Determine assay name to use
+  my_assay <- ifelse(
+    rlang::quo_is_symbol(.abundance),
+    rlang::quo_name(.abundance),
+    assayNames(.data)[1]
+  )
 
-	# If column is present use this instead of doing more work
-	if(".abundant" %in% colnames(colData(.data))){
-		message("tidybulk says: the column .abundant already exists in colData. Nothing was done")
+  if (minimum_counts < 0)
+    stop("The parameter minimum_counts must be > 0")
 
-		# Return
-		return(.data)
-	}
+  if (minimum_proportion < 0 | minimum_proportion > 1)
+    stop("The parameter minimum_proportion must be between 0 and 1")
 
+  # If column is present use this instead of doing more work
+  if(".abundant" %in% colnames(colData(.data))){
+    message("tidybulk says: the column .abundant already exists in colData. Nothing was done")
+    return(.data)
+  }
 
+  # Check if package is installed, otherwise install
+  check_and_install_packages("edgeR")
+browser()
+  # Get gene to exclude
+  # If minimum_count_per_million is provided, use it and ignore minimum_counts
+  if (!is.null(minimum_count_per_million)) {
+    gene_to_exclude =
+      .data |>
+      tidybulk:::filterByExpr_SE(
+        design = design,
+        min.prop = minimum_proportion,
+        CPM.Cutoff = minimum_count_per_million,
+        assay_name = my_assay
+      ) %>%
+      not() %>%
+      which %>%
+      names
+  } else {
+    gene_to_exclude =
+      .data |>
+      tidybulk:::filterByExpr_SE(
+        min.count = minimum_counts,
+        design = design,
+        min.prop = minimum_proportion,
+        assay_name = my_assay
+      ) %>%
+      not() %>%
+      which %>%
+      names
+  }
 
+  rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) %>% not()
 
-
-	# Check if package is installed, otherwise install
-	check_and_install_packages("edgeR")
-
-
-	# If no assay is specified take first
-	my_assay = ifelse(
-	  quo_is_symbol(.abundance),
-	  quo_name(.abundance),
-	  .data |>
-	    assayNames() |>
-	    extract2(1)
-	)
-
-	# Get gene to exclude
-	# If minimum_count_per_million is provided, use it and ignore minimum_counts
-	if (!is.null(minimum_count_per_million)) {
-		gene_to_exclude =
-		  .data |>
-			tidybulk:::filterByExpr_SE(
-				design = design,
-				min.prop = minimum_proportion,
-				CPM.Cutoff = minimum_count_per_million,
-				assay_name = my_assay
-			) %>%
-			not() %>%
-			which %>%
-			names
-	} else {
-		gene_to_exclude =
-		  .data |>
-			tidybulk:::filterByExpr_SE(
-				min.count = minimum_counts,
-				design = design,
-				min.prop = minimum_proportion,
-				assay_name = my_assay
-			) %>%
-			not() %>%
-			which %>%
-			names
-	}
-
-	rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) %>% not()
-
-	# Return
-	.data
-
+  # Return
+  .data
 }
 
 
@@ -1673,19 +1664,8 @@ setMethod("keep_variable",
 #'
 setMethod("identify_abundant",
                     "SummarizedExperiment",
-                    function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL, design = NULL, formula_design = NULL, minimum_counts = 10, minimum_proportion = 0.7, minimum_count_per_million = NULL) {
-                      .identify_abundant_se(
-                        .data = .data,
-                        .sample = .sample,
-                        .transcript = .transcript,
-                        .abundance = .abundance,
-                        design = design,
-                        formula_design = formula_design,
-                        minimum_counts = minimum_counts,
-                        minimum_proportion = minimum_proportion,
-                        minimum_count_per_million = minimum_count_per_million
-                      )
-                    })
+          .identify_abundant_se
+                    )
 
 #' identify_abundant
 #' @inheritParams identify_abundant
@@ -1698,19 +1678,8 @@ setMethod("identify_abundant",
 #'
 setMethod("identify_abundant",
                     "RangedSummarizedExperiment",
-                    function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL, design = NULL, formula_design = NULL, minimum_counts = 10, minimum_proportion = 0.7, minimum_count_per_million = NULL) {
-                      .identify_abundant_se(
-                        .data = .data,
-                        .sample = .sample,
-                        .transcript = .transcript,
-                        .abundance = .abundance,
-                        design = design,
-                        formula_design = formula_design,
-                        minimum_counts = minimum_counts,
-                        minimum_proportion = minimum_proportion,
-                        minimum_count_per_million = minimum_count_per_million
-                      )
-                    })
+          .identify_abundant_se
+                    )
 
 
 
@@ -1725,32 +1694,30 @@ setMethod("identify_abundant",
 														 minimum_proportion = 0.7,
 														 minimum_count_per_million = NULL)
 {
-
   # Fix NOTEs
   . = NULL
 
-	# If formula_design is provided, use it to create the design matrix
-	if (!is.null(formula_design)) {
-		if (!is.null(design)) warning("Both formula_design and design provided; formula_design will be used.")
-		design <- model.matrix(formula_design, data = colData(.data))
-	}
+  # If formula_design is provided, use it to create the design matrix
+  if (!is.null(formula_design)) {
+    if (!is.null(design)) warning("Both formula_design and design provided; formula_design will be used.")
+    design <- model.matrix(formula_design, data = colData(.data))
+  }
 
-    .abundance = enquo(.abundance)
+  # Handle .abundance as quosure
+  .abundance <- rlang::enquo(.abundance)
 
-	.data =
-		.data %>%
+  .data =
+    .data %>%
+    # Apply scale method
+    identify_abundant(
+      minimum_counts = minimum_counts,
+      minimum_proportion = minimum_proportion,
+      .abundance = !!.abundance,
+      design = design,
+      minimum_count_per_million = minimum_count_per_million
+    )
 
-		# Apply scale method
-		identify_abundant(
-			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion,
-			.abundance = !!.abundance,
-			design = design,
-			minimum_count_per_million = minimum_count_per_million
-		)
-
-	.data[rowData(.data)$.abundant,]
-
+  .data[rowData(.data)$.abundant,]
 }
 
 #' keep_abundant

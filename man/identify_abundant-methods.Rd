@@ -34,7 +34,8 @@ identify_abundant(
   formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
-  minimum_count_per_million = NULL
+  minimum_count_per_million = NULL,
+  ...
 )
 
 \S4method{identify_abundant}{tbl_df}(
@@ -47,7 +48,8 @@ identify_abundant(
   formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
-  minimum_count_per_million = NULL
+  minimum_count_per_million = NULL,
+  ...
 )
 
 \S4method{identify_abundant}{tidybulk}(
@@ -60,7 +62,8 @@ identify_abundant(
   formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
-  minimum_count_per_million = NULL
+  minimum_count_per_million = NULL,
+  ...
 )
 
 \S4method{identify_abundant}{SummarizedExperiment}(

@@ -3155,7 +3155,8 @@ setGeneric("identify_abundant", function(.data,
 														formula_design = NULL,
 														minimum_counts = 10,
 														minimum_proportion = 0.7,
-														minimum_count_per_million = NULL)
+														minimum_count_per_million = NULL,
+														...)
 {
 
   # Fix NOTEs
