@@ -3,23 +3,11 @@
 \docType{methods}
 \name{get_bibliography}
 \alias{get_bibliography}
-\alias{get_bibliography,tbl-method}
-\alias{get_bibliography,tbl_df-method}
-\alias{get_bibliography,spec_tbl_df-method}
-\alias{get_bibliography,tidybulk-method}
 \alias{get_bibliography,SummarizedExperiment-method}
 \alias{get_bibliography,RangedSummarizedExperiment-method}
 \title{Produces the bibliography list of your workflow}
 \usage{
 get_bibliography(.data)
-
-\S4method{get_bibliography}{tbl}(.data)
-
-\S4method{get_bibliography}{tbl_df}(.data)
-
-\S4method{get_bibliography}{spec_tbl_df}(.data)
-
-\S4method{get_bibliography}{tidybulk}(.data)
 
 \S4method{get_bibliography}{SummarizedExperiment}(.data)
 

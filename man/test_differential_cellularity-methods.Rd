@@ -3,50 +3,11 @@
 \docType{methods}
 \name{test_differential_cellularity}
 \alias{test_differential_cellularity}
-\alias{test_differential_cellularity,spec_tbl_df-method}
-\alias{test_differential_cellularity,tbl_df-method}
-\alias{test_differential_cellularity,tidybulk-method}
 \alias{test_differential_cellularity,SummarizedExperiment-method}
 \alias{test_differential_cellularity,RangedSummarizedExperiment-method}
 \title{Add differential tissue composition information to a tbl}
 \usage{
 test_differential_cellularity(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "cibersort",
-  reference = X_cibersort,
-  significance_threshold = 0.05,
-  ...
-)
-
-\S4method{test_differential_cellularity}{spec_tbl_df}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "cibersort",
-  reference = X_cibersort,
-  significance_threshold = 0.05,
-  ...
-)
-
-\S4method{test_differential_cellularity}{tbl_df}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "cibersort",
-  reference = X_cibersort,
-  significance_threshold = 0.05,
-  ...
-)
-
-\S4method{test_differential_cellularity}{tidybulk}(
   .data,
   .formula,
   .sample = NULL,

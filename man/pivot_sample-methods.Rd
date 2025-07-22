@@ -3,20 +3,11 @@
 \docType{methods}
 \name{pivot_sample}
 \alias{pivot_sample}
-\alias{pivot_sample,spec_tbl_df-method}
-\alias{pivot_sample,tbl_df-method}
-\alias{pivot_sample,tidybulk-method}
 \alias{pivot_sample,SummarizedExperiment-method}
 \alias{pivot_sample,RangedSummarizedExperiment-method}
 \title{Extract sample-wise information}
 \usage{
 pivot_sample(.data, .sample = NULL)
-
-\S4method{pivot_sample}{spec_tbl_df}(.data, .sample = NULL)
-
-\S4method{pivot_sample}{tbl_df}(.data, .sample = NULL)
-
-\S4method{pivot_sample}{tidybulk}(.data, .sample = NULL)
 
 \S4method{pivot_sample}{SummarizedExperiment}(.data, .sample = NULL)
 

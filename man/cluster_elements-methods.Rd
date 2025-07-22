@@ -3,53 +3,11 @@
 \docType{methods}
 \name{cluster_elements}
 \alias{cluster_elements}
-\alias{cluster_elements,spec_tbl_df-method}
-\alias{cluster_elements,tbl_df-method}
-\alias{cluster_elements,tidybulk-method}
 \alias{cluster_elements,SummarizedExperiment-method}
 \alias{cluster_elements,RangedSummarizedExperiment-method}
 \title{Get clusters of elements (e.g., samples or transcripts)}
 \usage{
 cluster_elements(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  of_samples = TRUE,
-  transform = log1p,
-  action = "add",
-  ...,
-  log_transform = NULL
-)
-
-\S4method{cluster_elements}{spec_tbl_df}(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  of_samples = TRUE,
-  transform = log1p,
-  action = "add",
-  ...,
-  log_transform = NULL
-)
-
-\S4method{cluster_elements}{tbl_df}(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  of_samples = TRUE,
-  transform = log1p,
-  action = "add",
-  ...,
-  log_transform = NULL
-)
-
-\S4method{cluster_elements}{tidybulk}(
   .data,
   .element = NULL,
   .feature = NULL,
@@ -110,12 +68,6 @@ cluster_elements(
 \item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
-A tbl object with additional columns with cluster labels
-
-A tbl object with additional columns with cluster labels
-
-A tbl object with additional columns with cluster labels
-
 A tbl object with additional columns with cluster labels
 
 A `SummarizedExperiment` object

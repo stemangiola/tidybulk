@@ -3,71 +3,11 @@
 \docType{methods}
 \name{test_differential_abundance}
 \alias{test_differential_abundance}
-\alias{test_differential_abundance,spec_tbl_df-method}
-\alias{test_differential_abundance,tbl_df-method}
-\alias{test_differential_abundance,tidybulk-method}
 \alias{test_differential_abundance,SummarizedExperiment-method}
 \alias{test_differential_abundance,RangedSummarizedExperiment-method}
 \title{Perform differential transcription testing using edgeR quasi-likelihood (QLT), edgeR likelihood-ratio (LR), limma-voom, limma-voom-with-quality-weights or DESeq2}
 \usage{
 test_differential_abundance(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
-  test_above_log2_fold_change = NULL,
-  scaling_method = "TMM",
-  omit_contrast_in_colnames = FALSE,
-  prefix = "",
-  action = "add",
-  ...,
-  significance_threshold = NULL,
-  fill_missing_values = NULL,
-  .contrasts = NULL
-)
-
-\S4method{test_differential_abundance}{spec_tbl_df}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
-  test_above_log2_fold_change = NULL,
-  scaling_method = "TMM",
-  omit_contrast_in_colnames = FALSE,
-  prefix = "",
-  action = "add",
-  ...,
-  significance_threshold = NULL,
-  fill_missing_values = NULL,
-  .contrasts = NULL
-)
-
-\S4method{test_differential_abundance}{tbl_df}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  contrasts = NULL,
-  method = "edgeR_quasi_likelihood",
-  test_above_log2_fold_change = NULL,
-  scaling_method = "TMM",
-  omit_contrast_in_colnames = FALSE,
-  prefix = "",
-  action = "add",
-  ...,
-  significance_threshold = NULL,
-  fill_missing_values = NULL,
-  .contrasts = NULL
-)
-
-\S4method{test_differential_abundance}{tidybulk}(
   .data,
   .formula,
   .sample = NULL,
@@ -159,12 +99,6 @@ test_differential_abundance(
 }
 \value{
 A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
-
-A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).
-
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 
 A `SummarizedExperiment` object
 

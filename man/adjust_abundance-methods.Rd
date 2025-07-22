@@ -3,62 +3,11 @@
 \docType{methods}
 \name{adjust_abundance}
 \alias{adjust_abundance}
-\alias{adjust_abundance,spec_tbl_df-method}
-\alias{adjust_abundance,tbl_df-method}
-\alias{adjust_abundance,tidybulk-method}
 \alias{adjust_abundance,SummarizedExperiment-method}
 \alias{adjust_abundance,RangedSummarizedExperiment-method}
 \title{Adjust transcript abundance for unwanted variation}
 \usage{
 adjust_abundance(
-  .data,
-  .formula = NULL,
-  .factor_unwanted = NULL,
-  .factor_of_interest = NULL,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "combat_seq",
-  action = "add",
-  ...,
-  log_transform = NULL,
-  transform = NULL,
-  inverse_transform = NULL
-)
-
-\S4method{adjust_abundance}{spec_tbl_df}(
-  .data,
-  .formula = NULL,
-  .factor_unwanted = NULL,
-  .factor_of_interest = NULL,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "combat_seq",
-  action = "add",
-  ...,
-  log_transform = NULL,
-  transform = NULL,
-  inverse_transform = NULL
-)
-
-\S4method{adjust_abundance}{tbl_df}(
-  .data,
-  .formula = NULL,
-  .factor_unwanted = NULL,
-  .factor_of_interest = NULL,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "combat_seq",
-  action = "add",
-  ...,
-  log_transform = NULL,
-  transform = NULL,
-  inverse_transform = NULL
-)
-
-\S4method{adjust_abundance}{tidybulk}(
   .data,
   .formula = NULL,
   .factor_unwanted = NULL,
@@ -134,12 +83,6 @@ adjust_abundance(
 \item{inverse_transform}{DEPRECATED - A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.}
 }
 \value{
-A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
-
-A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
-
-A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
-
 A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
 
 A `SummarizedExperiment` object

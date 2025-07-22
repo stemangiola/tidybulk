@@ -3,20 +3,11 @@
 \docType{methods}
 \name{pivot_transcript}
 \alias{pivot_transcript}
-\alias{pivot_transcript,spec_tbl_df-method}
-\alias{pivot_transcript,tbl_df-method}
-\alias{pivot_transcript,tidybulk-method}
 \alias{pivot_transcript,SummarizedExperiment-method}
 \alias{pivot_transcript,RangedSummarizedExperiment-method}
 \title{Extract transcript-wise information}
 \usage{
 pivot_transcript(.data, .transcript = NULL)
-
-\S4method{pivot_transcript}{spec_tbl_df}(.data, .transcript = NULL)
-
-\S4method{pivot_transcript}{tbl_df}(.data, .transcript = NULL)
-
-\S4method{pivot_transcript}{tidybulk}(.data, .transcript = NULL)
 
 \S4method{pivot_transcript}{SummarizedExperiment}(.data, .transcript = NULL)
 

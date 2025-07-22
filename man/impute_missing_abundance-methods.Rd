@@ -3,44 +3,11 @@
 \docType{methods}
 \name{impute_missing_abundance}
 \alias{impute_missing_abundance}
-\alias{impute_missing_abundance,spec_tbl_df-method}
-\alias{impute_missing_abundance,tbl_df-method}
-\alias{impute_missing_abundance,tidybulk-method}
 \alias{impute_missing_abundance,SummarizedExperiment-method}
 \alias{impute_missing_abundance,RangedSummarizedExperiment-method}
 \title{impute transcript abundance if missing from sample-transcript pairs}
 \usage{
 impute_missing_abundance(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  suffix = "",
-  force_scaling = FALSE
-)
-
-\S4method{impute_missing_abundance}{spec_tbl_df}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  suffix = "",
-  force_scaling = FALSE
-)
-
-\S4method{impute_missing_abundance}{tbl_df}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  suffix = "",
-  force_scaling = FALSE
-)
-
-\S4method{impute_missing_abundance}{tidybulk}(
   .data,
   .formula,
   .sample = NULL,
@@ -87,12 +54,6 @@ impute_missing_abundance(
 }
 \value{
 A consistent object (to the input) non-sparse abundance
-
-A consistent object (to the input) with imputed abundance
-
-A consistent object (to the input) with imputed abundance
-
-A consistent object (to the input) with imputed abundance
 
 A `SummarizedExperiment` object
 

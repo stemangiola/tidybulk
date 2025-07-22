@@ -3,47 +3,11 @@
 \docType{methods}
 \name{keep_abundant}
 \alias{keep_abundant}
-\alias{keep_abundant,spec_tbl_df-method}
-\alias{keep_abundant,tbl_df-method}
-\alias{keep_abundant,tidybulk-method}
 \alias{keep_abundant,SummarizedExperiment-method}
 \alias{keep_abundant,RangedSummarizedExperiment-method}
 \title{Filter to keep only abundant transcripts/genes}
 \usage{
 keep_abundant(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  factor_of_interest = NULL,
-  design = NULL,
-  minimum_counts = 10,
-  minimum_proportion = 0.7
-)
-
-\S4method{keep_abundant}{spec_tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  factor_of_interest = NULL,
-  design = NULL,
-  minimum_counts = 10,
-  minimum_proportion = 0.7
-)
-
-\S4method{keep_abundant}{tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  factor_of_interest = NULL,
-  design = NULL,
-  minimum_counts = 10,
-  minimum_proportion = 0.7
-)
-
-\S4method{keep_abundant}{tidybulk}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -100,12 +64,6 @@ that must exceed the minimum_counts threshold (default = 0.7)}
 \value{
 Returns a filtered version of the input object containing only the features that passed
 the abundance threshold criteria.
-
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 
 A `SummarizedExperiment` object
 

@@ -3,50 +3,11 @@
 \docType{methods}
 \name{scale_abundance}
 \alias{scale_abundance}
-\alias{scale_abundance,spec_tbl_df-method}
-\alias{scale_abundance,tbl_df-method}
-\alias{scale_abundance,tidybulk-method}
 \alias{scale_abundance,SummarizedExperiment-method}
 \alias{scale_abundance,RangedSummarizedExperiment-method}
 \title{Scale the counts of transcripts/genes}
 \usage{
 scale_abundance(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "TMM",
-  reference_sample = NULL,
-  .subset_for_scaling = NULL,
-  action = "add",
-  reference_selection_function = NULL
-)
-
-\S4method{scale_abundance}{spec_tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "TMM",
-  reference_sample = NULL,
-  .subset_for_scaling = NULL,
-  action = "add",
-  reference_selection_function = NULL
-)
-
-\S4method{scale_abundance}{tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "TMM",
-  reference_sample = NULL,
-  .subset_for_scaling = NULL,
-  action = "add",
-  reference_selection_function = NULL
-)
-
-\S4method{scale_abundance}{tidybulk}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -102,12 +63,6 @@ scale_abundance(
 \item{reference_selection_function}{DEPRECATED. please use reference_sample.}
 }
 \value{
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
-
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
-
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
-
 A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 
 A `SummarizedExperiment` object

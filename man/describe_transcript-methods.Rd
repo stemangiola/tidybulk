@@ -3,21 +3,12 @@
 \docType{methods}
 \name{describe_transcript}
 \alias{describe_transcript}
-\alias{describe_transcript,spec_tbl_df-method}
-\alias{describe_transcript,tbl_df-method}
-\alias{describe_transcript,tidybulk-method}
 \alias{.describe_transcript_SE}
 \alias{describe_transcript,SummarizedExperiment-method}
 \alias{describe_transcript,RangedSummarizedExperiment-method}
 \title{Get DESCRIPTION from gene SYMBOL for Human and Mouse}
 \usage{
 describe_transcript(.data, .transcript = NULL)
-
-\S4method{describe_transcript}{spec_tbl_df}(.data, .transcript = NULL)
-
-\S4method{describe_transcript}{tbl_df}(.data, .transcript = NULL)
-
-\S4method{describe_transcript}{tidybulk}(.data, .transcript = NULL)
 
 .describe_transcript_SE(.data, .transcript = NULL)
 
@@ -33,12 +24,6 @@ describe_transcript(.data, .transcript = NULL)
 \value{
 A tbl
 
-A consistent object (to the input) including additional columns for transcript symbol
-
-A consistent object (to the input) including additional columns for transcript symbol
-
-A consistent object (to the input) including additional columns for transcript symbol
-
 A `SummarizedExperiment` object
 
 A consistent object (to the input) including additional columns for transcript symbol
@@ -47,12 +32,6 @@ A consistent object (to the input) including additional columns for transcript s
 }
 \description{
 Get DESCRIPTION from gene SYMBOL for Human and Mouse
-
-describe_transcript
-
-describe_transcript
-
-describe_transcript
 
 describe_transcript
 

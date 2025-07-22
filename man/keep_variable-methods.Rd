@@ -3,9 +3,6 @@
 \docType{methods}
 \name{keep_variable}
 \alias{keep_variable}
-\alias{keep_variable,spec_tbl_df-method}
-\alias{keep_variable,tbl_df-method}
-\alias{keep_variable,tidybulk-method}
 \alias{keep_variable,SummarizedExperiment-method}
 \alias{keep_variable,RangedSummarizedExperiment-method}
 \title{Keep variable transcripts}
@@ -18,36 +15,6 @@ keep_variable(
   top = 500,
   transform = log1p,
   log_transform = TRUE
-)
-
-\S4method{keep_variable}{spec_tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  top = 500,
-  transform = log1p,
-  log_transform = NULL
-)
-
-\S4method{keep_variable}{tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  top = 500,
-  transform = log1p,
-  log_transform = NULL
-)
-
-\S4method{keep_variable}{tidybulk}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  top = 500,
-  transform = log1p,
-  log_transform = NULL
 )
 
 \S4method{keep_variable}{SummarizedExperiment}(.data, top = 500, transform = log1p)
@@ -77,12 +44,6 @@ Underlying method:
 o <- order(s, decreasing = TRUE)
 x <- x[o[1L:top], , drop = FALSE]
 variable_trancripts = rownames(x)
-
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 
 A `SummarizedExperiment` object
 

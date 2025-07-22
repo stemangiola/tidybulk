@@ -3,62 +3,11 @@
 \docType{methods}
 \name{reduce_dimensions}
 \alias{reduce_dimensions}
-\alias{reduce_dimensions,spec_tbl_df-method}
-\alias{reduce_dimensions,tbl_df-method}
-\alias{reduce_dimensions,tidybulk-method}
 \alias{reduce_dimensions,SummarizedExperiment-method}
 \alias{reduce_dimensions,RangedSummarizedExperiment-method}
 \title{Dimension reduction of the transcript abundance data}
 \usage{
 reduce_dimensions(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  .dims = 2,
-  top = 500,
-  of_samples = TRUE,
-  transform = log1p,
-  scale = TRUE,
-  action = "add",
-  ...,
-  log_transform = NULL
-)
-
-\S4method{reduce_dimensions}{spec_tbl_df}(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  .dims = 2,
-  top = 500,
-  of_samples = TRUE,
-  transform = log1p,
-  scale = TRUE,
-  action = "add",
-  ...,
-  log_transform = NULL
-)
-
-\S4method{reduce_dimensions}{tbl_df}(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  .dims = 2,
-  top = 500,
-  of_samples = TRUE,
-  transform = log1p,
-  scale = TRUE,
-  action = "add",
-  ...,
-  log_transform = NULL
-)
-
-\S4method{reduce_dimensions}{tidybulk}(
   .data,
   .element = NULL,
   .feature = NULL,
@@ -134,12 +83,6 @@ reduce_dimensions(
 \item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
-A tbl object with additional columns for the reduced dimensions
-
-A tbl object with additional columns for the reduced dimensions
-
-A tbl object with additional columns for the reduced dimensions
-
 A tbl object with additional columns for the reduced dimensions
 
 A `SummarizedExperiment` object

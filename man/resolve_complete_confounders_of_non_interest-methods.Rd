@@ -10,11 +10,6 @@
 
 \S4method{resolve_complete_confounders_of_non_interest}{RangedSummarizedExperiment}(se, ...)
 }
-\arguments{
-\item{se}{A `SummarizedExperiment` object. This object contains assay data, row data (e.g., gene annotations), and column data (e.g., sample annotations).}
-
-\item{...}{Factors of non-interest (column names from `colData(se)`) to examine for complete confounders.}
-}
 \value{
 A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 

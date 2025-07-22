@@ -262,8 +262,10 @@ validation <- function(.data,
 	UseMethod("validation", .data)
 }
 
+#' @export
 validation.default = validation_default
 
+#' @export
 validation.tidybulk = function(.data,
 														 .sample = NULL,
 														 .transcript = NULL,

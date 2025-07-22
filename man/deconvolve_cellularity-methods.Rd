@@ -3,50 +3,11 @@
 \docType{methods}
 \name{deconvolve_cellularity}
 \alias{deconvolve_cellularity}
-\alias{deconvolve_cellularity,spec_tbl_df-method}
-\alias{deconvolve_cellularity,tbl_df-method}
-\alias{deconvolve_cellularity,tidybulk-method}
 \alias{deconvolve_cellularity,SummarizedExperiment-method}
 \alias{deconvolve_cellularity,RangedSummarizedExperiment-method}
 \title{Get cell type proportions from samples}
 \usage{
 deconvolve_cellularity(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  reference = NULL,
-  method = "cibersort",
-  prefix = "",
-  action = "add",
-  ...
-)
-
-\S4method{deconvolve_cellularity}{spec_tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  reference = NULL,
-  method = "cibersort",
-  prefix = "",
-  action = "add",
-  ...
-)
-
-\S4method{deconvolve_cellularity}{tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  reference = NULL,
-  method = "cibersort",
-  prefix = "",
-  action = "add",
-  ...
-)
-
-\S4method{deconvolve_cellularity}{tidybulk}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -102,12 +63,6 @@ deconvolve_cellularity(
 \item{...}{Further parameters passed to the function Cibersort}
 }
 \value{
-A consistent object (to the input) including additional columns for each cell type estimated
-
-A consistent object (to the input) including additional columns for each cell type estimated
-
-A consistent object (to the input) including additional columns for each cell type estimated
-
 A consistent object (to the input) including additional columns for each cell type estimated
 
 A `SummarizedExperiment` object

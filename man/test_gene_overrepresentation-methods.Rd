@@ -3,44 +3,11 @@
 \docType{methods}
 \name{test_gene_overrepresentation}
 \alias{test_gene_overrepresentation}
-\alias{test_gene_overrepresentation,spec_tbl_df-method}
-\alias{test_gene_overrepresentation,tbl_df-method}
-\alias{test_gene_overrepresentation,tidybulk-method}
 \alias{test_gene_overrepresentation,SummarizedExperiment-method}
 \alias{test_gene_overrepresentation,RangedSummarizedExperiment-method}
 \title{analyse gene over-representation with GSEA}
 \usage{
 test_gene_overrepresentation(
-  .data,
-  .entrez,
-  .do_test,
-  species,
-  .sample = NULL,
-  gene_sets = NULL,
-  gene_set = NULL
-)
-
-\S4method{test_gene_overrepresentation}{spec_tbl_df}(
-  .data,
-  .entrez,
-  .do_test,
-  species,
-  .sample = NULL,
-  gene_sets = NULL,
-  gene_set = NULL
-)
-
-\S4method{test_gene_overrepresentation}{tbl_df}(
-  .data,
-  .entrez,
-  .do_test,
-  species,
-  .sample = NULL,
-  gene_sets = NULL,
-  gene_set = NULL
-)
-
-\S4method{test_gene_overrepresentation}{tidybulk}(
   .data,
   .entrez,
   .do_test,
@@ -87,12 +54,6 @@ test_gene_overrepresentation(
 }
 \value{
 A consistent object (to the input)
-
-A `spec_tbl_df` object
-
-A `tbl_df` object
-
-A `tidybulk` object
 
 A `SummarizedExperiment` object
 

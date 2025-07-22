@@ -68,14 +68,12 @@ Function | Description
 Utilities | Description
 ------------ | -------------
 `get_bibliography` | Get the bibliography of your workflow
-`tidybulk` | add tidybulk attributes to a tibble object
-`tidybulk_SAM_BAM` | Convert SAM BAM files into tidybulk tibble
 `pivot_sample` | Select sample-wise columns/information
 `pivot_transcript` | Select transcript-wise columns/information
 `rotate_dimensions` | Rotate two dimensions of a degree
-`ensembl_to_symbol` | Add gene symbol from ensembl IDs
-`symbol_to_entrez` | Add entrez ID from gene symbol
 `describe_transcript` | Add gene description from gene symbol
+`impute_missing_abundance` | Impute abundance for missing data points using sample groupings 
+`fill_missing_abundance` | Fill abundance for missing data points using an arbitrary value
 
 All functions are directly compatibble with `SummarizedExperiment` object.
 
@@ -803,21 +801,6 @@ counts_SE.norm.non_redundant |>
 ## Other useful wrappers
 
 The above wrapper streamline the most common processing of bulk RNA sequencing data. Other useful wrappers are listed above.
-
-## From BAM/SAM to tibble of gene counts
-
-We can calculate gene counts (using FeatureCounts; Liao Y et al., 10.1093/nar/gkz114) from a list of BAM/SAM files and format them into a tidy structure (similar to counts).
-
-```{r eval=FALSE}
-counts = tidybulk_SAM_BAM(
-	file_names,
-	genome = "hg38",
-	isPairedEnd = TRUE,
-	requireBothEndsMapped = TRUE,
-	checkFragLength = FALSE,
-	useMetaFeatures = TRUE
-)
-```
 
 ## From ensembl IDs to gene symbol IDs
 

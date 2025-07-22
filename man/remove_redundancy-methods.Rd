@@ -3,9 +3,6 @@
 \docType{methods}
 \name{remove_redundancy}
 \alias{remove_redundancy}
-\alias{remove_redundancy,spec_tbl_df-method}
-\alias{remove_redundancy,tbl_df-method}
-\alias{remove_redundancy,tidybulk-method}
 \alias{remove_redundancy,SummarizedExperiment-method}
 \alias{remove_redundancy,RangedSummarizedExperiment-method}
 \title{Drop redundant elements (e.g., samples) for which feature (e.g., transcript/gene) abundances are correlated}
@@ -22,51 +19,6 @@ remove_redundancy(
   transform = identity,
   Dim_a_column,
   Dim_b_column,
-  log_transform = NULL
-)
-
-\S4method{remove_redundancy}{spec_tbl_df}(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  of_samples = TRUE,
-  correlation_threshold = 0.9,
-  top = Inf,
-  transform = identity,
-  Dim_a_column = NULL,
-  Dim_b_column = NULL,
-  log_transform = NULL
-)
-
-\S4method{remove_redundancy}{tbl_df}(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  of_samples = TRUE,
-  correlation_threshold = 0.9,
-  top = Inf,
-  transform = identity,
-  Dim_a_column = NULL,
-  Dim_b_column = NULL,
-  log_transform = NULL
-)
-
-\S4method{remove_redundancy}{tidybulk}(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  of_samples = TRUE,
-  correlation_threshold = 0.9,
-  top = Inf,
-  transform = identity,
-  Dim_a_column = NULL,
-  Dim_b_column = NULL,
   log_transform = NULL
 )
 
@@ -126,12 +78,6 @@ remove_redundancy(
 \item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
-A tbl object with with dropped redundant elements (e.g., samples).
-
-A tbl object with with dropped redundant elements (e.g., samples).
-
-A tbl object with with dropped redundant elements (e.g., samples).
-
 A tbl object with with dropped redundant elements (e.g., samples).
 
 A `SummarizedExperiment` object

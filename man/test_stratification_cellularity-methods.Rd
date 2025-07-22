@@ -3,47 +3,11 @@
 \docType{methods}
 \name{test_stratification_cellularity}
 \alias{test_stratification_cellularity}
-\alias{test_stratification_cellularity,spec_tbl_df-method}
-\alias{test_stratification_cellularity,tbl_df-method}
-\alias{test_stratification_cellularity,tidybulk-method}
 \alias{test_stratification_cellularity,SummarizedExperiment-method}
 \alias{test_stratification_cellularity,RangedSummarizedExperiment-method}
 \title{Test of stratification of biological replicates based on tissue composition, one cell-type at the time, using Kaplan-meier curves.}
 \usage{
 test_stratification_cellularity(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "cibersort",
-  reference = X_cibersort,
-  ...
-)
-
-\S4method{test_stratification_cellularity}{spec_tbl_df}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "cibersort",
-  reference = X_cibersort,
-  ...
-)
-
-\S4method{test_stratification_cellularity}{tbl_df}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "cibersort",
-  reference = X_cibersort,
-  ...
-)
-
-\S4method{test_stratification_cellularity}{tidybulk}(
   .data,
   .formula,
   .sample = NULL,

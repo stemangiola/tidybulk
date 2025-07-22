@@ -1459,7 +1459,6 @@ univariable_differential_tissue_composition_SE = function(
 #' @importFrom dplyr across
 #' @importFrom dplyr n_distinct
 #' @importFrom tibble as_tibble
-#' @importFrom rlang as.symbol
 #'
 #' @param df A data frame
 #' @param ... Column names to consider as confounders

@@ -3,50 +3,11 @@
 \docType{methods}
 \name{rotate_dimensions}
 \alias{rotate_dimensions}
-\alias{rotate_dimensions,spec_tbl_df-method}
-\alias{rotate_dimensions,tbl_df-method}
-\alias{rotate_dimensions,tidybulk-method}
 \alias{rotate_dimensions,SummarizedExperiment-method}
 \alias{rotate_dimensions,RangedSummarizedExperiment-method}
 \title{Rotate two dimensions (e.g., principal components) of an arbitrary angle}
 \usage{
 rotate_dimensions(
-  .data,
-  dimension_1_column,
-  dimension_2_column,
-  rotation_degrees,
-  .element = NULL,
-  of_samples = TRUE,
-  dimension_1_column_rotated = NULL,
-  dimension_2_column_rotated = NULL,
-  action = "add"
-)
-
-\S4method{rotate_dimensions}{spec_tbl_df}(
-  .data,
-  dimension_1_column,
-  dimension_2_column,
-  rotation_degrees,
-  .element = NULL,
-  of_samples = TRUE,
-  dimension_1_column_rotated = NULL,
-  dimension_2_column_rotated = NULL,
-  action = "add"
-)
-
-\S4method{rotate_dimensions}{tbl_df}(
-  .data,
-  dimension_1_column,
-  dimension_2_column,
-  rotation_degrees,
-  .element = NULL,
-  of_samples = TRUE,
-  dimension_1_column_rotated = NULL,
-  dimension_2_column_rotated = NULL,
-  action = "add"
-)
-
-\S4method{rotate_dimensions}{tidybulk}(
   .data,
   dimension_1_column,
   dimension_2_column,
@@ -102,12 +63,6 @@ rotate_dimensions(
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 }
 \value{
-A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-
-A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-
-A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-
 A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 
 A `SummarizedExperiment` object

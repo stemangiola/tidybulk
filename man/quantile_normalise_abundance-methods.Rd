@@ -3,44 +3,11 @@
 \docType{methods}
 \name{quantile_normalise_abundance}
 \alias{quantile_normalise_abundance}
-\alias{quantile_normalise_abundance,spec_tbl_df-method}
-\alias{quantile_normalise_abundance,tbl_df-method}
-\alias{quantile_normalise_abundance,tidybulk-method}
 \alias{quantile_normalise_abundance,SummarizedExperiment-method}
 \alias{quantile_normalise_abundance,RangedSummarizedExperiment-method}
 \title{Normalise by quantiles the counts of transcripts/genes}
 \usage{
 quantile_normalise_abundance(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "limma_normalize_quantiles",
-  target_distribution = NULL,
-  action = "add"
-)
-
-\S4method{quantile_normalise_abundance}{spec_tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "limma_normalize_quantiles",
-  target_distribution = NULL,
-  action = "add"
-)
-
-\S4method{quantile_normalise_abundance}{tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  method = "limma_normalize_quantiles",
-  target_distribution = NULL,
-  action = "add"
-)
-
-\S4method{quantile_normalise_abundance}{tidybulk}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -86,12 +53,6 @@ quantile_normalise_abundance(
 \item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
 }
 \value{
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
-
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
-
-A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
-
 A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`
 
 A `SummarizedExperiment` object

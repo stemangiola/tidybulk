@@ -5,7 +5,6 @@
 \alias{as_SummarizedExperiment}
 \alias{as_SummarizedExperiment,spec_tbl_df-method}
 \alias{as_SummarizedExperiment,tbl_df-method}
-\alias{as_SummarizedExperiment,tidybulk-method}
 \title{as_SummarizedExperiment}
 \usage{
 as_SummarizedExperiment(
@@ -28,13 +27,6 @@ as_SummarizedExperiment(
   .transcript = NULL,
   .abundance = NULL
 )
-
-\S4method{as_SummarizedExperiment}{tidybulk}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL
-)
 }
 \arguments{
 \item{.data}{A tibble}
@@ -46,8 +38,6 @@ as_SummarizedExperiment(
 \item{.abundance}{The name of the transcript/gene abundance column}
 }
 \value{
-A `SummarizedExperiment` object
-
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object

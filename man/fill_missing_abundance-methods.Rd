@@ -3,36 +3,9 @@
 \docType{methods}
 \name{fill_missing_abundance}
 \alias{fill_missing_abundance}
-\alias{fill_missing_abundance,spec_tbl_df-method}
-\alias{fill_missing_abundance,tbl_df-method}
-\alias{fill_missing_abundance,tidybulk-method}
 \title{Fill transcript abundance if missing from sample-transcript pairs}
 \usage{
 fill_missing_abundance(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  fill_with
-)
-
-\S4method{fill_missing_abundance}{spec_tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  fill_with
-)
-
-\S4method{fill_missing_abundance}{tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  fill_with
-)
-
-\S4method{fill_missing_abundance}{tidybulk}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -53,12 +26,6 @@ fill_missing_abundance(
 }
 \value{
 A consistent object (to the input) non-sparse abundance
-
-A consistent object (to the input) with filled abundance
-
-A consistent object (to the input) with filled abundance
-
-A consistent object (to the input) with filled abundance
 }
 \description{
 fill_missing_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with new observations

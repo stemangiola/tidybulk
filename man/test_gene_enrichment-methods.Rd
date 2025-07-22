@@ -3,62 +3,11 @@
 \docType{methods}
 \name{test_gene_enrichment}
 \alias{test_gene_enrichment}
-\alias{test_gene_enrichment,spec_tbl_df-method}
-\alias{test_gene_enrichment,tbl_df-method}
-\alias{test_gene_enrichment,tidybulk-method}
 \alias{test_gene_enrichment,SummarizedExperiment-method}
 \alias{test_gene_enrichment,RangedSummarizedExperiment-method}
 \title{analyse gene enrichment with EGSEA}
 \usage{
 test_gene_enrichment(
-  .data,
-  .formula,
-  .sample = NULL,
-  .entrez,
-  .abundance = NULL,
-  contrasts = NULL,
-  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
-    "kegg_metabolism", "kegg_signaling"),
-  species,
-  cores = 10,
-  method = NULL,
-  .contrasts = NULL
-)
-
-\S4method{test_gene_enrichment}{spec_tbl_df}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .entrez,
-  .abundance = NULL,
-  contrasts = NULL,
-  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
-    "kegg_metabolism", "kegg_signaling"),
-  species,
-  cores = 10,
-  method = NULL,
-  .contrasts = NULL
-)
-
-\S4method{test_gene_enrichment}{tbl_df}(
-  .data,
-  .formula,
-  .sample = NULL,
-  .entrez,
-  .abundance = NULL,
-  contrasts = NULL,
-  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
-    "kegg_metabolism", "kegg_signaling"),
-  species,
-  cores = 10,
-  method = NULL,
-  .contrasts = NULL
-)
-
-\S4method{test_gene_enrichment}{tidybulk}(
   .data,
   .formula,
   .sample = NULL,
@@ -132,12 +81,6 @@ test_gene_enrichment(
 \item{.contrasts}{DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 }
 \value{
-A consistent object (to the input)
-
-A consistent object (to the input)
-
-A consistent object (to the input)
-
 A consistent object (to the input)
 
 A consistent object (to the input)

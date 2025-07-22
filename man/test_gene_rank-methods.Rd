@@ -3,9 +3,6 @@
 \docType{methods}
 \name{test_gene_rank}
 \alias{test_gene_rank}
-\alias{test_gene_rank,spec_tbl_df-method}
-\alias{test_gene_rank,tbl_df-method}
-\alias{test_gene_rank,tidybulk-method}
 \alias{test_gene_rank,SummarizedExperiment-method}
 \alias{test_gene_rank,RangedSummarizedExperiment-method}
 \title{analyse gene rank with GSEA}
@@ -17,36 +14,6 @@ test_gene_rank(
   species,
   .sample = NULL,
   gene_sets = NULL,
-  gene_set = NULL
-)
-
-\S4method{test_gene_rank}{spec_tbl_df}(
-  .data,
-  .entrez,
-  .arrange_desc,
-  species,
-  .sample = NULL,
-  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7"),
-  gene_set = NULL
-)
-
-\S4method{test_gene_rank}{tbl_df}(
-  .data,
-  .entrez,
-  .arrange_desc,
-  species,
-  .sample = NULL,
-  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7"),
-  gene_set = NULL
-)
-
-\S4method{test_gene_rank}{tidybulk}(
-  .data,
-  .entrez,
-  .arrange_desc,
-  species,
-  .sample = NULL,
-  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7"),
   gene_set = NULL
 )
 
@@ -87,12 +54,6 @@ test_gene_rank(
 }
 \value{
 A consistent object (to the input)
-
-A `spec_tbl_df` object
-
-A `tbl_df` object
-
-A `tidybulk` object
 
 A `SummarizedExperiment` object
 

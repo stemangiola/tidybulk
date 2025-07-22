@@ -3,47 +3,11 @@
 \docType{methods}
 \name{identify_abundant}
 \alias{identify_abundant}
-\alias{identify_abundant,spec_tbl_df-method}
-\alias{identify_abundant,tbl_df-method}
-\alias{identify_abundant,tidybulk-method}
 \alias{identify_abundant,SummarizedExperiment-method}
 \alias{identify_abundant,RangedSummarizedExperiment-method}
 \title{Identify abundant transcripts/genes}
 \usage{
 identify_abundant(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  factor_of_interest = NULL,
-  design = NULL,
-  minimum_counts = 10,
-  minimum_proportion = 0.7
-)
-
-\S4method{identify_abundant}{spec_tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  factor_of_interest = NULL,
-  design = NULL,
-  minimum_counts = 10,
-  minimum_proportion = 0.7
-)
-
-\S4method{identify_abundant}{tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  factor_of_interest = NULL,
-  design = NULL,
-  minimum_counts = 10,
-  minimum_proportion = 0.7
-)
-
-\S4method{identify_abundant}{tidybulk}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -100,12 +64,6 @@ that must exceed the minimum_counts threshold (default = 0.7)}
 \value{
 Returns the input object with an additional logical column `.abundant` indicating which 
 features passed the abundance threshold criteria.
-
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-
-A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 
 A `SummarizedExperiment` object
 

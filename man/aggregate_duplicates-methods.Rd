@@ -3,41 +3,11 @@
 \docType{methods}
 \name{aggregate_duplicates}
 \alias{aggregate_duplicates}
-\alias{aggregate_duplicates,spec_tbl_df-method}
-\alias{aggregate_duplicates,tbl_df-method}
-\alias{aggregate_duplicates,tidybulk-method}
 \alias{aggregate_duplicates,SummarizedExperiment-method}
 \alias{aggregate_duplicates,RangedSummarizedExperiment-method}
 \title{Aggregates multiple counts from the same samples (e.g., from isoforms), concatenates other character columns, and averages other numeric columns}
 \usage{
 aggregate_duplicates(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  aggregation_function = sum,
-  keep_integer = TRUE
-)
-
-\S4method{aggregate_duplicates}{spec_tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  aggregation_function = sum,
-  keep_integer = TRUE
-)
-
-\S4method{aggregate_duplicates}{tbl_df}(
-  .data,
-  .sample = NULL,
-  .transcript = NULL,
-  .abundance = NULL,
-  aggregation_function = sum,
-  keep_integer = TRUE
-)
-
-\S4method{aggregate_duplicates}{tidybulk}(
   .data,
   .sample = NULL,
   .transcript = NULL,
@@ -78,12 +48,6 @@ aggregate_duplicates(
 \item{keep_integer}{A boolean. Whether to force the aggregated counts to integer}
 }
 \value{
-A consistent object (to the input) with aggregated transcript abundance and annotation
-
-A consistent object (to the input) with aggregated transcript abundance and annotation
-
-A consistent object (to the input) with aggregated transcript abundance and annotation
-
 A consistent object (to the input) with aggregated transcript abundance and annotation
 
 A `SummarizedExperiment` object
