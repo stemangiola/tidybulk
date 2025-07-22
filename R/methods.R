@@ -3102,6 +3102,7 @@ setMethod("keep_variable", "tidybulk", .keep_variable)
 #' This function uses edgeR's filterByExpr() function to identify consistently expressed features.
 #' A feature is considered abundant if it has CPM > minimum_counts in at least minimum_proportion 
 #' of samples in at least one experimental group (defined by factor_of_interest or design).
+#' If minimum_count_per_million is provided, it will override the minimum_counts parameter.
 #'
 #' @return 
 #' Returns the input object with an additional logical column `.abundant` indicating which 
@@ -3139,7 +3140,9 @@ setGeneric("identify_abundant", function(.data,
 																		 factor_of_interest = NULL,
 																		 design = NULL,
 																		 minimum_counts = 10,
-																		 minimum_proportion = 0.7)
+																		 minimum_proportion = 0.7,
+																		 minimum_count_per_million = NULL,
+																		 ...)
 	standardGeneric("identify_abundant"))
 
 # Set internal
@@ -3150,13 +3153,12 @@ setGeneric("identify_abundant", function(.data,
 														factor_of_interest = NULL,
 														design = NULL,
 														minimum_counts = 10,
-														minimum_proportion = 0.7)
+														minimum_proportion = 0.7,
+														minimum_count_per_million = NULL)
 {
 
   # Fix NOTEs
   . = NULL
-
-  factor_of_interest = enquo(factor_of_interest)
 
 	# Get column names
 	.sample = enquo(.sample)
@@ -3186,60 +3188,14 @@ setGeneric("identify_abundant", function(.data,
   # Check if package is installed, otherwise install
 	check_and_install_packages("edgeR")
 
-	# If character fail
-	if(
-	  !is.null(factor_of_interest) &&
-	  !factor_of_interest |> quo_is_null() &&
-	  !factor_of_interest |> quo_is_symbolic()
-	) stop("tidybulk says: factor_of_interest must be symbolic (i.e. column name/s not surrounded by single or double quotes) and not a character.")
-
-
-	if(
-	  !is.null(factor_of_interest) &&
-	  ( enquo(factor_of_interest) |> quo_is_symbolic() | is.character(factor_of_interest) )
-	){
-
-	  # DEPRECATION OF symbolic factor_of_interest
-	  # factor_of_interest must be a character now because we identified
-	  # a edge case for which if the column name is the same as an existing function,
-	  # such as time the column name would not be registered as such but would be
-	  # registered as that function
-
-    # # Signal the deprecation to the user
-    # warning(
-    #   "The `factor_of_interest` argument of `test_differential_abundance() is changed as of tidybulk 1.11.5",
-    #   details = "The argument factor_of_interest must now be a character array. This because we identified a edge case for which if the column name is the same as an existing function, such as time the column name would not be registered as such but would be registered as that function"
-    # )
-
-	 factor_of_interest = factor_of_interest |> enquo() |> quo_names()
-
-
-	    # If is numeric ERROR
-	    if(
-	      .data |>
-	      select(factor_of_interest) |>
-	      lapply(class) |>
-	      unlist() |>
-	      as.character()%in% c("numeric", "integer", "double") |>
-	      any()
-	    )
-	      stop("tidybulk says: The factor(s) of interest must not include continuous variables (e.g., integer,numeric, double).")
-
-	    string_factor_of_interest =
-	      .data %>%
-	      select(!!.sample, factor_of_interest) |>
-	      distinct() |>
-	      arrange(!!.sample) |>
-	      select(factor_of_interest) |>
-	      pull(1)
-
-
-	} else {
-	  string_factor_of_interest = NULL
+	# Soft-deprecate factor_of_interest, use design instead
+	if(!is.null(factor_of_interest)) {
+		warning("The `factor_of_interest` argument is deprecated. Please use the `design` argument instead.")
 	}
 
-	gene_to_exclude =
-	.data %>%
+	# Prepare data for edgeR
+	data_matrix =
+	  .data %>%
 	  select(!!.sample,!!.transcript, !!.abundance) |>
 	  spread(!!.sample, !!.abundance) |>
 
@@ -3252,17 +3208,34 @@ setGeneric("identify_abundant", function(.data,
 	    ~ (.)
 	  ) %>%
 
-	  # Call edgeR
-	  as_matrix(rownames = !!.transcript) |>
-	  edgeR::filterByExpr(
-	    min.count = minimum_counts,
-	    group = string_factor_of_interest,
-	    design = design,
-	    min.prop = minimum_proportion
-	  ) %>%
-	  not() |>
-	  which() |>
-	  names()
+	  # Convert to matrix
+	  as_matrix(rownames = !!.transcript)
+
+	# Call edgeR with appropriate parameters
+	# If minimum_count_per_million is provided, use it and ignore minimum_counts
+	if (!is.null(minimum_count_per_million)) {
+	  gene_to_exclude =
+	    data_matrix |>
+	    edgeR::filterByExpr(
+	      design = design,
+	      min.prop = minimum_proportion,
+	      CPM.Cutoff = minimum_count_per_million
+	    ) %>%
+	    not() |>
+	    which() |>
+	    names()
+	} else {
+	  gene_to_exclude =
+	    data_matrix |>
+	    edgeR::filterByExpr(
+	      min.count = minimum_counts,
+	      design = design,
+	      min.prop = minimum_proportion
+	    ) %>%
+	    not() |>
+	    which() |>
+	    names()
+	}
 
 	.data |>
 	  dplyr::mutate(.abundant := (!!.transcript %in% gene_to_exclude) |> not()) |>
@@ -3321,11 +3294,14 @@ setMethod("identify_abundant", "tidybulk", .identify_abundant)
 #'        for a transcript to be kept (default = 10)
 #' @param minimum_proportion A number between 0 and 1 specifying the minimum proportion of samples
 #'        that must exceed the minimum_counts threshold (default = 0.7)
+#' @param minimum_count_per_million A positive number specifying the minimum CPM cutoff for filtering.
+#'        If provided, this will override the minimum_counts parameter (default = NULL)
 #'
 #' @details 
 #' This function uses edgeR's filterByExpr() function to identify and keep consistently expressed features.
 #' A feature is kept if it has CPM > minimum_counts in at least minimum_proportion of samples
 #' in at least one experimental group (defined by factor_of_interest or design).
+#' If minimum_count_per_million is provided, it will override the minimum_counts parameter.
 #' 
 #' This function is similar to identify_abundant() but instead of adding an .abundant column,
 #' it filters out the low-abundance features directly.
@@ -3365,7 +3341,8 @@ setGeneric("keep_abundant", function(.data,
 																			 factor_of_interest = NULL,
 																			 design = NULL,
 																			 minimum_counts = 10,
-																			 minimum_proportion = 0.7)
+																			 minimum_proportion = 0.7,
+																			 minimum_count_per_million = NULL)
 	standardGeneric("keep_abundant"))
 
 # Set internal
@@ -3376,7 +3353,8 @@ setGeneric("keep_abundant", function(.data,
 															factor_of_interest = NULL,
 															design = NULL,
 															minimum_counts = 10,
-															minimum_proportion = 0.7)
+															minimum_proportion = 0.7,
+															minimum_count_per_million = NULL)
 {
 
   # Fix NOTEs
@@ -3409,7 +3387,8 @@ setGeneric("keep_abundant", function(.data,
 			factor_of_interest = !!factor_of_interest,
 			design = design,
 			minimum_counts = minimum_counts,
-			minimum_proportion = minimum_proportion
+			minimum_proportion = minimum_proportion,
+			minimum_count_per_million = minimum_count_per_million
 		) |>
 		dplyr::filter(.abundant) |>
 

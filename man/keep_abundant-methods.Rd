@@ -18,7 +18,8 @@ keep_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 
 \S4method{keep_abundant}{spec_tbl_df}(
@@ -29,7 +30,8 @@ keep_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 
 \S4method{keep_abundant}{tbl_df}(
@@ -40,7 +42,8 @@ keep_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 
 \S4method{keep_abundant}{tidybulk}(
@@ -51,7 +54,8 @@ keep_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 
 \S4method{keep_abundant}{SummarizedExperiment}(
@@ -62,7 +66,8 @@ keep_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 
 \S4method{keep_abundant}{RangedSummarizedExperiment}(
@@ -73,7 +78,8 @@ keep_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 }
 \arguments{

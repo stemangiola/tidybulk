@@ -1572,34 +1572,16 @@ setMethod("keep_variable",
 																 .sample = NULL,
 																 .transcript = NULL,
 																 .abundance = NULL,
-																 factor_of_interest = NULL,
 																 design = NULL,
 																 minimum_counts = 10,
-																 minimum_proportion = 0.7)
-{
+																 minimum_proportion = 0.7,
+																 minimum_count_per_million = NULL) {
 
   # Fix NOTEs
   . = NULL
 
 
-	factor_of_interest = enquo(factor_of_interest)
 	.abundance = enquo(.abundance)
-
-	# If character fail
-	if(
-	  !is.null(factor_of_interest) &&
-	  !factor_of_interest |> quo_is_null() &&
-	  !factor_of_interest |> quo_is_symbolic()
-	) stop("tidybulk says: factor_of_interest must be symbolic (i.e. column name/s not surrounded by single or double quotes) and not a character.")
-
-
-	# Check factor_of_interest
-	if(
-		!is.null(factor_of_interest) &&
-		quo_is_symbolic(factor_of_interest) &&
-		(quo_names(factor_of_interest) %in% colnames(colData(.data)) |> all() %>% not())
-	)
-		stop(sprintf("tidybulk says: the column %s is not present in colData", quo_names(factor_of_interest)))
 
 	if (minimum_counts < 0)
 		stop("The parameter minimum_counts must be > 0")
@@ -1615,47 +1597,7 @@ setMethod("keep_variable",
 		return(.data)
 	}
 
-	if(
-	  !is.null(factor_of_interest) &&
-	  ( enquo(factor_of_interest) |> quo_is_symbolic() | is.character(factor_of_interest) )
-	){
 
-	  # DEPRECATION OF symbolic factor_of_interest
-	  # factor_of_interest must be a character now because we identified
-	  # a edge case for which if the column name is the same as an existing function,
-	  # such as time the column name would not be registered as such but would be
-	  # registered as that function
-
-	  # # Signal the deprecation to the user
-	  # warning(
-	  #   "The `factor_of_interest` argument of `test_differential_abundance() is changed as of tidybulk 1.11.5",
-	  #   details = "The argument factor_of_interest must now be a character array. This because we identified a edge case for which if the column name is the same as an existing function, such as time the column name would not be registered as such but would be registered as that function"
-	  # )
-
-	  factor_of_interest = factor_of_interest |> enquo() |> quo_names()
-
-
-	  # If is numeric ERROR
-	  if(
-	    colData(.data)[, factor_of_interest, drop=FALSE] |>
-	          as_tibble() |>
-	          map(~class(.x)) |>
-	          unlist() %in% c("numeric", "integer", "double") |>
-	          any()
-	  )
-	    stop("tidybulk says: The factor(s) of interest must not include continuous variables (e.g., integer,numeric, double).")
-
-	  string_factor_of_interest =
-	    colData(.data)[, factor_of_interest, drop=FALSE] |>
-	    as_tibble() |>
-	    unite("factor_of_interest") |>
-	    select(factor_of_interest) |>
-	    pull(1)
-
-
-	} else {
-	  string_factor_of_interest = NULL
-	}
 
 
 
@@ -1671,23 +1613,31 @@ setMethod("keep_variable",
 	    assayNames() |>
 	    extract2(1)
 	)
-
 	# Get gene to exclude
-	gene_to_exclude =
-	  .data |>
-	  assay(my_assay) %>%
-
-		# Call edgeR
-		edgeR::filterByExpr(
-			min.count = minimum_counts,
-			group = string_factor_of_interest,
-			design = design,
-			min.prop = minimum_proportion,
-			lib.size = Matrix::colSums(., na.rm=TRUE)
-		) %>%
-		not() %>%
-		which %>%
-		names
+	# If minimum_count_per_million is provided, use it and ignore minimum_counts
+	if (!is.null(minimum_count_per_million)) {
+		gene_to_exclude =
+		  .data |>
+			tidybulk:::filterByExpr_SE(
+				design = design,
+				min.prop = minimum_proportion,
+				CPM.Cutoff = minimum_count_per_million
+			) %>%
+			not() %>%
+			which %>%
+			names
+	} else {
+		gene_to_exclude =
+		  .data |>
+			tidybulk:::filterByExpr_SE(
+				min.count = minimum_counts,
+				design = design,
+				min.prop = minimum_proportion
+			) %>%
+			not() %>%
+			which %>%
+			names
+	}
 
 	rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) %>% not()
 
@@ -1699,6 +1649,7 @@ setMethod("keep_variable",
 
 #' identify_abundant
 #' @inheritParams identify_abundant
+#' @param minimum_count_per_million Minimum CPM cutoff to use for filtering (passed to CPM.Cutoff in filterByExpr). If provided, this will override the minimum_counts parameter. Default is NULL (uses edgeR default).
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
@@ -1706,11 +1657,23 @@ setMethod("keep_variable",
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("identify_abundant",
-					"SummarizedExperiment",
-					.identify_abundant_se)
+                    "SummarizedExperiment",
+                    function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL, factor_of_interest = NULL, design = NULL, minimum_counts = 10, minimum_proportion = 0.7, minimum_count_per_million = NULL) {
+                      .identify_abundant_se(
+                        .data = .data,
+                        .sample = .sample,
+                        .transcript = .transcript,
+                        .abundance = .abundance,
+                        design = design,
+                        minimum_counts = minimum_counts,
+                        minimum_proportion = minimum_proportion,
+                        minimum_count_per_million = minimum_count_per_million
+                      )
+                    })
 
 #' identify_abundant
 #' @inheritParams identify_abundant
+#' @param minimum_count_per_million Minimum CPM cutoff to use for filtering (passed to CPM.Cutoff in filterByExpr). If provided, this will override the minimum_counts parameter. Default is NULL (uses edgeR default).
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
@@ -1718,8 +1681,19 @@ setMethod("identify_abundant",
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("identify_abundant",
-					"RangedSummarizedExperiment",
-					.identify_abundant_se)
+                    "RangedSummarizedExperiment",
+                    function(.data, .sample = NULL, .transcript = NULL, .abundance = NULL, factor_of_interest = NULL, design = NULL, minimum_counts = 10, minimum_proportion = 0.7, minimum_count_per_million = NULL) {
+                      .identify_abundant_se(
+                        .data = .data,
+                        .sample = .sample,
+                        .transcript = .transcript,
+                        .abundance = .abundance,
+                        design = design,
+                        minimum_counts = minimum_counts,
+                        minimum_proportion = minimum_proportion,
+                        minimum_count_per_million = minimum_count_per_million
+                      )
+                    })
 
 
 
@@ -1731,14 +1705,13 @@ setMethod("identify_abundant",
 														 factor_of_interest = NULL,
 														 design = NULL,
 														 minimum_counts = 10,
-														 minimum_proportion = 0.7)
+														 minimum_proportion = 0.7,
+														 minimum_count_per_million = NULL)
 {
 
   # Fix NOTEs
   . = NULL
 
-
-    factor_of_interest = factor_of_interest |> enquo()
     .abundance = enquo(.abundance)
 
 	.data =
@@ -1746,11 +1719,11 @@ setMethod("identify_abundant",
 
 		# Apply scale method
 		identify_abundant(
-			factor_of_interest = !!factor_of_interest,
 			minimum_counts = minimum_counts,
 			minimum_proportion = minimum_proportion,
 			.abundance = !!.abundance,
-			design = design
+			design = design,
+			minimum_count_per_million = minimum_count_per_million
 		)
 
 	.data[rowData(.data)$.abundant,]

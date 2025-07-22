@@ -18,7 +18,8 @@ identify_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  ...
 )
 
 \S4method{identify_abundant}{spec_tbl_df}(
@@ -62,7 +63,8 @@ identify_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 
 \S4method{identify_abundant}{RangedSummarizedExperiment}(
@@ -73,7 +75,8 @@ identify_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 }
 \arguments{
@@ -96,6 +99,8 @@ for a transcript to be considered abundant (default = 10)}
 
 \item{minimum_proportion}{A number between 0 and 1 specifying the minimum proportion of samples
 that must exceed the minimum_counts threshold (default = 0.7)}
+
+\item{minimum_count_per_million}{Minimum CPM cutoff to use for filtering (passed to CPM.Cutoff in filterByExpr). Default is NULL (uses edgeR default).}
 }
 \value{
 Returns the input object with an additional logical column `.abundant` indicating which 
