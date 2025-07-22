@@ -92,3 +92,33 @@ test_that("identify_abundant works with minimum_counts and minimum_count_per_mil
   # So this should behave the same as using only minimum_count_per_million = 100
   expect_equal(sum(rowData(se_abundant_both)$.abundant), sum(rowData(se_abundant_cpm100)$.abundant))
 }) 
+
+test_that("identify_abundant and keep_abundant work with design argument", {
+  se = tidybulk::se
+  # Use the first available column as a factor for the design
+  design <- model.matrix(~ dex + cell, data = colData(se))
+
+  # identify_abundant with design
+  se_abundant_10 <- tidybulk::identify_abundant(se, minimum_counts = 10, design = design)
+  se_abundant_100 <- tidybulk::identify_abundant(se, minimum_counts = 100, design = design)
+  expect_true(sum(rowData(se_abundant_100)$.abundant) <= sum(rowData(se_abundant_10)$.abundant))
+
+  se_abundant_cpm10 <- tidybulk::identify_abundant(se, minimum_count_per_million = 10, design = design)
+  se_abundant_cpm100 <- tidybulk::identify_abundant(se, minimum_count_per_million = 100, design = design)
+  expect_true(sum(rowData(se_abundant_cpm100)$.abundant) <= sum(rowData(se_abundant_cpm10)$.abundant))
+
+  se_abundant_both <- tidybulk::identify_abundant(se, minimum_counts = 100, minimum_count_per_million = 100, design = design)
+  expect_equal(sum(rowData(se_abundant_both)$.abundant), sum(rowData(se_abundant_cpm100)$.abundant))
+
+  # keep_abundant with design
+  se_keep_10 <- tidybulk::keep_abundant(se, minimum_counts = 10, design = design)
+  se_keep_100 <- tidybulk::keep_abundant(se, minimum_counts = 100, design = design)
+  expect_true(nrow(se_keep_100) <= nrow(se_keep_10))
+
+  se_keep_cpm10 <- tidybulk::keep_abundant(se, minimum_count_per_million = 10, design = design)
+  se_keep_cpm100 <- tidybulk::keep_abundant(se, minimum_count_per_million = 100, design = design)
+  expect_true(nrow(se_keep_cpm100) <= nrow(se_keep_cpm10))
+
+  se_keep_both <- tidybulk::keep_abundant(se, minimum_counts = 100, minimum_count_per_million = 100, design = design)
+  expect_equal(nrow(se_keep_both), nrow(se_keep_cpm100))
+}) 
