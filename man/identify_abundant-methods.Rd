@@ -19,6 +19,7 @@ identify_abundant(
   design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
+  minimum_count_per_million = NULL,
   ...
 )
 
@@ -30,7 +31,8 @@ identify_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 
 \S4method{identify_abundant}{tbl_df}(
@@ -41,7 +43,8 @@ identify_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 
 \S4method{identify_abundant}{tidybulk}(
@@ -52,7 +55,8 @@ identify_abundant(
   factor_of_interest = NULL,
   design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 
 \S4method{identify_abundant}{SummarizedExperiment}(
@@ -100,7 +104,7 @@ for a transcript to be considered abundant (default = 10)}
 \item{minimum_proportion}{A number between 0 and 1 specifying the minimum proportion of samples
 that must exceed the minimum_counts threshold (default = 0.7)}
 
-\item{minimum_count_per_million}{Minimum CPM cutoff to use for filtering (passed to CPM.Cutoff in filterByExpr). Default is NULL (uses edgeR default).}
+\item{minimum_count_per_million}{Minimum CPM cutoff to use for filtering (passed to CPM.Cutoff in filterByExpr). If provided, this will override the minimum_counts parameter. Default is NULL (uses edgeR default).}
 }
 \value{
 Returns the input object with an additional logical column `.abundant` indicating which 
@@ -127,6 +131,7 @@ This function adds a logical column `.abundant` to indicate which features pass 
 This function uses edgeR's filterByExpr() function to identify consistently expressed features.
 A feature is considered abundant if it has CPM > minimum_counts in at least minimum_proportion 
 of samples in at least one experimental group (defined by factor_of_interest or design).
+If minimum_count_per_million is provided, it will override the minimum_counts parameter.
 }
 \examples{
 # Basic usage

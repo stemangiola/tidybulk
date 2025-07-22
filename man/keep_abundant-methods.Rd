@@ -102,6 +102,9 @@ for a transcript to be kept (default = 10)}
 
 \item{minimum_proportion}{A number between 0 and 1 specifying the minimum proportion of samples
 that must exceed the minimum_counts threshold (default = 0.7)}
+
+\item{minimum_count_per_million}{A positive number specifying the minimum CPM cutoff for filtering.
+If provided, this will override the minimum_counts parameter (default = NULL)}
 }
 \value{
 Returns a filtered version of the input object containing only the features that passed
@@ -129,6 +132,7 @@ removes low-abundance features instead of just marking them.
 This function uses edgeR's filterByExpr() function to identify and keep consistently expressed features.
 A feature is kept if it has CPM > minimum_counts in at least minimum_proportion of samples
 in at least one experimental group (defined by factor_of_interest or design).
+If minimum_count_per_million is provided, it will override the minimum_counts parameter.
 
 This function is similar to identify_abundant() but instead of adding an .abundant column,
 it filters out the low-abundance features directly.
