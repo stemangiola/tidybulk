@@ -10,7 +10,7 @@
 test_differential_abundance(
   .data,
   .formula,
-  .abundance = NULL,
+  abundance = assayNames(.data)[1],
   contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
@@ -21,13 +21,14 @@ test_differential_abundance(
   ...,
   significance_threshold = NULL,
   fill_missing_values = NULL,
-  .contrasts = NULL
+  .contrasts = NULL,
+  .abundance = NULL
 )
 
 \S4method{test_differential_abundance}{SummarizedExperiment}(
   .data,
   .formula,
-  .abundance = NULL,
+  abundance = assayNames(.data)[1],
   contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
@@ -38,13 +39,14 @@ test_differential_abundance(
   ...,
   significance_threshold = NULL,
   fill_missing_values = NULL,
-  .contrasts = NULL
+  .contrasts = NULL,
+  .abundance = NULL
 )
 
 \S4method{test_differential_abundance}{RangedSummarizedExperiment}(
   .data,
   .formula,
-  .abundance = NULL,
+  abundance = assayNames(.data)[1],
   contrasts = NULL,
   method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
@@ -55,7 +57,8 @@ test_differential_abundance(
   ...,
   significance_threshold = NULL,
   fill_missing_values = NULL,
-  .contrasts = NULL
+  .contrasts = NULL,
+  .abundance = NULL
 )
 }
 \arguments{
@@ -63,7 +66,7 @@ test_differential_abundance(
 
 \item{.formula}{A formula representing the desired linear model. If there is more than one factor, they should be in the order factor of interest + additional factors.}
 
-\item{.abundance}{The name of the transcript/gene abundance column}
+\item{abundance}{The name of the transcript/gene abundance column (character, preferred)}
 
 \item{contrasts}{This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
@@ -86,6 +89,8 @@ test_differential_abundance(
 \item{fill_missing_values}{DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.}
 
 \item{.contrasts}{DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
+
+\item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
 
 \item{.sample}{The name of the sample column}
 

@@ -4,12 +4,14 @@
 \alias{check_if_counts_is_na}
 \title{Check whether there are NA counts}
 \usage{
-check_if_counts_is_na(.data, .abundance)
+check_if_counts_is_na(.data, abundance, .abundance = NULL)
 }
 \arguments{
 \item{.data}{A tibble of read counts}
 
-\item{.abundance}{A character name of the read count column}
+\item{abundance}{A character name of the read count column}
+
+\item{.abundance}{A character name of the read count column (DEPRECATED)}
 }
 \value{
 A tbl

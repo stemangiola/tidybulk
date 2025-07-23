@@ -66,14 +66,20 @@ check_if_duplicated_genes <- function(.data,
 #' @import tibble
 #'
 #' @param .data A tibble of read counts
-#' @param .abundance A character name of the read count column
+#' @param abundance A character name of the read count column
+#' @param .abundance A character name of the read count column (DEPRECATED)
 #'
 #' @return A tbl
 #'
-check_if_counts_is_na = function(.data, .abundance) {
-	.abundance = enquo(.abundance)
+check_if_counts_is_na = function(.data, abundance, .abundance = NULL) {
+	if (!is.null(.abundance)) {
+		lifecycle::deprecate_warn("2.0.0", "check_if_counts_is_na(.abundance)", "check_if_counts_is_na(abundance)")
+		if (missing(abundance) || is.null(abundance)) {
+			abundance <- rlang::as_name(rlang::ensym(.abundance))
+		}
+	}
 
-	.data %>% filter(!!.abundance %>% is.na) %>% nrow() %>% equals(0)
+	.data %>% filter(!!rlang::ensym(abundance) %>% is.na) %>% nrow() %>% equals(0)
 
 }
 
@@ -84,11 +90,18 @@ check_if_transcript_is_na = function(.data, .transcript) {
 
 }
 
-check_if_column_missing = function(.data, .sample, .transcript, .abundance) {
+check_if_column_missing = function(.data, .sample, .transcript, abundance, .abundance = NULL) {
+	if (!is.null(.abundance)) {
+		lifecycle::deprecate_warn("2.0.0", "check_if_column_missing(.abundance)", "check_if_column_missing(abundance)")
+		if (missing(abundance) || is.null(abundance)) {
+			abundance <- rlang::as_name(rlang::ensym(.abundance))
+		}
+	}
+
 	# Parse column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+	.abundance = enquo(abundance)
 
 	# Check that the intersection is length 3
 	.data %>% colnames %>%
@@ -102,11 +115,18 @@ check_if_column_missing = function(.data, .sample, .transcript, .abundance) {
 }
 
 #' @importFrom dplyr pull
-column_type_checking = function(.data, .sample, .transcript, .abundance) {
+column_type_checking = function(.data, .sample, .transcript, abundance, .abundance = NULL) {
+	if (!is.null(.abundance)) {
+		lifecycle::deprecate_warn("2.0.0", "column_type_checking(.abundance)", "column_type_checking(abundance)")
+		if (missing(abundance) || is.null(abundance)) {
+			abundance <- rlang::as_name(rlang::ensym(.abundance))
+		}
+	}
+
 	# Parse column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+	.abundance = enquo(abundance)
 
 	.data %>% pull(!!.sample) %>% class %in% c("character", "factor") &
 		.data %>% pull(!!.transcript) %>% class %in% c("character", "factor") &
@@ -131,12 +151,18 @@ eliminate_sparse_transcripts = function(.data, .transcript){
 		select(-my_n)
 }
 
-check_if_data_rectangular = function(.data, .sample, .transcript, .abundance){
+check_if_data_rectangular = function(.data, .sample, .transcript, abundance, .abundance = NULL){
+	if (!is.null(.abundance)) {
+		lifecycle::deprecate_warn("2.0.0", "check_if_data_rectangular(.abundance)", "check_if_data_rectangular(abundance)")
+		if (missing(abundance) || is.null(abundance)) {
+			abundance <- rlang::as_name(rlang::ensym(.abundance))
+		}
+	}
 
 	# Parse column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+	.abundance = enquo(abundance)
 
 	is_rectangular =
 		.data %>%
@@ -150,24 +176,36 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance){
 
 }
 
-warning_if_data_is_not_rectangular = function(.data, .sample, .transcript, .abundance){
+warning_if_data_is_not_rectangular = function(.data, .sample, .transcript, abundance, .abundance = NULL){
+	if (!is.null(.abundance)) {
+		lifecycle::deprecate_warn("2.0.0", "warning_if_data_is_not_rectangular(.abundance)", "warning_if_data_is_not_rectangular(abundance)")
+		if (missing(abundance) || is.null(abundance)) {
+			abundance <- rlang::as_name(rlang::ensym(.abundance))
+		}
+	}
 
 	# Parse column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+	.abundance = enquo(abundance)
 
 	if(!check_if_data_rectangular(.data, !!.sample, !!.transcript, !!.abundance))
 		warning("tidybulk says: the data does not have the same number of transcript per sample. The data set is not rectangular.")
 
 }
 
-error_if_data_is_not_rectangular = function(.data, .sample, .transcript, .abundance){
+error_if_data_is_not_rectangular = function(.data, .sample, .transcript, abundance, .abundance = NULL){
+	if (!is.null(.abundance)) {
+		lifecycle::deprecate_warn("2.0.0", "error_if_data_is_not_rectangular(.abundance)", "error_if_data_is_not_rectangular(abundance)")
+		if (missing(abundance) || is.null(abundance)) {
+			abundance <- rlang::as_name(rlang::ensym(.abundance))
+		}
+	}
 
 	# Parse column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
-	.abundance = enquo(.abundance)
+	.abundance = enquo(abundance)
 
 	if(!check_if_data_rectangular(.data, !!.sample, !!.transcript, !!.abundance))
 		stop("tidybulk says: the data must have the same number of transcript per sample. Check again that you have not filtered single observations accidentally. If you have missing data you can use fill_missing_abundance() or impute_missing_abundance()")

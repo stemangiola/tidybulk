@@ -10,15 +10,16 @@
 #' @param .data A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
+#' @param abundance The name of the transcript/gene abundance column (character, preferred)
+#' @param design A design matrix for more complex experimental designs. If provided, this is passed to filterByExpr instead of factor_of_interest.
+#' @param formula_design ...
+#' @param minimum_counts ...
+#' @param minimum_proportion ...
+#' @param minimum_count_per_million ...
+#' @param ... Further arguments.
+#' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
 #' @param factor_of_interest The name of the column containing groups/conditions for filtering. 
 #'        Used by edgeR's filterByExpr to define sample groups.
-#' @param design A design matrix for more complex experimental designs. If provided, 
-#'        this is passed to filterByExpr instead of factor_of_interest.
-#' @param minimum_counts A positive number specifying the minimum counts per million (CPM) threshold
-#'        for a transcript to be kept (default = 10)
-#' @param minimum_proportion A number between 0 and 1 specifying the minimum proportion of samples
-#'        that must exceed the minimum_counts threshold (default = 0.7)
 #'
 #' @details 
 #' This function uses edgeR's filterByExpr() function to identify and keep consistently expressed features.
@@ -57,13 +58,14 @@
 #' @rdname keep_abundant-methods
 #' @export
 setGeneric("keep_abundant", function(.data,
-                                     .abundance = NULL,
+                                     abundance = assayNames(.data)[1],
                                      design = NULL,
                                      formula_design = NULL,
                                      minimum_counts = 10,
                                      minimum_proportion = 0.7,
                                      minimum_count_per_million = NULL,
-                                     ...)
+                                     ...,
+                                     .abundance = NULL)
   standardGeneric("keep_abundant"))
 
 #' Identify abundant transcripts/genes
@@ -77,15 +79,16 @@ setGeneric("keep_abundant", function(.data,
 #' @param .data A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
+#' @param abundance The name of the transcript/gene abundance column (character, preferred)
+#' @param design A design matrix for more complex experimental designs. If provided, this is passed to filterByExpr instead of factor_of_interest.
+#' @param formula_design ...
+#' @param minimum_counts ...
+#' @param minimum_proportion ...
+#' @param minimum_count_per_million ...
+#' @param ... Further arguments.
+#' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
 #' @param factor_of_interest The name of the column containing groups/conditions for filtering. 
 #'        Used by edgeR's filterByExpr to define sample groups.
-#' @param design A design matrix for more complex experimental designs. If provided, 
-#'        this is passed to filterByExpr instead of factor_of_interest.
-#' @param minimum_counts A positive number specifying the minimum counts per million (CPM) threshold
-#'        for a transcript to be considered abundant (default = 10)
-#' @param minimum_proportion A number between 0 and 1 specifying the minimum proportion of samples
-#'        that must exceed the minimum_counts threshold (default = 0.7)
 #'
 #' @details 
 #' This function uses edgeR's filterByExpr() function to identify consistently expressed features.
@@ -122,13 +125,14 @@ setGeneric("keep_abundant", function(.data,
 #' @rdname identify_abundant-methods
 #' @export
 setGeneric("identify_abundant", function(.data,
-                                         .abundance = NULL,
+                                         abundance = assayNames(.data)[1],
                                          design = NULL,
                                          formula_design = NULL,
                                          minimum_counts = 10,
                                          minimum_proportion = 0.7,
                                          minimum_count_per_million = NULL,
-                                         ...)
+                                         ...,
+                                         .abundance = NULL)
   standardGeneric("identify_abundant"))
 
 
@@ -136,13 +140,14 @@ setGeneric("identify_abundant", function(.data,
 
 
 .identify_abundant_se = function(.data,
-                                 .abundance = NULL,
+                                 abundance = assayNames(.data)[1],
                                  design = NULL,
                                  formula_design = NULL,
                                  minimum_counts = 10,
                                  minimum_proportion = 0.7,
                                  minimum_count_per_million = NULL,
-                                 ...) {
+                                 ...,
+                                 .abundance = NULL) {
   
   # Fix NOTEs
   . = NULL
@@ -153,15 +158,14 @@ setGeneric("identify_abundant", function(.data,
     design <- model.matrix(formula_design, data = colData(.data))
   }
   
-  # Handle .abundance as quosure
-  .abundance <- rlang::enquo(.abundance)
-  
-  # Determine assay name to use
-  my_assay <- ifelse(
-    rlang::quo_is_symbol(.abundance),
-    rlang::quo_name(.abundance),
-    assayNames(.data)[1]
-  )
+  # Soft-deprecate .abundance, prefer abundance (character)
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "identify_abundant(.abundance)", "identify_abundant(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
+  my_assay <- abundance
   
   if (minimum_counts < 0)
     stop("The parameter minimum_counts must be > 0")
@@ -177,7 +181,7 @@ setGeneric("identify_abundant", function(.data,
   
   # Check if package is installed, otherwise install
   check_and_install_packages("edgeR")
-  browser()
+
   # Get gene to exclude
   # If minimum_count_per_million is provided, use it and ignore minimum_counts
   if (!is.null(minimum_count_per_million)) {
@@ -245,12 +249,14 @@ setMethod("identify_abundant",
 .keep_abundant_se = function(.data,
                              
                              
-                             .abundance = NULL,
+                             abundance = assayNames(.data)[1],
                              design = NULL,
                              formula_design = NULL,
                              minimum_counts = 10,
                              minimum_proportion = 0.7,
-                             minimum_count_per_million = NULL)
+                             minimum_count_per_million = NULL,
+                             ...,
+                             .abundance = NULL)
 {
   # Fix NOTEs
   . = NULL
@@ -261,21 +267,23 @@ setMethod("identify_abundant",
     design <- model.matrix(formula_design, data = colData(.data))
   }
   
-  # Handle .abundance as quosure
-  .abundance <- rlang::enquo(.abundance)
-  
+  # Soft-deprecate .abundance, prefer abundance (character)
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "keep_abundant(.abundance)", "keep_abundant(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
   .data =
     .data %>%
-    # Apply scale method
     identify_abundant(
       minimum_counts = minimum_counts,
       minimum_proportion = minimum_proportion,
-      .abundance = !!.abundance,
+      abundance = abundance,
       design = design,
       minimum_count_per_million = minimum_count_per_million
     )
-  
-  .data[rowData(.data)$.abundant,]
+  .data[rowData(.data)[".abundant"][[1]],]
 }
 
 #' keep_abundant

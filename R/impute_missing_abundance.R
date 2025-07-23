@@ -12,11 +12,11 @@
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 #' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
 #' @param suffix A character string. This is added to the imputed count column names. If empty the count column are overwritten
 #' @param force_scaling A boolean. In case a abundance-containing column is not scaled (columns with _scale suffix), setting force_scaling = TRUE will result in a scaling by library size, to compensating for a possible difference in sequencing depth.
+#' @param ... Further arguments.
+#' @param abundance The name of the transcript/gene abundance column (character, preferred)
+#' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
 #'
 #' @details This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 #'
@@ -43,34 +43,42 @@
 #'
 setGeneric("impute_missing_abundance", function(.data,
                                                 .formula,
-                                                
-                                                
-                                                .abundance = NULL,
                                                 suffix = "",
-                                                force_scaling = FALSE)
+                                                force_scaling = FALSE,
+                                                ...,
+                                                abundance = assayNames(.data)[1],
+                                                .abundance = NULL)
   standardGeneric("impute_missing_abundance"))
 
 
 
 .impute_missing_abundance_se = function(.data,
                                         .formula,
-                                        
-                                        
-                                        .abundance  = NULL,
                                         suffix = "",
-                                        force_scaling = FALSE) {
+                                        force_scaling = FALSE,
+                                        ...,
+                                        abundance = assayNames(.data)[1],
+                                        .abundance = NULL) {
   
   # Fix NOTEs
   . = NULL
   
+  # Soft-deprecate .abundance, prefer abundance (character)
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "impute_missing_abundance(.abundance)", "impute_missing_abundance(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
+  
   .abundance = enquo(.abundance)
   
   .assay_to_impute =
-    .abundance %>%
-    when(
-      quo_is_symbolic(.) ~ assays(.data)[quo_names(.abundance)],
-      ~ assays(.data)
-    )
+    if (quo_is_symbolic(.abundance)) {
+      assays(.data)[quo_names(.abundance)]
+    } else {
+      assays(.data)
+    }
   
   
   # Split data by formula and impute

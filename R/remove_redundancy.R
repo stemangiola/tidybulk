@@ -140,24 +140,18 @@ standardGeneric("remove_redundancy"))
   
   redundant_elements =
     if (method == "correlation") {
-      
       # Get counts
       my_assay =
         .data %>%
-        
         # Filter abundant if performed
         filter_if_abundant_were_identified() %>%
-        
         assays() %>%
         as.list() %>%
         .[[get_assay_scaled_if_exists_SE(.data)]] %>%
-        
         # Filter most variable genes
         keep_variable_transcripts_SE(top = top, transform = transform) %>%
-        
         # Check if log transform is needed
         transform()
-      
       # Get correlated elements
       remove_redundancy_elements_through_correlation_SE(
         my_assay,
@@ -165,7 +159,6 @@ standardGeneric("remove_redundancy"))
         of_samples = of_samples
       )
     } else if (method == "reduced_dimensions") {
-      
       # Get dimensions
       my_dims =
         if (of_samples) {
@@ -173,7 +166,6 @@ standardGeneric("remove_redundancy"))
         } else {
           rowData(.data)[,c(quo_name(Dim_a_column), quo_name(Dim_b_column))]
         }
-      
       # Get correlated elements
       remove_redundancy_elements_though_reduced_dimensions_SE(
         my_dims

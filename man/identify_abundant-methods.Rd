@@ -9,52 +9,58 @@
 \usage{
 identify_abundant(
   .data,
-  .abundance = NULL,
+  abundance = assayNames(.data)[1],
   design = NULL,
   formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
-  ...
+  ...,
+  .abundance = NULL
 )
 
 \S4method{identify_abundant}{SummarizedExperiment}(
   .data,
-  .abundance = NULL,
+  abundance = assayNames(.data)[1],
   design = NULL,
   formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
-  ...
+  ...,
+  .abundance = NULL
 )
 
 \S4method{identify_abundant}{RangedSummarizedExperiment}(
   .data,
-  .abundance = NULL,
+  abundance = assayNames(.data)[1],
   design = NULL,
   formula_design = NULL,
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
-  ...
+  ...,
+  .abundance = NULL
 )
 }
 \arguments{
 \item{.data}{A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data}
 
-\item{.abundance}{The name of the transcript/gene abundance column}
+\item{abundance}{The name of the transcript/gene abundance column (character, preferred)}
 
-\item{design}{A design matrix for more complex experimental designs. If provided, 
-this is passed to filterByExpr instead of factor_of_interest.}
+\item{design}{A design matrix for more complex experimental designs. If provided, this is passed to filterByExpr instead of factor_of_interest.}
 
-\item{minimum_counts}{A positive number specifying the minimum counts per million (CPM) threshold
-for a transcript to be considered abundant (default = 10)}
+\item{formula_design}{...}
 
-\item{minimum_proportion}{A number between 0 and 1 specifying the minimum proportion of samples
-that must exceed the minimum_counts threshold (default = 0.7)}
+\item{minimum_counts}{...}
+
+\item{minimum_proportion}{...}
 
 \item{minimum_count_per_million}{Minimum CPM cutoff to use for filtering (passed to CPM.Cutoff in filterByExpr). If provided, this will override the minimum_counts parameter. Default is NULL (uses edgeR default).}
+
+\item{...}{Further arguments.}
+
+\item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
 
 \item{.sample}{The name of the sample column}
 

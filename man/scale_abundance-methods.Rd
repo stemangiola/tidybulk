@@ -9,38 +9,44 @@
 \usage{
 scale_abundance(
   .data,
-  .abundance = NULL,
+  abundance = assayNames(.data)[1],
   method = "TMM",
   reference_sample = NULL,
   .subset_for_scaling = NULL,
   action = "add",
-  reference_selection_function = NULL
+  reference_selection_function = NULL,
+  ...,
+  .abundance = NULL
 )
 
 \S4method{scale_abundance}{SummarizedExperiment}(
   .data,
-  .abundance = NULL,
+  abundance = assayNames(.data)[1],
   method = "TMM",
   reference_sample = NULL,
   .subset_for_scaling = NULL,
   action = NULL,
-  reference_selection_function = NULL
+  reference_selection_function = NULL,
+  ...,
+  .abundance = NULL
 )
 
 \S4method{scale_abundance}{RangedSummarizedExperiment}(
   .data,
-  .abundance = NULL,
+  abundance = assayNames(.data)[1],
   method = "TMM",
   reference_sample = NULL,
   .subset_for_scaling = NULL,
   action = NULL,
-  reference_selection_function = NULL
+  reference_selection_function = NULL,
+  ...,
+  .abundance = NULL
 )
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
-\item{.abundance}{The name of the transcript/gene abundance column}
+\item{abundance}{The name of the transcript/gene abundance column (character, preferred)}
 
 \item{method}{A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")}
 
@@ -51,6 +57,10 @@ scale_abundance(
 \item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
 
 \item{reference_selection_function}{DEPRECATED. please use reference_sample.}
+
+\item{...}{Further arguments.}
+
+\item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
 
 \item{.sample}{The name of the sample column}
 

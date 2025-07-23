@@ -12,6 +12,7 @@ adjust_abundance(
   .formula = NULL,
   .factor_unwanted = NULL,
   .factor_of_interest = NULL,
+  abundance = assayNames(.data)[1],
   .abundance = NULL,
   method = "combat_seq",
   action = "add",
@@ -26,6 +27,7 @@ adjust_abundance(
   .formula = NULL,
   .factor_unwanted = NULL,
   .factor_of_interest = NULL,
+  abundance = assayNames(.data)[1],
   .abundance = NULL,
   method = "combat_seq",
   action = "add",
@@ -40,6 +42,7 @@ adjust_abundance(
   .formula = NULL,
   .factor_unwanted = NULL,
   .factor_of_interest = NULL,
+  abundance = assayNames(.data)[1],
   .abundance = NULL,
   method = "combat_seq",
   action = "add",
@@ -58,7 +61,9 @@ adjust_abundance(
 
 \item{.factor_of_interest}{A tidy select, e.g. column names without double quotation. c(treatment) These are the factor that we want to preserve.}
 
-\item{.abundance}{The name of the transcript/gene abundance column}
+\item{abundance}{The name of the transcript/gene abundance column (character, preferred)}
+
+\item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
 
 \item{method}{A character string. Methods include combat_seq (default), combat and limma_remove_batch_effect.}
 
@@ -71,10 +76,6 @@ adjust_abundance(
 \item{transform}{DEPRECATED - A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
 
 \item{inverse_transform}{DEPRECATED - A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.}
-
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`

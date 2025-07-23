@@ -46,15 +46,12 @@ setGeneric("as_SummarizedExperiment", function(.data,
   check_and_install_packages(c("SummarizedExperiment", "S4Vectors"))
   
   # If present get the scaled abundance
-  .abundance_scaled =
-    .data %>%
-    ifelse_pipe(
-      ".abundance_scaled" %in% ((.) %>% get_tt_columns() %>% names) &&
-        # .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% not() &&
-        quo_name((.) %>% get_tt_columns() %$% .abundance_scaled) %in% ((.) %>% colnames),
-      ~ .x %>% get_tt_columns() %$% .abundance_scaled,
-      ~ NULL
-    )
+  if (".abundance_scaled" %in% (get_tt_columns(.data) %>% names) &&
+      quo_name(get_tt_columns(.data)$.abundance_scaled) %in% colnames(.data)) {
+    .abundance_scaled <- get_tt_columns(.data)$.abundance_scaled
+  } else {
+    .abundance_scaled <- NULL
+  }
   
   # Get which columns are sample wise and which are feature wise
   col_direction = get_x_y_annotation_columns(.data,

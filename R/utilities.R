@@ -27,17 +27,11 @@ as_data_frame <- function(tbl,
   . = NULL
   
   rownames = enquo(rownames)
-  tbl %>%
-    
-    as.data.frame() |>
-    
-    # Deal with rownames column if present
-    ifelse_pipe(
-      !quo_is_null(rownames),
-      ~ .x |>
-        magrittr::set_rownames(tbl |> pull(!!rownames)) |>
-        select(-1)
-    ) 
+  df <- tbl %>% as.data.frame()
+  if (!quo_is_null(rownames)) {
+    df <- df %>% magrittr::set_rownames(tbl %>% pull(!!rownames)) %>% select(-1)
+  }
+  df
 }
 
 my_stop = function() {
@@ -48,85 +42,26 @@ my_stop = function() {
       ")
 }
 
-#' This is a generalisation of ifelse that accepts an object and return an objects
-#'
-#' @keywords internal
-#' @noRd
-#'
-#' 
-#' 
-#' @importFrom purrr as_mapper
-#'
-#' @param .x A tibble
-#' @param .p A boolean
-#' @param .f1 A function
-#' @param .f2 A function
-#'
-#' @return A tibble
-ifelse_pipe = function(.x, .p, .f1, .f2 = NULL) {
-  switch(.p %>% not() %>% sum(1),
-         as_mapper(.f1)(.x),
-         if (.f2 %>% is.null %>% not())
-           as_mapper(.f2)(.x)
-         else
-           .x)
-
-}
-
-#' This is a generalisation of ifelse that acceots an object and return an objects
-#'
-#' @keywords internal
-#' @noRd
-#'
-#' 
-#' 
-#'
-#' @param .x A tibble
-#' @param .p1 A boolean
-#' @param .p2 ELSE IF condition
-#' @param .f1 A function
-#' @param .f2 A function
-#' @param .f3 A function
-#'
-#' @return A tibble
-ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
-  # Nested switch
-  switch(# First condition
-    .p1 %>% not() %>% sum(1),
-
-    # First outcome
-    as_mapper(.f1)(.x),
-    switch(
-      # Second condition
-      .p2 %>% not() %>% sum(1),
-
-      # Second outcome
-      as_mapper(.f2)(.x),
-
-      # Third outcome - if there is not .f3 just return the original data frame
-      if (.f3 %>% is.null %>% not())
-        as_mapper(.f3)(.x)
-      else
-        .x
-    ))
-}
-
-
-
 #' Check whether a numeric vector has been log transformed
 #'
 #' @keywords internal
 #' @noRd
 #'
 #' @param x A numeric vector
-#' @param .abundance A character name of the transcript/gene abundance column
+#' @param abundance A character name of the transcript/gene abundance column
+#' @param .abundance DEPRECATED
 #'
 #' @return NA
-error_if_log_transformed <- function(x, .abundance) {
-  .abundance = enquo(.abundance)
+error_if_log_transformed <- function(x, abundance, .abundance = NULL) {
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "error_if_log_transformed(.abundance)", "error_if_log_transformed(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
 
   if (x %>% nrow() %>% gt(0))
-    if (x %>% summarise(m = !!.abundance %>% max) %>% pull(m) < 50)
+    if (x %>% summarise(m = !!abundance %>% max) %>% pull(m) < 50)
       stop(
         "tidybulk says: The input was log transformed, this algorithm requires raw (un-scaled) read counts"
       )
@@ -185,15 +120,21 @@ error_if_duplicated_genes <- function(.data,
 #' @import tibble
 #'
 #' @param .data A tibble of read counts
-#' @param .abundance A character name of the read count column
+#' @param abundance A character name of the read count column
+#' @param .abundance DEPRECATED
 #'
 #' @return A tbl
 #'
-error_if_counts_is_na = function(.data, .abundance) {
-  .abundance = enquo(.abundance)
+error_if_counts_is_na = function(.data, abundance, .abundance = NULL) {
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "error_if_counts_is_na(.abundance)", "error_if_counts_is_na(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
 
   # Do the check
-  if (.data %>% filter(!!.abundance %>% is.na) %>% nrow() %>% gt(0))
+  if (.data %>% filter(!!abundance %>% is.na) %>% nrow() %>% gt(0))
     stop("tidybulk says: You have NA values in your counts")
 
   # If all good return original data frame
@@ -323,8 +264,9 @@ get_tt_columns = function(.data){
 add_tt_columns = function(.data,
                           .sample,
                           .transcript,
-                          .abundance,
-                          .abundance_scaled = NULL,
+                          abundance,
+                          .abundance = NULL,
+													.abundance_scaled = NULL,
 													.abundance_adjusted = NULL){
 
   # Make col names
@@ -333,36 +275,26 @@ add_tt_columns = function(.data,
   .abundance = enquo(.abundance)
   .abundance_scaled = enquo(.abundance_scaled)
   .abundance_adjusted = enquo(.abundance_adjusted)
-
-  # Add tt_columns
-  .data %>% attach_to_internals(
-     list(
-      .sample = .sample,
-      .transcript = .transcript,
-      .abundance = .abundance
-    ) %>%
-
-    # If .abundance_scaled is not NULL add it to tt_columns
-    ifelse_pipe(
-      .abundance_scaled %>% quo_is_symbol,
-      ~ .x %>% c(		list(.abundance_scaled = .abundance_scaled))
-    ) %>%
-
-  	ifelse_pipe(
-  		.abundance_adjusted %>% quo_is_symbol,
-  		~ .x %>% c(		list(.abundance_adjusted = .abundance_adjusted))
-  	),
-    "tt_columns"
+  tt_list <- list(
+    .sample = .sample,
+    .transcript = .transcript,
+    .abundance = .abundance
   )
+  if (.abundance_scaled %>% quo_is_symbol) {
+    tt_list <- c(tt_list, list(.abundance_scaled = .abundance_scaled))
+  }
+  if (.abundance_adjusted %>% quo_is_symbol) {
+    tt_list <- c(tt_list, list(.abundance_adjusted = .abundance_adjusted))
+  }
+  .data %>% attach_to_internals(tt_list, "tt_columns")
 
 }
 
 initialise_tt_internals = function(.data){
-  .data %>%
-    ifelse_pipe(
-      "internals" %in% ((.) %>% attributes %>% names) %>% not(),
-      ~ .x %>% add_attr(list(), "internals")
-    )
+  if ("internals" %in% (attributes(.data) %>% names) %>% not()) {
+    .data <- add_attr(.data, list(), "internals")
+  }
+  .data
 }
 
 reattach_internals = function(.data, .data_internals_from = NULL){
@@ -500,10 +432,17 @@ add_class = function(var, name) {
 #' @param .data A tibble
 #' @param .sample A character name of the sample column
 #' @param .transcript A character name of the transcript/gene column
-#' @param .abundance A character name of the read count column
+#' @param abundance A character name of the read count column
+#' @param .abundance DEPRECATED
 #'
 #' @return A list of column enquo or error
-get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance){
+get_sample_transcript_counts = function(.data, .sample, .transcript, abundance, .abundance = NULL){
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "get_sample_transcript_counts(.abundance)", "get_sample_transcript_counts(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
 
     if( quo_is_symbolic(.sample) ) .sample = .sample
     else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
@@ -515,12 +454,12 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
       .transcript =  get_tt_columns(.data)$.transcript
     else my_stop()
 
-    if(  quo_is_symbolic(.abundance) ) .abundance = .abundance
+    if(  quo_is_symbolic(abundance) ) abundance = abundance
     else if(".abundance" %in% (.data %>% get_tt_columns() %>% names))
-      .abundance = get_tt_columns(.data)$.abundance
+      abundance = get_tt_columns(.data)$.abundance
     else my_stop()
 
-    list(.sample = .sample, .transcript = .transcript, .abundance = .abundance)
+    list(.sample = .sample, .transcript = .transcript, .abundance = abundance)
 
 }
 
@@ -533,10 +472,17 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, .abundance)
 #'
 #' @param .data A tibble
 #' @param .sample A character name of the sample column
-#' @param .abundance A character name of the read count column
+#' @param abundance A character name of the read count column
+#' @param .abundance DEPRECATED
 #'
 #' @return A list of column enquo or error
-get_sample_counts = function(.data, .sample, .abundance){
+get_sample_counts = function(.data, .sample, abundance, .abundance = NULL){
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "get_sample_counts(.abundance)", "get_sample_counts(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
 
   if( .sample %>% quo_is_symbol() ) .sample = .sample
   else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
@@ -723,13 +669,18 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
 #' @param .data A tibble
 #' @param .element A character name of the sample column
 #' @param .feature A character name of the transcript/gene column
-#' @param .abundance A character name of the read count column
-
-#' @param of_samples A boolean
+#' @param abundance A character name of the read count column
+#' @param .abundance DEPRECATED
 #'
 #' @return A list of column enquo or error
 #'
-get_elements_features_abundance = function(.data, .element, .feature, .abundance, of_samples = TRUE){
+get_elements_features_abundance = function(.data, .element, .feature, abundance, .abundance = NULL, of_samples = TRUE){
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "get_elements_features_abundance(.abundance)", "get_elements_features_abundance(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
 
   my_stop = function() {
     stop("
@@ -814,42 +765,40 @@ get_elements = function(.data, .element, of_samples = TRUE){
 #' @importFrom rlang quo_is_symbol
 #'
 #' @param .data A tibble
-#' @param .abundance A character name of the abundance column
+#' @param abundance A character name of the abundance column
+#' @param .abundance DEPRECATED
 #'
 #' @return A list of column enquo or error
-get_abundance_norm_if_exists = function(.data, .abundance){
-
-  # If setted by the user, enquo those
-  if(
-    .abundance %>% quo_is_symbol()
-  )
+get_abundance_norm_if_exists = function(.data, abundance, .abundance = NULL){
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "get_abundance_norm_if_exists(.abundance)", "get_abundance_norm_if_exists(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
+  if (.abundance %>% quo_is_symbol()) {
     return(list(
       .abundance = .abundance
     ))
-
-  # Otherwise check if attribute exists
-  else {
-
-    # If so, take them from the attribute
-    if(.data %>% get_tt_columns() %>% is.null %>% not())
-
-      return(list(
-        .abundance =  switch(
-          (".abundance_scaled" %in% (.data %>% get_tt_columns() %>% names) &&
-             # .data %>% get_tt_columns() %$% .abundance_scaled %>% is.null %>% not() &&
-             quo_name(.data %>% get_tt_columns() %$% .abundance_scaled) %in% (.data %>% colnames)
-           ) %>% not() %>% sum(1),
-          get_tt_columns(.data)$.abundance_scaled,
-          get_tt_columns(.data)$.abundance
-        )
-      ))
-    # Else through error
-    else
+  } else {
+    if (!is.null(get_tt_columns(.data))) {
+      if (".abundance_scaled" %in% names(get_tt_columns(.data)) &&
+          quo_name(get_tt_columns(.data)$.abundance_scaled) %in% colnames(.data)) {
+        return(list(
+          .abundance = get_tt_columns(.data)$.abundance_scaled
+        ))
+      } else {
+        return(list(
+          .abundance = get_tt_columns(.data)$.abundance
+        ))
+      }
+    } else {
       stop("
         tidybulk says: The function does not know what your sample, transcript and counts columns are.
 	You might need to specify the arguments .sample, .transcript and/or .abundance. 
 	Please read the documentation of this function for more information.
       ")
+    }
   }
 }
 
@@ -916,14 +865,21 @@ fill_NA_with_row_median = function(.matrix){
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 #' @param .horizontal The name of the column horizontally presented in the heatmap
 #' @param .vertical The name of the column vertically presented in the heatmap
-#' @param .abundance The name of the transcript/gene abundance column
+#' @param abundance A character name of the transcript/gene abundance column
+#' @param .abundance DEPRECATED
 #' @param .abundance_scaled The name of the transcript/gene scaled abundance column
 #'
 #' @description This function recognise what are the sample-wise columns and transcrip-wise columns
 #'
 #' @return A list
 #'
-get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance, .abundance_scaled){
+get_x_y_annotation_columns = function(.data, .horizontal, .vertical, abundance, .abundance = NULL, .abundance_scaled = NULL){
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "get_x_y_annotation_columns(.abundance)", "get_x_y_annotation_columns(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
 
 
   # Comply with CRAN NOTES
@@ -967,17 +923,18 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
     select(-!!.horizontal, -!!.vertical, -!!.abundance, -horizontal_cols) %>%
     colnames %>%
     map(
-      ~
-        .x %>%
-        ifelse_pipe(
-          .data %>%
+      ~{
+          if(.data %>%
             select(!!.vertical, !!as.symbol(.x)) |>
             distinct() |>
             nrow() %>%
-            equals(n_y),
-          ~ .x,
-          ~ NULL
-        )
+            equals(n_y)) {
+          .x
+        } else {
+          NULL
+        }
+      }
+       
     ) %>%
 
     # Drop NULL
@@ -987,38 +944,30 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .abundance,
   # Counts wise columns, at the moment scaled counts is treated as special and not accounted for here
   counts_cols =
     .data %>%
-    select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
+    select(-!!.horizontal, -!!.vertical, -!!.abundance)
 
-    # Exclude horizontal
-    ifelse_pipe(!is.null(horizontal_cols),  ~ .x %>% select(-horizontal_cols)) %>%
-
-    # Exclude vertical
-    ifelse_pipe(!is.null(vertical_cols),  ~ .x %>% select(-vertical_cols)) %>%
-
-    # Exclude scaled counts if exist
-    ifelse_pipe(.abundance_scaled %>% quo_is_symbol,  ~ .x %>% select(-!!.abundance_scaled) ) %>%
-
-    # Select colnames
-    colnames %>%
-
-    # select columns
-    map(
-      ~
-        .x %>%
-        ifelse_pipe(
-          .data %>%
-            select(!!.vertical, !!.horizontal, !!as.symbol(.x)) %>%
-            distinct() |>
-            nrow() %>%
-            equals(n_x * n_y),
-          ~ .x,
-          ~ NULL
-        )
-    ) %>%
-
-    # Drop NULL
-    {	(.)[lengths((.)) != 0]	} %>%
-    unlist
+  if (!is.null(horizontal_cols)) {
+    counts_cols <- counts_cols %>% select(-horizontal_cols)
+  }
+  if (!is.null(vertical_cols)) {
+    counts_cols <- counts_cols %>% select(-vertical_cols)
+  }
+  if (.abundance_scaled %>% quo_is_symbol) {
+    counts_cols <- counts_cols %>% select(-!!.abundance_scaled)
+  }
+  counts_cols <- counts_cols %>% colnames
+  counts_cols <- counts_cols %>% map(
+    ~ {
+      n_unique <- .data %>% select(!!.vertical, !!.horizontal, !!as.symbol(.x)) %>% distinct() %>% nrow()
+      if (n_unique == n_x * n_y) {
+        .x
+      } else {
+        NULL
+      }
+    }
+  )
+  counts_cols <- counts_cols[lengths(counts_cols) != 0]
+  counts_cols <- unlist(counts_cols)
 
   list(  horizontal_cols = horizontal_cols,  vertical_cols = vertical_cols, counts_cols = counts_cols )
 }
@@ -1040,20 +989,18 @@ get_specific_annotation_columns = function(.data, .col){
   select(-!!.col) %>%
   colnames %>%
   map(
-    ~
-      .x %>%
-      ifelse_pipe(
-        .data %>%
-          distinct(!!.col, !!as.symbol(.x)) %>%
-          nrow() %>%
-          equals(n_x),
-        ~ .x,
-        ~ NULL
-      )
+    ~ {
+      n_unique <- .data %>% distinct(!!.col, !!as.symbol(.x)) %>% nrow()
+      if (n_unique == n_x) {
+        .x
+      } else {
+        NULL
+      }
+    }
   ) %>%
 
   # Drop NULL
-  {	(.)[lengths((.)) != 0]	} %>%
+  { (.)[lengths((.)) != 0] } %>%
   unlist
 
 }

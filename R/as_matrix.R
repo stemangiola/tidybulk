@@ -28,34 +28,20 @@ as_matrix <- function(tbl,
   . = NULL
   
   rownames = enquo(rownames)
-  tbl %>%
-    
-    # Through warning if data frame is not numerical beside the rownames column (if present)
-    ifelse_pipe(
-      do_check &&
-        tbl %>%
-        # If rownames defined eliminate it from the data frame
-        ifelse_pipe(!quo_is_null(rownames), ~ .x[,-1], ~ .x) |>
-        dplyr::summarise_all(class) |>
-        tidyr::gather(variable, class) |>
-        pull(class) |>
-        unique() %>%
-        `%in%`(c("numeric", "integer")) |> not() |> any(),
-      ~ {
-        warning("tidybulk says: there are NON-numerical columns, the matrix will NOT be numerical")
-        .x
-      }
-    ) |>
-    as.data.frame() |>
-    
-    # Deal with rownames column if present
-    ifelse_pipe(
-      !quo_is_null(rownames),
-      ~ .x |>
-        magrittr::set_rownames(tbl |> pull(!!rownames)) |>
-        select(-1)
-    ) |>
-    
-    # Convert to matrix
-    as.matrix()
+  df <- tbl
+  # Through warning if data frame is not numerical beside the rownames column (if present)
+  check_df <- df
+  if (!quo_is_null(rownames)) {
+    check_df <- check_df[,-1]
+  }
+  if (do_check && check_df %>% dplyr::summarise_all(class) %>% tidyr::gather(variable, class) %>% pull(class) %>% unique() %>% `%in%`(c("numeric", "integer")) %>% not() %>% any()) {
+    warning("tidybulk says: there are NON-numerical columns, the matrix will NOT be numerical")
+  }
+  df <- as.data.frame(df)
+  # Deal with rownames column if present
+  if (!quo_is_null(rownames)) {
+    df <- df %>% magrittr::set_rownames(tbl %>% pull(!!rownames)) %>% select(-1)
+  }
+  # Convert to matrix
+  as.matrix(df)
 }

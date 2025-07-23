@@ -13,8 +13,7 @@
 #' @param .formula A formula representing the desired linear model. If there is more than one factor, they should be in the order factor of interest + additional factors.
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
-#'
+#' @param abundance The name of the transcript/gene abundance column (character, preferred)
 #' @param contrasts This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"
 #' @param test_above_log2_fold_change A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
@@ -26,6 +25,7 @@
 #' @param fill_missing_values DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param .contrasts DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
 #' @param ... Further arguments passed to some of the internal experimental functions. For example for glmmSeq, it is possible to pass .dispersion, and .scaling_factor column tidyeval to skip the caluclation of dispersion and scaling and use precalculated values. This is helpful is you want to calculate those quantities on many genes and do DE testing on fewer genes. .scaling_factor is the TMM value that can be obtained with tidybulk::scale_abundance.
+#' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
 #'
 #'
 #' @details This function provides the option to use edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}, limma-voom \url{https://doi.org/10.1186/gb-2014-15-2-r29}, limma_voom_sample_weights \url{https://doi.org/10.1093/nar/gkv412} or  DESeq2 \url{https://doi.org/10.1186/s13059-014-0550-8} to perform the testing.
@@ -171,7 +171,7 @@ setGeneric("test_differential_abundance", function(.data,
                                                    .formula,
                                                    
                                                    
-                                                   .abundance = NULL,
+                                                   abundance =  assayNames(.data)[1],
                                                    contrasts = NULL,
                                                    method = "edgeR_quasi_likelihood",
                                                    test_above_log2_fold_change = NULL,
@@ -184,7 +184,8 @@ setGeneric("test_differential_abundance", function(.data,
                                                    # DEPRECATED
                                                    significance_threshold = NULL,
                                                    fill_missing_values = NULL,
-                                                   .contrasts = NULL
+                                                   .contrasts = NULL,
+                                                   .abundance = NULL
 )
 standardGeneric("test_differential_abundance"))
 
@@ -193,17 +194,23 @@ standardGeneric("test_differential_abundance"))
 #' @importFrom rlang inform
 .test_differential_abundance_se = function(.data,
                                            .formula,
-                                           .abundance = NULL,
+                                           abundance = assayNames(.data)[1],
                                            contrasts = NULL,
                                            method = "edgeR_quasi_likelihood",
                                            test_above_log2_fold_change = NULL,
                                            scaling_method = "TMM",
                                            omit_contrast_in_colnames = FALSE,
                                            prefix = "",
-                                           ...)
+                                           ...,
+                                           .abundance = NULL)
 {
-  
-  .abundance = enquo(.abundance)
+  # Deprecation logic for .abundance
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "test_differential_abundance(.abundance)", "test_differential_abundance(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
   
   # Fix NOTEs
   . = NULL
@@ -237,7 +244,7 @@ such as batch effects (if applicable) in the formula.
     get_differential_transcript_abundance_bulk_SE(
       .data,
       .formula,
-      .abundance = !!.abundance,
+      abundance = abundance,
       .contrasts = contrasts,
       sample_annotation = colData(.data),
       method = method,
@@ -253,7 +260,7 @@ such as batch effects (if applicable) in the formula.
     get_differential_transcript_abundance_bulk_voom_SE(
       .data,
       .formula,
-      .abundance = !!.abundance,
+      abundance = abundance,
       .contrasts = contrasts,
       sample_annotation = colData(.data),
       method = method,
@@ -269,7 +276,7 @@ such as batch effects (if applicable) in the formula.
     get_differential_transcript_abundance_deseq2_SE(
       .data,
       .formula,
-      .abundance = !!.abundance,
+      abundance = abundance,
       .contrasts = contrasts,
       method = method,
       test_above_log2_fold_change = test_above_log2_fold_change,
@@ -285,7 +292,7 @@ such as batch effects (if applicable) in the formula.
     get_differential_transcript_abundance_glmmSeq_SE(
       .data,
       .formula,
-      .abundance = !!.abundance,
+      abundance = abundance,
       .contrasts = contrasts,
       sample_annotation = colData(.data),
       method = method,

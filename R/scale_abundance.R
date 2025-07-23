@@ -13,13 +13,15 @@
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 #' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
-#' @param .abundance The name of the transcript/gene abundance column
+#' @param abundance The name of the transcript/gene abundance column (character, preferred)
 #' @param method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_sample A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.
 #' @param .subset_for_scaling A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example
 #' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
 #'
 #' @param reference_selection_function DEPRECATED. please use reference_sample.
+#' @param ... Further arguments.
+#' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
 #'
 #' @details Scales transcript abundance compensating for sequencing depth
 #' (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
@@ -51,14 +53,16 @@
 setGeneric("scale_abundance", function(.data,
                                        
                                        
-                                       .abundance = NULL,
+                                       abundance = assayNames(.data)[1],
                                        method = "TMM",
                                        reference_sample = NULL,
                                        .subset_for_scaling = NULL,
                                        action = "add",
                                        
                                        # DEPRECATED
-                                       reference_selection_function = NULL)
+                                       reference_selection_function = NULL,
+                                       ...,
+                                       .abundance = NULL)
   standardGeneric("scale_abundance"))
 
 #' @importFrom magrittr multiply_by
@@ -84,23 +88,27 @@ setGeneric("scale_abundance", function(.data,
 .scale_abundance_se = function(.data,
                                
                                
-                               .abundance = NULL,
+                               abundance = assayNames(.data)[1],
                                method = "TMM",
                                reference_sample = NULL,
                                .subset_for_scaling = NULL,
                                action = NULL,
                                # DEPRECATED
-                               reference_selection_function = NULL) {
+                               reference_selection_function = NULL,
+                               ...,
+                               .abundance = NULL) {
   
   # Fix NOTEs
   . = NULL
   
-  # Set .abundance default if NULL
-  if (is.null(.abundance)) {
-    .abundance <- rlang::quo(assayNames(.data)[1])
-  } else {
-    .abundance <- rlang::enquo(.abundance)
+  # Soft-deprecate .abundance, prefer abundance (character)
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "scale_abundance(.abundance)", "scale_abundance(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
   }
+  my_assay <- abundance
   
   # Check if package is installed, otherwise install
   check_and_install_packages("edgeR")
@@ -135,8 +143,6 @@ setGeneric("scale_abundance", function(.data,
     stop("tidybulk says: there are 0 genes that passes the filters (.abundant and/or .subset_for_scaling). Please check your filtering or your data.")
   
   # Determine the correct assay name
-  my_assay <- rlang::as_name(.abundance)
-  
   my_counts_filtered = assays(.data_filtered)[[my_assay]] %>% na.omit()
   library_size_filtered = my_counts_filtered %>% colSums(na.rm  = TRUE)
   
