@@ -10,37 +10,42 @@
 keep_abundant(
   .data,
   .abundance = NULL,
-  factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL,
+  ...
 )
 
 \S4method{keep_abundant}{SummarizedExperiment}(
   .data,
+  .sample = NULL,
+  .transcript = NULL,
   .abundance = NULL,
-  factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 
 \S4method{keep_abundant}{RangedSummarizedExperiment}(
   .data,
+  .sample = NULL,
+  .transcript = NULL,
   .abundance = NULL,
-  factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL
 )
 }
 \arguments{
 \item{.data}{A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
-
-\item{factor_of_interest}{The name of the column containing groups/conditions for filtering. 
-Used by edgeR's filterByExpr to define sample groups.}
 
 \item{design}{A design matrix for more complex experimental designs. If provided, 
 this is passed to filterByExpr instead of factor_of_interest.}
@@ -54,6 +59,9 @@ that must exceed the minimum_counts threshold (default = 0.7)}
 \item{.sample}{The name of the sample column}
 
 \item{.transcript}{The name of the transcript/gene column}
+
+\item{factor_of_interest}{The name of the column containing groups/conditions for filtering. 
+Used by edgeR's filterByExpr to define sample groups.}
 }
 \value{
 Returns a filtered version of the input object containing only the features that passed

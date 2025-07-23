@@ -535,7 +535,7 @@ setGeneric("fill_missing_abundance", function(.data,
 #'
 #'
 setGeneric("pivot_transcript", function(.data
-                                        )
+)
   standardGeneric("pivot_transcript"))
 
 #' Extract sample-wise information
@@ -571,7 +571,7 @@ setGeneric("pivot_transcript", function(.data
 #'
 #'
 setGeneric("pivot_sample", function(.data
-                                    )
+)
   standardGeneric("pivot_sample"))
 
 
@@ -739,17 +739,17 @@ setGeneric("test_gene_rank", function(.data,
 #'
 #'
 setGeneric("test_gene_overrepresentation", function(
-  .data,
-  .formula,
-  .entrez,
-  .abundance = NULL,
-  contrasts = NULL,
-  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
-  species,
-  cores = 10,
-  method = NULL,
-  .contrasts = NULL
+    .data,
+    .formula,
+    .entrez,
+    .abundance = NULL,
+    contrasts = NULL,
+    methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+    gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+    species,
+    cores = 10,
+    method = NULL,
+    .contrasts = NULL
 ) standardGeneric("test_gene_overrepresentation"))
 
 
@@ -922,13 +922,13 @@ standardGeneric("test_gene_enrichment"))
 #' @rdname keep_abundant-methods
 #' @export
 setGeneric("keep_abundant", function(.data,
-                                     
-                                     
                                      .abundance = NULL,
-                                     factor_of_interest = NULL,
                                      design = NULL,
+                                     formula_design = NULL,
                                      minimum_counts = 10,
-                                     minimum_proportion = 0.7)
+                                     minimum_proportion = 0.7,
+                                     minimum_count_per_million = NULL,
+                                     ...)
   standardGeneric("keep_abundant"))
 
 #' Identify abundant transcripts/genes
@@ -987,13 +987,13 @@ setGeneric("keep_abundant", function(.data,
 #' @rdname identify_abundant-methods
 #' @export
 setGeneric("identify_abundant", function(.data,
-                                         
-                                         
                                          .abundance = NULL,
-                                         factor_of_interest = NULL,
                                          design = NULL,
+                                         formula_design = NULL,
                                          minimum_counts = 10,
-                                         minimum_proportion = 0.7)
+                                         minimum_proportion = 0.7,
+                                         minimum_count_per_million = NULL,
+                                         ...)
   standardGeneric("identify_abundant"))
 
 

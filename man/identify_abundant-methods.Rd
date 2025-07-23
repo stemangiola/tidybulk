@@ -10,37 +10,40 @@
 identify_abundant(
   .data,
   .abundance = NULL,
-  factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL,
+  ...
 )
 
 \S4method{identify_abundant}{SummarizedExperiment}(
   .data,
   .abundance = NULL,
-  factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL,
+  ...
 )
 
 \S4method{identify_abundant}{RangedSummarizedExperiment}(
   .data,
   .abundance = NULL,
-  factor_of_interest = NULL,
   design = NULL,
+  formula_design = NULL,
   minimum_counts = 10,
-  minimum_proportion = 0.7
+  minimum_proportion = 0.7,
+  minimum_count_per_million = NULL,
+  ...
 )
 }
 \arguments{
 \item{.data}{A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
-
-\item{factor_of_interest}{The name of the column containing groups/conditions for filtering. 
-Used by edgeR's filterByExpr to define sample groups.}
 
 \item{design}{A design matrix for more complex experimental designs. If provided, 
 this is passed to filterByExpr instead of factor_of_interest.}
@@ -51,9 +54,14 @@ for a transcript to be considered abundant (default = 10)}
 \item{minimum_proportion}{A number between 0 and 1 specifying the minimum proportion of samples
 that must exceed the minimum_counts threshold (default = 0.7)}
 
+\item{minimum_count_per_million}{Minimum CPM cutoff to use for filtering (passed to CPM.Cutoff in filterByExpr). If provided, this will override the minimum_counts parameter. Default is NULL (uses edgeR default).}
+
 \item{.sample}{The name of the sample column}
 
 \item{.transcript}{The name of the transcript/gene column}
+
+\item{factor_of_interest}{The name of the column containing groups/conditions for filtering. 
+Used by edgeR's filterByExpr to define sample groups.}
 }
 \value{
 Returns the input object with an additional logical column `.abundant` indicating which 
