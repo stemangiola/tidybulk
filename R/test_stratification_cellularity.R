@@ -1,0 +1,150 @@
+#' Test of stratification of biological replicates based on tissue composition, one cell-type at the time, using Kaplan-meier curves.
+#'
+#' `r lifecycle::badge("maturing")`
+#'
+#' @description test_stratification_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
+#'
+#' @importFrom rlang enquo
+#'
+#' @importFrom stringr str_detect
+#'
+#' @name test_stratification_cellularity
+#'
+#' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+#' @param .formula A formula representing the desired linear model. The formula can be of two forms: multivariable (recommended) or univariable Respectively: \"factor_of_interest ~ .\" or \". ~ factor_of_interest\". The dot represents cell-type proportions, and it is mandatory. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ .\"
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A string character. Either \"cibersort\", \"epic\" or \"llsr\". The regression method will be chosen based on being multivariable: lm or cox-regression (both on logit-transformed proportions); or univariable: beta or cox-regression (on logit-transformed proportions). See .formula for multi- or univariable choice.
+#' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
+#' @param ... Further parameters passed to the method deconvolve_cellularity
+#'
+#' @details This routine applies a deconvolution method (e.g., Cibersort; DOI: 10.1038/nmeth.3337)
+#' and passes the proportions inferred into a generalised linear model (DOI:dx.doi.org/10.1007/s11749-010-0189-z)
+#' or a cox regression model (ISBN: 978-1-4757-3294-8)
+#'
+#'
+#' Underlying method for the test:
+#' data |>
+#' deconvolve_cellularity(
+#' 	!!.sample, !!.transcript, !!.abundance,
+#' 	method=method,
+#' 	reference = reference,
+#' 	action="get",
+#' 	...
+#' )  %>%
+#' 	[..] |>
+#' 	mutate(.high_cellularity = .proportion > median(.proportion)) |>
+#' 	survival::survdiff(data = data, .my_formula)
+#'
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#'	tidybulk::se_mini |>
+#'	test_stratification_cellularity(
+#'		survival::Surv(days, dead) ~ .,
+#'		cores = 1
+#'	)
+#'
+#'
+#'
+#' @docType methods
+#' @rdname test_stratification_cellularity-methods
+#' @export
+#'
+setGeneric("test_stratification_cellularity", function(.data,
+                                                       .formula,
+                                                       
+                                                       
+                                                       .abundance = NULL,
+                                                       method = "cibersort",
+                                                       reference = X_cibersort,
+                                                       ...)
+  standardGeneric("test_stratification_cellularity"))
+
+
+
+
+# Set internal
+#' @importFrom stringr str_replace
+.test_stratification_cellularity_SE = 		function(.data,
+                                                 .formula,
+                                                 
+                                                 
+                                                 .abundance = NULL,
+                                                 method = "cibersort",
+                                                 reference = X_cibersort,
+                                                 ...)
+{
+  
+  # Fix NOTEs
+  . = NULL
+  
+  # Validate formula
+  if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
+    stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
+  
+  deconvoluted =
+    .data %>%
+    
+    # Deconvolution
+    deconvolve_cellularity(
+      method=method,
+      prefix = sprintf("%s:", method),
+      reference = reference,
+      ...
+    )
+  
+  # Check if test is univaiable or multivariable
+  .formula %>%
+    {
+      # Parse formula
+      .my_formula =
+        format(.formula) %>%
+        str_replace("([~ ])(\\.)", "\\1.high_cellularity") %>%
+        as.formula
+      
+      # Test
+      univariable_differential_tissue_stratification_SE(deconvoluted,
+                                                        method,
+                                                        .my_formula) %>%
+        
+        # Attach attributes
+        reattach_internals(.data) %>%
+        
+        # Add methods used
+        memorise_methods_used(c("survival", "boot", "survminer"))
+    } %>%
+    
+    # Eliminate prefix
+    mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+  
+}
+
+#' test_stratification_cellularity
+#'
+#' @docType methods
+#' @rdname test_stratification_cellularity-methods
+#'
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_stratification_cellularity",
+          "SummarizedExperiment",
+          .test_stratification_cellularity_SE)
+
+#' test_stratification_cellularity
+#'
+#' @docType methods
+#' @rdname test_stratification_cellularity-methods
+#'
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("test_stratification_cellularity",
+          "RangedSummarizedExperiment",
+          .test_stratification_cellularity_SE)
+
+
+

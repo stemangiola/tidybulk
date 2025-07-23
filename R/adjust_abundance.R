@@ -1,0 +1,278 @@
+#' Adjust transcript abundance for unwanted variation
+#'
+#' `r lifecycle::badge("maturing")`
+#'
+#' @description adjust_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with an additional adjusted abundance column. This method uses scaled counts if present.
+#'
+#' @importFrom rlang enquo
+#'
+#'
+#' @name adjust_abundance
+#'
+#' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
+#' @param .factor_unwanted A tidy select, e.g. column names without double quotation. c(batch, country) These are the factor that we want to adjust for, including unwanted batcheffect, and unwanted biological effects.
+#' @param .factor_of_interest A tidy select, e.g. column names without double quotation. c(treatment) These are the factor that we want to preserve.
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A character string. Methods include combat_seq (default), combat and limma_remove_batch_effect.
+#'
+#' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
+#' @param ... Further parameters passed to the function sva::ComBat
+#'
+#' @param .formula DEPRECATED - A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_interest + batch)
+#' @param transform DEPRECATED - A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param inverse_transform DEPRECATED - A function that is the inverse of transform (e.g. expm1 is inverse of log1p). This is needed to tranform back the counts after analysis.
+#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#'
+#' @details This function adjusts the abundance for (known) unwanted variation.
+#' At the moment just an unwanted covariate is allowed at a time using Combat (DOI: 10.1093/bioinformatics/bts034)
+#'
+#' Underlying method:
+#' 	sva::ComBat(data, batch = my_batch,	mod = design,	prior.plots = FALSE, ...)
+#'
+#' @return A consistent object (to the input) with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#'
+#' cm = tidybulk::se_mini
+#' cm$batch = 0
+#' cm$batch[colnames(cm) %in% c("SRR1740035", "SRR1740043")] = 1
+#'
+#' cm |>
+#' identify_abundant() |>
+#'	adjust_abundance(	.factor_unwanted = batch, .factor_of_interest =  condition, method="combat"	)
+#'
+#'
+#' @docType methods
+#' @rdname adjust_abundance-methods
+#' @export
+#'
+#'
+setGeneric("adjust_abundance", function(.data,
+                                        
+                                        # DEPRECATED
+                                        .formula = NULL,
+                                        .factor_unwanted =NULL,
+                                        .factor_of_interest = NULL,
+                                        
+                                        
+                                        .abundance = NULL,
+                                        method = "combat_seq",
+                                        
+                                        action = "add",
+                                        ...,
+                                        
+                                        # DEPRECATED
+                                        log_transform = NULL,
+                                        transform = NULL,
+                                        inverse_transform = NULL
+                                        
+)
+standardGeneric("adjust_abundance"))
+
+
+
+
+.adjust_abundance_se = function(.data,
+                                
+                                # DEPRECATED
+                                .formula = NULL,
+                                
+                                .factor_unwanted = NULL,
+                                .factor_of_interest = NULL,
+                                
+                                .abundance = NULL,
+                                
+                                method = "combat_seq",
+                                
+                                
+                                ...,
+                                
+                                # DEPRECATED
+                                transform = NULL,
+                                inverse_transform = NULL
+) {
+  
+  # Fix NOTEs
+  . = NULL
+  
+  .abundance = enquo(.abundance)
+  
+  # Check if package is installed, otherwise install
+  check_and_install_packages("sva")
+  
+  
+  # DEPRECATION OF log_transform
+  if (
+    (is_present(transform) & !is.null(transform)) |
+    is_present(inverse_transform) & !is.null(inverse_transform)
+  ) {
+    
+    # Signal the deprecation to the user
+    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(transform = )", details = "The argument transform and inverse_transform is now deprecated, please use method argument instead specifying \"combat\" or \"combat_seq\".")
+    
+  }
+  
+  # Set column name for value scaled
+  value_adjusted = get_assay_scaled_if_exists_SE(.data) %>% paste0(adjusted_string)
+  
+  
+  # DEPRECATION OF .formula
+  if (is_present(.formula) & !is.null(.formula)) {
+    
+    # Signal the deprecation to the user
+    deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(.formula = )", details = "The argument .formula is now deprecated, please use factor_unwanted and factor_of_interest. Using the formula, the first factor is of interest and the second is unwanted")
+    
+    # Check that .formula includes at least two covariates
+    if (parse_formula(.formula) %>% length %>% st(2))
+      stop(
+        "The .formula must contain two covariates, the first being the factor of interest, the second being the factor of unwanted variation"
+      )
+    
+    # Check that .formula includes no more than two covariates at the moment
+    if (parse_formula(.formula) %>% length %>% gt(3))
+      warning("tidybulk says: Only the second covariate in the .formula is adjusted for")
+    
+    
+    .factor_of_interest = quo(!!as.symbol(parse_formula(.formula)[1]))
+    .factor_unwanted = quo(!!as.symbol(parse_formula(.formula)[2]))
+    
+  } else {
+    
+    .factor_of_interest = enquo(.factor_of_interest)
+    .factor_unwanted = enquo(.factor_unwanted)
+  }
+  
+  # Create design matrix
+  design =
+    model.matrix(
+      object = as.formula(sprintf("~ %s", colData(.data) |> as_tibble() |> select(!!.factor_of_interest) |> colnames() |> str_c(collapse = '+'))),
+      # get first argument of the .formula
+      data = colData(.data)
+    )
+  
+  my_batch = colData(.data) |> as_tibble() |> select(!!.factor_unwanted)
+  
+  
+  
+  # If no assay is specified take first
+  my_assay = quo_name(.abundance)
+  
+  if(tolower(method) == "combat"){
+    
+    my_assay_adjusted =
+      .data |>
+      assay(my_assay) |> # Check if log transform is needed
+      log1p() %>%
+      # Add little noise to avoid all 0s for a covariate that would error combat code (not statistics that would be fine)
+      `+` (rnorm(length(.), 0, 0.000001))
+    
+    
+    for(i in colnames(my_batch)){
+      my_assay_adjusted =
+        my_assay_adjusted %>%
+        
+        # Run combat
+        sva::ComBat(
+          batch = my_batch[,i] |> pull(1),
+          mod = design,
+          prior.plots = FALSE,
+          ...
+        )
+    }
+    
+    # Tranfrom back
+    my_assay_adjusted =
+      my_assay_adjusted %>%
+      expm1() |>
+      apply(2, pmax, 0)
+    
+  }
+  else if(tolower(method) == "combat_seq"){
+    
+    my_assay_adjusted =
+      .data %>%
+      
+      assay(my_assay)
+    
+    for(i in ncol(my_batch)){
+      
+      my_assay_adjusted =
+        my_assay_adjusted |>
+        sva::ComBat_seq(batch = my_batch[,i] |> pull(1),
+                        covar_mod = design,
+                        full_mod=TRUE,
+                        ...)
+    }
+    
+  }
+  else if(tolower(method) == "limma_remove_batch_effect") {
+    
+    unwanted_covariate_matrix =
+      model.matrix(
+        object = as.formula(sprintf("~ 0 + %s", colData(.data) |> as_tibble() |> select(!!.factor_unwanted) |> colnames() |> str_c(collapse = '+'))),
+        # get first argument of the .formula
+        data = colData(.data)
+      )
+    
+    my_assay_adjusted =
+      .data |>
+      assay(my_assay) |>
+      edgeR::cpm(log = TRUE) |>
+      limma::removeBatchEffect(
+        design = design,
+        covariates = unwanted_covariate_matrix,
+        ...
+      ) |>
+      expm1() |>
+      apply(2, pmax, 0)
+    
+  } else {
+    stop("tidybulk says: the argument \"method\" must be \"combat_seq\", \"combat\", or \"limma_remove_batch_effect\"")
+  }
+  
+  
+  # Add the assay
+  my_assay_scaled = list(my_assay_adjusted) %>% setNames(value_adjusted)
+  
+  assays(.data) =  assays(.data) %>% c(my_assay_scaled)
+  
+  # Return
+  .data %>%
+    
+    # Add methods
+    memorise_methods_used("sva") %>%
+    
+    # Attach column internals
+    add_tt_columns(.abundance_adjusted = !!(((function(x, v)	enquo(v))(x,!!as.symbol(value_adjusted))) |> drop_enquo_env()) )
+  
+}
+
+#' adjust_abundance
+#'
+#' @docType methods
+#' @rdname adjust_abundance-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("adjust_abundance",
+          "SummarizedExperiment",
+          .adjust_abundance_se)
+
+#' adjust_abundance
+#'
+#' @docType methods
+#' @rdname adjust_abundance-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("adjust_abundance",
+          "RangedSummarizedExperiment",
+          .adjust_abundance_se)
+

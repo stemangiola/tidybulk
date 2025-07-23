@@ -1,0 +1,304 @@
+#' Filter to keep only abundant transcripts/genes
+#'
+#' \lifecycle{questioning}
+#'
+#' @description 
+#' Filters the data to keep only transcripts/genes that are consistently expressed above 
+#' a threshold across samples. This is a filtering version of identify_abundant() that 
+#' removes low-abundance features instead of just marking them.
+#'
+#' @param .data A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param factor_of_interest The name of the column containing groups/conditions for filtering. 
+#'        Used by edgeR's filterByExpr to define sample groups.
+#' @param design A design matrix for more complex experimental designs. If provided, 
+#'        this is passed to filterByExpr instead of factor_of_interest.
+#' @param minimum_counts A positive number specifying the minimum counts per million (CPM) threshold
+#'        for a transcript to be kept (default = 10)
+#' @param minimum_proportion A number between 0 and 1 specifying the minimum proportion of samples
+#'        that must exceed the minimum_counts threshold (default = 0.7)
+#'
+#' @details 
+#' This function uses edgeR's filterByExpr() function to identify and keep consistently expressed features.
+#' A feature is kept if it has CPM > minimum_counts in at least minimum_proportion of samples
+#' in at least one experimental group (defined by factor_of_interest or design).
+#' 
+#' This function is similar to identify_abundant() but instead of adding an .abundant column,
+#' it filters out the low-abundance features directly.
+#'
+#' @return 
+#' Returns a filtered version of the input object containing only the features that passed
+#' the abundance threshold criteria.
+#'
+#' @examples
+#' # Basic usage
+#' se_mini |> keep_abundant()
+#'
+#' # With custom thresholds
+#' se_mini |> keep_abundant(
+#'   minimum_counts = 5,
+#'   minimum_proportion = 0.5
+#' )
+#'
+#' # Using a factor of interest
+#' se_mini |> keep_abundant(factor_of_interest = condition)
+#'
+#' @references
+#' McCarthy, D. J., Chen, Y., & Smyth, G. K. (2012). Differential expression analysis of 
+#' multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research, 
+#' 40(10), 4288-4297. DOI: 10.1093/bioinformatics/btp616
+#'
+#' @importFrom rlang enquo
+#' @importFrom dplyr filter
+#'
+#' @docType methods
+#' @rdname keep_abundant-methods
+#' @export
+setGeneric("keep_abundant", function(.data,
+                                     .abundance = NULL,
+                                     design = NULL,
+                                     formula_design = NULL,
+                                     minimum_counts = 10,
+                                     minimum_proportion = 0.7,
+                                     minimum_count_per_million = NULL,
+                                     ...)
+  standardGeneric("keep_abundant"))
+
+#' Identify abundant transcripts/genes
+#'
+#' `r lifecycle::badge("maturing")`
+#'
+#' @description 
+#' Identifies transcripts/genes that are consistently expressed above a threshold across samples. 
+#' This function adds a logical column `.abundant` to indicate which features pass the filtering criteria.
+#'
+#' @param .data A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param factor_of_interest The name of the column containing groups/conditions for filtering. 
+#'        Used by edgeR's filterByExpr to define sample groups.
+#' @param design A design matrix for more complex experimental designs. If provided, 
+#'        this is passed to filterByExpr instead of factor_of_interest.
+#' @param minimum_counts A positive number specifying the minimum counts per million (CPM) threshold
+#'        for a transcript to be considered abundant (default = 10)
+#' @param minimum_proportion A number between 0 and 1 specifying the minimum proportion of samples
+#'        that must exceed the minimum_counts threshold (default = 0.7)
+#'
+#' @details 
+#' This function uses edgeR's filterByExpr() function to identify consistently expressed features.
+#' A feature is considered abundant if it has CPM > minimum_counts in at least minimum_proportion 
+#' of samples in at least one experimental group (defined by factor_of_interest or design).
+#'
+#' @return 
+#' Returns the input object with an additional logical column `.abundant` indicating which 
+#' features passed the abundance threshold criteria.
+#'
+#' @examples
+#' # Basic usage
+#' se_mini |> identify_abundant()
+#'
+#' # With custom thresholds
+#' se_mini |> identify_abundant(
+#'   minimum_counts = 5,
+#'   minimum_proportion = 0.5
+#' )
+#'
+#' # Using a factor of interest
+#' se_mini |> identify_abundant(factor_of_interest = condition)
+#'
+#' @references
+#' McCarthy, D. J., Chen, Y., & Smyth, G. K. (2012). Differential expression analysis of 
+#' multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research, 
+#' 40(10), 4288-4297. DOI: 10.1093/bioinformatics/btp616
+#'
+#' @importFrom rlang enquo
+#' @importFrom dplyr filter
+#' @importFrom tidyr drop_na
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#' @export
+setGeneric("identify_abundant", function(.data,
+                                         .abundance = NULL,
+                                         design = NULL,
+                                         formula_design = NULL,
+                                         minimum_counts = 10,
+                                         minimum_proportion = 0.7,
+                                         minimum_count_per_million = NULL,
+                                         ...)
+  standardGeneric("identify_abundant"))
+
+
+
+
+
+.identify_abundant_se = function(.data,
+                                 .abundance = NULL,
+                                 design = NULL,
+                                 formula_design = NULL,
+                                 minimum_counts = 10,
+                                 minimum_proportion = 0.7,
+                                 minimum_count_per_million = NULL,
+                                 ...) {
+  
+  # Fix NOTEs
+  . = NULL
+  
+  # If formula_design is provided, use it to create the design matrix
+  if (!is.null(formula_design)) {
+    if (!is.null(design)) warning("Both formula_design and design provided; formula_design will be used.")
+    design <- model.matrix(formula_design, data = colData(.data))
+  }
+  
+  # Handle .abundance as quosure
+  .abundance <- rlang::enquo(.abundance)
+  
+  # Determine assay name to use
+  my_assay <- ifelse(
+    rlang::quo_is_symbol(.abundance),
+    rlang::quo_name(.abundance),
+    assayNames(.data)[1]
+  )
+  
+  if (minimum_counts < 0)
+    stop("The parameter minimum_counts must be > 0")
+  
+  if (minimum_proportion < 0 | minimum_proportion > 1)
+    stop("The parameter minimum_proportion must be between 0 and 1")
+  
+  # If column is present use this instead of doing more work
+  if(".abundant" %in% colnames(colData(.data))){
+    message("tidybulk says: the column .abundant already exists in colData. Nothing was done")
+    return(.data)
+  }
+  
+  # Check if package is installed, otherwise install
+  check_and_install_packages("edgeR")
+  browser()
+  # Get gene to exclude
+  # If minimum_count_per_million is provided, use it and ignore minimum_counts
+  if (!is.null(minimum_count_per_million)) {
+    gene_to_exclude =
+      .data |>
+      tidybulk:::filterByExpr_SE(
+        design = design,
+        min.prop = minimum_proportion,
+        CPM.Cutoff = minimum_count_per_million,
+        assay_name = my_assay
+      ) %>%
+      not() %>%
+      which %>%
+      names
+  } else {
+    gene_to_exclude =
+      .data |>
+      tidybulk:::filterByExpr_SE(
+        min.count = minimum_counts,
+        design = design,
+        min.prop = minimum_proportion,
+        assay_name = my_assay
+      ) %>%
+      not() %>%
+      which %>%
+      names
+  }
+  
+  rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) %>% not()
+  
+  # Return
+  .data
+}
+
+
+#' identify_abundant
+#' @param minimum_count_per_million Minimum CPM cutoff to use for filtering (passed to CPM.Cutoff in filterByExpr). If provided, this will override the minimum_counts parameter. Default is NULL (uses edgeR default).
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("identify_abundant",
+          "SummarizedExperiment",
+          .identify_abundant_se
+)
+
+#' identify_abundant
+#' @param minimum_count_per_million Minimum CPM cutoff to use for filtering (passed to CPM.Cutoff in filterByExpr). If provided, this will override the minimum_counts parameter. Default is NULL (uses edgeR default).
+#'
+#' @docType methods
+#' @rdname identify_abundant-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("identify_abundant",
+          "RangedSummarizedExperiment",
+          .identify_abundant_se
+)
+
+
+
+
+.keep_abundant_se = function(.data,
+                             
+                             
+                             .abundance = NULL,
+                             design = NULL,
+                             formula_design = NULL,
+                             minimum_counts = 10,
+                             minimum_proportion = 0.7,
+                             minimum_count_per_million = NULL)
+{
+  # Fix NOTEs
+  . = NULL
+  
+  # If formula_design is provided, use it to create the design matrix
+  if (!is.null(formula_design)) {
+    if (!is.null(design)) warning("Both formula_design and design provided; formula_design will be used.")
+    design <- model.matrix(formula_design, data = colData(.data))
+  }
+  
+  # Handle .abundance as quosure
+  .abundance <- rlang::enquo(.abundance)
+  
+  .data =
+    .data %>%
+    # Apply scale method
+    identify_abundant(
+      minimum_counts = minimum_counts,
+      minimum_proportion = minimum_proportion,
+      .abundance = !!.abundance,
+      design = design,
+      minimum_count_per_million = minimum_count_per_million
+    )
+  
+  .data[rowData(.data)$.abundant,]
+}
+
+#' keep_abundant
+#'
+#' @docType methods
+#' @rdname keep_abundant-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("keep_abundant",
+          "SummarizedExperiment",
+          .keep_abundant_se)
+
+#' keep_abundant
+#'
+#' @docType methods
+#' @rdname keep_abundant-methods
+#'
+#' @return A `SummarizedExperiment` object
+#'
+setMethod("keep_abundant",
+          "RangedSummarizedExperiment",
+          .keep_abundant_se)
+
+
+
