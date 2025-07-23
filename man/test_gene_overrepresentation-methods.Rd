@@ -9,29 +9,47 @@
 \usage{
 test_gene_overrepresentation(
   .data,
+  .formula,
   .entrez,
-  .do_test,
+  .abundance = NULL,
+  contrasts = NULL,
+  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
+    "kegg_metabolism", "kegg_signaling"),
   species,
-  gene_sets = NULL,
-  gene_set = NULL
+  cores = 10,
+  method = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_gene_overrepresentation}{SummarizedExperiment}(
   .data,
+  .formula,
   .entrez,
-  .do_test,
+  .abundance = NULL,
+  contrasts = NULL,
+  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
+    "kegg_metabolism", "kegg_signaling"),
   species,
-  gene_sets = NULL,
-  gene_set = NULL
+  cores = 10,
+  method = NULL,
+  .contrasts = NULL
 )
 
 \S4method{test_gene_overrepresentation}{RangedSummarizedExperiment}(
   .data,
+  .formula,
   .entrez,
-  .do_test,
+  .abundance = NULL,
+  contrasts = NULL,
+  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
+    "kegg_metabolism", "kegg_signaling"),
   species,
-  gene_sets = NULL,
-  gene_set = NULL
+  cores = 10,
+  method = NULL,
+  .contrasts = NULL
 )
 }
 \arguments{
@@ -39,15 +57,15 @@ test_gene_overrepresentation(
 
 \item{.entrez}{The ENTREZ ID of the transcripts/genes}
 
-\item{.do_test}{A boolean column name symbol. It indicates the transcript to check}
+\item{gene_sets}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
 
 \item{species}{A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")}
 
-\item{gene_sets}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
+\item{.sample}{The name of the sample column}
+
+\item{.do_test}{A boolean column name symbol. It indicates the transcript to check}
 
 \item{gene_set}{DEPRECATED. Use gene_sets instead.}
-
-\item{.sample}{The name of the sample column}
 }
 \value{
 A consistent object (to the input)
@@ -91,8 +109,8 @@ msigdb_data |>
 
 print("Not run for build time.")
 
-#se_mini = aggregate_duplicates(tidybulk::se_mini, .transcript = entrez)
-#df_entrez = mutate(df_entrez, do_test = feature \%in\% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+# se_mini = tidybulk::se_mini[!rowData(tidybulk::se_mini)$entrez |> is.na(),] |> aggregate_duplicates(.transcript = entrez)
+# df_entrez = mutate(df_entrez, do_test = feature \%in\% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 
 \dontrun{
 	test_gene_overrepresentation(

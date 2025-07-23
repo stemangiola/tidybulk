@@ -8,6 +8,10 @@
 #' @import tibble
 #' @importFrom stats kmeans
 #' @importFrom rlang :=
+#' @importFrom purrr map2_dfr
+#' @importFrom magrittr "%$%"
+#' @importFrom dplyr distinct count desc summarise starts_with n
+#' @importFrom purrr map2
 #'
 #' @param .data A tibble
 #' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
@@ -26,27 +30,30 @@ get_clusters_kmeans_bulk_SE <-
 					 transform = log1p,
 					 ...) {
 
+  # Fix NOTEs
+  cluster = NULL
+  seurat_clusters = NULL
+
 		# Check if centers is in dots
 		dots_args = rlang::dots_list(...)
 		if ("centers" %in% names(dots_args) %>% not())
 			stop("tidybulk says: for kmeans you need to provide the \"centers\" integer argument")
 
-		.data %>%
+		.data = 
+		  .data %>%
 
 			# Check if log transform is needed
-			transform() %>%
+			transform() 
 
-			# Decide if of samples or transcripts
-			when(
-				of_samples ~ t(.),
-				~ (.)
-			) %>%
+		# Decide if of samples or transcripts
+		if (of_samples) 
+		  .data = .data |> t()
+		
 
-			# Wrap the do.call because of the centrers check
-			{
-				do.call(kmeans, list(x = (.), iter.max = 1000) %>% c(dots_args))
-			}	 %$%
-			cluster
+		# Wrap the do.call because of the centrers check
+		
+		 do.call(kmeans, list(x = .data, iter.max = 1000) %>% c(dots_args)) %$%
+		cluster
 
 	}
 
@@ -131,6 +138,8 @@ get_reduced_dimensions_MDS_bulk_SE <-
 					) {
 		# Comply with CRAN NOTES
 		. = NULL
+		Component = NULL
+		`Component value` = NULL
 
 		# Get components from dims
 		components = 1:.dims
@@ -176,7 +185,7 @@ get_reduced_dimensions_MDS_bulk_SE <-
 
 				)  %>%
 				distinct() %>%
-				spread(Component, `Component value`) %>%
+				pivot_wider(names_from = Component, values_from = `Component value`) %>%
 				setNames(c((.) %>% select(1) %>% colnames(),
 									 paste0("Dim", (.) %>% select(-1) %>% colnames())
 				)) %>%
@@ -228,31 +237,31 @@ get_reduced_dimensions_PCA_bulk_SE <-
 					 ...) {
 		# Comply with CRAN NOTES
 		. = NULL
+		sdev = NULL
+		x = NULL
 
 		# Get components from dims
 		components = 1:.dims
 
-		prcomp_obj =
-			.data %>%
+		
 
 			# check that there are non-NA genes for enough samples
-			when(# First condition
-				(.) %>% nrow == 0 ~ stop(
+			if (nrow(.data) == 0) 
+				stop(
 					"tidybulk says: In calculating PCA there is no gene that have non NA values is all samples"
-				),
-
-				# Second condition
-				(.) %>% nrow < 100 ~ {
-					warning(
-						"
-						tidybulk says: In PCA correlation there is < 100 genes that have non NA values is all samples.
+				)
+			 else if (nrow(.data) < 100) 
+				warning(
+					"
+					tidybulk says: In PCA correlation there is < 100 genes that have non NA values is all samples.
 The correlation calculation would not be reliable,
 we suggest to partition the dataset for sample clusters.
-						"
-					)
-					(.)
-				},
-				~ (.)) %>%
+					"
+				)
+			
+		
+		prcomp_obj =
+		  .data %>%
 
 			t() %>%
 
@@ -328,6 +337,7 @@ get_reduced_dimensions_TSNE_bulk_SE <-
 					 ...) {
 		# Comply with CRAN NOTES
 		. = NULL
+		Y = NULL
 
 		# To avoid dplyr complications
 
@@ -408,6 +418,7 @@ get_reduced_dimensions_UMAP_bulk_SE <-
            ...) {
     # Comply with CRAN NOTES
     . = NULL
+    x = NULL
 
     # To avoid dplyr complications
 
@@ -488,16 +499,13 @@ get_assay_scaled_if_exists_SE = function(.data){
 }
 
 filter_if_abundant_were_identified = function(.data){
-	.data %>%
-
-		# Filter abundant if performed
-		when(
-			".abundant" %in% (rowData(.data) %>% colnames()) ~ .data[rowData(.data)[,".abundant"],],
-			~ {
-				warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
-				(.)
-			}
-		)
+	# Filter abundant if performed
+	if (".abundant" %in% (rowData(.data) %>% colnames())) {
+		.data[rowData(.data)[,".abundant"],]
+	} else {
+		warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+		.data
+	}
 }
 
 #' Identify variable genes for dimensionality reduction
@@ -552,6 +560,7 @@ keep_variable_transcripts_SE = function(.data,
 #'
 #' @import tibble
 #' @importFrom rlang :=
+#' @importFrom dplyr mutate_if
 #'
 #' @param .data A tibble
 #' @param correlation_threshold A real number between 0 and 1
@@ -566,43 +575,43 @@ remove_redundancy_elements_through_correlation_SE <- function(.data,
 																													 of_samples = TRUE) {
 	# Comply with CRAN NOTES
 	. = NULL
+	cluster = NULL
 
 	# Check if package is installed, otherwise install
 	check_and_install_packages("widyr")
 
 
 	# Get the redundant data frame
-	.data %>%
-
-		# check that there are non-NA genes for enough samples
-		when(# First condition
-			(.) %>% nrow == 0 	~ stop(
-				"tidybulk says: In calculating correlation there is no gene that have non NA values is all samples"
-			),
-
-			# Second condition
-			(.) %>% nrow < 100 ~ {
-				message(
-					"tidybulk says: In calculating correlation there is < 100 genes (that have non NA values) is all samples.
+	# check that there are non-NA genes for enough samples
+	if (nrow(.data) == 0) {
+		stop(
+			"tidybulk says: In calculating correlation there is no gene that have non NA values is all samples"
+		)
+	} else if (nrow(.data) < 100) {
+		message(
+			"tidybulk says: In calculating correlation there is < 100 genes (that have non NA values) is all samples.
 The correlation calculation might not be reliable"
-				)
-				.x
-			},
-			~ (.)) %>%
+		)
+	}
+	
+	.data = 
+	  .data %>%
 
 		as_tibble(rownames="transcript") %>%
 
 		# Prepare the data frame
 		gather(sample,abundance,-transcript) %>%
-
-		when(
-			of_samples ~ 	dplyr::rename(., rc = abundance,
-																	element = sample,
-																	feature = transcript) ,
-			~ dplyr::rename(., rc = abundance,
-											element = transcript,
-											feature = sample)
-		) %>%
+		{
+			if (of_samples) {
+				dplyr::rename(., rc = abundance,
+										element = sample,
+										feature = transcript)
+			} else {
+				dplyr::rename(., rc = abundance,
+										element = transcript,
+										feature = sample)
+			}
+		} %>%
 
 		# Is this necessary?
 		mutate_if(is.factor, as.character) %>%
@@ -623,7 +632,8 @@ The correlation calculation might not be reliable"
 }
 
 #' Identifies the closest pairs in a MDS context and return one of them
-#'
+#' 
+#' @importFrom dplyr rowwise
 #' @keywords internal
 #' @noRd
 #'
@@ -709,6 +719,10 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 
   .abundance = enquo(.abundance)
 
+  # Fix NOTEs
+  . = NULL
+  tagwise.dispersion = NULL
+
 	# Check if omit_contrast_in_colnames is correctly setup
 	if(omit_contrast_in_colnames & length(.contrasts) > 1){
 		warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
@@ -760,17 +774,24 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 		edgeR::DGEList() %>%
 
 		# Scale data if method is not "none"
-		when(
-			scaling_method != "none" ~ (.) %>% edgeR::calcNormFactors(method = scaling_method),
-			~ (.)
-		) %>%
+		{
+			if (scaling_method != "none") {
+				(.) %>% edgeR::calcNormFactors(method = scaling_method)
+			} else {
+				(.)
+			}
+		} %>%
 
 		# select method
-		when(
-			tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmFit(design),
-			tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmQLFit(design),
-			tolower(method) == "edger_robust_likelihood_ratio" ~ (.) %>% edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
-		)
+		{
+			if (tolower(method) ==  "edger_likelihood_ratio") {
+				(.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmFit(design)
+			} else if (tolower(method) ==  "edger_quasi_likelihood") {
+				(.) %>% 	edgeR::estimateDisp(design) %>% edgeR::glmQLFit(design)
+			} else if (tolower(method) == "edger_robust_likelihood_ratio") {
+				(.) %>% edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
+			}
+		}
 
 	# Return
 	list(
@@ -786,11 +807,15 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 				~ .x %>%
 
 					# select method
-					when(
-						!is.null(test_above_log2_fold_change) ~ (.) %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change),
-						tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts) ,
-						tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
-					)	%>%
+					{
+						if (!is.null(test_above_log2_fold_change)) {
+							(.) %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change)
+						} else if (tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio")) {
+							(.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts)
+						} else if (tolower(method) ==  "edger_quasi_likelihood") {
+							(.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
+						}
+					}	%>%
 
 					# Convert to tibble
 					edgeR::topTags(n = Inf) %$%
@@ -812,11 +837,15 @@ get_differential_transcript_abundance_bulk_SE <- function(.data,
 							~ edgeR_obj %>%
 
 								# select method
-								when(
-								    !is.null(test_above_log2_fold_change) ~ (.) %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts[, .x], lfc=test_above_log2_fold_change),
-									tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio") ~ (.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x]) ,
-									tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
-								)	%>%
+								{
+									if (!is.null(test_above_log2_fold_change)) {
+										(.) %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts[, .x], lfc=test_above_log2_fold_change)
+									} else if (tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio")) {
+										(.) %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts[, .x])
+									} else if (tolower(method) ==  "edger_quasi_likelihood") {
+										(.) %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts[, .x])
+									}
+								}	%>%
 
 								# Convert to tibble
 								edgeR::topTags(n = Inf) %$%
@@ -873,13 +902,20 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(.data,
 																														.abundance = NULL,
 																														sample_annotation,
 																														.contrasts = NULL,
-																														method = NULL,
+																														method = "limma_voom",
 																														test_above_log2_fold_change = NULL,
 																														scaling_method = "TMM",
 																														omit_contrast_in_colnames = FALSE,
-																														prefix = "") {
+																														prefix = "",
+																														...) {
 
   .abundance = enquo(.abundance)
+
+  # Fix NOTEs
+  . = NULL
+  table = NULL
+  FDR = NULL
+  constrast = NULL
 
 	# Check if omit_contrast_in_colnames is correctly setup
 	if(omit_contrast_in_colnames & length(.contrasts) > 1){
@@ -1068,6 +1104,11 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(.data,
   .dispersion = enquo(.dispersion)
   .scaling_factor = enquo(.scaling_factor)
 
+  # Fix NOTEs
+  . = NULL
+  adj.P.Val = NULL
+  constrast = NULL
+
   # Check if contrasts are of the same form
   if(
     .contrasts %>% is.null %>% not() &
@@ -1220,6 +1261,11 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 
   .abundance = enquo(.abundance)
 
+  # Fix NOTEs
+  . = NULL
+  pvalue = NULL
+  padj = NULL
+
 	# Check if contrasts are of the same form
 	if(
 		.contrasts %>% is.null %>% not() &
@@ -1286,7 +1332,7 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 					DESeq2::results(contrast = c(
 						parse_formula(.formula)[1],
 						deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels %>% .[2],
-						deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels %>% .[1]
+						deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels |> _[1]
 					), lfcThreshold=test_above_log2_fold_change) %>%
 					as_tibble(rownames = "transcript"),
 
@@ -1340,6 +1386,9 @@ multivariable_differential_tissue_composition_SE = function(
 	.my_formula,
 	min_detected_proportion
 ){
+  # Fix NOTEs
+  . = NULL
+  constrast = NULL
 	results_regression =
 		deconvoluted %>%
 		as_tibble(rownames = "sample") %>%
@@ -1395,6 +1444,11 @@ univariable_differential_tissue_composition_SE = function(
 	.my_formula,
 	min_detected_proportion
 ){
+  # Fix NOTEs
+  . = NULL
+  .cell_type = NULL
+  .proportion = NULL
+  surv_test = NULL
 	deconvoluted %>%
 		as_tibble(rownames = "sample") %>%
 
@@ -1449,7 +1503,12 @@ univariable_differential_tissue_composition_SE = function(
 		unnest(surv_test, keep_empty = TRUE)
 }
 
-#' Resolve complete confounders of non-interest
+#' Resolve complete confounders of non-interest in a data frame
+#'
+#' This internal function identifies and resolves complete confounders among specified columns (factors of non-interest) in a data frame.
+#' For each specified column, a new column with the suffix "___altered" is created to preserve the original values.
+#' The function then examines all pairs of these altered columns to detect and resolve complete confounding relationships.
+#' Additionally, it checks for columns with only one unique value, which cannot be estimated in a linear model, and issues a warning if any are found.
 #'
 #' @keywords internal
 #' @noRd
@@ -1460,57 +1519,60 @@ univariable_differential_tissue_composition_SE = function(
 #' @importFrom dplyr n_distinct
 #' @importFrom tibble as_tibble
 #'
-#' @param df A data frame
-#' @param ... Column names to consider as confounders
+#' @param df A data frame containing the data to be checked for confounders.
+#' @param ... Unquoted column names to consider as confounders (factors of non-interest).
 #'
-#' @return A data frame with resolved confounders (added columns with ___altered suffix)
+#' @return A data frame with new columns (with "___altered" suffix) where confounders have been resolved.
 #'
-.resolve_complete_confounders_of_non_interest_df <- function(df, ...){
+.resolve_complete_confounders_of_non_interest_df <- function(df, ...) {
 
-  # Create altered columns with ___altered prefix
-  df = df |>
-    #as_tibble(rownames = ".sample") |>
+  # Step 1: Create new columns with ___altered suffix for each specified confounder
+  df <- df |>
     mutate(across(c(...), ~ .x, .names = "{col}___altered"))
 
-  combination_of_factors_of_NON_interest =
-    # Factors
+  # Step 2: Identify all pairs of altered columns to check for complete confounding
+  combination_of_factors_of_NON_interest <-
     df |>
     select(ends_with("___altered")) |>
-    colnames() |> 
-
-    # Combinations
+    colnames() |>
     combn(2) |>
     t() |>
     as_tibble() |>
     set_names(c("factor_1", "factor_2"))
 
-  message("tidybulk says: New columns created with resolved confounders: ", 
-          paste0(colnames(df) |> str_subset("___altered"), collapse = ", "))
-  
-  for(i in combination_of_factors_of_NON_interest |> nrow() |> seq_len()){
-    df =
+  # Step 3: Inform the user about the new columns created
+  message(
+    "tidybulk says: New columns created with resolved confounders: ",
+    paste0(colnames(df) |> str_subset("___altered"), collapse = ", ")
+  )
+
+  # Step 4: For each pair of altered columns, resolve complete confounding if present
+  for (i in seq_len(nrow(combination_of_factors_of_NON_interest))) {
+    df <-
       df |>
       resolve_complete_confounders_of_non_interest_pair_df(
-        !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_1),
-        !!as.symbol(combination_of_factors_of_NON_interest[i,]$factor_2)
+        !!as.symbol(combination_of_factors_of_NON_interest[i, ]$factor_1),
+        !!as.symbol(combination_of_factors_of_NON_interest[i, ]$factor_2)
       )
   }
 
-		  
-	  # Check for columns with only one unique value
-  single_value_cols = df |>
+  # Step 5: Check for columns with only one unique value (cannot be estimated in a linear model)
+  single_value_cols <- df |>
     select(ends_with("___altered")) |>
     summarise(across(everything(), ~ n_distinct(.x))) |>
     pivot_longer(everything()) |>
     filter(value == 1) |>
     pull(name)
 
-  if(length(single_value_cols) > 0) {
-    warning("tidybulk says: The following columns have only one unique value and cannot be estimated by a linear model: ",
-            paste(single_value_cols, collapse = ", "))
+  if (length(single_value_cols) > 0) {
+    warning(
+      "tidybulk says: The following columns have only one unique value and cannot be estimated by a linear model: ",
+      paste(single_value_cols, collapse = ", ")
+    )
   }
-  
-  df 
+
+  # Step 6: Return the modified data frame with resolved confounders
+  df
 }
 
 #' Resolve Complete Confounders of Non-Interest
@@ -1543,9 +1605,12 @@ univariable_differential_tissue_composition_SE = function(
 #' @noRd
 resolve_complete_confounders_of_non_interest_pair_df <- function(df, .factor_1, .factor_2){
 
-  .factor_1 <- enquo(.factor_1)
-  .factor_2 <- enquo(.factor_2)
+  # Fix NOTEs
+  . = NULL
 
+  .factor_1 = enquo(.factor_1)
+  .factor_2 = enquo(.factor_2)
+  
   cd =
     df |>
     as_tibble() |>
@@ -1591,3 +1656,8 @@ resolve_complete_confounders_of_non_interest_pair_df <- function(df, .factor_1, 
 
   df
 }
+
+# Global variable declarations to avoid R CMD check warnings
+globalVariables(c("transcript", "read count", "n", "m", ".", ".feature", ".abundance_scaled", 
+                 "tt_columns", "seurat_clusters", "cluster", "tagwise.dispersion", "Component", 
+                 "Component value", "sdev", "name", "value", "x", "Y", "x"))

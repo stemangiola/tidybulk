@@ -9,27 +9,35 @@
 \usage{
 aggregate_duplicates(
   .data,
+  .transcript = NULL,
   .abundance = NULL,
   aggregation_function = sum,
-  keep_integer = TRUE
+  keep_integer = TRUE,
+  ...
 )
 
 \S4method{aggregate_duplicates}{SummarizedExperiment}(
   .data,
+  .transcript = NULL,
   .abundance = NULL,
   aggregation_function = sum,
-  keep_integer = TRUE
+  keep_integer = TRUE,
+  ...
 )
 
 \S4method{aggregate_duplicates}{RangedSummarizedExperiment}(
   .data,
+  .transcript = NULL,
   .abundance = NULL,
   aggregation_function = sum,
-  keep_integer = TRUE
+  keep_integer = TRUE,
+  ...
 )
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
+
+\item{.transcript}{The name of the transcript/gene column}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
@@ -38,8 +46,6 @@ aggregate_duplicates(
 \item{keep_integer}{A boolean. Whether to force the aggregated counts to integer}
 
 \item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A consistent object (to the input) with aggregated transcript abundance and annotation

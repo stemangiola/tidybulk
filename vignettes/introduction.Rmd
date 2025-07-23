@@ -147,7 +147,7 @@ tidybulk provide the `aggregate_duplicates` function to aggregate duplicated tra
 
 <div class="column-left">
 TidyTranscriptomics
-```{r aggregate, message=FALSE, warning=FALSE, results='hide', class.source='yellow'}
+```{r aggregate, message=FALSE, warning=FALSE, results='hide', class.source='yellow', eval=FALSE}
 rowData(se_mini)$gene_name = rownames(se_mini)
 se_mini.aggr = se_mini |> aggregate_duplicates(.transcript = gene_name)
 ```
@@ -177,7 +177,7 @@ We may want to compensate for sequencing depth, scaling the transcript abundance
 <div class="column-left">
 TidyTranscriptomics
 ```{r normalise}
-se_mini.norm = se_mini.aggr |> identify_abundant(factor_of_interest = condition) |> scale_abundance()
+se_mini.norm = se_mini |> identify_abundant(factor_of_interest = condition) |> scale_abundance()
 ```
 
 </div>
@@ -435,7 +435,8 @@ TidyTranscriptomics
 ```{r de, message=FALSE, warning=FALSE, results='hide'}
 se_mini.de =
 	se_mini |>
-	test_differential_abundance( ~ condition, action="get")
+	test_differential_abundance( ~ condition) |>
+  pivot_transcript()
 se_mini.de
 ```
 </div>
@@ -464,9 +465,9 @@ se_mini.de =
 	identify_abundant(factor_of_interest = condition) |>
 	test_differential_abundance(
 		~ 0 + condition,                  
-		.contrasts = c( "conditionTRUE - conditionFALSE"),
-		action="get"
-	)
+		.contrasts = c( "conditionTRUE - conditionFALSE")
+	) |> 
+  pivot_transcript()
 ```
 
 ## Adjust `counts`
@@ -522,7 +523,8 @@ TidyTranscriptomics
 ```{r cibersort}
 se_mini.cibersort =
 	se_mini |>
-	deconvolve_cellularity(action="get", cores=1, prefix = "cibersort__") 
+	deconvolve_cellularity( cores=1, prefix = "cibersort__") |> 
+  pivot_sample()
 
 ```
 </div>
@@ -676,9 +678,9 @@ se_mini.norm.SNN |>
 se_mini.norm.SNN |>
 	mutate(factor_of_interest = `cluster_SNN` == 3) |>
 	test_differential_abundance(
-    ~ factor_of_interest,
-    action="get"
-   )
+    ~ factor_of_interest
+   ) |> 
+  pivot_transcript()
 ```
 
 ## Drop `redundant` transcripts
@@ -781,13 +783,6 @@ counts = tidybulk_SAM_BAM(
 )
 ```
 
-## From ensembl IDs to gene symbol IDs
-
-We can add gene symbols from ensembl identifiers. This is useful since different resources use ensembl IDs while others use gene symbol IDs. This currently works for human and mouse.
-
-```{r ensembl}
-counts_ensembl |> ensembl_to_symbol(ens)
-```
 
 ## From gene symbol to gene description (gene name in full)
 

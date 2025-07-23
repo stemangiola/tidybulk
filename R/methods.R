@@ -88,7 +88,7 @@ setGeneric("resolve_complete_confounders_of_non_interest", function(se, ...) {
 #'
 #' @examples
 #'
-#'
+#' library(tibble)
 #' tibble(.feature = "CD3G", count=1) |> as_matrix(rownames=.feature)
 #'
 #' @export
@@ -719,8 +719,8 @@ setGeneric("test_gene_rank", function(.data,
 #'
 #' print("Not run for build time.")
 #'
-#' #se_mini = aggregate_duplicates(tidybulk::se_mini, .transcript = entrez)
-#' #df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
+#' # se_mini = tidybulk::se_mini[!rowData(tidybulk::se_mini)$entrez |> is.na(),] |> aggregate_duplicates(.transcript = entrez)
+#' # df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #'
 #' \dontrun{
 #' 	test_gene_overrepresentation(
@@ -738,15 +738,19 @@ setGeneric("test_gene_rank", function(.data,
 #' @export
 #'
 #'
-setGeneric("test_gene_overrepresentation", function(.data,
-                                                    .entrez,
-                                                    .do_test,
-                                                    species,
-                                                    
-                                                    gene_sets  = NULL,
-                                                    gene_set = NULL # DEPRECATED
-)
-  standardGeneric("test_gene_overrepresentation"))
+setGeneric("test_gene_overrepresentation", function(
+  .data,
+  .formula,
+  .entrez,
+  .abundance = NULL,
+  contrasts = NULL,
+  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
+  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+  species,
+  cores = 10,
+  method = NULL,
+  .contrasts = NULL
+) standardGeneric("test_gene_overrepresentation"))
 
 
 #' analyse gene enrichment with EGSEA
@@ -1309,6 +1313,8 @@ setGeneric("deconvolve_cellularity", function(.data,
                                               reference = NULL,
                                               method = "cibersort",
                                               prefix = "",
+                                              gene_symbol_column = NULL,
+                                              
                                               action = "add",
                                               ...)
   standardGeneric("deconvolve_cellularity"))
@@ -1371,10 +1377,11 @@ setGeneric("deconvolve_cellularity", function(.data,
 setGeneric("aggregate_duplicates", function(.data,
                                             
                                             
-                                            
+                                            .transcript = NULL,
                                             .abundance = NULL,
                                             aggregation_function = sum,
-                                            keep_integer = TRUE)
+                                            keep_integer = TRUE,
+                                            ...)
   standardGeneric("aggregate_duplicates"))
 
 
@@ -2071,18 +2078,6 @@ setGeneric("as_SummarizedExperiment", function(.data,
   )
   
 }
-
-#' as_SummarizedExperiment
-#'
-#' @export
-#'
-#'
-#' @docType methods
-#' @rdname as_SummarizedExperiment-methods
-#'
-#' @return A `SummarizedExperiment` object
-#'
-setMethod("as_SummarizedExperiment", "spec_tbl_df", .as_SummarizedExperiment)
 
 #' as_SummarizedExperiment
 #'

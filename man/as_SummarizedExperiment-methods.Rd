@@ -3,13 +3,10 @@
 \docType{methods}
 \name{as_SummarizedExperiment}
 \alias{as_SummarizedExperiment}
-\alias{as_SummarizedExperiment,spec_tbl_df-method}
 \alias{as_SummarizedExperiment,tbl_df-method}
 \title{as_SummarizedExperiment}
 \usage{
 as_SummarizedExperiment(.data, .abundance = NULL)
-
-\S4method{as_SummarizedExperiment}{spec_tbl_df}(.data, .abundance = NULL)
 
 \S4method{as_SummarizedExperiment}{tbl_df}(.data, .abundance = NULL)
 }
@@ -23,8 +20,6 @@ as_SummarizedExperiment(.data, .abundance = NULL)
 \item{.transcript}{The name of the transcript/gene column}
 }
 \value{
-A `SummarizedExperiment` object
-
 A `SummarizedExperiment` object
 
 A `SummarizedExperiment` object

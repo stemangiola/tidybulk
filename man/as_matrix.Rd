@@ -21,7 +21,7 @@ Get matrix from tibble
 }
 \examples{
 
-
+library(tibble)
 tibble(.feature = "CD3G", count=1) |> as_matrix(rownames=.feature)
 
 }

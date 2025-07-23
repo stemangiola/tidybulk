@@ -13,6 +13,7 @@ deconvolve_cellularity(
   reference = NULL,
   method = "cibersort",
   prefix = "",
+  gene_symbol_column = NULL,
   action = "add",
   ...
 )
@@ -23,6 +24,7 @@ deconvolve_cellularity(
   reference = NULL,
   method = "cibersort",
   prefix = "",
+  gene_symbol_column = NULL,
   action = "add",
   ...
 )
@@ -33,6 +35,7 @@ deconvolve_cellularity(
   reference = NULL,
   method = "cibersort",
   prefix = "",
+  gene_symbol_column = NULL,
   action = "add",
   ...
 )

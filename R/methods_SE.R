@@ -4,6 +4,19 @@
 #' @importFrom SummarizedExperiment colData
 #' @importFrom utils tail
 #' @importFrom stats na.omit
+#' @importFrom stringr str_c
+#' @importFrom dplyr mutate select pull arrange slice n_distinct across
+#' @importFrom tidyr nest unnest pivot_longer pivot_wider drop_na
+#' @importFrom purrr map when
+#' @importFrom stringr str_subset str_remove str_replace str_replace_all
+#' @importFrom tibble as_tibble
+#' @importFrom SummarizedExperiment assay
+#' @importFrom SummarizedExperiment assayNames
+#' @importFrom purrr map2_dfr
+#' @importFrom SummarizedExperiment "colData<-"
+#' @importFrom SummarizedExperiment "rowData<-"
+#' @importFrom magrittr "%$%"
+#' @importFrom SummarizedExperiment "assays<-"
 #'
 .scale_abundance_se = function(.data,
                               
@@ -39,17 +52,19 @@
 
   .subset_for_scaling = enquo(.subset_for_scaling)
 
+
 	.data_filtered =
-	  filter_if_abundant_were_identified(.data) %>%
+	  filter_if_abundant_were_identified(.data)
+	  
+	  
+	  if (!quo_is_null(.subset_for_scaling))
+	  	.data_filtered = filter_genes_on_condition(.data_filtered, !!.subset_for_scaling)
 
 	  # Filter based on user condition
-	  when(
-	    !quo_is_null(.subset_for_scaling) ~ filter_genes_on_condition(., !!.subset_for_scaling),
-	    ~ (.)
-	  ) %>%
 
 	  # Check I have genes left
-	  when(nrow(.) == 0 ~ stop("tidybulk says: there are 0 genes that passes the filters (.abundant and/or .subset_for_scaling). Please check your filtering or your data."), ~ (.))
+	  if (nrow(.data_filtered) == 0)
+	  	stop("tidybulk says: there are 0 genes that passes the filters (.abundant and/or .subset_for_scaling). Please check your filtering or your data.")
 
 	my_assay = assays(.data_filtered) %>% as.list() %>% .[1]
 
@@ -65,16 +80,14 @@
 
 	# Get reference
 	reference <-
-		reference_sample %>%
-		when(
-			!is.null(.) ~ (.),
+		reference_sample
 
-			# If not specified take most abundance sample
-			library_size_filtered %>%
+	if (is.null(reference))
+		reference = library_size_filtered %>%
 				sort() %>%
 				tail(1) %>%
 				names()
-		)
+
 
 	# Communicate the reference if chosen by default
 	if(is.null(reference_sample)) message(sprintf("tidybulk says: the sample with largest library size %s was chosen as reference for scaling", reference))
@@ -294,12 +307,13 @@ setMethod("quantile_normalise_abundance",
 		.[[get_assay_scaled_if_exists_SE(.data)]]
 
 	my_cluster_function  =
-		method %>%
-			when(
-				(.) == "kmeans" ~ get_clusters_kmeans_bulk_SE,
-				(.) == "SNN" ~  stop("tidybulk says: Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable."), #get_clusters_SNN_bulk_SE,
-				~ stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
-			)
+		if (method == "kmeans") {
+			get_clusters_kmeans_bulk_SE
+		} else if (method == "SNN") {
+			stop("tidybulk says: Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable.")
+		} else {
+			stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
+		}
 
 	my_clusters =
 		my_cluster_function(
@@ -316,17 +330,26 @@ setMethod("quantile_normalise_abundance",
 	.data %>%
 
 		# Add clusters to metadata
-		when(
-			of_samples ~ {.x = (.); colData(.x)[,my_cluster_column] = my_clusters; .x},
-			~ {.x = (.); rowData(.x)[,my_cluster_column] = my_clusters; .x}
-		) %>%
+		{
+			.x = (.)
+			if (of_samples) {
+				colData(.x)[,my_cluster_column] = my_clusters
+			} else {
+				rowData(.x)[,my_cluster_column] = my_clusters
+			}
+			.x
+		} %>%
 
 		# Add bibliography
-		when(
-			method == "kmeans" ~ memorise_methods_used(., "stats"),
-			method == "SNN" ~ memorise_methods_used(., "seurat"),
-			~ stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
-		)
+		{
+			if (method == "kmeans") {
+				memorise_methods_used(., "stats")
+			} else if (method == "SNN") {
+				memorise_methods_used(., "seurat")
+			} else {
+				stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
+			}
+		}
 
 }
 
@@ -401,14 +424,17 @@ setMethod("cluster_elements",
 		transform()
 
 	my_reduction_function  =
-		method %>%
-		when(
-			tolower(.) == tolower("MDS") ~ get_reduced_dimensions_MDS_bulk_SE,
-			tolower(.) == tolower("PCA") ~ get_reduced_dimensions_PCA_bulk_SE,
-			tolower(.) == tolower("tSNE") ~ get_reduced_dimensions_TSNE_bulk_SE,
-			tolower(.) == tolower("UMAP") ~ get_reduced_dimensions_UMAP_bulk_SE,
-			~ stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\", or \"UMAP\" ")
-		)
+		if (tolower(method) == tolower("MDS")) {
+			get_reduced_dimensions_MDS_bulk_SE
+		} else if (tolower(method) == tolower("PCA")) {
+			get_reduced_dimensions_PCA_bulk_SE
+		} else if (tolower(method) == tolower("tSNE")) {
+			get_reduced_dimensions_TSNE_bulk_SE
+		} else if (tolower(method) == tolower("UMAP")) {
+			get_reduced_dimensions_UMAP_bulk_SE
+		} else {
+			stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\", or \"UMAP\" ")
+		}
 
 	# Both dataframe and raw result object are returned
 	reduced_dimensions =
@@ -425,19 +451,30 @@ setMethod("cluster_elements",
 	.data %>%
 
 		# Add dimensions to metadata
-		when(
-			of_samples ~ {.x = (.); colData(.x) = colData(.x) %>% cbind(reduced_dimensions$result); .x},
-			~ {.x = (.); rowData(.x) = rowData(.x) %>% cbind(reduced_dimensions$result); .x}
-		) %>%
+		{
+			.x = (.)
+			if (of_samples) {
+				colData(.x) = colData(.x) %>% cbind(reduced_dimensions$result)
+			} else {
+				rowData(.x) = rowData(.x) %>% cbind(reduced_dimensions$result)
+			}
+			.x
+		} %>%
 
 		# Add bibliography
-		when(
-		  tolower(method) == tolower("MDS") ~ memorise_methods_used(., "limma"),
-			tolower(method) == tolower("PCA") ~ memorise_methods_used(., "stats"),
-			tolower(method) == tolower("tSNE") ~ memorise_methods_used(., "rtsne"),
-			tolower(method) == tolower("UMAP") ~ memorise_methods_used(., "uwot"),
-			~ stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\", or \"UMAP\" ")
-		) %>%
+		{
+			if (tolower(method) == tolower("MDS")) {
+				memorise_methods_used(., "limma")
+			} else if (tolower(method) == tolower("PCA")) {
+				memorise_methods_used(., "stats")
+			} else if (tolower(method) == tolower("tSNE")) {
+				memorise_methods_used(., "rtsne")
+			} else if (tolower(method) == tolower("UMAP")) {
+				memorise_methods_used(., "uwot")
+			} else {
+				stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\", or \"UMAP\" ")
+			}
+		} %>%
 
 		# Attach edgeR for keep variable filtering
 		memorise_methods_used(c("edger")) %>%
@@ -478,7 +515,47 @@ setMethod("reduce_dimensions",
 					"RangedSummarizedExperiment",
 					.reduce_dimensions_se)
 
-
+#' Rotate two coordinate columns and append the rotated axes
+#'
+#' This internal helper applies a planar rotation to two numeric columns
+#' that represent a low-dimensional embedding (for example PCA or UMAP
+#' coordinates) stored in either `colData()` or `rowData()` of a
+#' `SummarizedExperiment`.  It returns the original object with two
+#' additional columns containing the rotated values.  The user specifies
+#' the rotation angle in degrees and may provide custom names for the new
+#' columns; otherwise sensible defaults are generated.
+#'
+#' @param .data  A `SummarizedExperiment` (or derivative) holding the
+#'               coordinates to be rotated.
+#' @param dimension_1_column Symbol or bare column name for the first axis
+#'               (e.g. `UMAP_1`).
+#' @param dimension_2_column Symbol or bare column name for the second axis
+#'               (e.g. `UMAP_2`).
+#' @param rotation_degrees   Numeric scalar in the closed interval
+#'               \([-360, 360]\) indicating the anti-clockwise rotation
+#'               angle.
+#' @param .element Optional quoted column holding sample or feature labels
+#'               (unused, retained for compatibility).
+#' @param of_samples Logical.  If `TRUE` (default) the function rotates
+#'               columns in `colData()`.  If `FALSE` it operates on
+#'               `rowData()`.
+#' @param dimension_1_column_rotated Optional symbol to name the new first
+#'               rotated coordinate column.
+#' @param dimension_2_column_rotated Optional symbol to name the new second
+#'               rotated coordinate column.
+#' @param action Character.  `"add"` appends the rotated columns; future
+#'               extensions may allow other behaviours.
+#'
+#' @return The input `SummarizedExperiment` with two extra metadata columns
+#'         containing the rotated axes.
+#'
+#' @keywords internal
+#'
+#' @importFrom rlang enquo quo_name quo_is_null
+#' @importFrom purrr when not
+#' @importFrom dplyr between
+#' @importFrom SummarizedExperiment colData rowData
+#' @importFrom stats setNames
 .rotate_dimensions_se = function(.data,
 																 dimension_1_column,
 																 dimension_2_column,
@@ -605,68 +682,72 @@ setMethod("rotate_dimensions",
 		stop("tidybulk says: You must have more than one element (trancripts if of_samples == FALSE) to perform remove_redundancy")
 
 	redundant_elements =
-		method %>%
-		when(
-			. == "correlation" ~ {
+		if (method == "correlation") {
 
-				# Get counts
-				my_assay =
-					.data %>%
+			# Get counts
+			my_assay =
+				.data %>%
 
-					# Filter abundant if performed
-					filter_if_abundant_were_identified() %>%
+				# Filter abundant if performed
+				filter_if_abundant_were_identified() %>%
 
-					assays() %>%
-					as.list() %>%
-					.[[get_assay_scaled_if_exists_SE(.data)]] %>%
+				assays() %>%
+				as.list() %>%
+				.[[get_assay_scaled_if_exists_SE(.data)]] %>%
 
-					# Filter most variable genes
-					keep_variable_transcripts_SE(top = top, transform = transform) %>%
+				# Filter most variable genes
+				keep_variable_transcripts_SE(top = top, transform = transform) %>%
 
-					# Check if log transform is needed
-					transform()
+				# Check if log transform is needed
+				transform()
 
-				# Get correlated elements
-				remove_redundancy_elements_through_correlation_SE(
-					my_assay,
-					correlation_threshold = correlation_threshold,
-					of_samples = of_samples
-				)
-			}	,
-			. == "reduced_dimensions" ~ {
+			# Get correlated elements
+			remove_redundancy_elements_through_correlation_SE(
+				my_assay,
+				correlation_threshold = correlation_threshold,
+				of_samples = of_samples
+			)
+		} else if (method == "reduced_dimensions") {
 
-				# Get dimensions
-				my_dims =
-					of_samples %>%
-					when(
-						of_samples ~ colData(.data)[,c(quo_name(Dim_a_column), quo_name(Dim_b_column))],
-						~ rowData(.data)[,c(quo_name(Dim_a_column), quo_name(Dim_b_column))]
-					)
+			# Get dimensions
+			my_dims =
+				if (of_samples) {
+					colData(.data)[,c(quo_name(Dim_a_column), quo_name(Dim_b_column))]
+				} else {
+					rowData(.data)[,c(quo_name(Dim_a_column), quo_name(Dim_b_column))]
+				}
 
-				# Get correlated elements
-				remove_redundancy_elements_though_reduced_dimensions_SE(
-					my_dims
-				)
-			} ,
-			~ stop(
+			# Get correlated elements
+			remove_redundancy_elements_though_reduced_dimensions_SE(
+				my_dims
+			)
+		} else {
+			stop(
 				"tidybulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)"
 			)
-		)
+		}
 
 		.data %>%
 
 			# Condition on of_samples
-			when(
-				of_samples ~ (.)[,!colnames(.) %in% redundant_elements],
-				~ (.)[-!rownames(.) %in% redundant_elements,]
-			) %>%
+			{
+				if (of_samples) {
+					(.)[,!colnames(.) %in% redundant_elements]
+				} else {
+					(.)[-!rownames(.) %in% redundant_elements,]
+				}
+			} %>%
 
 			# Add bibliography
-			when(
-				method == "correlation" ~ memorise_methods_used(., "widyr"),
-				method == "reduced_dimensions" ~ (.),
-				~ stop("tidybulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)")
-			)
+			{
+				if (method == "correlation") {
+					memorise_methods_used(., "widyr")
+				} else if (method == "reduced_dimensions") {
+					(.)
+				} else {
+					stop("tidybulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)")
+				}
+			}
 
 }
 
@@ -902,13 +983,15 @@ setMethod("adjust_abundance",
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importFrom GenomicRanges makeGRangesListFromDataFrame
 #' @importFrom dplyr setdiff
+#' @importFrom dplyr select_if
 .aggregate_duplicates_se = function(.data,
 
 																		
 																		
 																		.abundance = NULL,
 																		aggregation_function = sum,
-																		keep_integer = TRUE) {
+																		keep_integer = TRUE,
+																		...) {
 
   # Fix NOTEs
   . = NULL
@@ -921,7 +1004,7 @@ setMethod("adjust_abundance",
 
   if(!quo_name(.transcript) %in% colnames( .data %>% rowData()))
     stop("tidybulk says: the .transcript argument must be a feature-wise column names. The feature-wise information can be found with rowData()")
-  if(!is.null(.sample) | !is.null(.abundance))
+  if( !is.null(.abundance))
     warning("tidybulk says: for SummarizedExperiment objects only the argument .transcript (feature ID to collapse) is considered")
 
   collapse_function = function(x){ x %>% unique() %>% paste(collapse = "___")	}
@@ -1088,7 +1171,42 @@ setMethod("aggregate_duplicates",
 
 
 
-#' @importFrom rlang quo_is_symbolic
+#' Deconvolve bulk data to sample-level cell–type proportions
+#'
+#' Wrapper that applies a chosen deconvolution engine (CIBERSORT, LLSR, EPIC,
+#' MCPcounter, quanTIseq, or xCell via immunedeconv) to the active assay in a
+#' `SummarizedExperiment`, then appends the estimated proportions to `colData`.
+#' You may supply a custom reference matrix; otherwise sensible defaults are
+#' used per method.
+#'
+#' @param .data    A `SummarizedExperiment`.
+#' @param reference Reference matrix or method-specific handle (see Details).
+#' @param method   Character string naming the deconvolution method.
+#' @param prefix   Optional prefix to prepend to output column names.
+#' @param ...      Additional arguments passed through to the underlying
+#'                 deconvolution function.
+#'
+#' @return The input `SummarizedExperiment` with additional proportion columns
+#'         in `colData`.
+#'
+#' @details
+#' * `"cibersort"` uses `my_CIBERSORT()` and requires the packages *class*,
+#'   *e1071*, and *preprocessCore*.
+#' * `"llsr"` uses `run_llsr()`.
+#' * `"epic"` uses `run_epic()`.
+#' * `"mcp_counter"`, `"quantiseq"`, and `"xcell"` use `immunedeconv::deconvolute()`
+#'   and require that *immunedeconv* is attached.
+#'
+#' @family deconvolution helpers
+#'
+#' @importFrom magrittr %>% %$% when
+#' @importFrom purrr equals
+#' @importFrom rlang quo_is_symbolic quo_name
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr select
+#' @importFrom tidyr gather spread
+#' @importFrom SummarizedExperiment assays colData
+#' @keywords internal
 .deconvolve_cellularity_se = function(.data,
 																			reference = X_cibersort,
 																			method = "cibersort",
@@ -1098,7 +1216,6 @@ setMethod("aggregate_duplicates",
   # Fix NOTEs
   . = NULL
 
-  .transcript = enquo(.transcript)
   .sample = s_(.data)$symbol
 
 	my_assay =
@@ -1106,16 +1223,16 @@ setMethod("aggregate_duplicates",
 
 		assays() %>%
 		as.list() %>%
-		.[[get_assay_scaled_if_exists_SE(.data)]] %>%
+		.[[get_assay_scaled_if_exists_SE(.data)]] 
 
-	  # Change row names
-	  when(quo_is_symbolic(.transcript) ~ {
-  	    .x = (.)
-  	    rownames(.x) = .data %>% pivot_transcript() %>% pull(!!.transcript)
-  	    .x
-  	  },
-  	  ~ (.)
-	  )
+# 	  # Change row names
+# 	  if (quo_is_symbolic(.transcript)) {
+#   	    .x = (.)
+#   	    rownames(.x) = .data %>% pivot_transcript() %>% pull(!!.transcript)
+#   	    .x
+#   	  } else {
+#   	    (.)
+#   	  }
 
 	# Get the dots arguments
 	dots_args = rlang::dots_list(...)
@@ -1127,13 +1244,13 @@ setMethod("aggregate_duplicates",
 		when(
 
 			# Execute do.call because I have to deal with ...
-			method %>% tolower %>% equals("cibersort") 	~ {
+			if (method %>% tolower %>% equals("cibersort")) {
 
 				# Check if package is installed, otherwise install
 			  check_and_install_packages(c("class", "e1071", "preprocessCore"))
 
 				# Choose reference
-				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
+				reference = if (is.null(reference)) X_cibersort else reference
 
 				# Validate reference
 				validate_signature_SE(., reference)
@@ -1142,13 +1259,10 @@ setMethod("aggregate_duplicates",
 					proportions %>%
 					as_tibble(rownames = quo_name(.sample)) %>%
 					select(-`P-value`,-Correlation,-RMSE)
-			},
-
-			# Don't need to execute do.call
-			method %>% tolower %>% equals("llsr") ~ {
+			} else if (method %>% tolower %>% equals("llsr")) {
 
 				# Choose reference
-				reference = reference %>% when(is.null(.) ~ X_cibersort, ~ .)
+				reference = if (is.null(reference)) X_cibersort else reference
 
 				# Validate reference
 				validate_signature_SE(., reference)
@@ -1156,21 +1270,15 @@ setMethod("aggregate_duplicates",
 				(.) %>%
 					run_llsr(reference, ...) %>%
 					as_tibble(rownames = quo_name(.sample))
-			},
-
-			# Don't need to execute do.call
-			method %>% tolower %>% equals("epic") ~ {
+			} else if (method %>% tolower %>% equals("epic")) {
 
 				# Choose reference
-				reference = reference %>% when(is.null(.) ~ "BRef", ~ .)
+				reference = if (is.null(reference)) "BRef" else reference
 
 				(.) %>%
 					run_epic(reference) %>%
 					as_tibble(rownames = quo_name(.sample))
-			},
-
-			# Other (hidden for the moment) methods using third party wrapper https://icbi-lab.github.io/immunedeconv
-			method %>% tolower %in% c("mcp_counter", "quantiseq", "xcell") ~ {
+			} else if (method %>% tolower %in% c("mcp_counter", "quantiseq", "xcell")) {
 
 				# Check if package is installed, otherwise install
 			  check_and_install_packages("immunedeconv")
@@ -1182,11 +1290,11 @@ setMethod("aggregate_duplicates",
 					deconvolute(method %>% tolower, tumor = FALSE) %>%
 					gather(!!.sample, .proportion, -cell_type) %>%
 					spread(cell_type,  .proportion)
-			},
-
-			~ stop(
-				"tidybulk says: please choose between cibersort, llsr and epic methods"
-			)
+			} else {
+				stop(
+					"tidybulk says: please choose between cibersort, llsr and epic methods"
+				)
+			}
 		)	 %>%
 
 		# Parse results and return
@@ -1977,66 +2085,265 @@ setMethod("test_gene_enrichment",
 
 # Set internal
 .test_gene_overrepresentation_SE = 		function(.data,
-																					 .entrez,
-																					 .do_test,
-																					 species,
+																					 .formula,
 																					
-																					 gene_sets = NULL,
-																					 gene_set = NULL  # DEPRECATED
+																					 .entrez,
+																					 .abundance = NULL,
+																					 contrasts = NULL,
+																					 methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
+																					 gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+																					 species,
+																					 cores = 10,
+
+																					 # DEPRECATED
+																					 method = NULL,
+																					 .contrasts = NULL
 																					 )	{
+
+  # Fix NOTEs
+  . = NULL
+
+	# DEPRECATION OF reference function
+	if (is_present(method) & !is.null(method)) {
+
+		# Signal the deprecation to the user
+		deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", details = "The argument method is now deprecated please use methods")
+		methods = method
+	}
+
+  # DEPRECATION OF .constrasts
+  if (is_present(.contrasts) & !is.null(.contrasts)) {
+
+    # Signal the deprecation to the user
+    deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
+
+    contrasts = .contrasts
+  }
+
+	.entrez = enquo(.entrez)
+
+	# Check that there are no entrez missing
+	.data =
+		.data %>%
+		when(
+			filter(., !!.entrez %>% is.na) %>% nrow() %>% gt(0) ~ {
+				warning("tidybulk says: There are NA entrez IDs. Those genes will be filtered")
+				filter(., !!.entrez %>% is.na %>% not())
+			},
+			~ (.)
+		)
+
+	# Check if duplicated entrez
+	if(rowData(.data)[,quo_name(.entrez)] %>% duplicated() %>% any())
+		stop("tidybulk says: There are duplicated .entrez IDs. Please use aggregate_duplicates(.transcript = entrez).")
+
+	# For use within when
+	.my_data = .data
+
 
 	# Comply with CRAN NOTES
 	. = NULL
 
-	# DEPRECATION OF reference function
-	if (is_present(gene_set) & !is.null(gene_set)) {
+	# Check if at least two samples for each group
+	if (.data %>%
+			pivot_sample() %>%
+			count(!!as.symbol(parse_formula(.formula))) %>%
+			distinct(n) %>%
+			pull(n) %>%
+			min %>%
+			st(2))
+		stop("tidybulk says: You need at least two replicates for each condition for EGSEA to work")
 
-		# Signal the deprecation to the user
-		deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_sets.")
-		gene_sets = gene_set
+
+	# Create design matrix
+	design =	model.matrix(	object = .formula,	data = .data %>% colData() 	)
+
+	# Print the design column names in case I want contrasts
+	message(
+		sprintf(
+			"tidybulk says: The design column names are \"%s\"",
+			design %>% colnames %>% paste(collapse = ", ")
+		)
+	)
+
+	my_contrasts =
+		contrasts %>%
+		when(
+			length(.) > 0 ~ limma::makeContrasts(contrasts = ., levels = design),
+			~ NULL
+			)
+
+	# Check if package is installed, otherwise install
+	check_and_install_packages("EGSEA")
+
+	if (!"EGSEA" %in% (.packages())) {
+		stop("EGSEA package not loaded. Please run library(\"EGSEA\"). With this setup, EGSEA require manual loading, for technical reasons.")
 	}
 
-	# Get column names
-	.do_test = enquo(.do_test)
-	.entrez = enquo(.entrez)
-	#
-	# expr <- rlang::quo_get_expr(.do_test)
-	# env <- quo_get_env(x)
-	#
+	dge =
+		.data %>%
+		assays() %>%
+		as.list() %>%
+		.[[1]] %>%
+		as.matrix %>%
 
-	# Check if entrez is set
-	if(quo_is_missing(.entrez))
-		stop("tidybulk says: the .entrez parameter appears to no be set")
+		# Change rownames to entrez
+		when(
+			quo_is_null(.entrez) %>% `!` ~ {
+				x = (.)
+				rownames(x) =
+					.my_data %>%
+					pivot_transcript() %>%
+					pull(!!.entrez)
+				x
+			},
+			~ (.)
+		) %>%
 
-	# Check column type
-	if (.data %>% rowData() %>% as_tibble(rownames = f_(.data)$name) %>% mutate(my_do_test = !!.do_test) %>% pull(my_do_test) |> is("logical") %>% not())
-		stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
+		# Filter missing entrez
+		.[rownames(.) %>% is.na %>% not, ] %>%
 
-	# Check packages msigdbr
-	# Check if package is installed, otherwise install
-	check_and_install_packages("msigdbr")
+		# # Make sure transcript names are adjacent
+		# arrange(!!.entrez) %>%
+
+		# select(!!.sample, !!.entrez, !!.abundance) %>%
+		# spread(!!.sample,!!.abundance) %>%
+		# as_matrix(rownames = !!.entrez) %>%
+		edgeR::DGEList(counts = .)
+
+	# Add gene ids for Interpret Results tables in report
+	dge$genes = rownames(dge$counts)
+
+	if (is.list(gene_sets)) {
+
+	    idx =  buildCustomIdx(geneIDs = rownames(dge), species = species, gsets=gene_sets)
+	    nonkegg_genesets = idx
+	    kegg_genesets = NULL
+
+	} else {
+
+    	# Specify gene sets to include
+    	msig_all <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
+    	kegg_all <- c("kegg_disease", "kegg_metabolism", "kegg_signaling")
+
+    	# Record which collections used (kegg, msigdb) for bibliography
+    	collections_bib = c()
+
+    	# Identify any msigdb sets to be included
+    	msigdb.gsets <- gene_sets[gene_sets %in% msig_all]
+    	if (length(msigdb.gsets) >= 1) {
+    	    collections_bib = c(collections_bib, "msigdb")
+    	}
+
+    	# Have to identify kegg sets to exclude for EGSEA
+    	kegg_to_exclude = kegg_all[!(kegg_all %in% gene_sets)]
+
+    	# If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object
+        if (length(kegg_to_exclude) == 3) {
+                kegg.exclude = "all"
+        } else {
+    	    kegg.exclude = kegg_to_exclude %>% str_replace("kegg_", "")
+    	    collections_bib = c(collections_bib, "kegg")
+    	}
 
 
-	# Check is correct species name
-	if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
-		stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
+    	idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets,
+    	                kegg.exclude = kegg.exclude)
 
-	# # Check if missing entrez
-	# if(.data %>% filter(!!.entrez %>% is.na) %>% nrow() %>% gt(0) ){
-	# 	warning("tidybulk says: there are .entrez that are NA. Those will be removed")
-	# 	.data = .data %>%	filter(!!.entrez %>% is.na %>% not())
-	# }
+    	# Due to a bug with kegg pathview overlays, this collection is run without report
+        # https://support.bioconductor.org/p/122172/#122218
 
-	.data %>%
-		pivot_transcript(!!.entrez) %>%
-		filter(!!.do_test) %>%
-		distinct(!!.entrez) %>%
-		pull(!!.entrez) %>%
-		entrez_over_to_gsea(species, gene_collections = gene_sets) %>%
+	    kegg_genesets = idx[which(names(idx)=="kegg")]
+	    nonkegg_genesets = idx[which(names(idx)!="kegg")]
+	}
 
-	  # Add methods used
-	  memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"), object_containing_methods = .data)
+	# Specify column to use to sort results in output table
+	# If only one method is specified there is no med.rank column
+	if (length(methods) == 1) {
+	    sort_column = "p.value"
+	} else {
+	    sort_column = "med.rank"
+	}
 
+
+	if (length(nonkegg_genesets) != 0) {
+    	res =
+        	dge %>%
+
+        	# Calculate weights
+        	limma::voom(design, plot = FALSE) %>%
+
+        	# Execute EGSEA
+        	egsea(
+        		contrasts = my_contrasts,
+        		gs.annots = nonkegg_genesets,
+        		baseGSEAs = methods,
+        		sort.by = sort_column,
+        		num.threads = cores
+        	)
+
+        gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
+
+        res_formatted_nonkegg =
+        	res@results %>%
+        	map2_dfr(
+        		(.) %>% names,
+        		~ .x[[1]][[1]] %>%
+        			as_tibble(rownames = "pathway") %>%
+        			mutate(data_base = .y)
+        	) %>%
+        	arrange(sort_column) %>%
+
+        	# Add webpage
+        	mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
+        	select(data_base, pathway, web_page, sort_column, everything())
+	}
+
+    if (length(kegg_genesets) != 0) {
+    	message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
+
+    	res_kegg =
+    		dge %>%
+
+    		# Calculate weights
+    		limma::voom(design, plot = FALSE) %>%
+
+    		# Execute EGSEA
+    		egsea(
+    			contrasts = my_contrasts,
+    			gs.annots = kegg_genesets,
+    			baseGSEAs = methods,
+    			sort.by = sort_column,
+    			num.threads = cores,
+    			report = FALSE
+    		)
+
+    	res_formatted_kegg =
+    		res_kegg@results %>%
+    		map2_dfr(
+    			(.) %>% names,
+    			~ .x[[1]][[1]] %>%
+    				as_tibble(rownames = "pathway") %>%
+    				mutate(data_base = .y)
+    		) %>%
+    		arrange(sort_column) %>%
+    		select(data_base, pathway, everything())
+
+    }
+
+	# output tibble
+	if (exists("res_formatted_nonkegg") & exists("res_formatted_kegg")) {
+	    out = bind_rows(res_formatted_nonkegg, res_formatted_kegg)
+	} else if (exists("res_formatted_nonkegg")) {
+	    out = res_formatted_nonkegg
+	} else {
+	    out = res_formatted_kegg
+	}
+
+	# add to bibliography
+	if (exists("collections_bib")) {
+	    out %>% memorise_methods_used(c("egsea", collections_bib, methods))
+	}
 
 }
 
@@ -2352,7 +2659,36 @@ setMethod("impute_missing_abundance",
 					.impute_missing_abundance_se)
 
 
-
+#' Differential cellularity test with standard-error propagation
+#'
+#' Deconvolves bulk expression into cell–type proportions, then fits either a
+#' univariable or multivariable model to compare cellularity across conditions,
+#' returning estimates and standard errors.  The helper chooses the appropriate
+#' engine (beta-regression, survival, or bootstrap) according to the input
+#' formula.
+#'
+#' @param .data      A `SummarizedExperiment` (or derivative) that holds bulk
+#'                   expression and sample-level metadata.
+#' @param .formula   A two-sided formula specifying the outcome and covariates.
+#' @param method     Character, the deconvolution method name (default
+#'                   `"cibersort"`).
+#' @param reference  Matrix or data frame with reference profiles.  Defaults to
+#'                   the internal object `X_cibersort`.
+#' @param ...        Additional arguments forwarded to
+#'                   `deconvolve_cellularity()`.
+#'
+#' @return A tibble with one row per cell type and columns for log-fold change,
+#'         standard error, confidence interval, and \(P\) value.
+#'
+#' @family differential-cellularity helpers
+#'
+#' @importFrom magrittr %>%
+#' @importFrom purrr map_lgl equals when
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr select starts_with filter pull mutate
+#' @importFrom tidyr gather
+#' @importFrom stringr str_split str_replace str_replace_all str_remove
+#' @keywords internal
 .test_differential_cellularity_se = function(.data,
 																						 .formula,
 																						 method = "cibersort",
@@ -2609,13 +2945,21 @@ setMethod("get_bibliography",
 #'
 #' @importFrom SummarizedExperiment rowData
 #' @importFrom tibble enframe
-#'
+#' @importFrom dplyr distinct
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarise
+#' @importFrom dplyr ungroup
+#' @importFrom dplyr mutate
+#' @importFrom dplyr arrange
+#' @importFrom dplyr select
+#' @importFrom dplyr pull
+#' @importFrom dplyr left_join
+#' @importFrom magrittr %>%
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods
 #'
 #' @return A `SummarizedExperiment` object
-#'
 #'
 .describe_transcript_SE = function(.data ) {
 
@@ -2626,15 +2970,15 @@ setMethod("get_bibliography",
   check_and_install_packages(c("org.Hs.eg.db", "org.Mm.eg.db", "AnnotationDbi"))
 
 
-	.transcript = enquo(.transcript)
+	# .transcript = enquo(.transcript)
 
 	# Transcript rownames by default
-	my_transcripts =
-		.transcript %>%
-		when(
-			quo_is_null(.) ~ rownames(.data),
-			~ rowData(.data)[,quo_name(.transcript)]
-		)
+	my_transcripts = rownames(.data)
+		# .transcript %>%
+		# when(
+		# 	quo_is_null(.) ~ rownames(.data),
+		# 	~ rowData(.data)[,quo_name(.transcript)]
+		# )
 
 	description_df =
 		# Human
@@ -2732,3 +3076,4 @@ setMethod("resolve_complete_confounders_of_non_interest",
 setMethod("resolve_complete_confounders_of_non_interest",
           "RangedSummarizedExperiment",
           .resolve_complete_confounders_of_non_interest)
+
