@@ -83,7 +83,7 @@ filterByExpr.default <- function(y, design=NULL, group=NULL, lib.size=NULL, min.
 #	CPM cutoff
 	MedianLibSize <- median(lib.size)
     
-    if(is.null(CPM.Cutoff)) CPM.Cutoff <- min.count/MedianLibSize*1e6
+    if(is.null(CPM.Cutoff)) CPM.Cutoff <- (min.count/MedianLibSize) * 1e6
 
 	CPM <- edgeR::cpm(y,lib.size=lib.size)
 	tol <- 1e-14
