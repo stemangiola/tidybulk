@@ -1,4 +1,3 @@
-context('filterByExpr internal function')
 
 library(SummarizedExperiment)
 
