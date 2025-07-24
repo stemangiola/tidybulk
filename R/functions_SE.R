@@ -1245,6 +1245,8 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(
 #'
 get_differential_transcript_abundance_deseq2_SE <- function(.data,
                                                             .formula,
+                                                            abundance = assayNames(.data)[1],
+                                                            
                                                             .abundance = NULL,
                                                             .contrasts = NULL,
                                                             method = "deseq2",
@@ -1256,8 +1258,16 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
                                                             prefix = "",
                                                             ...) {
   
-  .abundance = enquo(.abundance)
+  # Deprecation logic for .abundance (symbolic)
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "get_differential_transcript_abundance_deseq2_SE(.abundance)", "get_differential_transcript_abundance_deseq2_SE(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
   
+  .abundance <- rlang::enquo(.abundance)
+   
   # Fix NOTEs
   . = NULL
   pvalue = NULL
@@ -1287,13 +1297,7 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
   my_contrasts = .contrasts
   
   # If no assay is specified take first
-  my_assay = ifelse(
-    .abundance %>% quo_is_symbol(),
-    quo_name(.abundance),
-    .data |>
-      assayNames() |>
-      extract2(1)
-  )
+  my_assay <- abundance
   
   deseq2_object =
     

@@ -194,21 +194,33 @@ standardGeneric("test_differential_abundance"))
 #' @importFrom rlang inform
 .test_differential_abundance_se = function(.data,
                                            .formula,
-                                           abundance = assayNames(.data)[1],
+                                           
+                                           
+                                           abundance =  assayNames(.data)[1],
                                            contrasts = NULL,
                                            method = "edgeR_quasi_likelihood",
                                            test_above_log2_fold_change = NULL,
                                            scaling_method = "TMM",
                                            omit_contrast_in_colnames = FALSE,
                                            prefix = "",
+                                           action = "add",
                                            ...,
+                                           
+                                           # DEPRECATED
+                                           significance_threshold = NULL,
+                                           fill_missing_values = NULL,
+                                           .contrasts = NULL,
                                            .abundance = NULL)
 {
+
+  .abundance <- enquo(.abundance)
+
   # Deprecation logic for .abundance
-  if (!is.null(.abundance)) {
+  if (!quo_is_null(.abundance)) {
+    
     lifecycle::deprecate_warn("2.0.0", "test_differential_abundance(.abundance)", "test_differential_abundance(abundance)")
     if (missing(abundance) || is.null(abundance)) {
-      abundance <- rlang::as_name(rlang::ensym(.abundance))
+      abundance <- rlang::quo_name(.abundance)
     }
   }
   

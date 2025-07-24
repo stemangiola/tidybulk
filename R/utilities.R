@@ -1489,3 +1489,95 @@ drop_enquo_env <- function(q) {
   }
   rlang::quo_set_env(q, emptyenv())
 }
+
+#' Perform linear equation system analysis through linear least squares regression
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom stats lsfit
+#'
+#' @param mix A data frame containing mixture expression profiles
+#' @param reference A data frame containing reference expression profiles for cell types (default = X_cibersort)
+#' @param intercept Logical indicating whether to include intercept in the regression model (default = TRUE)
+#'
+#' @details
+#' Performs cell type deconvolution using linear least squares regression. The function:
+#' 1. Identifies common markers between mixture and reference
+#' 2. Normalizes expression data
+#' 3. Fits linear model with or without intercept
+#' 4. Constrains results to non-negative values and normalizes to sum to 1
+#'
+#' @return A data frame containing estimated cell type proportions
+#'
+#'
+run_llsr = function(mix, reference = X_cibersort,  intercept= TRUE) {
+  # Get common markers
+  markers = intersect(rownames(mix), rownames(reference))
+  
+  X <- (reference[markers, , drop = FALSE])
+  Y <- (mix[markers, , drop = FALSE])
+  
+  X = as.matrix(X)
+  Y = as.matrix(Y)
+  
+  X <- (X - mean(X)) / sd(X)
+  Y <- apply(Y, 2, function(mc) (mc - mean(mc)) / sd(mc)  )
+  # Y <- (Y - mean(y)) / sd(Y)
+  
+  if(intercept)
+    results <- t(data.frame(lsfit(X, Y)$coefficients)[-1, , drop = FALSE])
+  else
+    results <- t(data.frame(lsfit(X, Y, intercept=FALSE)$coefficients))
+  results[results < 0] <- 0
+  results <- results / apply(results, 1, sum)
+  rownames(results) = colnames(Y)
+  
+  results
+}
+
+#' Perform linear equation system analysis through llsr
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom stats lsfit
+#'
+#' @param mix A data frame
+#' @param reference A data frame
+#'
+#' @return A data frame
+#'
+#'
+run_epic = function(mix, reference = NULL) {
+  
+  # Check if 'EPIC' package is installed, otherwise stop with instructions
+  check_and_install_packages("EPIC")
+  
+  if("EPIC" %in% .packages() %>% not) stop("tidybulk says: Please install and then load the package EPIC manually (i.e. library(EPIC)). This is because EPIC is not in Bioconductor or CRAN so it is not possible to seamlessly make EPIC part of the dependencies.")
+  
+  # Get common markers
+  if( reference  |> is("data.frame") | reference  |> is("matrix")){
+    markers = intersect(rownames(mix), rownames(reference))
+    
+    X <- (reference[markers, , drop = FALSE])
+    Y <- (mix[markers, , drop = FALSE])
+    
+    if(!is.null(reference))
+      reference = list(
+        refProfiles = X,
+        sigGenes = rownames(X)
+      )
+  } else { Y <- mix }
+  
+  # Check if it is not matrix or data.frame, for example DelayedMatrix
+  if(!is(Y, "matrix") & !is(Y, "data.frame"))
+    Y = as.matrix(Y)
+  
+  results <- EPIC(Y, reference = reference)$cellFractions %>% data.frame()
+  #results[results < 0] <- 0
+  #results <- results / apply(results, 1, sum)
+  rownames(results) = colnames(Y)
+  
+  results
+}

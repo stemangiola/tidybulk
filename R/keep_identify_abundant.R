@@ -19,7 +19,8 @@
 #' @param ... Further arguments.
 #' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
 #' @param factor_of_interest The name of the column containing groups/conditions for filtering. 
-#'        Used by edgeR's filterByExpr to define sample groups.
+#'        Used by edgeR's filterByExpr to define sample groups. 
+#'        \strong{DEPRECATED:} Use 'design' or 'formula_design' instead. This argument will be removed in a future release.
 #'
 #' @details 
 #' This function uses edgeR's filterByExpr() function to identify and keep consistently expressed features.
@@ -64,8 +65,9 @@ setGeneric("keep_abundant", function(.data,
                                      minimum_counts = 10,
                                      minimum_proportion = 0.7,
                                      minimum_count_per_million = NULL,
-                                     ...,
-                                     .abundance = NULL)
+                                     ..., 
+                                     .abundance = NULL,
+                                     factor_of_interest = NULL) # add factor_of_interest
   standardGeneric("keep_abundant"))
 
 #' Identify abundant transcripts/genes
@@ -88,7 +90,8 @@ setGeneric("keep_abundant", function(.data,
 #' @param ... Further arguments.
 #' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
 #' @param factor_of_interest The name of the column containing groups/conditions for filtering. 
-#'        Used by edgeR's filterByExpr to define sample groups.
+#'        Used by edgeR's filterByExpr to define sample groups. 
+#'        \strong{DEPRECATED:} Use 'design' or 'formula_design' instead. This argument will be removed in a future release.
 #'
 #' @details 
 #' This function uses edgeR's filterByExpr() function to identify consistently expressed features.
@@ -131,8 +134,10 @@ setGeneric("identify_abundant", function(.data,
                                          minimum_counts = 10,
                                          minimum_proportion = 0.7,
                                          minimum_count_per_million = NULL,
-                                         ...,
-                                         .abundance = NULL)
+                                         factor_of_interest = NULL,
+                                         ..., 
+                                         .abundance = NULL
+                                         ) # add factor_of_interest
   standardGeneric("identify_abundant"))
 
 
@@ -146,8 +151,22 @@ setGeneric("identify_abundant", function(.data,
                                  minimum_counts = 10,
                                  minimum_proportion = 0.7,
                                  minimum_count_per_million = NULL,
-                                 ...,
-                                 .abundance = NULL) {
+                                 factor_of_interest = NULL,
+                                 ..., 
+                                 .abundance = NULL
+                                 ) { # <-- add back for backward compatibility
+ 
+  factor_of_interest <- enquo(factor_of_interest)
+  
+  if (!quo_is_null(factor_of_interest)) {
+  # Tidy deprecation warning for factor_of_interest
+    lifecycle::deprecate_warn(
+      when = "2.0.0",
+      what = "identify_abundant(factor_of_interest)",
+      with = "identify_abundant(formula_design)",
+      details = "The argument 'factor_of_interest' is deprecated and will be removed in a future release. Please use the 'design' or 'formula_design' argument instead."
+    )
+  }
   
   # Fix NOTEs
   . = NULL
@@ -158,11 +177,23 @@ setGeneric("identify_abundant", function(.data,
     design <- model.matrix(formula_design, data = colData(.data))
   }
   
+  # Map factor_of_interest to design if design is NULL and factor_of_interest is provided (for backward compatibility)
+  if (!quo_is_null(factor_of_interest) && is.null(design)) {
+    # If factor_of_interest is a quosure or symbol, convert to character
+    factor_of_interest_chr <- rlang::quo_name(factor_of_interest)
+
+    
+    design_formula <- as.formula(paste("~", paste(factor_of_interest_chr, collapse = "+")))
+    
+      design <- model.matrix(design_formula, data = as.data.frame(colData(.data)))
+
+  }
+  
   # Soft-deprecate .abundance, prefer abundance (character)
   if (!is.null(.abundance)) {
     lifecycle::deprecate_warn("2.0.0", "identify_abundant(.abundance)", "identify_abundant(abundance)")
     if (missing(abundance) || is.null(abundance)) {
-      abundance <- rlang::as_name(rlang::ensym(.abundance))
+      abundance <- rlang::quo_name(rlang::ensym(.abundance))
     }
   }
   my_assay <- abundance
@@ -255,11 +286,23 @@ setMethod("identify_abundant",
                              minimum_counts = 10,
                              minimum_proportion = 0.7,
                              minimum_count_per_million = NULL,
-                             ...,
-                             .abundance = NULL)
+                             ..., 
+                             .abundance = NULL,
+                             factor_of_interest = NULL) # add factor_of_interest
 {
   # Fix NOTEs
   . = NULL
+  
+  # Tidy deprecation warning for factor_of_interest
+  factor_of_interest <- enquo(factor_of_interest)
+  if (!quo_is_null(factor_of_interest)) {
+    lifecycle::deprecate_warn(
+      when = "2.0.0",
+      what = "keep_abundant(factor_of_interest)",
+      with = "keep_abundant(formula_design)",
+      details = "The argument 'factor_of_interest' is deprecated and will be removed in a future release. Please use the 'design' or 'formula_design' argument instead."
+    )
+  }
   
   # If formula_design is provided, use it to create the design matrix
   if (!is.null(formula_design)) {
@@ -271,7 +314,7 @@ setMethod("identify_abundant",
   if (!is.null(.abundance)) {
     lifecycle::deprecate_warn("2.0.0", "keep_abundant(.abundance)", "keep_abundant(abundance)")
     if (missing(abundance) || is.null(abundance)) {
-      abundance <- rlang::as_name(rlang::ensym(.abundance))
+      abundance <- rlang::quo_name(.abundance)
     }
   }
   .data =
@@ -281,7 +324,8 @@ setMethod("identify_abundant",
       minimum_proportion = minimum_proportion,
       abundance = abundance,
       design = design,
-      minimum_count_per_million = minimum_count_per_million
+      minimum_count_per_million = minimum_count_per_million,
+      factor_of_interest = !!factor_of_interest # pass through
     )
   .data[rowData(.data)[".abundant"][[1]],]
 }

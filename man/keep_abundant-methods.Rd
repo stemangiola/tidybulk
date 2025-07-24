@@ -16,7 +16,8 @@ keep_abundant(
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
   ...,
-  .abundance = NULL
+  .abundance = NULL,
+  factor_of_interest = NULL
 )
 
 \S4method{keep_abundant}{SummarizedExperiment}(
@@ -28,7 +29,8 @@ keep_abundant(
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
   ...,
-  .abundance = NULL
+  .abundance = NULL,
+  factor_of_interest = NULL
 )
 
 \S4method{keep_abundant}{RangedSummarizedExperiment}(
@@ -40,7 +42,8 @@ keep_abundant(
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
   ...,
-  .abundance = NULL
+  .abundance = NULL,
+  factor_of_interest = NULL
 )
 }
 \arguments{
@@ -62,12 +65,13 @@ keep_abundant(
 
 \item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
 
+\item{factor_of_interest}{The name of the column containing groups/conditions for filtering. 
+Used by edgeR's filterByExpr to define sample groups. 
+\strong{DEPRECATED:} Use 'design' or 'formula_design' instead. This argument will be removed in a future release.}
+
 \item{.sample}{The name of the sample column}
 
 \item{.transcript}{The name of the transcript/gene column}
-
-\item{factor_of_interest}{The name of the column containing groups/conditions for filtering. 
-Used by edgeR's filterByExpr to define sample groups.}
 }
 \value{
 Returns a filtered version of the input object containing only the features that passed

@@ -105,13 +105,17 @@ standardGeneric("adjust_abundance"))
   # Fix NOTEs
   . = NULL
   
-  # Soft-deprecate .abundance, prefer abundance (character)
-  if (!is.null(.abundance)) {
-    lifecycle::deprecate_warn("2.0.0", "adjust_abundance(.abundance)", "adjust_abundance(abundance)")
+  .abundance <- enquo(.abundance)
+  
+  # Deprecation logic for .abundance
+  if (!quo_is_null(.abundance)) {
+    
+    lifecycle::deprecate_warn("2.0.0", "test_differential_abundance(.abundance)", "test_differential_abundance(abundance)")
     if (missing(abundance) || is.null(abundance)) {
-      abundance <- rlang::as_name(rlang::ensym(.abundance))
+      abundance <- rlang::quo_name(.abundance)
     }
   }
+  
   if (is.null(abundance)) {
     stop("You must provide the `abundance` argument (character).")
   }

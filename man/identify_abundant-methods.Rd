@@ -15,6 +15,7 @@ identify_abundant(
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
+  factor_of_interest = NULL,
   ...,
   .abundance = NULL
 )
@@ -27,6 +28,7 @@ identify_abundant(
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
+  factor_of_interest = NULL,
   ...,
   .abundance = NULL
 )
@@ -39,6 +41,7 @@ identify_abundant(
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
+  factor_of_interest = NULL,
   ...,
   .abundance = NULL
 )
@@ -58,6 +61,10 @@ identify_abundant(
 
 \item{minimum_count_per_million}{Minimum CPM cutoff to use for filtering (passed to CPM.Cutoff in filterByExpr). If provided, this will override the minimum_counts parameter. Default is NULL (uses edgeR default).}
 
+\item{factor_of_interest}{The name of the column containing groups/conditions for filtering. 
+Used by edgeR's filterByExpr to define sample groups. 
+\strong{DEPRECATED:} Use 'design' or 'formula_design' instead. This argument will be removed in a future release.}
+
 \item{...}{Further arguments.}
 
 \item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
@@ -65,9 +72,6 @@ identify_abundant(
 \item{.sample}{The name of the sample column}
 
 \item{.transcript}{The name of the transcript/gene column}
-
-\item{factor_of_interest}{The name of the column containing groups/conditions for filtering. 
-Used by edgeR's filterByExpr to define sample groups.}
 }
 \value{
 Returns the input object with an additional logical column `.abundant` indicating which 
