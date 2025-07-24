@@ -226,3 +226,133 @@ setMethod("remove_redundancy",
 
 
 
+
+
+#' Drop redundant elements (e.g., samples) for which feature (e.g., genes) aboundances are correlated
+#'
+#' @keywords internal
+#' @noRd
+#'
+#'
+#'
+#' @import tibble
+#' @importFrom rlang :=
+#' @importFrom dplyr mutate_if
+#'
+#' @param .data A tibble
+#' @param correlation_threshold A real number between 0 and 1
+#' @param top An integer. How many top genes to select
+#' @param of_samples A boolean
+#'
+#' @return A tibble with redundant elements removed
+#'
+#'
+remove_redundancy_elements_through_correlation_SE <- function(.data,
+                                                              correlation_threshold = 0.9,
+                                                              of_samples = TRUE) {
+  # Comply with CRAN NOTES
+  . = NULL
+  cluster = NULL
+  
+  # Check if package is installed, otherwise install
+  check_and_install_packages("widyr")
+  
+  
+  # Get the redundant data frame
+  # check that there are non-NA genes for enough samples
+  if (nrow(.data) == 0) {
+    stop(
+      "tidybulk says: In calculating correlation there is no gene that have non NA values is all samples"
+    )
+  } else if (nrow(.data) < 100) {
+    message(
+      "tidybulk says: In calculating correlation there is < 100 genes (that have non NA values) is all samples.
+The correlation calculation might not be reliable"
+    )
+  }
+  
+  .data = 
+    .data %>%
+    
+    as_tibble(rownames="transcript") %>%
+    
+    # Prepare the data frame
+    gather(sample,abundance,-transcript) %>%
+    {
+      if (of_samples) {
+        dplyr::rename(., rc = abundance,
+                      element = sample,
+                      feature = transcript)
+      } else {
+        dplyr::rename(., rc = abundance,
+                      element = transcript,
+                      feature = sample)
+      }
+    } %>%
+    
+    # Is this necessary?
+    mutate_if(is.factor, as.character) %>%
+    
+    # Run pairwise correlation and return a tibble
+    widyr::pairwise_cor(
+      element,
+      feature,
+      rc,
+      sort = TRUE,
+      diag = FALSE,
+      upper = FALSE
+    ) %>%
+    filter(correlation > correlation_threshold) %>%
+    distinct(item1) %>%
+    pull(item1)
+  
+}
+
+#' Identifies the closest pairs in a MDS context and return one of them
+#' 
+#' @importFrom dplyr rowwise
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom stats setNames
+#' @importFrom stats dist
+#'
+#' @param .data A tibble
+#' @param of_samples A boolean
+#'
+#' @return A tibble with pairs dropped
+#'
+#'
+remove_redundancy_elements_though_reduced_dimensions_SE <-
+  function(.data) {
+    # This function identifies the closest pairs and return one of them
+    
+    
+    # Calculate distances
+    .data %>%
+      dist() %>%
+      
+      # Prepare matrix
+      as.matrix() %>%
+      as_tibble(rownames = "sample a") %>%
+      gather(`sample b`, dist,-`sample a`) %>%
+      filter(`sample a` != `sample b`) %>%
+      
+      # Sort the elements of the two columns to avoid eliminating all samples
+      rowwise() %>%
+      mutate(
+        `sample 1` = c(`sample a`, `sample b`) %>% sort() %>% `[`(1),
+        `sample 2` = c(`sample a`, `sample b`) %>% sort() %>% `[`(2)
+      ) %>%
+      ungroup() %>%
+      select(`sample 1`, `sample 2`, dist) %>%
+      distinct() %>%
+      
+      # Select closestpairs
+      select_closest_pairs %>%
+      
+      # Select pair to keep
+      pull(1)
+    
+  }
+

@@ -155,3 +155,107 @@ setMethod("cluster_elements",
           "RangedSummarizedExperiment",
           .cluster_elements_se)
 
+#' Get K-mean clusters to a tibble
+#'
+#' @keywords internal
+#' @noRd
+#'
+#'
+#'
+#' @import tibble
+#' @importFrom stats kmeans
+#' @importFrom rlang :=
+#' @importFrom purrr map2_dfr
+#' @importFrom magrittr "%$%"
+#' @importFrom dplyr distinct count desc summarise starts_with n
+#' @importFrom purrr map2
+#'
+#' @param .data A tibble
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
+#' @param of_samples A boolean
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param ... Further parameters passed to the function kmeans
+#'
+#' @return A tibble with additional columns
+#'
+#'
+get_clusters_kmeans_bulk_SE <-
+  function(.data,
+           of_samples = TRUE,
+           transform = log1p,
+           ...) {
+    
+    # Fix NOTEs
+    cluster = NULL
+    seurat_clusters = NULL
+    
+    # Check if centers is in dots
+    dots_args = rlang::dots_list(...)
+    if ("centers" %in% names(dots_args) %>% not())
+      stop("tidybulk says: for kmeans you need to provide the \"centers\" integer argument")
+    
+    .data = 
+      .data %>%
+      
+      # Check if log transform is needed
+      transform() 
+    
+    # Decide if of samples or transcripts
+    if (of_samples) 
+      .data = .data |> t()
+    
+    
+    # Wrap the do.call because of the centrers check
+    
+    do.call(kmeans, list(x = .data, iter.max = 1000) %>% c(dots_args)) %$%
+      cluster
+    
+  }
+
+#' Get SNN shared nearest neighbour clusters to a tibble
+#'
+#' @keywords internal
+#' @noRd
+#'
+#'
+#'
+#' @import tibble
+#' @importFrom rlang :=
+#'
+#' @param .data A tibble
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally samples)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
+#' @param of_samples A boolean
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param ... Further parameters passed to the function kmeans
+#'
+#' @return A tibble with additional columns
+#'
+get_clusters_SNN_bulk_SE <-
+  function(.data,
+           of_samples = TRUE,
+           transform = log1p,
+           ...) {
+    
+    
+    # Check if package is installed, otherwise install
+    check_and_install_packages(c("cluster", "Seurat", "KernSmooth"))
+    
+    ndims = min(c(nrow(.data), ncol(.data), 30))-1
+    
+    .data %>%
+      Seurat::CreateSeuratObject() %>%
+      Seurat::ScaleData(display.progress = TRUE,
+                        num.cores = 4,
+                        do.par = TRUE) %>%
+      Seurat::FindVariableFeatures(selection.method = "vst") %>%
+      Seurat::RunPCA(npcs = ndims) %>%
+      Seurat::FindNeighbors(dims = 1:ndims) %>%
+      Seurat::FindClusters(method = "igraph", ...) %>%
+      .[["seurat_clusters"]] %$%
+      seurat_clusters
+    
+  }

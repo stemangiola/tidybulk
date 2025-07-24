@@ -110,3 +110,47 @@ setMethod("keep_variable",
           "RangedSummarizedExperiment",
           .keep_variable_se)
 
+
+
+#' Identify variable genes for dimensionality reduction
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom Matrix rowMeans
+#'
+#' @param .data A tibble
+#' @param .sample A character name of the sample column
+#' @param .transcript A character name of the transcript/gene column
+#' @param .abundance A character name of the read count column
+#' @param top An integer. How many top genes to select
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#'
+#' @return A tibble filtered genes
+#'
+keep_variable_transcripts_SE = function(.data,
+                                        top = 500,
+                                        transform = log1p) {
+  
+  
+  # Manage Inf
+  top = min(top, .data %>% nrow)
+  
+  message(sprintf("Getting the %s most variable genes", top))
+  
+  x =
+    .data %>%
+    
+    # Check if log transform is needed
+    transform()
+  
+  
+  s <- rowMeans((x - rowMeans(x, na.rm=TRUE)) ^ 2, na.rm=TRUE)
+  o <- order(s, decreasing = TRUE)
+  x <- x[o[1L:top], , drop = FALSE]
+  variable_trancripts = rownames(x)
+  
+  .data[variable_trancripts,]
+  
+}
+

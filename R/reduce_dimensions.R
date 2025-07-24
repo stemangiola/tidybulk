@@ -238,3 +238,371 @@ setMethod("reduce_dimensions",
           "RangedSummarizedExperiment",
           .reduce_dimensions_se)
 
+
+
+
+#' Get dimensionality information to a tibble using MDS
+#'
+#' @keywords internal
+#' @noRd
+#'
+#'
+#'
+#' @import tibble
+#' @importFrom purrr map_dfr
+#' @importFrom rlang :=
+#' @importFrom stats setNames
+#'
+#' @param .data A tibble
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param top An integer. How many top genes to select
+#' @param of_samples A boolean
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param scale A boolean
+#'
+#' @return A tibble with additional columns
+#'
+#'
+get_reduced_dimensions_MDS_bulk_SE <-
+  function(.data,
+           .dims = 2,
+           top = 500,
+           of_samples = TRUE,
+           transform = log1p,
+           scale = NULL # This is only a dummy argument for making it compatibble with PCA
+  ) {
+    # Comply with CRAN NOTES
+    . = NULL
+    Component = NULL
+    `Component value` = NULL
+    
+    # Get components from dims
+    components = 1:.dims
+    
+    
+    # Convert components to components list
+    if((length(components) %% 2) != 0 ) components = components %>% append(components[1])
+    components_list = split(components, ceiling(seq_along(components)/2))
+    
+    # Loop over components list and calculate MDS. (I have to make this process more elegant)
+    mds_object =
+      components_list %>%
+      map(
+        ~ .data %>%
+          limma::plotMDS(dim.plot = .x, plot = FALSE, top = top)
+      )
+    
+    # Return
+    list(
+      raw_result = mds_object,
+      result =
+        map2_dfr(
+          mds_object, components_list,
+          ~ {
+            
+            # Change of function from Bioconductor 3_13 of plotMDS
+            my_rownames = .x %>% when(
+              "distance.matrix.squared" %in% names(.x) ~ .x$distance.matrix.squared,
+              ~ .x$distance.matrix
+            ) %>%
+              rownames()
+            
+            tibble(my_rownames, .x$x, .x$y) %>%
+              rename(
+                sample := my_rownames,
+                !!as.symbol(.y[1]) := `.x$x`,
+                !!as.symbol(.y[2]) := `.x$y`
+              ) %>%
+              gather(Component, `Component value`,-sample)
+            
+          }
+          
+          
+        )  %>%
+        distinct() %>%
+        pivot_wider(names_from = Component, values_from = `Component value`) %>%
+        setNames(c((.) %>% select(1) %>% colnames(),
+                   paste0("Dim", (.) %>% select(-1) %>% colnames())
+        )) %>%
+        select(-sample)
+    )
+    
+    
+  }
+
+
+
+
+
+#' Get principal component information to a tibble using PCA
+#'
+#' @keywords internal
+#' @noRd
+#'
+#'
+#'
+#' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats prcomp
+#' @importFrom utils capture.output
+#' @importFrom magrittr divide_by
+#' @importFrom Matrix t
+#'
+#' @param .data A tibble
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param top An integer. How many top genes to select
+#' @param of_samples A boolean
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param scale A boolean
+#' @param ... Further parameters passed to the function prcomp
+#'
+#' @return A tibble with additional columns
+#'
+#'
+get_reduced_dimensions_PCA_bulk_SE <-
+  function(.data,
+           .dims = 2,
+           top = 500,
+           of_samples = TRUE,
+           transform = log1p,
+           scale = FALSE,
+           ...) {
+    # Comply with CRAN NOTES
+    . = NULL
+    sdev = NULL
+    x = NULL
+    
+    # Get components from dims
+    components = 1:.dims
+    
+    
+    
+    # check that there are non-NA genes for enough samples
+    if (nrow(.data) == 0) 
+      stop(
+        "tidybulk says: In calculating PCA there is no gene that have non NA values is all samples"
+      )
+    else if (nrow(.data) < 100) 
+      warning(
+        "
+					tidybulk says: In PCA correlation there is < 100 genes that have non NA values is all samples.
+The correlation calculation would not be reliable,
+we suggest to partition the dataset for sample clusters.
+					"
+      )
+    
+    
+    prcomp_obj =
+      .data %>%
+      
+      t() %>%
+      
+      # Calculate principal components
+      prcomp(scale = scale, ...)
+    
+    # Return
+    list(
+      raw_result = prcomp_obj,
+      result =
+        prcomp_obj %>%
+        
+        # Anonymous function - Prints fraction of variance
+        # input: PCA object
+        # output: PCA object
+        {
+          message("Fraction of variance explained by the selected principal components")
+          
+          (.) %$% sdev %>% pow(2) %>% # Eigen value
+            divide_by(sum(.)) %>%
+            `[` (components) %>%
+            enframe() %>%
+            select(-name) %>%
+            rename(`Fraction of variance` = value) %>%
+            mutate(PC = components) %>%
+            capture.output() %>% paste0(collapse = "\n") %>% message()
+          
+          (.)
+          
+        } %$%
+        
+        # Parse the PCA results to a tibble
+        x %>%
+        as_tibble(rownames = "sample") %>%
+        select(sprintf("PC%s", components))
+    )
+    
+    
+  }
+
+#' Get principal component information to a tibble using tSNE
+#'
+#' @keywords internal
+#' @noRd
+#'
+#'
+#'
+#' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats setNames
+#' @importFrom Matrix t
+#'
+#' @param .data A tibble
+#' @param .abundance A column symbol with the value the clustering is based on (e.g., `count`)
+#' @param .dims A integer vector corresponding to principal components of interest (e.g., 1:6)
+#' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally samples)
+#' @param top An integer. How many top genes to select
+#' @param of_samples A boolean
+#' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
+#' @param scale A boolean
+#' @param ... Further parameters passed to the function Rtsne
+#'
+#' @return A tibble with additional columns
+#'
+get_reduced_dimensions_TSNE_bulk_SE <-
+  function(.data,
+           .dims = 2,
+           top = 500,
+           of_samples = TRUE,
+           transform = log1p,
+           scale = NULL, # This is only a dummy argument for making it compatibble with PCA
+           ...) {
+    # Comply with CRAN NOTES
+    . = NULL
+    Y = NULL
+    
+    # To avoid dplyr complications
+    
+    
+    # Evaluate ...
+    arguments <- list(...)
+    if (!"check_duplicates" %in% names(arguments))
+      arguments = arguments %>% c(check_duplicates = FALSE)
+    if (!"verbose" %in% names(arguments))
+      arguments = arguments %>% c(verbose = TRUE)
+    if (!"dims" %in% names(arguments))
+      arguments = arguments %>% c(dims = .dims)
+    
+    
+    # Check if package is installed, otherwise install
+    check_and_install_packages("Rtsne")
+    
+    
+    # Set perprexity to not be too high
+    if (!"perplexity" %in% names(arguments))
+      arguments = arguments %>% c(perplexity = ((
+        .data %>% ncol() %>% sum(-1)
+      ) / 3 / 2) %>% floor() %>% min(30))
+    
+    # If not enough samples stop
+    if (arguments$perplexity <= 2)
+      stop("tidybulk says: You don't have enough samples to run tSNE")
+    
+    tsne_obj = .data |> t() |> as.matrix() |>  list() |> c(arguments) |> do.call(Rtsne::Rtsne, args = _)
+    
+    
+    
+    list(
+      raw_result = tsne_obj,
+      result = tsne_obj %$%
+        Y %>%
+        as_tibble(.name_repair = "minimal") %>%
+        setNames(paste0("tSNE", seq_len(ncol(tsne_obj$Y)))) %>%
+        
+        # add element name
+        dplyr::mutate(sample = !!.data %>% colnames) %>%
+        select(-sample)
+    )
+    
+  }
+
+#' Get UMAP reduced dimensions
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @import tibble
+#' @importFrom rlang :=
+#' @importFrom stats setNames
+#'
+#' @param .data A SummarizedExperiment object containing the data to be reduced
+#' @param .dims An integer specifying the number of UMAP dimensions to return (default = 2)
+#' @param top An integer specifying how many top variable features to select
+#' @param of_samples A boolean indicating whether to calculate for samples (TRUE) or features (FALSE)
+#' @param transform A function to transform the abundance values (default = log1p)
+#' @param scale A boolean indicating whether to scale the data before UMAP (default = NULL, only used for PCA compatibility)
+#' @param calculate_for_pca_dimensions An integer specifying the number of PCA dimensions to use as UMAP input. 
+#'                                    If NULL, variable features are used directly without PCA reduction.
+#' @param ... Additional arguments passed to uwot::tumap()
+#'
+#' @return A list containing:
+#'   \item{raw_result}{The raw UMAP object from uwot}
+#'   \item{result}{A tibble with UMAP coordinates (UMAP1, UMAP2, etc.)}
+#'
+get_reduced_dimensions_UMAP_bulk_SE <-
+  function(.data,
+           .dims = 2,
+           top = 500,
+           of_samples = TRUE,
+           transform = log1p,
+           scale = NULL, # This is only a dummy argument for making it compatibble with PCA
+           calculate_for_pca_dimensions = min(20, top),
+           ...) {
+    # Comply with CRAN NOTES
+    . = NULL
+    x = NULL
+    
+    # To avoid dplyr complications
+    
+    # Evaluate ...
+    arguments <- list(...)
+    # if (!"check_duplicates" %in% names(arguments))
+    #   arguments = arguments %>% c(check_duplicates = FALSE)
+    if (!"dims" %in% names(arguments))
+      arguments = arguments %>% c(n_components = .dims)
+    if (!"init" %in% names(arguments))
+      arguments = arguments %>% c(init = "spca")
+    
+    
+    # Check if package is installed, otherwise install
+    check_and_install_packages("uwot")
+    
+    
+    # Calculate based on PCA
+    if(!is.null(calculate_for_pca_dimensions))
+      df_UMAP =
+      .data %>%
+      
+      t() %>%
+      
+      # Calculate principal components
+      prcomp(scale = scale) %$%
+      
+      # Parse the PCA results to a tibble
+      x %>%
+      .[,1:calculate_for_pca_dimensions]
+    
+    # Calculate based on all features
+    else
+      df_UMAP = .data |> t() |>  as.matrix()
+    
+    umap_obj = do.call(uwot::tumap, c(list(df_UMAP), arguments))
+    
+    list(
+      raw_result = umap_obj,
+      result = umap_obj  %>%
+        as_tibble(.name_repair = "minimal") %>%
+        setNames(paste0("UMAP", seq_len(ncol(umap_obj)))) %>%
+        
+        # add element name
+        dplyr::mutate(sample = !!.data %>% colnames) %>%
+        select(-sample)
+    )
+    
+  }

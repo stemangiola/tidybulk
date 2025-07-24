@@ -1581,3 +1581,205 @@ run_epic = function(mix, reference = NULL) {
   
   results
 }
+
+
+
+counts_scaled_exist_SE = function(.data){
+  
+  ("tt_columns" %in% (.data %>%
+                        attr("internal") %>% names())) &&
+    (
+      .data %>%
+        attr("internal") %$%
+        tt_columns %>%
+        names() %>%
+        grep("scaled", .) %>%
+        length() %>%
+        equals(1)
+    )
+}
+
+get_assay_scaled_if_exists_SE = function(.data){
+  if(counts_scaled_exist_SE(.data))
+    .data %>%
+    attr("internal") %$%
+    tt_columns %$%
+    .abundance_scaled %>%
+    quo_name()
+  else
+    .data %>%
+    assays() %>%
+    names() %>%
+    head(1)
+}
+
+filter_if_abundant_were_identified = function(.data){
+  # Filter abundant if performed
+  if (".abundant" %in% (rowData(.data) %>% colnames())) {
+    .data[rowData(.data)[,".abundant"],]
+  } else {
+    warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")
+    .data
+  }
+}
+
+
+
+#' Resolve complete confounders of non-interest in a data frame
+#'
+#' This internal function identifies and resolves complete confounders among specified columns (factors of non-interest) in a data frame.
+#' For each specified column, a new column with the suffix "___altered" is created to preserve the original values.
+#' The function then examines all pairs of these altered columns to detect and resolve complete confounding relationships.
+#' Additionally, it checks for columns with only one unique value, which cannot be estimated in a linear model, and issues a warning if any are found.
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom stringr str_remove
+#' @importFrom stringr str_subset
+#' @importFrom dplyr across
+#' @importFrom dplyr n_distinct
+#' @importFrom tibble as_tibble
+#'
+#' @param df A data frame containing the data to be checked for confounders.
+#' @param ... Unquoted column names to consider as confounders (factors of non-interest).
+#'
+#' @return A data frame with new columns (with "___altered" suffix) where confounders have been resolved.
+#'
+.resolve_complete_confounders_of_non_interest_df <- function(df, ...) {
+  
+  # Step 1: Create new columns with ___altered suffix for each specified confounder
+  df <- df |>
+    mutate(across(c(...), ~ .x, .names = "{col}___altered"))
+  
+  # Step 2: Identify all pairs of altered columns to check for complete confounding
+  combination_of_factors_of_NON_interest <-
+    df |>
+    select(ends_with("___altered")) |>
+    colnames() |>
+    combn(2) |>
+    t() |>
+    as_tibble() |>
+    set_names(c("factor_1", "factor_2"))
+  
+  # Step 3: Inform the user about the new columns created
+  message(
+    "tidybulk says: New columns created with resolved confounders: ",
+    paste0(colnames(df) |> str_subset("___altered"), collapse = ", ")
+  )
+  
+  # Step 4: For each pair of altered columns, resolve complete confounding if present
+  for (i in seq_len(nrow(combination_of_factors_of_NON_interest))) {
+    df <-
+      df |>
+      resolve_complete_confounders_of_non_interest_pair_df(
+        !!as.symbol(combination_of_factors_of_NON_interest[i, ]$factor_1),
+        !!as.symbol(combination_of_factors_of_NON_interest[i, ]$factor_2)
+      )
+  }
+  
+  # Step 5: Check for columns with only one unique value (cannot be estimated in a linear model)
+  single_value_cols <- df |>
+    select(ends_with("___altered")) |>
+    summarise(across(everything(), ~ n_distinct(.x))) |>
+    pivot_longer(everything()) |>
+    filter(value == 1) |>
+    pull(name)
+  
+  if (length(single_value_cols) > 0) {
+    warning(
+      "tidybulk says: The following columns have only one unique value and cannot be estimated by a linear model: ",
+      paste(single_value_cols, collapse = ", ")
+    )
+  }
+  
+  # Step 6: Return the modified data frame with resolved confounders
+  df
+}
+
+#' Resolve Complete Confounders of Non-Interest
+#'
+#' This function processes a SummarizedExperiment object to handle confounders
+#' that are not of interest in the analysis. It deals with two factors, adjusting
+#' the data by nesting and summarizing over these factors.
+#'
+#' @importFrom rlang enquo
+#' @importFrom rlang quo_name
+#' @importFrom rlang !!
+#' @importFrom tidyr unnest
+#' @importFrom tidyr nest
+#' @importFrom dplyr mutate
+#' @importFrom dplyr arrange
+#' @importFrom dplyr slice
+#' @importFrom dplyr pull
+#' @importFrom dplyr select
+#' @importFrom purrr map_int
+#' @importFrom dplyr if_else
+#'
+#' @param se A SummarizedExperiment object that contains the data to be processed.
+#' @param .factor_1 A symbol or quosure representing the first factor variable in `se`.
+#' @param .factor_2 A symbol or quosure representing the second factor variable in `se`.
+#' @return A modified SummarizedExperiment object with confounders resolved.
+#' @examples
+#' # Not run:
+#' # se is a SummarizedExperiment object
+#' resolve_complete_confounders_of_non_interest(se, .factor_1 = factor1, .factor_2 = factor2)
+#' @noRd
+resolve_complete_confounders_of_non_interest_pair_df <- function(df, .factor_1, .factor_2){
+  
+  # Fix NOTEs
+  . = NULL
+  
+  .factor_1 = enquo(.factor_1)
+  .factor_2 = enquo(.factor_2)
+  
+  cd =
+    df |>
+    as_tibble() |>
+    rowid_to_column() |>
+    distinct(rowid, !!.factor_1, !!.factor_2) |>
+    
+    nest(se_data = -c(!!.factor_1, !!.factor_2)) |>
+    nest(data = -!!.factor_1) |>
+    mutate(n1 = map_int(data, ~ .x |> distinct(!!.factor_2) |> nrow())) |>
+    unnest(data) |>
+    
+    # Nest data excluding .factor_2 and count distinct .factor_1 values
+    nest(data = -!!.factor_2) |>
+    mutate(n2 = map_int(data, ~ .x |> distinct(!!.factor_1) |> nrow())) |>
+    unnest(data)
+  
+  # Choose a dummy value for .factor_2 based on sorting by n1 + n2
+  dummy_factor_2 <- cd |> arrange(desc(n1 + n2)) |> slice(1) |> pull(!!.factor_2)
+  
+  # Messages if I have confounders
+  if(cd |> filter(n1 + n2 < 3) |> nrow() > 0){
+    
+    message(sprintf("tidybulk says: IMPORTANT! the columns %s and %s, have been corrected for complete confounders and now are NOT interpretable. \n      They cannot be used in hypothesis testing. However they can be used in the model to capture the unwanted variability in the data.", quo_name(.factor_1), quo_name(.factor_2)))
+    
+    message(sprintf(
+      "tidybulk says: The value(s) %s in column %s from sample(s) %s, has been changed to %s.",
+      cd |> filter(n1 + n2 < 3) |> pull(!!.factor_2),
+      quo_name(.factor_2),
+      cd |> filter(n1 + n2 < 3) |> pull(se_data) |> map(colnames) |> unlist(),
+      dummy_factor_2
+    ))
+    
+    # Replace .factor_2 with dummy_factor_2 where n1 + n2 is less than 3 and unnest
+    cd = cd |>
+      mutate(!!.factor_2 := if_else(n1 + n2 < 3, dummy_factor_2, !!.factor_2))
+  }
+  
+  df[,c(quo_name(.factor_1), quo_name(.factor_2))] =
+    cd |>
+    unnest(se_data) |>
+    arrange(rowid) |>
+    select(!!.factor_1, !!.factor_2)
+  
+  df
+}
+
+# Global variable declarations to avoid R CMD check warnings
+globalVariables(c("transcript", "read count", "n", "m", ".", ".feature", ".abundance_scaled", 
+                  "tt_columns", "seurat_clusters", "cluster", "tagwise.dispersion", "Component", 
+                  "Component value", "sdev", "name", "value", "x", "Y", "x"))

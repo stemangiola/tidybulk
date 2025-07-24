@@ -275,3 +275,133 @@ setMethod(
 )
 
 
+
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom stringr str_remove
+#' @importFrom stringr str_replace_all
+#'
+multivariable_differential_tissue_composition_SE = function(
+    deconvoluted,
+    method,
+    .my_formula,
+    min_detected_proportion
+){
+  # Fix NOTEs
+  . = NULL
+  constrast = NULL
+  results_regression =
+    deconvoluted %>%
+    as_tibble(rownames = "sample") %>%
+    
+    # Replace 0s - before
+    mutate(across(starts_with(method), function(.x) if_else(.x==0, min_detected_proportion, .x))) %>%
+    mutate(across(starts_with(method), boot::logit)) %>%
+    
+    # Rename columns - after
+    setNames(
+      str_remove(colnames(.), sprintf("%s:", method)) %>%
+        str_replace_all("[ \\(\\)]", "___")
+    ) %>%
+    
+    # Beta or Cox
+    when(
+      grepl("Surv", .my_formula) %>% any ~ {
+        # Check if package is installed, otherwise install
+        check_and_install_packages(c("survival", "boot"))
+        
+        
+        (.) %>%
+          survival::coxph(.my_formula, .)	%>%
+          broom::tidy()
+      } ,
+      ~ {
+        (.) %>%
+          lm(.my_formula, .) %>%
+          broom::tidy() %>%
+          filter(term != "(Intercept)")
+      }
+    )
+  
+  # Join results
+  deconvoluted %>%
+    as_tibble(rownames = "sample") %>%
+    pivot_longer(
+      names_prefix = sprintf("%s: ", method),
+      cols = starts_with(method),
+      names_to = ".cell_type",
+      values_to = ".proportion"
+    ) %>%
+    tidyr::nest(cell_type_proportions = -.cell_type) %>%
+    bind_cols(
+      results_regression %>%
+        select(-term)
+    )
+}
+
+univariable_differential_tissue_composition_SE = function(
+    deconvoluted,
+    method,
+    .my_formula,
+    min_detected_proportion
+){
+  # Fix NOTEs
+  . = NULL
+  .cell_type = NULL
+  .proportion = NULL
+  surv_test = NULL
+  deconvoluted %>%
+    as_tibble(rownames = "sample") %>%
+    
+    # Test
+    pivot_longer(
+      names_prefix = sprintf("%s: ", method),
+      cols = starts_with(method),
+      names_to = ".cell_type",
+      values_to = ".proportion"
+    ) %>%
+    
+    # Replace 0s
+    mutate(.proportion_0_corrected = if_else(.proportion==0, min_detected_proportion, .proportion)) %>%
+    
+    # Test survival
+    tidyr::nest(cell_type_proportions = -.cell_type) %>%
+    mutate(surv_test = map(
+      cell_type_proportions,
+      ~ {
+        if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
+        
+        # See if regression if censored or not
+        .x %>%
+          when(
+            grepl("Surv", .my_formula) %>% any ~ {
+              # Check if package is installed, otherwise install
+              check_and_install_packages(c("survival", "boot"))
+              
+              
+              (.) %>%
+                mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
+                survival::coxph(.my_formula, .)	%>%
+                broom::tidy() %>%
+                select(-term)
+            } ,
+            ~ {
+              # Check if package is installed, otherwise install
+              check_and_install_packages("betareg")
+              
+              (.) %>%
+                betareg::betareg(.my_formula, .) %>%
+                broom::tidy() %>%
+                filter(component != "precision") %>%
+                pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
+                select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
+                select(-component)
+            }
+          )
+      }
+    )) %>%
+    
+    unnest(surv_test, keep_empty = TRUE)
+}

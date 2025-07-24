@@ -389,3 +389,697 @@ setMethod(
 )
 
 
+
+
+#' Get differential transcription information to a tibble using edgeR.
+#'
+#' @keywords internal
+#' @noRd
+#'
+#'
+#'
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom purrr when
+#' @importFrom magrittr extract2
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param test_above_log2_fold_change A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
+#'
+#' @return A tibble with edgeR results
+#'
+get_differential_transcript_abundance_bulk_SE <- function(
+    .data,
+    .formula,
+    abundance = assayNames(.data)[1],
+    sample_annotation,
+    .contrasts = NULL,
+    method = "edgeR_quasi_likelihood",
+    test_above_log2_fold_change = NULL,
+    scaling_method = "TMM",
+    omit_contrast_in_colnames = FALSE,
+    prefix = "",
+    ...,
+    .abundance = NULL
+) {
+  # Deprecation logic for .abundance
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "get_differential_transcript_abundance_bulk_SE(.abundance)", "get_differential_transcript_abundance_bulk_SE(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
+  my_assay <- abundance
+  
+  # Check if omit_contrast_in_colnames is correctly setup
+  if(omit_contrast_in_colnames & length(.contrasts) > 1){
+    warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+    omit_contrast_in_colnames = FALSE
+  }
+  
+  # Create design matrix
+  design =
+    model.matrix(
+      object = .formula,
+      data = sample_annotation
+    )
+  
+  # Replace `:` with ___ because it creates error with edgeR
+  if(design |> colnames() |> str_detect(":") |> any()) {
+    message("tidybulk says: the interaction term `:` has been replaced with `___` in the design matrix, in order to work with edgeR.")
+    colnames(design) = design |> colnames() |> str_replace(":", "___")
+  }
+  
+  # Print the design column names in case I want contrasts
+  message(
+    sprintf(
+      "tidybulk says: The design column names are \"%s\"",
+      design %>% colnames %>% paste(collapse = ", ")
+    )
+  )
+  
+  if(length(.contrasts) > 0) {
+    my_contrasts = limma::makeContrasts(contrasts = .contrasts, levels = design)
+  } else {
+    my_contrasts = NULL
+  }
+  
+  # Check if package is installed, otherwise install
+  check_and_install_packages("edgeR")
+  
+  # If no assay is specified take first
+  # if(abundance %>% quo_is_symbol()) {
+  #   abundance = quo_name(abundance)
+  # } else {
+  #   abundance = .data |>
+  #     assayNames() |>
+  #     extract2(1)
+  # }	
+  # my_assay = abundance
+  
+  edgeR_object =
+    .data |>
+    assay(my_assay) |>
+    edgeR::DGEList() 
+  
+  if(scaling_method != "none")
+    edgeR_object = edgeR_object %>% edgeR::calcNormFactors(method = scaling_method)
+  
+  
+  
+  
+  if(tolower(method) ==  "edger_likelihood_ratio")
+    edgeR_object = edgeR_object %>% edgeR::estimateDisp(design) %>% edgeR::glmFit(design)
+  else if(tolower(method) ==  "edger_quasi_likelihood")
+    edgeR_object = edgeR_object %>% edgeR::estimateDisp(design) %>% edgeR::glmQLFit(design)
+  else if(tolower(method) == "edger_robust_likelihood_ratio")
+    edgeR_object = edgeR_object %>% edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
+  
+  
+  
+  # Return
+  if(my_contrasts %>% is.null | omit_contrast_in_colnames)	{
+    if(!is.null(test_above_log2_fold_change))
+      edgeR_object = edgeR_object %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change)
+    else if(tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio"))
+      edgeR_object = edgeR_object %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts)
+    else if(tolower(method) ==  "edger_quasi_likelihood")
+      edgeR_object = edgeR_object %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
+    else
+      stop("tidybulk says: method not supported")	
+    
+    
+    # Convert to tibble
+    result = 
+      edgeR_object %>% 
+      edgeR::topTags(n = Inf) %$%
+      table %>%
+      as_tibble(rownames = "transcript") %>%
+      
+      # # Mark DE genes
+      # mutate(significant = FDR < significance_threshold) 	%>%
+      
+      # Arrange
+      arrange(FDR)
+  }  else {
+    
+    result = 
+      
+      1:ncol(my_contrasts) %>%
+      map_dfr(~ {
+        if(!is.null(test_above_log2_fold_change))
+          edgeR_object = edgeR_object %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change)
+        else if(tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio"))
+          edgeR_object = edgeR_object %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts)
+        else if(tolower(method) ==  "edger_quasi_likelihood")
+          edgeR_object = edgeR_object %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
+        else
+          stop("tidybulk says: method not supported")	
+        
+        edgeR_object %>%
+          
+          
+          # Convert to tibble
+          edgeR::topTags(n = Inf) %$%
+          table %>%
+          as_tibble(rownames = "transcript") %>%
+          mutate(constrast = colnames(my_contrasts)[.x])
+      }) %>%
+      pivot_wider(values_from = -c(transcript, constrast),
+                  names_from = constrast, names_sep = "___")
+  }
+  
+  if (exists("result") && !is.null(result)) {
+    result <- result |>
+      setNames(c(
+        colnames(result)[1],
+        sprintf("%s%s", prefix, colnames(result)[2:ncol(result)])
+      ))
+    
+    list(
+      result_raw = edgeR_object,
+      result = result
+    )
+  } else {
+    stop("tidybulk says: Internal error -- result object was not created in get_differential_transcript_abundance_bulk_SE.")
+  }
+  
+  
+  
+  
+  
+  
+}
+
+
+#' Get differential transcription information to a tibble using voom.
+#'
+#' @keywords internal
+#' @noRd
+#'
+#'
+#'
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom purrr when
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .contrasts A character vector. See voom makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "limma_voom", "limma_voom_sample_weights"
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
+#'
+#' @return A tibble with voom results
+#'
+get_differential_transcript_abundance_bulk_voom_SE <- function(
+    .data,
+    .formula,
+    abundance = assayNames(.data)[1],
+    sample_annotation,
+    .contrasts = NULL,
+    method = "limma_voom",
+    test_above_log2_fold_change = NULL,
+    scaling_method = "TMM",
+    omit_contrast_in_colnames = FALSE,
+    prefix = "",
+    ...,
+    .abundance = NULL
+) {
+  # Deprecation logic for .abundance
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "get_differential_transcript_abundance_bulk_voom_SE(.abundance)", "get_differential_transcript_abundance_bulk_voom_SE(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
+  my_assay <- abundance
+  
+  # Check if omit_contrast_in_colnames is correctly setup
+  if(omit_contrast_in_colnames & length(.contrasts) > 1){
+    warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+    omit_contrast_in_colnames = FALSE
+  }
+  
+  
+  # Create design matrix
+  design =
+    model.matrix(
+      object = .formula,
+      data = sample_annotation
+    )
+  
+  # Print the design column names in case I want contrasts
+  message(
+    sprintf(
+      "tidybulk says: The design column names are \"%s\"",
+      design %>% colnames %>% paste(collapse = ", ")
+    )
+  )
+  
+  # Check if package is installed, otherwise install
+  check_and_install_packages("limma")
+  
+  if(length(.contrasts) > 0) {
+    my_contrasts =
+      limma::makeContrasts(contrasts = .contrasts, levels = design)
+  } else {
+    my_contrasts = NULL
+  }
+  
+  
+  
+  # If no assay is specified take first
+  # my_assay = ifelse(
+  #   abundance %>% quo_is_symbol(),
+  #   quo_name(abundance),
+  #   .data |>
+  #     assayNames() |>
+  #     extract2(1)
+  # )
+  
+  voom_object =
+    .data %>%
+    
+    assay(my_assay) |>
+    edgeR::DGEList() 
+  
+  # Scale data if method is not "none"
+  # use if else instead of when
+  if(scaling_method != "none")
+    voom_object = voom_object %>% edgeR::calcNormFactors(method = scaling_method)
+  
+  
+  if(tolower(method) == "limma_voom")
+    voom_object = voom_object %>% limma::voom(design, plot=FALSE)
+  else if(tolower(method) == "limma_voom_sample_weights")
+    voom_object = voom_object %>% limma::voomWithQualityWeights(design, plot=FALSE)
+  else
+    stop("tidybulk says: method not supported")
+  
+  # select method
+  voom_object = 
+    voom_object %>%
+    
+    limma::lmFit(design)
+  
+  # Return
+  
+  
+  if(my_contrasts %>% is.null | omit_contrast_in_colnames) {
+    result = voom_object %>%
+      
+      # Contrasts
+      limma::contrasts.fit(contrasts=my_contrasts, coefficients =  when(my_contrasts, is.null(.) ~ 2)) %>%
+      limma::eBayes() 
+    
+    if(is.null(test_above_log2_fold_change)) {
+      result = result %>% limma::topTable(n = Inf)
+    } else {
+      result = result %>% limma::treat(lfc=test_above_log2_fold_change) %>% limma::topTreat(n = Inf)
+    }
+    
+    
+    result = result %>%
+      # Convert to tibble
+      as_tibble(rownames = "transcript") %>%
+      
+      # # Mark DE genes
+      # mutate(significant = adj.P.Val < significance_threshold) 	%>%
+      
+      # Arrange
+      arrange(adj.P.Val)		
+  } else {
+    
+    
+    result = 
+      1:ncol(my_contrasts) %>%
+      map_dfr(
+        ~ {
+          
+          
+          result = voom_object %>%
+            
+            # Contrasts
+            limma::contrasts.fit(contrasts=my_contrasts[, .x]) %>%
+            limma::eBayes() 
+          
+          if(is.null(test_above_log2_fold_change)) {
+            result = result %>% limma::topTable(n = Inf)
+          } else {
+            result = result %>% limma::treat(lfc=test_above_log2_fold_change) %>% limma::topTreat(n = Inf)
+          }
+          
+          result = result %>%
+            
+            # Convert to tibble
+            as_tibble(rownames = "transcript") %>%
+            mutate(constrast = colnames(my_contrasts)[.x])
+          # %>%
+          #
+          # # Mark DE genes
+          # mutate(significant = adj.P.Val < significance_threshold)
+        }) %>%
+      pivot_wider(values_from = -c(transcript, constrast),
+                  names_from = constrast, names_sep = "___")
+    
+  }
+  
+  
+  result =
+    # Attach prefix
+    result |> setNames(c(
+      colnames(result)[1],
+      sprintf("%s%s", prefix, colnames(result)[2:ncol(result)])
+    ))
+  
+  list(
+    result_raw = voom_object,
+    result = result
+  )
+  
+}
+
+
+#' Get differential transcription information to a tibble using glmmSeq
+#'
+#' @keywords internal
+#' @noRd
+#'
+#'
+#'
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom purrr when
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param .scaling_factor A tidyeval (column name) for the precalculated TMM scaling
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param ... Additional arguments for glmmSeq
+#'
+#' @return A tibble with glmmSeq results
+#'
+get_differential_transcript_abundance_glmmSeq_SE <- function(
+    .data,
+    .formula,
+    abundance = assayNames(.data)[1],
+    .contrasts = NULL,
+    sample_annotation,
+    method,
+    test_above_log2_fold_change = NULL,
+    scaling_method = "TMM",
+    .scaling_factor = NULL,
+    omit_contrast_in_colnames = FALSE,
+    prefix = "",
+    .dispersion = NULL,
+    ...,
+    .abundance = NULL
+) {
+  
+  .dispersion = enquo(.dispersion)
+  .scaling_factor = enquo(.scaling_factor)
+  
+  # Deprecation logic for .abundance
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "get_differential_transcript_abundance_glmmSeq_SE(.abundance)", "get_differential_transcript_abundance_glmmSeq_SE(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
+  my_assay <- abundance
+  
+  # Check if contrasts are of the same form
+  if(
+    .contrasts %>% is.null %>% not() &
+    .contrasts %>% class %>% equals("list") %>% not()
+  )
+    stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
+  
+  # Check if omit_contrast_in_colnames is correctly setup
+  if(omit_contrast_in_colnames & length(.contrasts) > 1){
+    warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+    omit_contrast_in_colnames = FALSE
+  }
+  
+  # # Check if package is installed, otherwise install
+  # if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+  #   message("tidybulk says: Installing edgeR needed for differential transcript abundance analyses")
+  #   if (!requireNamespace("BiocManager", quietly = TRUE))
+  #     install.packages("BiocManager", repos = "https://cloud.r-project.org")
+  #   BiocManager::install("edgeR", ask = FALSE)
+  # }
+  
+  # Check if package is installed, otherwise install
+  check_and_install_packages("glmmSeq")
+  
+  metadata =
+    .data |>
+    colData()
+  
+  counts =
+    .data %>%
+    assay(my_assay)
+  
+  # Create design matrix for dispersion, removing random effects
+  design =
+    model.matrix(
+      object = .formula |> lme4::nobars(),
+      data = metadata
+    )
+  
+  if(.dispersion |> quo_is_symbolic())
+    dispersion = rowData(.data)[,quo_name(.dispersion),drop=FALSE] |> as_tibble(rownames = feature__$name) |> deframe()
+  else
+    dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersion |> setNames(rownames(counts))
+  
+  # # Check dispersion
+  # if(!names(dispersion) |> sort() |> identical(
+  #   rownames(counts) |>
+  #   sort()
+  # )) stop("tidybulk says: The features in the dispersion vector do not overlap with the feature in the assay")
+  
+  # Make sure the order matches the counts
+  dispersion = dispersion[rownames(counts)]
+  
+  # Scaling
+  if(.scaling_factor |> quo_is_symbolic())
+    sizeFactors = .data |> pivot_sample() |> pull(!!.scaling_factor)
+  else
+    sizeFactors <- counts |> edgeR::calcNormFactors(method = scaling_method)
+  
+  
+  glmmSeq_object =
+    glmmSeq( .formula,
+             countdata = counts ,
+             metadata =   metadata |> as.data.frame(),
+             dispersion = dispersion,
+             sizeFactors = sizeFactors,
+             progress = TRUE,
+             method = method |> str_remove("(?i)^glmmSeq_" ),
+             ...
+    )
+  
+  glmmSeq_object |>
+    summary_lmmSeq() |>
+    as_tibble(rownames = "transcript") |>
+    mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |>
+    
+    # Attach attributes
+    reattach_internals(.data) %>%
+    
+    # select method
+    memorise_methods_used("glmmSeq") %>%
+    
+    # # Add raw object
+    # attach_to_internals(glmmSeq_object, "glmmSeq") %>%
+    
+    # # Communicate the attribute added
+    # {
+    #   rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
+    #   (.)
+    # }  %>%
+    
+    # Attach prefix
+    setNames(c(
+      colnames(.)[1],
+      sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
+    )) |>
+    
+    list() |>
+    setNames("result") |>
+    c(list(result_raw = glmmSeq_object))
+  
+  
+}
+
+
+#' Get differential transcription information to a tibble using DESeq2
+#'
+#' @keywords internal
+#' @noRd
+#'
+#'
+#'
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom purrr when
+#'
+#'
+#' @param .data A tibble
+#' @param .formula a formula with no response variable, referring only to numeric variables
+#' @param .contrasts A character vector. See edgeR makeContrasts specification for the parameter `contrasts`. If contrasts are not present the first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
+#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT)
+#' @param scaling_method A character string. The scaling method passed to the backend function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
+#' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
+#' @param ... Additional arguments for DESeq2
+#'
+#' @return A tibble with DESeq2 results
+#'
+get_differential_transcript_abundance_deseq2_SE <- function(.data,
+                                                            .formula,
+                                                            abundance = assayNames(.data)[1],
+                                                            
+                                                            .abundance = NULL,
+                                                            .contrasts = NULL,
+                                                            method = "deseq2",
+                                                            
+                                                            test_above_log2_fold_change = NULL,
+                                                            
+                                                            scaling_method = "TMM",
+                                                            omit_contrast_in_colnames = FALSE,
+                                                            prefix = "",
+                                                            ...) {
+  
+  # Deprecation logic for .abundance (symbolic)
+  if (!is.null(.abundance)) {
+    lifecycle::deprecate_warn("2.0.0", "get_differential_transcript_abundance_deseq2_SE(.abundance)", "get_differential_transcript_abundance_deseq2_SE(abundance)")
+    if (missing(abundance) || is.null(abundance)) {
+      abundance <- rlang::as_name(rlang::ensym(.abundance))
+    }
+  }
+  
+  .abundance <- rlang::enquo(.abundance)
+  
+  # Fix NOTEs
+  . = NULL
+  pvalue = NULL
+  padj = NULL
+  
+  # Check if contrasts are of the same form
+  if(
+    .contrasts %>% is.null %>% not() &
+    .contrasts %>% class %>% equals("list") %>% not()
+  )
+    stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
+  
+  # Check if omit_contrast_in_colnames is correctly setup
+  if(omit_contrast_in_colnames & length(.contrasts) > 1){
+    warning("tidybulk says: you can omit contrasts in column names only when maximum one contrast is present")
+    omit_contrast_in_colnames = FALSE
+  }
+  
+  # Check if package is installed, otherwise install
+  check_and_install_packages("DESeq2")
+  
+  
+  if (is.null(test_above_log2_fold_change)) {
+    test_above_log2_fold_change <- 0
+  }
+  
+  my_contrasts = .contrasts
+  
+  # If no assay is specified take first
+  my_assay <- abundance
+  
+  deseq2_object =
+    
+    # DESeq2
+    DESeq2::DESeqDataSetFromMatrix(
+      countData = .data |> assay(my_assay),
+      colData = colData(.data),
+      design = .formula
+    ) %>%
+    DESeq2::DESeq(...)
+  
+  # Return
+  list(
+    result_raw = deseq2_object,
+    result =
+      # Read ft object
+      deseq2_object %>%
+      
+      # If I have multiple .contrasts merge the results
+      when(
+        
+        # Simple comparison continuous
+        (my_contrasts %>% is.null ) &
+          (deseq2_object@colData[,parse_formula(.formula)[1]] %>%
+             class %in% c("numeric", "integer", "double")) 	~
+          (.) %>%
+          DESeq2::results(lfcThreshold=test_above_log2_fold_change) %>%
+          as_tibble(rownames = "transcript"),
+        
+        # Simple comparison discrete
+        my_contrasts %>% is.null 	~
+          (.) %>%
+          DESeq2::results(contrast = c(
+            parse_formula(.formula)[1],
+            deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels %>% .[2],
+            deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels |> _[1]
+          ), lfcThreshold=test_above_log2_fold_change) %>%
+          as_tibble(rownames = "transcript"),
+        
+        # Simple comparison discrete
+        my_contrasts %>% is.null %>% not() & omit_contrast_in_colnames	~
+          (.) %>%
+          DESeq2::results(contrast = my_contrasts[[1]], lfcThreshold=test_above_log2_fold_change)%>%
+          as_tibble(rownames = "transcript"),
+        
+        # Multiple comparisons NOT USED AT THE MOMENT
+        ~ {
+          deseq2_obj = (.)
+          
+          1:length(my_contrasts) %>%
+            map_dfr(
+              ~ 	deseq2_obj %>%
+                
+                # select method
+                DESeq2::results(contrast = my_contrasts[[.x]], lfcThreshold=test_above_log2_fold_change)	%>%
+                
+                # Convert to tibble
+                as_tibble(rownames = "transcript") %>%
+                mutate(constrast = sprintf("%s %s-%s", my_contrasts[[.x]][1], my_contrasts[[.x]][2], my_contrasts[[.x]][3]) )
+              
+            ) %>%
+            pivot_wider(values_from = -c(transcript, constrast),
+                        names_from = constrast, names_sep = "___")
+        }
+      )	 %>%
+      
+      # Attach prefix
+      setNames(c(
+        colnames(.)[1],
+        sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
+      ))
+  )
+  
+  
+}
