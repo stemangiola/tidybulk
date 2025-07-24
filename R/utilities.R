@@ -1,6 +1,12 @@
 
 
 
+#' Internal error function for tidybulk
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @return Stops execution with a helpful error message
 my_stop = function() {
   stop("
         tidybulk says: The function does not know what your sample, transcript and counts columns are.
@@ -416,13 +422,7 @@ get_sample = function(.data, .sample){
 get_transcript = function(.data, .transcript){
 
 
-  my_stop = function() {
-    stop("
-        tidybulk says: The function does not know what your sample, transcript and counts columns are.
-	You might need to specify the arguments .sample, .transcript and/or .abundance. 
-	Please read the documentation of this function for more information.
-      ")
-  }
+
 
   if( .transcript %>% quo_is_symbol() ) .transcript = .transcript
   else if(".transcript" %in% (.data %>% get_tt_columns() %>% names))
@@ -564,13 +564,7 @@ get_elements_features_abundance = function(.data, .element, .feature, abundance,
     }
   }
 
-  my_stop = function() {
-    stop("
-          tidybulk says: The function does not know what your sample, transcript and counts columns are.
-	You might need to specify the arguments .sample, .transcript and/or .abundance 
-	Please read the documentation of this function for more information.
-      ")
-  }
+
 
   if( .element %>% quo_is_symbol() ) .element = .element
   else if(of_samples & ".sample" %in% (.data %>% get_tt_columns() %>% names))
