@@ -1,38 +1,5 @@
 
-#' Get matrix from tibble
-#'
-#' @keywords internal
-#' @noRd
-#' 
-#' 
-#' @importFrom magrittr set_rownames
-#' @importFrom rlang quo_is_null
-#'
-#' @param tbl A tibble
-#' @param rownames The column name of the input tibble that will become the rownames of the output matrix
-#' @param do_check A boolean
-#'
-#' @return A matrix
-#'
-#' @examples
-#'
-#' library(tibble)
-#' tibble(.feature = "CD3G", count=1) |> as_matrix(rownames=.feature)
-#'
-as_data_frame <- function(tbl,
-                          rownames = NULL,
-                          do_check = TRUE) {
-  
-  # Fix NOTEs
-  . = NULL
-  
-  rownames = enquo(rownames)
-  df <- tbl %>% as.data.frame()
-  if (!quo_is_null(rownames)) {
-    df <- df %>% magrittr::set_rownames(tbl %>% pull(!!rownames)) %>% select(-1)
-  }
-  df
-}
+
 
 my_stop = function() {
   stop("
@@ -42,73 +9,9 @@ my_stop = function() {
       ")
 }
 
-#' Check whether a numeric vector has been log transformed
-#'
-#' @keywords internal
-#' @noRd
-#'
-#' @param x A numeric vector
-#' @param abundance A character name of the transcript/gene abundance column
-#' @param .abundance DEPRECATED
-#'
-#' @return NA
-error_if_log_transformed <- function(x, abundance, .abundance = NULL) {
-  if (!is.null(.abundance)) {
-    lifecycle::deprecate_warn("2.0.0", "error_if_log_transformed(.abundance)", "error_if_log_transformed(abundance)")
-    if (missing(abundance) || is.null(abundance)) {
-      abundance <- rlang::as_name(rlang::ensym(.abundance))
-    }
-  }
 
-  if (x %>% nrow() %>% gt(0))
-    if (x %>% summarise(m = !!abundance %>% max) %>% pull(m) < 50)
-      stop(
-        "tidybulk says: The input was log transformed, this algorithm requires raw (un-scaled) read counts"
-      )
-}
 
-#' Check whether there are duplicated genes/transcripts
-#'
-#' @keywords internal
-#' @noRd
-#'
-#' 
-#' 
-#' @import tibble
-#' @importFrom utils capture.output
-#'
-#'
-#' @param .data A tibble of read counts
-#' @param .sample A character name of the sample column
-#' @param .transcript A character name of the transcript/gene column
-#' @param .abundance A character name of the read count column
-#'
-#' @return A tbl
-error_if_duplicated_genes <- function(.data,
-                                      .sample = `sample`,
-                                      .transcript = `transcript`,
-                                      .abundance = `read count`) {
-  .sample = enquo(.sample)
-  .transcript = enquo(.transcript)
-  .abundance = enquo(.abundance)
 
-  duplicates <-
-    distinct( .data, !!.sample,!!.transcript,!!.abundance) %>%
-    count(!!.sample,!!.transcript) %>%
-    filter(n > 1) %>%
-    arrange(n %>% desc())
-
-  if (duplicates %>% nrow() > 0) {
-    message("Those are the duplicated genes")
-    duplicates %>% capture.output() %>% paste0(collapse = "\n") %>% message()
-    stop(
-      "tidybulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding."
-    )
-  }
-
-  .data
-
-}
 
 #' Check whether there are NA counts
 #'
@@ -196,28 +99,7 @@ parse_formula <- function(fm) {
     as.character(attr(terms(fm), "variables"))[-1]
 }
 
-#' Formula parser with survival
-#'
-#' @keywords internal
-#' @noRd
-#'
-#' @param fm A formula
-#'
-#' @return A character vector
-#'
-#'
-parse_formula_survival <- function(fm) {
-  pars = as.character(attr(terms(fm), "variables"))[-1]
 
-  response = NULL
-  if(attr(terms(fm), "response") == 1) response = pars[1]
-  covariates = ifelse(attr(terms(fm), "response") == 1, pars[-1], pars)
-
-  list(
-    response = response,
-    covariates = covariates
-  )
-}
 
 #' Scale design matrix
 #'

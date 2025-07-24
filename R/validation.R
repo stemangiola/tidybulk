@@ -83,12 +83,7 @@ check_if_counts_is_na = function(.data, abundance, .abundance = NULL) {
 
 }
 
-check_if_transcript_is_na = function(.data, .transcript) {
-	.transcript = enquo(.transcript)
 
-	.data %>% filter(!!.transcript %>% is.na) %>% nrow() %>% equals(0)
-
-}
 
 check_if_column_missing = function(.data, .sample, .transcript, abundance, .abundance = NULL) {
 	if (!is.null(.abundance)) {
