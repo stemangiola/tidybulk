@@ -149,8 +149,8 @@ my_theme =
 	theme(
 		panel.border = element_blank(),
 		axis.line = element_line(),
-		panel.grid.major = element_line(size = 0.2),
-		panel.grid.minor = element_line(size = 0.1),
+		panel.grid.major = element_line(linewidth = 0.2),
+		panel.grid.minor = element_line(linewidth = 0.1),
 		text = element_text(size=12),
 		legend.position="bottom",
 		aspect.ratio=1,
@@ -167,14 +167,14 @@ data(se_mini)
 
 **Bioconductor**
 
-```{r install-bioconductor, message=FALSE}
+```{r install-bioconductor, message=FALSE, eval=FALSE}
 if (!requireNamespace("BiocManager")) install.packages("BiocManager")
-if (!requireNamespace("tidybulk")) BiocManager::install("tidybulk")
+BiocManager::install("tidybulk")
 ```
 
 **Github**
 
-```{r install-github, message=FALSE}
+```{r install-github, message=FALSE, eval=FALSE}
 devtools::install_github("stemangiola/tidybulk")
 ```
 
