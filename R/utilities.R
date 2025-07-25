@@ -1308,11 +1308,6 @@ sample__ = get_special_column_name_symbol(".sample")
 check_and_install_packages <- function(packages) {
   rlang::check_installed(
     pkg = packages,
-    reason = paste0(
-      "tidybulk says: The following package(s) are required: ",
-      paste(packages, collapse = ", "),
-      "."
-    ),
     action = function(...) {
       if (!requireNamespace("BiocManager", quietly = TRUE)) {
         install.packages("BiocManager", repos = c("https://cloud.r-project.org"))
