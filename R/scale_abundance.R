@@ -17,7 +17,6 @@
 #' @param method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_sample A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.
 #' @param .subset_for_scaling A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example
-#' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
 #' @param suffix A character string to append to the scaled abundance column name. Default is "_scaled".
 #'
 #' @param reference_selection_function DEPRECATED. please use reference_sample.
@@ -58,7 +57,6 @@ setGeneric("scale_abundance", function(.data,
                                        method = "TMM",
                                        reference_sample = NULL,
                                        .subset_for_scaling = NULL,
-                                       action = "add",
                                        suffix = "_scaled",
                                        # DEPRECATED
                                        reference_selection_function = NULL,
@@ -93,7 +91,6 @@ setGeneric("scale_abundance", function(.data,
                                method = "TMM",
                                reference_sample = NULL,
                                .subset_for_scaling = NULL,
-                               action = NULL,
                                suffix = "_scaled",
                                # DEPRECATED
                                reference_selection_function = NULL,

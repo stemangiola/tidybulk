@@ -18,7 +18,6 @@
 #' @param method A character string. The cluster algorithm to use, at the moment k-means is the only algorithm included.
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
-#' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function kmeans
 #'
 #' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
@@ -53,19 +52,10 @@
 #' @export
 #'
 setGeneric("cluster_elements", function(.data,
-                                        .element = NULL,
-                                        .feature = NULL,
-                                        .abundance = NULL,
-                                        method,
-                                        of_samples = TRUE,
-                                        transform = log1p,
-                                        
-                                        action = "add",
-                                        ...,
-                                        
-                                        # DEPRECATED
-                                        log_transform = NULL
-)
+                                method ,
+                                of_samples = TRUE,
+                                transform = log1p,
+                                ...)
 standardGeneric("cluster_elements"))
 
 .cluster_elements_se = function(.data,

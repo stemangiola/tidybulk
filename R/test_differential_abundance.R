@@ -21,7 +21,6 @@
 #' @param scaling_method A character string. The scaling method passed to the back-end functions: edgeR and limma-voom (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile"). Setting the parameter to \"none\" will skip the compensation for sequencing-depth for the method edgeR or limma-voom.
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
 #' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to compare several methods.
-#' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param significance_threshold DEPRECATED - A real between 0 and 1 (usually 0.05).
 #' @param fill_missing_values DEPRECATED - A boolean. Whether to fill missing sample/transcript values with the median of the transcript. This is rarely needed.
 #' @param .contrasts DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
@@ -184,7 +183,6 @@ setGeneric("test_differential_abundance", function(.data,
                                                    scaling_method = "TMM",
                                                    omit_contrast_in_colnames = FALSE,
                                                    prefix = "",
-                                                   action = "add",
                                                    ...,
                                                    
                                                    # DEPRECATED
@@ -209,7 +207,6 @@ standardGeneric("test_differential_abundance"))
                                            scaling_method = "TMM",
                                            omit_contrast_in_colnames = FALSE,
                                            prefix = "",
-                                           action = "add",
                                            ...,
                                            
                                            # DEPRECATED
@@ -330,9 +327,6 @@ such as batch effects (if applicable) in the formula.
     )
   else
     stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"edger_robust_likelihood_ratio\", \"DESeq2\", \"limma_voom\", \"limma_voom_sample_weights\", \"glmmseq_lme4\", \"glmmseq_glmmtmb\"")
-  
-  # If action is get just return the statistics
-  if(action == "get") return(my_differential_abundance$result)
   
   # Add results
   rowData(.data) = rowData(.data) %>% cbind(

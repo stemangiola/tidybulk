@@ -19,7 +19,6 @@ test_differential_abundance(
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = "",
-  action = "add",
   ...,
   significance_threshold = NULL,
   fill_missing_values = NULL,
@@ -39,7 +38,6 @@ test_differential_abundance(
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = "",
-  action = "add",
   ...,
   significance_threshold = NULL,
   fill_missing_values = NULL,
@@ -59,7 +57,6 @@ test_differential_abundance(
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
   prefix = "",
-  action = "add",
   ...,
   significance_threshold = NULL,
   fill_missing_values = NULL,
@@ -85,8 +82,6 @@ test_differential_abundance(
 \item{omit_contrast_in_colnames}{If just one contrast is specified you can choose to omit the contrast label in the colnames.}
 
 \item{prefix}{A character string. The prefix you would like to add to the result columns. It is useful if you want to compare several methods.}
-
-\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further arguments passed to some of the internal experimental functions. For example for glmmSeq, it is possible to pass .dispersion, and .scaling_factor column tidyeval to skip the caluclation of dispersion and scaling and use precalculated values. This is helpful is you want to calculate those quantities on many genes and do DE testing on fewer genes. .scaling_factor is the TMM value that can be obtained with tidybulk::scale_abundance.}
 

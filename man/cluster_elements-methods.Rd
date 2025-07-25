@@ -7,53 +7,14 @@
 \alias{cluster_elements,RangedSummarizedExperiment-method}
 \title{Get clusters of elements (e.g., samples or transcripts)}
 \usage{
-cluster_elements(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  of_samples = TRUE,
-  transform = log1p,
-  action = "add",
-  ...,
-  log_transform = NULL
-)
+cluster_elements(.data, method, of_samples = TRUE, transform = log1p, ...)
 
-\S4method{cluster_elements}{SummarizedExperiment}(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  of_samples = TRUE,
-  transform = log1p,
-  action = "add",
-  ...,
-  log_transform = NULL
-)
+\S4method{cluster_elements}{SummarizedExperiment}(.data, method, of_samples = TRUE, transform = log1p, ...)
 
-\S4method{cluster_elements}{RangedSummarizedExperiment}(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .abundance = NULL,
-  method,
-  of_samples = TRUE,
-  transform = log1p,
-  action = "add",
-  ...,
-  log_transform = NULL
-)
+\S4method{cluster_elements}{RangedSummarizedExperiment}(.data, method, of_samples = TRUE, transform = log1p, ...)
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
-
-\item{.element}{The name of the element column (normally samples).}
-
-\item{.feature}{The name of the feature column (normally transcripts/genes)}
-
-\item{.abundance}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
 
 \item{method}{A character string. The cluster algorithm to use, at the moment k-means is the only algorithm included.}
 
@@ -61,9 +22,13 @@ cluster_elements(
 
 \item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
 
-\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
-
 \item{...}{Further parameters passed to the function kmeans}
+
+\item{.element}{The name of the element column (normally samples).}
+
+\item{.feature}{The name of the feature column (normally transcripts/genes)}
+
+\item{.abundance}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
 
 \item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }

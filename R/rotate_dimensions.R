@@ -19,7 +19,6 @@
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param dimension_1_column_rotated A character string. The column of the rotated dimension 1 (optional)
 #' @param dimension_2_column_rotated A character string. The column of the rotated dimension 2 (optional)
-#' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #'
 #' @details This function to rotate two dimensions such as the reduced dimensions.
 #'
@@ -59,8 +58,7 @@ setGeneric("rotate_dimensions", function(.data,
                                          .element = NULL,
                                          of_samples = TRUE,
                                          dimension_1_column_rotated = NULL,
-                                         dimension_2_column_rotated = NULL,
-                                         action = "add")
+                                         dimension_2_column_rotated = NULL)
   standardGeneric("rotate_dimensions"))
 
 
@@ -94,8 +92,6 @@ setGeneric("rotate_dimensions", function(.data,
 #'               rotated coordinate column.
 #' @param dimension_2_column_rotated Optional symbol to name the new second
 #'               rotated coordinate column.
-#' @param action Character.  `"add"` appends the rotated columns; future
-#'               extensions may allow other behaviours.
 #'
 #' @return The input `SummarizedExperiment` with two extra metadata columns
 #'         containing the rotated axes.
@@ -115,8 +111,7 @@ setGeneric("rotate_dimensions", function(.data,
                                  
                                  of_samples = TRUE,
                                  dimension_1_column_rotated = NULL,
-                                 dimension_2_column_rotated = NULL,
-                                 action = "add") {
+                                 dimension_2_column_rotated = NULL) {
   
   # Fix NOTEs
   . = NULL

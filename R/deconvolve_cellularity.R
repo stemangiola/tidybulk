@@ -16,7 +16,6 @@
 #' @param reference A data frame. The methods cibersort and llsr can accept a custom rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. For exampler tidybulk::X_cibersort. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.
 #' @param method A character string. The method to be used. Available methods: "cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell". If a vector is provided, an error will be thrown. Default is all available methods.
 #' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
-#' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @details This function infers the cell type composition of our samples
@@ -48,9 +47,7 @@ setGeneric("deconvolve_cellularity", function(.data,
                                               reference = NULL,
                                               method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
                                               prefix = "",
-                                              gene_symbol_column = NULL,
                                               
-                                              action = "add",
                                               ...)
   standardGeneric("deconvolve_cellularity"))
 

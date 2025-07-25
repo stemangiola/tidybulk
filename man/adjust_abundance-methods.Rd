@@ -15,7 +15,6 @@ adjust_abundance(
   abundance = assayNames(.data)[1],
   .abundance = NULL,
   method = "combat_seq",
-  action = "add",
   ...,
   log_transform = NULL,
   transform = NULL,
@@ -30,7 +29,6 @@ adjust_abundance(
   abundance = assayNames(.data)[1],
   .abundance = NULL,
   method = "combat_seq",
-  action = "add",
   ...,
   log_transform = NULL,
   transform = NULL,
@@ -45,7 +43,6 @@ adjust_abundance(
   abundance = assayNames(.data)[1],
   .abundance = NULL,
   method = "combat_seq",
-  action = "add",
   ...,
   log_transform = NULL,
   transform = NULL,
@@ -66,8 +63,6 @@ adjust_abundance(
 \item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
 
 \item{method}{A character string. Methods include combat_seq (default), combat and limma_remove_batch_effect.}
-
-\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function sva::ComBat}
 

@@ -21,7 +21,6 @@
 #' @param .dims An integer. The number of dimensions your are interested in (e.g., 4 for returning the first four principal components).
 #' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param scale A boolean for method="PCA", this will be passed to the `prcomp` function. It is not included in the ... argument because although the default for `prcomp` if FALSE, it is advisable to set it as TRUE.
-#' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE", or uwot::tumap if you choose method="umap"
 #'
 #' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
@@ -52,7 +51,7 @@
 #'
 #'   # Filter most variable genes
 #'   keep_variable_transcripts(top) |>
-#'   reduce_dimensions(method="PCA",  .dims = calculate_for_pca_dimensions,  action="get" ) |>
+#'   reduce_dimensions(method="PCA",  .dims = calculate_for_pca_dimensions ) |>
 #'   as_matrix(rownames = quo_name(.element)) |>
 #'   uwot::tumap(...)
 #'
@@ -93,7 +92,6 @@ setGeneric("reduce_dimensions", function(.data,
                                          of_samples = TRUE,
                                          transform = log1p,
                                          scale = TRUE,
-                                         action = "add",
                                          ...,
                                          
                                          # DEPRECATED

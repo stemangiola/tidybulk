@@ -16,7 +16,6 @@
 #' @param .factor_of_interest A tidy select, e.g. column names without double quotation. c(treatment) These are the factor that we want to preserve.
 #' @param method A character string. Methods include combat_seq (default), combat and limma_remove_batch_effect.
 #'
-#' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function sva::ComBat
 #'
 #' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
@@ -65,7 +64,6 @@ setGeneric("adjust_abundance", function(.data,
                                         .abundance = NULL,
                                         method = "combat_seq",
                                         
-                                        action = "add",
                                         ...,
                                         
                                         # DEPRECATED
@@ -92,7 +90,6 @@ standardGeneric("adjust_abundance"))
                                 
                                 method = "combat_seq",
                                 
-                                action = "add",
                                 ...,
                                 
                                 # DEPRECATED

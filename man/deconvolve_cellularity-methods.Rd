@@ -13,8 +13,6 @@ deconvolve_cellularity(
   reference = NULL,
   method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
   prefix = "",
-  gene_symbol_column = NULL,
-  action = "add",
   ...
 )
 
@@ -24,8 +22,6 @@ deconvolve_cellularity(
   reference = NULL,
   method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
   prefix = "",
-  gene_symbol_column = NULL,
-  action = "add",
   ...
 )
 
@@ -35,8 +31,6 @@ deconvolve_cellularity(
   reference = NULL,
   method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
   prefix = "",
-  gene_symbol_column = NULL,
-  action = "add",
   ...
 )
 }
@@ -50,8 +44,6 @@ deconvolve_cellularity(
 \item{method}{A character string. The method to be used. Available methods: "cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell". If a vector is provided, an error will be thrown. Default is all available methods.}
 
 \item{prefix}{A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.}
-
-\item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
 \item{...}{Further parameters passed to the function Cibersort}
 

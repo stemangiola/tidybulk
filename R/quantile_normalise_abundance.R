@@ -17,7 +17,6 @@
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A character string. Either "limma_normalize_quantiles" for limma::normalizeQuantiles or "preprocesscore_normalize_quantiles_use_target" for preprocessCore::normalize.quantiles.use.target for large-scale datasets.
 #' @param target_distribution A numeric vector. If NULL the target distribution will be calculated by preprocessCore. This argument only affects the "preprocesscore_normalize_quantiles_use_target" method.
-#' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
 #'
 #'
 #' @details Tranform the feature abundance across samples so to have the same quantile distribution (using preprocessCore).
@@ -56,8 +55,7 @@ setGeneric("quantile_normalise_abundance", function(.data,
                                                     
                                                     .abundance = NULL,
                                                     method = "limma_normalize_quantiles",
-                                                    target_distribution = NULL,
-                                                    action = "add")
+                                                    target_distribution = NULL)
   standardGeneric("quantile_normalise_abundance"))
 
 
@@ -73,8 +71,7 @@ setGeneric("quantile_normalise_abundance", function(.data,
                                             
                                             .abundance = NULL,
                                             method = "limma_normalize_quantiles",
-                                            target_distribution = NULL,
-                                            action = NULL) {
+                                            target_distribution = NULL) {
   
   # Fix NOTEs
   . = NULL

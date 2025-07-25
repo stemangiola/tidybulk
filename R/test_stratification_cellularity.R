@@ -30,7 +30,6 @@
 #' 	!!.sample, !!.transcript, !!.abundance,
 #' 	method=method,
 #' 	reference = reference,
-#' 	action="get",
 #' 	...
 #' )  %>%
 #' 	[..] |>

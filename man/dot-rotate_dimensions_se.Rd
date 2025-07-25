@@ -12,8 +12,7 @@
   .element = NULL,
   of_samples = TRUE,
   dimension_1_column_rotated = NULL,
-  dimension_2_column_rotated = NULL,
-  action = "add"
+  dimension_2_column_rotated = NULL
 )
 }
 \arguments{
@@ -42,9 +41,6 @@ rotated coordinate column.}
 
 \item{dimension_2_column_rotated}{Optional symbol to name the new second
 rotated coordinate column.}
-
-\item{action}{Character.  `"add"` appends the rotated columns; future
-extensions may allow other behaviours.}
 }
 \value{
 The input `SummarizedExperiment` with two extra metadata columns
