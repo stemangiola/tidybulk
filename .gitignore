@@ -24,3 +24,7 @@ _targets*
 ._.DS_Store
 counts_SE.rda
 R/rotate_dimensions.R
+renv/.gitignore
+renv/activate.R
+renv/settings.json
+.Rprofile
