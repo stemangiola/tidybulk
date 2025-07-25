@@ -5,6 +5,7 @@
 #' @description test_gene_enrichment() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` of gene set information
 #'
 #' @importFrom rlang enquo
+#' @importFrom magrittr not
 #'
 #'
 #' @name test_gene_enrichment

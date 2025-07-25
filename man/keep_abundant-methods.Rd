@@ -15,9 +15,9 @@ keep_abundant(
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
+  factor_of_interest = NULL,
   ...,
-  .abundance = NULL,
-  factor_of_interest = NULL
+  .abundance = NULL
 )
 
 \S4method{keep_abundant}{SummarizedExperiment}(
@@ -28,9 +28,9 @@ keep_abundant(
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
+  factor_of_interest = NULL,
   ...,
-  .abundance = NULL,
-  factor_of_interest = NULL
+  .abundance = NULL
 )
 
 \S4method{keep_abundant}{RangedSummarizedExperiment}(
@@ -41,9 +41,9 @@ keep_abundant(
   minimum_counts = 10,
   minimum_proportion = 0.7,
   minimum_count_per_million = NULL,
+  factor_of_interest = NULL,
   ...,
-  .abundance = NULL,
-  factor_of_interest = NULL
+  .abundance = NULL
 )
 }
 \arguments{
@@ -61,13 +61,13 @@ keep_abundant(
 
 \item{minimum_count_per_million}{...}
 
-\item{...}{Further arguments.}
-
-\item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
-
 \item{factor_of_interest}{The name of the column containing groups/conditions for filtering. 
 Used by edgeR's filterByExpr to define sample groups. 
 \strong{DEPRECATED:} Use 'design' or 'formula_design' instead. This argument will be removed in a future release.}
+
+\item{...}{Further arguments.}
+
+\item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
 
 \item{.sample}{The name of the sample column}
 

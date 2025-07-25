@@ -18,6 +18,7 @@
 #' @param reference_sample A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.
 #' @param .subset_for_scaling A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example
 #' @param action A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.
+#' @param suffix A character string to append to the scaled abundance column name. Default is "_scaled".
 #'
 #' @param reference_selection_function DEPRECATED. please use reference_sample.
 #' @param ... Further arguments.
@@ -58,7 +59,7 @@ setGeneric("scale_abundance", function(.data,
                                        reference_sample = NULL,
                                        .subset_for_scaling = NULL,
                                        action = "add",
-                                       
+                                       suffix = "_scaled",
                                        # DEPRECATED
                                        reference_selection_function = NULL,
                                        ...,
@@ -93,6 +94,7 @@ setGeneric("scale_abundance", function(.data,
                                reference_sample = NULL,
                                .subset_for_scaling = NULL,
                                action = NULL,
+                               suffix = "_scaled",
                                # DEPRECATED
                                reference_selection_function = NULL,
                                ...,
@@ -150,7 +152,7 @@ setGeneric("scale_abundance", function(.data,
   if(nrow(my_counts_filtered)<100) warning(warning_for_scaling_with_few_genes)
   
   # Set column name for value scaled
-  value_scaled = my_assay %>% paste0(scaled_string)
+  value_scaled = paste0(my_assay, suffix)
   
   # Get reference
   reference <-

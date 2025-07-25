@@ -11,7 +11,7 @@ test_stratification_cellularity(
   .data,
   .formula,
   .abundance = NULL,
-  method = "cibersort",
+  method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
   reference = X_cibersort,
   ...
 )
@@ -20,7 +20,7 @@ test_stratification_cellularity(
   .data,
   .formula,
   .abundance = NULL,
-  method = "cibersort",
+  method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
   reference = X_cibersort,
   ...
 )
@@ -29,7 +29,7 @@ test_stratification_cellularity(
   .data,
   .formula,
   .abundance = NULL,
-  method = "cibersort",
+  method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
   reference = X_cibersort,
   ...
 )

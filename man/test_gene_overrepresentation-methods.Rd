@@ -9,47 +9,32 @@
 \usage{
 test_gene_overrepresentation(
   .data,
-  .formula,
   .entrez,
-  .abundance = NULL,
-  contrasts = NULL,
-  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
-    "kegg_metabolism", "kegg_signaling"),
+  .do_test,
   species,
-  cores = 10,
-  method = NULL,
-  .contrasts = NULL
+  .sample = NULL,
+  gene_sets = NULL,
+  gene_set = NULL
 )
 
 \S4method{test_gene_overrepresentation}{SummarizedExperiment}(
   .data,
-  .formula,
   .entrez,
-  .abundance = NULL,
-  contrasts = NULL,
-  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
-    "kegg_metabolism", "kegg_signaling"),
+  .do_test,
   species,
-  cores = 10,
-  method = NULL,
-  .contrasts = NULL
+  .sample = NULL,
+  gene_sets = NULL,
+  gene_set = NULL
 )
 
 \S4method{test_gene_overrepresentation}{RangedSummarizedExperiment}(
   .data,
-  .formula,
   .entrez,
-  .abundance = NULL,
-  contrasts = NULL,
-  methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-  gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease",
-    "kegg_metabolism", "kegg_signaling"),
+  .do_test,
   species,
-  cores = 10,
-  method = NULL,
-  .contrasts = NULL
+  .sample = NULL,
+  gene_sets = NULL,
+  gene_set = NULL
 )
 }
 \arguments{
@@ -57,13 +42,13 @@ test_gene_overrepresentation(
 
 \item{.entrez}{The ENTREZ ID of the transcripts/genes}
 
-\item{gene_sets}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
+\item{.do_test}{A boolean column name symbol. It indicates the transcript to check}
 
 \item{species}{A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")}
 
 \item{.sample}{The name of the sample column}
 
-\item{.do_test}{A boolean column name symbol. It indicates the transcript to check}
+\item{gene_sets}{A character vector. The subset of MSigDB datasets you want to test against (e.g. \"C2\"). If NULL all gene sets are used (suggested). This argument was added to avoid time overflow of the examples.}
 
 \item{gene_set}{DEPRECATED. Use gene_sets instead.}
 }

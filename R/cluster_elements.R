@@ -5,6 +5,7 @@
 #' @description cluster_elements() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and identify clusters in the data.
 #'
 #' @importFrom rlang enquo
+#' @importFrom magrittr not
 #'
 #'
 #' @name cluster_elements

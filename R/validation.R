@@ -8,6 +8,7 @@
 #' 
 #' @import tibble
 #' @importFrom purrr map
+#' @importFrom magrittr not
 #'
 #'
 #' @param .data A tibble of read counts

@@ -6,6 +6,7 @@
 #'
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_missing
+#' @importFrom magrittr not
 #'
 #'
 #' @name test_gene_overrepresentation
@@ -73,17 +74,13 @@
 #'
 #'
 setGeneric("test_gene_overrepresentation", function(
-    .data,
-    .formula,
-    .entrez,
-    .abundance = NULL,
-    contrasts = NULL,
-    methods = c("camera", "roast", "safe", "gage", "padog", "globaltest", "ora"),
-    gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
-    species,
-    cores = 10,
-    method = NULL,
-    .contrasts = NULL
+        .data,
+        .entrez,
+        .do_test,
+        species,
+        .sample = NULL,
+        gene_sets = NULL,
+        gene_set = NULL  # DEPRECATED
 ) standardGeneric("test_gene_overrepresentation"))
 
 
@@ -91,268 +88,76 @@ setGeneric("test_gene_overrepresentation", function(
 
 # Set internal
 .test_gene_overrepresentation_SE = 		function(.data,
-                                              .formula,
-                                              
                                               .entrez,
-                                              .abundance = NULL,
-                                              contrasts = NULL,
-                                              methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
-                                              gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+                                              .do_test,
                                               species,
-                                              cores = 10,
-                                              
-                                              # DEPRECATED
-                                              method = NULL,
-                                              .contrasts = NULL
+                                              .sample = NULL,
+                                              gene_sets = NULL,
+                                              gene_set = NULL  # DEPRECATED
 )	{
-    
-    # Fix NOTEs
-    . = NULL
-    
-    # DEPRECATION OF reference function
-    if (is_present(method) & !is.null(method)) {
-        
-        # Signal the deprecation to the user
-        deprecate_warn("1.3.2", "tidybulk::test_gene_enrichment(method = )", details = "The argument method is now deprecated please use methods")
-        methods = method
-    }
-    
-    # DEPRECATION OF .constrasts
-    if (is_present(.contrasts) & !is.null(.contrasts)) {
-        
-        # Signal the deprecation to the user
-        deprecate_warn("1.7.4", "tidybulk::test_differential_abundance(.contrasts = )", details = "The argument .contrasts is now deprecated please use contrasts (without the dot).")
-        
-        contrasts = .contrasts
-    }
-    
-    .entrez = enquo(.entrez)
-    
-    # Check that there are no entrez missing
-    .data =
-        .data %>%
-        when(
-            filter(., !!.entrez %>% is.na) %>% nrow() %>% gt(0) ~ {
-                warning("tidybulk says: There are NA entrez IDs. Those genes will be filtered")
-                filter(., !!.entrez %>% is.na %>% not())
-            },
-            ~ (.)
-        )
-    
-    # Check if duplicated entrez
-    if(rowData(.data)[,quo_name(.entrez)] %>% duplicated() %>% any())
-        stop("tidybulk says: There are duplicated .entrez IDs. Please use aggregate_duplicates(.transcript = entrez).")
-    
-    # For use within when
-    .my_data = .data
-    
     
     # Comply with CRAN NOTES
     . = NULL
     
-    # Check if at least two samples for each group
-    if (.data %>%
-        pivot_sample() %>%
-        count(!!as.symbol(parse_formula(.formula))) %>%
-        distinct(n) %>%
-        pull(n) %>%
-        min %>%
-        st(2))
-        stop("tidybulk says: You need at least two replicates for each condition for EGSEA to work")
+    # DEPRECATION OF reference function
+    if (is_present(gene_set) & !is.null(gene_set)) {
+        
+        # Signal the deprecation to the user
+        deprecate_warn("1.3.1", "tidybulk::.test_gene_overrepresentation(gene_set = )", details = "The argument gene_set is now deprecated please use gene_sets.")
+        gene_sets = gene_set
+    }
     
+    # Get column names
+    .do_test = enquo(.do_test)
+    .entrez = enquo(.entrez)
+    #
+    # expr <- rlang::quo_get_expr(.do_test)
+    # env <- quo_get_env(x)
+    #
     
-    # Create design matrix
-    design =	model.matrix(	object = .formula,	data = .data %>% colData() 	)
+    # Check if entrez is set
+    if(quo_is_missing(.entrez))
+        stop("tidybulk says: the .entrez parameter appears to no be set")
     
-    # Print the design column names in case I want contrasts
-    message(
-        sprintf(
-            "tidybulk says: The design column names are \"%s\"",
-            design %>% colnames %>% paste(collapse = ", ")
-        )
+    # Check column type
+    if (
+        .data %>% 
+        rowData() %>% 
+        as_tibble(rownames = f_(.data)$name) %>% 
+        mutate(my_do_test = !!.do_test) %>% 
+        pull(my_do_test) |> 
+        is("logical") %>% 
+        not()
     )
+        stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
     
-    my_contrasts =
-        contrasts %>%
-        when(
-            length(.) > 0 ~ limma::makeContrasts(contrasts = ., levels = design),
-            ~ NULL
-        )
-    
+    # Check packages msigdbr
     # Check if package is installed, otherwise install
-    check_and_install_packages("EGSEA")
-    
-    if (!"EGSEA" %in% (.packages())) {
-        stop("EGSEA package not loaded. Please run library(\"EGSEA\"). With this setup, EGSEA require manual loading, for technical reasons.")
-    }
-    
-    dge =
-        .data %>%
-        assays() %>%
-        as.list() %>%
-        .[[1]] %>%
-        as.matrix %>%
-        
-        # Change rownames to entrez
-        when(
-            quo_is_null(.entrez) %>% `!` ~ {
-                x = (.)
-                rownames(x) =
-                    .my_data %>%
-                    pivot_transcript() %>%
-                    pull(!!.entrez)
-                x
-            },
-            ~ (.)
-        ) %>%
-        
-        # Filter missing entrez
-        .[rownames(.) %>% is.na %>% not, ] %>%
-        
-        # # Make sure transcript names are adjacent
-        # arrange(!!.entrez) %>%
-        
-        # select(!!.sample, !!.entrez, !!.abundance) %>%
-        # spread(!!.sample,!!.abundance) %>%
-        # as_matrix(rownames = !!.entrez) %>%
-        edgeR::DGEList(counts = .)
-    
-    # Add gene ids for Interpret Results tables in report
-    dge$genes = rownames(dge$counts)
-    
-    if (is.list(gene_sets)) {
-        
-        idx =  buildCustomIdx(geneIDs = rownames(dge), species = species, gsets=gene_sets)
-        nonkegg_genesets = idx
-        kegg_genesets = NULL
-        
-    } else {
-        
-        # Specify gene sets to include
-        msig_all <- c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")
-        kegg_all <- c("kegg_disease", "kegg_metabolism", "kegg_signaling")
-        
-        # Record which collections used (kegg, msigdb) for bibliography
-        collections_bib = c()
-        
-        # Identify any msigdb sets to be included
-        msigdb.gsets <- gene_sets[gene_sets %in% msig_all]
-        if (length(msigdb.gsets) >= 1) {
-            collections_bib = c(collections_bib, "msigdb")
-        }
-        
-        # Have to identify kegg sets to exclude for EGSEA
-        kegg_to_exclude = kegg_all[!(kegg_all %in% gene_sets)]
-        
-        # If all 3 kegg sets are excluded then set to "all" as specifying the 3 names gives empty kegg object
-        if (length(kegg_to_exclude) == 3) {
-            kegg.exclude = "all"
-        } else {
-            kegg.exclude = kegg_to_exclude %>% str_replace("kegg_", "")
-            collections_bib = c(collections_bib, "kegg")
-        }
-        
-        
-        idx =  buildIdx(entrezIDs = rownames(dge), species = species,  msigdb.gsets = msigdb.gsets,
-                        kegg.exclude = kegg.exclude)
-        
-        # Due to a bug with kegg pathview overlays, this collection is run without report
-        # https://support.bioconductor.org/p/122172/#122218
-        
-        kegg_genesets = idx[which(names(idx)=="kegg")]
-        nonkegg_genesets = idx[which(names(idx)!="kegg")]
-    }
-    
-    # Specify column to use to sort results in output table
-    # If only one method is specified there is no med.rank column
-    if (length(methods) == 1) {
-        sort_column = "p.value"
-    } else {
-        sort_column = "med.rank"
-    }
+    check_and_install_packages("msigdbr")
     
     
-    if (length(nonkegg_genesets) != 0) {
-        res =
-            dge %>%
-            
-            # Calculate weights
-            limma::voom(design, plot = FALSE) %>%
-            
-            # Execute EGSEA
-            egsea(
-                contrasts = my_contrasts,
-                gs.annots = nonkegg_genesets,
-                baseGSEAs = methods,
-                sort.by = sort_column,
-                num.threads = cores
-            )
-        
-        gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
-        
-        res_formatted_nonkegg =
-            res@results %>%
-            map2_dfr(
-                (.) %>% names,
-                ~ .x[[1]][[1]] %>%
-                    as_tibble(rownames = "pathway") %>%
-                    mutate(data_base = .y)
-            ) %>%
-            arrange(sort_column) %>%
-            
-            # Add webpage
-            mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
-            select(data_base, pathway, web_page, sort_column, everything())
-    }
+    # Check is correct species name
+    if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
+        stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
     
-    if (length(kegg_genesets) != 0) {
-        message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
-        
-        res_kegg =
-            dge %>%
-            
-            # Calculate weights
-            limma::voom(design, plot = FALSE) %>%
-            
-            # Execute EGSEA
-            egsea(
-                contrasts = my_contrasts,
-                gs.annots = kegg_genesets,
-                baseGSEAs = methods,
-                sort.by = sort_column,
-                num.threads = cores,
-                report = FALSE
-            )
-        
-        res_formatted_kegg =
-            res_kegg@results %>%
-            map2_dfr(
-                (.) %>% names,
-                ~ .x[[1]][[1]] %>%
-                    as_tibble(rownames = "pathway") %>%
-                    mutate(data_base = .y)
-            ) %>%
-            arrange(sort_column) %>%
-            select(data_base, pathway, everything())
-        
-    }
+    # # Check if missing entrez
+    # if(.data %>% filter(!!.entrez %>% is.na) %>% nrow() %>% gt(0) ){
+    # 	warning("tidybulk says: there are .entrez that are NA. Those will be removed")
+    # 	.data = .data %>%	filter(!!.entrez %>% is.na %>% not())
+    # }
     
-    # output tibble
-    if (exists("res_formatted_nonkegg") & exists("res_formatted_kegg")) {
-        out = bind_rows(res_formatted_nonkegg, res_formatted_kegg)
-    } else if (exists("res_formatted_nonkegg")) {
-        out = res_formatted_nonkegg
-    } else {
-        out = res_formatted_kegg
-    }
+    .data %>%
+        pivot_transcript() %>%
+        filter(!!.do_test) %>%
+        distinct(!!.entrez) %>%
+        pull(!!.entrez) %>%
+        entrez_over_to_gsea(species, gene_collections = gene_sets) %>%
+        
+        # Add methods used
+        memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"), object_containing_methods = .data)
     
-    # add to bibliography
-    if (exists("collections_bib")) {
-        out %>% memorise_methods_used(c("egsea", collections_bib, methods))
-    }
     
 }
-
 #' test_gene_overrepresentation
 #'
 #' @docType methods
@@ -372,4 +177,122 @@ setMethod("test_gene_overrepresentation",
 setMethod("test_gene_overrepresentation",
           "RangedSummarizedExperiment",
           .test_gene_overrepresentation_SE)
+
+
+#' @details
+#' This function plots the GSEA for gene overrepresentation
+#'
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom stats p.adjust
+entrez_over_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
+    
+    # From the page
+    # https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
+    
+    # Check if package is installed, otherwise install
+    check_and_install_packages(c("fastmatch", "clusterProfiler"))
+    
+    # Check msigdbr version
+    if(packageVersion("msigdbr") < "10.0.0") {
+        stop("tidybulk says: msigdbr version must be >= 10.0.0")
+    }
+    
+    
+    # Get gene sets signatures
+    # Get MSigDB data
+    msigdb_data = msigdbr::msigdbr(species = species)
+    
+    # Filter for specific gene collections if provided
+    if (!is.null(gene_collections)) {
+        msigdb_data = filter(msigdb_data, gs_collection %in% gene_collections)
+    }
+    
+    # Process the data
+    msigdb_data |>
+        nest(data = -gs_collection) |>
+        mutate(test =
+                   map(
+                       data,
+                       ~ clusterProfiler::enricher(
+                           my_entrez_rank,
+                           TERM2GENE=.x |> select(gs_name, ncbi_gene),
+                           pvalueCutoff = 1
+                       ) |>
+                           as_tibble()
+                   )) |>
+        select(-data) |>
+        unnest(test) |>
+        
+        # Order
+        arrange(`p.adjust`) |>
+        
+        # format transcripts
+        mutate(entrez = strsplit(geneID, "/")) |>
+        select(-geneID)
+    
+}
+
+
+#' @details
+#' This function plots the GSEA for gene overrepresentation
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom tibble rowid_to_column
+#' @importFrom stats p.adjust
+#' @importFrom purrr map
+#'
+entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
+    
+    # From the page
+    # https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
+    
+    # Check if package is installed, otherwise install
+    check_and_install_packages(c("fastmatch", "clusterProfiler", "enrichplot", "ggplot2"))
+    
+    # Get gene sets signatures
+    if(is.null(gene_collections ) )
+        my_gene_collection = msigdbr::msigdbr(species = species)
+    else if(gene_collections |> is("character"))
+        my_gene_collection = msigdbr::msigdbr(species = species) %>%  filter( tolower(gs_collection) %in% tolower(gene_collections) )
+    else if(gene_collections |> is("list"))
+        my_gene_collection = tibble(gs_name=names(.), ncbi_gene = . ) %>% unnest(ncbi_gene) %>% mutate(gs_collection = "user_defined")
+    else
+        stop("tidybulk says: the gene sets should be either a character vector or a named list")
+    
+    
+    my_gene_collection |>
+        
+        
+        # Execute calculation
+        nest(data = -gs_collection) |>
+        mutate(fit =
+                   map(
+                       data,
+                       ~ 	clusterProfiler::GSEA(
+                           my_entrez_rank,
+                           TERM2GENE=.x %>% select(gs_name, ncbi_gene),
+                           pvalueCutoff = 1
+                       )
+                       
+                   )) |>
+        mutate(test =
+                   map(
+                       fit,
+                       ~ .x |>
+                           # ggplot2::fortify(showCategory=Inf) %>%
+                           as_tibble() |>
+                           rowid_to_column(var = "idx_for_plotting")
+                       #%>%
+                       #	mutate(plot = future_imap(ID, ~ enrichplot::gseaplot2(fit, geneSetID = .y, title = .x)))
+                       
+                   )) |>
+        select(-data)
+    
+    
+}
 

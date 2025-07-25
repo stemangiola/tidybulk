@@ -86,11 +86,16 @@ Suggests:
     lme4,
     glmmTMB,
     MASS,
-    pkgconfig
+    pkgconfig,
+    enrichplot,
+    patchwork,
+    immunedeconv
 VignetteBuilder: 
     knitr
 RdMacros:
     lifecycle
+Remotes:
+    omnideconv/immunedeconv
 Biarch: true
 biocViews: AssayDomain, Infrastructure, RNASeq, DifferentialExpression, GeneExpression, Normalization, Clustering, QualityControl, Sequencing, Transcription, Transcriptomics
 Encoding: UTF-8

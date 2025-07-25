@@ -5,6 +5,7 @@
 #' @description test_differential_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo
+#' @importFrom magrittr not
 #'
 #'
 #' @name test_differential_abundance
@@ -15,7 +16,7 @@
 #' @param .transcript The name of the transcript/gene column
 #' @param abundance The name of the transcript/gene abundance column (character, preferred)
 #' @param contrasts This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)
-#' @param method A string character. Either "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"
+#' @param method A character vector. Available methods are "edgeR_quasi_likelihood" (i.e., QLF), "edgeR_likelihood_ratio" (i.e., LRT), "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb". Only one method can be specified at a time.
 #' @param test_above_log2_fold_change A positive real value. This works for edgeR and limma_voom methods. It uses the `treat` function, which tests that the difference in abundance is bigger than this threshold rather than zero \url{https://pubmed.ncbi.nlm.nih.gov/19176553}.
 #' @param scaling_method A character string. The scaling method passed to the back-end functions: edgeR and limma-voom (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile"). Setting the parameter to \"none\" will skip the compensation for sequencing-depth for the method edgeR or limma-voom.
 #' @param omit_contrast_in_colnames If just one contrast is specified you can choose to omit the contrast label in the colnames.
@@ -103,11 +104,16 @@
 #'
 #' @examples
 #'
-#'  # edgeR
+#'  # edgeR (default method)
 #'
 #'  tidybulk::se_mini |>
 #'  identify_abundant() |>
 #' 	test_differential_abundance( ~ condition )
+#'
+#'  # You can also explicitly specify the method
+#'  tidybulk::se_mini |>
+#'  identify_abundant() |>
+#' 	test_differential_abundance( ~ condition, method = "edgeR_quasi_likelihood" )
 #'
 #' 	# The function `test_differential_abundance` operates with contrasts too
 #'
@@ -173,7 +179,7 @@ setGeneric("test_differential_abundance", function(.data,
                                                    
                                                    abundance =  assayNames(.data)[1],
                                                    contrasts = NULL,
-                                                   method = "edgeR_quasi_likelihood",
+                                                   method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio", "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"),
                                                    test_above_log2_fold_change = NULL,
                                                    scaling_method = "TMM",
                                                    omit_contrast_in_colnames = FALSE,
@@ -198,7 +204,7 @@ standardGeneric("test_differential_abundance"))
                                            
                                            abundance =  assayNames(.data)[1],
                                            contrasts = NULL,
-                                           method = "edgeR_quasi_likelihood",
+                                           method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio", "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"),
                                            test_above_log2_fold_change = NULL,
                                            scaling_method = "TMM",
                                            omit_contrast_in_colnames = FALSE,
@@ -243,6 +249,14 @@ or adjust_abundance have been calculated. Therefore, it is essential to add cova
 such as batch effects (if applicable) in the formula.
 =====================================", .frequency_id = "All testing methods use raw counts",  .frequency = "once")
   
+  
+  # Validate method parameter
+  if(length(method) > 1) {
+    stop("tidybulk says: only one method can be specified at a time. Please choose one method from the available options.")
+  }
+  
+  # Use the first method if multiple are provided (for backward compatibility)
+  method = method[1]
   
   # Test test_above_log2_fold_change
   if(!is.null(test_above_log2_fold_change) && test_above_log2_fold_change < 0)
@@ -315,7 +329,7 @@ such as batch effects (if applicable) in the formula.
       ...
     )
   else
-    stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"limma_voom\", \"limma_voom_sample_weights\", \"DESeq2\", \"glmmseq_lme4\", \"glmmseq_glmmTMB\"")
+    stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"edger_robust_likelihood_ratio\", \"DESeq2\", \"limma_voom\", \"limma_voom_sample_weights\", \"glmmseq_lme4\", \"glmmseq_glmmtmb\"")
   
   # If action is get just return the statistics
   if(action == "get") return(my_differential_abundance$result)

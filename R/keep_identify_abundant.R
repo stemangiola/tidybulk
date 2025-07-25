@@ -1,74 +1,3 @@
-#' Filter to keep only abundant transcripts/genes
-#'
-#' \lifecycle{questioning}
-#'
-#' @description 
-#' Filters the data to keep only transcripts/genes that are consistently expressed above 
-#' a threshold across samples. This is a filtering version of identify_abundant() that 
-#' removes low-abundance features instead of just marking them.
-#'
-#' @param .data A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
-#' @param abundance The name of the transcript/gene abundance column (character, preferred)
-#' @param design A design matrix for more complex experimental designs. If provided, this is passed to filterByExpr instead of factor_of_interest.
-#' @param formula_design ...
-#' @param minimum_counts ...
-#' @param minimum_proportion ...
-#' @param minimum_count_per_million ...
-#' @param ... Further arguments.
-#' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
-#' @param factor_of_interest The name of the column containing groups/conditions for filtering. 
-#'        Used by edgeR's filterByExpr to define sample groups. 
-#'        \strong{DEPRECATED:} Use 'design' or 'formula_design' instead. This argument will be removed in a future release.
-#'
-#' @details 
-#' This function uses edgeR's filterByExpr() function to identify and keep consistently expressed features.
-#' A feature is kept if it has CPM > minimum_counts in at least minimum_proportion of samples
-#' in at least one experimental group (defined by factor_of_interest or design).
-#' 
-#' This function is similar to identify_abundant() but instead of adding an .abundant column,
-#' it filters out the low-abundance features directly.
-#'
-#' @return 
-#' Returns a filtered version of the input object containing only the features that passed
-#' the abundance threshold criteria.
-#'
-#' @examples
-#' # Basic usage
-#' se_mini |> keep_abundant()
-#'
-#' # With custom thresholds
-#' se_mini |> keep_abundant(
-#'   minimum_counts = 5,
-#'   minimum_proportion = 0.5
-#' )
-#'
-#' # Using a factor of interest
-#' se_mini |> keep_abundant(factor_of_interest = condition)
-#'
-#' @references
-#' McCarthy, D. J., Chen, Y., & Smyth, G. K. (2012). Differential expression analysis of 
-#' multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research, 
-#' 40(10), 4288-4297. DOI: 10.1093/bioinformatics/btp616
-#'
-#' @importFrom rlang enquo
-#' @importFrom dplyr filter
-#'
-#' @docType methods
-#' @rdname keep_abundant-methods
-#' @export
-setGeneric("keep_abundant", function(.data,
-                                     abundance = assayNames(.data)[1],
-                                     design = NULL,
-                                     formula_design = NULL,
-                                     minimum_counts = 10,
-                                     minimum_proportion = 0.7,
-                                     minimum_count_per_million = NULL,
-                                     ..., 
-                                     .abundance = NULL,
-                                     factor_of_interest = NULL) # add factor_of_interest
-  standardGeneric("keep_abundant"))
 
 #' Identify abundant transcripts/genes
 #'
@@ -123,6 +52,7 @@ setGeneric("keep_abundant", function(.data,
 #' @importFrom rlang enquo
 #' @importFrom dplyr filter
 #' @importFrom tidyr drop_na
+#' @importFrom magrittr not
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
@@ -276,25 +206,98 @@ setMethod("identify_abundant",
 
 
 
+#' Filter to keep only abundant transcripts/genes
+#'
+#' \lifecycle{questioning}
+#'
+#' @description 
+#' Filters the data to keep only transcripts/genes that are consistently expressed above 
+#' a threshold across samples. This is a filtering version of identify_abundant() that 
+#' removes low-abundance features instead of just marking them.
+#'
+#' @param .data A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data
+#' @param .sample The name of the sample column
+#' @param .transcript The name of the transcript/gene column
+#' @param abundance The name of the transcript/gene abundance column (character, preferred)
+#' @param design A design matrix for more complex experimental designs. If provided, this is passed to filterByExpr instead of factor_of_interest.
+#' @param formula_design ...
+#' @param minimum_counts ...
+#' @param minimum_proportion ...
+#' @param minimum_count_per_million ...
+#' @param ... Further arguments.
+#' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
+#' @param factor_of_interest The name of the column containing groups/conditions for filtering. 
+#'        Used by edgeR's filterByExpr to define sample groups. 
+#'        \strong{DEPRECATED:} Use 'design' or 'formula_design' instead. This argument will be removed in a future release.
+#'
+#' @details 
+#' This function uses edgeR's filterByExpr() function to identify and keep consistently expressed features.
+#' A feature is kept if it has CPM > minimum_counts in at least minimum_proportion of samples
+#' in at least one experimental group (defined by factor_of_interest or design).
+#' 
+#' This function is similar to identify_abundant() but instead of adding an .abundant column,
+#' it filters out the low-abundance features directly.
+#'
+#' @return 
+#' Returns a filtered version of the input object containing only the features that passed
+#' the abundance threshold criteria.
+#'
+#' @examples
+#' # Basic usage
+#' se_mini |> keep_abundant()
+#'
+#' # With custom thresholds
+#' se_mini |> keep_abundant(
+#'   minimum_counts = 5,
+#'   minimum_proportion = 0.5
+#' )
+#'
+#' # Using a factor of interest
+#' se_mini |> keep_abundant(factor_of_interest = condition)
+#'
+#' @references
+#' McCarthy, D. J., Chen, Y., & Smyth, G. K. (2012). Differential expression analysis of 
+#' multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research, 
+#' 40(10), 4288-4297. DOI: 10.1093/bioinformatics/btp616
+#'
+#' @importFrom rlang enquo
+#' @importFrom dplyr filter
+#'
+#' @docType methods
+#' @rdname keep_abundant-methods
+#' @export
+setGeneric("keep_abundant", function(.data,
+                                     abundance = assayNames(.data)[1],
+                                     design = NULL,
+                                     formula_design = NULL,
+                                     minimum_counts = 10,
+                                     minimum_proportion = 0.7,
+                                     minimum_count_per_million = NULL,
+                                     factor_of_interest = NULL,
+                                     ..., 
+                                     .abundance = NULL
+) # add factor_of_interest
+  standardGeneric("keep_abundant"))
+
 
 .keep_abundant_se = function(.data,
-                             
-                             
-                             abundance = assayNames(.data)[1],
-                             design = NULL,
-                             formula_design = NULL,
-                             minimum_counts = 10,
-                             minimum_proportion = 0.7,
-                             minimum_count_per_million = NULL,
-                             ..., 
-                             .abundance = NULL,
-                             factor_of_interest = NULL) # add factor_of_interest
+                                         abundance = assayNames(.data)[1],
+                                         design = NULL,
+                                         formula_design = NULL,
+                                         minimum_counts = 10,
+                                         minimum_proportion = 0.7,
+                                         minimum_count_per_million = NULL,
+                                         factor_of_interest = NULL,
+                                         ..., 
+                                         .abundance = NULL
+                                         ) # add factor_of_interest
 {
   # Fix NOTEs
   . = NULL
   
   # Tidy deprecation warning for factor_of_interest
   factor_of_interest <- enquo(factor_of_interest)
+  
   if (!quo_is_null(factor_of_interest)) {
     lifecycle::deprecate_warn(
       when = "2.0.0",

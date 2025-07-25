@@ -14,7 +14,7 @@
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param reference A data frame. The methods cibersort and llsr can accept a custom rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. For exampler tidybulk::X_cibersort. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.
-#' @param method A character string. The method to be used. At the moment Cibersort (default, can accept custom reference), epic (can accept custom reference) and llsr (linear least squares regression, can accept custom reference), mcp_counter, quantiseq, xcell are available.
+#' @param method A character string. The method to be used. Available methods: "cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell". If a vector is provided, an error will be thrown. Default is all available methods.
 #' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function Cibersort
@@ -46,7 +46,7 @@ setGeneric("deconvolve_cellularity", function(.data,
                                               
                                               .abundance = NULL,
                                               reference = NULL,
-                                              method = "cibersort",
+                                              method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
                                               prefix = "",
                                               gene_symbol_column = NULL,
                                               
@@ -92,12 +92,23 @@ setGeneric("deconvolve_cellularity", function(.data,
 #' @keywords internal
 .deconvolve_cellularity_se = function(.data,
                                       reference = X_cibersort,
-                                      method = "cibersort",
+                                      method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
                                       prefix = "",
                                       ...) {
   
   # Fix NOTEs
   . = NULL
+  
+  # Validate method parameter - ensure only one method is selected
+  if (length(method) > 1) {
+    stop("tidybulk says: Please select one method from: ", paste(method, collapse = ", "))
+  }
+  
+  # Validate method is one of the supported methods
+  valid_methods <- c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell")
+  if (!method %in% valid_methods) {
+    stop(paste("Invalid method. Please choose from:", paste(valid_methods, collapse = ", ")))
+  }
   
   .sample = s_(.data)$symbol
   

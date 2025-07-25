@@ -120,9 +120,10 @@ setGeneric("aggregate_duplicates", function(.data,
   # Row data
   new_row_data =
     .data %>%
-    rowData() %>%
-    as_tibble(rownames = feature__$name) %>%
-    group_by(!!as.symbol(quo_name(.transcript))) %>%
+    rowData() |>
+    S4Vectors::as.data.frame(optional = TRUE) |>
+    tibble::as_tibble(rownames = feature__$name, .name_repair = "minimal") |> 
+    group_by(!!.transcript) %>%
     summarise(
       across(columns_to_collapse, ~ .x %>% collapse_function()),
       across(non_standard_columns, ~ .x[1]),

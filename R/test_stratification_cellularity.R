@@ -62,7 +62,7 @@ setGeneric("test_stratification_cellularity", function(.data,
                                                        
                                                        
                                                        .abundance = NULL,
-                                                       method = "cibersort",
+                                                       method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
                                                        reference = X_cibersort,
                                                        ...)
   standardGeneric("test_stratification_cellularity"))
@@ -77,13 +77,24 @@ setGeneric("test_stratification_cellularity", function(.data,
                                                  
                                                  
                                                  .abundance = NULL,
-                                                 method = "cibersort",
+                                                 method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
                                                  reference = X_cibersort,
                                                  ...)
 {
   
   # Fix NOTEs
   . = NULL
+  
+  # Validate method parameter - ensure only one method is selected
+  if (length(method) > 1) {
+    stop("Multiple methods provided. Please select only one method from: ", paste(method, collapse = ", "))
+  }
+  
+  # Validate method is one of the supported methods
+  valid_methods <- c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell")
+  if (!method %in% valid_methods) {
+    stop(paste("Invalid method. Please choose from:", paste(valid_methods, collapse = ", ")))
+  }
   
   # Validate formula
   if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)

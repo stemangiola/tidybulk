@@ -7,7 +7,7 @@
 .deconvolve_cellularity_se(
   .data,
   reference = X_cibersort,
-  method = "cibersort",
+  method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
   prefix = "",
   ...
 )

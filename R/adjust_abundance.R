@@ -136,7 +136,8 @@ standardGeneric("adjust_abundance"))
   }
   
   # Set column name for value scaled
-  value_adjusted = get_assay_scaled_if_exists_SE(.data) %>% paste0(adjusted_string)
+  # Use the actual assay being adjusted for naming
+  value_adjusted = paste0(abundance, adjusted_string)
   
   
   # DEPRECATION OF .formula

@@ -7,6 +7,7 @@
 #'
 #' @importFrom magrittr set_rownames
 #' @importFrom rlang quo_is_null
+#' @importFrom magrittr not
 #'
 #' @param tbl A tibble
 #' @param rownames The column name of the input tibble that will become the rownames of the output matrix

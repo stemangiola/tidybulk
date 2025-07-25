@@ -38,12 +38,6 @@ test_that("test_differential_abundance with limma works correctly", {
   expect_true("adj.P.Val" %in% names(SummarizedExperiment::rowData(res)))
 })
 
-# Test test_differential_cellularity function
-test_that("test_differential_cellularity works correctly", {
-  # Skip this test as it requires cellularity data
-  skip("test_differential_cellularity requires cellularity data")
-})
-
 # Test glmmSeq function
 test_that("glmmSeq works correctly", {
   # Skip glmmSeq as it's not available

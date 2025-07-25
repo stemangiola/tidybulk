@@ -1,92 +1,148 @@
 ---
-title: "Overview of the tidybulk package"
+title: "tidybulk: An R tidy framework for modular transcriptomic data analysis"
 author: "Stefano Mangiola"
 date: "`r Sys.Date()`"
 package: tidybulk
 output:
   BiocStyle::html_document:
     toc_float: true
+bibliography: references.bib
+link-citations: true
+abstract: >
+  Tidybulk is a comprehensive R package for modular transcriptomic data analysis that brings transcriptomics 
+  to the tidyverse. It provides a unified interface for data transformation, normalization, filtering, 
+  dimensionality reduction, clustering, differential analysis, cellularity analysis, and gene enrichment 
+  with seamless integration of SummarizedExperiment objects and tidyverse principles.
+keywords: "transcriptomics, RNA-seq, differential expression, data analysis, tidyverse, SummarizedExperiment, 
+  bioinformatics, genomics, gene expression, clustering, dimensionality reduction, cellularity analysis, 
+  gene enrichment, R package"
 vignette: >
   %\VignetteEngine{knitr::knitr}
   %\VignetteIndexEntry{Overview of the tidybulk package}
   %\usepackage[UTF-8]{inputenc}
+knit: >
+    (function(x, ...){
+        proj_root <- rprojroot::find_package_root_file() |> normalizePath()
+        
+        # Set knitr options for both renders
+        knitr::opts_knit$set(root.dir = proj_root)
+        
+        rmarkdown::render(
+            x,
+            output_file = "README.md",
+            output_format = "github_document",
+            output_dir = proj_root,
+            knit_root_dir = proj_root,
+            params = list(
+                demo_metadata = FALSE
+            )
+        )
+    })
 ---
 
+<!-- badges: start -->
+[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing) 
+[![R build status](https://github.com/stemangiola/tidybulk/workflows/R-CMD-check/badge.svg)](https://github.com/stemangiola/tidybulk/actions/)
+[![Bioconductor status](https://bioconductor.org/shields/build/release/bioc/tidybulk.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/tidybulk/)
+<!-- badges: end -->
 
-<!-- <style type="text/css"> -->
-<!-- .main-container { -->
-<!--   max-width: 2800px;!important -->
-<!--   margin-left: auto; -->
-<!--   margin-right: auto; -->
-<!-- } -->
-<!-- </style> -->
+# <img src="`r ifelse(knitr::pandoc_to() %in% c('html', 'html4'), '../inst/logo.svg', 'inst/logo.svg')`" height="139px" width="120px"/>
 
-<style>
-.column-left{
-  float: left;
-  width: 50%;
-  text-align: left;
-}
-.column-right{
-  float: right;
-  width: 50%;
-  text-align: right;
-}
-</style>
+**tidybulk** is a powerful R package designed for modular transcriptomic data analysis that brings transcriptomics to the tidyverse.
 
-**Brings transcriptomics to the tidyverse**
+## Why tidybulk?
 
-```{r, echo=FALSE, out.width = "800px"}
-knitr::include_graphics("../man/figures/new_SE_usage-01.png")
-```
+Tidybulk provides a unified interface for comprehensive transcriptomic data analysis with seamless integration of SummarizedExperiment objects and tidyverse principles. It streamlines the entire workflow from raw data to biological insights.
 
+# <img src="`r ifelse(knitr::pandoc_to() %in% c('html', 'html4'), '../inst/new_SE_usage-01.png', 'inst/new_SE_usage-01.png')`" width="100%"/>
 
 ## Functions/utilities available
 
+### Abundance Normalization Functions
 Function | Description
 ------------ | -------------
-`identify_abundant` | identify the abundant genes
-`aggregate_duplicates` | Aggregate abundance and annotation of duplicated transcripts in a robust way
-`scale_abundance` | Scale (normalise) abundance for RNA sequencing depth
-`reduce_dimensions` | Perform dimensionality reduction (PCA, MDS, tSNE)
-`cluster_elements` | Labels elements with cluster identity (kmeans, SNN)
-`remove_redundancy` | Filter out elements with highly correlated features
-`adjust_abundance` | Remove known unwanted variation (Combat)
-`test_differential_abundance` | Differential transcript abundance testing (DE) 
-`deconvolve_cellularity` | Estimated tissue composition (Cibersort or llsr)
-`test_differential_cellularity` | Differential cell-type abundance testing
-`keep_variable` | Filter for top variable features
-`keep_abundant` | Filter out lowly abundant transcripts
-`test_gene_enrichment` | Gene enrichment analyses (EGSEA)
-`test_gene_overrepresentation` | Gene enrichment on list of transcript names (no rank)
+`scale_abundance()` | Scale abundance data
+`quantile_normalise_abundance()` | Quantile normalization
+`adjust_abundance()` | Adjust abundance for unwanted variation
+`fill_missing_abundance()` | Fill missing abundance values
+`impute_missing_abundance()` | Impute missing abundance values
 
-
-Utilities | Description
+### Filtering and Selection Functions
+Function | Description
 ------------ | -------------
-`get_bibliography` | Get the bibliography of your workflow
-`pivot_sample` | Select sample-wise columns/information
-`pivot_transcript` | Select transcript-wise columns/information
-`rotate_dimensions` | Rotate two dimensions of a degree
-`describe_transcript` | Add gene description from gene symbol
-`impute_missing_abundance` | Impute abundance for missing data points using sample groupings 
-`fill_missing_abundance` | Fill abundance for missing data points using an arbitrary value
+`identify_abundant()` | Identify abundant transcripts without removing them
+`keep_abundant()` | Keep abundant transcripts
+`keep_variable()` | Keep variable transcripts
+`filterByExpr()` | Filter by expression
 
-All functions are directly compatibble with `SummarizedExperiment` object.
+### Dimensionality Reduction Functions
+Function | Description
+------------ | -------------
+`reduce_dimensions()` | Reduce dimensions with PCA/MDS/tSNE/UMAP
+`rotate_dimensions()` | Rotate dimensions
+`remove_redundancy()` | Remove redundant features
 
+### Clustering Functions
+Function | Description
+------------ | -------------
+`cluster_elements()` | Cluster elements with various methods
+`kmeans clustering` | K-means clustering
+`SNN clustering` | Shared nearest neighbor clustering
+`hierarchical clustering` | Hierarchical clustering
+`DBSCAN clustering` | Density-based clustering
 
-```{r, echo=FALSE, include=FALSE, }
+### Differential Analysis Functions
+Function | Description
+------------ | -------------
+`test_differential_abundance()` | Test differential abundance with various methods
+
+### Cellularity Analysis Functions
+Function | Description
+------------ | -------------
+`deconvolve_cellularity()` | Deconvolve cellularity with various methods
+`test_stratification_cellularity()` | Test stratification cellularity
+`cibersort()` | CIBERSORT analysis
+
+### Gene Enrichment Functions
+Function | Description
+------------ | -------------
+`test_gene_enrichment()` | Test gene enrichment
+`test_gene_overrepresentation()` | Test gene overrepresentation
+`test_gene_rank()` | Test gene rank
+
+### Utility Functions
+Function | Description
+------------ | -------------
+`describe_transcript()` | Describe transcript characteristics
+`get_bibliography()` | Get bibliography
+`resolve_complete_confounders_of_non_interest()` | Resolve confounders
+
+### Validation and Utility Functions
+Function | Description
+------------ | -------------
+`check_if_counts_is_na()` | Check if counts contain NA values
+`check_if_duplicated_genes()` | Check for duplicated genes
+`check_if_wrong_input()` | Validate input data
+`log10_reverse_trans()` | Log10 reverse transformation
+`logit_trans()` | Logit transformation
+
+All functions are directly compatible with `SummarizedExperiment` objects and follow tidyverse principles for seamless integration with the tidyverse ecosystem.
+
+### Scientific Citation
+
+Mangiola, Stefano, Ramyar Molania, Ruining Dong, Maria A. Doyle, and Anthony T. Papenfuss. 2021. "Tidybulk: An R tidy framework for modular transcriptomic data analysis." Genome Biology 22 (42). https://doi.org/10.1186/s13059-020-02233-7
+
+[Genome Biology - tidybulk: an R tidy framework for modular transcriptomic data analysis](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02233-7)
+
+```{r setup-libraries-and-theme, echo=FALSE, include=FALSE}
 library(knitr)
-# knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
-#                       message = FALSE, cache.lazy = FALSE)
-
-library(dplyr)
-library(tidyr)
-library(tibble)
+library(tidyverse)
 library(magrittr)
 library(ggplot2)
 library(ggrepel)
 library(tidybulk)
 library(tidySummarizedExperiment)
+library(SummarizedExperiment)
 
 my_theme = 	
 	theme_bw() +
@@ -104,698 +160,842 @@ my_theme =
 	)
 
 data(se_mini)
-# tibble_counts = tidybulk::se_mini |> tidybulk() |> as_tibble()
 
 ```
 
-## Installation
+# Installation Guide
 
-From Bioconductor
-```{r eval=FALSE}
-BiocManager::install("tidybulk")
+**Bioconductor**
+
+```{r install-bioconductor, message=FALSE}
+if (!requireNamespace("BiocManager")) install.packages("BiocManager")
+if (!requireNamespace("tidybulk")) BiocManager::install("tidybulk")
 ```
 
-From Github
-```{r, eval=FALSE}
+**Github**
+
+```{r install-github, message=FALSE}
 devtools::install_github("stemangiola/tidybulk")
 ```
 
-# Data
+# Comprehensive Example Pipeline
 
-We will use a `SummarizedExperiment` object
+This vignette demonstrates a complete transcriptomic analysis workflow using tidybulk, with special emphasis on differential expression analysis.
 
-```{r}
+## Data Overview
+
+We will use a `SummarizedExperiment` object containing RNA-seq data:
+
+```{r data-overview}
 se_mini
 ```
 
-Loading `tidySummarizedExperiment` will automatically abstract this object as `tibble`, so we can display it and manipulate it with tidy tools. Although it looks different, and more tools (tidyverse) are available to us, this object is in fact a `SummarizedExperiment` object.
+Loading `tidySummarizedExperiment` automatically abstracts this object as a `tibble`, making it compatible with tidyverse tools while maintaining its `SummarizedExperiment` nature:
 
-```{r}
+```{r check-se-class}
 class(se_mini)
 ```
 
-## Get the bibliography of your workflow 
-First of all, you can cite all articles utilised within your workflow automatically from any tidybulk tibble
+### Prepare Data for Analysis
 
-```{r eval=FALSE}
-se_mini |>	get_bibliography()
+Before analysis, we need to ensure our variables are in the correct format:
+
+```{r convert-condition-to-factor}
+# Convert condition to factor for proper differential expression analysis
+colData(se_mini)$condition = as.factor(colData(se_mini)$condition)
 ```
 
-## Aggregate duplicated `transcripts`
-
-tidybulk provide the `aggregate_duplicates` function to aggregate duplicated transcripts (e.g., isoforms, ensembl). For example, we often have to convert ensembl symbols to gene/transcript symbol, but in doing so we have to deal with duplicates. `aggregate_duplicates` takes a tibble and column names (as symbols; for `sample`, `transcript` and `count`) as arguments and returns a tibble with transcripts with the same name aggregated. All the rest of the columns are appended, and factors and boolean are appended as characters.
-
-<div class="column-left">
-TidyTranscriptomics
-```{r aggregate, message=FALSE, warning=FALSE, results='hide', class.source='yellow', eval=FALSE}
-rowData(se_mini)$gene_name = rownames(se_mini)
-se_mini.aggr = se_mini |> aggregate_duplicates(.transcript = gene_name)
-```
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r aggregate long, eval=FALSE}
-temp = data.frame(
-	symbol = dge_list$genes$symbol,
-	dge_list$counts
-)
-dge_list.nr <- by(temp,	temp$symbol,
-	function(df)
-		if(length(df[1,1])>0)
-			matrixStats:::colSums(as.matrix(df[,-1]))
-)
-dge_list.nr <- do.call("rbind", dge_list.nr)
-colnames(dge_list.nr) <- colnames(dge_list)
-```
-</div>
-<div style="clear:both;"></div>
-
-## Scale `counts`
-
-We may want to compensate for sequencing depth, scaling the transcript abundance (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25). `scale_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method as arguments and returns a tibble with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`.
-
-<div class="column-left">
-TidyTranscriptomics
-```{r normalise}
-se_mini.norm = se_mini |> identify_abundant(factor_of_interest = condition) |> scale_abundance()
-```
-
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r normalise long, eval=FALSE}
-library(edgeR)
-
-dgList <- DGEList(count_m=x,group=group)
-keep <- filterByExpr(dgList)
-dgList <- dgList[keep,,keep.lib.sizes=FALSE]
-[...]
-dgList <- calcNormFactors(dgList, method="TMM")
-norm_counts.table <- cpm(dgList)
-```
-</div>
-<div style="clear:both;"></div>
-
-```{r, include=FALSE}
-se_mini.norm |> select(`count`, count_scaled, .abundant, everything())
-```
-
-We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.
-
-
-```{r plot_normalise}
-se_mini.norm |>
-	ggplot(aes(count_scaled + 1, group=.sample, color=`Cell.type`)) +
-	geom_density() +
-	scale_x_log10() +
-	my_theme
-```
-
-## Filter `variable transcripts`
-
-We may want to identify and filter variable transcripts.
-
-<div class="column-left">
-TidyTranscriptomics
-```{r filter variable}
-se_mini.norm.variable = se_mini.norm |> keep_variable()
-```
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r filter variable long, eval=FALSE}
-library(edgeR)
-
-x = norm_counts.table
-
-s <- rowMeans((x-rowMeans(x))^2)
-o <- order(s,decreasing=TRUE)
-x <- x[o[1L:top],,drop=FALSE]
-
-norm_counts.table = norm_counts.table[rownames(x)]
-
-norm_counts.table$cell_type = tibble_counts[
-	match(
-		tibble_counts$sample,
-		rownames(norm_counts.table)
-	),
-	"Cell.type"
-]
-```
-
-</div>
-<div style="clear:both;"></div>
-
-
-## Reduce `dimensions`
-
-We may want to reduce the dimensions of our data, for example using PCA or MDS algorithms. `reduce_dimensions` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a method (e.g., MDS or PCA) as arguments and returns a tibble with additional columns for the reduced dimensions.
-
-**MDS** (Robinson et al., 10.1093/bioinformatics/btp616)
-
-<div class="column-left">
-TidyTranscriptomics
-```{r mds}
-se_mini.norm.MDS =
-  se_mini.norm |>
-  reduce_dimensions(method="MDS", .dims = 3)
-
-```
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r, eval = FALSE}
-library(limma)
-
-count_m_log = log(count_m + 1)
-cmds = limma::plotMDS(ndim = .dims, plot = FALSE)
-
-cmds = cmds %$%	
-	cmdscale.out |>
-	setNames(sprintf("Dim%s", 1:6))
-
-cmds$cell_type = tibble_counts[
-	match(tibble_counts$sample, rownames(cmds)),
-	"Cell.type"
-]
-```
-</div>
-<div style="clear:both;"></div>
-
-On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.
-
-```{r plot_mds, eval=FALSE}
-se_mini.norm.MDS |> pivot_sample()  |> select(contains("Dim"), everything())
-
-se_mini.norm.MDS |>
-	pivot_sample() |>
-  GGally::ggpairs(columns = 9:11, ggplot2::aes(colour=`Cell.type`))
-
-
-```
-
-**PCA**
-
-<div class="column-left">
-TidyTranscriptomics
-```{r pca, message=FALSE, warning=FALSE, results='hide'}
-se_mini.norm.PCA =
-  se_mini.norm |>
-  reduce_dimensions(method="PCA", .dims = 3)
-```
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r,eval=FALSE}
-count_m_log = log(count_m + 1)
-pc = count_m_log |> prcomp(scale = TRUE)
-variance = pc$sdev^2
-variance = (variance / sum(variance))[1:6]
-pc$cell_type = counts[
-	match(counts$sample, rownames(pc)),
-	"Cell.type"
-]
-```
-</div>
-<div style="clear:both;"></div>
-
-On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.
-
-```{r plot_pca, eval=FALSE}
-
-se_mini.norm.PCA |> pivot_sample() |> select(contains("PC"), everything())
-
-se_mini.norm.PCA |>
-	 pivot_sample() |>
-  GGally::ggpairs(columns = 11:13, ggplot2::aes(colour=`Cell.type`))
-```
-
-**tSNE**
-<div class="column-left">
-TidyTranscriptomics
-```{r tsne, message=FALSE, warning=FALSE, results='hide'}
-se_mini.norm.tSNE =
-	breast_tcga_mini_SE |>
-	identify_abundant() |>
-	reduce_dimensions(
-		method = "tSNE",
-		perplexity=10,
-		pca_scale =TRUE
-	)
-```
-
-
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r, eval=FALSE}
-count_m_log = log(count_m + 1)
-
-tsne = Rtsne::Rtsne(
-	t(count_m_log),
-	perplexity=10,
-		pca_scale =TRUE
-)$Y
-tsne$cell_type = tibble_counts[
-	match(tibble_counts$sample, rownames(tsne)),
-	"Cell.type"
-]
-```
-</div>
-<div style="clear:both;"></div>
-
-Plot
-
-```{r}
-se_mini.norm.tSNE |>
-	pivot_sample() |>
-	select(contains("tSNE"), everything()) 
-
-se_mini.norm.tSNE |>
-	pivot_sample() |>
-	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
-```
-
-## Rotate `dimensions`
-
-We may want to rotate the reduced dimensions (or any two numeric columns really) of our data, of a set angle. `rotate_dimensions` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and an angle as arguments and returns a tibble with additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-<div class="column-left">
-TidyTranscriptomics
-```{r rotate}
-se_mini.norm.MDS.rotated =
-  se_mini.norm.MDS |>
-	rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, action="get")
-```
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r, eval=FALSE}
-rotation = function(m, d) {
-	r = d * pi / 180
-	((bind_rows(
-		c(`1` = cos(r), `2` = -sin(r)),
-		c(`1` = sin(r), `2` = cos(r))
-	) |> as_matrix()) %*% m)
-}
-mds_r = pca |> rotation(rotation_degrees)
-mds_r$cell_type = counts[
-	match(counts$sample, rownames(mds_r)),
-	"Cell.type"
-]
-```
-</div>
-<div style="clear:both;"></div>
-
-**Original**
-On the x and y axes axis we have the first two reduced dimensions, data is coloured by cell type.
-
-```{r plot_rotate_1}
-se_mini.norm.MDS.rotated |>
-	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type` )) +
-  geom_point() +
-  my_theme
-```
-
-**Rotated**
-On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by cell type.
-
-```{r plot_rotate_2}
-se_mini.norm.MDS.rotated |>
-	pivot_sample() |>
-	ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`Cell.type` )) +
-  geom_point() +
-  my_theme
-```
-
-## Test `differential abundance`
-
-We may want to test for differential transcription between sample-wise factors of interest (e.g., with edgeR). `test_differential_abundance` takes a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model as arguments and returns a tibble with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
-<div class="column-left">
-TidyTranscriptomics
-```{r de, message=FALSE, warning=FALSE, results='hide'}
-se_mini.de =
-	se_mini |>
-	test_differential_abundance( ~ condition) |>
-  pivot_transcript()
-se_mini.de
-```
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r, eval=FALSE}
-library(edgeR)
-
-dgList <- DGEList(counts=counts_m,group=group)
-keep <- filterByExpr(dgList)
-dgList <- dgList[keep,,keep.lib.sizes=FALSE]
-dgList <- calcNormFactors(dgList)
-design <- model.matrix(~group)
-dgList <- estimateDisp(dgList,design)
-fit <- glmQLFit(dgList,design)
-qlf <- glmQLFTest(fit,coef=2)
-topTags(qlf, n=Inf)
-```
-</div>
-<div style="clear:both;"></div>
-
-The functon `test_differential_abundance` operated with contrasts too. The constrasts hve the name of the design matrix (generally <NAME_COLUMN_COVARIATE><VALUES_OF_COVARIATE>)
-```{r de contrast, message=FALSE, warning=FALSE, results='hide', eval=FALSE}
-se_mini.de =
-	se_mini |>
-	identify_abundant(factor_of_interest = condition) |>
-	test_differential_abundance(
-		~ 0 + condition,                  
-		.contrasts = c( "conditionTRUE - conditionFALSE")
-	) |> 
-  pivot_transcript()
-```
-
-## Adjust `counts`
-
-We may want to adjust `counts` for (known) unwanted variation. `adjust_abundance` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation, and returns a tibble with additional columns for the adjusted counts as `<COUNT COLUMN>_adjusted`. At the moment just an unwanted covariates is allowed at a time.
-
-<div class="column-left">
-TidyTranscriptomics
-```{r adjust, message=FALSE, warning=FALSE, results='hide'}
-se_mini.norm.adj =
-	se_mini.norm 	|> adjust_abundance(	.factor_unwanted = time, .factor_of_interest = condition, method="combat")
-
-
-```
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r, eval=FALSE}
-library(sva)
-
-count_m_log = log(count_m + 1)
-
-design =
-		model.matrix(
-			object = ~ factor_of_interest + batch,
-			data = annotation
-		)
-
-count_m_log.sva =
-	ComBat(
-			batch =	design[,2],
-			mod = design,
-			...
-		)
-
-count_m_log.sva = ceiling(exp(count_m_log.sva) -1)
-count_m_log.sva$cell_type = counts[
-	match(counts$sample, rownames(count_m_log.sva)),
-	"Cell.type"
-]
-
-```
-</div>
-<div style="clear:both;"></div>
-
-## Deconvolve `Cell type composition`
-
-We may want to infer the cell type composition of our samples (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337). `deconvolve_cellularity` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with additional columns for the adjusted  cell type proportions.
-
-
-<div class="column-left">
-TidyTranscriptomics
-```{r cibersort}
-se_mini.cibersort =
-	se_mini |>
-	deconvolve_cellularity( cores=1, prefix = "cibersort__") |> 
-  pivot_sample()
-
-```
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r, eval=FALSE}
-
-source(‘CIBERSORT.R’)
-count_m |> write.table("mixture_file.txt")
-results <- CIBERSORT(
-	"sig_matrix_file.txt",
-	"mixture_file.txt",
-	perm=100, QN=TRUE
-)
-results$cell_type = tibble_counts[
-	match(tibble_counts$sample, rownames(results)),
-	"Cell.type"
-]
-
-```
-</div>
-<div style="clear:both;"></div>
-
-With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is facetted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).
-
-```{r plot_cibersort, eval=FALSE}
-se_mini.cibersort |>
-	pivot_longer(
-		names_to= "Cell_type_inferred", 
-		values_to = "proportion", 
-		names_prefix ="cibersort__", 
-		cols=contains("cibersort__")
-	) |>
-  ggplot(aes(x=Cell_type_inferred, y=proportion, fill=`Cell.type`)) +
-  geom_boxplot() +
-  facet_wrap(~`Cell.type`) +
+### Visualize Raw Counts
+Visualize the distribution of raw counts before any filtering:
+
+```{r plot-raw-counts, fig.width = 10, fig.height = 10}
+ggplot(as_tibble(se_mini), aes(count + 1, group = .sample, color = `Cell.type`)) +
+  geom_density() +
+  scale_x_log10() +
   my_theme +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
+  labs(title = "Raw counts by cell type (before any filtering)")
 ```
 
-## Test differential cell-type abundance
+## Step 1: Data Preprocessing
 
-We can also perform a statistical test on the differential cell-type abundance across conditions
+### Aggregate Duplicated Transcripts (optional)
+Aggregate duplicated transcripts (e.g., isoforms, ensembl IDs):
 
-```{r DC, eval=FALSE}
+> Transcript aggregation is a standard bioinformatics approach for gene-level summarization.
 
-	se_mini |>
-	test_differential_cellularity(. ~ condition )
+```{r preprocessing-aggregate-duplicates}
+# Add gene names to rowData
+rowData(se_mini)$gene_name = rownames(se_mini)
+
+# Aggregate duplicates
+se_mini = se_mini |> aggregate_duplicates(.transcript = gene_name, aggregation_function = mean)
+```
+
+### Abundance Filtering: tidybulk approaches only
+
+Abundance filtering can be performed using tidybulk's built-in methods [@robinson2010edger; @chen2016edgeR].
+
+#### 1. tidybulk: Default, formula_design, and CPM threshold
+
+```{r filtering-abundance-methods}
+# Default (simple filtering)
+se_abundant_default = se_mini |> keep_abundant()
+
+# With factor_of_interest (recommended for complex designs)
+se_abundant_formula = se_mini |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5, factor_of_interest = condition)
+
+# With CPM threshold (using design parameter)
+se_abundant_cpm = se_mini |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5)
 
 ```
 
-We can also perform regression analysis with censored data (coxph).
+#### 2. Summary statistics and density plots
 
-```{r DC_censored, eval=FALSE}
-
-	se_mini |>
-	test_differential_cellularity(survival::Surv(time, dead) ~ .)
-
-```
-
-## Cluster `samples`
-
-We may want to cluster our data (e.g., using k-means sample-wise). `cluster_elements` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with additional columns for the cluster annotation. At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
-
-**k-means**
-
-<div class="column-left">
-TidyTranscriptomics
-```{r cluster}
-se_mini.norm.cluster = se_mini.norm.MDS |>
-  cluster_elements(method="kmeans",	centers = 2, action="get" )
-```
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r, eval=FALSE}
-count_m_log = log(count_m + 1)
-
-k = kmeans(count_m_log, iter.max = 1000, ...)
-cluster = k$cluster
-
-cluster$cell_type = tibble_counts[
-	match(tibble_counts$sample, rownames(cluster)),
-	c("Cell.type", "Dim1", "Dim2")
-]
-
-```
-</div>
-<div style="clear:both;"></div>
-
-We can add cluster annotation to the MDS dimension reduced data set and plot.
-
-```{r plot_cluster}
- se_mini.norm.cluster |>
-	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster_kmeans`)) +
-  geom_point() +
-  my_theme
-```
-
-**SNN**
-
-Matrix package (v1.3-3) causes an error with Seurat::FindNeighbors used in this method. We are trying to solve this issue. At the moment this option in unaviable.
-
-<div class="column-left">
-TidyTranscriptomics
-```{r SNN, eval=FALSE, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
-se_mini.norm.SNN =
-	se_mini.norm.tSNE |>
-	cluster_elements(method = "SNN")
-```
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r, eval=FALSE}
-library(Seurat)
-
-snn = CreateSeuratObject(count_m)
-snn = ScaleData(
-	snn, display.progress = TRUE,
-	num.cores=4, do.par = TRUE
+```{r filtering-summary-statistics, fig.width = 10, fig.height = 10}
+# Example: summary for default tidybulk filtering
+# Before filtering
+se_mini |> as_tibble() |> summarise(
+  n_features = n_distinct(.feature),
+  min_count = min(count),
+  median_count = median(count),
+  max_count = max(count)
 )
-snn = FindVariableFeatures(snn, selection.method = "vst")
-snn = FindVariableFeatures(snn, selection.method = "vst")
-snn = RunPCA(snn, npcs = 30)
-snn = FindNeighbors(snn)
-snn = FindClusters(snn, method = "igraph", ...)
-snn = snn[["seurat_clusters"]]
 
-snn$cell_type = tibble_counts[
-	match(tibble_counts$sample, rownames(snn)),
-	c("Cell.type", "Dim1", "Dim2")
-]
+# After filtering
+se_abundant_default |> as_tibble() |> summarise(
+  n_features = n_distinct(.feature),
+  min_count = min(count),
+  median_count = median(count),
+  max_count = max(count)
+)
 
-```
-</div>
-<div style="clear:both;"></div>
+se_abundant_formula |> as_tibble() |> summarise(
+  n_features = n_distinct(.feature),
+  min_count = min(count),
+  median_count = median(count),
+  max_count = max(count)
+)
 
-```{r SNN_plot, eval=FALSE}
-se_mini.norm.SNN |>
-	pivot_sample() |>
-	select(contains("tSNE"), everything()) 
-
-se_mini.norm.SNN |>
-	pivot_sample() |>
-	gather(source, Call, c("cluster_SNN", "Call")) |>
-	distinct() |>
-	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + facet_grid(~source) + my_theme
-
-
-# Do differential transcription between clusters
-se_mini.norm.SNN |>
-	mutate(factor_of_interest = `cluster_SNN` == 3) |>
-	test_differential_abundance(
-    ~ factor_of_interest
-   ) |> 
-  pivot_transcript()
+se_abundant_cpm |> as_tibble() |> summarise(
+  n_features = n_distinct(.feature),
+  min_count = min(count),
+  median_count = median(count),
+  max_count = max(count)
+)
 ```
 
-## Drop `redundant` transcripts
+```{r filtering-density-plot-comparison, fig.width = 10, fig.height = 10}
+# Merge all methods into a single tibble
+se_abundant_all = 
+  bind_rows(
+    se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "no filter"),
+    se_abundant_default |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "default"),
+    se_abundant_formula |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "formula"),
+    se_abundant_cpm |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "cpm")
+  )
 
-We may want to remove redundant elements from the original data set (e.g., samples or transcripts), for example if we want to define cell-type specific signatures with low sample redundancy. `remove_redundancy` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with redundant elements removed (e.g., samples). Two redundancy estimation approaches are supported:
-
-+ removal of highly correlated clusters of elements (keeping a representative) with method="correlation"
-+ removal of most proximal element pairs in a reduced dimensional space.
-
-**Approach 1**
-
-<div class="column-left">
-TidyTranscriptomics
-```{r drop}
-se_mini.norm.non_redundant =
-	se_mini.norm.MDS |>
-  remove_redundancy(	method = "correlation" )
+# Density plot across methods
+se_abundant_all |> 
+  as_tibble() |> 
+  ggplot(aes(count + 1, group = .sample, color = method)) +
+    geom_density() +
+    scale_x_log10() +
+    facet_wrap(~method) +
+    my_theme +
+    labs(title = "Counts after abundance filtering (tidybulk default)")
 ```
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r, eval=FALSE}
-library(widyr)
 
-.data.correlated =
-	pairwise_cor(
-		counts,
-		sample,
-		transcript,
-		rc,
-		sort = TRUE,
-		diag = FALSE,
-		upper = FALSE
-	) |>
-	filter(correlation > correlation_threshold) |>
-	distinct(item1) |>
-	rename(!!.element := item1)
+Update the `se_mini` object with the filtered data:
 
-# Return non redudant data frame
-counts |> anti_join(.data.correlated) |>
-	spread(sample, rc, - transcript) |>
-	left_join(annotation)
+```{r update-se-mini-with-filtered}
+se_mini = se_abundant_formula
+```
 
+> **Tip:** Use `formula_design` for complex designs, and use the CPM threshold for library-size-aware filtering.
 
+### Remove Redundant Transcripts
+
+Redundancy removal is a standard approach for reducing highly correlated features.
+
+```{r preprocessing-remove-redundancy}
+se_mini_non_redundant = 
+  se_mini |> 
+  remove_redundancy(method = "correlation", top = 100) 
+
+  # Make  
+
+se_mini |> as_tibble() |> summarise(
+  n_features = n_distinct(.feature),
+  min_count = min(count),
+  median_count = median(count),
+  max_count = max(count)
+)
+
+# Summary statistics
+se_mini_non_redundant |> as_tibble() |> summarise(
+  n_features = n_distinct(.feature),
+  min_count = min(count),
+  median_count = median(count),
+  max_count = max(count)
+)
+
+# Plot before and after
+# Merge before and after into a single tibble
+se_mini_all = bind_rows(
+  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |>  mutate(method = "before"),
+  se_mini_non_redundant |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |>  mutate(method = "after")
+)
+
+# Density plot
+ggplot(as_tibble(se_mini_all), aes(count + 1, group = .sample, color = method)) +
+  geom_density() +
+  scale_x_log10() +
+  facet_wrap(~method) +
+  my_theme +
+  labs(title = "Counts after removing redundant transcripts")
 
 ```
-</div>
-<div style="clear:both;"></div>
 
-We can visualise how the reduced redundancy with the reduced dimentions look like
 
-```{r plot_drop}
-se_mini.norm.non_redundant |>
+### Filter Variable Transcripts
+Keep only the most variable transcripts for downstream analysis.
+
+Variance-based feature selection using edgeR methodology [@robinson2010edger] is used for selecting informative features.
+
+```{r filtering-keep-variable}
+se_mini_variable = se_mini |> keep_variable()
+```
+
+### Visualize After Variable Filtering Variable Transcripts (optional)
+```{r filtering-variable-summary-and-plot, fig.width = 10, fig.height = 10}
+# Before filtering
+se_mini |> as_tibble() |> summarise(
+  n_features = n_distinct(.feature),
+  min_count = min(count),
+  median_count = median(count),
+  max_count = max(count)
+)
+
+# After filtering
+se_mini_variable |> as_tibble() |> summarise(
+  n_features = n_distinct(.feature),
+  min_count = min(count),
+  median_count = median(count),
+  max_count = max(count)
+)
+
+# Density plot
+# Merge before and after into a single tibble
+se_mini_all = bind_rows(
+  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "before"),
+  se_mini_variable |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "after")
+)
+
+# Density plot
+ggplot(as_tibble(se_mini_all), aes(count + 1, group = .sample, color = method)) +
+  geom_density() +
+  scale_x_log10() +
+  facet_wrap(~method) +
+  my_theme +
+  labs(title = "Counts after variable filtering")
+```
+
+
+### Scale Abundance
+Scale for sequencing depth using TMM [@robinson2010edger], upper quartile [@bullard2010uq], and RLE [@anders2010rle] normalization.
+
+```{r normalization-scale-abundance}
+se_mini = 
+se_mini |> 
+	scale_abundance(method = "TMM", suffix = "_tmm") |>
+	scale_abundance(method = "upperquartile", suffix = "_upperquartile") |>
+	scale_abundance(method = "RLE", suffix = "_RLE")
+
+```
+
+### Visualize After Scaling
+```{r normalization-visualize-scaling, fig.width = 10, fig.height = 10}
+# Before scaling
+se_mini |> assay("count") |> as.matrix() |> rowMeans() |> summary()
+
+se_mini |> assay("count_tmm") |> as.matrix() |> rowMeans() |> summary()
+
+se_mini |> assay("count_upperquartile") |> as.matrix() |> rowMeans() |> summary()
+
+se_mini |> assay("count_RLE") |> as.matrix() |> rowMeans() |> summary()
+
+# Merge all methods into a single tibble
+se_mini_scaled_all = bind_rows(
+  se_mini |> assay("count") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "no_scaling"),
+  se_mini |> assay("count_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "TMM"),
+  se_mini |> assay("count_upperquartile") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "upperquartile"),
+  se_mini |> assay("count_RLE") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "RLE")
+)
+
+
+# Density plot
+ggplot(as_tibble(se_mini_scaled_all), aes(count + 1, group = .sample, color = method)) +
+  geom_density() +
+  scale_x_log10() +
+  facet_wrap(~method) +
+  my_theme +
+  labs(title = "Scaled counts by method (after scaling)")
+```
+
+
+## Step 2: Exploratory Data Analysis
+
+### Remove Zero-Variance Features (required for PCA)
+
+Variance filtering is a standard preprocessing step for dimensionality reduction.
+
+```{r eda-remove-zero-variance}
+library(matrixStats)
+# Remove features with zero variance across samples
+se_mini = se_mini[rowVars(assay(se_mini)) > 0, ]
+```
+
+### Dimensionality Reduction
+
+MDS [@kruskal1964mds] using limma::plotMDS [@ritchie2015limma] and PCA [@hotelling1933pca] are used for dimensionality reduction.
+
+```{r eda-mds-analysis, fig.width = 10, fig.height = 10}
+se_mini = se_mini |>
+  reduce_dimensions(method="MDS", .dims = 2)
+```
+
+```{r eda-pca-analysis, fig.width = 10, fig.height = 10}
+se_mini = se_mini |>
+  reduce_dimensions(method="PCA", .dims = 2)
+```
+
+### Visualize Dimensionality Reduction Results
+
+```{r eda-plot-dimensionality-reduction, fig.width = 10, fig.height = 10}
+# MDS plot
+se_mini |>
 	pivot_sample() |>
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
   geom_point() +
-  my_theme
+	my_theme +
+	labs(title = "MDS Analysis")
+
+# PCA plot
+	se_mini |>
+	pivot_sample() |>
+	ggplot(aes(x=`PC1`, y=`PC2`, color=`Cell.type`)) +
+	geom_point() +
+	my_theme +
+	labs(title = "PCA Analysis")
+```
+
+### Clustering Analysis
+
+K-means clustering [@macqueen1967kmeans] is used for unsupervised grouping.
+
+```{r eda-clustering-analysis, fig.width = 10, fig.height = 10}
+se_mini = se_mini |>
+  cluster_elements(method="kmeans", centers = 2, action="get")
+
+# Visualize clustering
+	se_mini |>
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster_kmeans`)) +
+  geom_point() +
+  my_theme +
+  labs(title = "K-means Clustering")
+```
+
+## Step 3: Differential Expression Analysis
+
+This workflow uses **edgeR quasi-likelihood** [@robinson2010edger; @chen2016edgeR], **edgeR robust likelihood ratio** [@chen2016edgeR], **DESeq2** [@love2014deseq2], **limma-voom** [@law2014voom], and **limma-voom with sample weights** [@liu2015voomweights] for differential expression analysis.
+
+### Basic Differential Expression
+
+**Methods:**
+- **edgeR quasi-likelihood:** Quasi-likelihood F-tests for differential expression
+- **edgeR robust likelihood ratio:** Robust likelihood ratio tests
+- **DESeq2:** Negative binomial distribution with dispersion estimation
+- **limma-voom:** Linear modeling with empirical Bayes moderation
+- **limma-voom with sample weights:** Enhanced voom with quality weights
+**References:**
+- Robinson et al. (2010) edgeR: a Bioconductor package for differential expression analysis
+- Chen et al. (2016) From reads to genes to pathways: differential expression analysis of RNA-Seq experiments using Rsubread and the edgeR quasi-likelihood pipeline
+- Love et al. (2014) Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2
+- Law et al. (2014) voom: precision weights unlock linear model analysis tools for RNA-seq read counts
+- Liu et al. (2015) Why weight? Modelling sample and observational level variability improves power in RNA-seq analyses
+
+```{r differential-expression-multiple-methods}
+# Standard differential expression analysis
+se_mini = se_mini |>
+
+# Use QL method
+	test_differential_abundance(~ condition, method = "edgeR_quasi_likelihood", prefix = "ql__") |>
+	
+	# Use edger_robust_likelihood_ratio
+	test_differential_abundance(~ condition, method = "edger_robust_likelihood_ratio", prefix = "lr_robust__") |>
+	
+# Use DESeq2 method
+	test_differential_abundance(~ condition, method = "DESeq2", prefix = "deseq2__") |>
+	
+	# Use limma_voom
+	test_differential_abundance(~ condition, method = "limma_voom", prefix = "voom__") |>
+
+# Use limma_voom_sample_weights
+	test_differential_abundance(~ condition, method = "limma_voom_sample_weights", prefix = "voom_weights__") 
+
 
 ```
 
-**Approach 2**
+### Gene Description
 
-```{r drop2}
-se_mini.norm.non_redundant =
-	se_mini.norm.MDS |>
-  remove_redundancy(
-  	method = "reduced_dimensions",
-  	Dim_a_column = `Dim1`,
-  	Dim_b_column = `Dim2`
+With tidybulk, retrieving gene descriptions is straightforward, making it easy to enhance the interpretability of your differential expression results.
+
+```{r differential-expression-gene-description}
+# Add gene descriptions using the original SummarizedExperiment
+se_mini |> 
+
+	describe_transcript() |>
+
+	# Filter top significant genes
+	filter(ql__FDR < 0.05) |>
+
+	# Print the gene statistics
+	pivot_transcript() |> 
+	dplyr::select(.feature, description, contains("ql")) |> 
+	head()
+
+```
+
+### Compare Results Across Methods
+
+```{r differential-expression-summary-statistics}
+# Summay statistics
+se_mini |> rowData() |> as_tibble() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
+summarise(across(everything(), list(min = min, median = median, max = max), na.rm = TRUE))
+
+```
+
+### Histograms of p-values across methods
+
+```{r differential-expression-pvalue-histograms, fig.width = 10, fig.height = 10}
+	se_mini |>
+  rowData() |> 
+  as_tibble() |> 
+  select(
+    ql__PValue, 
+    lr_robust__PValue, 
+    voom__P.Value, 
+    voom_weights__P.Value, 
+    deseq2__pvalue
+  ) |> 
+  pivot_longer(everything(), names_to = "method", values_to = "pvalue") |>
+  ggplot(aes(x = pvalue, fill = method)) +
+  geom_histogram(binwidth = 0.01) +
+  facet_wrap(~method) +
+  my_theme +
+  labs(title = "Histogram of p-values across methods")
+```
+
+### Pairplot of pvalues across methods (GGpairs)
+
+```{r differential-expression-pvalue-pairplot, fig.width = 10, fig.height = 10, message = FALSE}
+
+library(GGally)
+se_mini |> 
+  rowData() |> 
+  as_tibble() |> 
+  select(ql__PValue, lr_robust__PValue, voom__P.Value, voom_weights__P.Value, deseq2__pvalue) |> 
+  ggpairs(columns = 1:5) +
+  scale_x_continuous(trans = tidybulk::log10_reverse_trans()) +
+  scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
+  my_theme +
+  labs(title = "Pairplot of p-values across methods")
+```
+
+### Pairplot of effect sizes across methods (GGpairs)
+
+```{r differential-expression-effectsize-pairplot, fig.width = 10, fig.height = 10, message = FALSE}
+library(GGally)
+se_mini |> 
+  rowData() |> 
+  as_tibble() |> 
+  select(ql__logFC, lr_robust__logFC, voom__logFC, voom_weights__logFC, deseq2__log2FoldChange) |> 
+  ggpairs(columns = 1:5) +
+  my_theme +
+  labs(title = "Pairplot of effect sizes across methods")
+```
+
+### Volcano Plots for Each Method
+
+```{r differential-expression-volcano-plots, fig.width = 10, fig.height = 10}
+# Create volcano plots
+se_mini |>
+
+	# Select the columns we want to plot
+    rowData() |> 
+    as_tibble(rownames = ".feature") |> 
+    select(
+			.feature,
+      ql__logFC, ql__PValue,
+      lr_robust__logFC, lr_robust__PValue,
+      voom__logFC, voom__P.Value,
+      voom_weights__logFC, voom_weights__P.Value,
+      deseq2__log2FoldChange, deseq2__pvalue
+    ) |>
+
+	# Pivot longer to get a tidy data frame
+	pivot_longer(
+      - .feature,
+      names_to = c("method", "stat"),
+      values_to = "value", names_sep = "__"
+    ) |>
+
+	# Harmonize column names
+	mutate(stat  = case_when(
+		stat %in% c("logFC", "log2FoldChange") ~ "logFC",
+		stat %in% c("PValue", "pvalue", "P.Value", "p.value") ~ "PValue"
+	)) |>
+  pivot_wider(names_from = "stat", values_from = "value") |>
+  unnest( logFC, PValue) |> 
+
+	# Plot
+  ggplot(aes(x = logFC, y = PValue)) +
+  geom_point(aes(color = PValue < 0.05, size = PValue < 0.05)) +
+  ggrepel::geom_text_repel(aes(label = .feature), size = 2, max.overlaps = 10) +
+  scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
+  scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
+  scale_size_manual(values = c("TRUE" = 0.5, "FALSE" = 0.1)) +
+  facet_wrap(~method) +
+  my_theme +
+  labs(title = "Volcano Plots by Method")
+```
+
+### Differential Expression with Contrasts
+
+Contrast-based differential expression analysis using **edgeR** [@robinson2010edger; @chen2016edgeR] is a standard statistical approach for testing specific comparisons in complex designs.
+
+```{r differential-expression-contrasts}
+# Using contrasts for more complex comparisons
+se_mini |>
+	test_differential_abundance(
+		~ 0 + condition,                  
+		.contrasts = c("conditionTRUE - conditionFALSE"),
+        method = "edgeR_quasi_likelihood", 
+		prefix = "contrasts__"
+	) |> 
+
+	# Print the gene statistics
+  pivot_transcript() |>
+  select(contains("contrasts"))
+```
+
+### Differential Expression with minimum fold change (TREAT method)
+
+TREAT method [@mccarthy2009treat] is used for testing significance relative to a fold-change threshold.
+
+```{r differential-expression-treat-method}
+# Using contrasts for more complex comparisons
+se_mini |>
+	test_differential_abundance(
+		~ 0 + condition,                  
+		.contrasts = c("conditionTRUE - conditionFALSE"),
+        method = "edgeR_quasi_likelihood", 
+		test_above_log2_fold_change = 2, 
+		prefix = "treat__"
+	) |> 
+
+	# Print the gene statistics
+  pivot_transcript() |>
+  select(contains("treat"))
+```
+
+### Mixed Models for Complex Designs
+
+glmmSeq [@ma2020glmmseq] is used for generalized linear mixed models for RNA-seq data.
+
+```{r differential-expression-mixed-models, cache=TRUE}
+# Using glmmSeq for mixed models
+se_mini = se_mini |>
+  keep_abundant(formula_design = ~ condition) |>
+  test_differential_abundance(
+    ~ condition + (1|Cell.type), 
+    method = "glmmseq_lme4", 
+	prefix = "glmmseq__"
+  ) 
+
+  se_mini |>
+  pivot_transcript() 
+```
+
+## Step 4: Batch Effect Correction
+
+ComBat-seq [@zhang2017combatseq] is used for batch effect correction in RNA-seq data.
+
+```{r batch-correction-adjust-abundance}
+# Adjust for batch effects
+se_mini = se_mini |>
+  adjust_abundance(
+	  .factor_unwanted = time, 
+	  .factor_of_interest = condition, 
+    method = "combat_seq", 
+	  abundance = "count_tmm"
+  )
+
+# Scatter plot of adjusted vs unadjusted
+left_join(
+    se_mini |> assay("count_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count_tmm") ,
+    se_mini |> assay("count_tmm_adjusted") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count_tmm_adjusted") ,
+	by = c(".feature", ".sample")
+  ) |>
+  ggplot(aes(x = count_tmm + 1, y = count_tmm_adjusted + 1)) +
+  geom_point(aes(color = .sample), size = 0.1) +
+  ggrepel::geom_text_repel(aes(label = .feature), size = 2, max.overlaps = 10) +
+  scale_x_log10() +
+  scale_y_log10() +
+  my_theme +
+  labs(title = "Scatter plot of adjusted vs unadjusted")
+```
+
+
+
+## Step 5: Cellularity Analysis
+
+CIBERSORT [@newman2015cibersort] is used for cell type deconvolution.
+
+Cellularity deconvolution is a standard approach for estimating the cellular composition of a sample.
+
+### Available Deconvolution Methods
+
+The `tidybulk` package provides several methods for deconvolution:
+
+- **CIBERSORT** [@newman2015cibersort]: Uses support vector regression to deconvolve cell type proportions. Requires the `class`, `e1071`, and `preprocessCore` packages.
+- **LLSR** [@newman2015cibersort]: Linear Least Squares Regression for deconvolution.
+- **EPIC** [@racle2017epic]: Uses a reference-based approach to estimate cell fractions.
+- **MCP-counter** [@becht2016mcp]: Quantifies the abundance of immune and stromal cell populations.
+- **quanTIseq** [@finotello2019quantiseq]: A computational framework for inferring the immune contexture of tumors.
+- **xCell** [@aran2017xcell]: Performs cell type enrichment analysis.
+
+### Example Usage
+
+```{r deconvolution-examples}
+
+se_mini = 
+
+se_mini |> 
+deconvolve_cellularity(method = "cibersort", cores = 1, prefix = "cibersort__") 
+
+```
+
+For the rest of the methods, you need to install the `immunedeconv` package.
+
+```{r install-immunedeconv}
+if (!requireNamespace("immunedeconv")) BiocManager::install("immunedeconv")
+```
+
+```{r deconvolution-examples2, eval=FALSE}
+
+se_mini = 
+
+se_mini |> 
+# Example using LLSR
+deconvolve_cellularity(method = "llsr", prefix = "llsr__") |> 
+
+# Example using EPIC
+deconvolve_cellularity(method = "epic", prefix = "epic__") |> 
+
+# Example using MCP-counter
+deconvolve_cellularity(method = "mcp_counter", prefix = "mcp__") |> 
+
+# Example using quanTIseq
+deconvolve_cellularity(method = "quantiseq", prefix = "quantiseq__") |> 
+
+# Example using xCell
+deconvolve_cellularity(method = "xcell", prefix = "xcell__")
+```
+
+### Plotting Results
+
+Visualize the cell type proportions as a stacked barplot for each method:
+
+```{r deconvolution-plotting, fig.width = 10, fig.height = 10}
+# Visualize CIBERSORT results
+se_mini	 |>
+  pivot_sample() |>
+  select(.sample, contains("cibersort__")) |>
+  pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
+  ggplot(aes(x = .sample, y = proportion, fill = Cell_type_inferred)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = scales::percent) +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  labs(title = "CIBERSORT Cell Type Proportions")
+
+```
+
+
+```{r deconvolution-plotting2, fig.width = 10, fig.height = 10, eval=FALSE}
+
+ # Repeat similar plotting for LLSR, EPIC, MCP-counter, quanTIseq, and xCell
+se_mini	 |>
+  pivot_sample() |>
+  select(.sample, contains("llsr__")) |>
+  pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
+  ggplot(aes(x = .sample, y = proportion, fill = Cell_type_inferred)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = scales::percent) +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  labs(title = "LLSR Cell Type Proportions")
+
+  se_mini	 |>
+  pivot_sample() |>
+  select(.sample, contains("epic__")) |>
+  pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
+  ggplot(aes(x = .sample, y = proportion, fill = Cell_type_inferred)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = scales::percent) +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  labs(title = "EPIC Cell Type Proportions")
+
+  se_mini	 |>
+  pivot_sample() |>
+  select(.sample, contains("mcp__")) |>
+  pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
+  ggplot(aes(x = .sample, y = proportion, fill = Cell_type_inferred)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = scales::percent) +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  labs(title = "MCP-counter Cell Type Proportions")
+
+  se_mini	 |>
+  pivot_sample() |>
+  select(.sample, contains("quantiseq__")) |>
+  pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
+  ggplot(aes(x = .sample, y = proportion, fill = Cell_type_inferred)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = scales::percent) +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  labs(title = "quanTIseq Cell Type Proportions")
+
+  se_mini	 |>
+  pivot_sample() |>
+  select(.sample, contains("xcell__")) |>
+  pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
+  ggplot(aes(x = .sample, y = proportion, fill = Cell_type_inferred)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = scales::percent) +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  labs(title = "xCell Cell Type Proportions")
+  
+```
+
+## Step 6: Gene Enrichment Analysis
+
+Gene Set Enrichment Analysis (GSEA) [@subramanian2005gsea] is used for gene set enrichment.
+
+```{r enrichment-gene-rank-analysis}
+# Run gene rank enrichment (GSEA style)
+gene_rank_res =
+  se_mini |>
+
+    # Filter for genes with entrez IDs
+  filter(!entrez |> is.na()) |>
+
+  # Test gene rank
+  test_gene_rank(
+    .entrez = entrez,
+    .arrange_desc = lr_robust__logFC,
+    species = "Homo sapiens",
+    gene_sets = c("H", "C2", "C5")
   )
 ```
 
-We can visualise MDS reduced dimensions of the samples with the closest pair removed.
+```{r enrichment-inspect-significant-genesets}
+# Inspect significant gene sets (example for C2 collection)
+gene_rank_res |>
+  filter(gs_collection == "C2") |>
+  dplyr::select(-fit) |>
+  unnest(test) |>
+  filter(p.adjust < 0.05)
+```
 
-```{r plot_drop2}
-se_mini.norm.non_redundant |>
-	pivot_sample() |>
-	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
-  geom_point() +
-  my_theme
+# Visualize enrichment 
+```{r enrichment-visualize-gsea-plots}
+  library(enrichplot)
+  library(patchwork)
+  gene_rank_res |>
+    unnest(test) |>
+    head() |>
+    mutate(plot = pmap(
+      list(fit, ID, idx_for_plotting, p.adjust),
+      ~ enrichplot::gseaplot2(
+        ..1, geneSetID = ..3,
+        title = sprintf("%s \nadj pvalue %s", ..2, round(..4, 2)),
+        base_size = 6, rel_heights = c(1.5, 0.5), subplots = c(1, 2)
+      )
+    )) |>
+    pull(plot) 
 
 ```
 
-## Other useful wrappers
+Gene Ontology overrepresentation analysis [@ashburner2000go] is used for functional enrichment. 
 
-The above wrapper streamline the most common processing of bulk RNA sequencing data. Other useful wrappers are listed above.
+```{r enrichment-gene-overrepresentation}
+# Test gene overrepresentation
+se_mini_overrep = 
+  se_mini |>
+  
+  # Label genes to test overrepresentation of
+  mutate(genes_to_test = ql__FDR < 0.05) |>
+  
+    # Filter for genes with entrez IDs
+  filter(!entrez |> is.na()) |>
+  
+  test_gene_overrepresentation(
+    .entrez = entrez,
+    species = "Homo sapiens",
+    .do_test = genes_to_test,
+    gene_sets = c("H", "C2", "C5")
+  )
 
-## From BAM/SAM to tibble of gene counts
+  se_mini_overrep
+```
 
-We can calculate gene counts (using FeatureCounts; Liao Y et al., 10.1093/nar/gkz114) from a list of BAM/SAM files and format them into a tidy structure (similar to counts).
+EGSEA [@alhamdoosh2017egsea] is used for ensemble gene set enrichment analysis. EGSEA is a method that combines multiple gene set enrichment analysis methods to provide a more robust and comprehensive analysis of gene set enrichment. It creates a web-based interactive tool that allows you to explore the results of the gene set enrichment analysis.
 
-```{r eval=FALSE}
-counts = tidybulk_SAM_BAM(
-	file_names,
-	genome = "hg38",
-	isPairedEnd = TRUE,
-	requireBothEndsMapped = TRUE,
-	checkFragLength = FALSE,
-	useMetaFeatures = TRUE
-)
+```{r enrichment-egsea-analysis}
+library(EGSEA)
+# Test gene enrichment
+  se_mini |> 
+
+  # Filter for genes with entrez IDs
+  filter(!entrez |> is.na()) |>
+
+  # Test gene enrichment
+  test_gene_enrichment(
+    .formula = ~condition,
+    .entrez = entrez,
+    species = "human", 
+    gene_sets = "h"
+  )
+
 ```
 
 
-## From gene symbol to gene description (gene name in full)
+## Bibliography
 
-We can add gene full name (and in future description) from symbol identifiers. This currently works for human and mouse.
+`tidybulk` allows you to get the bibliography of all methods used in our workflow.
 
-```{r description}
-se_mini |> 
-	describe_transcript() |> 
-	select(feature, description, everything())
+```{r bibliography-get-methods}
+# Get bibliography of all methods used in our workflow
+se_mini |> get_bibliography()
 ```
 
-## Appendix
 
-```{r}
+```{r session-info}
 sessionInfo()
 ```

@@ -456,31 +456,6 @@ test_that("filter variable - no object",{
 
 
 
-test_that("differential composition",{
-  
-  # Cibersort
-  se_mini |>
-    test_differential_cellularity(. ~ condition	, cores = 1	) |>
-    pull(`estimate_(Intercept)`) |>
-    magrittr::extract2(1) |>
-    as.integer() |>
-    expect_equal(	-2, 	tollerance =1e-3)
-  
-  # llsr
-  se_mini |>
-    test_differential_cellularity(
-      . ~ condition,
-      method="llsr"
-    ) |>
-    pull(`estimate_(Intercept)`) |>
-    magrittr::extract2(1) |>
-    as.integer() |>
-    expect_equal(	-2, 	tollerance =1e-3)
-  
- 
-  
-})
-
 
 
 

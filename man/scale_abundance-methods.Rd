@@ -14,6 +14,7 @@ scale_abundance(
   reference_sample = NULL,
   .subset_for_scaling = NULL,
   action = "add",
+  suffix = "_scaled",
   reference_selection_function = NULL,
   ...,
   .abundance = NULL
@@ -26,6 +27,7 @@ scale_abundance(
   reference_sample = NULL,
   .subset_for_scaling = NULL,
   action = NULL,
+  suffix = "_scaled",
   reference_selection_function = NULL,
   ...,
   .abundance = NULL
@@ -38,6 +40,7 @@ scale_abundance(
   reference_sample = NULL,
   .subset_for_scaling = NULL,
   action = NULL,
+  suffix = "_scaled",
   reference_selection_function = NULL,
   ...,
   .abundance = NULL
@@ -55,6 +58,8 @@ scale_abundance(
 \item{.subset_for_scaling}{A gene-wise quosure condition. This will be used to filter rows (features/genes) of the dataset. For example}
 
 \item{action}{A character string between "add" (default) and "only". "add" joins the new information to the input tbl (default), "only" return a non-redundant tbl with the just new information.}
+
+\item{suffix}{A character string to append to the scaled abundance column name. Default is "_scaled".}
 
 \item{reference_selection_function}{DEPRECATED. please use reference_sample.}
 

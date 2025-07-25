@@ -19,6 +19,13 @@ test_that("deconvolve_cellularity with CIBERSORT works correctly", {
   expect_no_error(res)
 })
 
+test_that("deconvolve_cellularity throws error with multiple methods", {
+  expect_error(
+    se_mini |> deconvolve_cellularity(method = c("cibersort", "llsr")),
+    "Multiple methods provided"
+  )
+})
+
 test_that("deconvolve_cellularity with EPIC works correctly", {
   # Skip EPIC as it requires additional packages
   skip("EPIC requires additional Bioconductor packages")

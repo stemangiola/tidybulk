@@ -5,6 +5,7 @@
 #' @description rotate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
 #'
 #' @importFrom rlang enquo
+#' @importFrom magrittr not
 #'
 #'
 #' @name rotate_dimensions

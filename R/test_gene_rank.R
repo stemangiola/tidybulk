@@ -6,6 +6,7 @@
 #'
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_missing
+#' @importFrom magrittr not
 #'
 #'
 #' @name test_gene_rank
@@ -171,3 +172,65 @@ setMethod("test_gene_rank",
           .test_gene_rank_SE)
 
 
+
+
+
+#' @details
+#' This function plots the GSEA for gene overrepresentation
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @importFrom tibble rowid_to_column
+#' @importFrom stats p.adjust
+#' @importFrom purrr map
+#'
+entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL){
+
+	# From the page
+	# https://yulab-smu.github.io/clusterProfiler-book/chapter5.html
+
+	# Check if package is installed, otherwise install
+  check_and_install_packages(c("fastmatch", "clusterProfiler", "enrichplot", "ggplot2"))
+
+  # Get gene sets signatures
+  if(is.null(gene_collections ) )
+    my_gene_collection = msigdbr::msigdbr(species = species)
+  else if(gene_collections |> is("character"))
+    my_gene_collection = msigdbr::msigdbr(species = species) %>%  filter( tolower(gs_collection) %in% tolower(gene_collections) )
+  else if(gene_collections |> is("list"))
+    my_gene_collection = tibble(gs_name=names(.), ncbi_gene = . ) %>% unnest(ncbi_gene) %>% mutate(gs_collection = "user_defined")
+ else
+   stop("tidybulk says: the gene sets should be either a character vector or a named list")
+
+
+   my_gene_collection |>
+
+
+		# Execute calculation
+		nest(data = -gs_collection) |>
+		mutate(fit =
+					 	map(
+					 		data,
+					 		~ 	clusterProfiler::GSEA(
+					 				my_entrez_rank,
+					 				TERM2GENE=.x %>% select(gs_name, ncbi_gene),
+					 				pvalueCutoff = 1
+					 		)
+
+					 	)) |>
+			mutate(test =
+					 	map(
+					 		fit,
+					 		~ .x |>
+					 			# ggplot2::fortify(showCategory=Inf) %>%
+					 			as_tibble() |>
+					 			rowid_to_column(var = "idx_for_plotting")
+					 			#%>%
+					 			#	mutate(plot = future_imap(ID, ~ enrichplot::gseaplot2(fit, geneSetID = .y, title = .x)))
+
+					 	)) |>
+		select(-data)
+
+
+}
