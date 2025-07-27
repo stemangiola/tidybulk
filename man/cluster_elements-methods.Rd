@@ -53,17 +53,28 @@ Underlying method for kmeans
 do.call(kmeans(.data, iter.max = 1000, ...)
 
 Underlying method for SNN
-.data %>%
-Seurat::CreateSeuratObject() %>%
-Seurat::ScaleData(display.progress = TRUE,num.cores = 4, do.par = TRUE) %>%
-Seurat::FindVariableFeatures(selection.method = "vst") %>%
-Seurat::RunPCA(npcs = 30) %>%
-Seurat::FindNeighbors() %>%
+.data |>
+Seurat::CreateSeuratObject() |>
+Seurat::ScaleData(display.progress = TRUE,num.cores = 4, do.par = TRUE) |>
+Seurat::FindVariableFeatures(selection.method = "vst") |>
+Seurat::RunPCA(npcs = 30) |>
+Seurat::FindNeighbors() |>
 Seurat::FindClusters(method = "igraph", ...)
 }
 \examples{
 
 
-    cluster_elements(tidybulk::se_mini,	centers = 2, method="kmeans")
+    cluster_elements(tidybulk::se_mini,      centers = 2, method="kmeans")
 
+}
+\references{
+Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+
+MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability, 1, 281-297. doi:10.2307/2346830
+
+Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+
+MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability, 1(14), 281-297. doi:10.1007/978-3-642-05177-7_26
+
+Butler, A., Hoffman, P., Smibert, P., Papalexi, E., & Satija, R. (2018). Integrating single-cell transcriptomic data across different conditions, technologies, and species. Nature Biotechnology, 36(5), 411-420. doi:10.1038/nbt.4096
 }

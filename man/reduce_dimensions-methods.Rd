@@ -116,7 +116,7 @@ Underlying method for UMAP:
 
   # Filter most variable genes
   keep_variable_transcripts(top) |>
-  reduce_dimensions(method="PCA",  .dims = calculate_for_pca_dimensions,  action="get" ) |>
+  reduce_dimensions(method="PCA",  .dims = calculate_for_pca_dimensions ) |>
   as_matrix(rownames = quo_name(.element)) |>
   uwot::tumap(...)
 }
@@ -135,6 +135,11 @@ counts.PCA =
  identify_abundant() |>
  reduce_dimensions(method="PCA", .dims = 3)
 
+}
+\references{
+Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 
+Krijthe, J. H. (2015). Rtsne: T-Distributed Stochastic Neighbor Embedding using a Barnes-Hut Implementation. R package version 0.15.
 
+McInnes, L., Healy, J., & Melville, J. (2018). UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction. arXiv preprint arXiv:1802.03426.
 }

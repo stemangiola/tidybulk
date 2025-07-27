@@ -4,8 +4,11 @@
 #'
 #' @description cluster_elements() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and identify clusters in the data.
 #'
-#' @importFrom rlang enquo
+#' @importFrom rlang enquo quo_is_null quo_name
 #' @importFrom magrittr not
+#' @importFrom dplyr select pull mutate
+#' @importFrom stats kmeans
+#' @importFrom SummarizedExperiment assays
 #'
 #'
 #' @name cluster_elements
@@ -30,12 +33,12 @@
 #' do.call(kmeans(.data, iter.max = 1000, ...)
 #'
 #' Underlying method for SNN
-#' .data %>%
-#' Seurat::CreateSeuratObject() %>%
-#' Seurat::ScaleData(display.progress = TRUE,num.cores = 4, do.par = TRUE) %>%
-#' Seurat::FindVariableFeatures(selection.method = "vst") %>%
-#' Seurat::RunPCA(npcs = 30) %>%
-#' Seurat::FindNeighbors() %>%
+#' .data |>
+#' Seurat::CreateSeuratObject() |>
+#' Seurat::ScaleData(display.progress = TRUE,num.cores = 4, do.par = TRUE) |>
+#' Seurat::FindVariableFeatures(selection.method = "vst") |>
+#' Seurat::RunPCA(npcs = 30) |>
+#' Seurat::FindNeighbors() |>
 #' Seurat::FindClusters(method = "igraph", ...)
 #'
 #'
@@ -45,7 +48,20 @@
 #' @examples
 #'
 #'
-#'     cluster_elements(tidybulk::se_mini,	centers = 2, method="kmeans")
+#'     cluster_elements(tidybulk::se_mini,      centers = 2, method="kmeans")
+#'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability, 1, 281-297. doi:10.2307/2346830
+#'
+#'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability, 1(14), 281-297. doi:10.1007/978-3-642-05177-7_26
+#'
+#' Butler, A., Hoffman, P., Smibert, P., Papalexi, E., & Satija, R. (2018). Integrating single-cell transcriptomic data across different conditions, technologies, and species. Nature Biotechnology, 36(5), 411-420. doi:10.1038/nbt.4096
 #'
 #' @docType methods
 #' @rdname cluster_elements-methods
@@ -68,12 +84,12 @@ standardGeneric("cluster_elements"))
   . = NULL
   
   my_assay =
-    .data %>%
+    .data |>
     # Filter abundant if performed
-    filter_if_abundant_were_identified() %>%
-    assays() %>%
-    as.list() %>%
-    .[[get_assay_scaled_if_exists_SE(.data)]]
+    filter_if_abundant_were_identified() |>
+    assays() |>
+    as.list()
+  my_assay = my_assay[[get_assay_scaled_if_exists_SE(.data)]]
   
   my_cluster_function  =
     if (method == "kmeans") {
@@ -90,16 +106,16 @@ standardGeneric("cluster_elements"))
       of_samples = of_samples,
       transform = transform,
       ...
-    ) %>%
-    as.character() %>%
+    ) |>
+    as.character() |>
     as.factor()
   
   my_cluster_column = paste("cluster", method, sep="_")
   
-  .data %>%
+  .data |>
     
     # Add clusters to metadata
-    {
+    (\(.) {
       .x = (.)
       if (of_samples) {
         colData(.x)[,my_cluster_column] = my_clusters
@@ -107,10 +123,10 @@ standardGeneric("cluster_elements"))
         rowData(.x)[,my_cluster_column] = my_clusters
       }
       .x
-    } %>%
+    })() |>
     
     # Add bibliography
-    {
+    (\(.) {
       if (method == "kmeans") {
         memorise_methods_used(., "stats")
       } else if (method == "SNN") {
@@ -118,7 +134,7 @@ standardGeneric("cluster_elements"))
       } else {
         stop("tidybulk says: the only supported methods are \"kmeans\" or \"SNN\" ")
       }
-    }
+    })()
   
 }
 
@@ -184,11 +200,11 @@ get_clusters_kmeans_bulk_SE <-
     
     # Check if centers is in dots
     dots_args = rlang::dots_list(...)
-    if ("centers" %in% names(dots_args) %>% not())
+    if ("centers" %in% names(dots_args) |> not())
       stop("tidybulk says: for kmeans you need to provide the \"centers\" integer argument")
     
     .data = 
-      .data %>%
+      .data |>
       
       # Check if log transform is needed
       transform() 
@@ -200,7 +216,7 @@ get_clusters_kmeans_bulk_SE <-
     
     # Wrap the do.call because of the centrers check
     
-    do.call(kmeans, list(x = .data, iter.max = 1000) %>% c(dots_args)) %$%
+    do.call(kmeans, list(x = .data, iter.max = 1000) |> c(dots_args)) %$%
       cluster
     
   }
@@ -237,16 +253,16 @@ get_clusters_SNN_bulk_SE <-
     
     ndims = min(c(nrow(.data), ncol(.data), 30))-1
     
-    .data %>%
-      Seurat::CreateSeuratObject() %>%
+    .data |>
+      Seurat::CreateSeuratObject() |>
       Seurat::ScaleData(display.progress = TRUE,
                         num.cores = 4,
-                        do.par = TRUE) %>%
-      Seurat::FindVariableFeatures(selection.method = "vst") %>%
-      Seurat::RunPCA(npcs = ndims) %>%
-      Seurat::FindNeighbors(dims = 1:ndims) %>%
-      Seurat::FindClusters(method = "igraph", ...) %>%
-      .[["seurat_clusters"]] %$%
+                        do.par = TRUE) |>
+      Seurat::FindVariableFeatures(selection.method = "vst") |>
+      Seurat::RunPCA(npcs = ndims) |>
+      Seurat::FindNeighbors(dims = 1:ndims) |>
+              Seurat::FindClusters(method = "igraph", ...) |>
+        (\(.) .[["seurat_clusters"]])() %$%
       seurat_clusters
     
   }

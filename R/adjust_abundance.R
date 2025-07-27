@@ -5,7 +5,13 @@
 #' @description adjust_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with an additional adjusted abundance column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
-#'
+#' @importFrom rlang enquo quo_is_null quo_name is_present quo
+#' @importFrom lifecycle deprecate_warn
+#' @importFrom stringr str_c
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr select pull
+#' @importFrom SummarizedExperiment assay assayNames assays colData
+#' @importFrom stats model.matrix rnorm
 #'
 #' @name adjust_abundance
 #'
@@ -46,6 +52,14 @@
 #' identify_abundant() |>
 #'	adjust_abundance(	.factor_unwanted = batch, .factor_of_interest =  condition, method="combat"	)
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' Zhang, Y., Parmigiani, G., & Johnson, W. E. (2020). ComBat-seq: batch effect adjustment for RNA-seq count data. NAR Genomics and Bioinformatics, 2(3), lqaa078. doi:10.1093/nargab/lqaa078
+#'
+#' Johnson, W. E., Li, C., & Rabinovic, A. (2007). Adjusting batch effects in microarray expression data using empirical Bayes methods. Biostatistics, 8(1), 118–127. doi:10.1093/biostatistics/kxj037
+#'
+#' Ritchie, M. E., Phipson, B., Wu, D., Hu, Y., Law, C. W., Shi, W., & Smyth, G. K. (2015). limma powers differential expression analyses for RNA-sequencing and microarray studies. Nucleic Acids Research, 43(7), e47. doi:10.1093/nar/gkv007
 #'
 #' @docType methods
 #' @rdname adjust_abundance-methods
@@ -144,13 +158,13 @@ standardGeneric("adjust_abundance"))
     deprecate_warn("1.11.6", "tidybulk::test_differential_abundance(.formula = )", details = "The argument .formula is now deprecated, please use factor_unwanted and factor_of_interest. Using the formula, the first factor is of interest and the second is unwanted")
     
     # Check that .formula includes at least two covariates
-    if (parse_formula(.formula) %>% length %>% st(2))
+    if (parse_formula(.formula) |> length() |> st(2))
       stop(
         "The .formula must contain two covariates, the first being the factor of interest, the second being the factor of unwanted variation"
       )
     
     # Check that .formula includes no more than two covariates at the moment
-    if (parse_formula(.formula) %>% length %>% gt(3))
+    if (parse_formula(.formula) |> length() |> gt(3))
       warning("tidybulk says: Only the second covariate in the .formula is adjusted for")
     
     
@@ -183,14 +197,14 @@ standardGeneric("adjust_abundance"))
     my_assay_adjusted =
       .data |>
       assay(my_assay) |> # Check if log transform is needed
-      log1p() %>%
+      log1p() |>
       # Add little noise to avoid all 0s for a covariate that would error combat code (not statistics that would be fine)
-      `+` (rnorm(length(.), 0, 0.000001))
+      (\(y) y + rnorm(length(y), 0, 0.000001))()
     
     
     for(i in colnames(my_batch)){
       my_assay_adjusted =
-        my_assay_adjusted %>%
+        my_assay_adjusted |>
         
         # Run combat
         sva::ComBat(
@@ -203,7 +217,7 @@ standardGeneric("adjust_abundance"))
     
     # Tranfrom back
     my_assay_adjusted =
-      my_assay_adjusted %>%
+      my_assay_adjusted |>
       expm1() |>
       apply(2, pmax, 0)
     
@@ -211,7 +225,7 @@ standardGeneric("adjust_abundance"))
   else if(tolower(method) == "combat_seq"){
     
     my_assay_adjusted =
-      .data %>%
+      .data |>
       
       assay(my_assay)
     
@@ -253,18 +267,18 @@ standardGeneric("adjust_abundance"))
   
   
   # Add the assay
-  my_assay_scaled = list(my_assay_adjusted) %>% setNames(value_adjusted)
+  my_assay_scaled = list(my_assay_adjusted) |> setNames(value_adjusted)
   
-  assays(.data) =  assays(.data) %>% c(my_assay_scaled)
+  assays(.data) =  assays(.data) |> c(my_assay_scaled)
   
   # Return
-  .data %>%
+  .data |>
     
     # Add methods
-    memorise_methods_used("sva") %>%
+    memorise_methods_used("sva") |>
     
     # Attach column internals
-    add_tt_columns(.abundance_adjusted = !!(((function(x, v)	enquo(v))(x,!!as.symbol(value_adjusted))) |> drop_enquo_env()) )
+    add_tt_columns(.abundance_adjusted = !!(((function(x, v)	 enquo(v))(x,!!as.symbol(value_adjusted))) |> drop_enquo_env()) )
   
 }
 

@@ -61,5 +61,7 @@ At the moment this function uses edgeR \url{https://doi.org/10.1093/bioinformati
 
 	keep_variable(tidybulk::se_mini, top = 500)
 
-
+}
+\references{
+Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 }

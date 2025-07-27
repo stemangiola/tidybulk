@@ -45,6 +45,9 @@
 #' se_mini |> identify_abundant(factor_of_interest = condition)
 #'
 #' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' @references
 #' McCarthy, D. J., Chen, Y., & Smyth, G. K. (2012). Differential expression analysis of 
 #' multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research, 
 #' 40(10), 4288-4297. DOI: 10.1093/bioinformatics/btp616
@@ -153,10 +156,10 @@ setGeneric("identify_abundant", function(.data,
         min.prop = minimum_proportion,
         CPM.Cutoff = minimum_count_per_million,
         assay_name = my_assay
-      ) %>%
-      not() %>%
-      which %>%
-      names
+      ) |>
+      not() |>
+      which() |>
+      names()
   } else {
     gene_to_exclude =
       .data |>
@@ -165,13 +168,13 @@ setGeneric("identify_abundant", function(.data,
         design = design,
         min.prop = minimum_proportion,
         assay_name = my_assay
-      ) %>%
-      not() %>%
-      which %>%
-      names
+      ) |>
+      not() |>
+      which() |>
+      names()
   }
   
-  rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) %>% not()
+  rowData(.data)$.abundant = (rownames(rowData(.data)) %in% gene_to_exclude) |> not()
   
   # Return
   .data
@@ -321,7 +324,7 @@ setGeneric("keep_abundant", function(.data,
     }
   }
   .data =
-    .data %>%
+    .data |>
     identify_abundant(
       minimum_counts = minimum_counts,
       minimum_proportion = minimum_proportion,
@@ -330,7 +333,8 @@ setGeneric("keep_abundant", function(.data,
       minimum_count_per_million = minimum_count_per_million,
       factor_of_interest = !!factor_of_interest # pass through
     )
-  .data[rowData(.data)[".abundant"][[1]],]
+  idx <- rowData(.data)[[".abundant"]]
+  .data[idx,]
 }
 
 #' keep_abundant

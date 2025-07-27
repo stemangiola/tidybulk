@@ -132,17 +132,7 @@ select_closest_pairs = function(df) {
 	   	method = "correlation"
 	   	)
 
-counts.MDS =
- tidybulk::se_mini |>
- identify_abundant() |>
-  reduce_dimensions( method="MDS", .dims = 3)
-
-remove_redundancy(
-	counts.MDS,
-	Dim_a_column = `Dim1`,
-	Dim_b_column = `Dim2`,
-	.element = sample,
-  method = "reduced_dimensions"
-)
-
+}
+\references{
+Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 }

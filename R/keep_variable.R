@@ -4,7 +4,9 @@
 #'
 #' @description keep_variable() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
 #'
-#' @importFrom rlang enquo
+#' @importFrom rlang enquo quo_name
+#' @importFrom dplyr filter
+#' @importFrom SummarizedExperiment assays rowData
 #'
 #'
 #' @name keep_variable
@@ -36,6 +38,8 @@
 #'
 #' 	keep_variable(tidybulk::se_mini, top = 500)
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 #'
 #' @docType methods
 #' @rdname keep_variable-methods
@@ -64,17 +68,14 @@ setGeneric("keep_variable", function(.data,
   
   
   variable_transcripts =
-    .data %>%
-    
+    .data |>
     # Filter abundant if performed
-    filter_if_abundant_were_identified() %>%
-    
-    assays() %>%
-    as.list() %>%
-    .[[get_assay_scaled_if_exists_SE(.data)]] %>%
-    
+    filter_if_abundant_were_identified() |>
+    assays() |>
+    as.list()
+  variable_transcripts = variable_transcripts[[get_assay_scaled_if_exists_SE(.data)]] |>
     # Filter most variable genes
-    keep_variable_transcripts_SE(top = top, transform = transform) %>%
+    keep_variable_transcripts_SE(top = top, transform = transform) |>
     
     # Take gene names
     rownames()
@@ -134,12 +135,12 @@ keep_variable_transcripts_SE = function(.data,
   
   
   # Manage Inf
-  top = min(top, .data %>% nrow)
+      top = min(top, .data |> nrow())
   
   message(sprintf("Getting the %s most variable genes", top))
   
   x =
-    .data %>%
+    .data |>
     
     # Check if log transform is needed
     transform()

@@ -12,9 +12,7 @@ test_differential_abundance(
   .formula,
   abundance = assayNames(.data)[1],
   contrasts = NULL,
-  method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio",
-    "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights",
-    "glmmseq_lme4", "glmmseq_glmmtmb"),
+  method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -31,9 +29,7 @@ test_differential_abundance(
   .formula,
   abundance = assayNames(.data)[1],
   contrasts = NULL,
-  method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio",
-    "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights",
-    "glmmseq_lme4", "glmmseq_glmmtmb"),
+  method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -50,9 +46,7 @@ test_differential_abundance(
   .formula,
   abundance = assayNames(.data)[1],
   contrasts = NULL,
-  method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio",
-    "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights",
-    "glmmseq_lme4", "glmmseq_glmmtmb"),
+  method = "edgeR_quasi_likelihood",
   test_above_log2_fold_change = NULL,
   scaling_method = "TMM",
   omit_contrast_in_colnames = FALSE,
@@ -157,7 +151,7 @@ DESeq2::results()
 Underlying method for glmmSeq framework:
 
 counts =
-.data %>%
+.data |>
   assay(my_assay)
 
 # Create design matrix for dispersion, removing random effects
@@ -244,4 +238,13 @@ res <- my_se_mini  |>
          fitType="local"
  )
 
+}
+\references{
+Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+
+McCarthy, D. J., Chen, Y., & Smyth, G. K. (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research, 40(10), 4288-4297. doi:10.1093/nar/gks042
+
+Love, M. I., Huber, W., & Anders, S. (2014). Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. Genome Biology, 15(12), 550. doi:10.1186/s13059-014-0550-8
+
+Law, C. W., Chen, Y., Shi, W., & Smyth, G. K. (2014). voom: Precision weights unlock linear model analysis tools for RNA-seq read counts. Genome Biology, 15(2), R29. doi:10.1186/gb-2014-15-2-r29
 }

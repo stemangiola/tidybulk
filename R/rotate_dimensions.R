@@ -4,8 +4,10 @@
 #'
 #' @description rotate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the transcript abundance.
 #'
-#' @importFrom rlang enquo
+#' @importFrom rlang enquo quo_name
 #' @importFrom magrittr not
+#' @importFrom dplyr between
+#' @importFrom SummarizedExperiment colData rowData
 #'
 #'
 #' @name rotate_dimensions
@@ -46,6 +48,8 @@
 #'
 #' counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = sample)
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 #'
 #' @docType methods
 #' @rdname rotate_dimensions-methods
@@ -137,39 +141,39 @@ setGeneric("rotate_dimensions", function(.data,
     ))
   
   # Sanity check of the angle selected
-  if (rotation_degrees %>% between(-360, 360) %>% not())
+  if (rotation_degrees |> between(-360, 360) |> not())
     stop("tidybulk says: rotation_degrees must be between -360 and 360")
   
   
   # Return
   my_rotated_dimensions =
-    .data %>%
+    .data |>
     
     # Select correct annotation
     when(
       of_samples ~ colData(.),
       ~ rowData(.)
-    ) %>%
+    ) |>
     
     # Select dimensions
-    .[,c(quo_name(dimension_1_column), quo_name(dimension_2_column))] %>%
-    as.matrix() %>%
-    t() %>%
-    rotation(rotation_degrees) %>%
-    t() %>%
-    as.data.frame() %>%
+    (\(.) .[,c(quo_name(dimension_1_column), quo_name(dimension_2_column))])() |>
+    as.matrix() |>
+    t() |>
+    rotation(rotation_degrees) |>
+    t() |>
+    as.data.frame() |>
     setNames(c(
       quo_name(dimension_1_column_rotated),
       quo_name(dimension_2_column_rotated)
     ))
   
   
-  .data %>%
+  .data |>
     
     # Add dimensions to metadata
     when(
-      of_samples ~ {.x = (.); colData(.x) = colData(.x) %>% cbind(my_rotated_dimensions); .x},
-      ~ {.x = (.); rowData(.x) = rowData(.x) %>% cbind(my_rotated_dimensions); .x}
+      of_samples ~ {.x = (.); colData(.x) = colData(.x) |> cbind(my_rotated_dimensions); .x},
+      ~ {.x = (.); rowData(.x) = rowData(.x) |> cbind(my_rotated_dimensions); .x}
     )
   
 }

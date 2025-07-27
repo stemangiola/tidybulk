@@ -1,4 +1,6 @@
-
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
 
 #' Check whether there are NA counts
 #'
@@ -9,6 +11,7 @@
 #' @import tibble
 #' @importFrom purrr map
 #' @importFrom magrittr not
+#' @importFrom dplyr pull filter distinct count
 #'
 #'
 #' @param .data A tibble of read counts
@@ -19,11 +22,11 @@
 #'
 check_if_wrong_input = function(.data, list_input, expected_type) {
 	# Do the check
-	if (list_input %>%
-			map( ~ .x %>% class() %>% `[` (1)) %>%
-			unlist %>%
-			equals(expected_type) %>%
-			not())
+	        if (list_input |>
+                        map( ~ .x |> class() |> (\(.) .[1])()) |>
+                        unlist() |>
+                        equals(expected_type) |>
+                        not())
 		stop("tidybulk says: You have passed the wrong argument to the function. Please check again.")
 
 	# If all good return original data frame
@@ -54,7 +57,7 @@ check_if_duplicated_genes <- function(.data,
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 
-	paste(pull(.data, !!.sample), pull(.data, !!.transcript) ) %>% duplicated() %>% which() %>% length() %>% equals(0)
+	        paste(pull(.data, !!.sample), pull(.data, !!.transcript) ) |> duplicated() |> which() |> length() |> equals(0)
 
 }
 
@@ -80,7 +83,7 @@ check_if_counts_is_na = function(.data, abundance, .abundance = NULL) {
 		}
 	}
 
-	.data %>% filter(!!rlang::ensym(abundance) %>% is.na) %>% nrow() %>% equals(0)
+	        .data |> filter(!!rlang::ensym(abundance) |> is.na()) |> nrow() |> equals(0)
 
 }
 
@@ -100,13 +103,13 @@ check_if_column_missing = function(.data, .sample, .transcript, abundance, .abun
 	.abundance = enquo(abundance)
 
 	# Check that the intersection is length 3
-	.data %>% colnames %>%
+	        .data |> colnames() |>
 		intersect(c(
 			quo_name(.sample),
 			quo_name(.transcript),
 			quo_name(.abundance)
-		)) %>%
-		length %>%
+		        )) |>
+        length() |>
 		equals(3)
 }
 
@@ -124,15 +127,15 @@ column_type_checking = function(.data, .sample, .transcript, abundance, .abundan
 	.transcript = enquo(.transcript)
 	.abundance = enquo(abundance)
 
-	.data %>% pull(!!.sample) %>% class %in% c("character", "factor") &
-		.data %>% pull(!!.transcript) %>% class %in% c("character", "factor") &
-		.data %>% pull(!!.abundance) %>% class %in% c("integer", "numeric", "double")
+	        .data |> pull(!!.sample) |> class() %in% c("character", "factor") &
+        .data |> pull(!!.transcript) |> class() %in% c("character", "factor") &
+        .data |> pull(!!.abundance) |> class() %in% c("integer", "numeric", "double")
 
 }
 
 check_if_attribute_present = function(.data) {
-	"internals" %in% (.data %>% attributes %>% names) &&
-	"tt_columns" %in% (.data %>% attr("internals")  %>% names)
+	        "internals" %in% (.data |> attributes() |> names()) &&
+        "tt_columns" %in% (.data |> attr("internals")  |> names())
 }
 
 eliminate_sparse_transcripts = function(.data, .transcript){
@@ -141,9 +144,9 @@ eliminate_sparse_transcripts = function(.data, .transcript){
 
 	warning("tidybulk says: Some transcripts have been omitted from the analysis because not present in every sample.")
 
-	.data %>%
-		add_count(!!.transcript, name = "my_n") %>%
-		filter(my_n == max(my_n)) %>%
+	        .data |>
+        add_count(!!.transcript, name = "my_n") |>
+        filter(my_n == max(my_n)) |>
 		select(-my_n)
 }
 
@@ -161,11 +164,11 @@ check_if_data_rectangular = function(.data, .sample, .transcript, abundance, .ab
 	.abundance = enquo(abundance)
 
 	is_rectangular =
-		.data %>%
-		distinct(!!.sample, !!.transcript, !!.abundance) %>%
-		count(!!.sample) %>%
-		count(n, name = "nn") %>%
-		nrow() %>%
+		        .data |>
+        distinct(!!.sample, !!.transcript, !!.abundance) |>
+        count(!!.sample) |>
+        count(n, name = "nn") |>
+        nrow() |>
 		equals(1)
 
 	is_rectangular
@@ -208,7 +211,7 @@ error_if_data_is_not_rectangular = function(.data, .sample, .transcript, abundan
 }
 
 tidybulk_to_tbl = function(.data) {
-	.data %>%	drop_class(c("tidybulk", "tt"))
+	        .data |>	drop_class(c("tidybulk", "tt"))
 }
 
 validation_default = function(.data,
@@ -233,7 +236,7 @@ validation_default = function(.data,
 		warning(
 			"tidybulk says: One or more columns that should include sample identifier, transcript identified or transcript abundance are missing from your data frame. The tidybulk object has been converted to a `tbl`"
 		)
-		return(.data %>% tidybulk_to_tbl)
+		return(.data |> tidybulk_to_tbl())
 	}
 
 	# Type check
@@ -247,7 +250,7 @@ validation_default = function(.data,
 		warning(
 			"tidybulk says: The column provided as .sample .transcript or .abundance do not comply with the required types. The tidybulk object has been converted to a `tbl`"
 		)
-		return(.data %>% tidybulk_to_tbl)
+		return(.data |> tidybulk_to_tbl())
 	}
 
 	# Check if duplicated genes
@@ -259,17 +262,17 @@ validation_default = function(.data,
 
 			stop(
 				"tidybulk says: Your dataset include duplicated sample/gene pairs. ",
-				dup[dup %>% duplicated()] %>% head(30) %>% paste(collapse=", "),
+				dup[dup |> duplicated()] %>% head(30) %>% paste(collapse=", "),
 				"Please, remove redundancies before proceeding (e.g., aggregate_duplicates())."
 			)
 		}
 		if (type == "soft" & !is_unique) {
 			warning(
 				"tidybulk says: Your dataset include duplicated sample/gene pairs. ",
-				dup[dup %>% duplicated()] %>% paste(collapse=", "),
+				dup[dup |> duplicated()] %>% paste(collapse=", "),
 				" Please, remove redundancies before proceeding (e.g., aggregate_duplicates()). The tidybulk object has been converted to a `tbl`"
 			)
-			return(.data %>% tidybulk_to_tbl)
+			return(.data |> tidybulk_to_tbl())
 		}
 	}
 
@@ -282,7 +285,7 @@ validation_default = function(.data,
 		warning(
 			"tidybulk says: You have NA values in your counts. The tidybulk object has been converted to a `tbl`"
 		)
-		return(.data %>% tidybulk_to_tbl)
+		return(.data |> tidybulk_to_tbl())
 	}
 
 }
@@ -317,7 +320,7 @@ validation.tidybulk = function(.data,
 		warning(
 			"tidybulk says: The object provided has tidybulk class but no attribute containing the column names (attr(., \"internals\")). You must have used an external function that eliminated the attributes. The tidybulk object has been converted to a `tbl`"
 		)
-		return(.data %>% tidybulk_to_tbl)
+		return(.data |> tidybulk_to_tbl())
 	}
 
 	# Get column names
@@ -344,20 +347,20 @@ validate_signature = function(.data, reference, .transcript){
 
 	.transcript = enquo(.transcript)
 
-	overlapping_genes = .data %>%     pull(!!.transcript) %in% rownames(reference) %>%  which
+	overlapping_genes = .data |>     pull(!!.transcript) %in% rownames(reference) |>  which()
 
 	if(length(overlapping_genes) == 0  )
 	  stop(sprintf(
 	    "\ntidybulk says: You have NO genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
 	  ))
 
-	if ( length(overlapping_genes) %>%	st(50) )
+	if ( length(overlapping_genes) |>	st(50) )
 	  warning(sprintf(
 	    "\ntidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
 	  ))
 
 	# Check if rownames exist
-	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% not() %>% any)
+	if (reference |> sapply(class) %in% c("numeric", "double", "integer") |> not() |> any())
 	  stop("tidybulk says: your reference has non-numeric/integer columns.")
 
 
@@ -365,20 +368,25 @@ validate_signature = function(.data, reference, .transcript){
 
 validate_signature_SE = function(assay, reference){
 
-  overlapping_genes = (rownames(assay)  %in% rownames(reference)) %>%  which
+  # Check if assay has rownames
+  if (is.null(rownames(assay)) || length(rownames(assay)) == 0) {
+    stop("tidybulk says: The assay object does not have valid rownames.")
+  }
+
+  overlapping_genes = (rownames(assay)  %in% rownames(reference)) |>  which()
 
   if(length(overlapping_genes) == 0  )
     stop(sprintf(
       "\ntidybulk says: You have NO genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
     ))
 
-	if ( length(overlapping_genes) %>%	st(50) )
+	if ( length(overlapping_genes) |>	st(50) )
 	  warning(sprintf(
 			"\ntidybulk says: You have less than 50 genes in common between the query data and the reference data. Please check again your input dataframes\nthe genes in the reference look like this %s", paste(rownames(reference)[1:10], collapse = ", ")
 		))
 
 	# Check if rownames exist
-	if (reference %>% sapply(class) %in% c("numeric", "double", "integer") %>% not() %>% any)
+	if (reference |> sapply(class) %in% c("numeric", "double", "integer") |> not() |> any())
 		stop("tidybulk says: your reference has non-numeric/integer columns.")
 
 }

@@ -4,9 +4,10 @@
 #'
 #' @description test_gene_overrepresentation() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` with the GSEA statistics
 #'
-#' @importFrom rlang enquo
-#' @importFrom rlang quo_is_missing
+#' @importFrom rlang enquo quo_is_missing
 #' @importFrom magrittr not
+#' @importFrom dplyr filter distinct pull mutate
+#' @importFrom SummarizedExperiment rowData
 #'
 #'
 #' @name test_gene_overrepresentation
@@ -68,6 +69,11 @@
 #' 	)
 #' }
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' Yu, G., Wang, L. G., Han, Y., & He, Q. Y. (2012). clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology, 16(5), 284-287. doi:10.1089/omi.2011.0118
+#'
 #' @docType methods
 #' @rdname test_gene_overrepresentation-methods
 #' @export
@@ -121,12 +127,12 @@ setGeneric("test_gene_overrepresentation", function(
     
     # Check column type
     if (
-        .data %>% 
-        rowData() %>% 
-        as_tibble(rownames = f_(.data)$name) %>% 
-        mutate(my_do_test = !!.do_test) %>% 
+        .data |> 
+        rowData() |> 
+        as_tibble(rownames = f_(.data)$name) |> 
+        mutate(my_do_test = !!.do_test) |> 
         pull(my_do_test) |> 
-        is("logical") %>% 
+        is("logical") |> 
         not()
     )
         stop("tidybulk says: .do_test column must be logical (i.e., TRUE or FALSE)")
@@ -137,7 +143,7 @@ setGeneric("test_gene_overrepresentation", function(
     
     
     # Check is correct species name
-    if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
+    if(species %in% msigdbr::msigdbr_species()$species_name |> not())
         stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
     
     # # Check if missing entrez
@@ -146,12 +152,12 @@ setGeneric("test_gene_overrepresentation", function(
     # 	.data = .data %>%	filter(!!.entrez %>% is.na %>% not())
     # }
     
-    .data %>%
-        pivot_transcript() %>%
-        filter(!!.do_test) %>%
-        distinct(!!.entrez) %>%
-        pull(!!.entrez) %>%
-        entrez_over_to_gsea(species, gene_collections = gene_sets) %>%
+      .data |>
+    pivot_transcript() |>
+    filter(!!.do_test) |>
+    distinct(!!.entrez) |>
+    pull(!!.entrez) |>
+    entrez_over_to_gsea(species, gene_collections = gene_sets) |>
         
         # Add methods used
         memorise_methods_used(c("clusterProfiler", "msigdbr", "msigdb"), object_containing_methods = .data)
@@ -258,9 +264,9 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
     if(is.null(gene_collections ) )
         my_gene_collection = msigdbr::msigdbr(species = species)
     else if(gene_collections |> is("character"))
-        my_gene_collection = msigdbr::msigdbr(species = species) %>%  filter( tolower(gs_collection) %in% tolower(gene_collections) )
+        my_gene_collection = msigdbr::msigdbr(species = species) |>  filter( tolower(gs_collection) %in% tolower(gene_collections) )
     else if(gene_collections |> is("list"))
-        my_gene_collection = tibble(gs_name=names(.), ncbi_gene = . ) %>% unnest(ncbi_gene) %>% mutate(gs_collection = "user_defined")
+        my_gene_collection = tibble(gs_name=names(.), ncbi_gene = . ) |> unnest(ncbi_gene) |> mutate(gs_collection = "user_defined")
     else
         stop("tidybulk says: the gene sets should be either a character vector or a named list")
     
@@ -275,7 +281,7 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
                        data,
                        ~ 	clusterProfiler::GSEA(
                            my_entrez_rank,
-                           TERM2GENE=.x %>% select(gs_name, ncbi_gene),
+                           TERM2GENE=.x |> select(gs_name, ncbi_gene),
                            pvalueCutoff = 1
                        )
                        

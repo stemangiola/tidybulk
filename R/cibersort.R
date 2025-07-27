@@ -36,7 +36,8 @@
 #' @keywords internal
 #'
 #' @importFrom parallel mclapply
-#' @importFrom stats cor
+#' @importFrom stats cor sd
+#' @importFrom utils install.packages
 #'
 #'
 CoreAlg <- function(X, y, cores = 3){
@@ -251,7 +252,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
   if(length(which(colSums(Y)==0))>0)
     warning(sprintf(
       "tidybulk says: the samples %s were ignored for decovolution as they have 0 counts for the deconvolution signature genes",
-      colnames(Y)[colSums(Y)==0] %>% paste(collapse = ", ")
+      colnames(Y)[colSums(Y)==0] |> paste(collapse = ", ")
     ))
   Y=Y[,colSums(Y)>0, drop=FALSE]
 
@@ -262,7 +263,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
   if(length(which(matrixStats::colSds(Y)==0))>0)
     warning(sprintf(
       "tidybulk says: the samples %s were ignored for decovolution as they have standard deviation of 0 for the deconvolution signature genes",
-      colnames(Y)[matrixStats::colSds(Y)==0] %>% paste(collapse = ", ")
+      colnames(Y)[matrixStats::colSds(Y)==0] |> paste(collapse = ", ")
     ))
   Y = Y[,matrixStats::colSds(Y)>0,drop=FALSE]
 

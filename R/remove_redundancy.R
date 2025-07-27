@@ -4,7 +4,10 @@
 #'
 #' @description remove_redundancy() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a consistent object (to the input) with dropped elements (e.g., samples).
 #'
-#' @importFrom rlang enquo
+#' @importFrom rlang enquo quo_name
+#' @importFrom dplyr filter distinct select mutate arrange
+#' @importFrom tidyr gather
+#' @importFrom SummarizedExperiment assays
 #'
 #'
 #' @name remove_redundancy
@@ -70,18 +73,8 @@
 #' 	   	method = "correlation"
 #' 	   	)
 #'
-#' counts.MDS =
-#'  tidybulk::se_mini |>
-#'  identify_abundant() |>
-#'   reduce_dimensions( method="MDS", .dims = 3)
-#'
-#' remove_redundancy(
-#' 	counts.MDS,
-#' 	Dim_a_column = `Dim1`,
-#' 	Dim_b_column = `Dim2`,
-#' 	.element = sample,
-#'   method = "reduced_dimensions"
-#' )
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 #'
 #' @docType methods
 #' @rdname remove_redundancy-methods
@@ -142,14 +135,14 @@ standardGeneric("remove_redundancy"))
     if (method == "correlation") {
       # Get counts
       my_assay =
-        .data %>%
+        .data |>
         # Filter abundant if performed
-        filter_if_abundant_were_identified() %>%
-        assays() %>%
-        as.list() %>%
-        .[[get_assay_scaled_if_exists_SE(.data)]] %>%
+        filter_if_abundant_were_identified() |>
+        assays() |>
+        as.list()
+      my_assay = my_assay[[get_assay_scaled_if_exists_SE(.data)]] |>
         # Filter most variable genes
-        keep_variable_transcripts_SE(top = top, transform = transform) %>%
+        keep_variable_transcripts_SE(top = top, transform = transform) |>
         # Check if log transform is needed
         transform()
       # Get correlated elements
@@ -176,19 +169,18 @@ standardGeneric("remove_redundancy"))
       )
     }
   
-  .data %>%
-    
-    # Condition on of_samples
-    {
+  .data |>
+    (\(.) {
+            # Condition on of_samples
       if (of_samples) {
         (.)[,!colnames(.) %in% redundant_elements]
       } else {
         (.)[-!rownames(.) %in% redundant_elements,]
       }
-    } %>%
+    })() |>
     
     # Add bibliography
-    {
+    (\(.) {
       if (method == "correlation") {
         memorise_methods_used(., "widyr")
       } else if (method == "reduced_dimensions") {
@@ -196,7 +188,7 @@ standardGeneric("remove_redundancy"))
       } else {
         stop("tidybulk says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)")
       }
-    }
+    })()
   
 }
 
@@ -272,13 +264,11 @@ The correlation calculation might not be reliable"
   }
   
   .data = 
-    .data %>%
-    
-    as_tibble(rownames="transcript") %>%
-    
+    .data |>
+    as_tibble(rownames="transcript") |>
     # Prepare the data frame
-    gather(sample,abundance,-transcript) %>%
-    {
+    gather(sample,abundance,-transcript) |>
+    (\(.) {
       if (of_samples) {
         dplyr::rename(., rc = abundance,
                       element = sample,
@@ -288,11 +278,9 @@ The correlation calculation might not be reliable"
                       element = transcript,
                       feature = sample)
       }
-    } %>%
-    
+    })() |>
     # Is this necessary?
-    mutate_if(is.factor, as.character) %>%
-    
+    mutate_if(is.factor, as.character) |>
     # Run pairwise correlation and return a tibble
     widyr::pairwise_cor(
       element,
@@ -301,9 +289,9 @@ The correlation calculation might not be reliable"
       sort = TRUE,
       diag = FALSE,
       upper = FALSE
-    ) %>%
-    filter(correlation > correlation_threshold) %>%
-    distinct(item1) %>%
+    ) |>
+    filter(correlation > correlation_threshold) |>
+    distinct(item1) |>
     pull(item1)
   
 }
@@ -329,28 +317,24 @@ remove_redundancy_elements_though_reduced_dimensions_SE <-
     
     
     # Calculate distances
-    .data %>%
-      dist() %>%
-      
+    .data |>
+      dist() |>
       # Prepare matrix
-      as.matrix() %>%
-      as_tibble(rownames = "sample a") %>%
-      gather(`sample b`, dist,-`sample a`) %>%
-      filter(`sample a` != `sample b`) %>%
-      
+      as.matrix() |>
+      as_tibble(rownames = "sample a") |>
+      gather(`sample b`, dist,-`sample a`) |>
+      filter(`sample a` != `sample b`) |>
       # Sort the elements of the two columns to avoid eliminating all samples
-      rowwise() %>%
+      rowwise() |>
       mutate(
-        `sample 1` = c(`sample a`, `sample b`) %>% sort() %>% `[`(1),
-        `sample 2` = c(`sample a`, `sample b`) %>% sort() %>% `[`(2)
-      ) %>%
-      ungroup() %>%
-      select(`sample 1`, `sample 2`, dist) %>%
-      distinct() %>%
-      
+        `sample 1` = c(`sample a`, `sample b`) |> sort() |> (\(.) .[1])(),
+        `sample 2` = c(`sample a`, `sample b`) |> sort() |> (\(.) .[2])()
+      ) |>
+      ungroup() |>
+      select(`sample 1`, `sample 2`, dist) |>
+      distinct() |>
       # Select closestpairs
-      select_closest_pairs %>%
-      
+      select_closest_pairs() |>
       # Select pair to keep
       pull(1)
     

@@ -108,6 +108,8 @@ se_mini |> identify_abundant(factor_of_interest = condition)
 
 }
 \references{
+Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+
 McCarthy, D. J., Chen, Y., & Smyth, G. K. (2012). Differential expression analysis of 
 multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research, 
 40(10), 4288-4297. DOI: 10.1093/bioinformatics/btp616

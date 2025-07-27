@@ -5,7 +5,10 @@
 #'
 #' @description impute_missing_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional sample-transcript pairs with imputed transcript abundance.
 #'
-#' @importFrom rlang enquo
+#' @importFrom rlang enquo quo_name
+#' @importFrom dplyr select pull mutate
+#' @importFrom SummarizedExperiment assays assayNames
+#' @importFrom stats setNames
 #'
 #'
 #' @name impute_missing_abundance
@@ -34,6 +37,8 @@
 #' 	~ condition
 #' )
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 #'
 #' @docType methods
 #' @rdname impute_missing_abundance-methods
@@ -116,24 +121,27 @@ setGeneric("impute_missing_abundance", function(.data,
         # Return
         .x
       }
-    ) %>%
+    ) |>
     
     # Add imputed to the name
     setNames(sprintf("%s%s", names(.assay_to_impute), suffix))
   
-  .assays_name_to_port = names(assays(.data)) %>% setdiff(names(.assay_to_impute))
+  .assays_name_to_port = names(assays(.data)) |> setdiff(names(.assay_to_impute))
   
   assays(.data) =
-    as.list(assays(.data))[.assays_name_to_port] %>%
-    c(imputed_dataframe ) %>%
+    as.list(assays(.data))[.assays_name_to_port] |>
+    c(imputed_dataframe ) |>
     
     # Add .imputed column
-    c(list(.imputed =  which_NA_matrix(.assay_to_impute[[1]] ))) %>%
+    c(list(.imputed =  which_NA_matrix(.assay_to_impute[[1]] ))) |>
     
     # Make names unique
-    setNames(names(.) %>% make.unique())
+    (\(.) {
+      temp_obj = .
+      setNames(temp_obj, names(temp_obj) |> make.unique())
+    })()
   
-  .data %>%
+  .data |>
     
     # Reattach internals
     reattach_internals(.data)

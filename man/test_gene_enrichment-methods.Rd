@@ -148,3 +148,8 @@ library("EGSEA")
 }
 
 }
+\references{
+Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+
+Alhamdoosh, M., Ng, M., Wilson, N. J., Sheridan, J. M., Huynh, H., Wilson, M. J., & Ritchie, M. E. (2017). Combining multiple tools outperforms individual methods for gene set enrichment analysis in single-cell RNA-seq data. Genome Biology, 18(1), 174. doi:10.1186/s13059-017-1279-y
+}

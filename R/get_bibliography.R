@@ -5,6 +5,7 @@
 #' @description get_bibliography() takes as input a `tidybulk`
 #'
 #' @importFrom rlang enquo
+#' @importFrom magrittr when
 #'
 #'
 #' @name get_bibliography
@@ -19,7 +20,8 @@
 #'
 #' get_bibliography(tidybulk::se_mini)
 #'
-#'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 #'
 #' @docType methods
 #' @rdname get_bibliography-methods
@@ -41,18 +43,18 @@ setGeneric("get_bibliography", function(.data)
   
   # If there is not attributes parameter
   my_methods =
-    .data %>%
+    .data |>
     when(
       !(
         !"internals" %in% (attributes(.) |> names()) &&
           !"methods_used" %in% (attr(., "internals") |> names())
-      ) ~ 	attr(., "internals") %>% .[["methods_used"]],
+      ) ~       { temp <- attr(., "internals"); temp[["methods_used"]] },
       ~ ""
     )
   
   
-  my_bibliography() %>%
-    .[c(default_methods, my_methods)] |>
+      my_bibliography() |>
+    (\(.) .[c(default_methods, my_methods)])() |>
     unlist() |>
     writeLines()
   

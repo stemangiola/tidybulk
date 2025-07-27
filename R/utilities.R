@@ -6,6 +6,10 @@
 #' @keywords internal
 #' @noRd
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#'
 #' @return Stops execution with a helpful error message
 my_stop = function() {
   stop("
@@ -43,7 +47,7 @@ error_if_counts_is_na = function(.data, abundance, .abundance = NULL) {
   }
 
   # Do the check
-  if (.data %>% filter(!!abundance %>% is.na) %>% nrow() %>% gt(0))
+  if (.data |> filter(!!abundance |> is.na()) |> nrow() |> gt(0))
     stop("tidybulk says: You have NA values in your counts")
 
   # If all good return original data frame
@@ -74,10 +78,10 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
 
   # Do the check
   if (
-    list_input %>%
-    map(~ .x %>% class() %>% `[` (1)) %>%
-    unlist %>%
-    equals(expected_type) %>%
+    list_input |>
+    map(~ .x |> class() |> (\(.) .[1])()) |>
+    unlist() |>
+    equals(expected_type) |>
     not()
   )
     stop("tidybulk says: You have passed the wrong argument to the function. Please check again.")
@@ -122,28 +126,28 @@ parse_formula <- function(fm) {
 #'
 #'
 scale_design = function(df, .formula) {
-  df %>%
-    setNames(c("sample_idx", "(Intercept)", parse_formula(.formula))) %>%
-    gather(cov, value,-sample_idx) %>%
-    group_by(cov) %>%
+  df |>
+    setNames(c("sample_idx", "(Intercept)", parse_formula(.formula))) |>
+    gather(cov, value,-sample_idx) |>
+    group_by(cov) |>
     mutate(value = ifelse(
       !grepl("Intercept", cov) &
         length(union(c(0, 1), value)) != 2,
       scale(value),
       value
-    )) %>%
-    ungroup() %>%
-    spread(cov, value) %>%
-    arrange(as.integer(sample_idx)) %>%
+    )) |>
+    ungroup() |>
+    spread(cov, value) |>
+    arrange(as.integer(sample_idx)) |>
     select(`(Intercept)`, any_of(parse_formula(.formula)))
 }
 
 get_tt_columns = function(.data){
   if(
-    .data %>% attr("internals") %>% is.list() &&
-    "tt_columns" %in% names(.data %>% attr("internals"))
-    ) #& "internals" %in% (.data %>% attr("internals") %>% names()))
-    .data %>% attr("internals") %$% tt_columns
+    .data |> attr("internals") |> is.list() &&
+    "tt_columns" %in% names(.data |> attr("internals"))
+    ) #& "internals" %in% (.data |> attr("internals") |> names()))
+    .data |> attr("internals") %$% tt_columns
   else NULL
 }
 
@@ -213,15 +217,12 @@ drop_internals = function(.data){
 memorise_methods_used = function(.data, .method, object_containing_methods = .data){
   # object_containing_methods is used in case for example of test gene rank where the output is a tibble that has lost its attributes
 
-	.data %>%
-		attach_to_internals(
-		  object_containing_methods %>%
-				attr("internals") %>%
-				.[["methods_used"]] %>%
-				c(.method) %>%	unique(),
-			"methods_used"
-		)
-
+  internals <- object_containing_methods %>% attr("internals")
+  .data %>%
+    attach_to_internals(
+      internals[["methods_used"]] %>% c(.method) %>% unique(),
+      "methods_used"
+    )
 }
 
 #' Add attribute to abject

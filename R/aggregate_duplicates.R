@@ -5,6 +5,17 @@
 #' @description aggregate_duplicates() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with aggregated transcripts that were duplicated.
 #'
 #' @importFrom rlang enquo
+#' @importFrom rlang quo_is_null quo_name
+#' @importFrom dplyr group_by summarise arrange select left_join
+#' @importFrom dplyr across select_if as_tibble pull
+#' @importFrom tibble as_tibble
+#' @importFrom SummarizedExperiment rowData colData SummarizedExperiment
+#' @importFrom SummarizedExperiment rowRanges assays
+#' @importFrom GenomicRanges makeGRangesListFromDataFrame
+#' @importFrom S4Vectors as.data.frame
+#' @importFrom utils capture.output
+#' @importFrom crayon blue
+#' @importFrom stats setdiff
 #'
 #'
 #' @name aggregate_duplicates
@@ -46,6 +57,12 @@
 #'    .transcript = gene_name
 #'    )
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' Lawrence, M., Huber, W., Pagès, H., Aboyoun, P., Carlson, M., Gentleman, R., Morgan, M. T., & Carey, V. J. (2013). Software for computing and annotating genomic ranges. PLoS Computational Biology, 9(8), e1003118. doi:10.1371/journal.pcbi.1003118
+#'
+#' Wickham, H., François, R., Henry, L., Müller, K., & Vaughan, D. (2023). dplyr: A Grammar of Data Manipulation. R package version 1.1.0. https://CRAN.R-project.org/package=dplyr
 #'
 #' @docType methods
 #' @rdname aggregate_duplicates-methods
@@ -88,29 +105,29 @@ setGeneric("aggregate_duplicates", function(.data,
   
   if(quo_is_null(.transcript)) stop("tidybulk says: using SummarizedExperiment with aggregate_duplicates, you need to specify .transcript parameter. It should be a feature-wise column (e.g. gene symbol) that you want to collapse he features with (e.g. ensembl). It cannot be the representation of rownames(SummarizedExperiment), as those are unique by definition, and not part of rowData per-se.")
   
-  if(!quo_name(.transcript) %in% colnames( .data %>% rowData()))
+  if(!quo_name(.transcript) %in% colnames( .data |> rowData()))
     stop("tidybulk says: the .transcript argument must be a feature-wise column names. The feature-wise information can be found with rowData()")
   if( !is.null(.abundance))
     warning("tidybulk says: for SummarizedExperiment objects only the argument .transcript (feature ID to collapse) is considered")
   
-  collapse_function = function(x){ x %>% unique() %>% paste(collapse = "___")	}
+  collapse_function = function(x){ x |> unique() |> paste(collapse = "___")	}
   
   
   # Non standard column classes
   non_standard_columns =
-    .data %>%
-    rowData() %>%
-    as_tibble() %>%
-    select_if(select_non_standard_column_class) %>%
+    .data |>
+    rowData() |>
+    as_tibble() |>
+    select_if(select_non_standard_column_class) |>
     colnames()
   
   # GRanges
   columns_to_collapse =
-    .data %>%
-    rowData() %>%
-    colnames() %>%
-    outersect(non_standard_columns) %>%
-    setdiff(quo_name(.transcript)) %>%
+    .data |>
+    rowData() |>
+    colnames() |>
+    outersect(non_standard_columns) |>
+    setdiff(quo_name(.transcript)) |>
     c(feature__$name)
   # when(
   #   !is.null(rownames(.data)) ~ c(., feature__$name),
@@ -119,25 +136,25 @@ setGeneric("aggregate_duplicates", function(.data,
   
   # Row data
   new_row_data =
-    .data %>%
+    .data |>
     rowData() |>
     S4Vectors::as.data.frame(optional = TRUE) |>
     tibble::as_tibble(rownames = feature__$name, .name_repair = "minimal") |> 
-    group_by(!!.transcript) %>%
+    group_by(!!.transcript) |>
     summarise(
-      across(columns_to_collapse, ~ .x %>% collapse_function()),
+      across(columns_to_collapse, ~ .x |> collapse_function()),
       across(non_standard_columns, ~ .x[1]),
       merged_transcripts = n()
-    ) %>%
+    ) |>
     
-    arrange(!!as.symbol(feature__$name)) %>%
-    as.data.frame() %>%
-    {
+    arrange(!!as.symbol(feature__$name)) |>
+    as.data.frame() |>
+    (\(.) {
       .x = (.)
       rownames(.x) = .x[,feature__$name]
-      .x = .x %>% select(-feature__$name)
+      .x = .x |> select(-feature__$name)
       .x
-    }
+    })()
   
   # If no duplicate exit
   if(!nrow(new_row_data)<nrow(rowData(.data))){
@@ -147,13 +164,13 @@ setGeneric("aggregate_duplicates", function(.data,
   
   # Counts
   new_count_data =
-    .data %>%
-    assays() %>%
-    as.list() %>%
+    .data |>
+    assays() |>
+    as.list() |>
     map(
       ~ {
-        is_data_frame = .x %>% is("data.frame")
-        if(is_data_frame) .x = .x %>% as.matrix()
+        is_data_frame = .x |> is("data.frame")
+        if(is_data_frame) .x = .x |> as.matrix()
         
         # Gove duplicated rownames
         rownames(.x) = rowData(.data)[,quo_name(.transcript)]
@@ -166,40 +183,40 @@ setGeneric("aggregate_duplicates", function(.data,
         .x = .x[match(new_row_data[,quo_name(.transcript)], rownames(.x)),,drop=FALSE]
         rownames(.x) = rownames(new_row_data)
         
-        if(is_data_frame) .x = .x %>% as.data.frame()
+        if(is_data_frame) .x = .x |> as.data.frame()
         .x
       }
     )
   
   if(!is.null(rowRanges(.data))){
     
-    new_range_data = rowRanges(.data) %>% as_tibble()
+    new_range_data = rowRanges(.data) |> as_tibble()
     
     # If GRangesList & and .transcript is not there add .transcript
     if(is(rowRanges(.data), "CompressedGRangesList") & !quo_name(.transcript) %in% colnames(new_range_data)){
       
       new_range_data =
-        new_range_data %>% left_join(
-          rowData(.data)[,quo_name(.transcript),drop=FALSE] %>%
+        new_range_data |> left_join(
+          rowData(.data)[,quo_name(.transcript),drop=FALSE] |>
             as_tibble(rownames = feature__$name) ,
           by=c("group_name" = feature__$name)
-        ) %>%
+        ) |>
         select(-group_name, -group)
     }
     
     # Through warning if there are logicals of factor in the data frame
     # because they cannot be merged if they are not unique
-    if (length(non_standard_columns)>0 & new_range_data %>%  pull(!!.transcript) %>% duplicated() %>% which() %>% length() %>% gt(0) ) {
+    if (length(non_standard_columns)>0 & new_range_data |>  pull(!!.transcript) |> duplicated() |> which() |> length() |> gt(0) ) {
       warning(paste(capture.output({
         cat(crayon::blue("tidybulk says: If duplicates exist from the following columns, only the first instance was taken (lossy behaviour), as aggregating those classes with concatenation is not possible.\n"))
         print(rowData(.data)[1,non_standard_columns,drop=FALSE])
       }), collapse = "\n"))
     }
     
-    new_range_data = new_range_data %>%
+    new_range_data = new_range_data |>
       
       # I have to use this trick because rowRanges() and rowData() share @elementMetadata
-      select(-any_of(colnames(new_row_data) %>% outersect(quo_name(.transcript)))) %>%
+      select(-any_of(colnames(new_row_data) |> outersect(quo_name(.transcript)))) |>
       suppressWarnings()
     
     
@@ -211,7 +228,7 @@ setGeneric("aggregate_duplicates", function(.data,
     )
     
     # Give back rownames
-    new_range_data = new_range_data %>%  .[match(new_row_data[,quo_name(.transcript)], names(.))]
+    new_range_data = new_range_data[match(new_row_data[,quo_name(.transcript)], names(new_range_data))]
     #names(new_range_data) = rownames(new_row_data)
     #}
     # else if(is(rr, "GRanges")) new_range_data = makeGRangesFromDataFrame(new_range_data, keep.extra.columns = TRUE)

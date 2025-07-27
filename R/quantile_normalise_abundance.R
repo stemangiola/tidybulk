@@ -4,10 +4,10 @@
 #'
 #' @description quantile_normalise_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #'
-#' @importFrom rlang enquo
-#'
+#' @importFrom rlang enquo quo_name
 #' @importFrom stats median
 #' @importFrom dplyr join_by
+#' @importFrom SummarizedExperiment assays
 #'
 #' @name quantile_normalise_abundance
 #'
@@ -44,7 +44,10 @@
 #'  tidybulk::se_mini |>
 #'    quantile_normalise_abundance()
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 #'
+#' Ritchie, M. E., Phipson, B., Wu, D., Hu, Y., Law, C. W., Shi, W., & Smyth, G. K. (2015). limma powers differential expression analyses for RNA-sequencing and microarray studies. Nucleic Acids Research, 43(7), e47. doi:10.1093/nar/gkv007
 #'
 #' @docType methods
 #' @rdname quantile_normalise_abundance-methods
@@ -95,7 +98,7 @@ setGeneric("quantile_normalise_abundance", function(.data,
   )
   
   # Set column name for value scaled
-  value_scaled = my_assay %>% paste0(scaled_string)
+  value_scaled = my_assay |> paste0(scaled_string)
   
   # Check if the matrix is empty and avoid error
   if(.data |> assay(my_assay) |> dim() |> min() == 0)
@@ -111,9 +114,9 @@ setGeneric("quantile_normalise_abundance", function(.data,
     check_and_install_packages("limma")
     
     
-    .data_norm <-
-      .data %>%
-      assay(my_assay) |>
+      .data_norm <-
+    .data |>
+    assay(my_assay) |>
       limma::normalizeQuantiles() |>
       list() |>
       setNames(value_scaled)
@@ -149,12 +152,12 @@ setGeneric("quantile_normalise_abundance", function(.data,
   } else stop("tidybulk says: the methods must be limma_normalize_quantiles or preprocesscore")
   
   # Add the assay
-  assays(.data) =  assays(.data) %>% c(.data_norm)
+  assays(.data) =  assays(.data) |> c(.data_norm)
   
-  .data %>%
+  .data |>
     
     # Add methods
-    memorise_methods_used(c("quantile")) %>%
+    memorise_methods_used(c("quantile")) |>
     
     # Attach column internals
     add_tt_columns(.abundance_scaled = !!(((function(x, v)	enquo(v))(x,!!as.symbol(value_scaled))) |> drop_enquo_env()) )

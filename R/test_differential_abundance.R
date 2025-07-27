@@ -4,8 +4,10 @@
 #'
 #' @description test_differential_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
 #'
-#' @importFrom rlang enquo
+#' @importFrom rlang enquo quo_name
 #' @importFrom magrittr not
+#' @importFrom dplyr select mutate
+#' @importFrom SummarizedExperiment rowData colData
 #'
 #'
 #' @name test_differential_abundance
@@ -75,7 +77,7 @@
 #' Underlying method for glmmSeq framework:
 #'
 #' counts =
-#' .data %>%
+#' .data |>
 #'   assay(my_assay)
 #'
 #' # Create design matrix for dispersion, removing random effects
@@ -168,6 +170,15 @@
 #'          fitType="local"
 #'  )
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' McCarthy, D. J., Chen, Y., & Smyth, G. K. (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research, 40(10), 4288-4297. doi:10.1093/nar/gks042
+#'
+#' Love, M. I., Huber, W., & Anders, S. (2014). Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. Genome Biology, 15(12), 550. doi:10.1186/s13059-014-0550-8
+#'
+#' Law, C. W., Chen, Y., Shi, W., & Smyth, G. K. (2014). voom: Precision weights unlock linear model analysis tools for RNA-seq read counts. Genome Biology, 15(2), R29. doi:10.1186/gb-2014-15-2-r29
+#'
 #' @docType methods
 #' @rdname test_differential_abundance-methods
 #' @export
@@ -178,7 +189,7 @@ setGeneric("test_differential_abundance", function(.data,
                                                    
                                                    abundance =  assayNames(.data)[1],
                                                    contrasts = NULL,
-                                                   method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio", "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"),
+                                                   method = "edgeR_quasi_likelihood",
                                                    test_above_log2_fold_change = NULL,
                                                    scaling_method = "TMM",
                                                    omit_contrast_in_colnames = FALSE,
@@ -202,7 +213,7 @@ standardGeneric("test_differential_abundance"))
                                            
                                            abundance =  assayNames(.data)[1],
                                            contrasts = NULL,
-                                           method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio", "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"),
+                                           method = "edgeR_quasi_likelihood",
                                            test_above_log2_fold_change = NULL,
                                            scaling_method = "TMM",
                                            omit_contrast_in_colnames = FALSE,
@@ -329,42 +340,39 @@ such as batch effects (if applicable) in the formula.
     stop("tidybulk says: the only methods supported at the moment are \"edgeR_quasi_likelihood\" (i.e., QLF), \"edgeR_likelihood_ratio\" (i.e., LRT), \"edger_robust_likelihood_ratio\", \"DESeq2\", \"limma_voom\", \"limma_voom_sample_weights\", \"glmmseq_lme4\", \"glmmseq_glmmtmb\"")
   
   # Add results
-  rowData(.data) = rowData(.data) %>% cbind(
+  rowData(.data) = rowData(.data) |> cbind(
     
     # Parse the statistics
-    my_differential_abundance$result %>%
-      as_matrix(rownames = "transcript") %>%
-      .[match(rownames(rowData(.data)), rownames(.)),,drop=FALSE]
+        my_differential_abundance$result |>
+    as_matrix(rownames = "transcript") |>
+      (\(.) .[match(rownames(rowData(.data)), rownames(.)),,drop=FALSE])()
   )
   
   
-  .data %>%
+  .data |>
     
     # Add bibliography
     when(
-      tolower(method) ==  "edger_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
-      tolower(method) ==  "edger_quasi_likelihood" ~ (.) %>% memorise_methods_used(c("edger", "edgeR_quasi_likelihood")),
-      tolower(method) ==  "edger_robust_likelihood_ratio" ~ (.) %>% memorise_methods_used(c("edger", "edger_robust_likelihood_ratio")),
-      tolower(method) == "limma_voom" ~ (.) %>% memorise_methods_used("voom"),
-      tolower(method) == "limma_voom_sample_weights" ~ (.) %>% memorise_methods_used("voom_sample_weights"),
-      tolower(method) == "deseq2" ~ (.) %>% memorise_methods_used("deseq2"),
-      tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmtmb") ~ (.) %>% memorise_methods_used("glmmseq"),
+      tolower(method) ==  "edger_likelihood_ratio" ~ (.) |> memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
+      tolower(method) ==  "edger_quasi_likelihood" ~ (.) |> memorise_methods_used(c("edger", "edgeR_quasi_likelihood")),
+      tolower(method) ==  "edger_robust_likelihood_ratio" ~ (.) |> memorise_methods_used(c("edger", "edger_robust_likelihood_ratio")),
+      tolower(method) == "limma_voom" ~ (.) |> memorise_methods_used("voom"),
+      tolower(method) == "limma_voom_sample_weights" ~ (.) |> memorise_methods_used("voom_sample_weights"),
+      tolower(method) == "deseq2" ~ (.) |> memorise_methods_used("deseq2"),
+      tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmtmb") ~ (.) |> memorise_methods_used("glmmseq"),
       ~ stop("tidybulk says: method not supported")
-    ) %>%
+    ) |>
     
     when(
-      !is.null(test_above_log2_fold_change) ~ (.) %>% memorise_methods_used("treat"),
+      !is.null(test_above_log2_fold_change) ~ (.) |> memorise_methods_used("treat"),
       ~ (.)
-    ) %>%
+    ) |>
     
-    attach_to_internals(my_differential_abundance$result_raw, method) %>%
-    
-    # Communicate the attribute added
-    {
+    attach_to_internals(my_differential_abundance$result_raw, method) |>
+    (\(.) {
       rlang::inform(sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access DE results %s", method),  .frequency = "always")
-      
       (.)
-    }
+    })()
   
   
   
@@ -470,7 +478,7 @@ get_differential_transcript_abundance_bulk_SE <- function(
   message(
     sprintf(
       "tidybulk says: The design column names are \"%s\"",
-      design %>% colnames %>% paste(collapse = ", ")
+      design |> colnames() |> paste(collapse = ", ")
     )
   )
   
@@ -499,35 +507,35 @@ get_differential_transcript_abundance_bulk_SE <- function(
     edgeR::DGEList() 
   
   if(scaling_method != "none")
-    edgeR_object = edgeR_object %>% edgeR::calcNormFactors(method = scaling_method)
+    edgeR_object = edgeR_object |> edgeR::calcNormFactors(method = scaling_method)
   
   
   
   
   if(tolower(method) ==  "edger_likelihood_ratio")
-    edgeR_object = edgeR_object %>% edgeR::estimateDisp(design) %>% edgeR::glmFit(design)
+    edgeR_object = edgeR_object |> edgeR::estimateDisp(design) %>% edgeR::glmFit(design)
   else if(tolower(method) ==  "edger_quasi_likelihood")
-    edgeR_object = edgeR_object %>% edgeR::estimateDisp(design) %>% edgeR::glmQLFit(design)
+    edgeR_object = edgeR_object |> edgeR::estimateDisp(design) %>% edgeR::glmQLFit(design)
   else if(tolower(method) == "edger_robust_likelihood_ratio")
-    edgeR_object = edgeR_object %>% edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
+    edgeR_object = edgeR_object |> edgeR::estimateGLMRobustDisp(design) %>% edgeR::glmFit(design)
   
   
   
   # Return
-  if(my_contrasts %>% is.null | omit_contrast_in_colnames)	{
+  if(my_contrasts |> is.null() | omit_contrast_in_colnames)	{
     if(!is.null(test_above_log2_fold_change))
-      edgeR_object = edgeR_object %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change)
+      edgeR_object = edgeR_object |> edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change)
     else if(tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio"))
-      edgeR_object = edgeR_object %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts)
+      edgeR_object = edgeR_object |> edgeR::glmLRT(coef = 2, contrast = my_contrasts)
     else if(tolower(method) ==  "edger_quasi_likelihood")
-      edgeR_object = edgeR_object %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
+      edgeR_object = edgeR_object |> edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
     else
       stop("tidybulk says: method not supported")	
     
     
     # Convert to tibble
     result = 
-      edgeR_object %>% 
+      edgeR_object |> 
       edgeR::topTags(n = Inf) %$%
       table %>%
       as_tibble(rownames = "transcript") %>%
@@ -544,15 +552,15 @@ get_differential_transcript_abundance_bulk_SE <- function(
       1:ncol(my_contrasts) %>%
       map_dfr(~ {
         if(!is.null(test_above_log2_fold_change))
-          edgeR_object = edgeR_object %>% edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change)
+          edgeR_object = edgeR_object |> edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change)
         else if(tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio"))
-          edgeR_object = edgeR_object %>% edgeR::glmLRT(coef = 2, contrast = my_contrasts)
+          edgeR_object = edgeR_object |> edgeR::glmLRT(coef = 2, contrast = my_contrasts)
         else if(tolower(method) ==  "edger_quasi_likelihood")
-          edgeR_object = edgeR_object %>% edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
+          edgeR_object = edgeR_object |> edgeR::glmQLFTest(coef = 2, contrast = my_contrasts)
         else
           stop("tidybulk says: method not supported")	
         
-        edgeR_object %>%
+        edgeR_object |>
           
           
           # Convert to tibble
@@ -652,7 +660,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(
   message(
     sprintf(
       "tidybulk says: The design column names are \"%s\"",
-      design %>% colnames %>% paste(collapse = ", ")
+      design |> colnames() |> paste(collapse = ", ")
     )
   )
   
@@ -678,7 +686,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(
   # )
   
   voom_object =
-    .data %>%
+    .data |>
     
     assay(my_assay) |>
     edgeR::DGEList() 
@@ -686,40 +694,40 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(
   # Scale data if method is not "none"
   # use if else instead of when
   if(scaling_method != "none")
-    voom_object = voom_object %>% edgeR::calcNormFactors(method = scaling_method)
+    voom_object = voom_object |> edgeR::calcNormFactors(method = scaling_method)
   
   
   if(tolower(method) == "limma_voom")
-    voom_object = voom_object %>% limma::voom(design, plot=FALSE)
+    voom_object = voom_object |> limma::voom(design, plot=FALSE)
   else if(tolower(method) == "limma_voom_sample_weights")
-    voom_object = voom_object %>% limma::voomWithQualityWeights(design, plot=FALSE)
+    voom_object = voom_object |> limma::voomWithQualityWeights(design, plot=FALSE)
   else
     stop("tidybulk says: method not supported")
   
   # select method
   voom_object = 
-    voom_object %>%
+    voom_object |>
     
     limma::lmFit(design)
   
   # Return
   
   
-  if(my_contrasts %>% is.null | omit_contrast_in_colnames) {
-    result = voom_object %>%
+  if(my_contrasts |> is.null() | omit_contrast_in_colnames) {
+    result = voom_object |>
       
       # Contrasts
       limma::contrasts.fit(contrasts=my_contrasts, coefficients =  when(my_contrasts, is.null(.) ~ 2)) %>%
       limma::eBayes() 
     
     if(is.null(test_above_log2_fold_change)) {
-      result = result %>% limma::topTable(n = Inf)
+      result = result |> limma::topTable(n = Inf)
     } else {
-      result = result %>% limma::treat(lfc=test_above_log2_fold_change) %>% limma::topTreat(n = Inf)
+      result = result |> limma::treat(lfc=test_above_log2_fold_change) %>% limma::topTreat(n = Inf)
     }
     
     
-    result = result %>%
+    result = result |>
       # Convert to tibble
       as_tibble(rownames = "transcript") %>%
       
@@ -737,19 +745,19 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(
         ~ {
           
           
-          result = voom_object %>%
+          result = voom_object |>
             
             # Contrasts
             limma::contrasts.fit(contrasts=my_contrasts[, .x]) %>%
             limma::eBayes() 
           
           if(is.null(test_above_log2_fold_change)) {
-            result = result %>% limma::topTable(n = Inf)
+            result = result |> limma::topTable(n = Inf)
           } else {
-            result = result %>% limma::treat(lfc=test_above_log2_fold_change) %>% limma::topTreat(n = Inf)
+            result = result |> limma::treat(lfc=test_above_log2_fold_change) %>% limma::topTreat(n = Inf)
           }
           
-          result = result %>%
+          result = result |>
             
             # Convert to tibble
             as_tibble(rownames = "transcript") %>%
@@ -835,8 +843,8 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(
   
   # Check if contrasts are of the same form
   if(
-    .contrasts %>% is.null %>% not() &
-    .contrasts %>% class %>% equals("list") %>% not()
+    .contrasts |> is.null() %>% not() &
+    .contrasts |> class() |> equals("list") |> not()
   )
     stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
   
@@ -862,7 +870,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(
     colData()
   
   counts =
-    .data %>%
+    .data |>
     assay(my_assay)
   
   # Create design matrix for dispersion, removing random effects
@@ -910,7 +918,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(
     mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |>
     
     # Attach attributes
-    reattach_internals(.data) %>%
+    reattach_internals(.data) |>
     
     # select method
     memorise_methods_used("glmmSeq") %>%
@@ -993,8 +1001,8 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
   
   # Check if contrasts are of the same form
   if(
-    .contrasts %>% is.null %>% not() &
-    .contrasts %>% class %>% equals("list") %>% not()
+    .contrasts |> is.null() %>% not() &
+    .contrasts |> class() |> equals("list") |> not()
   )
     stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
   
@@ -1032,31 +1040,30 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
     result_raw = deseq2_object,
     result =
       # Read ft object
-      deseq2_object %>%
+      deseq2_object |>
       
       # If I have multiple .contrasts merge the results
       when(
         
         # Simple comparison continuous
-        (my_contrasts %>% is.null ) &
-          (deseq2_object@colData[,parse_formula(.formula)[1]] %>%
-             class %in% c("numeric", "integer", "double")) 	~
+        (my_contrasts |> is.null() ) &
+          (deseq2_object@colData[,parse_formula(.formula)[1]] |> class() %in% c("numeric", "integer", "double"))      ~
           (.) %>%
           DESeq2::results(lfcThreshold=test_above_log2_fold_change) %>%
           as_tibble(rownames = "transcript"),
         
         # Simple comparison discrete
-        my_contrasts %>% is.null 	~
+        my_contrasts |> is.null() 	~
           (.) %>%
           DESeq2::results(contrast = c(
             parse_formula(.formula)[1],
-            deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels %>% .[2],
-            deseq2_object@colData[,parse_formula(.formula)[1]] %>% as.factor() %>% levels |> _[1]
+            deseq2_object@colData[,parse_formula(.formula)[1]] |> as.factor() %>% levels %>% .[2],
+            deseq2_object@colData[,parse_formula(.formula)[1]] |> as.factor() %>% levels |> _[1]
           ), lfcThreshold=test_above_log2_fold_change) %>%
           as_tibble(rownames = "transcript"),
         
         # Simple comparison discrete
-        my_contrasts %>% is.null %>% not() & omit_contrast_in_colnames	~
+        my_contrasts |> is.null() %>% not() & omit_contrast_in_colnames	~
           (.) %>%
           DESeq2::results(contrast = my_contrasts[[1]], lfcThreshold=test_above_log2_fold_change)%>%
           as_tibble(rownames = "transcript"),

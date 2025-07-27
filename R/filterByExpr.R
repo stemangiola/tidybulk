@@ -2,6 +2,9 @@
 # This version allows the definition of CPM.Cutoff as an argument.
 #  FIT GENERALIZED LINEAR MODELS
 # Internal use only, do not export. # nolint # noRd
+#
+# @references
+# Chen, Y., Lun, A. T., & Smyth, G. K. (2016). From reads to genes to pathways: differential expression analysis of RNA-Seq experiments using Rsubread and the edgeR quasi-likelihood pipeline. F1000Research, 5, 1438. doi:10.12688/f1000research.8987.2
 
 filterByExpr <- function(y, ...)
 UseMethod("filterByExpr")

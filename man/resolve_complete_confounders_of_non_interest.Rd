@@ -39,6 +39,11 @@ The resolution strategy depends on the analysis context and can be modified in t
 }
 \examples{
 # Load necessary libraries
+
+}
+\references{
+Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+
 library(SummarizedExperiment)
 library(dplyr)
 
@@ -70,7 +75,6 @@ se_resolved <- resolve_complete_confounders_of_non_interest(se, A, B, C)
 
 # View the updated column data
 colData(se_resolved)
-
 }
 \seealso{
 \code{\link[SummarizedExperiment]{SummarizedExperiment}} for creating and handling `SummarizedExperiment` objects.

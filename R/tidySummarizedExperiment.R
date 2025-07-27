@@ -1,6 +1,6 @@
 eliminate_GRanges_metadata_columns_also_present_in_Rowdata = function(.my_data, se){
-  .my_data %>%
-    select(-any_of(colnames(rowData(se)))) %>%
+  .my_data |>
+    select(-any_of(colnames(rowData(se)))) |>
 
     # In case there is not metadata column
     suppressWarnings()
@@ -17,15 +17,15 @@ eliminate_GRanges_metadata_columns_also_present_in_Rowdata = function(.my_data, 
 #' @noRd
 get_special_datasets <- function(se) {
 
-  rr =  se %>%
+  rr =  se |>
     rowRanges()
 
-  rr %>%
+  rr |>
     when(
 
       # If no ranges
-      as.data.frame(.) %>%
-        nrow() %>%
+      as.data.frame(.) |>
+        nrow() |>
         equals(0) ~ tibble(),
 
       # If it is a range list (multiple rows per feature)
@@ -34,9 +34,9 @@ get_special_datasets <- function(se) {
         # If GRanges does not have row names
         if(is.null(rr@partitioning@NAMES)) rr@partitioning@NAMES = as.character(1:nrow(se))
 
-        tibble::as_tibble(rr) %>%
-          eliminate_GRanges_metadata_columns_also_present_in_Rowdata(se) %>%
-          nest(GRangesList = -group_name) %>%
+        tibble::as_tibble(rr) |>
+          eliminate_GRanges_metadata_columns_also_present_in_Rowdata(se) |>
+          nest(GRangesList = -group_name) |>
           rename(!!f_(se)$symbol := group_name)
 
       },
@@ -47,8 +47,8 @@ get_special_datasets <- function(se) {
         # If GRanges does not have row names
         if(is.null(rr@ranges@NAMES)) rr@ranges@NAMES = as.character(1:nrow(se))
 
-        tibble::as_tibble(rr) %>%
-          eliminate_GRanges_metadata_columns_also_present_in_Rowdata(se) %>%
+        tibble::as_tibble(rr) |>
+          eliminate_GRanges_metadata_columns_also_present_in_Rowdata(se) |>
           mutate(!!f_(se)$symbol := rr@ranges@NAMES)
       }
 
@@ -63,7 +63,7 @@ change_reserved_column_names = function(col_data, .data ){
   col_data %>%
 
     setNames(
-      colnames(.) %>%
+      colnames(.) |>
         sapply(function(x) if(x==f_(.data)$name) sprintf("%s.x", f_(.data)$name) else x) %>%
         sapply(function(x) if(x==s_(.data)$name) sprintf("%s.x", s_(.data)$name) else x) %>%
         str_replace("^coordinate$", "coordinate.x")
@@ -81,7 +81,7 @@ change_reserved_column_names = function(col_data, .data ){
 #' @noRd
 get_count_datasets <- function(se) {
   map2(
-    assays(se) %>% as.list(),
+    assays(se) |> as.list(),
     names(assays(se)),
     ~ {
 
@@ -92,13 +92,13 @@ get_count_datasets <- function(se) {
         .x = as.matrix(.x)
       }
 
-      .x %>%
+      .x |>
         # matrix() %>%
         # as.data.frame() %>%
-        tibble::as_tibble(rownames = f_(se)$name, .name_repair = "minimal") %>%
+        tibble::as_tibble(rownames = f_(se)$name, .name_repair = "minimal") |>
 
         # If the matrix does not have sample names, fix column names
-        when(colnames(.x) %>% is.null() ~ setNames(., c(
+        when(colnames(.x) |> is.null() ~ setNames(., c(
           f_(se)$name,  seq_len(ncol(.x))
         )),
         ~ (.)
@@ -121,8 +121,8 @@ get_count_datasets <- function(se) {
     # Add dummy sample or feature if we have empty assay.
     # This is needed for a correct isualisation of the tibble form
     when(
-      f_(se)$name %in% colnames(.) %>% not ~ mutate(., !!f_(se)$symbol := as.character(NA)),
-      s_(se)$name %in% colnames(.) %>% not ~ mutate(., !!s_(se)$symbol := as.character(NA)),
+      f_(se)$name %in% colnames(.) |> not() ~ mutate(., !!f_(se)$symbol := as.character(NA)),
+      s_(se)$name %in% colnames(.) |> not() ~ mutate(., !!s_(se)$symbol := as.character(NA)),
       ~ (.)
     )
 }
@@ -145,7 +145,7 @@ subset_tibble_output = function(.data, count_info, sample_info, gene_info, range
   sample_info =
     sample_info %>%
     when(
-      colnames(.) %>% intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
+      colnames(.) |> intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
       select(., any_of(s_(.data)$name, output_colnames)) %>%
         suppressWarnings()
     )
@@ -154,7 +154,7 @@ subset_tibble_output = function(.data, count_info, sample_info, gene_info, range
   range_info =
     range_info %>%
     when(
-      colnames(.) %>% intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
+      colnames(.) |> intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
       select(., any_of(f_(.data)$name, output_colnames)) %>%
         suppressWarnings()
     )
@@ -163,7 +163,7 @@ subset_tibble_output = function(.data, count_info, sample_info, gene_info, range
   gene_info =
     gene_info %>%
     when(
-      colnames(.) %>% intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
+      colnames(.) |> intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
       select(., any_of(f_(.data)$name, output_colnames)) %>%
         suppressWarnings()
     )
@@ -172,7 +172,7 @@ subset_tibble_output = function(.data, count_info, sample_info, gene_info, range
   count_info =
     count_info %>%
     when(
-      colnames(.) %>% intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
+      colnames(.) |> intersect(output_colnames) %>% length() %>% equals(0) ~ NULL,
       select(., any_of(f_(.data)$name, s_(.data)$name, output_colnames)) %>%
         suppressWarnings()
     )

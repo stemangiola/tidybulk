@@ -9,6 +9,13 @@
 #'
 #' describe_transcript(tidybulk::se_mini)
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' Carlson, M. (2019). org.Hs.eg.db: Genome wide annotation for Human. R package version 3.8.2.
+#'
+#' Carlson, M. (2019). org.Mm.eg.db: Genome wide annotation for Mouse. R package version 3.8.2.
+#'
 #' @docType methods
 #' @rdname describe_transcript-methods
 #' @export
@@ -33,7 +40,7 @@ setGeneric("describe_transcript", function(.data )
 #' @importFrom dplyr select
 #' @importFrom dplyr pull
 #' @importFrom dplyr left_join
-#' @importFrom magrittr %>%
+
 #'
 #' @docType methods
 #' @rdname describe_transcript-methods
@@ -67,8 +74,8 @@ setGeneric("describe_transcript", function(.data )
       column = "GENENAME",
       keytype = "SYMBOL",
       multiVals = "first"
-    ))  %>%
-      .[!is.na(.)], error = function(x){}) %>%
+        ))  |>
+    (\(.) .[!is.na(.)])(), error = function(x){}) |>
     
     # Mouse
     c(
@@ -78,24 +85,24 @@ setGeneric("describe_transcript", function(.data )
         column = "GENENAME",
         keytype = "SYMBOL",
         multiVals = "first"
-      )) %>% .[!is.na(.)], error = function(x){})
-      
-    ) %>%
+          )) |> (\(.) .[!is.na(.)])(), error = function(x){})
     
-    # Parse
-    unlist() %>%
-    #unique() %>%
-    enframe(name = "transcript", value = "description") %>%
+  ) |>
+  
+  # Parse
+  unlist() |>
+  #unique() |>
+  enframe(name = "transcript", value = "description") |>
     
     # Select just one per transcript
-    distinct() %>%
-    group_by(transcript) %>%
-    slice(1) %>%
+    distinct() |>
+    group_by(transcript) |>
+    slice(1) |>
     ungroup()
   
-  rowData(.data) = rowData(.data) %>% cbind(
-    tibble(transcript = rownames(!!.data)) %>%
-      left_join(description_df, by = "transcript") %>%
+    rowData(.data) = rowData(.data) |> cbind(
+    tibble(transcript = rownames(!!.data)) |>
+    left_join(description_df, by = "transcript") |>
       select(description)
   )
   

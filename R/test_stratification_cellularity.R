@@ -4,9 +4,9 @@
 #'
 #' @description test_stratification_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
 #'
-#' @importFrom rlang enquo
-#'
-#' @importFrom stringr str_detect
+#' @importFrom rlang enquo quo_name
+#' @importFrom stringr str_detect str_replace
+#' @importFrom dplyr mutate
 #'
 #' @name test_stratification_cellularity
 #'
@@ -50,7 +50,10 @@
 #'		cores = 1
 #'	)
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 #'
+#' Newman, A. M., Liu, C. L., Green, M. R., Gentles, A. J., Feng, W., Xu, Y., Hoang, C. D., Diehn, M., & Alizadeh, A. A. (2015). Robust enumeration of cell subsets from tissue expression profiles. Nature Methods, 12(5), 453-457. doi:10.1038/nmeth.3337
 #'
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
@@ -96,11 +99,11 @@ setGeneric("test_stratification_cellularity", function(.data,
   }
   
   # Validate formula
-  if(.formula %>% format() %>% grepl(" \\.|\\. ", .) %>% not)
+  if(.formula |> format() |> grepl(" \\.|\\. ", .) |> not())
     stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
   
   deconvoluted =
-    .data %>%
+    .data |>
     
     # Deconvolution
     deconvolve_cellularity(
@@ -111,28 +114,24 @@ setGeneric("test_stratification_cellularity", function(.data,
     )
   
   # Check if test is univaiable or multivariable
-  .formula %>%
-    {
+  .formula |>
+    (\(.) {
       # Parse formula
       .my_formula =
-        format(.formula) %>%
-        str_replace("([~ ])(\\.)", "\\1.high_cellularity") %>%
-        as.formula
-      
+        format(.) |>
+        str_replace("([~ ])(\\.)", "\\1.high_cellularity") |>
+        as.formula()
       # Test
       univariable_differential_tissue_stratification_SE(deconvoluted,
                                                         method,
                                                         .my_formula) %>%
-        
         # Attach attributes
-        reattach_internals(.data) %>%
-        
-        # Add methods used
-        memorise_methods_used(c("survival", "boot", "survminer"))
-    } %>%
-    
-    # Eliminate prefix
-    mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+        reattach_internals(deconvoluted) %>%
+        memorise_methods_used("test_stratification_cellularity")
+    })()
+  
+  # Eliminate prefix
+  mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
   
 }
 

@@ -4,9 +4,9 @@
 #'
 #' @description scale_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and Scales transcript abundance compansating for sequencing depth (e.g., with TMM algorithm, Robinson and Oshlack doi.org/10.1186/gb-2010-11-3-r25).
 #'
-#' @importFrom rlang enquo
-#'
+#' @importFrom rlang enquo quo_name
 #' @importFrom stats median
+#' @importFrom SummarizedExperiment assays colnames
 #'
 #' @name scale_abundance
 #'
@@ -44,7 +44,10 @@
 #'    identify_abundant() |>
 #'    scale_abundance()
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 #'
+#' Robinson, M. D., & Oshlack, A. (2010). A scaling normalization method for differential expression analysis of RNA-seq data. Genome Biology, 11(3), R25. doi:10.1186/gb-2010-11-3-r25
 #'
 #' @docType methods
 #' @rdname scale_abundance-methods
@@ -122,7 +125,7 @@ setGeneric("scale_abundance", function(.data,
   }
   
   # Check that reference sample exists
-  if(!is.null(reference_sample) && !reference_sample %in% (.data %>% colnames))
+  if(!is.null(reference_sample) && !reference_sample %in% (.data |> colnames()))
     stop("tidybulk says: your reference sample is not among the samples in your data frame")
   
   .subset_for_scaling = enquo(.subset_for_scaling)
@@ -142,8 +145,8 @@ setGeneric("scale_abundance", function(.data,
     stop("tidybulk says: there are 0 genes that passes the filters (.abundant and/or .subset_for_scaling). Please check your filtering or your data.")
   
   # Determine the correct assay name
-  my_counts_filtered = assays(.data_filtered)[[my_assay]] %>% na.omit()
-  library_size_filtered = my_counts_filtered %>% colSums(na.rm  = TRUE)
+  my_counts_filtered = assays(.data_filtered)[[my_assay]] |> na.omit()
+  library_size_filtered = my_counts_filtered |> colSums(na.rm  = TRUE)
   
   # If not enough genes, warning
   if(nrow(my_counts_filtered)<100) warning(warning_for_scaling_with_few_genes)
@@ -156,9 +159,9 @@ setGeneric("scale_abundance", function(.data,
     reference_sample
   
   if (is.null(reference))
-    reference = library_size_filtered %>%
-    sort() %>%
-    tail(1) %>%
+    reference = library_size_filtered |>
+    sort() |>
+    tail(1) |>
     names()
   
   
@@ -176,7 +179,7 @@ setGeneric("scale_abundance", function(.data,
   # Calculate multiplier
   multiplier =
     # Relecting the ratio of effective library size of the reference sample to the effective library size of each sample
-    (library_size_filtered[reference] * nf[reference]) %>%
+    (library_size_filtered[reference] * nf[reference]) |>
     divide_by(library_size_filtered * nf) 
   
   # NOT HELPING - Put everything to the reference sample scale
@@ -197,18 +200,18 @@ setGeneric("scale_abundance", function(.data,
       assay(.data) %*%
         diag(multiplier)
       
-    ) %>%
+    ) |>
     setNames(value_scaled)
   colnames(my_counts_scaled[[1]]) = assay(.data)  |> colnames()
   
   
   # Add the assay
-  assays(.data, withDimnames=FALSE) =  assays(.data) %>% c(my_counts_scaled)
+  assays(.data, withDimnames=FALSE) =  assays(.data) |> c(my_counts_scaled)
   
-  .data %>%
+  .data |>
     
     # Add methods
-    memorise_methods_used(c("edger", "tmm")) %>%
+    memorise_methods_used(c("edger", "tmm")) |>
     
     # Attach column internals
     add_tt_columns(.abundance_scaled = !!(((function(x, v)	enquo(v))(x,!!as.symbol(value_scaled))) |> drop_enquo_env()) )

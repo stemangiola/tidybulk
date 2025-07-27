@@ -4,8 +4,10 @@
 #'
 #' @description test_gene_enrichment() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` of gene set information
 #'
-#' @importFrom rlang enquo
+#' @importFrom rlang enquo quo_name
 #' @importFrom magrittr not
+#' @importFrom dplyr filter arrange mutate pull
+#' @importFrom SummarizedExperiment colData rowData assays
 #'
 #'
 #' @name test_gene_enrichment
@@ -86,6 +88,11 @@
 #'
 #'}
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' Alhamdoosh, M., Ng, M., Wilson, N. J., Sheridan, J. M., Huynh, H., Wilson, M. J., & Ritchie, M. E. (2017). Combining multiple tools outperforms individual methods for gene set enrichment analysis in single-cell RNA-seq data. Genome Biology, 18(1), 174. doi:10.1186/s13059-017-1279-y
+#'
 #' @docType methods
 #' @rdname test_gene_enrichment-methods
 #' @export
@@ -158,17 +165,17 @@ standardGeneric("test_gene_enrichment"))
   
   # Check that there are no entrez missing
   .data =
-    .data %>%
+    .data |>
     when(
-      filter(., !!.entrez %>% is.na) %>% nrow() %>% gt(0) ~ {
+      filter(., !!.entrez |> is.na()) |> nrow() |> gt(0) ~ {
         warning("tidybulk says: There are NA entrez IDs. Those genes will be filtered")
-        filter(., !!.entrez %>% is.na %>% not())
+        filter(., !!.entrez |> is.na() |> not())
       },
       ~ (.)
     )
   
   # Check if duplicated entrez
-  if(rowData(.data)[,quo_name(.entrez)] %>% duplicated() %>% any())
+  if(rowData(.data)[,quo_name(.entrez)] |> duplicated() |> any())
     stop("tidybulk says: There are duplicated .entrez IDs. Please use aggregate_duplicates(.transcript = entrez).")
   
   # For use within when
@@ -179,29 +186,29 @@ standardGeneric("test_gene_enrichment"))
   . = NULL
   
   # Check if at least two samples for each group
-  if (.data %>%
-      pivot_sample() %>%
-      count(!!as.symbol(parse_formula(.formula))) %>%
-      distinct(n) %>%
-      pull(n) %>%
-      min %>%
+  if (.data |>
+      pivot_sample() |>
+      count(!!as.symbol(parse_formula(.formula))) |>
+      distinct(n) |>
+      pull(n) |>
+      min() |>
       st(2))
     stop("tidybulk says: You need at least two replicates for each condition for EGSEA to work")
   
   
   # Create design matrix
-  design =	model.matrix(	object = .formula,	data = .data %>% colData() 	)
+  design =	model.matrix(	object = .formula,	data = .data |> colData() 	)
   
   # Print the design column names in case I want contrasts
   message(
     sprintf(
       "tidybulk says: The design column names are \"%s\"",
-      design %>% colnames %>% paste(collapse = ", ")
+      design |> colnames() |> paste(collapse = ", ")
     )
   )
   
   my_contrasts =
-    contrasts %>%
+    contrasts |>
     when(
       length(.) > 0 ~ limma::makeContrasts(contrasts = ., levels = design),
       ~ NULL
@@ -215,11 +222,11 @@ standardGeneric("test_gene_enrichment"))
   }
   
   dge =
-    .data %>%
-    assays() %>%
-    as.list() %>%
-    .[[1]] %>%
-    as.matrix %>%
+    .data |>
+    assays() |>
+    as.list() |>
+    (\(.) .[[1]])() |>
+    as.matrix() |>
     
     # Change rownames to entrez
     when(
@@ -235,7 +242,7 @@ standardGeneric("test_gene_enrichment"))
     ) %>%
     
     # Filter missing entrez
-    .[rownames(.) %>% is.na %>% not, ] %>%
+    .[rownames(.) |> is.na() |> not(), ] |>
     
     # # Make sure transcript names are adjacent
     # arrange(!!.entrez) %>%
@@ -302,10 +309,10 @@ standardGeneric("test_gene_enrichment"))
   
   if (length(nonkegg_genesets) != 0) {
     res =
-      dge %>%
+      dge |>
       
       # Calculate weights
-      limma::voom(design, plot = FALSE) %>%
+      limma::voom(design, plot = FALSE) |>
       
       # Execute EGSEA
       egsea(
@@ -319,17 +326,17 @@ standardGeneric("test_gene_enrichment"))
     gsea_web_page = "https://www.gsea-msigdb.org/gsea/msigdb/cards/%s.html"
     
     res_formatted_nonkegg =
-      res@results %>%
+      res@results |>
       map2_dfr(
-        (.) %>% names,
-        ~ .x[[1]][[1]] %>%
-          as_tibble(rownames = "pathway") %>%
+        (.) |> names(),
+        ~ .x[[1]][[1]] |>
+          as_tibble(rownames = "pathway") |>
           mutate(data_base = .y)
-      ) %>%
-      arrange(sort_column) %>%
+      ) |>
+      arrange(sort_column) |>
       
       # Add webpage
-      mutate(web_page = sprintf(gsea_web_page, pathway)) %>%
+      mutate(web_page = sprintf(gsea_web_page, pathway)) |>
       select(data_base, pathway, web_page, sort_column, everything())
   }
   
@@ -337,10 +344,10 @@ standardGeneric("test_gene_enrichment"))
     message("tidybulk says: due to a bug in the call to KEGG database (http://supportupgrade.bioconductor.org/p/122172/#122218), the analysis for this database is run without report production.")
     
     res_kegg =
-      dge %>%
+      dge |>
       
       # Calculate weights
-      limma::voom(design, plot = FALSE) %>%
+      limma::voom(design, plot = FALSE) |>
       
       # Execute EGSEA
       egsea(
@@ -353,14 +360,14 @@ standardGeneric("test_gene_enrichment"))
       )
     
     res_formatted_kegg =
-      res_kegg@results %>%
+      res_kegg@results |>
       map2_dfr(
-        (.) %>% names,
-        ~ .x[[1]][[1]] %>%
-          as_tibble(rownames = "pathway") %>%
+        (.) |> names(),
+        ~ .x[[1]][[1]] |>
+          as_tibble(rownames = "pathway") |>
           mutate(data_base = .y)
-      ) %>%
-      arrange(sort_column) %>%
+      ) |>
+      arrange(sort_column) |>
       select(data_base, pathway, everything())
     
   }
@@ -376,7 +383,7 @@ standardGeneric("test_gene_enrichment"))
   
   # add to bibliography
   if (exists("collections_bib")) {
-    out %>% memorise_methods_used(c("egsea", collections_bib, methods))
+    out |> memorise_methods_used(c("egsea", collections_bib, methods))
   }
   
 }

@@ -11,7 +11,7 @@ deconvolve_cellularity(
   .data,
   .abundance = NULL,
   reference = NULL,
-  method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
+  method = "cibersort",
   prefix = "",
   ...
 )
@@ -20,7 +20,7 @@ deconvolve_cellularity(
   .data,
   .abundance = NULL,
   reference = NULL,
-  method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
+  method = "cibersort",
   prefix = "",
   ...
 )
@@ -29,7 +29,7 @@ deconvolve_cellularity(
   .data,
   .abundance = NULL,
   reference = NULL,
-  method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
+  method = "cibersort",
   prefix = "",
   ...
 )
@@ -76,5 +76,11 @@ CIBERSORT(Y = data, X = reference, ...)
 # Subsetting for time efficiency
 tidybulk::se_mini |> deconvolve_cellularity(cores = 1)
 
+}
+\references{
+Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 
+Newman, A. M., Liu, C. L., Green, M. R., Gentles, A. J., Feng, W., Xu, Y., Hoang, C. D., Diehn, M., & Alizadeh, A. A. (2015). Robust enumeration of cell subsets from tissue expression profiles. Nature Methods, 12(5), 453-457. doi:10.1038/nmeth.3337
+
+Racle, J., de Jonge, K., Baumgaertner, P., Speiser, D. E., & Gfeller, D. (2017). Simultaneous enumeration of cancer and immune cell types from bulk tumor gene expression data. eLife, 6, e26476. doi:10.7554/eLife.26476
 }

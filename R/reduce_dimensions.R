@@ -4,8 +4,12 @@
 #'
 #' @description reduce_dimensions() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and calculates the reduced dimensional space of the transcript abundance.
 #'
-#' @importFrom rlang enquo
+#' @importFrom rlang enquo quo_name
 #' @importFrom magrittr not
+#' @importFrom dplyr filter distinct select mutate rename
+#' @importFrom tidyr pivot_wider enframe
+#' @importFrom SummarizedExperiment colData rowData assays
+#' @importFrom stats prcomp
 #'
 #'
 #' @name reduce_dimensions
@@ -74,6 +78,13 @@
 #'  identify_abundant() |>
 #'  reduce_dimensions(method="PCA", .dims = 3)
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' Krijthe, J. H. (2015). Rtsne: T-Distributed Stochastic Neighbor Embedding using a Barnes-Hut Implementation. R package version 0.15.
+#'
+#' McInnes, L., Healy, J., & Melville, J. (2018). UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction. arXiv preprint arXiv:1802.03426.
+#'
 #'
 #'
 #' @docType methods
@@ -132,15 +143,15 @@ standardGeneric("reduce_dimensions"))
   }
   
   my_assay =
-    .data %>%
+    .data |>
     
     # Filter abundant if performed
-    filter_if_abundant_were_identified() %>%
+    filter_if_abundant_were_identified() |>
     
-    assay(my_assay) %>%
+    assay(my_assay) |>
     
     # Filter most variable genes
-    keep_variable_transcripts_SE(top = top, transform = transform) %>%
+    keep_variable_transcripts_SE(top = top, transform = transform) |>
     
     # Check if log transform is needed
     transform()
@@ -170,21 +181,42 @@ standardGeneric("reduce_dimensions"))
       ...
     )
   
-  .data %>%
+  .data |>
     
     # Add dimensions to metadata
-    {
+    (\(.) {
       .x = (.)
       if (of_samples) {
-        colData(.x) = colData(.x) %>% cbind(reduced_dimensions$result)
+        # Ensure reduced_dimensions$result has same number of rows as colData
+        result_df = reduced_dimensions$result
+        if (!is.null(result_df) && is.data.frame(result_df) && nrow(result_df) > 0) {
+          if (nrow(result_df) != nrow(colData(.x))) {
+            message(sprintf("Row count mismatch: result_df (%d), colData (%d)", nrow(result_df), nrow(colData(.x))))
+            # Align rows by sample names
+            sample_names = rownames(colData(.x))
+            result_df = result_df[match(sample_names, rownames(result_df)), , drop = FALSE]
+          }
+          if (nrow(result_df) == nrow(colData(.x))) {
+            # Only remove the sample column if it matches rownames or is named 'sample'
+            col_names = colnames(result_df)
+            if (tolower(col_names[1]) == "sample" || all(rownames(colData(.x)) == result_df[[1]])) {
+              dim_cols = col_names[-1]
+              colData(.x) = cbind(colData(.x), result_df[, dim_cols, drop = FALSE])
+            } else {
+              colData(.x) = cbind(colData(.x), result_df)
+            }
+          } else {
+            warning("Skipping cbind: row counts still do not match after alignment.")
+          }
+        }
       } else {
-        rowData(.x) = rowData(.x) %>% cbind(reduced_dimensions$result)
+        rowData(.x) = rowData(.x) |> cbind(reduced_dimensions$result)
       }
       .x
-    } %>%
+    })() |>
     
     # Add bibliography
-    {
+    (\(.) {
       if (tolower(method) == tolower("MDS")) {
         memorise_methods_used(., "limma")
       } else if (tolower(method) == tolower("PCA")) {
@@ -196,21 +228,20 @@ standardGeneric("reduce_dimensions"))
       } else {
         stop("tidybulk says: method must be either \"MDS\" or \"PCA\" or \"tSNE\", or \"UMAP\" ")
       }
-    } %>%
+    })() |>
     
     # Attach edgeR for keep variable filtering
-    memorise_methods_used(c("edger")) %>%
-    
+    memorise_methods_used(c("edger")) |>
     # Add raw object
-    attach_to_internals(reduced_dimensions$raw_result, method) %>%
+    attach_to_internals(reduced_dimensions$raw_result, method) |>
     
     # Communicate the attribute added
-    {
+    (\(.) {
       
       rlang::inform(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access %s results", method),  .frequency = "always")
       
       (.)
-    }
+    })()
   
   
 }
@@ -281,18 +312,31 @@ get_reduced_dimensions_MDS_bulk_SE <-
     # Get components from dims
     components = 1:.dims
     
-    
-    # Convert components to components list
-    if((length(components) %% 2) != 0 ) components = components %>% append(components[1])
-    components_list = split(components, ceiling(seq_along(components)/2))
+    # For MDS, we need to create pairs of dimensions (x,y)
+    # If .dims is odd, we need to add one more to make pairs
+    if((length(components) %% 2) != 0 ) {
+      components = components |> append(components[length(components)])
+    }
+    # Ensure we only create exactly .dims dimensions
+    if (.dims == 2) {
+      components = c(1, 2)
+      components_list = list(c(1, 2))
+    } else {
+      components_list = split(components, ceiling(seq_along(components)/2))
+    }
     
     # Loop over components list and calculate MDS. (I have to make this process more elegant)
     mds_object =
-      components_list %>%
+      components_list |>
       map(
-        ~ .data %>%
+        ~ .data |>
           limma::plotMDS(dim.plot = .x, plot = FALSE, top = top)
       )
+    
+    # Check if mds_object is NULL or contains NULL elements
+    if (is.null(mds_object) || any(sapply(mds_object, is.null))) {
+      stop("MDS calculation failed - check your data dimensions")
+    }
     
     # Return
     list(
@@ -302,31 +346,56 @@ get_reduced_dimensions_MDS_bulk_SE <-
           mds_object, components_list,
           ~ {
             
-            # Change of function from Bioconductor 3_13 of plotMDS
-            my_rownames = .x %>% when(
-              "distance.matrix.squared" %in% names(.x) ~ .x$distance.matrix.squared,
-              ~ .x$distance.matrix
-            ) %>%
-              rownames()
+            # Use temporary variables for clarity
+            mds_result = .x
+            component_pair = .y
             
-            tibble(my_rownames, .x$x, .x$y) %>%
+            # Extract sample names from the MDS result
+            if ("distance.matrix.squared" %in% names(mds_result)) {
+              my_rownames = rownames(mds_result$distance.matrix.squared)
+            } else if ("distance.matrix" %in% names(mds_result)) {
+              my_rownames = rownames(mds_result$distance.matrix)
+            } else {
+              # Fallback: use names from x component
+              my_rownames = names(mds_result$x)
+            }
+            
+            tibble(my_rownames, mds_result$x, mds_result$y) |>
               rename(
                 sample := my_rownames,
-                !!as.symbol(.y[1]) := `.x$x`,
-                !!as.symbol(.y[2]) := `.x$y`
-              ) %>%
-              gather(Component, `Component value`,-sample)
+                !!as.symbol(component_pair[1]) := `mds_result$x`,
+                !!as.symbol(component_pair[2]) := `mds_result$y`
+              ) |> gather(Component, `Component value`,-sample)
             
           }
           
           
         )  %>%
-        distinct() %>%
-        pivot_wider(names_from = Component, values_from = `Component value`) %>%
-        setNames(c((.) %>% select(1) %>% colnames(),
-                   paste0("Dim", (.) %>% select(-1) %>% colnames())
-        )) %>%
-        select(-sample)
+        distinct() |>
+        pivot_wider(names_from = Component, values_from = `Component value`) |>
+        (\(.) {
+          if (is.null(.)) {
+            stop("MDS result is NULL - check data dimensions")
+          }
+          # Use temporary variables for clarity
+          result_df = .
+          col_names = colnames(result_df)
+          print(sprintf("MDS result_df colnames: %s", paste(col_names, collapse=", ")))
+          sample_col = col_names[1]
+          dim_cols = col_names[-1]
+          # Only keep the first .dims dimensions and ensure we have exactly .dims
+          if (length(dim_cols) > .dims) {
+            dim_cols = dim_cols[1:.dims]
+          }
+          new_names = paste0("Dim", 1:length(dim_cols))
+          # Ensure we only return exactly .dims dimensions
+          final_result = setNames(result_df[, c(sample_col, dim_cols)], c(sample_col, new_names))
+          # Double-check that we have the right number of columns
+          if (ncol(final_result) != .dims + 1) {
+            stop(sprintf("MDS result has wrong number of columns: expected %d, got %d", .dims + 1, ncol(final_result)))
+          }
+          final_result
+        })()
     )
     
     
@@ -398,10 +467,8 @@ we suggest to partition the dataset for sample clusters.
     
     
     prcomp_obj =
-      .data %>%
-      
-      t() %>%
-      
+      .data |>
+      t() |>
       # Calculate principal components
       prcomp(scale = scale, ...)
     
@@ -409,29 +476,24 @@ we suggest to partition the dataset for sample clusters.
     list(
       raw_result = prcomp_obj,
       result =
-        prcomp_obj %>%
-        
+        prcomp_obj |>
         # Anonymous function - Prints fraction of variance
         # input: PCA object
         # output: PCA object
-        {
+        (\(.) {
           message("Fraction of variance explained by the selected principal components")
-          
-          (.) %$% sdev %>% pow(2) %>% # Eigen value
-            divide_by(sum(.)) %>%
+          (.) %$% sdev |> pow(2) |> # Eigen value
+            unlist() |> divide_by(sum(unlist(.))) %>%
             `[` (components) %>%
             enframe() %>%
             select(-name) %>%
             rename(`Fraction of variance` = value) %>%
             mutate(PC = components) %>%
             capture.output() %>% paste0(collapse = "\n") %>% message()
-          
           (.)
-          
-        } %$%
-        
+        })() %$%
         # Parse the PCA results to a tibble
-        x %>%
+        x |>
         as_tibble(rownames = "sample") %>%
         select(sprintf("PC%s", components))
     )
@@ -482,11 +544,11 @@ get_reduced_dimensions_TSNE_bulk_SE <-
     # Evaluate ...
     arguments <- list(...)
     if (!"check_duplicates" %in% names(arguments))
-      arguments = arguments %>% c(check_duplicates = FALSE)
+      arguments = arguments |> c(check_duplicates = FALSE)
     if (!"verbose" %in% names(arguments))
-      arguments = arguments %>% c(verbose = TRUE)
+      arguments = arguments |> c(verbose = TRUE)
     if (!"dims" %in% names(arguments))
-      arguments = arguments %>% c(dims = .dims)
+      arguments = arguments |> c(dims = .dims)
     
     
     # Check if package is installed, otherwise install
@@ -495,9 +557,9 @@ get_reduced_dimensions_TSNE_bulk_SE <-
     
     # Set perprexity to not be too high
     if (!"perplexity" %in% names(arguments))
-      arguments = arguments %>% c(perplexity = ((
-        .data %>% ncol() %>% sum(-1)
-      ) / 3 / 2) %>% floor() %>% min(30))
+      arguments = arguments |> c(perplexity = ((
+        .data |> ncol() |> sum(-1)
+      ) / 3 / 2) |> floor() |> min(30))
     
     # If not enough samples stop
     if (arguments$perplexity <= 2)
@@ -510,12 +572,11 @@ get_reduced_dimensions_TSNE_bulk_SE <-
     list(
       raw_result = tsne_obj,
       result = tsne_obj %$%
-        Y %>%
-        as_tibble(.name_repair = "minimal") %>%
-        setNames(paste0("tSNE", seq_len(ncol(tsne_obj$Y)))) %>%
-        
+        Y |>
+        as_tibble(.name_repair = "minimal") |>
+        setNames(paste0("tSNE", seq_len(ncol(tsne_obj$Y)))) |>
         # add element name
-        dplyr::mutate(sample = !!.data %>% colnames) %>%
+        dplyr::mutate(sample = !!.data |> colnames()) |>
         select(-sample)
     )
     
@@ -564,9 +625,9 @@ get_reduced_dimensions_UMAP_bulk_SE <-
     # if (!"check_duplicates" %in% names(arguments))
     #   arguments = arguments %>% c(check_duplicates = FALSE)
     if (!"dims" %in% names(arguments))
-      arguments = arguments %>% c(n_components = .dims)
+      arguments = arguments |> c(n_components = .dims)
     if (!"init" %in% names(arguments))
-      arguments = arguments %>% c(init = "spca")
+      arguments = arguments |> c(init = "spca")
     
     
     # Check if package is installed, otherwise install
@@ -576,16 +637,13 @@ get_reduced_dimensions_UMAP_bulk_SE <-
     # Calculate based on PCA
     if(!is.null(calculate_for_pca_dimensions))
       df_UMAP =
-      .data %>%
-      
-      t() %>%
-      
+      .data |>
+      t() |>
       # Calculate principal components
       prcomp(scale = scale) %$%
-      
       # Parse the PCA results to a tibble
-      x %>%
-      .[,1:calculate_for_pca_dimensions]
+      x |>
+      (\(.) .[,1:calculate_for_pca_dimensions])()
     
     # Calculate based on all features
     else
@@ -595,12 +653,11 @@ get_reduced_dimensions_UMAP_bulk_SE <-
     
     list(
       raw_result = umap_obj,
-      result = umap_obj  %>%
-        as_tibble(.name_repair = "minimal") %>%
-        setNames(paste0("UMAP", seq_len(ncol(umap_obj)))) %>%
-        
+      result = umap_obj  |>
+        as_tibble(.name_repair = "minimal") |>
+        setNames(paste0("UMAP", seq_len(ncol(umap_obj)))) |>
         # add element name
-        dplyr::mutate(sample = !!.data %>% colnames) %>%
+        dplyr::mutate(sample = !!.data |> colnames()) |>
         select(-sample)
     )
     

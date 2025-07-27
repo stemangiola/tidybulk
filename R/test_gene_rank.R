@@ -4,9 +4,10 @@
 #'
 #' @description test_gene_rank() takes as input a `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a `tbl` with the GSEA statistics
 #'
-#' @importFrom rlang enquo
-#' @importFrom rlang quo_is_missing
+#' @importFrom rlang enquo quo_is_missing
 #' @importFrom magrittr not
+#' @importFrom dplyr filter arrange select mutate
+#' @importFrom SummarizedExperiment rowData
 #'
 #'
 #' @name test_gene_rank
@@ -72,6 +73,11 @@
 #' 	)
 #' }
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' Yu, G., Wang, L. G., Han, Y., & He, Q. Y. (2012). clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology, 16(5), 284-287. doi:10.1089/omi.2011.0118
+#'
 #' @docType methods
 #' @rdname test_gene_rank-methods
 #' @export
@@ -129,20 +135,20 @@ setGeneric("test_gene_rank", function(.data,
   
   
   # Check is correct species name
-  if(species %in% msigdbr::msigdbr_species()$species_name %>% not())
+  if(species %in% msigdbr::msigdbr_species()$species_name |> not())
     stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
   
-  .data %>%
-    pivot_transcript() %>%
-    arrange(desc(!!.arrange_desc)) %>%
-    select(!!.entrez, !!.arrange_desc) %>%
-    deframe() %>%
-    entrez_rank_to_gsea(species, gene_collections = gene_sets)%>%
+  .data |>
+    pivot_transcript() |>
+    arrange(desc(!!.arrange_desc)) |>
+    select(!!.entrez, !!.arrange_desc) |>
+    deframe() |>
+    entrez_rank_to_gsea(species, gene_collections = gene_sets) |>
     
     # Add methods used. It is here and not in functions because I need the original .data
-    memorise_methods_used(c("clusterProfiler", "enrichplot"), object_containing_methods = .data) %>%
-    when(
-      gene_sets %>% is("character") ~ (.) %>% memorise_methods_used("msigdbr"),
+    memorise_methods_used(c("clusterProfiler", "enrichplot"), object_containing_methods = .data) |>
+          when(
+        gene_sets |> is("character") ~ (.) |> memorise_methods_used("msigdbr"),
       ~ (.)
     )
   
@@ -197,9 +203,9 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
   if(is.null(gene_collections ) )
     my_gene_collection = msigdbr::msigdbr(species = species)
   else if(gene_collections |> is("character"))
-    my_gene_collection = msigdbr::msigdbr(species = species) %>%  filter( tolower(gs_collection) %in% tolower(gene_collections) )
+    my_gene_collection = msigdbr::msigdbr(species = species) |>  filter( tolower(gs_collection) %in% tolower(gene_collections) )
   else if(gene_collections |> is("list"))
-    my_gene_collection = tibble(gs_name=names(.), ncbi_gene = . ) %>% unnest(ncbi_gene) %>% mutate(gs_collection = "user_defined")
+            my_gene_collection = tibble(gs_name=names(.), ncbi_gene = . ) |> unnest(ncbi_gene) |> mutate(gs_collection = "user_defined")
  else
    stop("tidybulk says: the gene sets should be either a character vector or a named list")
 
@@ -214,7 +220,7 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 					 		data,
 					 		~ 	clusterProfiler::GSEA(
 					 				my_entrez_rank,
-					 				TERM2GENE=.x %>% select(gs_name, ncbi_gene),
+					 				              TERM2GENE=.x |> select(gs_name, ncbi_gene),
 					 				pvalueCutoff = 1
 					 		)
 

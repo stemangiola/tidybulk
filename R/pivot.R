@@ -24,6 +24,8 @@
 #'
 #' 	pivot_transcript(tidybulk::se_mini 	)
 #'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 #'
 #' @docType methods
 #' @rdname pivot_transcript-methods
@@ -75,13 +77,13 @@ setGeneric("pivot_sample", function(.data
 # Set internal
 .pivot_sample = 		function(.data)	{
   
-  colData(.data) %>%
+  colData(.data) |>
     
     # If reserved column names are present add .x
     setNames(
-      colnames(.) %>%
+      colnames(colData(.data)) |>
         str_replace("^sample$", "sample.x")
-    ) %>%
+    ) |>
     
     # Convert to tibble
     tibble::as_tibble(rownames=sample__$name)
@@ -107,6 +109,9 @@ setMethod("pivot_sample",
 #' @rdname pivot_sample-methods
 #'
 #' @importFrom stringr str_replace
+#' @importFrom rlang enquo quo_name
+#' @importFrom dplyr select left_join
+#' @importFrom SummarizedExperiment colData rowData
 #'
 #'
 #' @return A consistent object (to the input)
@@ -124,24 +129,24 @@ setMethod("pivot_sample",
   . = NULL
   
   range_info <-
-    get_special_datasets(.data) %>%
+    get_special_datasets(.data) |>
     reduce(left_join, by=feature__$name)
   
   gene_info <-
-    rowData(.data) %>%
+    rowData(.data) |>
     
     # If reserved column names are present add .x
     setNames(
-      colnames(.) %>%
+      colnames(.) |>
         str_replace("^feature$", "feature.x")
-    ) %>%
+    ) |>
     
     # Convert to tibble
     tibble::as_tibble(rownames=feature__$name)
   
-  gene_info %>%
+  gene_info |>
     when(
-      nrow(range_info) > 0 ~ (.) %>% left_join(range_info, by=feature__$name),
+      nrow(range_info) > 0 ~ (.) |> left_join(range_info, by=feature__$name),
       ~ (.)
     )
 }
