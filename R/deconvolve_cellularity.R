@@ -126,7 +126,7 @@ setGeneric("deconvolve_cellularity", function(.data,
   # 	  # Change row names
   # 	  if (quo_is_symbolic(.transcript)) {
   #   	    .x = (.)
-  #   	    rownames(.x) = .data %>% pivot_transcript() %>% pull(!!.transcript)
+  #   	    rownames(.x) = .data |> pivot_transcript() |> pull(!!.transcript)
   #   	    .x
   #   	  } else {
   #   	    (.)

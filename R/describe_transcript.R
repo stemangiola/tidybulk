@@ -59,7 +59,7 @@ setGeneric("describe_transcript", function(.data )
   
   # Transcript rownames by default
   my_transcripts = rownames(.data)
-  # .transcript %>%
+  # .transcript |> 
   # when(
   # 	quo_is_null(.) ~ rownames(.data),
   # 	~ rowData(.data)[,quo_name(.transcript)]
@@ -69,7 +69,7 @@ setGeneric("describe_transcript", function(.data )
     # Human
     tryCatch(suppressMessages(AnnotationDbi::mapIds(
       org.Hs.eg.db::org.Hs.eg.db,
-      keys = my_transcripts,  #ensembl_symbol_mapping$transcript %>% unique,
+      keys = my_transcripts,  #ensembl_symbol_mapping$transcript |> unique,
       column = "GENENAME",
       keytype = "SYMBOL",
       multiVals = "first"
@@ -80,7 +80,7 @@ setGeneric("describe_transcript", function(.data )
     c(
       tryCatch(suppressMessages(AnnotationDbi::mapIds(
         org.Mm.eg.db::org.Mm.eg.db,
-        keys = my_transcripts,  #ensembl_symbol_mapping$transcript %>% unique,
+        keys = my_transcripts,  #ensembl_symbol_mapping$transcript |> unique,
         column = "GENENAME",
         keytype = "SYMBOL",
         multiVals = "first"

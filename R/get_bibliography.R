@@ -5,7 +5,6 @@
 #' @description get_bibliography() takes as input a `tidybulk`
 #'
 #' @importFrom rlang enquo
-#' @importFrom magrittr %>%
 #'
 #'
 #' @name get_bibliography
