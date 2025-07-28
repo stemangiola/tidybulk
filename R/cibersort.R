@@ -176,7 +176,7 @@ doPerm <- function(perm, X, Y, cores = 3){
 }
 
 # MADE BY STEFANO TO ALLOW PARALLELISM
-call_core = function(itor, Y, X, P, pval, CoreAlg){
+call_core = function(itor, Y, X, P, pval, CoreAlg, cores = 1){
   ##################################
   ## Analyze the first mixed sample
   ##################################
@@ -187,7 +187,7 @@ call_core = function(itor, Y, X, P, pval, CoreAlg){
   y <- (y - mean(y)) / sd(y)
 
   #run SVR core algorithm
-  result <- CoreAlg(X, y, cores = 1)
+  result <- CoreAlg(X, y, cores = cores)
 
   #get results
   w <- result$w
@@ -294,7 +294,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = parallel::detectCores(),
       ##################################
 
 
-      out <- call_core(itor, Y, X, P, pval, CoreAlg)
+      out <- call_core(itor, Y, X, P, pval, CoreAlg, cores)
       if(itor == 1) {output <- out}
       else {output <- rbind(output, out)}
       itor <- itor + 1
@@ -305,7 +305,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = parallel::detectCores(),
 
   # If Linux of Mac
   else {
-    output <- parallel::mclapply(1:mix, call_core, Y, X, P, pval, CoreAlg, mc.cores=cores)
+    output <- parallel::mclapply(1:mix, call_core, Y, X, P, pval, CoreAlg, cores, mc.cores=cores)
     output= matrix(unlist(output), nrow=length(output), byrow=TRUE)
 
   }
