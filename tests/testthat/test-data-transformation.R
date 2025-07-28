@@ -53,8 +53,8 @@ test_that("pivot_transcript works correctly and preserves expected columns", {
   expect_true(inherits(result, "tbl_df"))
   
   # Check that all original rowData columns are preserved (plus .feature)
-  # The entrez column becomes "NA." in the output
-  expected_cols <- c(".feature", "NA.")
+  # The entrez column is preserved as "entrez" in the output
+  expected_cols <- c(".feature", "entrez")
   expect_equal(sort(names(result)), sort(expected_cols))
   
   # Check that the number of rows matches the number of features/transcripts
@@ -64,7 +64,7 @@ test_that("pivot_transcript works correctly and preserves expected columns", {
   expect_equal(result$.feature, rownames(original_rowData))
   
   # Check specific expected columns based on the test data
-  expect_true("NA." %in% names(result))  # This is the entrez column
+  expect_true("entrez" %in% names(result))  # This is the entrez column
   expect_true(".feature" %in% names(result))
   
   # Check that the result has the expected number of columns (1 + 1 for .feature)
@@ -100,13 +100,13 @@ test_that("pivot_transcript handles additional rowData columns correctly", {
   result <- se_modified |> pivot_transcript()
   
   # Check that all original columns plus new ones are preserved
-  # The entrez column becomes "NA." and additional columns get numbered suffixes
-  expected_cols <- c(".feature", "NA.", "NA..1", "NA..2")
+  # The entrez column is preserved as "entrez" and additional columns are preserved
+  expected_cols <- c(".feature", "entrez", "extra_column", "numeric_column")
   expect_equal(sort(names(result)), sort(expected_cols))
   
-  # Check that new columns have correct values (they get renamed with suffixes)
-  expect_equal(result$`NA..1`, rep("test", nrow(result)))
-  expect_equal(result$`NA..2`, 1:nrow(result))
+  # Check that new columns have correct values
+  expect_equal(result$extra_column, rep("test", nrow(result)))
+  expect_equal(result$numeric_column, 1:nrow(result))
 })
 
 test_that("pivot_sample preserves data types correctly", {
@@ -132,7 +132,7 @@ test_that("pivot_transcript preserves data types correctly", {
   result <- se_mini |> pivot_transcript()
   
   # Check that character columns remain character
-  expect_true(is.character(result$NA.))  # This is the entrez column
+  expect_true(is.character(result$entrez))  # This is the entrez column
   expect_true(is.character(result$.feature))
 })
 

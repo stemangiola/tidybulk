@@ -158,7 +158,7 @@ norm_counts.table <- cpm(dgList)
 <div style="clear:both;"></div>
 
 ```{r, include=FALSE}
-se_mini.norm |> select(`count`, count_scaled, .abundant, everything())
+se_mini.norm |> select(`counts`, counts_scaled, .abundant, everything())
 ```
 
 We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.
@@ -166,7 +166,7 @@ We can easily plot the scaled density to check the scaling outcome. On the x axi
 
 ```{r plot_normalise, fig.width = 10, fig.height = 10}
 se_mini.norm |>
-	ggplot(aes(count_scaled + 1, group=.sample, color=`Cell.type`)) +
+	ggplot(aes(counts_scaled + 1, group=.sample, color=`Cell.type`)) +
 	geom_density() +
 	scale_x_log10() +
 	my_theme
@@ -219,7 +219,7 @@ TidyTranscriptomics
 ```{r mds}
 se_mini.norm.MDS =
   se_mini.norm |>
-  reduce_dimensions(method="MDS", .dims = 3)
+  reduce_dimensions(method="MDS", .dims = 2)
 
 ```
 </div>
@@ -262,7 +262,7 @@ TidyTranscriptomics
 ```{r pca, message=FALSE, warning=FALSE, results='hide'}
 se_mini.norm.PCA =
   se_mini.norm |>
-  reduce_dimensions(method="PCA", .dims = 3)
+  reduce_dimensions(method="PCA", .dims = 2)
 ```
 </div>
 <div class="column-right">
@@ -345,7 +345,7 @@ TidyTranscriptomics
 ```{r rotate}
 se_mini.norm.MDS.rotated =
   se_mini.norm.MDS |>
-	rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45, action="get")
+	rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45)
 ```
 </div>
 <div class="column-right">
@@ -527,4 +527,66 @@ se_mini.cibersort |>
 
 ```
 
-## Cluster `
+## Cluster samples
+
+We may want to cluster our samples based on the transcriptomic profiles. `cluster_elements` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with additional columns for the cluster labels.
+
+<div class="column-left">
+TidyTranscriptomics
+```{r cluster}
+se_mini.norm.cluster =
+	se_mini.norm |>
+	cluster_elements(method="kmeans", centers = 2)
+```
+</div>
+<div class="column-right">
+Standard procedure (comparative purpose)
+```{r, eval=FALSE}
+library(stats)
+
+count_m_log = log(count_m + 1)
+count_m_log_centered = count_m_log - rowMeans(count_m_log)
+
+kmeans_result = kmeans(t(count_m_log_centered), centers = 2)
+
+cluster_labels = kmeans_result$cluster
+```
+</div>
+<div style="clear:both;"></div>
+
+## Test differential abundance
+
+We may want to test for differential abundance between conditions. `test_differential_abundance` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and a formula representing the desired linear model, and returns a tibble with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+
+<div class="column-left">
+TidyTranscriptomics
+```{r differential}
+se_mini.norm.de =
+	se_mini.norm |>
+	test_differential_abundance(~ condition, method="edgeR_quasi_likelihood")
+```
+</div>
+<div class="column-right">
+Standard procedure (comparative purpose)
+```{r, eval=FALSE}
+library(edgeR)
+
+count_m_log = log(count_m + 1)
+
+design = model.matrix(~ condition, data = annotation)
+
+dge = DGEList(counts = count_m)
+dge = calcNormFactors(dge)
+dge = estimateDisp(dge, design)
+
+fit = glmQLFit(dge, design)
+qlf = glmQLFTest(fit, coef=2)
+
+results = topTags(qlf, n = Inf)
+```
+</div>
+<div style="clear:both;"></div>
+
+## Conclusion
+
+Tidybulk provides a unified interface for comprehensive transcriptomic data analysis with seamless integration of SummarizedExperiment objects and tidyverse principles. It streamlines the entire workflow from raw data to biological insights while maintaining compatibility with standard Bioconductor practices.

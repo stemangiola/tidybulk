@@ -529,7 +529,7 @@ test_that("Only reduced dimensions MDS - no object",{
     3
   )
   
-  expect_equal(	class(attr(res, "internals")$MDS[[1]])[1], 	"MDS"  )
+  expect_equal(	class(S4Vectors::metadata(res)$tidybulk$MDS[[1]])[1], 	"MDS"  )
   
 })
 
@@ -553,7 +553,7 @@ test_that("Only reduced dimensions PCA - no object",{
     3
   )
   
-  expect_equal(	class(attr(res, "internals")$PCA[[1]])[1], 	"numeric"  )
+  expect_equal(	class(S4Vectors::metadata(res)$tidybulk$PCA[[1]])[1], 	"numeric"  )
   
 })
 
@@ -577,7 +577,7 @@ test_that("Only reduced dimensions tSNE - no object",{
     3
   )
   
-  expect_equal(	class(attr(res, "internals")$tSNE[[1]])[1], 	"integer"  )
+  expect_equal(	class(S4Vectors::metadata(res)$tidybulk$tSNE[[1]])[1], 	"integer"  )
   
 })
 
@@ -601,7 +601,7 @@ test_that("Only reduced dimensions UMAP - no object",{
     3
   )
   
-  expect_equal(	class(attr(res, "internals")$UMAP[[1]])[1], 	"numeric"  )
+  expect_equal(	class(S4Vectors::metadata(res)$tidybulk$UMAP[[1]])[1], 	"numeric"  )
   
 })
 

@@ -573,7 +573,7 @@ Plot the biological coefficient of variation (BCV) trend. This plot is helpful t
 ```{r differential-expression-edgeR-object}
 library(edgeR)
 
-attr(se_mini, "internals")$edgeR_quasi_likelihood_object |>
+metadata(se_mini)$tidybulk$edgeR_quasi_likelihood_object |>
   plotBCV()
 
 ```
@@ -583,7 +583,7 @@ Plot the log-fold change vs mean plot.
 ```{r differential-expression-edgeR-fit}
 library(edgeR)
 
-attr(se_mini, "internals")$edgeR_quasi_likelihood_fit |>
+metadata(se_mini)$tidybulk$edgeR_quasi_likelihood_fit |>
   plotMD()
 
 ```
@@ -595,7 +595,7 @@ Plot the mean-variance trend.
 ```{r differential-expression-DESeq2-object}
 library(DESeq2)
 
-attr(se_mini, "internals")$DESeq2_object |>
+metadata(se_mini)$tidybulk$DESeq2_object |>
   plotDispEsts()
 
 ```
@@ -605,7 +605,7 @@ Plot the log-fold change vs mean plot.
 ```{r differential-expression-DESeq2-fit}
 library(DESeq2)
 
-attr(se_mini, "internals")$DESeq2_object |>
+metadata(se_mini)$tidybulk$DESeq2_object |>
   plotMA()
 
 ```
@@ -826,6 +826,7 @@ se_mini = se_mini |>
   test_differential_expression(
     ~ condition + (1|Cell.type), 
     method = "glmmseq_lme4", 
+    cores = 1,
 	prefix = "glmmseq__"
   ) 
 
@@ -925,19 +926,19 @@ se_mini =
 
 se_mini |> 
 # Example using LLSR
-deconvolve_cellularity(method = "llsr", prefix = "llsr__") |> 
+deconvolve_cellularity(method = "llsr", cores = 1, prefix = "llsr__") |> 
 
 # Example using EPIC
-deconvolve_cellularity(method = "epic", prefix = "epic__") |> 
+deconvolve_cellularity(method = "epic", cores = 1, prefix = "epic__") |> 
 
 # Example using MCP-counter
-deconvolve_cellularity(method = "mcp_counter", prefix = "mcp__") |> 
+deconvolve_cellularity(method = "mcp_counter", cores = 1, prefix = "mcp__") |> 
 
 # Example using quanTIseq
-deconvolve_cellularity(method = "quantiseq", prefix = "quantiseq__") |> 
+deconvolve_cellularity(method = "quantiseq", cores = 1, prefix = "quantiseq__") |> 
 
 # Example using xCell
-deconvolve_cellularity(method = "xcell", prefix = "xcell__")
+deconvolve_cellularity(method = "xcell", cores = 1, prefix = "xcell__")
 ```
 
 ### Plotting Results
@@ -1024,7 +1025,7 @@ se_mini	 |>
 
 Gene Set Enrichment Analysis (GSEA) [@subramanian2005gsea] is used for gene set enrichment.
 
-```{r enrichment-gene-rank-analysis}
+```{r enrichment-gene-rank-analysis, eval=FALSE}
 # Run gene rank enrichment (GSEA style)
 gene_rank_res =
   se_mini |>
@@ -1041,7 +1042,7 @@ gene_rank_res =
   )
 ```
 
-```{r enrichment-inspect-significant-genesets}
+```{r enrichment-inspect-significant-genesets, eval=FALSE}
 # Inspect significant gene sets (example for C2 collection)
 gene_rank_res |>
   filter(gs_collection == "C2") |>
@@ -1050,8 +1051,8 @@ gene_rank_res |>
   filter(p.adjust < 0.05)
 ```
 
-# Visualize enrichment 
-```{r enrichment-visualize-gsea-plots}
+#### Visualize enrichment 
+```{r enrichment-visualize-gsea-plots, eval=FALSE}
   library(enrichplot)
   library(patchwork)
   gene_rank_res |>
@@ -1071,7 +1072,7 @@ gene_rank_res |>
 
 Gene Ontology overrepresentation analysis [@ashburner2000go] is used for functional enrichment. 
 
-```{r enrichment-gene-overrepresentation}
+```{r enrichment-gene-overrepresentation, eval=FALSE}
 # Test gene overrepresentation
 se_mini_overrep = 
   se_mini |>
@@ -1094,7 +1095,7 @@ se_mini_overrep =
 
 EGSEA [@alhamdoosh2017egsea] is used for ensemble gene set enrichment analysis. EGSEA is a method that combines multiple gene set enrichment analysis methods to provide a more robust and comprehensive analysis of gene set enrichment. It creates a web-based interactive tool that allows you to explore the results of the gene set enrichment analysis.
 
-```{r enrichment-egsea-analysis}
+```{r enrichment-egsea-analysis, eval=FALSE}
 library(EGSEA)
 # Test gene enrichment
   se_mini |> 
@@ -1107,7 +1108,9 @@ library(EGSEA)
     .formula = ~condition,
     .entrez = entrez,
     species = "human", 
-    gene_sets = "h"
+    gene_sets = "h",
+    methods = c("roast"),  # Use a more robust method
+    cores = 1
   )
 
 ```
