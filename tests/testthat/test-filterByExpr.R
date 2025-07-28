@@ -1,4 +1,3 @@
-context('filterByExpr internal function')
 
 library(SummarizedExperiment)
 
@@ -6,8 +5,7 @@ library(SummarizedExperiment)
 test_that("filterByExpr filters by min.count and CPM.Cutoff (minimum_count_per_million)", {
   se = tidybulk::se
   mat = assay(se)
-  print("Matrix used for matrix-based test:")
-  print(mat)
+# Removed unnecessary print statements
 
   # Test default min.count filtering on SummarizedExperiment
   keep_default_se <- tidybulk:::filterByExpr_SE(se, min.count = 10)
