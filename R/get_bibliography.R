@@ -12,7 +12,7 @@
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 #'
-#' @details This methods returns the bibliography list of your workflow from the internals of a tidybulk object (attr(., "internals"))
+#' @details This methods returns the bibliography list of your workflow from the metadata of a tidybulk object (metadata(.)$tidybulk$methods_used) or from the internals for backward compatibility (attr(., "internals"))
 #'
 #'
 #' @examples
@@ -45,14 +45,23 @@ setGeneric("get_bibliography", function(.data)
   my_methods =
     .data |>
     (function(data_obj) {
-      has_internals <- "internals" %in% (attributes(data_obj) |> names())
-      has_methods_used <- has_internals && "methods_used" %in% (attr(data_obj, "internals") |> names())
-      
-      if (has_methods_used) {
-        temp <- attr(data_obj, "internals")
-        temp[["methods_used"]]
+      if (is(data_obj, "SummarizedExperiment")) {
+        current_metadata <- metadata(data_obj)
+        if ("tidybulk" %in% names(current_metadata) && "methods_used" %in% names(current_metadata$tidybulk)) {
+          current_metadata$tidybulk$methods_used
+        } else {
+          ""
+        }
       } else {
-        ""
+        has_internals <- "internals" %in% (attributes(data_obj) |> names())
+        has_methods_used <- has_internals && "methods_used" %in% (attr(data_obj, "internals") |> names())
+        
+        if (has_methods_used) {
+          temp <- attr(data_obj, "internals")
+          temp[["methods_used"]]
+        } else {
+          ""
+        }
       }
     })()
   

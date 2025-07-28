@@ -371,17 +371,17 @@ such as batch effects (if applicable) in the formula.
     data_obj_intermediate <- memorise_methods_used(data_obj_intermediate, "treat")
   }
 
-    data_obj_intermediate <- attach_to_internals(data_obj_intermediate, my_differential_abundance$result_raw, paste0(method, "_fit"))
-    data_obj_intermediate <- attach_to_internals(data_obj_intermediate, my_differential_abundance$de_object, paste0(method, "_object"))
+    data_obj_intermediate <- attach_to_metadata(data_obj_intermediate, my_differential_abundance$result_raw, paste0(method, "_fit"))
+    data_obj_intermediate <- attach_to_metadata(data_obj_intermediate, my_differential_abundance$de_object, paste0(method, "_object"))
    
     rlang::inform(
-      sprintf("tidybulk says: to access the DE object do `attr(..., \"internals\")$%s_object`", method),
+      sprintf("tidybulk says: to access the DE object do `metadata(.)$tidybulk$%s_object`", method),
       .frequency_id = sprintf("Access DE results %s", method),
       .frequency = "always"
     )
 
         rlang::inform(
-      sprintf("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$%s_fit`", method),
+      sprintf("tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$%s_fit`", method),
       .frequency_id = sprintf("Access DE results %s", method),
       .frequency = "always"
     )
@@ -1171,7 +1171,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(
     mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |>
     
     # Attach attributes
-    reattach_internals(.data) |>
+    reattach_metadata(.data) |>
     
     # select method
     memorise_methods_used("glmmSeq") %>%

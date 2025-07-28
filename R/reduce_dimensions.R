@@ -233,12 +233,12 @@ standardGeneric("reduce_dimensions"))
     # Attach edgeR for keep variable filtering
     memorise_methods_used(c("edger")) |>
     # Add raw object
-    attach_to_internals(reduced_dimensions$raw_result, method) |>
+    attach_to_metadata(reduced_dimensions$raw_result, method) |>
     
     # Communicate the attribute added
     (\(.) {
       
-      rlang::inform(sprintf("tidybulk says: to access the raw results do `attr(..., \"internals\")$%s`", method), .frequency_id = sprintf("Access %s results", method),  .frequency = "always")
+      rlang::inform(sprintf("tidybulk says: to access the raw results do `metadata(.)$tidybulk$%s`", method), .frequency_id = sprintf("Access %s results", method),  .frequency = "always")
       
       (.)
     })()

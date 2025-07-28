@@ -141,8 +141,8 @@ setGeneric("impute_missing_abundance", function(.data,
   
   .data |>
     
-    # Reattach internals
-    reattach_internals(.data)
+    # Reattach metadata
+    reattach_metadata(.data)
   
 }
 

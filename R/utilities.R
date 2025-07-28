@@ -178,10 +178,102 @@ add_tt_columns = function(.data,
   if (.abundance_adjusted %>% quo_is_symbol) {
     tt_list <- c(tt_list, list(.abundance_adjusted = .abundance_adjusted))
   }
-  .data %>% attach_to_internals(tt_list, "tt_columns")
+  .data %>% attach_to_metadata(tt_list, "tt_columns")
 
 }
 
+initialise_tt_metadata = function(.data){
+  if (is(.data, "SummarizedExperiment")) {
+    current_metadata <- metadata(.data)
+    if (!("tidybulk" %in% names(current_metadata))) {
+      current_metadata$tidybulk <- list()
+      metadata(.data) <- current_metadata
+    }
+  } else {
+    if ("internals" %in% (attributes(.data) %>% names) %>% not()) {
+      .data <- add_attr(.data, list(), "internals")
+    }
+  }
+  .data
+}
+
+reattach_metadata = function(.data, .data_metadata_from = NULL){
+  if(.data_metadata_from %>% is.null)
+    .data_metadata_from = .data
+
+  if (is(.data, "SummarizedExperiment")) {
+    current_metadata <- metadata(.data)
+    source_metadata <- metadata(.data_metadata_from)
+    if ("tidybulk" %in% names(source_metadata)) {
+      current_metadata$tidybulk <- source_metadata$tidybulk
+      metadata(.data) <- current_metadata
+    }
+  } else {
+    .data %>% add_attr(.data_metadata_from %>% attr("internals"), "internals")
+  }
+  .data
+}
+
+attach_to_metadata = function(.data, .object, .name){
+
+  if (is(.data, "SummarizedExperiment")) {
+    current_metadata <- metadata(.data)
+    if (!("tidybulk" %in% names(current_metadata))) {
+      current_metadata$tidybulk <- list()
+    }
+    current_metadata$tidybulk[[.name]] <- .object
+    metadata(.data) <- current_metadata
+  } else {
+    internals =
+      .data %>%
+      initialise_tt_internals() %>%
+      attr("internals")
+
+    # Add tt_columns
+    internals[[.name]] = .object
+
+    .data %>% add_attr(internals, "internals")
+  }
+  .data
+}
+
+drop_metadata = function(.data){
+
+  if (is(.data, "SummarizedExperiment")) {
+    current_metadata <- metadata(.data)
+    if ("tidybulk" %in% names(current_metadata)) {
+      current_metadata$tidybulk <- NULL
+      metadata(.data) <- current_metadata
+    }
+  } else {
+    .data %>% drop_attr("internals")
+  }
+  .data
+}
+
+memorise_methods_used = function(.data, .method, object_containing_methods = .data){
+  # object_containing_methods is used in case for example of test gene rank where the output is a tibble that has lost its attributes
+
+  if (is(object_containing_methods, "SummarizedExperiment")) {
+    current_metadata <- metadata(object_containing_methods)
+    methods_used <- if ("tidybulk" %in% names(current_metadata) && "methods_used" %in% names(current_metadata$tidybulk)) {
+      current_metadata$tidybulk$methods_used
+    } else {
+      character(0)
+    }
+    methods_used <- c(methods_used, .method) %>% unique()
+    .data %>% attach_to_metadata(methods_used, "methods_used")
+  } else {
+    internals <- object_containing_methods %>% attr("internals")
+    .data %>%
+      attach_to_metadata(
+        internals[["methods_used"]] %>% c(.method) %>% unique(),
+        "methods_used"
+      )
+  }
+}
+
+# Keep the old functions for backward compatibility
 initialise_tt_internals = function(.data){
   if ("internals" %in% (attributes(.data) %>% names) %>% not()) {
     .data <- add_attr(.data, list(), "internals")
@@ -203,7 +295,7 @@ attach_to_internals = function(.data, .object, .name){
     initialise_tt_internals() %>%
     attr("internals")
 
-  # Add tt_bolumns
+  # Add tt_columns
   internals[[.name]] = .object
 
   .data %>% add_attr(internals, "internals")
@@ -212,17 +304,6 @@ attach_to_internals = function(.data, .object, .name){
 drop_internals = function(.data){
 
   .data %>% drop_attr("internals")
-}
-
-memorise_methods_used = function(.data, .method, object_containing_methods = .data){
-  # object_containing_methods is used in case for example of test gene rank where the output is a tibble that has lost its attributes
-
-  internals <- object_containing_methods %>% attr("internals")
-  .data %>%
-    attach_to_internals(
-      internals[["methods_used"]] %>% c(.method) %>% unique(),
-      "methods_used"
-    )
 }
 
 #' Add attribute to abject

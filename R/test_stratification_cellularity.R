@@ -126,7 +126,7 @@ setGeneric("test_stratification_cellularity", function(.data,
                                                         method,
                                                         .my_formula) %>%
         # Attach attributes
-        reattach_internals(deconvoluted) %>%
+        reattach_metadata(deconvoluted) %>%
         memorise_methods_used("test_stratification_cellularity")
     })()
   

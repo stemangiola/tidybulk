@@ -29,7 +29,7 @@ get_bibliography() takes as input a `tidybulk`
 \details{
 `r lifecycle::badge("maturing")`
 
-This methods returns the bibliography list of your workflow from the internals of a tidybulk object (attr(., "internals"))
+This methods returns the bibliography list of your workflow from the metadata of a tidybulk object (metadata(.)$tidybulk$methods_used) or from the internals for backward compatibility (attr(., "internals"))
 }
 \examples{
 
