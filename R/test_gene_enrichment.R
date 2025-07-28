@@ -164,15 +164,20 @@ standardGeneric("test_gene_enrichment"))
   .entrez = enquo(.entrez)
   
   # Check that there are no entrez missing
-  .data =
-    .data |>
-    when(
-      filter(., !!.entrez |> is.na()) |> nrow() |> gt(0) ~ {
-        warning("tidybulk says: There are NA entrez IDs. Those genes will be filtered")
-        filter(., !!.entrez |> is.na() |> not())
-      },
-      ~ (.)
-    )
+  entrez_col_name <- quo_name(.entrez)
+  if (entrez_col_name %in% colnames(rowData(.data))) {
+    entrez_values <- rowData(.data)[, entrez_col_name]
+    has_na_entrez <- any(is.na(entrez_values))
+    
+    if (has_na_entrez) {
+      warning("tidybulk says: There are NA entrez IDs. Those genes will be filtered")
+      # Filter out NAs using row indexing instead of dplyr filter
+      na_rows <- is.na(entrez_values)
+      .data <- .data[!na_rows, ]
+    }
+  } else {
+    stop("tidybulk says: the .entrez parameter appears to not be set")
+  }
   
   # Check if duplicated entrez
   if(rowData(.data)[,quo_name(.entrez)] |> duplicated() |> any())
@@ -207,12 +212,11 @@ standardGeneric("test_gene_enrichment"))
     )
   )
   
-  my_contrasts =
-    contrasts |>
-    when(
-      length(.) > 0 ~ limma::makeContrasts(contrasts = ., levels = design),
-      ~ NULL
-    )
+  if (length(contrasts) > 0) {
+    my_contrasts <- limma::makeContrasts(contrasts = contrasts, levels = design)
+  } else {
+    my_contrasts <- NULL
+  }
   
   # Check if package is installed, otherwise install
   check_and_install_packages("EGSEA")
@@ -221,36 +225,31 @@ standardGeneric("test_gene_enrichment"))
     stop("EGSEA package not loaded. Please run library(\"EGSEA\"). With this setup, EGSEA require manual loading, for technical reasons.")
   }
   
-  dge =
-    .data |>
+  # Extract assay data
+  assay_data <- .data |>
     assays() |>
     as.list() |>
-    (\(.) .[[1]])() |>
-    as.matrix() |>
-    
-    # Change rownames to entrez
-    when(
-      quo_is_null(.entrez) %>% `!` ~ {
-        x = (.)
-        rownames(x) =
-          .my_data %>%
-          pivot_transcript() %>%
-          pull(!!.entrez)
-        x
-      },
-      ~ (.)
-    ) %>%
-    
-    # Filter missing entrez
-    .[rownames(.) |> is.na() |> not(), ] |>
-    
-    # # Make sure transcript names are adjacent
-    # arrange(!!.entrez) %>%
-    
-    # select(!!.sample, !!.entrez, !!.abundance) %>%
-    # spread(!!.sample,!!.abundance) %>%
-    # as_matrix(rownames = !!.entrez) %>%
-    edgeR::DGEList(counts = .)
+    _[[1]] |>
+    as.matrix()
+  
+  # Change rownames to entrez
+  if (!quo_is_null(.entrez)) {
+    rownames(assay_data) <-
+      .my_data %>%
+      pivot_transcript() %>%
+      pull(!!.entrez)
+  }
+  
+  # Filter missing entrez
+  valid_rows <- !is.na(rownames(assay_data))
+  assay_data <- assay_data[valid_rows, , drop = FALSE]
+  
+  # Check if we have data
+  if (nrow(assay_data) == 0) {
+    stop("tidybulk says: No data remaining after filtering")
+  }
+  
+  dge = edgeR::DGEList(counts = assay_data)
   
   # Add gene ids for Interpret Results tables in report
   dge$genes = rownames(dge$counts)
@@ -335,9 +334,25 @@ standardGeneric("test_gene_enrichment"))
       ) |>
       arrange(sort_column) |>
       
-      # Add webpage
-      mutate(web_page = sprintf(gsea_web_page, pathway)) |>
-      select(data_base, pathway, web_page, sort_column, everything())
+      # Add webpage - check if pathway column exists and create web_page
+      (function(data) {
+        if ("pathway" %in% names(data) && nrow(data) > 0) {
+          mutate(data, web_page = sprintf(gsea_web_page, pathway))
+        } else {
+          data
+        }
+      })() |>
+      # Select columns that exist
+      (function(data) {
+        available_cols <- names(data)
+        select_cols <- c("data_base", "pathway", "web_page", sort_column)
+        existing_cols <- select_cols[select_cols %in% available_cols]
+        if (length(existing_cols) > 0) {
+          select(data, all_of(existing_cols), everything())
+        } else {
+          data
+        }
+      })()
   }
   
   if (length(kegg_genesets) != 0) {
@@ -368,7 +383,17 @@ standardGeneric("test_gene_enrichment"))
           mutate(data_base = .y)
       ) |>
       arrange(sort_column) |>
-      select(data_base, pathway, everything())
+      # Select columns that exist
+      (function(data) {
+        available_cols <- names(data)
+        select_cols <- c("data_base", "pathway", sort_column)
+        existing_cols <- select_cols[select_cols %in% available_cols]
+        if (length(existing_cols) > 0) {
+          select(data, all_of(existing_cols), everything())
+        } else {
+          data
+        }
+      })()
     
   }
   

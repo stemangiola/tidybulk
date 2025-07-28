@@ -209,7 +209,7 @@ colData(se_mini)$condition = as.factor(colData(se_mini)$condition)
 Visualize the distribution of raw counts before any filtering:
 
 ```{r plot-raw-counts, fig.width = 10, fig.height = 10}
-ggplot(as_tibble(se_mini), aes(count + 1, group = .sample, color = `Cell.type`)) +
+ggplot(as_tibble(se_mini), aes(counts + 1, group = .sample, color = `Cell.type`)) +
   geom_density() +
   scale_x_log10() +
   my_theme +
@@ -256,31 +256,31 @@ se_abundant_cpm = se_mini |> keep_abundant(minimum_counts = 10, minimum_proporti
 # Before filtering
 se_mini |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 
 # After filtering
 se_abundant_default |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 
 se_abundant_formula |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 
 se_abundant_cpm |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 ```
 
@@ -288,16 +288,16 @@ se_abundant_cpm |> as_tibble() |> summarise(
 # Merge all methods into a single tibble
 se_abundant_all = 
   bind_rows(
-    se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "no filter"),
-    se_abundant_default |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "default"),
-    se_abundant_formula |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "formula"),
-    se_abundant_cpm |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "cpm")
+    se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no filter"),
+    se_abundant_default |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "default"),
+    se_abundant_formula |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "formula"),
+    se_abundant_cpm |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "cpm")
   )
 
 # Density plot across methods
 se_abundant_all |> 
   as_tibble() |> 
-  ggplot(aes(count + 1, group = .sample, color = method)) +
+  ggplot(aes(counts + 1, group = .sample, color = method)) +
     geom_density() +
     scale_x_log10() +
     facet_wrap(~method) +
@@ -326,28 +326,28 @@ se_mini_non_redundant =
 
 se_mini |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 
 # Summary statistics
 se_mini_non_redundant |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 
 # Plot before and after
 # Merge before and after into a single tibble
 se_mini_all = bind_rows(
-  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |>  mutate(method = "before"),
-  se_mini_non_redundant |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |>  mutate(method = "after")
+  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "before"),
+  se_mini_non_redundant |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "after")
 )
 
 # Density plot
-ggplot(as_tibble(se_mini_all), aes(count + 1, group = .sample, color = method)) +
+ggplot(as_tibble(se_mini_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -371,28 +371,28 @@ se_mini_variable = se_mini |> keep_variable()
 # Before filtering
 se_mini |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 
 # After filtering
 se_mini_variable |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 
 # Density plot
 # Merge before and after into a single tibble
 se_mini_all = bind_rows(
-  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "before"),
-  se_mini_variable |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "after")
+  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "before"),
+  se_mini_variable |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "after")
 )
 
 # Density plot
-ggplot(as_tibble(se_mini_all), aes(count + 1, group = .sample, color = method)) +
+ggplot(as_tibble(se_mini_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -416,25 +416,25 @@ se_mini |>
 ### Visualize After Scaling
 ```{r normalization-visualize-scaling, fig.width = 10, fig.height = 10}
 # Before scaling
-se_mini |> assay("count") |> as.matrix() |> rowMeans() |> summary()
+se_mini |> assay("counts") |> as.matrix() |> rowMeans() |> summary()
 
-se_mini |> assay("count_tmm") |> as.matrix() |> rowMeans() |> summary()
+se_mini |> assay("counts_tmm") |> as.matrix() |> rowMeans() |> summary()
 
-se_mini |> assay("count_upperquartile") |> as.matrix() |> rowMeans() |> summary()
+se_mini |> assay("counts_upperquartile") |> as.matrix() |> rowMeans() |> summary()
 
-se_mini |> assay("count_RLE") |> as.matrix() |> rowMeans() |> summary()
+se_mini |> assay("counts_RLE") |> as.matrix() |> rowMeans() |> summary()
 
 # Merge all methods into a single tibble
 se_mini_scaled_all = bind_rows(
-  se_mini |> assay("count") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "no_scaling"),
-  se_mini |> assay("count_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "TMM"),
-  se_mini |> assay("count_upperquartile") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "upperquartile"),
-  se_mini |> assay("count_RLE") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "RLE")
+  se_mini |> assay("counts") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no_scaling"),
+  se_mini |> assay("counts_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "TMM"),
+  se_mini |> assay("counts_upperquartile") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "upperquartile"),
+  se_mini |> assay("counts_RLE") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "RLE")
 )
 
 
 # Density plot
-ggplot(as_tibble(se_mini_scaled_all), aes(count + 1, group = .sample, color = method)) +
+ggplot(as_tibble(se_mini_scaled_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -495,7 +495,7 @@ K-means clustering [@macqueen1967kmeans] is used for unsupervised grouping.
 
 ```{r eda-clustering-analysis, fig.width = 10, fig.height = 10}
 se_mini = se_mini |>
-  cluster_elements(method="kmeans", centers = 2, action="get")
+  cluster_elements(method="kmeans", centers = 2)
 
 # Visualize clustering
 	se_mini |>
@@ -545,6 +545,33 @@ se_mini = se_mini |>
 
 
 ```
+
+The fit object produced by each underlying method are stored in as attributes of the `se_mini` object. We can use them for example to perform quality control of the fit.
+
+#### For edgeR
+
+```{r differential-expression-edgeR-fit, eval=FALSE}
+library(edgeR)
+
+# Plot the mean-variance trend
+se_mini |> 
+ SE2DGEList() |>
+  
+# The DGELRT object contains the original DGEList
+dge_obj <- attr(se_mini, "internals")$edgeR_quasi_likelihood
+# Access the original DGEList from the DGELRT object
+# The counts are stored in the DGELRT object
+if (!is.null(dge_obj$counts)) {
+  plotMeanVar(DGEList(counts = dge_obj$counts))
+} else {
+  # If counts are not available, skip the plot
+  cat("Counts not available for plotMeanVar\n")
+}
+
+
+```
+
+
 
 ### Gene Description
 
@@ -627,7 +654,53 @@ se_mini |>
 
 ### Volcano Plots for Each Method
 
-```{r differential-expression-volcano-plots, fig.width = 10, fig.height = 10}
+Visualising the significance and effect size of the differential expression results as a volcano plots we appreciate that DESeq2 has much lower p-values than other methods, for the same model.
+
+```{r differential-expression-volcano-plots-1, fig.width = 10, fig.height = 10}
+# Create volcano plots
+se_mini |>
+
+	# Select the columns we want to plot
+    rowData() |> 
+    as_tibble(rownames = ".feature") |> 
+    select(
+			.feature,
+      ql__logFC, ql__PValue,
+      lr_robust__logFC, lr_robust__PValue,
+      voom__logFC, voom__P.Value,
+      voom_weights__logFC, voom_weights__P.Value,
+      deseq2__log2FoldChange, deseq2__pvalue
+    ) |>
+
+	# Pivot longer to get a tidy data frame
+	pivot_longer(
+      - .feature,
+      names_to = c("method", "stat"),
+      values_to = "value", names_sep = "__"
+    ) |>
+
+	# Harmonize column names
+	mutate(stat  = case_when(
+		stat %in% c("logFC", "log2FoldChange") ~ "logFC",
+		stat %in% c("PValue", "pvalue", "P.Value", "p.value") ~ "PValue"
+	)) |>
+  pivot_wider(names_from = "stat", values_from = "value") |>
+  unnest( logFC, PValue) |> 
+
+	# Plot
+  ggplot(aes(x = logFC, y = PValue)) +
+  geom_point(aes(color = PValue < 0.05, size = PValue < 0.05)) +
+  scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
+  scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
+  scale_size_manual(values = c("TRUE" = 0.5, "FALSE" = 0.1)) +
+  facet_wrap(~method) +
+  my_theme +
+  labs(title = "Volcano Plots by Method")
+```
+
+Plotting independent y-axis scales for the p-values and effect sizes allows us to compare the top genes across methods.
+
+```{r differential-expression-volcano-plots-2, fig.width = 10, fig.height = 10}
 # Create volcano plots
 se_mini |>
 
@@ -665,7 +738,7 @@ se_mini |>
   scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
   scale_size_manual(values = c("TRUE" = 0.5, "FALSE" = 0.1)) +
-  facet_wrap(~method) +
+  facet_wrap(~method, scales = "free_y") +
   my_theme +
   labs(title = "Volcano Plots by Method")
 ```
@@ -738,16 +811,16 @@ se_mini = se_mini |>
 	  .factor_unwanted = time, 
 	  .factor_of_interest = condition, 
     method = "combat_seq", 
-	  abundance = "count_tmm"
+	  abundance = "counts_tmm"
   )
 
 # Scatter plot of adjusted vs unadjusted
 left_join(
-    se_mini |> assay("count_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count_tmm") ,
-    se_mini |> assay("count_tmm_adjusted") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count_tmm_adjusted") ,
+    se_mini |> assay("counts_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts_tmm") ,
+    se_mini |> assay("counts_tmm_adjusted") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts_tmm_adjusted") ,
 	by = c(".feature", ".sample")
   ) |>
-  ggplot(aes(x = count_tmm + 1, y = count_tmm_adjusted + 1)) +
+  ggplot(aes(x = counts_tmm + 1, y = counts_tmm_adjusted + 1)) +
   geom_point(aes(color = .sample), size = 0.1) +
   ggrepel::geom_text_repel(aes(label = .feature), size = 2, max.overlaps = 10) +
   scale_x_log10() +
@@ -788,7 +861,7 @@ deconvolve_cellularity(method = "cibersort", cores = 1, prefix = "cibersort__")
 
 For the rest of the methods, you need to install the `immunedeconv` package.
 
-```{r install-immunedeconv}
+```{r install-immunedeconv, eval=FALSE}
 if (!requireNamespace("immunedeconv")) BiocManager::install("immunedeconv")
 ```
 

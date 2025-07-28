@@ -778,16 +778,18 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, abundance, 
     select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
     colnames %>%
     map(
-      ~
-        .x %>%
-        when(
-          .data %>%
-            select(!!.horizontal, !!as.symbol(.x)) %>%
-            distinct() |>
-            nrow() %>%
-            equals(n_x) ~ .x,
-          ~ NULL
-        )
+      function(col_name) {
+        horizontal_distinct_count <- .data %>%
+          select(!!.horizontal, !!as.symbol(col_name)) %>%
+          distinct() |>
+          nrow()
+        
+        if (horizontal_distinct_count == n_x) {
+          col_name
+        } else {
+          NULL
+        }
+      }
     ) %>%
 
     # Drop NULL
@@ -862,12 +864,12 @@ get_specific_annotation_columns = function(.data, .col){
   n_x = .data %>% distinct(!!.col) %>% nrow
 
   # Sample wise columns
-  .data %>%
-  select(-!!.col) %>%
-  colnames %>%
+  .data |>
+  select(-!!.col) |>
+  colnames() %>%
   map(
     ~ {
-      n_unique <- .data %>% distinct(!!.col, !!as.symbol(.x)) %>% nrow()
+      n_unique <- .data |> distinct(!!.col, !!as.symbol(.x)) |> nrow()
       if (n_unique == n_x) {
         .x
       } else {
@@ -876,9 +878,9 @@ get_specific_annotation_columns = function(.data, .col){
     }
   ) %>%
 
-  # Drop NULL
-  { (.)[lengths((.)) != 0] } %>%
-  unlist
+  # Drop NULL.
+  { (.)[lengths((.)) != 0] } |>
+  unlist()
 
 }
 
@@ -899,9 +901,9 @@ get_specific_annotation_columns = function(.data, .col){
 quo_names <- function(v) {
 
 	v = quo_name(quo_squash(v))
-	gsub('^c\\(|`|\\)$', '', v) %>%
-		strsplit(', ') %>%
-		unlist
+	gsub('^c\\(|`|\\)$', '', v) |>
+		strsplit(', ') |>
+		unlist()
 }
 
 # Greater than
@@ -953,24 +955,21 @@ multivariable_differential_tissue_composition = function(
 		) %>%
 
 		# Beta or Cox
-		when(
-			grepl("Surv", .my_formula) %>% any ~ {
-			  
-				# Check if package is installed, otherwise install
-			  check_and_install_packages(c("survival", "boot"))
-			  
+		if (grepl("Surv", .my_formula) %>% any) {
+			# Check if package is installed, otherwise install
+			check_and_install_packages(c("survival", "boot"))
 
-				(.) %>%
-					survival::coxph(.my_formula, .)	%>%
-					broom::tidy()
-			} ,
-			~ {
-				(.) %>%
-					lm(.my_formula, .) %>%
-					broom::tidy() %>%
-					filter(term != "(Intercept)")
-			}
-		)
+			data_for_cox <- .
+			data_for_cox %>%
+				survival::coxph(.my_formula, .)	%>%
+				broom::tidy()
+		} else {
+			data_for_lm <- .
+			data_for_lm %>%
+				lm(.my_formula, .) %>%
+				broom::tidy() %>%
+				filter(term != "(Intercept)")
+		}
 
 	# Join results
 	deconvoluted %>%
@@ -1014,32 +1013,30 @@ univariable_differential_tissue_composition = function(
 				if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
 
 				# See if regression if censored or not
-				.x %>%
-					when(
-						grepl("Surv", .my_formula) %>% any ~ {
-							# Check if package is installed, otherwise install
-						  check_and_install_packages(c("survival", "boot"))
-						  
+				if (grepl("Surv", .my_formula) %>% any) {
+					# Check if package is installed, otherwise install
+				  check_and_install_packages(c("survival", "boot"))
+				  
 
-							(.) %>%
-								mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
-								survival::coxph(.my_formula, .)	%>%
-								broom::tidy() %>%
-								select(-term)
-						} ,
-						~ {
-							# Check if package is installed, otherwise install
-						  check_and_install_packages("betareg")
-						  
-							(.) %>%
-								betareg::betareg(.my_formula, .) %>%
-								broom::tidy() %>%
-								filter(component != "precision") %>%
-								pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
-								select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
-								select(-component)
-						}
-					)
+					data_for_cox <- .x
+					data_for_cox %>%
+						mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
+						survival::coxph(.my_formula, .)	%>%
+						broom::tidy() %>%
+						select(-term)
+				} else {
+					# Check if package is installed, otherwise install
+				  check_and_install_packages("betareg")
+				  
+					data_for_beta <- .x
+					data_for_beta %>%
+						betareg::betareg(.my_formula, .) %>%
+						broom::tidy() %>%
+						filter(component != "precision") %>%
+						pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
+						select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
+						select(-component)
+				}
 			}
 		)) %>%
 
@@ -1274,10 +1271,10 @@ fill_NA_matrix_with_factor_colwise = function(.data, factor){
 
     # Fill
     map(
-      ~ {
-        k <- which(is.na(.x), arr.ind=TRUE)
-        .x[k] <- rowMedians(.x, na.rm=TRUE)[k[,1]]
-        .x
+      function(data_matrix) {
+        k <- which(is.na(data_matrix), arr.ind=TRUE)
+        data_matrix[k] <- rowMedians(data_matrix, na.rm=TRUE)[k[,1]]
+        data_matrix
       }
     ) %>%
 

@@ -204,7 +204,9 @@ setGeneric("deconvolve_cellularity", function(.data,
     colData(.data) = colData(.data) |> cbind(
     my_proportions |>
     as_matrix(rownames = .sample) |>
-      (\(.) .[match(rownames(colData(.data)), rownames(.)),])()
+      (function(matrix_data) {
+        matrix_data[match(rownames(colData(.data)), rownames(matrix_data)),]
+      })()
   )
   
   .data |>

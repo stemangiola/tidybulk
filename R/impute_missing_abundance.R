@@ -133,13 +133,11 @@ setGeneric("impute_missing_abundance", function(.data,
     c(imputed_dataframe ) |>
     
     # Add .imputed column
-    c(list(.imputed =  which_NA_matrix(.assay_to_impute[[1]] ))) |>
-    
-    # Make names unique
-    (\(.) {
-      temp_obj = .
-      setNames(temp_obj, names(temp_obj) |> make.unique())
-    })()
+    c(list(.imputed =  which_NA_matrix(.assay_to_impute[[1]] )))
+
+  # Make names unique
+  assays_names_unique <- make.unique(names(assays(.data)))
+  assays(.data) <- setNames(as.list(assays(.data)), assays_names_unique)
   
   .data |>
     

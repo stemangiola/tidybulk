@@ -132,23 +132,24 @@ setMethod("pivot_sample",
     get_special_datasets(.data) |>
     reduce(left_join, by=feature__$name)
   
+  # Get rowData and fix column names
+  row_data <- rowData(.data)
+  col_names <- colnames(row_data)
+  fixed_col_names <- str_replace(col_names, "^feature$", "feature.x")
+  row_data_fixed <- setNames(row_data, fixed_col_names)
+  
   gene_info <-
-    rowData(.data) |>
-    
-    # If reserved column names are present add .x
-    setNames(
-      colnames(.) |>
-        str_replace("^feature$", "feature.x")
-    ) |>
-    
-    # Convert to tibble
+    row_data_fixed |>
     tibble::as_tibble(rownames=feature__$name)
   
   gene_info |>
-    when(
-      nrow(range_info) > 0 ~ (.) |> left_join(range_info, by=feature__$name),
-      ~ (.)
-    )
+    (function(gene_data) {
+      if (nrow(range_info) > 0) {
+        gene_data |> left_join(range_info, by=feature__$name)
+      } else {
+        gene_data
+      }
+    })()
 }
 
 #' pivot_transcript

@@ -44,17 +44,21 @@ setGeneric("get_bibliography", function(.data)
   # If there is not attributes parameter
   my_methods =
     .data |>
-    when(
-      !(
-        !"internals" %in% (attributes(.) |> names()) &&
-          !"methods_used" %in% (attr(., "internals") |> names())
-      ) ~       { temp <- attr(., "internals"); temp[["methods_used"]] },
-      ~ ""
-    )
+    (function(data_obj) {
+      has_internals <- "internals" %in% (attributes(data_obj) |> names())
+      has_methods_used <- has_internals && "methods_used" %in% (attr(data_obj, "internals") |> names())
+      
+      if (has_methods_used) {
+        temp <- attr(data_obj, "internals")
+        temp[["methods_used"]]
+      } else {
+        ""
+      }
+    })()
   
   
       my_bibliography() |>
-    (\(.) .[c(default_methods, my_methods)])() |>
+    _[c(default_methods, my_methods)] |>
     unlist() |>
     writeLines()
   

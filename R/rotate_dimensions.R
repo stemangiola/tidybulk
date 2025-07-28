@@ -150,10 +150,13 @@ setGeneric("rotate_dimensions", function(.data,
     .data |>
     
     # Select correct annotation
-    when(
-      of_samples ~ colData(.),
-      ~ rowData(.)
-    ) |>
+    (function(data_obj) {
+      if (of_samples) {
+        colData(data_obj)
+      } else {
+        rowData(data_obj)
+      }
+    })() |>
     
     # Select dimensions
     (\(.) .[,c(quo_name(dimension_1_column), quo_name(dimension_2_column))])() |>
@@ -171,10 +174,15 @@ setGeneric("rotate_dimensions", function(.data,
   .data |>
     
     # Add dimensions to metadata
-    when(
-      of_samples ~ {.x = (.); colData(.x) = colData(.x) |> cbind(my_rotated_dimensions); .x},
-      ~ {.x = (.); rowData(.x) = rowData(.x) |> cbind(my_rotated_dimensions); .x}
-    )
+    (function(data_obj) {
+      if (of_samples) {
+        colData(data_obj) <- colData(data_obj) |> cbind(my_rotated_dimensions)
+        data_obj
+      } else {
+        rowData(data_obj) <- rowData(data_obj) |> cbind(my_rotated_dimensions)
+        data_obj
+      }
+    })()
   
 }
 

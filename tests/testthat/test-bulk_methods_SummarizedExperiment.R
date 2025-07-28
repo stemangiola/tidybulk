@@ -35,7 +35,7 @@ test_that("quantile normalisation",{
   
   target_distribution = 
     se_mini |> 
-    assay( "count") |> 
+    assay( "counts") |> 
     as.matrix() |> 
     preprocessCore::normalize.quantiles.determine.target() 
   
@@ -140,7 +140,7 @@ test_that("Get adjusted counts - SummarizedExperiment",{
   
   expect_equal(nrow(res),	527	)
   
-  expect_equal(	names(SummarizedExperiment::assays(res)),	c("count" ,"count_adjusted")	)
+  expect_equal(	names(SummarizedExperiment::assays(res)),	c("counts" ,"counts_adjusted")	)
   
   
 })
@@ -154,14 +154,14 @@ test_that("Get adjusted counts multiple factors - SummarizedExperiment",{
     cm |>
     identify_abundant() |>
     scale_abundance()
-  cm@assays@data$count_scaled  = apply(cm@assays@data$count_scaled, 2, as.integer)
+  cm@assays@data$counts_scaled  = apply(cm@assays@data$counts_scaled, 2, as.integer)
   
   
   res =
     cm |>
     adjust_abundance(.factor_unwanted = c(batch),
                      .factor_of_interest =  time,
-                     .abundance = count_scaled,
+                     .abundance = counts_scaled,
                      method = "combat_seq",
                      shrink.disp = TRUE,
                      shrink = TRUE,
@@ -170,7 +170,7 @@ test_that("Get adjusted counts multiple factors - SummarizedExperiment",{
   
   expect_equal(nrow(res),	527	)
   
-  expect_equal(	names(SummarizedExperiment::assays(res)),	c("count" , "count_scaled", "count_scaled_adjusted")	)
+  expect_equal(	names(SummarizedExperiment::assays(res)),	c("counts" , "counts_scaled", "counts_scaled_adjusted")	)
   
   
 })

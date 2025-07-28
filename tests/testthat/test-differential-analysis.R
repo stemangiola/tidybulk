@@ -38,6 +38,48 @@ test_that("test_differential_abundance with limma works correctly", {
   expect_true("adj.P.Val" %in% names(SummarizedExperiment::rowData(res)))
 })
 
+# Test colData preservation and usage
+test_that("test_differential_abundance preserves colData correctly", {
+  # Store original colData
+  original_colData <- colData(se_mini)
+  original_colData_names <- names(original_colData)
+  
+  # Run differential abundance test
+  res <- se_mini |> 
+    identify_abundant() |> 
+    test_differential_abundance(
+      .formula = ~ condition,
+      method = "edgeR_quasi_likelihood"
+    )
+  
+  # Check that colData is preserved
+  expect_equal(names(colData(res)), original_colData_names)
+  expect_equal(nrow(colData(res)), nrow(original_colData))
+  expect_equal(ncol(colData(res)), ncol(original_colData))
+  
+  # Check that sample names are preserved
+  expect_equal(rownames(colData(res)), rownames(original_colData))
+  
+  # Check that condition column is still present and usable
+  expect_true("condition" %in% names(colData(res)))
+  expect_true(all(colData(res)$condition %in% c(TRUE, FALSE)))
+  
+  # Check that the function can handle colData with additional columns
+  se_with_extra <- se_mini
+  colData(se_with_extra)$extra_column <- rep("test", nrow(colData(se_with_extra)))
+  
+  res_with_extra <- se_with_extra |> 
+    identify_abundant() |> 
+    test_differential_abundance(
+      .formula = ~ condition,
+      method = "edgeR_quasi_likelihood"
+    )
+  
+  # Check that extra column is preserved
+  expect_true("extra_column" %in% names(colData(res_with_extra)))
+  expect_equal(colData(res_with_extra)$extra_column, rep("test", nrow(colData(res_with_extra))))
+})
+
 # Test glmmSeq function
 test_that("glmmSeq works correctly", {
   # Skip glmmSeq as it's not available

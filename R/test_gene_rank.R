@@ -147,10 +147,13 @@ setGeneric("test_gene_rank", function(.data,
     
     # Add methods used. It is here and not in functions because I need the original .data
     memorise_methods_used(c("clusterProfiler", "enrichplot"), object_containing_methods = .data) |>
-          when(
-        gene_sets |> is("character") ~ (.) |> memorise_methods_used("msigdbr"),
-      ~ (.)
-    )
+    (function(result_obj) {
+      if (gene_sets |> is("character")) {
+        result_obj |> memorise_methods_used("msigdbr")
+      } else {
+        result_obj
+      }
+    })()
   
   
 }
@@ -204,9 +207,13 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
     my_gene_collection = msigdbr::msigdbr(species = species)
   else if(gene_collections |> is("character"))
     my_gene_collection = msigdbr::msigdbr(species = species) |>  filter( tolower(gs_collection) %in% tolower(gene_collections) )
-  else if(gene_collections |> is("list"))
-            my_gene_collection = tibble(gs_name=names(.), ncbi_gene = . ) |> unnest(ncbi_gene) |> mutate(gs_collection = "user_defined")
- else
+  else if(gene_collections |> is("list")) {
+    # Fix pipe issue by using explicit variable assignment
+    gene_sets_list <- gene_collections
+    my_gene_collection = tibble(gs_name=names(gene_sets_list), ncbi_gene = gene_sets_list) |> 
+      unnest(ncbi_gene) |> 
+      mutate(gs_collection = "user_defined")
+  } else
    stop("tidybulk says: the gene sets should be either a character vector or a named list")
 
 

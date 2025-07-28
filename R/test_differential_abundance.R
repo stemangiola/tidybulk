@@ -352,21 +352,35 @@ such as batch effects (if applicable) in the formula.
   .data |>
     
     # Add bibliography
-    when(
-      tolower(method) ==  "edger_likelihood_ratio" ~ (.) |> memorise_methods_used(c("edger", "edgeR_likelihood_ratio")),
-      tolower(method) ==  "edger_quasi_likelihood" ~ (.) |> memorise_methods_used(c("edger", "edgeR_quasi_likelihood")),
-      tolower(method) ==  "edger_robust_likelihood_ratio" ~ (.) |> memorise_methods_used(c("edger", "edger_robust_likelihood_ratio")),
-      tolower(method) == "limma_voom" ~ (.) |> memorise_methods_used("voom"),
-      tolower(method) == "limma_voom_sample_weights" ~ (.) |> memorise_methods_used("voom_sample_weights"),
-      tolower(method) == "deseq2" ~ (.) |> memorise_methods_used("deseq2"),
-      tolower(method) %in% c("glmmseq_lme4", "glmmseq_glmmtmb") ~ (.) |> memorise_methods_used("glmmseq"),
-      ~ stop("tidybulk says: method not supported")
-    ) |>
+    (function(data_obj) {
+      method_lower <- tolower(method)
+      
+      if (method_lower == "edger_likelihood_ratio") {
+        data_obj |> memorise_methods_used(c("edger", "edgeR_likelihood_ratio"))
+      } else if (method_lower == "edger_quasi_likelihood") {
+        data_obj |> memorise_methods_used(c("edger", "edgeR_quasi_likelihood"))
+      } else if (method_lower == "edger_robust_likelihood_ratio") {
+        data_obj |> memorise_methods_used(c("edger", "edger_robust_likelihood_ratio"))
+      } else if (method_lower == "limma_voom") {
+        data_obj |> memorise_methods_used("voom")
+      } else if (method_lower == "limma_voom_sample_weights") {
+        data_obj |> memorise_methods_used("voom_sample_weights")
+      } else if (method_lower == "deseq2") {
+        data_obj |> memorise_methods_used("deseq2")
+      } else if (method_lower %in% c("glmmseq_lme4", "glmmseq_glmmtmb")) {
+        data_obj |> memorise_methods_used("glmmseq")
+      } else {
+        stop("tidybulk says: method not supported")
+      }
+    })() |>
     
-    when(
-      !is.null(test_above_log2_fold_change) ~ (.) |> memorise_methods_used("treat"),
-      ~ (.)
-    ) |>
+    (function(data_obj) {
+      if (!is.null(test_above_log2_fold_change)) {
+        data_obj |> memorise_methods_used("treat")
+      } else {
+        data_obj
+      }
+    })() |>
     
     attach_to_internals(my_differential_abundance$result_raw, method) |>
     (\(.) {
@@ -550,7 +564,7 @@ get_differential_transcript_abundance_bulk_SE <- function(
     result = 
       
       1:ncol(my_contrasts) %>%
-      map_dfr(~ {
+      map_dfr(function(contrast_index) {
         if(!is.null(test_above_log2_fold_change))
           edgeR_object = edgeR_object |> edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change)
         else if(tolower(method) %in%  c("edger_likelihood_ratio", "edger_robust_likelihood_ratio"))
@@ -567,7 +581,7 @@ get_differential_transcript_abundance_bulk_SE <- function(
           edgeR::topTags(n = Inf) %$%
           table %>%
           as_tibble(rownames = "transcript") %>%
-          mutate(constrast = colnames(my_contrasts)[.x])
+          mutate(constrast = colnames(my_contrasts)[contrast_index])
       }) %>%
       pivot_wider(values_from = -c(transcript, constrast),
                   names_from = constrast, names_sep = "___")
@@ -742,13 +756,13 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(
     result = 
       1:ncol(my_contrasts) %>%
       map_dfr(
-        ~ {
+        function(contrast_index) {
           
           
           result = voom_object |>
             
             # Contrasts
-            limma::contrasts.fit(contrasts=my_contrasts[, .x]) %>%
+            limma::contrasts.fit(contrasts=my_contrasts[, contrast_index]) %>%
             limma::eBayes() 
           
           if(is.null(test_above_log2_fold_change)) {
@@ -761,7 +775,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(
             
             # Convert to tibble
             as_tibble(rownames = "transcript") %>%
-            mutate(constrast = colnames(my_contrasts)[.x])
+            mutate(constrast = colnames(my_contrasts)[contrast_index])
           # %>%
           #
           # # Mark DE genes
@@ -1043,51 +1057,52 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
       deseq2_object |>
       
       # If I have multiple .contrasts merge the results
-      when(
+      (function(deseq2_obj) {
+        # Check conditions
+        has_no_contrasts <- my_contrasts |> is.null()
+        is_continuous <- deseq2_obj@colData[,parse_formula(.formula)[1]] |> class() %in% c("numeric", "integer", "double")
+        should_omit_contrast_names <- my_contrasts |> is.null() %>% not() & omit_contrast_in_colnames
         
-        # Simple comparison continuous
-        (my_contrasts |> is.null() ) &
-          (deseq2_object@colData[,parse_formula(.formula)[1]] |> class() %in% c("numeric", "integer", "double"))      ~
-          (.) %>%
-          DESeq2::results(lfcThreshold=test_above_log2_fold_change) %>%
-          as_tibble(rownames = "transcript"),
-        
-        # Simple comparison discrete
-        my_contrasts |> is.null() 	~
-          (.) %>%
-          DESeq2::results(contrast = c(
-            parse_formula(.formula)[1],
-            deseq2_object@colData[,parse_formula(.formula)[1]] |> as.factor() %>% levels %>% .[2],
-            deseq2_object@colData[,parse_formula(.formula)[1]] |> as.factor() %>% levels |> _[1]
-          ), lfcThreshold=test_above_log2_fold_change) %>%
-          as_tibble(rownames = "transcript"),
-        
-        # Simple comparison discrete
-        my_contrasts |> is.null() %>% not() & omit_contrast_in_colnames	~
-          (.) %>%
-          DESeq2::results(contrast = my_contrasts[[1]], lfcThreshold=test_above_log2_fold_change)%>%
-          as_tibble(rownames = "transcript"),
-        
-        # Multiple comparisons NOT USED AT THE MOMENT
-        ~ {
-          deseq2_obj = (.)
-          
+        if (has_no_contrasts & is_continuous) {
+          # Simple comparison continuous
+          deseq2_obj %>%
+            DESeq2::results(lfcThreshold=test_above_log2_fold_change) %>%
+            as_tibble(rownames = "transcript")
+        } else if (has_no_contrasts) {
+          # Simple comparison discrete
+          factor_levels <- deseq2_obj@colData[,parse_formula(.formula)[1]] |> as.factor() %>% levels
+          deseq2_obj %>%
+            DESeq2::results(contrast = c(
+              parse_formula(.formula)[1],
+              factor_levels[2],
+              factor_levels[1]
+            ), lfcThreshold=test_above_log2_fold_change) %>%
+            as_tibble(rownames = "transcript")
+        } else if (should_omit_contrast_names) {
+          # Simple comparison discrete
+          deseq2_obj %>%
+            DESeq2::results(contrast = my_contrasts[[1]], lfcThreshold=test_above_log2_fold_change)%>%
+            as_tibble(rownames = "transcript")
+        } else {
+          # Multiple comparisons NOT USED AT THE MOMENT
           1:length(my_contrasts) %>%
             map_dfr(
-              ~ 	deseq2_obj %>%
+              function(contrast_index) {
+                deseq2_obj %>%
+                  
+                  # select method
+                  DESeq2::results(contrast = my_contrasts[[contrast_index]], lfcThreshold=test_above_log2_fold_change)	%>%
+                  
+                  # Convert to tibble
+                  as_tibble(rownames = "transcript") %>%
+                  mutate(constrast = sprintf("%s %s-%s", my_contrasts[[contrast_index]][1], my_contrasts[[contrast_index]][2], my_contrasts[[contrast_index]][3]) )
                 
-                # select method
-                DESeq2::results(contrast = my_contrasts[[.x]], lfcThreshold=test_above_log2_fold_change)	%>%
-                
-                # Convert to tibble
-                as_tibble(rownames = "transcript") %>%
-                mutate(constrast = sprintf("%s %s-%s", my_contrasts[[.x]][1], my_contrasts[[.x]][2], my_contrasts[[.x]][3]) )
-              
+              }
             ) %>%
             pivot_wider(values_from = -c(transcript, constrast),
                         names_from = constrast, names_sep = "___")
         }
-      )	 %>%
+      })() %>%
       
       # Attach prefix
       setNames(c(

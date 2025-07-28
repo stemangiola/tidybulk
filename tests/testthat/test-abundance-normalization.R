@@ -12,7 +12,7 @@ test_that("scale_abundance works correctly", {
   
   expect_equal(
     names(SummarizedExperiment::assays(res)),
-    c("count", "count_scaled")
+    c("counts", "counts_scaled")
   )
 })
 
@@ -21,7 +21,7 @@ test_that("scale_abundance with subset works correctly", {
     .subset_for_scaling = .abundant & grepl("^A", .feature)
   )
   
-  expect_true("count_scaled" %in% names(SummarizedExperiment::assays(res)))
+  expect_true("counts_scaled" %in% names(SummarizedExperiment::assays(res)))
 })
 
 # Test quantile_normalise_abundance function
@@ -77,13 +77,13 @@ test_that("impute_missing_abundance works correctly", {
 
 test_that("scale_abundance uses custom suffix correctly", {
   res <- se_mini |> identify_abundant() |> scale_abundance(suffix = "_custom")
-  expect_true("count_custom" %in% names(SummarizedExperiment::assays(res)))
-  expect_false("count_scaled" %in% names(SummarizedExperiment::assays(res)))
+  expect_true("counts_custom" %in% names(SummarizedExperiment::assays(res)))
+  expect_false("counts_scaled" %in% names(SummarizedExperiment::assays(res)))
 })
 
 test_that("scale_abundance default suffix still works", {
   res <- se_mini |> identify_abundant() |> scale_abundance()
-  expect_true("count_scaled" %in% names(SummarizedExperiment::assays(res)))
+  expect_true("counts_scaled" %in% names(SummarizedExperiment::assays(res)))
 }) 
 
 # Test adjust_abundance on a custom assay
@@ -93,7 +93,7 @@ test_that("adjust_abundance on custom assay creates correct adjusted assay name"
   # Create a batch variable with two groups
   colData(se_mini2)$batch <- rep(1:2, length.out = ncol(se_mini2))
   # Create a custom assay
-  SummarizedExperiment::assays(se_mini2)[["my_custom_assay"]] <- SummarizedExperiment::assay(se_mini2, "count") + 1
+  SummarizedExperiment::assays(se_mini2)[["my_custom_assay"]] <- SummarizedExperiment::assay(se_mini2, "counts") + 1
   # Run identify_abundant and adjust_abundance on the custom assay
   res <- se_mini2 |> identify_abundant(abundance = "my_custom_assay") |> adjust_abundance(
     abundance = "my_custom_assay",

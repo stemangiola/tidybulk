@@ -100,11 +100,12 @@ setGeneric("describe_transcript", function(.data )
     slice(1) |>
     ungroup()
   
-    rowData(.data) = rowData(.data) |> cbind(
-    tibble(transcript = rownames(!!.data)) |>
-    left_join(description_df, by = "transcript") |>
-      select(description)
-  )
+  # Create description column for all transcripts
+  all_transcripts <- rownames(.data)
+  description_matched <- description_df[match(all_transcripts, description_df$transcript), "description", drop = TRUE]
+  
+  # Add description to rowData
+  rowData(.data)$description <- description_matched
   
   .data
 }
