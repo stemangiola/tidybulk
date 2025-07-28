@@ -590,3 +590,7 @@ results = topTags(qlf, n = Inf)
 ## Conclusion
 
 Tidybulk provides a unified interface for comprehensive transcriptomic data analysis with seamless integration of SummarizedExperiment objects and tidyverse principles. It streamlines the entire workflow from raw data to biological insights while maintaining compatibility with standard Bioconductor practices.
+
+```{r session-info}
+sessionInfo()
+```
