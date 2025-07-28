@@ -208,7 +208,7 @@ call_core = function(itor, Y, X, P, pval, CoreAlg){
 #'
 #' @keywords internal
 #'
-my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE){
+my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = parallel::detectCores(), exp_transform = FALSE){
 
 
   #read in data

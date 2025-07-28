@@ -107,7 +107,7 @@ setGeneric("test_gene_enrichment", function(.data,
                                             methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
                                             gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
                                             species,
-                                            cores = 10,
+                                            cores = parallel::detectCores(),
                                             
                                             # DEPRECATED
                                             method = NULL,
@@ -134,7 +134,7 @@ standardGeneric("test_gene_enrichment"))
                                       methods = c("camera" ,    "roast" ,     "safe",       "gage"  ,     "padog" ,     "globaltest",  "ora" ),
                                       gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
                                       species,
-                                      cores = 10,
+                                      cores = parallel::detectCores(),
                                       
                                       # DEPRECATED
                                       method = NULL,
