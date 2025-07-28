@@ -270,14 +270,14 @@ validation_default = function(.data,
 
 			stop(
 				"tidybulk says: Your dataset include duplicated sample/gene pairs. ",
-				dup[dup |> duplicated()] %>% head(30) %>% paste(collapse=", "),
+				dup[dup |> duplicated()] |> head(30) |> paste(collapse=", "),
 				"Please, remove redundancies before proceeding (e.g., aggregate_duplicates())."
 			)
 		}
 		if (type == "soft" & !is_unique) {
 			warning(
 				"tidybulk says: Your dataset include duplicated sample/gene pairs. ",
-				dup[dup |> duplicated()] %>% paste(collapse=", "),
+				dup[dup |> duplicated()] |> paste(collapse=", "),
 				" Please, remove redundancies before proceeding (e.g., aggregate_duplicates()). The tidybulk object has been converted to a `tbl`"
 			)
 			return(.data |> tidybulk_to_tbl())

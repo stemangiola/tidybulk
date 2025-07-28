@@ -25,13 +25,11 @@
 #' @details This function to rotate two dimensions such as the reduced dimensions.
 #'
 #' Underlying custom method:
-#' 	rotation = function(m, d) {
-#' 		# r = the angle
-#' 		# m data matrix
-#'    r = d * pi / 180
-#'    ((bind_rows(
-#' 	  c(`1` = cos(r), `2` = -sin(r)),
-#' 	  c(`1` = sin(r), `2` = cos(r))
+#' rotation = function(m, d) {
+#'   r = d * pi / 180
+#'   ((bind_rows(
+#'     c(`1` = cos(r), `2` = -sin(r)),
+#'     c(`1` = sin(r), `2` = cos(r))
 #'   ) |> as_matrix()) %*% m)
 #' }
 #'

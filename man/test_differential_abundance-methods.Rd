@@ -117,7 +117,7 @@ keep_abundant(
 		# Format
 		select(!!.transcript,!!.sample,!!.abundance) |>
 		spread(!!.sample,!!.abundance) |>
-		as_matrix(rownames = !!.transcript) %>%
+		as_matrix(rownames = !!.transcript) |>
 
 		# edgeR
 		edgeR::DGEList(counts = .) |>

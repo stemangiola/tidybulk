@@ -382,7 +382,7 @@ get_reduced_dimensions_MDS_bulk_SE <-
           }
           
           
-        )  %>%
+        )  |>
         distinct() |>
         pivot_wider(names_from = Component, values_from = `Component value`) |>
         (\(.) {
@@ -495,18 +495,18 @@ we suggest to partition the dataset for sample clusters.
         (\(.) {
           message("Fraction of variance explained by the selected principal components")
           (.) %$% sdev |> pow(2) |> # Eigen value
-            unlist() |> divide_by(sum(unlist(.))) %>%
-            `[` (components) %>%
-            enframe() %>%
-            select(-name) %>%
-            rename(`Fraction of variance` = value) %>%
-            mutate(PC = components) %>%
-            capture.output() %>% paste0(collapse = "\n") %>% message()
+            unlist() |> divide_by(sum(unlist(.))) |>
+            _[components] |>
+            enframe() |>
+            select(-name) |>
+            rename(`Fraction of variance` = value) |>
+            mutate(PC = components) |>
+            capture.output() |> paste0(collapse = "\n") |> message()
           (.)
         })() %$%
         # Parse the PCA results to a tibble
         x |>
-        as_tibble(rownames = "sample") %>%
+        as_tibble(rownames = "sample") |>
         select(sprintf("PC%s", components))
     )
     
@@ -635,7 +635,7 @@ get_reduced_dimensions_UMAP_bulk_SE <-
     # Evaluate ...
     arguments <- list(...)
     # if (!"check_duplicates" %in% names(arguments))
-    #   arguments = arguments %>% c(check_duplicates = FALSE)
+    #   arguments = arguments |> c(check_duplicates = FALSE)
     if (!"dims" %in% names(arguments))
       arguments = arguments |> c(n_components = .dims)
     if (!"init" %in% names(arguments))

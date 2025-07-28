@@ -31,7 +31,7 @@
 #' 	method=method,
 #' 	reference = reference,
 #' 	...
-#' )  %>%
+#' )  |>
 #' 	[..] |>
 #' 	mutate(.high_cellularity = .proportion > median(.proportion)) |>
 #' 	survival::survdiff(data = data, .my_formula)
@@ -132,9 +132,9 @@ setGeneric("test_stratification_cellularity", function(.data,
       # Test
       univariable_differential_tissue_stratification_SE(deconvoluted,
                                                         method,
-                                                        .my_formula) %>%
+                                                        .my_formula) |>
         # Attach attributes
-        reattach_metadata(deconvoluted) %>%
+        reattach_metadata(deconvoluted) |>
         memorise_methods_used("test_stratification_cellularity")
     })()
   

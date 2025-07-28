@@ -27,13 +27,10 @@
 #'
 #' Undelying method:
 ## Get gene sets signatures
-#' msigdbr::msigdbr(species = species) %>%
-#'
-#'	# Filter specific gene_sets  if specified. This was introduced to speed up examples executionS
-#'	when(
-#'		!is.null(gene_sets ) ~ filter(., gs_collection %in% gene_sets ),
-#'		~ (.)
-#'	) |>
+#' my_gene_collection <- msigdbr::msigdbr(species = species)
+#' if (!is.null(gene_sets)) {
+#'   my_gene_collection <- filter(my_gene_collection, gs_collection %in% gene_sets)
+#' }
 #'
 #'	# Execute calculation
 #'	nest(data = -gs_collection) |>
@@ -237,11 +234,8 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
 					 	map(
 					 		fit,
 					 		~ .x |>
-					 			# ggplot2::fortify(showCategory=Inf) %>%
 					 			as_tibble() |>
 					 			rowid_to_column(var = "idx_for_plotting")
-					 			#%>%
-					 			#	mutate(plot = future_imap(ID, ~ enrichplot::gseaplot2(fit, geneSetID = .y, title = .x)))
 
 					 	)) |>
 		select(-data)

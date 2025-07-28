@@ -46,7 +46,7 @@
 #'			# Format
 #'			select(!!.transcript,!!.sample,!!.abundance) |>
 #'			spread(!!.sample,!!.abundance) |>
-#'			as_matrix(rownames = !!.transcript) %>%
+#'			as_matrix(rownames = !!.transcript) |>
 #'
 #'			# edgeR
 #'			edgeR::DGEList(counts = .) |>
@@ -463,7 +463,7 @@ setMethod(
 #'			# Format
 #'			select(!!.transcript,!!.sample,!!.abundance) |>
 #'			spread(!!.sample,!!.abundance) |>
-#'			as_matrix(rownames = !!.transcript) %>%
+#'			as_matrix(rownames = !!.transcript) |>
 #'
 #'			# edgeR
 #'			edgeR::DGEList(counts = .) |>
@@ -739,7 +739,7 @@ get_differential_transcript_abundance_bulk_SE <- function(
   check_and_install_packages("edgeR")
   
   # If no assay is specified take first
-  # if(abundance %>% quo_is_symbol()) {
+  # if(abundance |> quo_is_symbol()) {
   #   abundance = quo_name(abundance)
   # } else {
   #   abundance = .data |>
@@ -786,11 +786,11 @@ get_differential_transcript_abundance_bulk_SE <- function(
     result = 
       fit_object |> 
       edgeR::topTags(n = Inf) %$%
-      table %>%
-      as_tibble(rownames = "transcript") %>%
+      table |>
+      as_tibble(rownames = "transcript") |>
       
       # # Mark DE genes
-      # mutate(significant = FDR < significance_threshold) 	%>%
+      # mutate(significant = FDR < significance_threshold) 	|>
       
       # Arrange
       arrange(FDR)
@@ -798,7 +798,7 @@ get_differential_transcript_abundance_bulk_SE <- function(
     
     result = 
       
-      1:ncol(my_contrasts) %>%
+      1:ncol(my_contrasts) |>
       map_dfr(function(contrast_index) {
         if(!is.null(test_above_log2_fold_change))
           fit_object = fit_object |> edgeR::glmTreat(coef = 2, contrast = my_contrasts, lfc=test_above_log2_fold_change)
@@ -814,10 +814,10 @@ get_differential_transcript_abundance_bulk_SE <- function(
           
           # Convert to tibble
           edgeR::topTags(n = Inf) %$%
-          table %>%
-          as_tibble(rownames = "transcript") %>%
+          table |>
+          as_tibble(rownames = "transcript") |>
           mutate(constrast = colnames(my_contrasts)[contrast_index])
-      }) %>%
+      }) |>
       pivot_wider(values_from = -c(transcript, constrast),
                   names_from = constrast, names_sep = "___")
   }
@@ -837,12 +837,6 @@ get_differential_transcript_abundance_bulk_SE <- function(
   } else {
     stop("tidybulk says: Internal error -- result object was not created in get_differential_transcript_abundance_bulk_SE.")
   }
-  
-  
-  
-  
-  
-  
 }
 
 
@@ -928,7 +922,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(
   
   # If no assay is specified take first
   # my_assay = ifelse(
-  #   abundance %>% quo_is_symbol(),
+  #   abundance |> quo_is_symbol(),
   #   quo_name(abundance),
   #   .data |>
   #     assayNames() |>
@@ -967,22 +961,22 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(
     result = result |>
       
       # Contrasts
-      limma::contrasts.fit(contrasts=my_contrasts, coefficients =  when(my_contrasts, is.null(.) ~ 2)) %>%
+      limma::contrasts.fit(contrasts=my_contrasts, coefficients =  when(my_contrasts, is.null(.) ~ 2)) |>
       limma::eBayes() 
     
     if(is.null(test_above_log2_fold_change)) {
       result = result |> limma::topTable(n = Inf)
     } else {
-      result = result |> limma::treat(lfc=test_above_log2_fold_change) %>% limma::topTreat(n = Inf)
+      result = result |> limma::treat(lfc=test_above_log2_fold_change) |> limma::topTreat(n = Inf)
     }
     
     
     result = result |>
       # Convert to tibble
-      as_tibble(rownames = "transcript") %>%
+      as_tibble(rownames = "transcript") |>
       
       # # Mark DE genes
-      # mutate(significant = adj.P.Val < significance_threshold) 	%>%
+      # mutate(significant = adj.P.Val < significance_threshold) 	|>
       
       # Arrange
       arrange(adj.P.Val)		
@@ -990,7 +984,7 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(
     
     
     result = 
-      1:ncol(my_contrasts) %>%
+      1:ncol(my_contrasts) |>
       map_dfr(
         function(contrast_index) {
           
@@ -998,25 +992,22 @@ get_differential_transcript_abundance_bulk_voom_SE <- function(
           result = result |>
             
             # Contrasts
-            limma::contrasts.fit(contrasts=my_contrasts[, contrast_index]) %>%
+            limma::contrasts.fit(contrasts=my_contrasts[, contrast_index]) |>
             limma::eBayes() 
           
           if(is.null(test_above_log2_fold_change)) {
             result = result |> limma::topTable(n = Inf)
           } else {
-            result = result |> limma::treat(lfc=test_above_log2_fold_change) %>% limma::topTreat(n = Inf)
+            result = result |> limma::treat(lfc=test_above_log2_fold_change) |> limma::topTreat(n = Inf)
           }
           
           result = result |>
             
             # Convert to tibble
-            as_tibble(rownames = "transcript") %>%
+            as_tibble(rownames = "transcript") |>
             mutate(constrast = colnames(my_contrasts)[contrast_index])
-          # %>%
-          #
-          # # Mark DE genes
-          # mutate(significant = adj.P.Val < significance_threshold)
-        }) %>%
+
+        }) |>
       pivot_wider(values_from = -c(transcript, constrast),
                   names_from = constrast, names_sep = "___")
     
@@ -1094,7 +1085,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(
   
   # Check if contrasts are of the same form
   if(
-    .contrasts |> is.null() %>% not() &
+    .contrasts |> is.null() |> not() &
     .contrasts |> class() |> equals("list") |> not()
   )
     stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
@@ -1106,7 +1097,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(
   }
   
   # # Check if package is installed, otherwise install
-  # if (find.package("edgeR", quiet = TRUE) %>% length %>% equals(0)) {
+  # if (find.package("edgeR", quiet = TRUE) |> length() |> equals(0)) {
   #   message("tidybulk says: Installing edgeR needed for differential transcript abundance analyses")
   #   if (!requireNamespace("BiocManager", quietly = TRUE))
   #     install.packages("BiocManager", repos = "https://cloud.r-project.org")
@@ -1163,7 +1154,7 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(
              ...
     )
   
-  glmmSeq_object |>
+  result_df <- glmmSeq_object |>
     summary_lmmSeq() |>
     as_tibble(rownames = "transcript") |>
     mutate(across(starts_with("P_"), list(adjusted = function(x) p.adjust(x, method="BH")), .names = "{.col}_{.fn}")) |>
@@ -1172,26 +1163,16 @@ get_differential_transcript_abundance_glmmSeq_SE <- function(
     reattach_metadata(.data) |>
     
     # select method
-    memorise_methods_used("glmmSeq") %>%
-    
-    # # Add raw object
-    # attach_to_internals(glmmSeq_object, "glmmSeq") %>%
-    
-    # # Communicate the attribute added
-    # {
-    #   rlang::inform("tidybulk says: to access the raw results (fitted GLM) do `attr(..., \"internals\")$glmmSeq`", .frequency_id = "Access DE results glmmSeq",  .frequency = "once")
-    #   (.)
-    # }  %>%
-    
-    # Attach prefix
+    memorise_methods_used("glmmSeq")
+  
+  # Attach prefix
+  result_df <- result_df |>
     setNames(c(
-      colnames(.)[1],
-      sprintf("%s%s", prefix, colnames(.)[2:ncol(.)])
-    )) |>
-    
-    list() |>
-    setNames("result") |>
-    c(list(result_raw = glmmSeq_object, de_object = glmmSeq_object))
+      colnames(result_df)[1],
+      sprintf("%s%s", prefix, colnames(result_df)[2:ncol(result_df)])
+    ))
+  
+  list(result = result_df, result_raw = glmmSeq_object, de_object = glmmSeq_object)
   
   
 }
@@ -1252,7 +1233,7 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
   
   # Check if contrasts are of the same form
   if(
-    .contrasts |> is.null() %>% not() &
+    .contrasts |> is.null() |> not() &
     .contrasts |> class() |> equals("list") |> not()
   )
     stop("tidybulk says: for DESeq2 the list of constrasts should be given in the form list(c(\"condition_column\",\"condition1\",\"condition2\")) i.e. list(c(\"genotype\",\"knockout\",\"wildtype\"))")
@@ -1283,7 +1264,7 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
       countData = .data |> assay(my_assay),
       colData = colData(.data),
       design = .formula
-    ) %>%
+    ) |>
     DESeq2::DESeq(...)
   
 
@@ -1295,13 +1276,13 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
 
       if (has_no_contrasts & is_continuous) {
         # Simple comparison continuous
-        result <- deseq2_object %>%
-          DESeq2::results(lfcThreshold = test_above_log2_fold_change) %>%
+        result <- deseq2_object |>
+          DESeq2::results(lfcThreshold = test_above_log2_fold_change) |>
           as_tibble(rownames = "transcript")
       } else if (has_no_contrasts) {
         # Simple comparison discrete
         factor_levels <- deseq2_object@colData[, parse_formula(.formula)[1]] |> as.factor() |> levels()
-        result <- deseq2_object %>%
+        result <- deseq2_object |>
           DESeq2::results(
             contrast = c(
               parse_formula(.formula)[1],
@@ -1309,22 +1290,22 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
               factor_levels[1]
             ),
             lfcThreshold = test_above_log2_fold_change
-          ) %>%
+          ) |>
           as_tibble(rownames = "transcript")
       } else if (should_omit_contrast_names) {
         # Single contrast, omit contrast names in columns
-        result <- deseq2_object %>%
-          DESeq2::results(contrast = my_contrasts[[1]], lfcThreshold = test_above_log2_fold_change) %>%
+        result <- deseq2_object |>
+          DESeq2::results(contrast = my_contrasts[[1]], lfcThreshold = test_above_log2_fold_change) |>
           as_tibble(rownames = "transcript")
       } else {
         # Multiple contrasts
-        result <- 1:length(my_contrasts) %>%
+        result <- 1:length(my_contrasts) |>
           map_dfr(function(contrast_index) {
-            deseq2_object %>%
-              DESeq2::results(contrast = my_contrasts[[contrast_index]], lfcThreshold = test_above_log2_fold_change) %>%
-              as_tibble(rownames = "transcript") %>%
+            deseq2_object |>
+              DESeq2::results(contrast = my_contrasts[[contrast_index]], lfcThreshold = test_above_log2_fold_change) |>
+              as_tibble(rownames = "transcript") |>
               mutate(constrast = sprintf("%s %s-%s", my_contrasts[[contrast_index]][1], my_contrasts[[contrast_index]][2], my_contrasts[[contrast_index]][3]))
-          }) %>%
+          }) |>
           pivot_wider(
             values_from = -c(transcript, constrast),
             names_from = constrast,

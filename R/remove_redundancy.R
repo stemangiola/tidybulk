@@ -39,21 +39,13 @@
 #'
 #' Underlying custom method for reduced dimensions:
 #' select_closest_pairs = function(df) {
-#' 		couples <- df |> head(n = 0)
-#'
-#' 		while (df |> nrow() > 0) {
-#' 			pair <- df |>
-#' 			arrange(dist) |>
-#' 			head(n = 1)
-#' 			couples <- couples |> bind_rows(pair)
-#' 			df <- df |>
-#' 				filter(
-#' 					!`sample 1` %in% (pair |> select(1:2) |> as.character()) &
-#' 						!`sample 2` %in% (pair |> select(1:2) |> as.character())
-#' 				)
-#' 		}
-#'
-#' 		couples
+#'   couples <- df |> head(n = 0)
+#'   while (df |> nrow() > 0) {
+#'     pair <- df |> arrange(dist) |> head(n = 1)
+#'     couples <- couples |> bind_rows(pair)
+#'     df <- df |> filter(!`sample 1` %in% (pair |> select(1:2) |> as.character()) & !`sample 2` %in% (pair |> select(1:2) |> as.character()))
+#'   }
+#'   couples
 #' }
 #'
 #'

@@ -180,15 +180,6 @@ setGeneric("scale_abundance", function(.data,
     (library_size_filtered[reference] * nf[reference]) |>
     divide_by(library_size_filtered * nf) 
   
-  # NOT HELPING - Put everything to the reference sample scale
-  # multiply_by(library_size_filtered[reference])
-  
-  # At the moment no because would be different from TIBBLE behaviour
-  # %>%
-  #
-  # # Make reference == 1
-  # divide_by(.[reference])
-  
   # Add to sample info
   colData(.data)$TMM = nf
   colData(.data)$multiplier = multiplier

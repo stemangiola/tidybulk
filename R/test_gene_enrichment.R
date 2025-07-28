@@ -35,11 +35,11 @@
 #' 	keep_abundant(
 #' 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 #' 		!!.sample, !!.entrez, !!.abundance
-#' 	) %>%
+#' 	) |>
 #'
 #' 	# Make sure transcript names are adjacent
-#' 	[...] %>%
-#' 	as_matrix(rownames = !!.entrez) %>%
+#' 	[...] |>
+#' 	as_matrix(rownames = !!.entrez) |>
 #' 	edgeR::DGEList(counts = .)
 #'
 #' idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets,
@@ -236,8 +236,8 @@ standardGeneric("test_gene_enrichment"))
   # Change rownames to entrez
   if (!quo_is_null(.entrez)) {
     rownames(assay_data) <-
-      .my_data %>%
-      pivot_transcript() %>%
+      .my_data |>
+      pivot_transcript() |>
       pull(!!.entrez)
   }
   
@@ -283,7 +283,7 @@ standardGeneric("test_gene_enrichment"))
     if (length(kegg_to_exclude) == 3) {
       kegg.exclude = "all"
     } else {
-      kegg.exclude = kegg_to_exclude %>% str_replace("kegg_", "")
+      kegg.exclude = kegg_to_exclude |> str_replace("kegg_", "")
       collections_bib = c(collections_bib, "kegg")
     }
     

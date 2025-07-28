@@ -96,11 +96,11 @@ dge =
 	keep_abundant(
 		factor_of_interest = !!as.symbol(parse_formula(.formula)[[1]]),
 		!!.sample, !!.entrez, !!.abundance
-	) %>%
+	) |>
 
 	# Make sure transcript names are adjacent
-	[...] %>%
-	as_matrix(rownames = !!.entrez) %>%
+	[...] |>
+	as_matrix(rownames = !!.entrez) |>
 	edgeR::DGEList(counts = .)
 
 idx =  buildIdx(entrezIDs = rownames(dge), species = species, msigdb.gsets = msigdb.gsets,

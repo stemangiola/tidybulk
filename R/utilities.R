@@ -173,13 +173,13 @@ add_tt_columns = function(.data,
     .transcript = .transcript,
     .abundance = .abundance
   )
-  if (.abundance_scaled %>% quo_is_symbol) {
+  if (quo_is_symbol(.abundance_scaled)) {
     tt_list <- c(tt_list, list(.abundance_scaled = .abundance_scaled))
   }
-  if (.abundance_adjusted %>% quo_is_symbol) {
+  if (quo_is_symbol(.abundance_adjusted)) {
     tt_list <- c(tt_list, list(.abundance_adjusted = .abundance_adjusted))
   }
-  .data %>% attach_to_metadata(tt_list, "tt_columns")
+  .data |> attach_to_metadata(tt_list, "tt_columns")
 
 }
 
@@ -191,7 +191,7 @@ initialise_tt_metadata = function(.data){
       metadata(.data) <- current_metadata
     }
   } else {
-    if ("internals" %in% (attributes(.data) %>% names) %>% not()) {
+    if ("internals" %in% (attributes(.data) |> names() |> not())) {
       .data <- add_attr(.data, list(), "internals")
     }
   }
@@ -199,7 +199,7 @@ initialise_tt_metadata = function(.data){
 }
 
 reattach_metadata = function(.data, .data_metadata_from = NULL){
-  if(.data_metadata_from %>% is.null)
+  if(.data_metadata_from |> is.null())
     .data_metadata_from = .data
 
   if (is(.data, "SummarizedExperiment")) {
@@ -210,7 +210,7 @@ reattach_metadata = function(.data, .data_metadata_from = NULL){
       metadata(.data) <- current_metadata
     }
   } else {
-    .data %>% add_attr(.data_metadata_from %>% attr("internals"), "internals")
+    .data |> add_attr(.data_metadata_from |> attr("internals"), "internals")
   }
   .data
 }
@@ -226,14 +226,14 @@ attach_to_metadata = function(.data, .object, .name){
     metadata(.data) <- current_metadata
   } else {
     internals =
-      .data %>%
-      initialise_tt_internals() %>%
+      .data |>
+      initialise_tt_internals() |>
       attr("internals")
 
     # Add tt_columns
     internals[[.name]] = .object
 
-    .data %>% add_attr(internals, "internals")
+    .data |> add_attr(internals, "internals")
   }
   .data
 }
@@ -247,7 +247,7 @@ drop_metadata = function(.data){
       metadata(.data) <- current_metadata
     }
   } else {
-    .data %>% drop_attr("internals")
+    .data |> drop_attr("internals")
   }
   .data
 }
@@ -262,13 +262,13 @@ memorise_methods_used = function(.data, .method, object_containing_methods = .da
     } else {
       character(0)
     }
-    methods_used <- c(methods_used, .method) %>% unique()
-    .data %>% attach_to_metadata(methods_used, "methods_used")
+    methods_used <- c(methods_used, .method) |> unique()
+    .data |> attach_to_metadata(methods_used, "methods_used")
   } else {
-    internals <- object_containing_methods %>% attr("internals")
-    .data %>%
+    internals <- object_containing_methods |> attr("internals")
+    .data |>
       attach_to_metadata(
-        internals[["methods_used"]] %>% c(.method) %>% unique(),
+        internals[["methods_used"]] |> c(.method) |> unique(),
         "methods_used"
       )
   }
@@ -276,35 +276,36 @@ memorise_methods_used = function(.data, .method, object_containing_methods = .da
 
 # Keep the old functions for backward compatibility
 initialise_tt_internals = function(.data){
-  if ("internals" %in% (attributes(.data) %>% names) %>% not()) {
+  attr_names <- names(attributes(.data))
+  if (is.null(attr_names) || !("internals" %in% attr_names)) {
     .data <- add_attr(.data, list(), "internals")
   }
   .data
 }
 
 reattach_internals = function(.data, .data_internals_from = NULL){
-  if(.data_internals_from %>% is.null)
+  if(.data_internals_from |> is.null())
     .data_internals_from = .data
 
-  .data %>% add_attr(.data_internals_from %>% attr("internals"), "internals")
+  .data |> add_attr(.data_internals_from |> attr("internals"), "internals")
 }
 
 attach_to_internals = function(.data, .object, .name){
 
   internals =
-    .data %>%
-    initialise_tt_internals() %>%
+    .data |>
+    initialise_tt_internals() |>
     attr("internals")
 
   # Add tt_columns
   internals[[.name]] = .object
 
-  .data %>% add_attr(internals, "internals")
+  .data |> add_attr(internals, "internals")
 }
 
 drop_internals = function(.data){
 
-  .data %>% drop_attr("internals")
+  .data |> drop_attr("internals")
 }
 
 #' Add attribute to abject
@@ -416,17 +417,17 @@ get_sample_transcript_counts = function(.data, .sample, .transcript, abundance, 
   }
 
     if( quo_is_symbolic(.sample) ) .sample = .sample
-    else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
+    else if(".sample" %in% (.data |> get_tt_columns() |> names()))
       .sample =  get_tt_columns(.data)$.sample
     else my_stop()
 
     if( quo_is_symbolic(.transcript) ) .transcript = .transcript
-    else if(".transcript" %in% (.data %>% get_tt_columns() %>% names))
+    else if(".transcript" %in% (.data |> get_tt_columns() |> names()))
       .transcript =  get_tt_columns(.data)$.transcript
     else my_stop()
 
     if(  quo_is_symbolic(abundance) ) abundance = abundance
-    else if(".abundance" %in% (.data %>% get_tt_columns() %>% names))
+    else if(".abundance" %in% (.data |> get_tt_columns() |> names()))
       abundance = get_tt_columns(.data)$.abundance
     else my_stop()
 
@@ -455,13 +456,13 @@ get_sample_counts = function(.data, .sample, abundance, .abundance = NULL){
     }
   }
 
-  if( .sample %>% quo_is_symbol() ) .sample = .sample
-  else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
+  if( .sample |> quo_is_symbol() ) .sample = .sample
+  else if(".sample" %in% (.data |> get_tt_columns() |> names()))
     .sample =  get_tt_columns(.data)$.sample
   else my_stop()
 
-  if( .abundance %>% quo_is_symbol() ) .abundance = .abundance
-  else if(".abundance" %in% (.data %>% get_tt_columns() %>% names))
+  if( .abundance |> quo_is_symbol() ) .abundance = .abundance
+  else if(".abundance" %in% (.data |> get_tt_columns() |> names()))
     .abundance = get_tt_columns(.data)$.abundance
   else my_stop()
 
@@ -482,8 +483,8 @@ get_sample_counts = function(.data, .sample, abundance, .abundance = NULL){
 #' @return A list of column enquo or error
 get_sample = function(.data, .sample){
 
-  if( .sample %>% quo_is_symbol() ) .sample = .sample
-  else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
+  if( .sample |> quo_is_symbol() ) .sample = .sample
+  else if(".sample" %in% (.data |> get_tt_columns() |> names()))
     .sample =  get_tt_columns(.data)$.sample
   else my_stop()
 
@@ -507,8 +508,8 @@ get_transcript = function(.data, .transcript){
 
 
 
-  if( .transcript %>% quo_is_symbol() ) .transcript = .transcript
-  else if(".transcript" %in% (.data %>% get_tt_columns() %>% names))
+  if( .transcript |> quo_is_symbol() ) .transcript = .transcript
+  else if(".transcript" %in% (.data |> get_tt_columns() |> names()))
     .transcript =  get_tt_columns(.data)$.transcript
   else my_stop()
 
@@ -531,13 +532,13 @@ get_transcript = function(.data, .transcript){
 #' @return A list of column enquo or error
 get_sample_transcript = function(.data, .sample, .transcript){
 
-  if( .sample %>% quo_is_symbol() ) .sample = .sample
-  else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
+  if( .sample |> quo_is_symbol() ) .sample = .sample
+  else if(".sample" %in% (.data |> get_tt_columns() |> names()))
     .sample =  get_tt_columns(.data)$.sample
   else my_stop()
 
-  if( .transcript %>% quo_is_symbol() ) .transcript = .transcript
-  else if(".transcript" %in% (.data %>% get_tt_columns() %>% names))
+  if( .transcript |> quo_is_symbol() ) .transcript = .transcript
+  else if(".transcript" %in% (.data |> get_tt_columns() |> names()))
     .transcript =  get_tt_columns(.data)$.transcript
   else my_stop()
 
@@ -559,8 +560,8 @@ get_sample_transcript = function(.data, .sample, .transcript){
 #' @return A list of column enquo or error
 get_sample = function(.data, .sample){
 
-  if( .sample %>% quo_is_symbol() ) .sample = .sample
-  else if(".sample" %in% (.data %>% get_tt_columns() %>% names))
+  if( .sample |> quo_is_symbol() ) .sample = .sample
+  else if(".sample" %in% (.data |> get_tt_columns() |> names()))
     .sample =  get_tt_columns(.data)$.sample
   else my_stop()
 
@@ -588,8 +589,8 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
 
   # If setted by the user, enquo those
   if(
-    .element %>% quo_is_symbol() &
-    .feature %>% quo_is_symbol()
+    .element |> quo_is_symbol() &
+    .feature |> quo_is_symbol()
   )
     return(list(
       .element = .element,
@@ -600,16 +601,16 @@ get_elements_features = function(.data, .element, .feature, of_samples = TRUE){
   else {
 
     # If so, take them from the attribute
-    if(.data %>% get_tt_columns() %>% is.null %>% not())
+    if(.data |> get_tt_columns() |> is.null() |> not())
 
       return(list(
         .element =  switch(
-          of_samples %>% not() %>% sum(1),
+          of_samples |> not() |> sum(1),
           get_tt_columns(.data)$.sample,
           get_tt_columns(.data)$.transcript
         ),
         .feature = switch(
-          of_samples %>% not() %>% sum(1),
+          of_samples |> not() |> sum(1),
           get_tt_columns(.data)$.transcript,
           get_tt_columns(.data)$.sample
         )
@@ -649,22 +650,22 @@ get_elements_features_abundance = function(.data, .element, .feature, abundance,
 
 
 
-  if( .element %>% quo_is_symbol() ) .element = .element
-  else if(of_samples & ".sample" %in% (.data %>% get_tt_columns() %>% names))
+  if( .element |> quo_is_symbol() ) .element = .element
+  else if(of_samples & ".sample" %in% (.data |> get_tt_columns() |> names()))
     .element =  get_tt_columns(.data)$.sample
-  else if((!of_samples) & ".transcript" %in% (.data %>% get_tt_columns() %>% names))
+  else if((!of_samples) & ".transcript" %in% (.data |> get_tt_columns() |> names()))
      .element =  get_tt_columns(.data)$.transcript
   else my_stop()
 
-  if( .feature %>% quo_is_symbol() ) .feature = .feature
-  else if(of_samples & ".transcript" %in% (.data %>% get_tt_columns() %>% names))
+  if( .feature |> quo_is_symbol() ) .feature = .feature
+  else if(of_samples & ".transcript" %in% (.data |> get_tt_columns() |> names()))
     .feature =  get_tt_columns(.data)$.transcript
-  else if((!of_samples) & ".sample" %in% (.data %>% get_tt_columns() %>% names))
+  else if((!of_samples) & ".sample" %in% (.data |> get_tt_columns() |> names()))
     .feature =  get_tt_columns(.data)$.sample
   else my_stop()
 
-  if( .abundance %>% quo_is_symbol() ) .abundance = .abundance
-  else if(".abundance" %in% (.data %>% get_tt_columns() %>% names))
+  if( .abundance |> quo_is_symbol() ) .abundance = .abundance
+  else if(".abundance" %in% (.data |> get_tt_columns() |> names()))
     .abundance = get_tt_columns(.data)$.abundance
   else my_stop()
 
@@ -687,7 +688,7 @@ get_elements = function(.data, .element, of_samples = TRUE){
 
   # If setted by the user, enquo those
   if(
-    .element %>% quo_is_symbol()
+    .element |> quo_is_symbol()
   )
     return(list(
       .element = .element
@@ -697,11 +698,11 @@ get_elements = function(.data, .element, of_samples = TRUE){
   else {
 
     # If so, take them from the attribute
-    if(.data %>% get_tt_columns() %>% is.null %>% not())
+    if(.data |> get_tt_columns() |> is.null() |> not())
 
       return(list(
         .element =  switch(
-          of_samples %>% not() %>% sum(1),
+          of_samples |> not() |> sum(1),
           get_tt_columns(.data)$.sample,
           get_tt_columns(.data)$.transcript
         )
@@ -735,7 +736,7 @@ get_abundance_norm_if_exists = function(.data, abundance, .abundance = NULL){
       abundance <- rlang::as_name(rlang::ensym(.abundance))
     }
   }
-  if (.abundance %>% quo_is_symbol()) {
+  if (.abundance |> quo_is_symbol()) {
     return(list(
       .abundance = .abundance
     ))
@@ -743,6 +744,9 @@ get_abundance_norm_if_exists = function(.data, abundance, .abundance = NULL){
     if (!is.null(get_tt_columns(.data))) {
       if (".abundance_scaled" %in% names(get_tt_columns(.data)) &&
           quo_name(get_tt_columns(.data)$.abundance_scaled) %in% colnames(.data)) {
+        # Comply with CRAN NOTES
+        . = NULL
+        
         return(list(
           .abundance = get_tt_columns(.data)$.abundance_scaled
         ))
@@ -775,17 +779,17 @@ get_abundance_norm_if_exists = function(.data, abundance, .abundance = NULL){
 #'
 #' @return A tibble with pairs to drop
 select_closest_pairs = function(df) {
-  couples <- df %>% head(n = 0)
+  couples <- df |> head(n = 0)
 
-  while (df %>% nrow() > 0) {
-    pair <- df %>%
-      arrange(dist) %>%
+  while (df |> nrow() > 0) {
+    pair <- df |>
+      arrange(dist) |>
       head(n = 1)
-    couples <- couples %>% bind_rows(pair)
-    df <- df %>%
+    couples <- couples |> bind_rows(pair)
+    df <- df |>
       filter(
-        !`sample 1` %in% (pair %>% select(1:2) %>% as.character()) &
-          !`sample 2` %in% (pair %>% select(1:2) %>% as.character())
+        !`sample 1` %in% (pair |> select(1:2) |> as.character()) &
+          !`sample 2` %in% (pair |> select(1:2) |> as.character())
       )
   }
 
@@ -806,7 +810,7 @@ fill_NA_with_row_median = function(.matrix){
   if(length(which(rowSums(is.na(.matrix)) > 0)) > 0)
     rbind(
       .matrix[rowSums(is.na(.matrix)) == 0,],
-      apply(.matrix[rowSums(is.na(.matrix)) > 0,], 1, FUN = function(.x) { .x[is.na(.x)] = median(.x, na.rm = TRUE); .x}) %>% t
+      t(apply(.matrix[rowSums(is.na(.matrix)) > 0,], 1, FUN = function(.x) { .x[is.na(.x)] = median(.x, na.rm = TRUE); .x}))
     )
   else
     .matrix
@@ -852,18 +856,18 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, abundance, 
   .abundance_scaled = enquo(.abundance_scaled)
 
   # x-annotation df
-  n_x = .data %>% select(!!.horizontal) |> distinct() |> nrow()
-  n_y = .data %>% select(!!.vertical) |> distinct() |> nrow()
+  n_x = .data |> select(!!.horizontal) |> distinct() |> nrow()
+  n_y = .data |> select(!!.vertical) |> distinct() |> nrow()
 
   # Sample wise columns
   horizontal_cols=
-    .data %>%
-    select(-!!.horizontal, -!!.vertical, -!!.abundance) %>%
-    colnames %>%
+    .data |>
+    select(-!!.horizontal, -!!.vertical, -!!.abundance) |>
+    colnames() |>
     map(
       function(col_name) {
-        horizontal_distinct_count <- .data %>%
-          select(!!.horizontal, !!as.symbol(col_name)) %>%
+        horizontal_distinct_count <- .data |>
+          select(!!.horizontal, !!as.symbol(col_name)) |>
           distinct() |>
           nrow()
         
@@ -873,23 +877,21 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, abundance, 
           NULL
         }
       }
-    ) %>%
-
-    # Drop NULL
-    {	(.)[lengths((.)) != 0]	} %>%
-    unlist
+    ) 
+    
+    horizontal_cols = unlist(horizontal_cols[lengths(horizontal_cols) != 0])
 
   # Transcript wise columns
   vertical_cols=
-    .data %>%
-    select(-!!.horizontal, -!!.vertical, -!!.abundance, -horizontal_cols) %>%
-    colnames %>%
+    .data |>    
+    select(-!!.horizontal, -!!.vertical, -!!.abundance, -horizontal_cols) |>
+    colnames() |>
     map(
       ~{
-          if(.data %>%
+          if(.data |>
             select(!!.vertical, !!as.symbol(.x)) |>
             distinct() |>
-            nrow() %>%
+            nrow() |>
             equals(n_y)) {
           .x
         } else {
@@ -897,30 +899,29 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, abundance, 
         }
       }
        
-    ) %>%
-
-    # Drop NULL
-    {	(.)[lengths((.)) != 0]	} %>%
-    unlist
+    ) 
+    
+    vertical_cols = vertical_cols[lengths(vertical_cols) != 0]
+    vertical_cols = unlist(vertical_cols)
 
   # Counts wise columns, at the moment scaled counts is treated as special and not accounted for here
   counts_cols =
-    .data %>%
+    .data |>
     select(-!!.horizontal, -!!.vertical, -!!.abundance)
 
   if (!is.null(horizontal_cols)) {
-    counts_cols <- counts_cols %>% select(-horizontal_cols)
+    counts_cols <- counts_cols |> select(-horizontal_cols)
   }
   if (!is.null(vertical_cols)) {
-    counts_cols <- counts_cols %>% select(-vertical_cols)
+    counts_cols <- counts_cols |> select(-vertical_cols)
   }
-  if (.abundance_scaled %>% quo_is_symbol) {
-    counts_cols <- counts_cols %>% select(-!!.abundance_scaled)
+  if (quo_is_symbol(.abundance_scaled)) {
+    counts_cols <- counts_cols |> select(-!!.abundance_scaled)
   }
-  counts_cols <- counts_cols %>% colnames
-  counts_cols <- counts_cols %>% map(
+  counts_cols <- counts_cols |> colnames()
+  counts_cols <- counts_cols |> map(
     ~ {
-      n_unique <- .data %>% select(!!.vertical, !!.horizontal, !!as.symbol(.x)) %>% distinct() %>% nrow()
+      n_unique <- .data |> select(!!.vertical, !!.horizontal, !!as.symbol(.x)) |> distinct() |> nrow()
       if (n_unique == n_x * n_y) {
         .x
       } else {
@@ -944,12 +945,12 @@ get_specific_annotation_columns = function(.data, .col){
   .col = enquo(.col)
 
   # x-annotation df
-  n_x = .data %>% distinct(!!.col) %>% nrow
+  n_x = .data |> distinct(!!.col) |> nrow()
 
   # Sample wise columns
-  .data |>
+  .data = .data |>
   select(-!!.col) |>
-  colnames() %>%
+  colnames() |>
   map(
     ~ {
       n_unique <- .data |> distinct(!!.col, !!as.symbol(.x)) |> nrow()
@@ -959,11 +960,10 @@ get_specific_annotation_columns = function(.data, .col){
         NULL
       }
     }
-  ) %>%
-
-  # Drop NULL.
-  { (.)[lengths((.)) != 0] } |>
-  unlist()
+  )
+  
+  .data = .data[lengths(.data) != 0]
+  .data = unlist(.data)
 
 }
 
@@ -1025,46 +1025,46 @@ multivariable_differential_tissue_composition = function(
 	min_detected_proportion
 ){
 	results_regression =
-		deconvoluted %>%
+		deconvoluted |>
 
 		# Replace 0s - before
-		mutate(across(starts_with(method), function(.x) if_else(.x==0, min_detected_proportion, .x))) %>%
-		mutate(across(starts_with(method), boot::logit)) %>%
+		mutate(across(starts_with(method), function(.x) if_else(.x==0, min_detected_proportion, .x))) |>
+		mutate(across(starts_with(method), boot::logit)) |>
 
 		# Rename columns - after
 		setNames(
-			str_remove(colnames(.), sprintf("%s:", method)) %>%
+			str_remove(colnames(.), sprintf("%s:", method)) |>
 				str_replace_all("[ \\(\\)]", "___")
-		) %>%
+		) 
 
 		# Beta or Cox
-		if (grepl("Surv", .my_formula) %>% any) {
+		if (grepl("Surv", .my_formula) |> any()) {
 			# Check if package is installed, otherwise install
 			check_and_install_packages(c("survival", "boot"))
 
-			data_for_cox <- .
-			data_for_cox %>%
-				survival::coxph(.my_formula, .)	%>%
+			data_for_cox <- results_regression
+			data_for_cox |>
+				survival::coxph(.my_formula, .)	|>
 				broom::tidy()
 		} else {
-			data_for_lm <- .
-			data_for_lm %>%
-				lm(.my_formula, .) %>%
-				broom::tidy() %>%
+			data_for_lm <- results_regression
+			data_for_lm |>
+				lm(.my_formula, .) |>
+				broom::tidy() |>
 				filter(term != "(Intercept)")
 		}
 
 	# Join results
-	deconvoluted %>%
+	deconvoluted |>
 		pivot_longer(
 			names_prefix = sprintf("%s: ", method),
 			cols = starts_with(method),
 			names_to = ".cell_type",
 			values_to = ".proportion"
-		) %>%
-		tidyr::nest(cell_type_proportions = -.cell_type) %>%
+		) |>
+		tidyr::nest(cell_type_proportions = -.cell_type) |>
 		bind_cols(
-			results_regression %>%
+			results_regression |>
 				select(-term)
 		)
 }
@@ -1075,7 +1075,7 @@ univariable_differential_tissue_composition = function(
 	.my_formula,
 	min_detected_proportion
 ){
-		deconvoluted %>%
+		deconvoluted |>
 
 		# Test
 		pivot_longer(
@@ -1083,45 +1083,45 @@ univariable_differential_tissue_composition = function(
 			cols = starts_with(method),
 			names_to = ".cell_type",
 			values_to = ".proportion"
-		) %>%
+		) |>
 
 		# Replace 0s
-		mutate(.proportion_0_corrected = if_else(.proportion==0, min_detected_proportion, .proportion)) %>%
+		mutate(.proportion_0_corrected = if_else(.proportion==0, min_detected_proportion, .proportion)) |>
 
 		# Test survival
-		tidyr::nest(cell_type_proportions = -.cell_type) %>%
+		tidyr::nest(cell_type_proportions = -.cell_type) |>
 		mutate(surv_test = map(
 			cell_type_proportions,
 			~ {
-				if(pull(., .proportion_0_corrected) %>% unique %>% length %>%  `<=` (3)) return(NULL)
+				if(pull(., .proportion_0_corrected) |> unique() |> length() <= 3) return(NULL)
 
 				# See if regression if censored or not
-				if (grepl("Surv", .my_formula) %>% any) {
+				if (grepl("Surv", .my_formula) |>  any()) {
 					# Check if package is installed, otherwise install
 				  check_and_install_packages(c("survival", "boot"))
 				  
 
 					data_for_cox <- .x
-					data_for_cox %>%
-						mutate(.proportion_0_corrected = .proportion_0_corrected  %>% boot::logit()) %>%
-						survival::coxph(.my_formula, .)	%>%
-						broom::tidy() %>%
+					data_for_cox |> 
+						mutate(.proportion_0_corrected = .proportion_0_corrected  |> boot::logit()) |>
+						survival::coxph(.my_formula, data=_)	|>
+						broom::tidy() |>
 						select(-term)
 				} else {
 					# Check if package is installed, otherwise install
 				  check_and_install_packages("betareg")
 				  
 					data_for_beta <- .x
-					data_for_beta %>%
-						betareg::betareg(.my_formula, .) %>%
-						broom::tidy() %>%
-						filter(component != "precision") %>%
-						pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) %>%
-						select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) %>%
+					data_for_beta |>
+						betareg::betareg(.my_formula, data=_) |>
+						broom::tidy() |>
+						filter(component != "precision") |>
+						pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic,   p.value)) |>
+						select(-c(`std.error_(Intercept)`, `statistic_(Intercept)`, `p.value_(Intercept)`)) |>
 						select(-component)
 				}
 			}
-		)) %>%
+		)) |>
 
 		unnest(surv_test, keep_empty = TRUE)
 }
@@ -1140,7 +1140,7 @@ univariable_differential_tissue_stratification = function(
   check_and_install_packages("broom")
   
 
-	deconvoluted %>%
+	deconvoluted |>
 
 		# Test
 		pivot_longer(
@@ -1148,20 +1148,20 @@ univariable_differential_tissue_stratification = function(
 			cols = starts_with(method),
 			names_to = ".cell_type",
 			values_to = ".proportion"
-		) %>%
+		) |>
 
 		# Test survival
-		tidyr::nest(cell_type_proportions = -.cell_type) %>%
+		tidyr::nest(cell_type_proportions = -.cell_type) |>
 		mutate(surv_test = map(
 			cell_type_proportions,
 			~ {
 
-				data = .x %>%
+				data = .x |>
 					mutate(.high_cellularity = .proportion > median(.proportion))
 
-				if(data %>%
-					 distinct(.high_cellularity) %>%
-					 nrow() %>%
+				if(data |>
+					 distinct(.high_cellularity) |>
+					 nrow() |>
 					 equals(1)
 				) return(NULL)
 
@@ -1169,9 +1169,8 @@ univariable_differential_tissue_stratification = function(
 				fit = survival::survdiff(data = data, .my_formula)
 
 				p =
-					survminer::surv_fit(data = data, .my_formula) %>%
+					survminer::surv_fit(data = data, .my_formula) |>
 					survminer::ggsurvplot(
-						fit=.,
 						data = data,
 						risk.table = FALSE,
 						conf.int = TRUE,
@@ -1180,16 +1179,16 @@ univariable_differential_tissue_stratification = function(
 						pval = TRUE
 					)
 
-				fit %>%
-					broom::tidy() %>%
-					select(-N, -obs) %>%
-					spread(.high_cellularity, exp) %>%
-					setNames(c(".low_cellularity_expected", ".high_cellularity_expected")) %>%
-					mutate(pvalue = 1 - pchisq(fit$chisq, length(fit$n) - 1)) %>%
+				fit |>  
+					broom::tidy() |>
+					select(-N, -obs) |>
+					spread(.high_cellularity, exp) |>
+					setNames(c(".low_cellularity_expected", ".high_cellularity_expected")) |>
+					mutate(pvalue = 1 - pchisq(fit$chisq, length(fit$n) - 1)) |>
 					mutate(plot = list(p))
 
 			}
-		)) %>%
+		)) |>
 
 		unnest(surv_test, keep_empty = TRUE)
 }
@@ -1204,9 +1203,9 @@ univariable_differential_tissue_stratification_SE = function(
   check_and_install_packages(c("survival", "survminer", "broom"))
   
 
-	deconvoluted %>%
+	deconvoluted |>
 
-		pivot_sample() %>%
+		pivot_sample() |>
 
 		# Test
 		pivot_longer(
@@ -1214,20 +1213,20 @@ univariable_differential_tissue_stratification_SE = function(
 			cols = starts_with(method),
 			names_to = ".cell_type",
 			values_to = ".proportion"
-		) %>%
+		) |>
 
 		# Test survival
-		tidyr::nest(cell_type_proportions = -.cell_type) %>%
+		tidyr::nest(cell_type_proportions = -.cell_type) |>
 		mutate(surv_test = map(
 			cell_type_proportions,
 			~ {
 
-				data = .x %>%
+				data = .x |>  
 					mutate(.high_cellularity = .proportion > median(.proportion))
 
-				if(data %>%
-					 distinct(.high_cellularity) %>%
-					 nrow() %>%
+				if(data |>
+					 distinct(.high_cellularity) |>
+					 nrow() |>
 					 equals(1)
 				) return(NULL)
 
@@ -1235,9 +1234,8 @@ univariable_differential_tissue_stratification_SE = function(
 				fit = survival::survdiff(data = data, .my_formula)
 
 				p =
-					survminer::surv_fit(data = data, .my_formula) %>%
+					survminer::surv_fit(data = data, .my_formula) |>
 					survminer::ggsurvplot(
-						fit=.,
 						data = data,
 						risk.table = FALSE,
 						conf.int = TRUE,
@@ -1246,16 +1244,16 @@ univariable_differential_tissue_stratification_SE = function(
 						pval = TRUE
 					)
 
-				fit %>%
-					broom::tidy() %>%
-					select(-N, -obs) %>%
-					spread(.high_cellularity, exp) %>%
-					setNames(c(".low_cellularity_expected", ".high_cellularity_expected")) %>%
-					mutate(pvalue = 1 - pchisq(fit$chisq, length(fit$n) - 1)) %>%
+				fit |>
+					broom::tidy() |>
+					select(-N, -obs) |>
+					spread(.high_cellularity, exp) |>
+					setNames(c(".low_cellularity_expected", ".high_cellularity_expected")) |>
+					mutate(pvalue = 1 - pchisq(fit$chisq, length(fit$n) - 1)) |>
 					mutate(plot = list(p))
 
 			}
-		)) %>%
+		)) |>
 
 		unnest(surv_test, keep_empty = TRUE)
 }
@@ -1266,7 +1264,7 @@ rotation = function(m, d) {
 	((bind_rows(
 		c(`1` = cos(r), `2` = -sin(r)),
 		c(`1` = sin(r), `2` = cos(r))
-	) %>% as_matrix) %*% m)
+	) |> as_matrix()) %*% m)
 }
 
 combineByRow <- function(m, fun = NULL) {
@@ -1316,9 +1314,9 @@ filter_genes_on_condition = function(.data, .subset_for_scaling){
 
   # Get genes from condition
   my_genes =
-    rowData(.data) %>%
-    as_tibble(rownames=".feature") %>%
-    filter(!!.subset_for_scaling) %>%
+    rowData(.data) |>
+    as_tibble(rownames=".feature") |>
+    filter(!!.subset_for_scaling) |>
     pull(.feature)
 
   .data[rownames(.data) %in% my_genes,]
@@ -1347,10 +1345,10 @@ fill_NA_matrix_with_factor_colwise = function(.data, factor){
   rn = rownames(.data)
   cn = colnames(.data)
 
-  .data %>%
-    t %>%
-    split.data.frame(factor) %>%
-    map(~ t(.x)) %>%
+  .data = .data |>
+    t() |>
+    split.data.frame(factor) |>
+    map(t) |>
 
     # Fill
     map(
@@ -1359,19 +1357,19 @@ fill_NA_matrix_with_factor_colwise = function(.data, factor){
         data_matrix[k] <- rowMedians(data_matrix, na.rm=TRUE)[k[,1]]
         data_matrix
       }
-    ) %>%
-
-    # Add NA factors if any
-    when(
-      is.na(factor) %>% length() %>% gt(0) ~ (.) %>% c(list(.data[,is.na(factor)])),
-      ~ (.)
-    ) %>%
+    ) 
+    
+    if (length(which(is.na(factor))) > 0) {
+      .data <- c(.data, list(.data[, is.na(factor)]))
+    }
+    
+    .data |>
 
     # Merge
-    reduce(cbind) %>%
+    reduce(cbind) |>
 
     # Reorder rows and column as it was
-    .[rn, cn]
+    _[rn, cn]
 
 }
 
@@ -1490,7 +1488,7 @@ run_epic = function(mix, reference = NULL) {
   # Check if 'EPIC' package is installed, otherwise stop with instructions
   check_and_install_packages("EPIC")
   
-  if("EPIC" %in% .packages() %>% not) stop("tidybulk says: Please install and then load the package EPIC manually (i.e. library(EPIC)). This is because EPIC is not in Bioconductor or CRAN so it is not possible to seamlessly make EPIC part of the dependencies.")
+  if("EPIC" %in% .packages() |> not()) stop("tidybulk says: Please install and then load the package EPIC manually (i.e. library(EPIC)). This is because EPIC is not in Bioconductor or CRAN so it is not possible to seamlessly make EPIC part of the dependencies.")
   
   # Get common markers
   if( reference  |> is("data.frame") | reference  |> is("matrix")){
@@ -1510,7 +1508,7 @@ run_epic = function(mix, reference = NULL) {
   if(!is(Y, "matrix") & !is(Y, "data.frame"))
     Y = as.matrix(Y)
   
-  results <- EPIC(Y, reference = reference)$cellFractions %>% data.frame()
+  results <- EPIC(Y, reference = reference)$cellFractions |> data.frame()
   #results[results < 0] <- 0
   #results <- results / apply(results, 1, sum)
   rownames(results) = colnames(Y)
@@ -1522,36 +1520,36 @@ run_epic = function(mix, reference = NULL) {
 
 counts_scaled_exist_SE = function(.data){
   
-  ("tt_columns" %in% (.data %>%
-                        attr("internal") %>% names())) &&
+  ("tt_columns" %in% (.data |>
+                        attr("internal") |> names())) &&
     (
-      .data %>%
+      .data |>
         attr("internal") %$%
-        tt_columns %>%
-        names() %>%
-        grep("scaled", .) %>%
-        length() %>%
+        tt_columns |>
+        names() |>
+        grep("scaled", .) |>
+        length() |>
         equals(1)
     )
 }
 
 get_assay_scaled_if_exists_SE = function(.data){
   if(counts_scaled_exist_SE(.data))
-    .data %>%
+    .data |>
     attr("internal") %$%
     tt_columns %$%
-    .abundance_scaled %>%
+    .abundance_scaled |>
     quo_name()
   else
-    .data %>%
-    assays() %>%
-    names() %>%
+    .data |>
+    assays() |>
+    names() |>
     head(1)
 }
 
 filter_if_abundant_were_identified = function(.data){
   # Filter abundant if performed
-  if (".abundant" %in% (rowData(.data) %>% colnames())) {
+  if (".abundant" %in% (rowData(.data) |> colnames())) {
     .data[rowData(.data)[,".abundant"],]
   } else {
     warning("tidybulk says: highly abundant transcripts were not identified (i.e. identify_abundant()) or filtered (i.e., keep_abundant), therefore this operation will be performed on unfiltered data. In rare occasions this could be wanted. In standard whole-transcriptome workflows is generally unwanted.")

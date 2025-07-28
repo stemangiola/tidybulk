@@ -149,9 +149,9 @@ setGeneric("test_gene_overrepresentation", function(
         stop(sprintf("tidybulk says: wrong species name. MSigDB uses the latin species names (e.g., %s)", paste(msigdbr::msigdbr_species()$species_name, collapse=", ")))
     
     # # Check if missing entrez
-    # if(.data %>% filter(!!.entrez %>% is.na) %>% nrow() %>% gt(0) ){
+    # if(.data |> filter(!!.entrez |> is.na()) |> nrow() |> gt(0) ){
     # 	warning("tidybulk says: there are .entrez that are NA. Those will be removed")
-    # 	.data = .data %>%	filter(!!.entrez %>% is.na %>% not())
+    # 	.data = .data |>	filter(!!.entrez |> is.na() |> not())
     # }
     
       .data |>
@@ -292,12 +292,9 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
                    map(
                        fit,
                        ~ .x |>
-                           # ggplot2::fortify(showCategory=Inf) %>%
                            as_tibble() |>
                            rowid_to_column(var = "idx_for_plotting")
-                       #%>%
-                       #	mutate(plot = future_imap(ID, ~ enrichplot::gseaplot2(fit, geneSetID = .y, title = .x)))
-                       
+ 
                    )) |>
         select(-data)
     
