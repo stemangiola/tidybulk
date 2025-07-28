@@ -64,13 +64,10 @@ This wrapper execute gene enrichment analyses of the dataset using a list of tra
 This wrapper uses clusterProfiler (DOI: doi.org/10.1089/omi.2011.0118) on the back-end.
 
 Undelying method:
-msigdbr::msigdbr(species = species) %>%
-
-# Filter specific gene_sets  if specified. This was introduced to speed up examples executionS
-when(
-	!is.null(gene_sets ) ~ filter(., gs_collection %in% gene_sets ),
-	~ (.)
-) |>
+my_gene_collection <- msigdbr::msigdbr(species = species)
+if (!is.null(gene_sets)) {
+  my_gene_collection <- filter(my_gene_collection, gs_collection %in% gene_sets)
+}
 
 # Execute calculation
 nest(data = -gs_collection) |>

@@ -188,7 +188,7 @@ setGeneric("test_differential_abundance", function(.data,
                                                    
                                                    abundance =  assayNames(.data)[1],
                                                    contrasts = NULL,
-                                                   method = "edgeR_quasi_likelihood",
+                                                   method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio", "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"),
                                                    test_above_log2_fold_change = NULL,
                                                    scaling_method = "TMM",
                                                    omit_contrast_in_colnames = FALSE,
@@ -212,7 +212,7 @@ standardGeneric("test_differential_abundance"))
                                            
                                            abundance =  assayNames(.data)[1],
                                            contrasts = NULL,
-                                           method = "edgeR_quasi_likelihood",
+                                           method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio", "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"),
                                            test_above_log2_fold_change = NULL,
                                            scaling_method = "TMM",
                                            omit_contrast_in_colnames = FALSE,
@@ -605,7 +605,7 @@ setGeneric("test_differential_expression", function(.data,
                                                    
                                                    abundance =  assayNames(.data)[1],
                                                    contrasts = NULL,
-                                                   method = "edgeR_quasi_likelihood",
+                                                   method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio", "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"),
                                                    test_above_log2_fold_change = NULL,
                                                    scaling_method = "TMM",
                                                    omit_contrast_in_colnames = FALSE,
@@ -630,7 +630,7 @@ standardGeneric("test_differential_expression"))
 setMethod(
   "test_differential_expression",
   "SummarizedExperiment",
-  function(.data, .formula, abundance = assayNames(.data)[1], contrasts = NULL, method = "edgeR_quasi_likelihood", test_above_log2_fold_change = NULL, scaling_method = "TMM", omit_contrast_in_colnames = FALSE, prefix = "", ..., significance_threshold = NULL, fill_missing_values = NULL, .contrasts = NULL, .abundance = NULL) {
+  function(.data, .formula, abundance = assayNames(.data)[1], contrasts = NULL, method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio", "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"), test_above_log2_fold_change = NULL, scaling_method = "TMM", omit_contrast_in_colnames = FALSE, prefix = "", ..., significance_threshold = NULL, fill_missing_values = NULL, .contrasts = NULL, .abundance = NULL) {
     test_differential_abundance(.data, .formula, abundance = abundance, contrasts = contrasts, method = method, test_above_log2_fold_change = test_above_log2_fold_change, scaling_method = scaling_method, omit_contrast_in_colnames = omit_contrast_in_colnames, prefix = prefix, ..., significance_threshold = significance_threshold, fill_missing_values = fill_missing_values, .contrasts = .contrasts, .abundance = .abundance)
   }
 )
@@ -645,7 +645,7 @@ setMethod(
 setMethod(
   "test_differential_expression",
   "RangedSummarizedExperiment",
-  function(.data, .formula, abundance = assayNames(.data)[1], contrasts = NULL, method = "edgeR_quasi_likelihood", test_above_log2_fold_change = NULL, scaling_method = "TMM", omit_contrast_in_colnames = FALSE, prefix = "", ..., significance_threshold = NULL, fill_missing_values = NULL, .contrasts = NULL, .abundance = NULL) {
+  function(.data, .formula, abundance = assayNames(.data)[1], contrasts = NULL, method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio", "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"), test_above_log2_fold_change = NULL, scaling_method = "TMM", omit_contrast_in_colnames = FALSE, prefix = "", ..., significance_threshold = NULL, fill_missing_values = NULL, .contrasts = NULL, .abundance = NULL) {
     test_differential_abundance(.data, .formula, abundance = abundance, contrasts = contrasts, method = method, test_above_log2_fold_change = test_above_log2_fold_change, scaling_method = scaling_method, omit_contrast_in_colnames = omit_contrast_in_colnames, prefix = prefix, ..., significance_threshold = significance_threshold, fill_missing_values = fill_missing_values, .contrasts = .contrasts, .abundance = .abundance)
   }
 )
@@ -685,7 +685,7 @@ get_differential_transcript_abundance_bulk_SE <- function(
     abundance = assayNames(.data)[1],
     sample_annotation,
     .contrasts = NULL,
-    method = "edgeR_quasi_likelihood",
+    method = c("edgeR_quasi_likelihood", "edgeR_likelihood_ratio", "edger_robust_likelihood_ratio", "DESeq2", "limma_voom", "limma_voom_sample_weights", "glmmseq_lme4", "glmmseq_glmmtmb"),
     test_above_log2_fold_change = NULL,
     scaling_method = "TMM",
     omit_contrast_in_colnames = FALSE,
