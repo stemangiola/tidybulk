@@ -54,8 +54,6 @@ knit: >
 
 Tidybulk provides a unified interface for comprehensive transcriptomic data analysis with seamless integration of SummarizedExperiment objects and tidyverse principles. It streamlines the entire workflow from raw data to biological insights.
 
-# <img src="`r ifelse(knitr::pandoc_to() %in% c('html', 'html4'), '../inst/new_SE_usage-01.png', 'inst/new_SE_usage-01.png')`" width="100%"/>
-
 ## Functions/utilities available
 
 ### Abundance Normalization Functions
