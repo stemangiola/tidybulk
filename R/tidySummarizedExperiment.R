@@ -282,6 +282,7 @@ subset_tibble_output = function(.data, count_info, sample_info, gene_info, range
 }
 
 #' @importFrom S4Vectors metadata
+#' @importFrom S4Vectors "metadata<-"
 f_ =  function(x){
   # Check if old deprecated columns are used
   if("feature__" %in% names(metadata(x))) feature__ = metadata(x)$feature__

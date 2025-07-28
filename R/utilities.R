@@ -97,6 +97,7 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
 #' @noRd
 #'
 #' @importFrom stats terms
+#' @importFrom S4Vectors "metadata<-"
 #'
 #' @param fm a formula
 #' @return A character vector

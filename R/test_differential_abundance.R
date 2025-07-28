@@ -668,6 +668,7 @@ setMethod(
 #' @importFrom stats model.matrix
 #' @importFrom purrr when
 #' @importFrom magrittr extract2
+#' @importFrom stringr str_detect str_replace
 #'
 #'
 #' @param .data A tibble

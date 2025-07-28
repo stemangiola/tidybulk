@@ -1,11 +1,13 @@
 #' Test of stratification of biological replicates based on tissue composition, one cell-type at the time, using Kaplan-meier curves.
 #'
-#' `r lifecycle::badge("maturing")`
+#' `r lifecycle::badge("deprecated")`
 #'
-#' @description test_stratification_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
+#' @description 
+#' **DEPRECATED**: This function is deprecated and will be removed in a future version.
+#' test_stratification_cellularity() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with additional columns for the statistics from the hypothesis test.
 #'
 #' @importFrom rlang enquo quo_name
-#' @importFrom stringr str_detect str_replace
+#' @importFrom stringr str_replace
 #' @importFrom dplyr mutate
 #'
 #' @name test_stratification_cellularity
@@ -42,14 +44,14 @@
 #'
 #'
 #' @examples
-#'
-#'
-#'	tidybulk::se_mini |>
-#'	test_stratification_cellularity(
-#'		survival::Surv(days, dead) ~ .,
-#'		cores = 1
-#'	)
-#'
+#' # Examples commented out due to deprecation
+#' # # Example with survival analysis
+#' # tidybulk::se_mini |>
+#' # test_stratification_cellularity(
+#' # 	survival::Surv(days, dead) ~ .,
+#' # 	method = "cibersort",
+#' # 	cores = 1
+#' # )
 #' @references
 #' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 #'
@@ -57,6 +59,7 @@
 #'
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
+#' @noRd
 #' @export
 #'
 setGeneric("test_stratification_cellularity", function(.data,
@@ -84,6 +87,13 @@ setGeneric("test_stratification_cellularity", function(.data,
                                                  ...)
 {
   
+  # Deprecation warning
+  lifecycle::deprecate_warn(
+    when = "2.0.0",
+    what = "test_stratification_cellularity()",
+    details = "This function is deprecated and will be removed in a future version."
+  )
+  
   # Fix NOTEs
   . = NULL
   
@@ -99,7 +109,8 @@ setGeneric("test_stratification_cellularity", function(.data,
   }
   
   # Validate formula
-  if(.formula |> format() |> grepl(" \\.|\\. ", .) |> not())
+  formula_str = format(.formula)
+  if(is.na(formula_str) || !grepl(" \\.|\\. ", formula_str))
     stop("tidybulk says: in the formula a dot must be present in either these forms \". ~\" or \"~ .\" with a white-space after or before respectively")
   
   deconvoluted =
@@ -114,7 +125,7 @@ setGeneric("test_stratification_cellularity", function(.data,
     )
   
   # Check if test is univaiable or multivariable
-  .formula |>
+  result = .formula |>
     (\(.) {
       # Parse formula
       .my_formula =
@@ -130,8 +141,12 @@ setGeneric("test_stratification_cellularity", function(.data,
         memorise_methods_used("test_stratification_cellularity")
     })()
   
-  # Eliminate prefix
-  mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+  # Eliminate prefix if .cell_type column exists
+  if (".cell_type" %in% colnames(result)) {
+    result = result |> mutate(.cell_type = str_remove(.cell_type, sprintf("%s:", method)))
+  }
+  
+  result
   
 }
 

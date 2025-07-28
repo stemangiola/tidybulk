@@ -23,7 +23,7 @@
 #' # Convert tibble to SummarizedExperiment
 #' library(tibble)
 #' tibble(.sample = "A", .transcript = "CD3G", count = 1) |>
-#'   as_SummarizedExperiment(.sample, .transcript, count)
+#'   as_SummarizedExperiment(.sample = .sample, .transcript = .transcript, .abundance = count)
 #'
 #' @references
 #' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
@@ -37,15 +37,15 @@
 #' @export
 #'
 setGeneric("as_SummarizedExperiment", function(.data,
-                                               
-                                               
+                                               .sample = NULL,
+                                               .transcript = NULL,
                                                .abundance = NULL)
   standardGeneric("as_SummarizedExperiment"))
 
 
 .as_SummarizedExperiment = function(.data,
-                                    
-                                    
+                                    .sample = NULL,
+                                    .transcript = NULL,
                                     .abundance = NULL) {
   
   # Fix NOTEs
@@ -76,7 +76,7 @@ setGeneric("as_SummarizedExperiment", function(.data,
                                              !!.sample,
                                              !!.transcript,
                                              !!.abundance,
-                                             !!.abundance_scaled)
+                                             if(is.null(.abundance_scaled)) NULL else !!.abundance_scaled)
   sample_cols = col_direction$horizontal_cols
   feature_cols = col_direction$vertical_cols
   counts_cols = col_direction$counts_cols

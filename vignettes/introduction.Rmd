@@ -100,7 +100,6 @@ Function | Description
 Function | Description
 ------------ | -------------
 `deconvolve_cellularity()` | Deconvolve cellularity with various methods
-`test_stratification_cellularity()` | Test stratification cellularity
 `cibersort()` | CIBERSORT analysis
 
 ### Gene Enrichment Functions

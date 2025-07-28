@@ -322,7 +322,18 @@ get_reduced_dimensions_MDS_bulk_SE <-
       components = c(1, 2)
       components_list = list(c(1, 2))
     } else {
-      components_list = split(components, ceiling(seq_along(components)/2))
+      # For MDS, we need to create pairs of dimensions for plotting
+      # If .dims is odd, we'll use the last dimension with the first
+      if (.dims %% 2 == 1) {
+        # For odd numbers, create pairs and handle the last dimension separately
+        pairs = split(components[1:(.dims-1)], ceiling(seq_along(components[1:(.dims-1)])/2))
+        # Add the last dimension paired with the first
+        pairs[[length(pairs) + 1]] = c(components[.dims], components[1])
+        components_list = pairs
+      } else {
+        # For even numbers, create pairs normally
+        components_list = split(components, ceiling(seq_along(components)/2))
+      }
     }
     
     # Loop over components list and calculate MDS. (I have to make this process more elegant)
