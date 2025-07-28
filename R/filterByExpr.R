@@ -3,13 +3,15 @@
 #  FIT GENERALIZED LINEAR MODELS
 # Internal use only, do not export. # nolint # noRd
 #
+#' @importFrom stats hat
+#
 # @references
 # Chen, Y., Lun, A. T., & Smyth, G. K. (2016). From reads to genes to pathways: differential expression analysis of RNA-Seq experiments using Rsubread and the edgeR quasi-likelihood pipeline. F1000Research, 5, 1438. doi:10.12688/f1000research.8987.2
 
 filterByExpr <- function(y, ...)
 UseMethod("filterByExpr")
 
-#' @exportS3Method
+#' @exportS3Method tidybulk::filterByExpr
 filterByExpr.DGEList <- function(y, design=NULL, group=NULL, lib.size=NULL, ...)
 {
 #	Order of precedence:
@@ -28,7 +30,6 @@ filterByExpr.DGEList <- function(y, design=NULL, group=NULL, lib.size=NULL, ...)
 	filterByExpr.default(y$counts, design=design, group=group, lib.size=lib.size, ...)
 }
 
-#' @exportS3Method
 filterByExpr_SE <- function(y, design=NULL, group=NULL, lib.size=NULL, assay_name=NULL, ...)
 #	Created 19 March 2020. Last revised 19 March 2020.
 {
@@ -50,7 +51,7 @@ filterByExpr_SE <- function(y, design=NULL, group=NULL, lib.size=NULL, assay_nam
     filterByExpr.DGEList(y, design=design, group=group, lib.size=lib.size, ...)
 }
 
-#' @exportS3Method
+#' @exportS3Method tidybulk::filterByExpr
 filterByExpr.default <- function(y, design=NULL, group=NULL, lib.size=NULL, min.count=10, CPM.Cutoff=NULL, min.total.count=15, large.n=10, min.prop=0.7, ...)
 #	Filter low expressed genes given count matrix
 #	Computes TRUE/FALSE index vector indicating which rows to keep

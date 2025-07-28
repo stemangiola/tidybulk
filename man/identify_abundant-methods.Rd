@@ -68,10 +68,6 @@ Used by edgeR's filterByExpr to define sample groups.
 \item{...}{Further arguments.}
 
 \item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
-
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 Returns the input object with an additional logical column `.abundant` indicating which 

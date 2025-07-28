@@ -36,10 +36,6 @@ quantile_normalise_abundance(
 \item{method}{A character string. Either "limma_normalize_quantiles" for limma::normalizeQuantiles or "preprocesscore_normalize_quantiles_use_target" for preprocessCore::normalize.quantiles.use.target for large-scale datasets.}
 
 \item{target_distribution}{A numeric vector. If NULL the target distribution will be calculated by preprocessCore. This argument only affects the "preprocesscore_normalize_quantiles_use_target" method.}
-
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`

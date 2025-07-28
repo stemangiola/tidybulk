@@ -103,7 +103,8 @@ setGeneric("rotate_dimensions", function(.data,
 #' @keywords internal
 #'
 #' @importFrom rlang enquo quo_name quo_is_null
-#' @importFrom purrr when not
+#' @importFrom purrr when
+#' @importFrom magrittr not
 #' @importFrom dplyr between
 #' @importFrom SummarizedExperiment colData rowData
 #' @importFrom stats setNames

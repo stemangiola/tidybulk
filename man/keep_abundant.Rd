@@ -3,37 +3,9 @@
 \docType{methods}
 \name{keep_abundant}
 \alias{keep_abundant}
-\alias{keep_abundant,SummarizedExperiment-method}
-\alias{keep_abundant,RangedSummarizedExperiment-method}
 \title{Filter to keep only abundant transcripts/genes}
 \usage{
 keep_abundant(
-  .data,
-  abundance = assayNames(.data)[1],
-  design = NULL,
-  formula_design = NULL,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
-  minimum_count_per_million = NULL,
-  factor_of_interest = NULL,
-  ...,
-  .abundance = NULL
-)
-
-\S4method{keep_abundant}{SummarizedExperiment}(
-  .data,
-  abundance = assayNames(.data)[1],
-  design = NULL,
-  formula_design = NULL,
-  minimum_counts = 10,
-  minimum_proportion = 0.7,
-  minimum_count_per_million = NULL,
-  factor_of_interest = NULL,
-  ...,
-  .abundance = NULL
-)
-
-\S4method{keep_abundant}{RangedSummarizedExperiment}(
   .data,
   abundance = assayNames(.data)[1],
   design = NULL,
@@ -53,40 +25,38 @@ keep_abundant(
 
 \item{design}{A design matrix for more complex experimental designs. If provided, this is passed to filterByExpr instead of factor_of_interest.}
 
-\item{formula_design}{...}
+\item{formula_design}{A formula for creating the design matrix}
 
-\item{minimum_counts}{...}
+\item{minimum_counts}{The minimum count threshold for a feature to be considered abundant}
 
-\item{minimum_proportion}{...}
+\item{minimum_proportion}{The minimum proportion of samples in which a feature must be abundant}
 
-\item{minimum_count_per_million}{...}
+\item{minimum_count_per_million}{The minimum count per million threshold}
 
-\item{factor_of_interest}{The name of the column containing groups/conditions for filtering. 
-Used by edgeR's filterByExpr to define sample groups. 
-\strong{DEPRECATED:} Use 'design' or 'formula_design' instead. This argument will be removed in a future release.}
+\item{factor_of_interest}{The name of the column containing groups/conditions for filtering. DEPRECATED: Use 'design' or 'formula_design' instead.}
 
 \item{...}{Further arguments.}
 
 \item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
-
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 Returns a filtered version of the input object containing only the features that passed
 the abundance threshold criteria.
 
-A `SummarizedExperiment` object
-
-A `SummarizedExperiment` object
+Returns a filtered version of the input object containing only the features that passed
+the abundance threshold criteria.
 }
 \description{
 Filters the data to keep only transcripts/genes that are consistently expressed above 
 a threshold across samples. This is a filtering version of identify_abundant() that 
 removes low-abundance features instead of just marking them.
+
+This function is similar to identify_abundant() but instead of adding an .abundant column,
+it filters out the low-abundance features directly.
 }
 \details{
+Filter to keep only abundant transcripts/genes
+
 \lifecycle{questioning}
 
 

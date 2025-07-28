@@ -19,7 +19,10 @@ car_relatives <- function (term, names, factors)
                                         function(term2) is.relative(term, term2))]
 }
 
-#' @importFrom stats pchisq
+#' @importFrom stats pchisq coef vcov AIC logLik anova predict
+#' @importFrom methods slot new
+#' @importFrom parallel makeCluster clusterExport parLapply stopCluster
+#' @importFrom stats update.formula
 organiseStats = function (resultList, test.stat)
 {
   statsList <- lapply(resultList, "[[", "stats")

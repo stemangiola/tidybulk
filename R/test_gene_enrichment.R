@@ -6,15 +6,16 @@
 #'
 #' @importFrom rlang enquo quo_name
 #' @importFrom magrittr not
-#' @importFrom dplyr filter arrange mutate pull
+#' @importFrom dplyr filter arrange mutate pull bind_rows
 #' @importFrom SummarizedExperiment colData rowData assays
+#' @importFrom tidyselect all_of
+
 #'
 #'
 #' @name test_gene_enrichment
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 #' @param .formula A formula with no response variable, representing the desired linear model
-#' @param .sample The name of the sample column
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param contrasts This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)

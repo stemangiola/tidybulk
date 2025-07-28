@@ -5,11 +5,12 @@
 #' @description adjust_abundance() takes as input A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment)) and returns a consistent object (to the input) with an additional adjusted abundance column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
-#' @importFrom rlang enquo quo_is_null quo_name is_present quo
+#' @importFrom rlang enquo quo_is_null quo_name quo
 #' @importFrom lifecycle deprecate_warn
 #' @importFrom stringr str_c
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr select pull
+#' @importFrom stats as.formula
 #' @importFrom SummarizedExperiment assay assayNames assays colData
 #' @importFrom stats model.matrix rnorm
 #'

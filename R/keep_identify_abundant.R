@@ -8,8 +8,6 @@
 #' This function adds a logical column `.abundant` to indicate which features pass the filtering criteria.
 #'
 #' @param .data A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
 #' @param abundance The name of the transcript/gene abundance column (character, preferred)
 #' @param design A design matrix for more complex experimental designs. If provided, this is passed to filterByExpr instead of factor_of_interest.
 #' @param formula_design ...
@@ -56,6 +54,7 @@
 #' @importFrom dplyr filter
 #' @importFrom tidyr drop_na
 #' @importFrom magrittr not
+#' @importFrom stats as.formula
 #'
 #' @docType methods
 #' @rdname identify_abundant-methods
@@ -219,8 +218,6 @@ setMethod("identify_abundant",
 #' removes low-abundance features instead of just marking them.
 #'
 #' @param .data A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
 #' @param abundance The name of the transcript/gene abundance column (character, preferred)
 #' @param design A design matrix for more complex experimental designs. If provided, this is passed to filterByExpr instead of factor_of_interest.
 #' @param formula_design ...
@@ -266,8 +263,27 @@ setMethod("identify_abundant",
 #' @importFrom rlang enquo
 #' @importFrom dplyr filter
 #'
+#' @name keep_abundant
+#' @title Filter to keep only abundant transcripts/genes
+#' @description This function is similar to identify_abundant() but instead of adding an .abundant column,
+#' it filters out the low-abundance features directly.
+#'
+#' @param .data A `tbl` or `SummarizedExperiment` object containing transcript/gene abundance data
+#' @param abundance The name of the transcript/gene abundance column (character, preferred)
+#' @param design A design matrix for more complex experimental designs. If provided, this is passed to filterByExpr instead of factor_of_interest.
+#' @param formula_design A formula for creating the design matrix
+#' @param minimum_counts The minimum count threshold for a feature to be considered abundant
+#' @param minimum_proportion The minimum proportion of samples in which a feature must be abundant
+#' @param minimum_count_per_million The minimum count per million threshold
+#' @param factor_of_interest The name of the column containing groups/conditions for filtering. DEPRECATED: Use 'design' or 'formula_design' instead.
+#' @param ... Further arguments.
+#' @param .abundance DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)
+#'
+#' @return 
+#' Returns a filtered version of the input object containing only the features that passed
+#' the abundance threshold criteria.
+#'
 #' @docType methods
-#' @rdname keep_abundant-methods
 #' @export
 setGeneric("keep_abundant", function(.data,
                                      abundance = assayNames(.data)[1],
@@ -340,8 +356,7 @@ setGeneric("keep_abundant", function(.data,
 #' keep_abundant
 #'
 #' @docType methods
-#' @rdname keep_abundant-methods
-#'
+#' @inheritParams keep_abundant
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("keep_abundant",
@@ -351,8 +366,7 @@ setMethod("keep_abundant",
 #' keep_abundant
 #'
 #' @docType methods
-#' @rdname keep_abundant-methods
-#'
+#' @inheritParams keep_abundant
 #' @return A `SummarizedExperiment` object
 #'
 setMethod("keep_abundant",

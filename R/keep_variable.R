@@ -12,13 +12,10 @@
 #' @name keep_variable
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param top Integer. Number of top transcript to consider
 #' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
-#'
-#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param log_transform DEPRECATED. Use transform instead.
 #'
 #' @details At the moment this function uses edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}
 #'

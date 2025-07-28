@@ -7,7 +7,9 @@
 #' @importFrom rlang enquo quo_is_missing
 #' @importFrom magrittr not
 #' @importFrom dplyr filter distinct pull mutate
+#' @importFrom dplyr add_count
 #' @importFrom SummarizedExperiment rowData
+#' @importFrom methods is
 #'
 #'
 #' @name test_gene_overrepresentation

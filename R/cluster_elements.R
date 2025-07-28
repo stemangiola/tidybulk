@@ -14,16 +14,10 @@
 #' @name cluster_elements
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
-#' @param .element The name of the element column (normally samples).
-#' @param .feature The name of the feature column (normally transcripts/genes)
-#' @param .abundance The name of the column including the numerical value the clustering is based on (normally transcript abundance)
-#'
 #' @param method A character string. The cluster algorithm to use, at the moment k-means is the only algorithm included.
 #' @param of_samples A boolean. In case the input is a tidybulk object, it indicates Whether the element column will be sample or transcript column
 #' @param transform A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity
 #' @param ... Further parameters passed to the function kmeans
-#'
-#' @param log_transform DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
 #'
 #' @details identifies clusters in the data, normally of samples.
 #' This function returns a tibble with additional columns for the cluster annotation.

@@ -1,7 +1,7 @@
 tidybulk: An R tidy framework for modular transcriptomic data analysis
 ================
 Stefano Mangiola
-2025-07-25
+2025-07-28
 
 <!-- badges: start -->
 
@@ -69,14 +69,14 @@ data to biological insights.
 
 | Function | Description |
 |----|----|
-| `test_differential_abundance()` | Test differential abundance with various methods |
+| `test_differential_expression()` | Test differential expression with various methods |
 
 ### Cellularity Analysis Functions
 
 | Function | Description |
 |----|----|
 | `deconvolve_cellularity()` | Deconvolve cellularity with various methods |
-| `test_stratification_cellularity()` | Test stratification cellularity |
+| `test_stratification_cellularity()` | Test stratification cellularity (DEPRECATED) |
 | `cibersort()` | CIBERSORT analysis |
 
 ### Gene Enrichment Functions
@@ -126,7 +126,7 @@ analysis](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02
 
 ``` r
 if (!requireNamespace("BiocManager")) install.packages("BiocManager")
-if (!requireNamespace("tidybulk")) BiocManager::install("tidybulk")
+BiocManager::install("tidybulk")
 ```
 
 **Github**
@@ -134,18 +134,6 @@ if (!requireNamespace("tidybulk")) BiocManager::install("tidybulk")
 ``` r
 devtools::install_github("stemangiola/tidybulk")
 ```
-
-    ## 
-    ## ── R CMD build ─────────────────────────────────────────────────────────────────
-    ##      checking for file ‘/private/var/folders/7w/rg5zrgd17dn9pfwgpbgwdvxc0000gp/T/Rtmp3PF8o7/remotes12ef01085c6d8/stemangiola-tidybulk-dcbf659/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/7w/rg5zrgd17dn9pfwgpbgwdvxc0000gp/T/Rtmp3PF8o7/remotes12ef01085c6d8/stemangiola-tidybulk-dcbf659/DESCRIPTION’
-    ##   ─  preparing ‘tidybulk’:
-    ##      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-    ##   ─  installing the package to process help pages
-    ##   ─  checking for LF line-endings in source and make files and shell scripts (22.3s)
-    ##   ─  checking for empty or unneeded directories
-    ##   ─  building ‘tidybulk_1.21.1.tar.gz’
-    ##      
-    ## 
 
 # Comprehensive Example Pipeline
 
@@ -164,7 +152,7 @@ se_mini
     ## class: SummarizedExperiment 
     ## dim: 527 5 
     ## metadata(0):
-    ## assays(1): count
+    ## assays(1): counts
     ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
     ## rowData names(1): entrez
     ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
@@ -197,7 +185,7 @@ colData(se_mini)$condition = as.factor(colData(se_mini)$condition)
 Visualize the distribution of raw counts before any filtering:
 
 ``` r
-ggplot(as_tibble(se_mini), aes(count + 1, group = .sample, color = `Cell.type`)) +
+ggplot(as_tibble(se_mini), aes(counts + 1, group = .sample, color = `Cell.type`)) +
   geom_density() +
   scale_x_log10() +
   my_theme +
@@ -281,9 +269,9 @@ se_abundant_cpm = se_mini |> keep_abundant(minimum_counts = 10, minimum_proporti
 # Before filtering
 se_mini |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 ```
 
@@ -296,9 +284,9 @@ se_mini |> as_tibble() |> summarise(
 # After filtering
 se_abundant_default |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 ```
 
@@ -310,9 +298,9 @@ se_abundant_default |> as_tibble() |> summarise(
 ``` r
 se_abundant_formula |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 ```
 
@@ -324,9 +312,9 @@ se_abundant_formula |> as_tibble() |> summarise(
 ``` r
 se_abundant_cpm |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 ```
 
@@ -339,16 +327,16 @@ se_abundant_cpm |> as_tibble() |> summarise(
 # Merge all methods into a single tibble
 se_abundant_all = 
   bind_rows(
-    se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "no filter"),
-    se_abundant_default |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "default"),
-    se_abundant_formula |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "formula"),
-    se_abundant_cpm |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "cpm")
+    se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no filter"),
+    se_abundant_default |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "default"),
+    se_abundant_formula |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "formula"),
+    se_abundant_cpm |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "cpm")
   )
 
 # Density plot across methods
 se_abundant_all |> 
   as_tibble() |> 
-  ggplot(aes(count + 1, group = .sample, color = method)) +
+  ggplot(aes(counts + 1, group = .sample, color = method)) +
     geom_density() +
     scale_x_log10() +
     facet_wrap(~method) +
@@ -385,9 +373,9 @@ se_mini_non_redundant =
 
 se_mini |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 ```
 
@@ -400,9 +388,9 @@ se_mini |> as_tibble() |> summarise(
 # Summary statistics
 se_mini_non_redundant |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 ```
 
@@ -415,12 +403,12 @@ se_mini_non_redundant |> as_tibble() |> summarise(
 # Plot before and after
 # Merge before and after into a single tibble
 se_mini_all = bind_rows(
-  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |>  mutate(method = "before"),
-  se_mini_non_redundant |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |>  mutate(method = "after")
+  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "before"),
+  se_mini_non_redundant |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "after")
 )
 
 # Density plot
-ggplot(as_tibble(se_mini_all), aes(count + 1, group = .sample, color = method)) +
+ggplot(as_tibble(se_mini_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -450,9 +438,9 @@ se_mini_variable = se_mini |> keep_variable()
 # Before filtering
 se_mini |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 ```
 
@@ -465,9 +453,9 @@ se_mini |> as_tibble() |> summarise(
 # After filtering
 se_mini_variable |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
-  min_count = min(count),
-  median_count = median(count),
-  max_count = max(count)
+  min_count = min(counts),
+  median_count = median(counts),
+  max_count = max(counts)
 )
 ```
 
@@ -480,12 +468,12 @@ se_mini_variable |> as_tibble() |> summarise(
 # Density plot
 # Merge before and after into a single tibble
 se_mini_all = bind_rows(
-  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "before"),
-  se_mini_variable |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "after")
+  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "before"),
+  se_mini_variable |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "after")
 )
 
 # Density plot
-ggplot(as_tibble(se_mini_all), aes(count + 1, group = .sample, color = method)) +
+ggplot(as_tibble(se_mini_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -518,28 +506,28 @@ se_mini |>
 
 ``` r
 # Before scaling
-se_mini |> assay("count") |> as.matrix() |> rowMeans() |> summary()
+se_mini |> assay("counts") |> as.matrix() |> rowMeans() |> summary()
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     ##     6.6   115.8   540.5  1769.1  1608.3 48505.2
 
 ``` r
-se_mini |> assay("count_tmm") |> as.matrix() |> rowMeans() |> summary()
+se_mini |> assay("counts_tmm") |> as.matrix() |> rowMeans() |> summary()
 ```
 
     ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
     ##     8.296   126.854   618.203  1964.138  1919.999 50581.378
 
 ``` r
-se_mini |> assay("count_upperquartile") |> as.matrix() |> rowMeans() |> summary()
+se_mini |> assay("counts_upperquartile") |> as.matrix() |> rowMeans() |> summary()
 ```
 
     ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
     ##     8.501   144.420   660.466  2095.482  1971.146 51299.288
 
 ``` r
-se_mini |> assay("count_RLE") |> as.matrix() |> rowMeans() |> summary()
+se_mini |> assay("counts_RLE") |> as.matrix() |> rowMeans() |> summary()
 ```
 
     ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
@@ -548,15 +536,15 @@ se_mini |> assay("count_RLE") |> as.matrix() |> rowMeans() |> summary()
 ``` r
 # Merge all methods into a single tibble
 se_mini_scaled_all = bind_rows(
-  se_mini |> assay("count") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "no_scaling"),
-  se_mini |> assay("count_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "TMM"),
-  se_mini |> assay("count_upperquartile") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "upperquartile"),
-  se_mini |> assay("count_RLE") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count") |> mutate(method = "RLE")
+  se_mini |> assay("counts") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no_scaling"),
+  se_mini |> assay("counts_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "TMM"),
+  se_mini |> assay("counts_upperquartile") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "upperquartile"),
+  se_mini |> assay("counts_RLE") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "RLE")
 )
 
 
 # Density plot
-ggplot(as_tibble(se_mini_scaled_all), aes(count + 1, group = .sample, color = method)) +
+ggplot(as_tibble(se_mini_scaled_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -595,7 +583,9 @@ se_mini = se_mini |>
 
     ## Getting the 394 most variable genes
 
-    ## tidybulk says: to access the raw results do `attr(..., "internals")$MDS`
+    ## [1] "MDS result_df colnames: sample, 1, 2"
+
+    ## tidybulk says: to access the raw results do `metadata(.)$tidybulk$MDS`
 
 ``` r
 se_mini = se_mini |>
@@ -612,10 +602,10 @@ se_mini = se_mini |>
     ## # A tibble: 2 × 2
     ##   `Fraction of variance`    PC
     ##                    <dbl> <int>
-    ## 1                  0.581     1
-    ## 2                  0.323     2
+    ## 1                 0.0878     1
+    ## 2                 0.0466     2
 
-    ## tidybulk says: to access the raw results do `attr(..., "internals")$PCA`
+    ## tidybulk says: to access the raw results do `metadata(.)$tidybulk$PCA`
 
 ### Visualize Dimensionality Reduction Results
 
@@ -650,7 +640,7 @@ for unsupervised grouping.
 
 ``` r
 se_mini = se_mini |>
-  cluster_elements(method="kmeans", centers = 2, action="get")
+  cluster_elements(method="kmeans", centers = 2)
 
 # Visualize clustering
     se_mini |>
@@ -664,9 +654,11 @@ se_mini = se_mini |>
 
 ## Step 3: Differential Expression Analysis
 
-This workflow uses **edgeR quasi-likelihood** ([Robinson, McCarthy, and
-Smyth 2010](#ref-robinson2010edger); [Chen, Lun, and Smyth
-2016](#ref-chen2016edgeR)), **edgeR robust likelihood ratio** ([Chen,
+This workflow uses
+
+**edgeR quasi-likelihood** ([Robinson, McCarthy, and Smyth
+2010](#ref-robinson2010edger); [Chen, Lun, and Smyth
+2016](#ref-chen2016edgeR)) **edgeR robust likelihood ratio** ([Chen,
 Lun, and Smyth 2016](#ref-chen2016edgeR)), **DESeq2** ([Love, Huber, and
 Anders 2014](#ref-love2014deseq2)), **limma-voom** ([Law et al.
 2014](#ref-law2014voom)), and **limma-voom with sample weights** ([Liu
@@ -675,40 +667,64 @@ analysis.
 
 ### Basic Differential Expression
 
-**Methods:** - **edgeR quasi-likelihood:** Quasi-likelihood F-tests for
-differential expression - **edgeR robust likelihood ratio:** Robust
-likelihood ratio tests - **DESeq2:** Negative binomial distribution with
-dispersion estimation - **limma-voom:** Linear modeling with empirical
-Bayes moderation - **limma-voom with sample weights:** Enhanced voom
-with quality weights **References:** - Robinson et al. (2010) edgeR: a
-Bioconductor package for differential expression analysis - Chen et
-al. (2016) From reads to genes to pathways: differential expression
-analysis of RNA-Seq experiments using Rsubread and the edgeR
-quasi-likelihood pipeline - Love et al. (2014) Moderated estimation of
-fold change and dispersion for RNA-seq data with DESeq2 - Law et
-al. (2014) voom: precision weights unlock linear model analysis tools
-for RNA-seq read counts - Liu et al. (2015) Why weight? Modelling sample
-and observational level variability improves power in RNA-seq analyses
+**Methods:**
+
+- **edgeR quasi-likelihood:** Quasi-likelihood F-tests for differential
+  expression
+
+- **edgeR robust likelihood ratio:** Robust likelihood ratio tests
+
+- **DESeq2:** Negative binomial distribution with dispersion estimation
+
+- **limma-voom:** Linear modeling with empirical Bayes moderation
+
+- **limma-voom with sample weights:** Enhanced voom with quality weights
+  **References:**
+
+- Robinson et al. (2010) edgeR: a Bioconductor package for differential
+  expression analysis
+
+- Chen et al. (2016) From reads to genes to pathways: differential
+  expression analysis of RNA-Seq experiments using Rsubread and the
+  edgeR quasi-likelihood pipeline
+
+- Love et al. (2014) Moderated estimation of fold change and dispersion
+  for RNA-seq data with DESeq2
+
+- Law et al. (2014) voom: precision weights unlock linear model analysis
+  tools for RNA-seq read counts
+
+- Liu et al. (2015) Why weight? Modelling sample and observational level
+  variability improves power in RNA-seq analyses
 
 ``` r
 # Standard differential expression analysis
 se_mini = se_mini |>
 
 # Use QL method
-    test_differential_abundance(~ condition, method = "edgeR_quasi_likelihood", prefix = "ql__") |>
+    test_differential_expression(~ condition, method = "edgeR_quasi_likelihood", prefix = "ql__") |>
     
     # Use edger_robust_likelihood_ratio
-    test_differential_abundance(~ condition, method = "edger_robust_likelihood_ratio", prefix = "lr_robust__") |>
+    test_differential_expression(~ condition, method = "edger_robust_likelihood_ratio", prefix = "lr_robust__") |>
     
 # Use DESeq2 method
-    test_differential_abundance(~ condition, method = "DESeq2", prefix = "deseq2__") |>
+    test_differential_expression(~ condition, method = "DESeq2", prefix = "deseq2__") |>
     
     # Use limma_voom
-    test_differential_abundance(~ condition, method = "limma_voom", prefix = "voom__") |>
+    test_differential_expression(~ condition, method = "limma_voom", prefix = "voom__") |>
 
 # Use limma_voom_sample_weights
-    test_differential_abundance(~ condition, method = "limma_voom_sample_weights", prefix = "voom_weights__") 
+    test_differential_expression(~ condition, method = "limma_voom_sample_weights", prefix = "voom_weights__") 
 ```
+
+    ## Warning: The `.abundance` argument of `test_differential_abundance()` is deprecated as
+    ## of tidybulk 2.0.0.
+    ## ℹ Please use the `abundance` argument instead.
+    ## ℹ The deprecated feature was likely used in the tidybulk package.
+    ##   Please report the issue at <https://github.com/stemangiola/tidybulk/issues>.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
 
     ## =====================================
     ## tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance
@@ -717,10 +733,12 @@ se_mini = se_mini |>
     ## =====================================
     ## tidybulk says: The design column names are "(Intercept), conditionTRUE"
     ## 
-    ## tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edgeR_quasi_likelihood`
+    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$edgeR_quasi_likelihood_object`
+    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$edgeR_quasi_likelihood_fit`
     ## tidybulk says: The design column names are "(Intercept), conditionTRUE"
     ## 
-    ## tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$edger_robust_likelihood_ratio`
+    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$edger_robust_likelihood_ratio_object`
+    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$edger_robust_likelihood_ratio_fit`
     ## converting counts to integer mode
     ## 
     ## estimating size factors
@@ -739,73 +757,101 @@ se_mini = se_mini |>
     ## 
     ## fitting model and testing
     ## 
-    ## tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$DESeq2`
+    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$DESeq2_object`
+    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$DESeq2_fit`
     ## tidybulk says: The design column names are "(Intercept), conditionTRUE"
     ## 
-    ## tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$limma_voom`
+    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$limma_voom_object`
+    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$limma_voom_fit`
     ## tidybulk says: The design column names are "(Intercept), conditionTRUE"
     ## 
-    ## tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$limma_voom_sample_weights`
+    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$limma_voom_sample_weights_object`
+    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$limma_voom_sample_weights_fit`
     ## This message is displayed once per session.
 
-### Gene Description
+### Quality Control of the Fit
 
-With tidybulk, retrieving gene descriptions is straightforward, making
-it easy to enhance the interpretability of your differential expression
-results.
+It is important to check the quality of the fit. All methods produce a
+fit object that can be used for quality control. The fit object produced
+by each underlying method are stored in as attributes of the `se_mini`
+object. We can use them for example to perform quality control of the
+fit.
 
-``` r
-# Add gene descriptions using the original SummarizedExperiment
-se_mini |> 
+#### For edgeR
 
-    describe_transcript() |>
-
-    # Filter top significant genes
-    filter(ql__FDR < 0.05) |>
-
-    # Print the gene statistics
-    pivot_transcript() |> 
-    dplyr::select(.feature, description, contains("ql")) |> 
-    head()
-```
-
-    ## 
-
-    ## 
-
-    ## # A tibble: 6 × 7
-    ##   .feature description             ql__logFC ql__logCPM ql__F ql__PValue ql__FDR
-    ##   <chr>    <chr>                       <dbl>      <dbl> <dbl>      <dbl>   <dbl>
-    ## 1 ABCB9    ATP binding cassette s…      2.47       5.94  12.5 0.0112     0.0332 
-    ## 2 AIF1     allograft inflammatory…     -8.43      12.8   29.0 0.00168    0.0107 
-    ## 3 ANGPT4   angiopoietin 4              -2.96       5.62  14.4 0.00764    0.0257 
-    ## 4 APOBEC3A apolipoprotein B mRNA …     -8.92      11.1   80.0 0.0000692  0.00317
-    ## 5 AQP9     aquaporin 9                -11.1       10.3   93.1 0.00000500 0.00197
-    ## 6 ASGR1    asialoglycoprotein rec…     -9.29       9.07  24.1 0.00105    0.00787
-
-### Compare Results Across Methods
+Plot the biological coefficient of variation (BCV) trend. This plot is
+helpful to understant the dispersion of the data.
 
 ``` r
-# Summay statistics
-se_mini |> rowData() |> as_tibble() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
-summarise(across(everything(), list(min = min, median = median, max = max), na.rm = TRUE))
+library(edgeR)
 ```
 
-    ## Warning: There was 1 warning in `summarise()`.
-    ## ℹ In argument: `across(...)`.
-    ## Caused by warning:
-    ## ! The `...` argument of `across()` is deprecated as of dplyr 1.1.0.
-    ## Supply arguments directly to `.fns` through an anonymous function instead.
-    ## 
-    ##   # Previously
-    ##   across(a:b, mean, na.rm = TRUE)
-    ## 
-    ##   # Now
-    ##   across(a:b, \(x) mean(x, na.rm = TRUE))
+    ## Warning: package 'edgeR' was built under R version 4.5.1
 
-    ## # A tibble: 1 × 0
+    ## Loading required package: limma
+
+    ## 
+    ## Attaching package: 'limma'
+
+    ## The following object is masked from 'package:BiocGenerics':
+    ## 
+    ##     plotMA
+
+``` r
+metadata(se_mini)$tidybulk$edgeR_quasi_likelihood_object |>
+  plotBCV()
+```
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-edgeR-object-1.png)<!-- -->
+
+Plot the log-fold change vs mean plot.
+
+``` r
+library(edgeR)
+
+metadata(se_mini)$tidybulk$edgeR_quasi_likelihood_fit |>
+  plotMD()
+```
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-edgeR-fit-1.png)<!-- -->
+
+#### For DESeq2
+
+Plot the mean-variance trend.
+
+``` r
+library(DESeq2)
+
+metadata(se_mini)$tidybulk$DESeq2_object |>
+  plotDispEsts()
+```
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-DESeq2-object-1.png)<!-- -->
+
+Plot the log-fold change vs mean plot.
+
+``` r
+library(DESeq2)
+
+metadata(se_mini)$tidybulk$DESeq2_object |>
+  plotMA()
+```
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-DESeq2-fit-1.png)<!-- -->
 
 ### Histograms of p-values across methods
+
+Inspection of the raw p-value histogram provides a rapid check of
+differential-expression results. When no gene is truly differentially
+expressed, the p-values follow a uniform U(0,1) distribution across the
+interval 0–1, so the histogram appears flat
+[Source](https://bioconductor.org/help/course-materials/2014/useR2014/Workflows.html).
+In a more realistic scenario where only a subset of genes changes, this
+uniform background is still present but an obvious spike emerges close
+to zero, created by the genuine signals.
+
+Thanks to the modularity of the `tidybulk` workflow, that can multiplex
+different methods, we can easily compare the p-values across methods.
 
 ``` r
     se_mini |>
@@ -830,6 +876,28 @@ summarise(across(everything(), list(min = min, median = median, max = max), na.r
     ## (`stat_bin()`).
 
 ![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-pvalue-histograms-1.png)<!-- -->
+
+### Compare Results Across Methods
+
+``` r
+# Summay statistics
+se_mini |> rowData() |> as_tibble() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
+summarise(across(everything(), list(min = min, median = median, max = max), na.rm = TRUE))
+```
+
+    ## Warning: There was 1 warning in `summarise()`.
+    ## ℹ In argument: `across(...)`.
+    ## Caused by warning:
+    ## ! The `...` argument of `across()` is deprecated as of dplyr 1.1.0.
+    ## Supply arguments directly to `.fns` through an anonymous function instead.
+    ## 
+    ##   # Previously
+    ##   across(a:b, mean, na.rm = TRUE)
+    ## 
+    ##   # Now
+    ##   across(a:b, \(x) mean(x, na.rm = TRUE))
+
+    ## # A tibble: 1 × 0
 
 ### Pairplot of pvalues across methods (GGpairs)
 
@@ -892,6 +960,63 @@ se_mini |>
 
 ### Volcano Plots for Each Method
 
+Visualising the significance and effect size of the differential
+expression results as a volcano plots we appreciate that DESeq2 has much
+lower p-values than other methods, for the same model.
+
+``` r
+# Create volcano plots
+se_mini |>
+
+    # Select the columns we want to plot
+    rowData() |> 
+    as_tibble(rownames = ".feature") |> 
+    select(
+            .feature,
+      ql__logFC, ql__PValue,
+      lr_robust__logFC, lr_robust__PValue,
+      voom__logFC, voom__P.Value,
+      voom_weights__logFC, voom_weights__P.Value,
+      deseq2__log2FoldChange, deseq2__pvalue
+    ) |>
+
+    # Pivot longer to get a tidy data frame
+    pivot_longer(
+      - .feature,
+      names_to = c("method", "stat"),
+      values_to = "value", names_sep = "__"
+    ) |>
+
+    # Harmonize column names
+    mutate(stat  = case_when(
+        stat %in% c("logFC", "log2FoldChange") ~ "logFC",
+        stat %in% c("PValue", "pvalue", "P.Value", "p.value") ~ "PValue"
+    )) |>
+  pivot_wider(names_from = "stat", values_from = "value") |>
+  unnest( logFC, PValue) |> 
+
+    # Plot
+  ggplot(aes(x = logFC, y = PValue)) +
+  geom_point(aes(color = PValue < 0.05, size = PValue < 0.05)) +
+  scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
+  scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
+  scale_size_manual(values = c("TRUE" = 0.5, "FALSE" = 0.1)) +
+  facet_wrap(~method) +
+  my_theme +
+  labs(title = "Volcano Plots by Method")
+```
+
+    ## Warning: `unnest()` has a new interface. See `?unnest` for details.
+    ## ℹ Try `df %>% unnest(c(logFC, PValue))`, with `mutate()` if needed.
+
+    ## Warning: Removed 36 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-volcano-plots-1-1.png)<!-- -->
+
+Plotting independent y-axis scales for the p-values and effect sizes
+allows us to compare the top genes across methods.
+
 ``` r
 # Create volcano plots
 se_mini |>
@@ -930,7 +1055,7 @@ se_mini |>
   scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
   scale_size_manual(values = c("TRUE" = 0.5, "FALSE" = 0.1)) +
-  facet_wrap(~method) +
+  facet_wrap(~method, scales = "free_y") +
   my_theme +
   labs(title = "Volcano Plots by Method")
 ```
@@ -944,15 +1069,22 @@ se_mini |>
     ## Warning: Removed 36 rows containing missing values or values outside the scale range
     ## (`geom_text_repel()`).
 
-    ## Warning: ggrepel: 326 unlabeled data points (too many overlaps). Consider
+    ## Warning: ggrepel: 329 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
-    ## Warning: ggrepel: 394 unlabeled data points (too many overlaps). Consider increasing max.overlaps
-    ## ggrepel: 394 unlabeled data points (too many overlaps). Consider increasing max.overlaps
-    ## ggrepel: 394 unlabeled data points (too many overlaps). Consider increasing max.overlaps
-    ## ggrepel: 394 unlabeled data points (too many overlaps). Consider increasing max.overlaps
+    ## Warning: ggrepel: 381 unlabeled data points (too many overlaps). Consider
+    ## increasing max.overlaps
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-volcano-plots-1.png)<!-- -->
+    ## Warning: ggrepel: 385 unlabeled data points (too many overlaps). Consider
+    ## increasing max.overlaps
+
+    ## Warning: ggrepel: 379 unlabeled data points (too many overlaps). Consider
+    ## increasing max.overlaps
+
+    ## Warning: ggrepel: 374 unlabeled data points (too many overlaps). Consider
+    ## increasing max.overlaps
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-volcano-plots-2-1.png)<!-- -->
 
 ### Differential Expression with Contrasts
 
@@ -964,7 +1096,7 @@ approach for testing specific comparisons in complex designs.
 ``` r
 # Using contrasts for more complex comparisons
 se_mini |>
-    test_differential_abundance(
+    test_differential_expression(
         ~ 0 + condition,                  
         .contrasts = c("conditionTRUE - conditionFALSE"),
         method = "edgeR_quasi_likelihood", 
@@ -980,14 +1112,16 @@ se_mini |>
     ## of tidybulk 1.7.4.
     ## ℹ The argument .contrasts is now deprecated please use contrasts (without the
     ##   dot).
+    ## ℹ The deprecated feature was likely used in the tidybulk package.
+    ##   Please report the issue at <https://github.com/stemangiola/tidybulk/issues>.
     ## This warning is displayed once every 8 hours.
     ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
     ## generated.
 
     ## tidybulk says: The design column names are "conditionFALSE, conditionTRUE"
 
-    ## tidybulk says: to access the raw results (fitted GLM) do `attr(...,
-    ## "internals")$edgeR_quasi_likelihood`
+    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$edgeR_quasi_likelihood_object`
+    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$edgeR_quasi_likelihood_fit`
 
     ## # A tibble: 394 × 5
     ##    contrasts__logFC___conditionT…¹ contrasts__logCPM___…² contrasts__F___condi…³
@@ -1017,7 +1151,7 @@ for testing significance relative to a fold-change threshold.
 ``` r
 # Using contrasts for more complex comparisons
 se_mini |>
-    test_differential_abundance(
+    test_differential_expression(
         ~ 0 + condition,                  
         .contrasts = c("conditionTRUE - conditionFALSE"),
         method = "edgeR_quasi_likelihood", 
@@ -1032,8 +1166,8 @@ se_mini |>
 
     ## tidybulk says: The design column names are "conditionFALSE, conditionTRUE"
 
-    ## tidybulk says: to access the raw results (fitted GLM) do `attr(...,
-    ## "internals")$edgeR_quasi_likelihood`
+    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$edgeR_quasi_likelihood_object`
+    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$edgeR_quasi_likelihood_fit`
 
     ## # A tibble: 394 × 5
     ##    treat__logFC___conditionTRUE.…¹ treat__unshrunk.logF…² treat__logCPM___cond…³
@@ -1064,7 +1198,7 @@ linear mixed models for RNA-seq data.
 # Using glmmSeq for mixed models
 se_mini = se_mini |>
   keep_abundant(formula_design = ~ condition) |>
-  test_differential_abundance(
+  test_differential_expression(
     ~ condition + (1|Cell.type), 
     method = "glmmseq_lme4", 
     prefix = "glmmseq__"
@@ -1074,12 +1208,12 @@ se_mini = se_mini |>
     ## 
     ## n = 5 samples, 4 individuals
 
-    ## Time difference of 2.354656 mins
+    ## Time difference of 1.962443 mins
 
     ## Errors in 1 gene(s): PTGER2
 
-    ## tidybulk says: to access the raw results (fitted GLM) do `attr(...,
-    ## "internals")$glmmseq_lme4`
+    ## tidybulk says: to access the DE object do `attr(..., "internals")$glmmseq_lme4_object`
+    ## tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$glmmseq_lme4_fit`
 
 ``` r
   se_mini |>
@@ -1107,6 +1241,41 @@ se_mini = se_mini |>
     ## #   deseq2__padj <dbl>, voom__logFC <dbl>, voom__AveExpr <dbl>, voom__t <dbl>,
     ## #   voom__P.Value <dbl>, voom__adj.P.Val <dbl>, voom__B <dbl>, …
 
+### Gene Description
+
+With tidybulk, retrieving gene descriptions is straightforward, making
+it easy to enhance the interpretability of your differential expression
+results.
+
+``` r
+# Add gene descriptions using the original SummarizedExperiment
+se_mini |> 
+
+    describe_transcript() |>
+
+    # Filter top significant genes
+    filter(ql__FDR < 0.05) |>
+
+    # Print the gene statistics
+    pivot_transcript() |> 
+    dplyr::select(.feature, description, contains("ql")) |> 
+    head()
+```
+
+    ## 
+
+    ## 
+
+    ## # A tibble: 6 × 7
+    ##   .feature description             ql__logFC ql__logCPM ql__F ql__PValue ql__FDR
+    ##   <chr>    <chr>                       <dbl>      <dbl> <dbl>      <dbl>   <dbl>
+    ## 1 ABCB9    ATP binding cassette s…      2.47       5.94  12.5 0.0112     0.0332 
+    ## 2 AIF1     allograft inflammatory…     -8.43      12.8   29.0 0.00168    0.0107 
+    ## 3 ANGPT4   angiopoietin 4              -2.96       5.62  14.4 0.00764    0.0257 
+    ## 4 APOBEC3A apolipoprotein B mRNA …     -8.92      11.1   80.0 0.0000692  0.00317
+    ## 5 AQP9     aquaporin 9                -11.1       10.3   93.1 0.00000500 0.00197
+    ## 6 ASGR1    asialoglycoprotein rec…     -9.29       9.07  24.1 0.00105    0.00787
+
 ## Step 4: Batch Effect Correction
 
 ComBat-seq ([Zhang, Parmigiani, and Johnson
@@ -1120,7 +1289,7 @@ se_mini = se_mini |>
       .factor_unwanted = time, 
       .factor_of_interest = condition, 
     method = "combat_seq", 
-      abundance = "count_tmm"
+      abundance = "counts_tmm"
   )
 ```
 
@@ -1135,11 +1304,11 @@ se_mini = se_mini |>
 ``` r
 # Scatter plot of adjusted vs unadjusted
 left_join(
-    se_mini |> assay("count_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count_tmm") ,
-    se_mini |> assay("count_tmm_adjusted") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "count_tmm_adjusted") ,
+    se_mini |> assay("counts_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts_tmm") ,
+    se_mini |> assay("counts_tmm_adjusted") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts_tmm_adjusted") ,
     by = c(".feature", ".sample")
   ) |>
-  ggplot(aes(x = count_tmm + 1, y = count_tmm_adjusted + 1)) +
+  ggplot(aes(x = counts_tmm + 1, y = counts_tmm_adjusted + 1)) +
   geom_point(aes(color = .sample), size = 0.1) +
   ggrepel::geom_text_repel(aes(label = .feature), size = 2, max.overlaps = 10) +
   scale_x_log10() +
@@ -1195,20 +1364,6 @@ package.
 ``` r
 if (!requireNamespace("immunedeconv")) BiocManager::install("immunedeconv")
 ```
-
-    ## Loading required namespace: immunedeconv
-
-    ## Bioconductor version 3.21 (BiocManager 1.30.26), R 4.5.0 (2025-04-11)
-
-    ## Installing package(s) 'immunedeconv'
-
-    ## Warning: package 'immunedeconv' is not available for Bioconductor version '3.21'
-    ## 
-    ## A version of this package for your version of R might be available elsewhere,
-    ## see the ideas at
-    ## https://cran.r-project.org/doc/manuals/r-patched/R-admin.html#Installing-packages
-
-    ## Old packages: 'arrow', 'tidytext'
 
 ``` r
 se_mini = 
@@ -1363,6 +1518,11 @@ gene_rank_res =
 
     ## done...
 
+    ## Warning: There was 1 warning in `mutate()`.
+    ## ℹ In argument: `fit = map(...)`.
+    ## Caused by warning in `fgseaMultilevel()`:
+    ## ! For some pathways, in reality P-values are less than 1e-10. You can set the `eps` argument to zero for better estimation.
+
 ``` r
 # Inspect significant gene sets (example for C2 collection)
 gene_rank_res |>
@@ -1372,7 +1532,7 @@ gene_rank_res |>
   filter(p.adjust < 0.05)
 ```
 
-    ## # A tibble: 67 × 13
+    ## # A tibble: 65 × 13
     ##    gs_collection idx_for_plotting ID         Description setSize enrichmentScore
     ##    <chr>                    <int> <chr>      <chr>         <int>           <dbl>
     ##  1 C2                           1 REACTOME_… REACTOME_N…      32          -0.770
@@ -1380,12 +1540,12 @@ gene_rank_res |>
     ##  3 C2                           3 FULCHER_I… FULCHER_IN…      42          -0.684
     ##  4 C2                           4 REACTOME_… REACTOME_I…      73          -0.586
     ##  5 C2                           5 RUTELLA_R… RUTELLA_RE…      36          -0.679
-    ##  6 C2                           6 LIU_OVARI… LIU_OVARIA…     130          -0.475
-    ##  7 C2                           7 CHEN_META… CHEN_METAB…      67          -0.570
-    ##  8 C2                           8 SMID_BREA… SMID_BREAS…      82           0.504
+    ##  6 C2                           6 CHEN_META… CHEN_METAB…      67          -0.570
+    ##  7 C2                           7 SMID_BREA… SMID_BREAS…      82           0.504
+    ##  8 C2                           8 LIU_OVARI… LIU_OVARIA…     130          -0.475
     ##  9 C2                           9 RUTELLA_R… RUTELLA_RE…      39          -0.644
-    ## 10 C2                          10 RUTELLA_R… RUTELLA_RE…      24          -0.722
-    ## # ℹ 57 more rows
+    ## 10 C2                          10 SMIRNOV_C… SMIRNOV_CI…      23          -0.737
+    ## # ℹ 55 more rows
     ## # ℹ 7 more variables: NES <dbl>, pvalue <dbl>, p.adjust <dbl>, qvalue <dbl>,
     ## #   rank <dbl>, leading_edge <chr>, core_enrichment <chr>
 
@@ -1401,9 +1561,10 @@ gene_rank_res |>
     ## 
     ## Please cite:
     ## 
-    ## Guangchuang Yu. Gene Ontology Semantic Similarity Analysis Using
-    ## GOSemSim. In: Kidder B. (eds) Stem Cell Transcriptional Networks.
-    ## Methods in Molecular Biology. 2020, 2117:207-215. Humana, New York, NY.
+    ## Guangchuang Yu, Li-Gen Wang, Yanyan Han and Qing-Yu He.
+    ## clusterProfiler: an R package for comparing biological themes among
+    ## gene clusters. OMICS: A Journal of Integrative Biology. 2012,
+    ## 16(5):284-287
 
     ## 
     ## Attaching package: 'enrichplot'
@@ -1606,7 +1767,7 @@ library(EGSEA)
 
     ## EGSEA analysis has started
 
-    ## ##------ Fri Jul 25 17:41:25 2025 ------##
+    ## ##------ Mon Jul 28 13:59:55 2025 ------##
 
     ## The argument 'contrast' is recommended to be a matrix object.
     ## See Vignette or Help.
@@ -1619,15 +1780,15 @@ library(EGSEA)
 
     ## 
 
-    ## ##------ Fri Jul 25 17:41:26 2025 ------##
+    ## ##------ Mon Jul 28 13:59:56 2025 ------##
 
-    ## EGSEA analysis took 0.700000000000017 seconds.
+    ## EGSEA analysis took 1.55 seconds.
 
     ## EGSEA analysis has completed
 
     ## EGSEA HTML report is being generated ...
 
-    ## ##------ Fri Jul 25 17:41:26 2025 ------##
+    ## ##------ Mon Jul 28 13:59:56 2025 ------##
 
     ## Report pages and figures are being generated for the h collection ...
 
@@ -1638,30 +1799,13 @@ library(EGSEA)
 
     ##    Comparison summary plots are being generated  ...
 
-    ## ##------ Fri Jul 25 17:43:00 2025 ------##
+    ## ##------ Mon Jul 28 14:01:28 2025 ------##
 
-    ## EGSEA report generation took 93.462 seconds.
+    ## EGSEA report generation took 91.398 seconds.
 
     ## EGSEA report has been generated.
 
-    ## # A tibble: 34 × 21
-    ##    data_base pathway          web_page med.rank p.value p.adj vote.rank avg.rank
-    ##    <chr>     <chr>            <chr>       <dbl>   <dbl> <dbl>     <dbl>    <dbl>
-    ##  1 h         HALLMARK_IL6_JA… https:/…        5 0.336   0.816         5    10   
-    ##  2 h         HALLMARK_INFLAM… https:/…        5 0.0403  0.342         5     6.29
-    ##  3 h         HALLMARK_XENOBI… https:/…        5 0.00599 0.102         5     6   
-    ##  4 h         HALLMARK_NOTCH_… https:/…        6 0.0961  0.502        10     6   
-    ##  5 h         HALLMARK_KRAS_S… https:/…        6 0.00599 0.102         5    12.6 
-    ##  6 h         HALLMARK_UV_RES… https:/…        8 0.0149  0.169        10     9.83
-    ##  7 h         HALLMARK_HEME_M… https:/…        9 0.500   0.999        10    14.7 
-    ##  8 h         HALLMARK_COMPLE… https:/…       10 0.319   0.816        10    11   
-    ##  9 h         HALLMARK_BILE_A… https:/…       10 0.192   0.654         5     9.86
-    ## 10 h         HALLMARK_FATTY_… https:/…       11 0.130   0.554        10    13   
-    ## # ℹ 24 more rows
-    ## # ℹ 13 more variables: min.pvalue <dbl>, min.rank <dbl>, avg.logfc <dbl>,
-    ## #   avg.logfc.dir <dbl>, direction <dbl>, significance <dbl>, camera <dbl>,
-    ## #   roast <dbl>, safe <dbl>, gage <dbl>, padog <dbl>, globaltest <dbl>,
-    ## #   ora <dbl>
+    ## # A tibble: 0 × 0
 
 ## Bibliography
 
@@ -1691,91 +1835,6 @@ se_mini |> get_bibliography()
     ##   pages={1686},
     ##   year={2019}
     ##  }
-    ## @article{robinson2010edger,
-    ##   title={edgeR: a Bioconductor package for differential expression analysis of digital gene expression data},
-    ##   author={Robinson, Mark D and McCarthy, Davis J and Smyth, Gordon K},
-    ##   journal={Bioinformatics},
-    ##   volume={26},
-    ##   number={1},
-    ##   pages={139--140},
-    ##   year={2010},
-    ##   publisher={Oxford University Press}
-    ##  }
-    ## @article{robinson2010scaling,
-    ##   title={A scaling normalization method for differential expression analysis of RNA-seq data},
-    ##   author={Robinson, Mark D and Oshlack, Alicia},
-    ##   journal={Genome biology},
-    ##   volume={11},
-    ##   number={3},
-    ##   pages={1--9},
-    ##   year={2010},
-    ##   publisher={BioMed Central}
-    ##  }
-    ## @incollection{smyth2005limma,
-    ##   title={Limma: linear models for microarray data},
-    ##   author={Smyth, Gordon K},
-    ##   booktitle={Bioinformatics and computational biology solutions using R and Bioconductor},
-    ##   pages={397--420},
-    ##   year={2005},
-    ##   publisher={Springer}
-    ##  }
-    ## @Manual{,
-    ##     title = {R: A Language and Environment for Statistical Computing},
-    ##     author = {{R Core Team}},
-    ##     organization = {R Foundation for Statistical Computing},
-    ##     address = {Vienna, Austria},
-    ##     year = {2020},
-    ##     url = {https://www.R-project.org/},
-    ##   }
-    ## @article{lund2012detecting,
-    ##   title={Detecting differential expression in RNA-sequence data using quasi-likelihood with shrunken dispersion estimates},
-    ##   author={Lund, Steven P and Nettleton, Dan and McCarthy, Davis J and Smyth, Gordon K},
-    ##   journal={Statistical applications in genetics and molecular biology},
-    ##   volume={11},
-    ##   number={5},
-    ##   year={2012},
-    ##   publisher={De Gruyter}
-    ##     }
-    ## @article{zhou2014robustly,
-    ##   title={Robustly detecting differential expression in RNA sequencing data using observation weights},
-    ##   author={Zhou, Xiaobei and Lindsay, Helen and Robinson, Mark D},
-    ##   journal={Nucleic acids research},
-    ##   volume={42},
-    ##   number={11},
-    ##   pages={e91--e91},
-    ##   year={2014},
-    ##   publisher={Oxford University Press}
-    ##  }
-    ## @article{love2014moderated,
-    ##   title={Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2},
-    ##   author={Love, Michael I and Huber, Wolfgang and Anders, Simon},
-    ##   journal={Genome biology},
-    ##   volume={15},
-    ##   number={12},
-    ##   pages={550},
-    ##   year={2014},
-    ##   publisher={Springer}
-    ##  }
-    ## @article{law2014voom,
-    ##   title={voom: Precision weights unlock linear model analysis tools for RNA-seq read counts},
-    ##   author={Law, Charity W and Chen, Yunshun and Shi, Wei and Smyth, Gordon K},
-    ##   journal={Genome biology},
-    ##   volume={15},
-    ##   number={2},
-    ##   pages={R29},
-    ##   year={2014},
-    ##   publisher={Springer}
-    ##     }
-    ## @article{liu2015weight,
-    ##   title={Why weight? Modelling sample and observational level variability improves power in RNA-seq analyses},
-    ##   author={Liu, Ruijie and Holik, Aliaksei Z and Su, Shian and Jansz, Natasha and Chen, Kelan and Leong, Huei San and Blewitt, Marnie E and Asselin-Labat, Marie-Liesse and Smyth, Gordon K and Ritchie, Matthew E},
-    ##   journal={Nucleic acids research},
-    ##   volume={43},
-    ##   number={15},
-    ##   pages={e97--e97},
-    ##   year={2015},
-    ##   publisher={Oxford University Press}
-    ##     }
     ## @article{leek2012sva,
     ##   title={The sva package for removing batch effects and other unwanted variation in high-throughput experiments},
     ##   author={Leek, Jeffrey T and Johnson, W Evan and Parker, Hilary S and Jaffe, Andrew E and Storey, John D},
@@ -1825,123 +1884,113 @@ sessionInfo()
     ##  [5] GO.db_3.21.0                    graph_1.86.0                   
     ##  [7] AnnotationDbi_1.70.0            gage_2.58.0                    
     ##  [9] patchwork_1.3.1                 enrichplot_1.28.4              
-    ## [11] GGally_2.3.0                    tidySummarizedExperiment_1.19.4
-    ## [13] SummarizedExperiment_1.38.1     Biobase_2.68.0                 
-    ## [15] GenomicRanges_1.60.0            GenomeInfoDb_1.44.1            
-    ## [17] IRanges_2.42.0                  S4Vectors_0.46.0               
-    ## [19] BiocGenerics_0.54.0             generics_0.1.4                 
-    ## [21] MatrixGenerics_1.20.0           matrixStats_1.5.0              
-    ## [23] tidybulk_1.21.1                 ttservice_0.5.3                
-    ## [25] ggrepel_0.9.6                   magrittr_2.0.3                 
-    ## [27] lubridate_1.9.4                 forcats_1.0.0                  
-    ## [29] stringr_1.5.1                   dplyr_1.1.4                    
-    ## [31] purrr_1.1.0                     readr_2.1.5                    
-    ## [33] tidyr_1.3.1                     tibble_3.3.0                   
-    ## [35] ggplot2_3.5.2.9002              tidyverse_2.0.0                
-    ## [37] knitr_1.50                     
+    ## [11] GGally_2.3.0                    DESeq2_1.48.1                  
+    ## [13] edgeR_4.6.3                     limma_3.64.1                   
+    ## [15] tidySummarizedExperiment_1.19.4 SummarizedExperiment_1.38.1    
+    ## [17] Biobase_2.68.0                  GenomicRanges_1.60.0           
+    ## [19] GenomeInfoDb_1.44.1             IRanges_2.42.0                 
+    ## [21] S4Vectors_0.46.0                BiocGenerics_0.54.0            
+    ## [23] generics_0.1.4                  MatrixGenerics_1.20.0          
+    ## [25] matrixStats_1.5.0               tidybulk_1.99.1                
+    ## [27] ttservice_0.5.3                 ggrepel_0.9.6                  
+    ## [29] magrittr_2.0.3                  lubridate_1.9.4                
+    ## [31] forcats_1.0.0                   stringr_1.5.1                  
+    ## [33] dplyr_1.1.4                     purrr_1.1.0                    
+    ## [35] readr_2.1.5                     tidyr_1.3.1                    
+    ## [37] tibble_3.3.0                    ggplot2_3.5.2.9002             
+    ## [39] tidyverse_2.0.0                 knitr_1.50                     
     ## 
     ## loaded via a namespace (and not attached):
-    ##   [1] SpatialExperiment_1.18.1    R.methodsS3_1.8.2          
-    ##   [3] GSEABase_1.70.0             urlchecker_1.0.1           
-    ##   [5] DT_0.33                     Biostrings_2.76.0          
-    ##   [7] HDF5Array_1.36.0            TH.data_1.1-3              
-    ##   [9] vctrs_0.6.5                 ggtangle_0.0.7             
-    ##  [11] digest_0.6.37               png_0.1-8                  
-    ##  [13] proxy_0.4-27                org.Mm.eg.db_3.21.0        
-    ##  [15] magick_2.8.7                MASS_7.3-65                
-    ##  [17] reshape2_1.4.4              httpuv_1.6.16              
-    ##  [19] foreach_1.5.2               qvalue_2.40.0              
-    ##  [21] withr_3.0.2                 xfun_0.52                  
-    ##  [23] ggfun_0.2.0                 ellipsis_0.3.2             
-    ##  [25] survival_3.8-3              doRNG_1.8.6.2              
-    ##  [27] memoise_2.0.1               HTMLUtils_0.1.9            
-    ##  [29] clusterProfiler_4.16.0      gson_0.1.0                 
-    ##  [31] profvis_0.4.0               hgu133a.db_3.13.0          
-    ##  [33] tidytree_0.4.6              zoo_1.8-14                 
-    ##  [35] gtools_3.9.5                KEGGgraph_1.68.0           
-    ##  [37] R.oo_1.27.1                 KEGGREST_1.48.1            
-    ##  [39] promises_1.3.3              httr_1.4.7                 
-    ##  [41] rhdf5filters_1.20.0         ps_1.9.1                   
-    ##  [43] rhdf5_2.52.1                rstudioapi_0.17.1          
-    ##  [45] UCSC.utils_1.4.0            miniUI_0.1.2               
-    ##  [47] DOSE_4.2.0                  processx_3.8.6             
-    ##  [49] babelgene_22.9              curl_6.4.0                 
-    ##  [51] ScaledMatrix_1.16.0         h5mread_1.0.1              
-    ##  [53] TFisher_0.2.0               GenomeInfoDbData_1.2.14    
-    ##  [55] SparseArray_1.8.1           xtable_1.8-4               
-    ##  [57] desc_1.4.3                  evaluate_1.0.4             
-    ##  [59] S4Arrays_1.8.1              preprocessCore_1.70.0      
-    ##  [61] hms_1.1.3                   irlba_2.3.5.1              
-    ##  [63] colorspace_2.1-1            Rgraphviz_2.52.0           
-    ##  [65] later_1.4.2                 ggtree_3.16.3              
-    ##  [67] lattice_0.22-7              genefilter_1.90.0          
-    ##  [69] XML_3.99-0.18               cowplot_1.2.0              
-    ##  [71] class_7.3-23                pillar_1.11.0              
-    ##  [73] nlme_3.1-168                iterators_1.0.14           
-    ##  [75] caTools_1.18.3              compiler_4.5.0             
-    ##  [77] beachmat_2.24.0             stringi_1.8.7              
-    ##  [79] KEGGdzPathwaysGEO_1.46.0    tokenizers_0.3.0           
-    ##  [81] devtools_2.4.5              plyr_1.8.9                 
-    ##  [83] msigdbr_25.1.1              crayon_1.5.3               
-    ##  [85] abind_1.4-8                 gridGraphics_0.5-1         
-    ##  [87] sn_2.1.1                    locfit_1.5-9.12            
-    ##  [89] mathjaxr_1.8-0              org.Hs.eg.db_3.21.0        
-    ##  [91] bit_4.6.0                   sandwich_3.1-1             
-    ##  [93] fastmatch_1.1-6             codetools_0.2-20           
-    ##  [95] multcomp_1.4-28             BiocSingular_1.24.0        
-    ##  [97] e1071_1.7-16                plotly_4.11.0              
-    ##  [99] hgu133plus2.db_3.13.0       org.Rn.eg.db_3.21.0        
-    ## [101] tidytext_0.4.2              multtest_2.64.0            
-    ## [103] mime_0.13                   splines_4.5.0              
-    ## [105] Rcpp_1.1.0                  sparseMatrixStats_1.20.0   
-    ## [107] blob_1.2.4                  utf8_1.2.6                 
-    ## [109] fs_1.6.6                    Rdpack_2.6.4               
-    ## [111] pkgbuild_1.4.8              GSVA_2.2.0                 
-    ## [113] ggplotify_0.1.2             Matrix_1.7-3               
-    ## [115] callr_3.7.6                 statmod_1.5.0              
-    ## [117] tzdb_0.5.0                  pkgconfig_2.0.3            
-    ## [119] tools_4.5.0                 cachem_1.1.0               
-    ## [121] rbibutils_2.3               RSQLite_2.4.2              
-    ## [123] viridisLite_0.4.2           globaltest_5.62.0          
-    ## [125] DBI_1.2.3                   numDeriv_2016.8-1.1        
-    ## [127] fastmap_1.2.0               rmarkdown_2.29             
-    ## [129] scales_1.4.0                grid_4.5.0                 
-    ## [131] usethis_3.1.0               metap_1.12                 
-    ## [133] broom_1.0.8                 BiocManager_1.30.26        
-    ## [135] ggstats_0.10.0              farver_2.1.2               
-    ## [137] mgcv_1.9-3                  yaml_2.3.10                
-    ## [139] cli_3.6.5                   safe_3.48.0                
-    ## [141] lifecycle_1.0.4             mvtnorm_1.3-3              
-    ## [143] sessioninfo_1.2.3           backports_1.5.0            
-    ## [145] BiocParallel_1.42.1         widyr_0.1.5                
-    ## [147] annotate_1.86.1             timechange_0.3.0           
-    ## [149] gtable_0.3.6                rjson_0.2.23               
-    ## [151] parallel_4.5.0              ape_5.8-1                  
-    ## [153] SnowballC_0.7.1             limma_3.64.1               
-    ## [155] jsonlite_2.0.0              edgeR_4.6.3                
-    ## [157] bitops_1.0-9                bit64_4.6.0-1              
-    ## [159] assertthat_0.2.1            qqconf_1.3.2               
-    ## [161] yulab.utils_0.2.0           PADOG_1.50.0               
-    ## [163] mutoss_0.1-13               janeaustenr_1.0.0          
-    ## [165] GOSemSim_2.34.0             R.utils_2.13.0             
-    ## [167] lazyeval_0.2.2              shiny_1.11.1               
-    ## [169] htmltools_0.5.8.1           glue_1.8.0                 
-    ## [171] XVector_0.48.0              RCurl_1.98-1.17            
-    ## [173] rprojroot_2.1.0             treeio_1.32.0              
-    ## [175] mnormt_2.1.1                igraph_2.1.4               
-    ## [177] R6_2.6.1                    sva_3.56.0                 
-    ## [179] DESeq2_1.48.1               SingleCellExperiment_1.30.1
-    ## [181] gplots_3.2.0                labeling_0.4.3             
-    ## [183] rngtools_1.5.2              R2HTML_2.3.4               
-    ## [185] pkgload_1.4.0               Rhdf5lib_1.30.0            
-    ## [187] aplot_0.2.8                 plotrix_3.8-4              
-    ## [189] DelayedArray_0.34.1         tidyselect_1.2.1           
-    ## [191] rsvd_1.0.5                  KernSmooth_2.23-26         
-    ## [193] S7_0.2.0                    data.table_1.17.8          
-    ## [195] htmlwidgets_1.6.4           fgsea_1.34.2               
-    ## [197] RColorBrewer_1.1-3          hwriter_1.3.2.1            
-    ## [199] rlang_1.1.6                 remotes_2.5.0              
-    ## [201] GSA_1.03.3                  EGSEAdata_1.36.0
+    ##   [1] fs_1.6.6                    GSVA_2.2.0                 
+    ##   [3] bitops_1.0-9                R2HTML_2.3.4               
+    ##   [5] httr_1.4.7                  RColorBrewer_1.1-3         
+    ##   [7] numDeriv_2016.8-1.1         Rgraphviz_2.52.0           
+    ##   [9] doRNG_1.8.6.2               tools_4.5.0                
+    ##  [11] backports_1.5.0             utf8_1.2.6                 
+    ##  [13] R6_2.6.1                    DT_0.33                    
+    ##  [15] HDF5Array_1.36.0            sn_2.1.1                   
+    ##  [17] lazyeval_0.2.2              mgcv_1.9-3                 
+    ##  [19] rhdf5filters_1.20.0         withr_3.0.2                
+    ##  [21] preprocessCore_1.70.0       cli_3.6.5                  
+    ##  [23] sandwich_3.1-1              labeling_0.4.3             
+    ##  [25] KEGGgraph_1.68.0            mvtnorm_1.3-3              
+    ##  [27] S7_0.2.0                    genefilter_1.90.0          
+    ##  [29] PADOG_1.50.0                proxy_0.4-27               
+    ##  [31] yulab.utils_0.2.0           gson_0.1.0                 
+    ##  [33] DOSE_4.2.0                  R.utils_2.13.0             
+    ##  [35] HTMLUtils_0.1.9             plotrix_3.8-4              
+    ##  [37] rstudioapi_0.17.1           RSQLite_2.4.2              
+    ##  [39] gridGraphics_0.5-1          hwriter_1.3.2.1            
+    ##  [41] gtools_3.9.5                Matrix_1.7-3               
+    ##  [43] abind_1.4-8                 R.methodsS3_1.8.2          
+    ##  [45] lifecycle_1.0.4             multcomp_1.4-28            
+    ##  [47] yaml_2.3.10                 mathjaxr_1.8-0             
+    ##  [49] KEGGdzPathwaysGEO_1.46.0    gplots_3.2.0               
+    ##  [51] rhdf5_2.52.1                qvalue_2.40.0              
+    ##  [53] SparseArray_1.8.1           grid_4.5.0                 
+    ##  [55] blob_1.2.4                  crayon_1.5.3               
+    ##  [57] ggtangle_0.0.7              lattice_0.22-7             
+    ##  [59] beachmat_2.24.0             msigdbr_25.1.1             
+    ##  [61] cowplot_1.2.0               annotate_1.86.1            
+    ##  [63] KEGGREST_1.48.1             magick_2.8.7               
+    ##  [65] pillar_1.11.0               fgsea_1.34.2               
+    ##  [67] hgu133plus2.db_3.13.0       hgu133a.db_3.13.0          
+    ##  [69] rjson_0.2.23                widyr_0.1.5                
+    ##  [71] codetools_0.2-20            fastmatch_1.1-6            
+    ##  [73] mutoss_0.1-13               glue_1.8.0                 
+    ##  [75] ggfun_0.2.0                 data.table_1.17.8          
+    ##  [77] Rdpack_2.6.4                vctrs_0.6.5                
+    ##  [79] png_0.1-8                   treeio_1.32.0              
+    ##  [81] org.Mm.eg.db_3.21.0         gtable_0.3.6               
+    ##  [83] org.Rn.eg.db_3.21.0         assertthat_0.2.1           
+    ##  [85] cachem_1.1.0                xfun_0.52                  
+    ##  [87] rbibutils_2.3               S4Arrays_1.8.1             
+    ##  [89] survival_3.8-3              SingleCellExperiment_1.30.1
+    ##  [91] iterators_1.0.14            statmod_1.5.0              
+    ##  [93] TH.data_1.1-3               ellipsis_0.3.2             
+    ##  [95] nlme_3.1-168                ggtree_3.16.3              
+    ##  [97] bit64_4.6.0-1               rprojroot_2.1.0            
+    ##  [99] SnowballC_0.7.1             irlba_2.3.5.1              
+    ## [101] KernSmooth_2.23-26          colorspace_2.1-1           
+    ## [103] DBI_1.2.3                   mnormt_2.1.1               
+    ## [105] tidyselect_1.2.1            bit_4.6.0                  
+    ## [107] compiler_4.5.0              curl_6.4.0                 
+    ## [109] h5mread_1.0.1               TFisher_0.2.0              
+    ## [111] DelayedArray_0.34.1         plotly_4.11.0              
+    ## [113] scales_1.4.0                caTools_1.18.3             
+    ## [115] SpatialExperiment_1.18.1    digest_0.6.37              
+    ## [117] rmarkdown_2.29              XVector_0.48.0             
+    ## [119] htmltools_0.5.8.1           pkgconfig_2.0.3            
+    ## [121] sparseMatrixStats_1.20.0    fastmap_1.2.0              
+    ## [123] rlang_1.1.6                 htmlwidgets_1.6.4          
+    ## [125] UCSC.utils_1.4.0            farver_2.1.2               
+    ## [127] zoo_1.8-14                  jsonlite_2.0.0             
+    ## [129] BiocParallel_1.42.1         GOSemSim_2.34.0            
+    ## [131] tokenizers_0.3.0            R.oo_1.27.1                
+    ## [133] BiocSingular_1.24.0         RCurl_1.98-1.17            
+    ## [135] GenomeInfoDbData_1.2.14     ggplotify_0.1.2            
+    ## [137] Rhdf5lib_1.30.0             Rcpp_1.1.0                 
+    ## [139] ape_5.8-1                   babelgene_22.9             
+    ## [141] stringi_1.8.7               MASS_7.3-65                
+    ## [143] globaltest_5.62.0           plyr_1.8.9                 
+    ## [145] org.Hs.eg.db_3.21.0         ggstats_0.10.0             
+    ## [147] parallel_4.5.0              Biostrings_2.76.0          
+    ## [149] splines_4.5.0               multtest_2.64.0            
+    ## [151] hms_1.1.3                   qqconf_1.3.2               
+    ## [153] locfit_1.5-9.12             igraph_2.1.4               
+    ## [155] rngtools_1.5.2              EGSEAdata_1.36.0           
+    ## [157] reshape2_1.4.4              ScaledMatrix_1.16.0        
+    ## [159] XML_3.99-0.18               GSA_1.03.3                 
+    ## [161] evaluate_1.0.4              metap_1.12                 
+    ## [163] tidytext_0.4.2              foreach_1.5.2              
+    ## [165] tzdb_0.5.0                  rsvd_1.0.5                 
+    ## [167] broom_1.0.8                 xtable_1.8-4               
+    ## [169] e1071_1.7-16                tidytree_0.4.6             
+    ## [171] janeaustenr_1.0.0           viridisLite_0.4.2          
+    ## [173] class_7.3-23                clusterProfiler_4.16.0     
+    ## [175] aplot_0.2.8                 safe_3.48.0                
+    ## [177] memoise_2.0.1               timechange_0.3.0           
+    ## [179] sva_3.56.0                  GSEABase_1.70.0
 
 <div id="refs" class="references csl-bib-body hanging-indent"
 entry-spacing="0">

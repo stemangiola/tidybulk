@@ -43,7 +43,6 @@ This directory contains unit tests organized by functionality groups for the tid
 
 ### 7. Cellularity Analysis Functions (`test-cellularity-analysis.R`)
 - **deconvolve_cellularity()** - Deconvolve cellularity with various methods
-- **test_stratification_cellularity()** - Test stratification cellularity
 - **cibersort()** - CIBERSORT analysis
 
 ### 8. Gene Enrichment Functions (`test-gene-enrichment.R`)

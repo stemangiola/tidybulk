@@ -45,7 +45,7 @@ aggregate_duplicates(
 
 \item{keep_integer}{A boolean. Whether to force the aggregated counts to integer}
 
-\item{.sample}{The name of the sample column}
+\item{...}{Additional arguments passed to the aggregation function}
 }
 \value{
 A consistent object (to the input) with aggregated transcript abundance and annotation

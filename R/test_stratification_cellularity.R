@@ -14,8 +14,6 @@
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 #' @param .formula A formula representing the desired linear model. The formula can be of two forms: multivariable (recommended) or univariable Respectively: \"factor_of_interest ~ .\" or \". ~ factor_of_interest\". The dot represents cell-type proportions, and it is mandatory. If censored regression is desired (coxph) the formula should be of the form \"survival::Surv\(y, dead\) ~ .\"
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param method A string character. Either \"cibersort\", \"epic\" or \"llsr\". The regression method will be chosen based on being multivariable: lm or cox-regression (both on logit-transformed proportions); or univariable: beta or cox-regression (on logit-transformed proportions). See .formula for multi- or univariable choice.
 #' @param reference A data frame. The transcript/cell_type data frame of integer transcript abundance
@@ -60,7 +58,6 @@
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
 #' @noRd
-#' @export
 #'
 setGeneric("test_stratification_cellularity", function(.data,
                                                        .formula,
@@ -154,6 +151,12 @@ setGeneric("test_stratification_cellularity", function(.data,
 #'
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
+#' @param .data A `SummarizedExperiment` object
+#' @param .formula A formula representing the desired linear model
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A character string naming the deconvolution method
+#' @param reference Reference matrix or method-specific handle
+#' @param ... Additional arguments passed through to the underlying deconvolution function
 #'
 #' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_stratification_cellularity",
@@ -164,6 +167,12 @@ setMethod("test_stratification_cellularity",
 #'
 #' @docType methods
 #' @rdname test_stratification_cellularity-methods
+#' @param .data A `SummarizedExperiment` object
+#' @param .formula A formula representing the desired linear model
+#' @param .abundance The name of the transcript/gene abundance column
+#' @param method A character string naming the deconvolution method
+#' @param reference Reference matrix or method-specific handle
+#' @param ... Additional arguments passed through to the underlying deconvolution function
 #'
 #' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("test_stratification_cellularity",

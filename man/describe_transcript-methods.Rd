@@ -18,8 +18,6 @@ describe_transcript(.data)
 }
 \arguments{
 \item{.data}{A tt or tbl object.}
-
-\item{.transcript}{A character. The name of the gene symbol column.}
 }
 \value{
 A tbl

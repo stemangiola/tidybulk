@@ -38,6 +38,7 @@
 #' @importFrom parallel mclapply
 #' @importFrom stats cor sd
 #' @importFrom utils install.packages
+
 #'
 #'
 CoreAlg <- function(X, y, cores = 3){

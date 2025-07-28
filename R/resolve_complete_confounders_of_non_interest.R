@@ -99,6 +99,8 @@ setGeneric("resolve_complete_confounders_of_non_interest", function(se, ...) {
 #'
 #' @docType methods
 #' @rdname resolve_complete_confounders_of_non_interest-methods
+#' @param se A `SummarizedExperiment` object
+#' @param ... Factors of non-interest (column names from `colData(se)`) to examine for complete confounders
 #'
 #' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("resolve_complete_confounders_of_non_interest",
@@ -109,6 +111,8 @@ setMethod("resolve_complete_confounders_of_non_interest",
 #'
 #' @docType methods
 #' @rdname resolve_complete_confounders_of_non_interest-methods
+#' @param se A `SummarizedExperiment` object
+#' @param ... Factors of non-interest (column names from `colData(se)`) to examine for complete confounders
 #'
 #' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 setMethod("resolve_complete_confounders_of_non_interest",

@@ -17,6 +17,14 @@
 #' @param .data A tibble of read counts
 #' @param list_input A list
 #' @param expected_type A character string
+#' Check if input arguments are of the expected type
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @param .data A data frame or tibble
+#' @param list_input A list of arguments to check
+#' @param expected_type The expected class type for the arguments
 #'
 #' @return A tbl
 #'

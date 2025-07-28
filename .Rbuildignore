@@ -16,3 +16,4 @@ README.Rmd
 .RData
 ^\.github$
 ^_pkgdown.yml
+^egsea_report*

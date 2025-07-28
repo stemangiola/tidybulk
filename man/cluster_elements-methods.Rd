@@ -23,14 +23,6 @@ cluster_elements(.data, method, of_samples = TRUE, transform = log1p, ...)
 \item{transform}{A function that will tranform the counts, by default it is log1p for RNA sequencing data, but for avoinding tranformation you can use identity}
 
 \item{...}{Further parameters passed to the function kmeans}
-
-\item{.element}{The name of the element column (normally samples).}
-
-\item{.feature}{The name of the feature column (normally transcripts/genes)}
-
-\item{.abundance}{The name of the column including the numerical value the clustering is based on (normally transcript abundance)}
-
-\item{log_transform}{DEPRECATED - A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)}
 }
 \value{
 A tbl object with additional columns with cluster labels

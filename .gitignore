@@ -29,3 +29,4 @@ renv/activate.R
 renv/settings.json
 .Rprofile
 tidybulk.Rcheck/*
+..Rcheck/*

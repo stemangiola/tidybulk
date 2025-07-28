@@ -15,8 +15,6 @@ pivot_sample(.data)
 }
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
-
-\item{.sample}{The name of the sample column}
 }
 \value{
 A `tbl` with transcript-related information

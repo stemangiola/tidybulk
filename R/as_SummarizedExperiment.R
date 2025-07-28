@@ -8,7 +8,8 @@
 #' @importFrom tidyr pivot_longer spread nest
 #' @importFrom rlang enquo quo_name
 #' @importFrom dplyr select distinct arrange pull mutate
-#' @importFrom purrr map setNames
+#' @importFrom purrr map
+#' @importFrom stats setNames
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #'
 #' @param .data A tibble

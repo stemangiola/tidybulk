@@ -24,6 +24,19 @@
   ...
 )
 }
+\arguments{
+\item{.data}{A `SummarizedExperiment` object}
+
+\item{.formula}{A formula representing the desired linear model}
+
+\item{.abundance}{The name of the transcript/gene abundance column}
+
+\item{method}{A character string naming the deconvolution method}
+
+\item{reference}{Reference matrix or method-specific handle}
+
+\item{...}{Additional arguments passed through to the underlying deconvolution function}
+}
 \value{
 A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
 

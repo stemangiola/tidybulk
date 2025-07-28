@@ -1,7 +1,6 @@
 #' Get DESCRIPTION from gene SYMBOL for Human and Mouse
 #'
 #' @param .data A tt or tbl object.
-#' @param .transcript A character. The name of the gene symbol column.
 #'
 #' @return A tbl
 #'

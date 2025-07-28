@@ -86,10 +86,6 @@ test_differential_abundance(
 \item{.contrasts}{DEPRECATED - This parameter takes the format of the contrast parameter of the method of choice. For edgeR and limma-voom is a character vector. For DESeq2 is a list including a character vector of length three. The first covariate is the one the model is tested against (e.g., ~ factor_of_interest)}
 
 \item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
-
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A consistent object (to the input) with additional columns for the statistics from the test (e.g.,  log fold change, p-value and false discovery rate).

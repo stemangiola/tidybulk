@@ -7,7 +7,8 @@
 #' @importFrom rlang enquo quo_name
 #' @importFrom magrittr not
 #' @importFrom dplyr filter distinct select mutate rename
-#' @importFrom tidyr pivot_wider enframe
+#' @importFrom tidyr pivot_wider
+#' @importFrom tibble enframe
 #' @importFrom SummarizedExperiment colData rowData assays
 #' @importFrom stats prcomp
 #'

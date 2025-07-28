@@ -230,6 +230,8 @@ setMethod("remove_redundancy",
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom dplyr mutate_if
+#' @importFrom dplyr bind_rows
+#' @importFrom tidyr gather
 #'
 #' @param .data A tibble
 #' @param correlation_threshold A real number between 0 and 1

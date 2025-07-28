@@ -7,13 +7,14 @@
 #' @importFrom rlang enquo quo_is_missing
 #' @importFrom magrittr not
 #' @importFrom dplyr filter arrange select mutate
+#' @importFrom utils packageVersion
+#' @importFrom methods is
 #' @importFrom SummarizedExperiment rowData
 #'
 #'
 #' @name test_gene_rank
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
-#' @param .sample The name of the sample column
 #' @param .entrez The ENTREZ ID of the transcripts/genes
 #' @param .arrange_desc A column name of the column to arrange in decreasing order
 #' @param species A character. For example, human or mouse. MSigDB uses the latin species names (e.g., \"Mus musculus\", \"Homo sapiens\")

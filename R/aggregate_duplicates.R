@@ -8,25 +8,25 @@
 #' @importFrom rlang quo_is_null quo_name
 #' @importFrom dplyr group_by summarise arrange select left_join
 #' @importFrom dplyr across select_if as_tibble pull
+#' @importFrom methods is
 #' @importFrom tibble as_tibble
 #' @importFrom SummarizedExperiment rowData colData SummarizedExperiment
 #' @importFrom SummarizedExperiment rowRanges assays
+#' @importFrom SummarizedExperiment "rowRanges<-"
 #' @importFrom GenomicRanges makeGRangesListFromDataFrame
 #' @importFrom S4Vectors as.data.frame
 #' @importFrom utils capture.output
 #' @importFrom crayon blue
-#' @importFrom stats setdiff
 #'
 #'
 #' @name aggregate_duplicates
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
-#' @param .sample The name of the sample column
 #' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
-#'
 #' @param aggregation_function A function for counts aggregation (e.g., sum,  median, or mean)
 #' @param keep_integer A boolean. Whether to force the aggregated counts to integer
+#' @param ... Additional arguments passed to the aggregation function
 #'
 #' @details This function aggregates duplicated transcripts (e.g., isoforms, ensembl).
 #' For example, we often have to convert ensembl symbols to gene/transcript symbol,

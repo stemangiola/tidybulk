@@ -11,8 +11,6 @@
 #' @name scale_abundance
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
 #' @param abundance The name of the transcript/gene abundance column (character, preferred)
 #' @param method A character string. The scaling method passed to the back-end function (i.e., edgeR::calcNormFactors; "TMM","TMMwsp","RLE","upperquartile")
 #' @param reference_sample A character string. The name of the reference sample. If NULL the sample with highest total read count will be selected as reference.

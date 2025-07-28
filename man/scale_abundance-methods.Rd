@@ -61,10 +61,6 @@ scale_abundance(
 \item{...}{Further arguments.}
 
 \item{.abundance}{DEPRECATED. The name of the transcript/gene abundance column (symbolic, for backward compatibility)}
-
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A tbl object with additional columns with scaled data as `<NAME OF COUNT COLUMN>_scaled`

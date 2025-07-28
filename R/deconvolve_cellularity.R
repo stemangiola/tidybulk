@@ -8,14 +8,12 @@
 #' @importFrom dplyr select pull mutate as_tibble
 #' @importFrom tidyr gather
 #' @importFrom SummarizedExperiment colData assays
-#' @importFrom magrittr %$% when
+#' @importFrom magrittr %$%
 #'
 #'
 #' @name deconvolve_cellularity
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
-#' @param .sample The name of the sample column
-#' @param .transcript The name of the transcript/gene column
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param reference A data frame. The methods cibersort and llsr can accept a custom rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. For exampler tidybulk::X_cibersort. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.
 #' @param method A character string. The method to be used. Available methods: "cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell". If a vector is provided, an error will be thrown. Default is all available methods.
@@ -90,7 +88,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 #' @family deconvolution helpers
 #'
 
-#' @importFrom purrr equals
+#' @importFrom purrr map
 #' @importFrom rlang quo_is_symbolic quo_name
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr select

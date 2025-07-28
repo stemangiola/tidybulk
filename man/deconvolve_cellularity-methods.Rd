@@ -46,10 +46,6 @@ deconvolve_cellularity(
 \item{prefix}{A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.}
 
 \item{...}{Further parameters passed to the function Cibersort}
-
-\item{.sample}{The name of the sample column}
-
-\item{.transcript}{The name of the transcript/gene column}
 }
 \value{
 A consistent object (to the input) including additional columns for each cell type estimated

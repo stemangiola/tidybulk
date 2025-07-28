@@ -768,6 +768,7 @@ get_abundance_norm_if_exists = function(.data, abundance, .abundance = NULL){
 #'
 #' @importFrom stats dist
 #' @importFrom utils head
+#' @importFrom dplyr bind_rows
 #'
 #' @param df A tibble
 #'
@@ -1575,6 +1576,8 @@ filter_if_abundant_were_identified = function(.data){
 #' @importFrom dplyr across
 #' @importFrom dplyr n_distinct
 #' @importFrom tibble as_tibble
+#' @importFrom utils combn
+#' @importFrom tidyselect ends_with
 #'
 #' @param df A data frame containing the data to be checked for confounders.
 #' @param ... Unquoted column names to consider as confounders (factors of non-interest).
@@ -1650,6 +1653,7 @@ filter_if_abundant_were_identified = function(.data){
 #' @importFrom dplyr select
 #' @importFrom purrr map_int
 #' @importFrom dplyr if_else
+#' @importFrom tibble rowid_to_column
 #'
 #' @param se A SummarizedExperiment object that contains the data to be processed.
 #' @param .factor_1 A symbol or quosure representing the first factor variable in `se`.
@@ -1713,8 +1717,3 @@ resolve_complete_confounders_of_non_interest_pair_df <- function(df, .factor_1, 
   
   df
 }
-
-# Global variable declarations to avoid R CMD check warnings
-globalVariables(c("transcript", "read count", "n", "m", ".", ".feature", ".abundance_scaled", 
-                  "tt_columns", "seurat_clusters", "cluster", "tagwise.dispersion", "Component", 
-                  "Component value", "sdev", "name", "value", "x", "Y", "x"))
