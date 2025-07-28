@@ -94,7 +94,7 @@ Function | Description
 ### Differential Analysis Functions
 Function | Description
 ------------ | -------------
-`test_differential_abundance()` | Test differential abundance with various methods
+`test_differential_expression()` | Test differential expression with various methods
 
 ### Cellularity Analysis Functions
 Function | Description
@@ -507,21 +507,37 @@ se_mini = se_mini |>
 
 ## Step 3: Differential Expression Analysis
 
-This workflow uses **edgeR quasi-likelihood** [@robinson2010edger; @chen2016edgeR], **edgeR robust likelihood ratio** [@chen2016edgeR], **DESeq2** [@love2014deseq2], **limma-voom** [@law2014voom], and **limma-voom with sample weights** [@liu2015voomweights] for differential expression analysis.
+This workflow uses 
+
+**edgeR quasi-likelihood** [@robinson2010edger; @chen2016edgeR]
+**edgeR robust likelihood ratio** [@chen2016edgeR], 
+**DESeq2** [@love2014deseq2], 
+**limma-voom** [@law2014voom], and 
+**limma-voom with sample weights** [@liu2015voomweights] for differential expression analysis.
 
 ### Basic Differential Expression
 
 **Methods:**
+
 - **edgeR quasi-likelihood:** Quasi-likelihood F-tests for differential expression
+
 - **edgeR robust likelihood ratio:** Robust likelihood ratio tests
+
 - **DESeq2:** Negative binomial distribution with dispersion estimation
+
 - **limma-voom:** Linear modeling with empirical Bayes moderation
+
 - **limma-voom with sample weights:** Enhanced voom with quality weights
 **References:**
+
 - Robinson et al. (2010) edgeR: a Bioconductor package for differential expression analysis
+
 - Chen et al. (2016) From reads to genes to pathways: differential expression analysis of RNA-Seq experiments using Rsubread and the edgeR quasi-likelihood pipeline
+
 - Love et al. (2014) Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2
+
 - Law et al. (2014) voom: precision weights unlock linear model analysis tools for RNA-seq read counts
+
 - Liu et al. (2015) Why weight? Modelling sample and observational level variability improves power in RNA-seq analyses
 
 ```{r differential-expression-multiple-methods}
@@ -529,80 +545,85 @@ This workflow uses **edgeR quasi-likelihood** [@robinson2010edger; @chen2016edge
 se_mini = se_mini |>
 
 # Use QL method
-	test_differential_abundance(~ condition, method = "edgeR_quasi_likelihood", prefix = "ql__") |>
+	test_differential_expression(~ condition, method = "edgeR_quasi_likelihood", prefix = "ql__") |>
 	
 	# Use edger_robust_likelihood_ratio
-	test_differential_abundance(~ condition, method = "edger_robust_likelihood_ratio", prefix = "lr_robust__") |>
+	test_differential_expression(~ condition, method = "edger_robust_likelihood_ratio", prefix = "lr_robust__") |>
 	
 # Use DESeq2 method
-	test_differential_abundance(~ condition, method = "DESeq2", prefix = "deseq2__") |>
+	test_differential_expression(~ condition, method = "DESeq2", prefix = "deseq2__") |>
 	
 	# Use limma_voom
-	test_differential_abundance(~ condition, method = "limma_voom", prefix = "voom__") |>
+	test_differential_expression(~ condition, method = "limma_voom", prefix = "voom__") |>
 
 # Use limma_voom_sample_weights
-	test_differential_abundance(~ condition, method = "limma_voom_sample_weights", prefix = "voom_weights__") 
+	test_differential_expression(~ condition, method = "limma_voom_sample_weights", prefix = "voom_weights__") 
 
 
 ```
 
-The fit object produced by each underlying method are stored in as attributes of the `se_mini` object. We can use them for example to perform quality control of the fit.
+### Quality Control of the Fit
+
+It is important to check the quality of the fit. All methods produce a fit object that can be used for quality control. The fit object produced by each underlying method are stored in as attributes of the `se_mini` object. We can use them for example to perform quality control of the fit.
 
 #### For edgeR
 
-```{r differential-expression-edgeR-fit, eval=FALSE}
+Plot the biological coefficient of variation (BCV) trend. This plot is helpful to understant the dispersion of the data.
+
+```{r differential-expression-edgeR-object}
 library(edgeR)
 
-# Plot the mean-variance trend
-se_mini |> 
- SE2DGEList() |>
-  
-# The DGELRT object contains the original DGEList
-dge_obj <- attr(se_mini, "internals")$edgeR_quasi_likelihood
-# Access the original DGEList from the DGELRT object
-# The counts are stored in the DGELRT object
-if (!is.null(dge_obj$counts)) {
-  plotMeanVar(DGEList(counts = dge_obj$counts))
-} else {
-  # If counts are not available, skip the plot
-  cat("Counts not available for plotMeanVar\n")
-}
+attr(se_mini, "internals")$edgeR_quasi_likelihood_object |>
+  plotBCV()
 
+```
+
+Plot the log-fold change vs mean plot. 
+
+```{r differential-expression-edgeR-fit}
+library(edgeR)
+
+attr(se_mini, "internals")$edgeR_quasi_likelihood_fit |>
+  plotMD()
+
+```
+
+#### For DESeq2
+
+Plot the mean-variance trend.
+
+```{r differential-expression-DESeq2-object}
+library(DESeq2)
+
+attr(se_mini, "internals")$DESeq2_object |>
+  plotDispEsts()
+
+```
+
+Plot the log-fold change vs mean plot.
+
+```{r differential-expression-DESeq2-fit}
+library(DESeq2)
+
+attr(se_mini, "internals")$DESeq2_object |>
+  plotMA()
 
 ```
 
 
 
-### Gene Description
 
-With tidybulk, retrieving gene descriptions is straightforward, making it easy to enhance the interpretability of your differential expression results.
 
-```{r differential-expression-gene-description}
-# Add gene descriptions using the original SummarizedExperiment
-se_mini |> 
 
-	describe_transcript() |>
 
-	# Filter top significant genes
-	filter(ql__FDR < 0.05) |>
 
-	# Print the gene statistics
-	pivot_transcript() |> 
-	dplyr::select(.feature, description, contains("ql")) |> 
-	head()
 
-```
-
-### Compare Results Across Methods
-
-```{r differential-expression-summary-statistics}
-# Summay statistics
-se_mini |> rowData() |> as_tibble() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
-summarise(across(everything(), list(min = min, median = median, max = max), na.rm = TRUE))
-
-```
 
 ### Histograms of p-values across methods
+
+Inspection of the raw p-value histogram provides a rapid check of differential-expression results. When no gene is truly differentially expressed, the p-values follow a uniform U(0,1) distribution across the interval 0–1, so the histogram appears flat [Source](https://bioconductor.org/help/course-materials/2014/useR2014/Workflows.html). In a more realistic scenario where only a subset of genes changes, this uniform background is still present but an obvious spike emerges close to zero, created by the genuine signals.
+
+Thanks to the modularity of the `tidybulk` workflow, that can multiplex different methods, we can easily compare the p-values across methods.
 
 ```{r differential-expression-pvalue-histograms, fig.width = 10, fig.height = 10}
 	se_mini |>
@@ -622,6 +643,18 @@ summarise(across(everything(), list(min = min, median = median, max = max), na.r
   my_theme +
   labs(title = "Histogram of p-values across methods")
 ```
+
+
+
+### Compare Results Across Methods
+
+```{r differential-expression-summary-statistics}
+# Summay statistics
+se_mini |> rowData() |> as_tibble() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
+summarise(across(everything(), list(min = min, median = median, max = max), na.rm = TRUE))
+
+```
+
 
 ### Pairplot of pvalues across methods (GGpairs)
 
@@ -750,7 +783,7 @@ Contrast-based differential expression analysis using **edgeR** [@robinson2010ed
 ```{r differential-expression-contrasts}
 # Using contrasts for more complex comparisons
 se_mini |>
-	test_differential_abundance(
+	test_differential_expression(
 		~ 0 + condition,                  
 		.contrasts = c("conditionTRUE - conditionFALSE"),
         method = "edgeR_quasi_likelihood", 
@@ -769,7 +802,7 @@ TREAT method [@mccarthy2009treat] is used for testing significance relative to a
 ```{r differential-expression-treat-method}
 # Using contrasts for more complex comparisons
 se_mini |>
-	test_differential_abundance(
+	test_differential_expression(
 		~ 0 + condition,                  
 		.contrasts = c("conditionTRUE - conditionFALSE"),
         method = "edgeR_quasi_likelihood", 
@@ -790,7 +823,7 @@ glmmSeq [@ma2020glmmseq] is used for generalized linear mixed models for RNA-seq
 # Using glmmSeq for mixed models
 se_mini = se_mini |>
   keep_abundant(formula_design = ~ condition) |>
-  test_differential_abundance(
+  test_differential_expression(
     ~ condition + (1|Cell.type), 
     method = "glmmseq_lme4", 
 	prefix = "glmmseq__"
@@ -798,6 +831,27 @@ se_mini = se_mini |>
 
   se_mini |>
   pivot_transcript() 
+```
+
+
+### Gene Description
+
+With tidybulk, retrieving gene descriptions is straightforward, making it easy to enhance the interpretability of your differential expression results.
+
+```{r differential-expression-gene-description}
+# Add gene descriptions using the original SummarizedExperiment
+se_mini |> 
+
+	describe_transcript() |>
+
+	# Filter top significant genes
+	filter(ql__FDR < 0.05) |>
+
+	# Print the gene statistics
+	pivot_transcript() |> 
+	dplyr::select(.feature, description, contains("ql")) |> 
+	head()
+
 ```
 
 ## Step 4: Batch Effect Correction
