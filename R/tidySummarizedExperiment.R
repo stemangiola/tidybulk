@@ -64,6 +64,7 @@ change_reserved_column_names = function(col_data, .data ){
 #' @importFrom tidyr gather
 #' @importFrom dplyr rename
 #' @importFrom dplyr left_join
+#' @importFrom dplyr inner_join
 #' @importFrom dplyr bind_cols
 #' @importFrom tibble as_tibble
 #' @importFrom purrr reduce

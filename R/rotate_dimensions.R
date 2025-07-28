@@ -26,14 +26,14 @@
 #'
 #' Underlying custom method:
 #' 	rotation = function(m, d) {
-#' 		// r = the angle
-#' 		// m data matrix
+#' 		# r = the angle
+#' 		# m data matrix
 #'    r = d * pi / 180
 #'    ((bind_rows(
 #' 	  c(`1` = cos(r), `2` = -sin(r)),
 #' 	  c(`1` = sin(r), `2` = cos(r))
 #'   ) |> as_matrix()) %*% m)
-#'  }
+#' }
 #'
 #'
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.

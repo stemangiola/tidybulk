@@ -301,6 +301,5 @@ entrez_rank_to_gsea = function(my_entrez_rank, species, gene_collections  = NULL
                    )) |>
         select(-data)
     
-    
 }
 
