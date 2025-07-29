@@ -134,6 +134,22 @@ setGeneric("aggregate_duplicates", function(.data,
   #   ~ (.)
   # )
   
+  # Separate numeric and non-numeric columns
+  # First convert to data frame to check column types
+  df_for_checking = .data |>
+    rowData() |>
+    S4Vectors::as.data.frame(optional = TRUE) |>
+    tibble::as_tibble(rownames = feature__$name, .name_repair = "minimal")
+  
+  # --- revised logic to detect numeric columns more robustly ---
+  numeric_columns =
+    df_for_checking |>
+    select(any_of(columns_to_collapse)) |>
+    select(where(is.numeric)) |>
+    colnames()
+  
+  non_numeric_columns = setdiff(columns_to_collapse, numeric_columns)
+  
   # Row data
   new_row_data =
     .data |>
@@ -142,7 +158,8 @@ setGeneric("aggregate_duplicates", function(.data,
     tibble::as_tibble(rownames = feature__$name, .name_repair = "minimal") |> 
     group_by(!!.transcript) |>
     summarise(
-      across(columns_to_collapse, ~ .x |> collapse_function()),
+      across(numeric_columns, ~ aggregation_function(.x)),
+      across(non_numeric_columns, ~ .x |> collapse_function()),
       across(non_standard_columns, ~ .x[1]),
       merged_transcripts = n()
     ) |>
