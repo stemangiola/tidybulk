@@ -138,9 +138,10 @@ library(magrittr)
 library(ggplot2)
 library(ggrepel)
 library(tidybulk)
-library(tidySummarizedExperiment)
 library(SummarizedExperiment)
+library(tidybulk)
 
+# Define theme
 my_theme = 	
 	theme_bw() +
 	theme(
@@ -155,8 +156,42 @@ my_theme =
 		axis.title.x  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10)),
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
+```
 
-data(se_mini)
+
+
+In this vignette we will use the `airway` dataset, a `SummarizedExperiment` object containing RNA-seq data from an experiment studying the effect of dexamethasone treatment on airway smooth muscle cells. This dataset is available in the [airway](https://bioconductor.org/packages/airway/) package.
+
+```{r load airway}
+library(airway)
+data(airway)
+```
+
+This workflow, will use the [tidySummarizedExperiment](https://bioconductor.org/packages/tidySummarizedExperiment/) package to manipulate the data in a `tidyverse` fashion. This approach streamlines the data manipulation and analysis process, making it more efficient and easier to understand.
+
+```{r load tidySummarizedExperiment}
+library(tidySummarizedExperiment)
+```
+
+Here we will add a gene symbol column to the `airway` object. This will be used to interpret the differential expression analysis, and to deconvolve the cellularity.
+
+```{r}
+# Add gene symbol and entrez
+airway <-
+  airway |> 
+  mutate(symbol = AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                                        keys = .feature,
+                                        keytype = "ENSEMBL",
+                                        column = "SYMBOL",
+                                        multiVals = "first"
+  )) |> 
+  
+  mutate(entrez = AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                                      keys = .feature,
+                                      keytype = "ENSEMBL",
+                                      column = "ENTREZID",
+                                      multiVals = "first"
+)) 
 
 ```
 
@@ -181,16 +216,16 @@ This vignette demonstrates a complete transcriptomic analysis workflow using tid
 
 ## Data Overview
 
-We will use a `SummarizedExperiment` object containing RNA-seq data:
+We will use the `airway` dataset, a `SummarizedExperiment` object containing RNA-seq data from an experiment studying the effect of dexamethasone treatment on airway smooth muscle cells:
 
 ```{r data-overview}
-se_mini
+airway
 ```
 
 Loading `tidySummarizedExperiment` automatically abstracts this object as a `tibble`, making it compatible with tidyverse tools while maintaining its `SummarizedExperiment` nature:
 
 ```{r check-se-class}
-class(se_mini)
+class(airway)
 ```
 
 ### Prepare Data for Analysis
@@ -198,19 +233,19 @@ class(se_mini)
 Before analysis, we need to ensure our variables are in the correct format:
 
 ```{r convert-condition-to-factor}
-# Convert condition to factor for proper differential expression analysis
-colData(se_mini)$condition = as.factor(colData(se_mini)$condition)
+# Convert dex to factor for proper differential expression analysis
+colData(airway)$dex = as.factor(colData(airway)$dex)
 ```
 
 ### Visualize Raw Counts
 Visualize the distribution of raw counts before any filtering:
 
 ```{r plot-raw-counts, fig.width = 10, fig.height = 10}
-ggplot(as_tibble(se_mini), aes(counts + 1, group = .sample, color = `Cell.type`)) +
+ggplot(as_tibble(airway), aes(counts + 1, group = .sample, color = `dex`)) +
   geom_density() +
   scale_x_log10() +
   my_theme +
-  labs(title = "Raw counts by cell type (before any filtering)")
+  labs(title = "Raw counts by treatment (before any filtering)")
 ```
 
 ## Step 1: Data Preprocessing
@@ -222,10 +257,10 @@ Aggregate duplicated transcripts (e.g., isoforms, ensembl IDs):
 
 ```{r preprocessing-aggregate-duplicates}
 # Add gene names to rowData
-rowData(se_mini)$gene_name = rownames(se_mini)
+rowData(airway)$gene_name = rownames(airway)
 
 # Aggregate duplicates
-se_mini = se_mini |> aggregate_duplicates(.transcript = gene_name, aggregation_function = mean)
+airway = airway |> aggregate_duplicates(.transcript = gene_name, aggregation_function = mean)
 ```
 
 ### Abundance Filtering: tidybulk approaches only
@@ -236,13 +271,13 @@ Abundance filtering can be performed using tidybulk's built-in methods [@robinso
 
 ```{r filtering-abundance-methods}
 # Default (simple filtering)
-se_abundant_default = se_mini |> keep_abundant()
+airway_abundant_default = airway |> keep_abundant()
 
 # With factor_of_interest (recommended for complex designs)
-se_abundant_formula = se_mini |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5, factor_of_interest = condition)
+airway_abundant_formula = airway |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5, factor_of_interest = dex)
 
 # With CPM threshold (using design parameter)
-se_abundant_cpm = se_mini |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5)
+airway_abundant_cpm = airway |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5)
 
 ```
 
@@ -251,7 +286,7 @@ se_abundant_cpm = se_mini |> keep_abundant(minimum_counts = 10, minimum_proporti
 ```{r filtering-summary-statistics, fig.width = 10, fig.height = 10}
 # Example: summary for default tidybulk filtering
 # Before filtering
-se_mini |> as_tibble() |> summarise(
+airway |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -259,21 +294,21 @@ se_mini |> as_tibble() |> summarise(
 )
 
 # After filtering
-se_abundant_default |> as_tibble() |> summarise(
+airway_abundant_default |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
   max_count = max(counts)
 )
 
-se_abundant_formula |> as_tibble() |> summarise(
+airway_abundant_formula |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
   max_count = max(counts)
 )
 
-se_abundant_cpm |> as_tibble() |> summarise(
+airway_abundant_cpm |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -283,16 +318,16 @@ se_abundant_cpm |> as_tibble() |> summarise(
 
 ```{r filtering-density-plot-comparison, fig.width = 10, fig.height = 10}
 # Merge all methods into a single tibble
-se_abundant_all = 
+airway_abundant_all = 
   bind_rows(
-    se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no filter"),
-    se_abundant_default |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "default"),
-    se_abundant_formula |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "formula"),
-    se_abundant_cpm |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "cpm")
+    airway |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no filter"),
+    airway_abundant_default |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "default"),
+    airway_abundant_formula |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "formula"),
+    airway_abundant_cpm |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "cpm")
   )
 
 # Density plot across methods
-se_abundant_all |> 
+airway_abundant_all |> 
   as_tibble() |> 
   ggplot(aes(counts + 1, group = .sample, color = method)) +
     geom_density() +
@@ -302,10 +337,10 @@ se_abundant_all |>
     labs(title = "Counts after abundance filtering (tidybulk default)")
 ```
 
-Update the `se_mini` object with the filtered data:
+Update the `airway` object with the filtered data:
 
 ```{r update-se-mini-with-filtered}
-se_mini = se_abundant_formula
+airway = airway_abundant_formula
 ```
 
 > **Tip:** Use `formula_design` for complex designs, and use the CPM threshold for library-size-aware filtering.
@@ -315,13 +350,13 @@ se_mini = se_abundant_formula
 Redundancy removal is a standard approach for reducing highly correlated features.
 
 ```{r preprocessing-remove-redundancy}
-se_mini_non_redundant = 
-  se_mini |> 
+airway_non_redundant = 
+  airway |> 
   remove_redundancy(method = "correlation", top = 100) 
 
   # Make  
 
-se_mini |> as_tibble() |> summarise(
+airway |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -329,7 +364,7 @@ se_mini |> as_tibble() |> summarise(
 )
 
 # Summary statistics
-se_mini_non_redundant |> as_tibble() |> summarise(
+airway_non_redundant |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -338,13 +373,13 @@ se_mini_non_redundant |> as_tibble() |> summarise(
 
 # Plot before and after
 # Merge before and after into a single tibble
-se_mini_all = bind_rows(
-  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "before"),
-  se_mini_non_redundant |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "after")
+airway_all = bind_rows(
+  airway |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "before"),
+  airway_non_redundant |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "after")
 )
 
 # Density plot
-ggplot(as_tibble(se_mini_all), aes(counts + 1, group = .sample, color = method)) +
+ggplot(as_tibble(airway_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -360,13 +395,13 @@ Keep only the most variable transcripts for downstream analysis.
 Variance-based feature selection using edgeR methodology [@robinson2010edger] is used for selecting informative features.
 
 ```{r filtering-keep-variable}
-se_mini_variable = se_mini |> keep_variable()
+airway_variable = airway |> keep_variable()
 ```
 
 ### Visualize After Variable Filtering Variable Transcripts (optional)
 ```{r filtering-variable-summary-and-plot, fig.width = 10, fig.height = 10}
 # Before filtering
-se_mini |> as_tibble() |> summarise(
+airway |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -374,7 +409,7 @@ se_mini |> as_tibble() |> summarise(
 )
 
 # After filtering
-se_mini_variable |> as_tibble() |> summarise(
+airway_variable |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -383,13 +418,13 @@ se_mini_variable |> as_tibble() |> summarise(
 
 # Density plot
 # Merge before and after into a single tibble
-se_mini_all = bind_rows(
-  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "before"),
-  se_mini_variable |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "after")
+airway_all = bind_rows(
+  airway |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "before"),
+  airway_variable |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "after")
 )
 
 # Density plot
-ggplot(as_tibble(se_mini_all), aes(counts + 1, group = .sample, color = method)) +
+ggplot(as_tibble(airway_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -402,8 +437,8 @@ ggplot(as_tibble(se_mini_all), aes(counts + 1, group = .sample, color = method))
 Scale for sequencing depth using TMM [@robinson2010edger], upper quartile [@bullard2010uq], and RLE [@anders2010rle] normalization.
 
 ```{r normalization-scale-abundance}
-se_mini = 
-se_mini |> 
+airway = 
+airway |> 
 	scale_abundance(method = "TMM", suffix = "_tmm") |>
 	scale_abundance(method = "upperquartile", suffix = "_upperquartile") |>
 	scale_abundance(method = "RLE", suffix = "_RLE")
@@ -413,25 +448,25 @@ se_mini |>
 ### Visualize After Scaling
 ```{r normalization-visualize-scaling, fig.width = 10, fig.height = 10}
 # Before scaling
-se_mini |> assay("counts") |> as.matrix() |> rowMeans() |> summary()
+airway |> assay("counts") |> as.matrix() |> rowMeans() |> summary()
 
-se_mini |> assay("counts_tmm") |> as.matrix() |> rowMeans() |> summary()
+airway |> assay("counts_tmm") |> as.matrix() |> rowMeans() |> summary()
 
-se_mini |> assay("counts_upperquartile") |> as.matrix() |> rowMeans() |> summary()
+airway |> assay("counts_upperquartile") |> as.matrix() |> rowMeans() |> summary()
 
-se_mini |> assay("counts_RLE") |> as.matrix() |> rowMeans() |> summary()
+airway |> assay("counts_RLE") |> as.matrix() |> rowMeans() |> summary()
 
 # Merge all methods into a single tibble
-se_mini_scaled_all = bind_rows(
-  se_mini |> assay("counts") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no_scaling"),
-  se_mini |> assay("counts_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "TMM"),
-  se_mini |> assay("counts_upperquartile") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "upperquartile"),
-  se_mini |> assay("counts_RLE") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "RLE")
+airway_scaled_all = bind_rows(
+  airway |> assay("counts") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no_scaling"),
+  airway |> assay("counts_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "TMM"),
+  airway |> assay("counts_upperquartile") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "upperquartile"),
+  airway |> assay("counts_RLE") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "RLE")
 )
 
 
 # Density plot
-ggplot(as_tibble(se_mini_scaled_all), aes(counts + 1, group = .sample, color = method)) +
+ggplot(as_tibble(airway_scaled_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -449,7 +484,7 @@ Variance filtering is a standard preprocessing step for dimensionality reduction
 ```{r eda-remove-zero-variance}
 library(matrixStats)
 # Remove features with zero variance across samples
-se_mini = se_mini[rowVars(assay(se_mini)) > 0, ]
+airway = airway[rowVars(assay(airway)) > 0, ]
 ```
 
 ### Dimensionality Reduction
@@ -457,12 +492,12 @@ se_mini = se_mini[rowVars(assay(se_mini)) > 0, ]
 MDS [@kruskal1964mds] using limma::plotMDS [@ritchie2015limma] and PCA [@hotelling1933pca] are used for dimensionality reduction.
 
 ```{r eda-mds-analysis, fig.width = 10, fig.height = 10}
-se_mini = se_mini |>
+airway = airway |>
   reduce_dimensions(method="MDS", .dims = 2)
 ```
 
 ```{r eda-pca-analysis, fig.width = 10, fig.height = 10}
-se_mini = se_mini |>
+airway = airway |>
   reduce_dimensions(method="PCA", .dims = 2)
 ```
 
@@ -470,17 +505,17 @@ se_mini = se_mini |>
 
 ```{r eda-plot-dimensionality-reduction, fig.width = 10, fig.height = 10}
 # MDS plot
-se_mini |>
+airway |>
 	pivot_sample() |>
-	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`dex`)) +
   geom_point() +
 	my_theme +
 	labs(title = "MDS Analysis")
 
 # PCA plot
-	se_mini |>
+	airway |>
 	pivot_sample() |>
-	ggplot(aes(x=`PC1`, y=`PC2`, color=`Cell.type`)) +
+	ggplot(aes(x=`PC1`, y=`PC2`, color=`dex`)) +
 	geom_point() +
 	my_theme +
 	labs(title = "PCA Analysis")
@@ -491,11 +526,11 @@ se_mini |>
 K-means clustering [@macqueen1967kmeans] is used for unsupervised grouping.
 
 ```{r eda-clustering-analysis, fig.width = 10, fig.height = 10}
-se_mini = se_mini |>
+airway = airway |>
   cluster_elements(method="kmeans", centers = 2)
 
 # Visualize clustering
-	se_mini |>
+	airway |>
 	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster_kmeans`)) +
   geom_point() +
   my_theme +
@@ -539,22 +574,22 @@ This workflow uses
 
 ```{r differential-expression-multiple-methods}
 # Standard differential expression analysis
-se_mini = se_mini |>
+airway = airway |>
 
 # Use QL method
-	test_differential_expression(~ condition, method = "edgeR_quasi_likelihood", prefix = "ql__") |>
+	test_differential_expression(~ dex, method = "edgeR_quasi_likelihood", prefix = "ql__") |>
 	
 	# Use edger_robust_likelihood_ratio
-	test_differential_expression(~ condition, method = "edger_robust_likelihood_ratio", prefix = "lr_robust__") |>
+	test_differential_expression(~ dex, method = "edger_robust_likelihood_ratio", prefix = "lr_robust__") |>
 	
 # Use DESeq2 method
-	test_differential_expression(~ condition, method = "DESeq2", prefix = "deseq2__") |>
+	test_differential_expression(~ dex, method = "DESeq2", prefix = "deseq2__") |>
 	
 	# Use limma_voom
-	test_differential_expression(~ condition, method = "limma_voom", prefix = "voom__") |>
+	test_differential_expression(~ dex, method = "limma_voom", prefix = "voom__") |>
 
 # Use limma_voom_sample_weights
-	test_differential_expression(~ condition, method = "limma_voom_sample_weights", prefix = "voom_weights__") 
+	test_differential_expression(~ dex, method = "limma_voom_sample_weights", prefix = "voom_weights__") 
 
 
 ```
@@ -570,7 +605,7 @@ Plot the biological coefficient of variation (BCV) trend. This plot is helpful t
 ```{r differential-expression-edgeR-object}
 library(edgeR)
 
-metadata(se_mini)$tidybulk$edgeR_quasi_likelihood_object |>
+metadata(airway)$tidybulk$edgeR_quasi_likelihood_object |>
   plotBCV()
 
 ```
@@ -580,7 +615,7 @@ Plot the log-fold change vs mean plot.
 ```{r differential-expression-edgeR-fit}
 library(edgeR)
 
-metadata(se_mini)$tidybulk$edgeR_quasi_likelihood_fit |>
+metadata(airway)$tidybulk$edgeR_quasi_likelihood_fit |>
   plotMD()
 
 ```
@@ -592,7 +627,7 @@ Plot the mean-variance trend.
 ```{r differential-expression-DESeq2-object}
 library(DESeq2)
 
-metadata(se_mini)$tidybulk$DESeq2_object |>
+metadata(airway)$tidybulk$DESeq2_object |>
   plotDispEsts()
 
 ```
@@ -602,18 +637,10 @@ Plot the log-fold change vs mean plot.
 ```{r differential-expression-DESeq2-fit}
 library(DESeq2)
 
-metadata(se_mini)$tidybulk$DESeq2_object |>
+metadata(airway)$tidybulk$DESeq2_object |>
   plotMA()
 
 ```
-
-
-
-
-
-
-
-
 
 
 ### Histograms of p-values across methods
@@ -623,7 +650,7 @@ Inspection of the raw p-value histogram provides a rapid check of differential-e
 Thanks to the modularity of the `tidybulk` workflow, that can multiplex different methods, we can easily compare the p-values across methods.
 
 ```{r differential-expression-pvalue-histograms, fig.width = 10, fig.height = 10}
-	se_mini |>
+	airway |>
   rowData() |> 
   as_tibble() |> 
   select(
@@ -646,8 +673,8 @@ Thanks to the modularity of the `tidybulk` workflow, that can multiplex differen
 ### Compare Results Across Methods
 
 ```{r differential-expression-summary-statistics}
-# Summay statistics
-se_mini |> rowData() |> as_tibble() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
+# Summary statistics
+airway |> rowData() |> as_tibble() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
 summarise(across(everything(), list(min = min, median = median, max = max), na.rm = TRUE))
 
 ```
@@ -658,7 +685,7 @@ summarise(across(everything(), list(min = min, median = median, max = max), na.r
 ```{r differential-expression-pvalue-pairplot, fig.width = 10, fig.height = 10, message = FALSE}
 
 library(GGally)
-se_mini |> 
+airway |> 
   rowData() |> 
   as_tibble() |> 
   select(ql__PValue, lr_robust__PValue, voom__P.Value, voom_weights__P.Value, deseq2__pvalue) |> 
@@ -673,7 +700,7 @@ se_mini |>
 
 ```{r differential-expression-effectsize-pairplot, fig.width = 10, fig.height = 10, message = FALSE}
 library(GGally)
-se_mini |> 
+airway |> 
   rowData() |> 
   as_tibble() |> 
   select(ql__logFC, lr_robust__logFC, voom__logFC, voom_weights__logFC, deseq2__log2FoldChange) |> 
@@ -684,11 +711,11 @@ se_mini |>
 
 ### Volcano Plots for Each Method
 
-Visualising the significance and effect size of the differential expression results as a volcano plots we appreciate that DESeq2 has much lower p-values than other methods, for the same model.
+Visualising the significance and effect size of the differential expression results as a volcano plots we appreciate that some methods have much lower p-values distributions than other methods, for the same model and data.
 
 ```{r differential-expression-volcano-plots-1, fig.width = 10, fig.height = 10}
 # Create volcano plots
-se_mini |>
+airway |>
 
 	# Select the columns we want to plot
     rowData() |> 
@@ -715,7 +742,7 @@ se_mini |>
 		stat %in% c("PValue", "pvalue", "P.Value", "p.value") ~ "PValue"
 	)) |>
   pivot_wider(names_from = "stat", values_from = "value") |>
-  unnest( logFC, PValue) |> 
+  unnest(c(logFC, PValue)) |> 
 
 	# Plot
   ggplot(aes(x = logFC, y = PValue)) +
@@ -732,13 +759,13 @@ Plotting independent y-axis scales for the p-values and effect sizes allows us t
 
 ```{r differential-expression-volcano-plots-2, fig.width = 10, fig.height = 10}
 # Create volcano plots
-se_mini |>
+airway |>
 
 	# Select the columns we want to plot
     rowData() |> 
     as_tibble(rownames = ".feature") |> 
     select(
-			.feature,
+			symbol,
       ql__logFC, ql__PValue,
       lr_robust__logFC, lr_robust__PValue,
       voom__logFC, voom__P.Value,
@@ -748,7 +775,7 @@ se_mini |>
 
 	# Pivot longer to get a tidy data frame
 	pivot_longer(
-      - .feature,
+      - symbol,
       names_to = c("method", "stat"),
       values_to = "value", names_sep = "__"
     ) |>
@@ -759,12 +786,12 @@ se_mini |>
 		stat %in% c("PValue", "pvalue", "P.Value", "p.value") ~ "PValue"
 	)) |>
   pivot_wider(names_from = "stat", values_from = "value") |>
-  unnest( logFC, PValue) |> 
+  unnest(c(logFC, PValue)) |> 
 
 	# Plot
   ggplot(aes(x = logFC, y = PValue)) +
   geom_point(aes(color = PValue < 0.05, size = PValue < 0.05)) +
-  ggrepel::geom_text_repel(aes(label = .feature), size = 2, max.overlaps = 10) +
+  ggrepel::geom_text_repel(aes(label = symbol), size = 2, max.overlaps = 20) +
   scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
   scale_size_manual(values = c("TRUE" = 0.5, "FALSE" = 0.1)) +
@@ -779,10 +806,10 @@ Contrast-based differential expression analysis using **edgeR** [@robinson2010ed
 
 ```{r differential-expression-contrasts}
 # Using contrasts for more complex comparisons
-se_mini |>
+airway |>
 	test_differential_expression(
-		~ 0 + condition,                  
-		.contrasts = c("conditionTRUE - conditionFALSE"),
+		~ 0 + dex,                  
+		.contrasts = c("dextrt - dexuntrt"),
         method = "edgeR_quasi_likelihood", 
 		prefix = "contrasts__"
 	) |> 
@@ -798,10 +825,10 @@ TREAT method [@mccarthy2009treat] is used for testing significance relative to a
 
 ```{r differential-expression-treat-method}
 # Using contrasts for more complex comparisons
-se_mini |>
+airway |>
 	test_differential_expression(
-		~ 0 + condition,                  
-		.contrasts = c("conditionTRUE - conditionFALSE"),
+		~ 0 + dex,                  
+		.contrasts = c("dextrt - dexuntrt"),
         method = "edgeR_quasi_likelihood", 
 		test_above_log2_fold_change = 2, 
 		prefix = "treat__"
@@ -818,16 +845,21 @@ glmmSeq [@ma2020glmmseq] is used for generalized linear mixed models for RNA-seq
 
 ```{r differential-expression-mixed-models, cache=TRUE}
 # Using glmmSeq for mixed models
-se_mini = se_mini |>
-  keep_abundant(formula_design = ~ condition) |>
+airway |>
+  keep_abundant(formula_design = ~ dex) |>
+  
+  # Select 100 genes in the interest of execution time
+  _[1:100,] |>
+
+  # Fit model
   test_differential_expression(
-    ~ condition + (1|Cell.type), 
+    ~ dex + (1|cell), 
     method = "glmmseq_lme4", 
     cores = 1,
 	prefix = "glmmseq__"
   ) 
 
-  se_mini |>
+  airway |>
   pivot_transcript() 
 ```
 
@@ -838,7 +870,7 @@ With tidybulk, retrieving gene descriptions is straightforward, making it easy t
 
 ```{r differential-expression-gene-description}
 # Add gene descriptions using the original SummarizedExperiment
-se_mini |> 
+airway |> 
 
 	describe_transcript() |>
 
@@ -858,23 +890,24 @@ ComBat-seq [@zhang2017combatseq] is used for batch effect correction in RNA-seq 
 
 ```{r batch-correction-adjust-abundance}
 # Adjust for batch effects
-se_mini = se_mini |>
+airway = airway |>
   adjust_abundance(
-	  .factor_unwanted = time, 
-	  .factor_of_interest = condition, 
+	  .factor_unwanted = cell, 
+	  .factor_of_interest = dex, 
     method = "combat_seq", 
 	  abundance = "counts_tmm"
   )
 
 # Scatter plot of adjusted vs unadjusted
-left_join(
-    se_mini |> assay("counts_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts_tmm") ,
-    se_mini |> assay("counts_tmm_adjusted") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts_tmm_adjusted") ,
-	by = c(".feature", ".sample")
-  ) |>
+airway |> 
+  
+  # Subset genes to speed up plotting
+  _[1:100,] |> 
+  select(symbol, .sample, counts_tmm, counts_tmm_adjusted) |> 
+  
   ggplot(aes(x = counts_tmm + 1, y = counts_tmm_adjusted + 1)) +
   geom_point(aes(color = .sample), size = 0.1) +
-  ggrepel::geom_text_repel(aes(label = .feature), size = 2, max.overlaps = 10) +
+  ggrepel::geom_text_repel(aes(label = symbol), size = 2, max.overlaps = 20) +
   scale_x_log10() +
   scale_y_log10() +
   my_theme +
@@ -883,7 +916,105 @@ left_join(
 
 
 
-## Step 5: Cellularity Analysis
+
+
+## Step 5: Gene Enrichment Analysis
+
+Gene Set Enrichment Analysis (GSEA) [@subramanian2005gsea] is used for gene set enrichment.
+
+```{r enrichment-gene-rank-analysis}
+# Run gene rank enrichment (GSEA style)
+gene_rank_res =
+  airway |>
+
+    # Filter for genes with entrez IDs
+  filter(!entrez |> is.na()) |>
+  aggregate_duplicates(.transcript = entrez) |> 
+
+  # Test gene rank
+  test_gene_rank(
+    .entrez = entrez,
+    .arrange_desc = lr_robust__logFC,
+    species = "Homo sapiens",
+    gene_sets = c("H", "C2", "C5")
+  )
+```
+
+```{r enrichment-inspect-significant-genesets}
+# Inspect significant gene sets (example for C2 collection)
+gene_rank_res |>
+  filter(gs_collection == "C2") |>
+  dplyr::select(-fit) |>
+  unnest(test) |>
+  filter(p.adjust < 0.05)
+```
+
+#### Visualize enrichment 
+```{r enrichment-visualize-gsea-plots}
+  library(enrichplot)
+  library(patchwork)
+  gene_rank_res |>
+    unnest(test) |>
+    head() |>
+    mutate(plot = pmap(
+      list(fit, ID, idx_for_plotting, p.adjust),
+      ~ enrichplot::gseaplot2(
+        ..1, geneSetID = ..3,
+        title = sprintf("%s \nadj pvalue %s", ..2, round(..4, 2)),
+        base_size = 6, rel_heights = c(1.5, 0.5), subplots = c(1, 2)
+      )
+    )) |>
+    pull(plot) 
+
+```
+
+Gene Ontology overrepresentation analysis [@ashburner2000go] is used for functional enrichment. 
+
+```{r enrichment-gene-overrepresentation}
+# Test gene overrepresentation
+airway_overrep = 
+  airway |>
+  
+  # Label genes to test overrepresentation of
+  mutate(genes_to_test = ql__FDR < 0.05) |>
+  
+    # Filter for genes with entrez IDs
+  filter(!entrez |> is.na()) |>
+  
+  test_gene_overrepresentation(
+    .entrez = entrez,
+    species = "Homo sapiens",
+    .do_test = genes_to_test,
+    gene_sets = c("H", "C2", "C5")
+  )
+
+  airway_overrep
+```
+
+EGSEA [@alhamdoosh2017egsea] is used for ensemble gene set enrichment analysis. EGSEA is a method that combines multiple gene set enrichment analysis methods to provide a more robust and comprehensive analysis of gene set enrichment. It creates a web-based interactive tool that allows you to explore the results of the gene set enrichment analysis.
+
+```{r enrichment-egsea-analysis}
+library(EGSEA)
+# Test gene enrichment
+  airway |> 
+
+  # Filter for genes with entrez IDs
+  filter(!entrez |> is.na()) |>
+  aggregate_duplicates(.transcript = entrez) |> 
+
+  # Test gene enrichment
+  test_gene_enrichment(
+    .formula = ~dex,
+    .entrez = entrez,
+    species = "human", 
+    gene_sets = "h",
+    methods = c("roast"),  # Use a more robust method
+    cores = 2
+  )
+
+```
+
+## Step 6: Cellularity Analysis
 
 CIBERSORT [@newman2015cibersort] is used for cell type deconvolution.
 
@@ -904,10 +1035,11 @@ The `tidybulk` package provides several methods for deconvolution:
 
 ```{r deconvolution-examples}
 
-se_mini = 
-
-se_mini |> 
-deconvolve_cellularity(method = "cibersort", cores = 1, prefix = "cibersort__") 
+airway = 
+  airway |> 
+  
+  filter(!symbol |> is.na()) |> 
+  deconvolve_cellularity(method = "cibersort", cores = 1, prefix = "cibersort__", feature_column = "symbol") 
 
 ```
 
@@ -919,11 +1051,11 @@ if (!requireNamespace("immunedeconv")) BiocManager::install("immunedeconv")
 
 ```{r deconvolution-examples2, eval=FALSE}
 
-se_mini = 
+airway = 
 
-se_mini |> 
+airway |> 
 # Example using LLSR
-deconvolve_cellularity(method = "llsr", cores = 1, prefix = "llsr__") |> 
+deconvolve_cellularity(method = "llsr", prefix = "llsr__", feature_column = "symbol") |> 
 
 # Example using EPIC
 deconvolve_cellularity(method = "epic", cores = 1, prefix = "epic__") |> 
@@ -944,7 +1076,7 @@ Visualize the cell type proportions as a stacked barplot for each method:
 
 ```{r deconvolution-plotting, fig.width = 10, fig.height = 10}
 # Visualize CIBERSORT results
-se_mini	 |>
+airway	 |>
   pivot_sample() |>
   select(.sample, contains("cibersort__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -961,7 +1093,7 @@ se_mini	 |>
 ```{r deconvolution-plotting2, fig.width = 10, fig.height = 10, eval=FALSE}
 
  # Repeat similar plotting for LLSR, EPIC, MCP-counter, quanTIseq, and xCell
-se_mini	 |>
+airway	 |>
   pivot_sample() |>
   select(.sample, contains("llsr__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -972,7 +1104,7 @@ se_mini	 |>
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   labs(title = "LLSR Cell Type Proportions")
 
-  se_mini	 |>
+  airway	 |>
   pivot_sample() |>
   select(.sample, contains("epic__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -983,7 +1115,7 @@ se_mini	 |>
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   labs(title = "EPIC Cell Type Proportions")
 
-  se_mini	 |>
+  airway	 |>
   pivot_sample() |>
   select(.sample, contains("mcp__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -994,7 +1126,7 @@ se_mini	 |>
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   labs(title = "MCP-counter Cell Type Proportions")
 
-  se_mini	 |>
+  airway	 |>
   pivot_sample() |>
   select(.sample, contains("quantiseq__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -1005,7 +1137,7 @@ se_mini	 |>
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   labs(title = "quanTIseq Cell Type Proportions")
 
-  se_mini	 |>
+  airway	 |>
   pivot_sample() |>
   select(.sample, contains("xcell__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -1018,99 +1150,6 @@ se_mini	 |>
   
 ```
 
-## Step 6: Gene Enrichment Analysis
-
-Gene Set Enrichment Analysis (GSEA) [@subramanian2005gsea] is used for gene set enrichment.
-
-```{r enrichment-gene-rank-analysis, eval=FALSE}
-# Run gene rank enrichment (GSEA style)
-gene_rank_res =
-  se_mini |>
-
-    # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
-
-  # Test gene rank
-  test_gene_rank(
-    .entrez = entrez,
-    .arrange_desc = lr_robust__logFC,
-    species = "Homo sapiens",
-    gene_sets = c("H", "C2", "C5")
-  )
-```
-
-```{r enrichment-inspect-significant-genesets, eval=FALSE}
-# Inspect significant gene sets (example for C2 collection)
-gene_rank_res |>
-  filter(gs_collection == "C2") |>
-  dplyr::select(-fit) |>
-  unnest(test) |>
-  filter(p.adjust < 0.05)
-```
-
-#### Visualize enrichment 
-```{r enrichment-visualize-gsea-plots, eval=FALSE}
-  library(enrichplot)
-  library(patchwork)
-  gene_rank_res |>
-    unnest(test) |>
-    head() |>
-    mutate(plot = pmap(
-      list(fit, ID, idx_for_plotting, p.adjust),
-      ~ enrichplot::gseaplot2(
-        ..1, geneSetID = ..3,
-        title = sprintf("%s \nadj pvalue %s", ..2, round(..4, 2)),
-        base_size = 6, rel_heights = c(1.5, 0.5), subplots = c(1, 2)
-      )
-    )) |>
-    pull(plot) 
-
-```
-
-Gene Ontology overrepresentation analysis [@ashburner2000go] is used for functional enrichment. 
-
-```{r enrichment-gene-overrepresentation, eval=FALSE}
-# Test gene overrepresentation
-se_mini_overrep = 
-  se_mini |>
-  
-  # Label genes to test overrepresentation of
-  mutate(genes_to_test = ql__FDR < 0.05) |>
-  
-    # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
-  
-  test_gene_overrepresentation(
-    .entrez = entrez,
-    species = "Homo sapiens",
-    .do_test = genes_to_test,
-    gene_sets = c("H", "C2", "C5")
-  )
-
-  se_mini_overrep
-```
-
-EGSEA [@alhamdoosh2017egsea] is used for ensemble gene set enrichment analysis. EGSEA is a method that combines multiple gene set enrichment analysis methods to provide a more robust and comprehensive analysis of gene set enrichment. It creates a web-based interactive tool that allows you to explore the results of the gene set enrichment analysis.
-
-```{r enrichment-egsea-analysis, eval=FALSE}
-library(EGSEA)
-# Test gene enrichment
-  se_mini |> 
-
-  # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
-
-  # Test gene enrichment
-  test_gene_enrichment(
-    .formula = ~condition,
-    .entrez = entrez,
-    species = "human", 
-    gene_sets = "h",
-    methods = c("roast"),  # Use a more robust method
-    cores = 1
-  )
-
-```
 
 
 ## Bibliography
@@ -1119,7 +1158,7 @@ library(EGSEA)
 
 ```{r bibliography-get-methods}
 # Get bibliography of all methods used in our workflow
-se_mini |> get_bibliography()
+airway |> get_bibliography()
 ```
 
 

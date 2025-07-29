@@ -1,7 +1,7 @@
 tidybulk: An R tidy framework for modular transcriptomic data analysis
 ================
 Stefano Mangiola
-2025-07-28
+2025-07-29
 
 <!-- badges: start -->
 
@@ -23,8 +23,6 @@ Tidybulk provides a unified interface for comprehensive transcriptomic
 data analysis with seamless integration of SummarizedExperiment objects
 and tidyverse principles. It streamlines the entire workflow from raw
 data to biological insights.
-
-# <img src="inst/new_SE_usage-01.png" width="100%"/>
 
 ## Functions/utilities available
 
@@ -73,11 +71,10 @@ data to biological insights.
 
 ### Cellularity Analysis Functions
 
-| Function | Description |
-|----|----|
+| Function                   | Description                                 |
+|----------------------------|---------------------------------------------|
 | `deconvolve_cellularity()` | Deconvolve cellularity with various methods |
-| `test_stratification_cellularity()` | Test stratification cellularity (DEPRECATED) |
-| `cibersort()` | CIBERSORT analysis |
+| `cibersort()`              | CIBERSORT analysis                          |
 
 ### Gene Enrichment Functions
 
@@ -120,6 +117,60 @@ transcriptomic data analysis.” Genome Biology 22 (42).
 transcriptomic data
 analysis](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02233-7)
 
+In this vignette we will use the `airway` dataset, a
+`SummarizedExperiment` object containing RNA-seq data from an experiment
+studying the effect of dexamethasone treatment on airway smooth muscle
+cells. This dataset is available in the
+[airway](https://bioconductor.org/packages/airway/) package.
+
+``` r
+library(airway)
+data(airway)
+```
+
+This workflow, will use the
+[tidySummarizedExperiment](https://bioconductor.org/packages/tidySummarizedExperiment/)
+package to manipulate the data in a `tidyverse` fashion. This approach
+streamlines the data manipulation and analysis process, making it more
+efficient and easier to understand.
+
+``` r
+library(tidySummarizedExperiment)
+```
+
+    ## tidySummarizedExperiment says: Printing is now handled externally. If you want to visualize the data in a tidy way, do library(tidyprint). See https://github.com/tidyomics/tidyprint for more information.
+
+    ## 
+    ## Attaching package: 'tidySummarizedExperiment'
+
+    ## The following object is masked from 'package:generics':
+    ## 
+    ##     tidy
+
+    ## The following object is masked from 'package:tidybulk':
+    ## 
+    ##     se
+
+Here we will add a gene symbol column to the `airway` object. This will
+be used to interpret the differential expression analysis, and to
+deconvolve the cellularity.
+
+``` r
+# Add gene symbol
+airway <-
+  airway |> 
+  mutate(symbol = AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                                        keys = .feature,
+                                        keytype = "ENSEMBL",
+                                        column = "SYMBOL",
+                                        multiVals = "first"
+  )) 
+```
+
+    ## 
+
+    ## 'select()' returned 1:many mapping between keys and columns
+
 # Installation Guide
 
 **Bioconductor**
@@ -143,30 +194,33 @@ analysis.
 
 ## Data Overview
 
-We will use a `SummarizedExperiment` object containing RNA-seq data:
+We will use the `airway` dataset, a `SummarizedExperiment` object
+containing RNA-seq data from an experiment studying the effect of
+dexamethasone treatment on airway smooth muscle cells:
 
 ``` r
-se_mini
+airway
 ```
 
-    ## class: SummarizedExperiment 
-    ## dim: 527 5 
-    ## metadata(0):
+    ## class: RangedSummarizedExperiment 
+    ## dim: 63677 8 
+    ## metadata(1): ''
     ## assays(1): counts
-    ## rownames(527): ABCB4 ABCB9 ... ZNF324 ZNF442
-    ## rowData names(1): entrez
-    ## colnames(5): SRR1740034 SRR1740035 SRR1740043 SRR1740058 SRR1740067
-    ## colData names(5): Cell.type time condition days dead
+    ## rownames(63677): ENSG00000000003 ENSG00000000005 ... ENSG00000273492
+    ##   ENSG00000273493
+    ## rowData names(10): gene_id gene_name ... seq_coord_system symbol
+    ## colnames(8): SRR1039508 SRR1039509 ... SRR1039520 SRR1039521
+    ## colData names(9): SampleName cell ... Sample BioSample
 
 Loading `tidySummarizedExperiment` automatically abstracts this object
 as a `tibble`, making it compatible with tidyverse tools while
 maintaining its `SummarizedExperiment` nature:
 
 ``` r
-class(se_mini)
+class(airway)
 ```
 
-    ## [1] "SummarizedExperiment"
+    ## [1] "RangedSummarizedExperiment"
     ## attr(,"package")
     ## [1] "SummarizedExperiment"
 
@@ -176,8 +230,8 @@ Before analysis, we need to ensure our variables are in the correct
 format:
 
 ``` r
-# Convert condition to factor for proper differential expression analysis
-colData(se_mini)$condition = as.factor(colData(se_mini)$condition)
+# Convert dex to factor for proper differential expression analysis
+colData(airway)$dex = as.factor(colData(airway)$dex)
 ```
 
 ### Visualize Raw Counts
@@ -185,11 +239,11 @@ colData(se_mini)$condition = as.factor(colData(se_mini)$condition)
 Visualize the distribution of raw counts before any filtering:
 
 ``` r
-ggplot(as_tibble(se_mini), aes(counts + 1, group = .sample, color = `Cell.type`)) +
+ggplot(as_tibble(airway), aes(counts + 1, group = .sample, color = `dex`)) +
   geom_density() +
   scale_x_log10() +
   my_theme +
-  labs(title = "Raw counts by cell type (before any filtering)")
+  labs(title = "Raw counts by treatment (before any filtering)")
 ```
 
 ![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/plot-raw-counts-1.png)<!-- -->
@@ -205,10 +259,10 @@ Aggregate duplicated transcripts (e.g., isoforms, ensembl IDs):
 
 ``` r
 # Add gene names to rowData
-rowData(se_mini)$gene_name = rownames(se_mini)
+rowData(airway)$gene_name = rownames(airway)
 
 # Aggregate duplicates
-se_mini = se_mini |> aggregate_duplicates(.transcript = gene_name, aggregation_function = mean)
+airway = airway |> aggregate_duplicates(.transcript = gene_name, aggregation_function = mean)
 ```
 
     ## tidybulk says: your object does not have duplicates along the gene_name column. The input dataset is returned.
@@ -223,7 +277,7 @@ Lun, and Smyth 2016](#ref-chen2016edgeR)).
 
 ``` r
 # Default (simple filtering)
-se_abundant_default = se_mini |> keep_abundant()
+airway_abundant_default = airway |> keep_abundant()
 ```
 
     ## Warning in filterByExpr.DGEList(y, design = design, group = group, lib.size =
@@ -231,7 +285,7 @@ se_abundant_default = se_mini |> keep_abundant()
 
 ``` r
 # With factor_of_interest (recommended for complex designs)
-se_abundant_formula = se_mini |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5, factor_of_interest = condition)
+airway_abundant_formula = airway |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5, factor_of_interest = dex)
 ```
 
     ## Warning: The `factor_of_interest` argument of `keep_abundant()` is deprecated as of
@@ -256,7 +310,7 @@ se_abundant_formula = se_mini |> keep_abundant(minimum_counts = 10, minimum_prop
 
 ``` r
 # With CPM threshold (using design parameter)
-se_abundant_cpm = se_mini |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5)
+airway_abundant_cpm = airway |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5)
 ```
 
     ## Warning in filterByExpr.DGEList(y, design = design, group = group, lib.size =
@@ -267,7 +321,7 @@ se_abundant_cpm = se_mini |> keep_abundant(minimum_counts = 10, minimum_proporti
 ``` r
 # Example: summary for default tidybulk filtering
 # Before filtering
-se_mini |> as_tibble() |> summarise(
+airway |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -277,12 +331,12 @@ se_mini |> as_tibble() |> summarise(
 
     ## # A tibble: 1 × 4
     ##   n_features min_count median_count max_count
-    ##        <int>     <dbl>        <dbl>     <dbl>
-    ## 1        527         0           26    134561
+    ##        <int>     <int>        <dbl>     <int>
+    ## 1      63677         0            0    513766
 
 ``` r
 # After filtering
-se_abundant_default |> as_tibble() |> summarise(
+airway_abundant_default |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -292,11 +346,11 @@ se_abundant_default |> as_tibble() |> summarise(
 
     ## # A tibble: 1 × 4
     ##   n_features min_count median_count max_count
-    ##        <int>     <dbl>        <dbl>     <dbl>
-    ## 1        182         7         370.    134561
+    ##        <int>     <int>        <dbl>     <int>
+    ## 1      14224         8          394    513766
 
 ``` r
-se_abundant_formula |> as_tibble() |> summarise(
+airway_abundant_formula |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -306,11 +360,11 @@ se_abundant_formula |> as_tibble() |> summarise(
 
     ## # A tibble: 1 × 4
     ##   n_features min_count median_count max_count
-    ##        <int>     <dbl>        <dbl>     <dbl>
-    ## 1        394         0         120.    134561
+    ##        <int>     <int>        <dbl>     <int>
+    ## 1      15926         0          310    513766
 
 ``` r
-se_abundant_cpm |> as_tibble() |> summarise(
+airway_abundant_cpm |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -320,21 +374,21 @@ se_abundant_cpm |> as_tibble() |> summarise(
 
     ## # A tibble: 1 × 4
     ##   n_features min_count median_count max_count
-    ##        <int>     <dbl>        <dbl>     <dbl>
-    ## 1        182         7         370.    134561
+    ##        <int>     <int>        <dbl>     <int>
+    ## 1      14224         8          394    513766
 
 ``` r
 # Merge all methods into a single tibble
-se_abundant_all = 
+airway_abundant_all = 
   bind_rows(
-    se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no filter"),
-    se_abundant_default |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "default"),
-    se_abundant_formula |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "formula"),
-    se_abundant_cpm |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "cpm")
+    airway |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no filter"),
+    airway_abundant_default |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "default"),
+    airway_abundant_formula |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "formula"),
+    airway_abundant_cpm |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "cpm")
   )
 
 # Density plot across methods
-se_abundant_all |> 
+airway_abundant_all |> 
   as_tibble() |> 
   ggplot(aes(counts + 1, group = .sample, color = method)) +
     geom_density() +
@@ -346,10 +400,10 @@ se_abundant_all |>
 
 ![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/filtering-density-plot-comparison-1.png)<!-- -->
 
-Update the `se_mini` object with the filtered data:
+Update the `airway` object with the filtered data:
 
 ``` r
-se_mini = se_abundant_formula
+airway = airway_abundant_formula
 ```
 
 > **Tip:** Use `formula_design` for complex designs, and use the CPM
@@ -361,8 +415,8 @@ Redundancy removal is a standard approach for reducing highly correlated
 features.
 
 ``` r
-se_mini_non_redundant = 
-  se_mini |> 
+airway_non_redundant = 
+  airway |> 
   remove_redundancy(method = "correlation", top = 100) 
 ```
 
@@ -371,7 +425,7 @@ se_mini_non_redundant =
 ``` r
   # Make  
 
-se_mini |> as_tibble() |> summarise(
+airway |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -381,12 +435,12 @@ se_mini |> as_tibble() |> summarise(
 
     ## # A tibble: 1 × 4
     ##   n_features min_count median_count max_count
-    ##        <int>     <dbl>        <dbl>     <dbl>
-    ## 1        394         0         120.    134561
+    ##        <int>     <int>        <dbl>     <int>
+    ## 1      15926         0          310    513766
 
 ``` r
 # Summary statistics
-se_mini_non_redundant |> as_tibble() |> summarise(
+airway_non_redundant |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -396,19 +450,19 @@ se_mini_non_redundant |> as_tibble() |> summarise(
 
     ## # A tibble: 1 × 4
     ##   n_features min_count median_count max_count
-    ##        <int>     <dbl>        <dbl>     <dbl>
-    ## 1        394         0         120.    134561
+    ##        <int>     <int>        <dbl>     <int>
+    ## 1      15926         0          357    401539
 
 ``` r
 # Plot before and after
 # Merge before and after into a single tibble
-se_mini_all = bind_rows(
-  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "before"),
-  se_mini_non_redundant |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "after")
+airway_all = bind_rows(
+  airway |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "before"),
+  airway_non_redundant |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |>  mutate(method = "after")
 )
 
 # Density plot
-ggplot(as_tibble(se_mini_all), aes(counts + 1, group = .sample, color = method)) +
+ggplot(as_tibble(airway_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -427,16 +481,16 @@ McCarthy, and Smyth 2010](#ref-robinson2010edger)) is used for selecting
 informative features.
 
 ``` r
-se_mini_variable = se_mini |> keep_variable()
+airway_variable = airway |> keep_variable()
 ```
 
-    ## Getting the 394 most variable genes
+    ## Getting the 500 most variable genes
 
 ### Visualize After Variable Filtering Variable Transcripts (optional)
 
 ``` r
 # Before filtering
-se_mini |> as_tibble() |> summarise(
+airway |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -446,12 +500,12 @@ se_mini |> as_tibble() |> summarise(
 
     ## # A tibble: 1 × 4
     ##   n_features min_count median_count max_count
-    ##        <int>     <dbl>        <dbl>     <dbl>
-    ## 1        394         0         120.    134561
+    ##        <int>     <int>        <dbl>     <int>
+    ## 1      15926         0          310    513766
 
 ``` r
 # After filtering
-se_mini_variable |> as_tibble() |> summarise(
+airway_variable |> as_tibble() |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -461,19 +515,19 @@ se_mini_variable |> as_tibble() |> summarise(
 
     ## # A tibble: 1 × 4
     ##   n_features min_count median_count max_count
-    ##        <int>     <dbl>        <dbl>     <dbl>
-    ## 1        394         0         120.    134561
+    ##        <int>     <int>        <dbl>     <int>
+    ## 1        500         0           46     76824
 
 ``` r
 # Density plot
 # Merge before and after into a single tibble
-se_mini_all = bind_rows(
-  se_mini |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "before"),
-  se_mini_variable |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "after")
+airway_all = bind_rows(
+  airway |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "before"),
+  airway_variable |> assay() |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "after")
 )
 
 # Density plot
-ggplot(as_tibble(se_mini_all), aes(counts + 1, group = .sample, color = method)) +
+ggplot(as_tibble(airway_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -491,60 +545,60 @@ Scale for sequencing depth using TMM ([Robinson, McCarthy, and Smyth
 2010](#ref-anders2010rle)) normalization.
 
 ``` r
-se_mini = 
-se_mini |> 
+airway = 
+airway |> 
     scale_abundance(method = "TMM", suffix = "_tmm") |>
     scale_abundance(method = "upperquartile", suffix = "_upperquartile") |>
     scale_abundance(method = "RLE", suffix = "_RLE")
 ```
 
-    ## tidybulk says: the sample with largest library size SRR1740035 was chosen as reference for scaling
-    ## tidybulk says: the sample with largest library size SRR1740035 was chosen as reference for scaling
-    ## tidybulk says: the sample with largest library size SRR1740035 was chosen as reference for scaling
+    ## tidybulk says: the sample with largest library size SRR1039517 was chosen as reference for scaling
+    ## tidybulk says: the sample with largest library size SRR1039517 was chosen as reference for scaling
+    ## tidybulk says: the sample with largest library size SRR1039517 was chosen as reference for scaling
 
 ### Visualize After Scaling
 
 ``` r
 # Before scaling
-se_mini |> assay("counts") |> as.matrix() |> rowMeans() |> summary()
-```
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##     6.6   115.8   540.5  1769.1  1608.3 48505.2
-
-``` r
-se_mini |> assay("counts_tmm") |> as.matrix() |> rowMeans() |> summary()
+airway |> assay("counts") |> as.matrix() |> rowMeans() |> summary()
 ```
 
     ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-    ##     8.296   126.854   618.203  1964.138  1919.999 50581.378
+    ##      7.38     71.38    325.56   1375.62    989.38 328812.62
 
 ``` r
-se_mini |> assay("counts_upperquartile") |> as.matrix() |> rowMeans() |> summary()
+airway |> assay("counts_tmm") |> as.matrix() |> rowMeans() |> summary()
 ```
 
     ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-    ##     8.501   144.420   660.466  2095.482  1971.146 51299.288
+    ##     10.50     97.19    444.13   1884.49   1350.66 457443.80
 
 ``` r
-se_mini |> assay("counts_RLE") |> as.matrix() |> rowMeans() |> summary()
+airway |> assay("counts_upperquartile") |> as.matrix() |> rowMeans() |> summary()
 ```
 
     ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-    ##     8.922   145.443   700.123  2190.865  2213.889 52881.398
+    ##     10.51     99.10    452.57   1918.62   1376.18 465420.93
+
+``` r
+airway |> assay("counts_RLE") |> as.matrix() |> rowMeans() |> summary()
+```
+
+    ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+    ##     10.45     97.02    443.51   1881.64   1348.31 456680.75
 
 ``` r
 # Merge all methods into a single tibble
-se_mini_scaled_all = bind_rows(
-  se_mini |> assay("counts") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no_scaling"),
-  se_mini |> assay("counts_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "TMM"),
-  se_mini |> assay("counts_upperquartile") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "upperquartile"),
-  se_mini |> assay("counts_RLE") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "RLE")
+airway_scaled_all = bind_rows(
+  airway |> assay("counts") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "no_scaling"),
+  airway |> assay("counts_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "TMM"),
+  airway |> assay("counts_upperquartile") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "upperquartile"),
+  airway |> assay("counts_RLE") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts") |> mutate(method = "RLE")
 )
 
 
 # Density plot
-ggplot(as_tibble(se_mini_scaled_all), aes(counts + 1, group = .sample, color = method)) +
+ggplot(as_tibble(airway_scaled_all), aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
   facet_wrap(~method) +
@@ -564,7 +618,7 @@ reduction.
 ``` r
 library(matrixStats)
 # Remove features with zero variance across samples
-se_mini = se_mini[rowVars(assay(se_mini)) > 0, ]
+airway = airway[rowVars(assay(airway)) > 0, ]
 ```
 
 ### Dimensionality Reduction
@@ -574,36 +628,30 @@ MDS ([Kruskal 1964](#ref-kruskal1964mds)) using limma::plotMDS
 1933](#ref-hotelling1933pca)) are used for dimensionality reduction.
 
 ``` r
-se_mini = se_mini |>
+airway = airway |>
   reduce_dimensions(method="MDS", .dims = 2)
 ```
 
-    ## Warning in reduce_dimensions(se_mini, method = "MDS", .dims = 2): tidybulk
-    ## says: the "top" argument 500 is higher than the number of features 394
-
-    ## Getting the 394 most variable genes
+    ## Getting the 500 most variable genes
 
     ## [1] "MDS result_df colnames: sample, 1, 2"
 
     ## tidybulk says: to access the raw results do `metadata(.)$tidybulk$MDS`
 
 ``` r
-se_mini = se_mini |>
+airway = airway |>
   reduce_dimensions(method="PCA", .dims = 2)
 ```
 
-    ## Warning in reduce_dimensions(se_mini, method = "PCA", .dims = 2): tidybulk
-    ## says: the "top" argument 500 is higher than the number of features 394
-
-    ## Getting the 394 most variable genes
+    ## Getting the 500 most variable genes
 
     ## Fraction of variance explained by the selected principal components
 
     ## # A tibble: 2 × 2
     ##   `Fraction of variance`    PC
     ##                    <dbl> <int>
-    ## 1                 0.0878     1
-    ## 2                 0.0466     2
+    ## 1                 0.0652     1
+    ## 2                 0.0553     2
 
     ## tidybulk says: to access the raw results do `metadata(.)$tidybulk$PCA`
 
@@ -611,9 +659,9 @@ se_mini = se_mini |>
 
 ``` r
 # MDS plot
-se_mini |>
+airway |>
     pivot_sample() |>
-    ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type`)) +
+    ggplot(aes(x=`Dim1`, y=`Dim2`, color=`dex`)) +
   geom_point() +
     my_theme +
     labs(title = "MDS Analysis")
@@ -623,9 +671,9 @@ se_mini |>
 
 ``` r
 # PCA plot
-    se_mini |>
+    airway |>
     pivot_sample() |>
-    ggplot(aes(x=`PC1`, y=`PC2`, color=`Cell.type`)) +
+    ggplot(aes(x=`PC1`, y=`PC2`, color=`dex`)) +
     geom_point() +
     my_theme +
     labs(title = "PCA Analysis")
@@ -639,11 +687,11 @@ K-means clustering ([MacQueen 1967](#ref-macqueen1967kmeans)) is used
 for unsupervised grouping.
 
 ``` r
-se_mini = se_mini |>
+airway = airway |>
   cluster_elements(method="kmeans", centers = 2)
 
 # Visualize clustering
-    se_mini |>
+    airway |>
     ggplot(aes(x=`Dim1`, y=`Dim2`, color=`cluster_kmeans`)) +
   geom_point() +
   my_theme +
@@ -699,22 +747,22 @@ analysis.
 
 ``` r
 # Standard differential expression analysis
-se_mini = se_mini |>
+airway = airway |>
 
 # Use QL method
-    test_differential_expression(~ condition, method = "edgeR_quasi_likelihood", prefix = "ql__") |>
+    test_differential_expression(~ dex, method = "edgeR_quasi_likelihood", prefix = "ql__") |>
     
     # Use edger_robust_likelihood_ratio
-    test_differential_expression(~ condition, method = "edger_robust_likelihood_ratio", prefix = "lr_robust__") |>
+    test_differential_expression(~ dex, method = "edger_robust_likelihood_ratio", prefix = "lr_robust__") |>
     
 # Use DESeq2 method
-    test_differential_expression(~ condition, method = "DESeq2", prefix = "deseq2__") |>
+    test_differential_expression(~ dex, method = "DESeq2", prefix = "deseq2__") |>
     
     # Use limma_voom
-    test_differential_expression(~ condition, method = "limma_voom", prefix = "voom__") |>
+    test_differential_expression(~ dex, method = "limma_voom", prefix = "voom__") |>
 
 # Use limma_voom_sample_weights
-    test_differential_expression(~ condition, method = "limma_voom_sample_weights", prefix = "voom_weights__") 
+    test_differential_expression(~ dex, method = "limma_voom_sample_weights", prefix = "voom_weights__") 
 ```
 
     ## Warning: The `.abundance` argument of `test_differential_abundance()` is deprecated as
@@ -731,16 +779,14 @@ se_mini = se_mini |>
     ## or adjust_abundance have been calculated. Therefore, it is essential to add covariates
     ## such as batch effects (if applicable) in the formula.
     ## =====================================
-    ## tidybulk says: The design column names are "(Intercept), conditionTRUE"
+    ## tidybulk says: The design column names are "(Intercept), dexuntrt"
     ## 
     ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$edgeR_quasi_likelihood_object`
     ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$edgeR_quasi_likelihood_fit`
-    ## tidybulk says: The design column names are "(Intercept), conditionTRUE"
+    ## tidybulk says: The design column names are "(Intercept), dexuntrt"
     ## 
     ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$edger_robust_likelihood_ratio_object`
     ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$edger_robust_likelihood_ratio_fit`
-    ## converting counts to integer mode
-    ## 
     ## estimating size factors
     ## 
     ## estimating dispersions
@@ -749,21 +795,17 @@ se_mini = se_mini |>
     ## 
     ## mean-dispersion relationship
     ## 
-    ## -- note: fitType='parametric', but the dispersion trend was not well captured by the
-    ##    function: y = a/x + b, and a local regression fit was automatically substituted.
-    ##    specify fitType='local' or 'mean' to avoid this message next time.
-    ## 
     ## final dispersion estimates
     ## 
     ## fitting model and testing
     ## 
     ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$DESeq2_object`
     ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$DESeq2_fit`
-    ## tidybulk says: The design column names are "(Intercept), conditionTRUE"
+    ## tidybulk says: The design column names are "(Intercept), dexuntrt"
     ## 
     ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$limma_voom_object`
     ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$limma_voom_fit`
-    ## tidybulk says: The design column names are "(Intercept), conditionTRUE"
+    ## tidybulk says: The design column names are "(Intercept), dexuntrt"
     ## 
     ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$limma_voom_sample_weights_object`
     ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$limma_voom_sample_weights_fit`
@@ -798,7 +840,7 @@ library(edgeR)
     ##     plotMA
 
 ``` r
-metadata(se_mini)$tidybulk$edgeR_quasi_likelihood_object |>
+metadata(airway)$tidybulk$edgeR_quasi_likelihood_object |>
   plotBCV()
 ```
 
@@ -809,7 +851,7 @@ Plot the log-fold change vs mean plot.
 ``` r
 library(edgeR)
 
-metadata(se_mini)$tidybulk$edgeR_quasi_likelihood_fit |>
+metadata(airway)$tidybulk$edgeR_quasi_likelihood_fit |>
   plotMD()
 ```
 
@@ -822,7 +864,7 @@ Plot the mean-variance trend.
 ``` r
 library(DESeq2)
 
-metadata(se_mini)$tidybulk$DESeq2_object |>
+metadata(airway)$tidybulk$DESeq2_object |>
   plotDispEsts()
 ```
 
@@ -833,7 +875,7 @@ Plot the log-fold change vs mean plot.
 ``` r
 library(DESeq2)
 
-metadata(se_mini)$tidybulk$DESeq2_object |>
+metadata(airway)$tidybulk$DESeq2_object |>
   plotMA()
 ```
 
@@ -854,7 +896,7 @@ Thanks to the modularity of the `tidybulk` workflow, that can multiplex
 different methods, we can easily compare the p-values across methods.
 
 ``` r
-    se_mini |>
+    airway |>
   rowData() |> 
   as_tibble() |> 
   select(
@@ -872,7 +914,7 @@ different methods, we can easily compare the p-values across methods.
   labs(title = "Histogram of p-values across methods")
 ```
 
-    ## Warning: Removed 36 rows containing non-finite outside the scale range
+    ## Warning: Removed 30 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
 
 ![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-pvalue-histograms-1.png)<!-- -->
@@ -880,8 +922,8 @@ different methods, we can easily compare the p-values across methods.
 ### Compare Results Across Methods
 
 ``` r
-# Summay statistics
-se_mini |> rowData() |> as_tibble() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
+# Summary statistics
+airway |> rowData() |> as_tibble() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
 summarise(across(everything(), list(min = min, median = median, max = max), na.rm = TRUE))
 ```
 
@@ -908,7 +950,7 @@ library(GGally)
     ## Warning: package 'GGally' was built under R version 4.5.1
 
 ``` r
-se_mini |> 
+airway |> 
   rowData() |> 
   as_tibble() |> 
   select(ql__PValue, lr_robust__PValue, voom__P.Value, voom_weights__P.Value, deseq2__pvalue) |> 
@@ -920,26 +962,32 @@ se_mini |>
 ```
 
     ## Warning in ggally_statistic(data = data, mapping = mapping, na.rm = na.rm, :
-    ## Removed 36 rows containing missing values
+    ## Removed 30 rows containing missing values
 
     ## Warning in ggally_statistic(data = data, mapping = mapping, na.rm = na.rm, :
-    ## Removed 36 rows containing missing values
+    ## Removed 30 rows containing missing values
     ## Warning in ggally_statistic(data = data, mapping = mapping, na.rm = na.rm, :
-    ## Removed 36 rows containing missing values
+    ## Removed 30 rows containing missing values
     ## Warning in ggally_statistic(data = data, mapping = mapping, na.rm = na.rm, :
-    ## Removed 36 rows containing missing values
+    ## Removed 30 rows containing missing values
 
-    ## Warning: Removed 36 rows containing missing values or values outside the scale range
+    ## Warning in scale_y_continuous(trans = tidybulk::log10_reverse_trans()):
+    ## log10_reverse transformation introduced infinite values.
+
+    ## Warning: Removed 30 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
-    ## Removed 36 rows containing missing values or values outside the scale range
+    ## Removed 30 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
-    ## Removed 36 rows containing missing values or values outside the scale range
+    ## Removed 30 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
-    ## Removed 36 rows containing missing values or values outside the scale range
+    ## Removed 30 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-    ## Warning: Removed 36 rows containing non-finite outside the scale range
+    ## Warning: Removed 30 rows containing non-finite outside the scale range
     ## (`stat_density()`).
+
+    ## Warning in scale_y_continuous(trans = tidybulk::log10_reverse_trans()):
+    ## log10_reverse transformation introduced infinite values.
 
 ![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-pvalue-pairplot-1.png)<!-- -->
 
@@ -947,7 +995,7 @@ se_mini |>
 
 ``` r
 library(GGally)
-se_mini |> 
+airway |> 
   rowData() |> 
   as_tibble() |> 
   select(ql__logFC, lr_robust__logFC, voom__logFC, voom_weights__logFC, deseq2__log2FoldChange) |> 
@@ -961,12 +1009,13 @@ se_mini |>
 ### Volcano Plots for Each Method
 
 Visualising the significance and effect size of the differential
-expression results as a volcano plots we appreciate that DESeq2 has much
-lower p-values than other methods, for the same model.
+expression results as a volcano plots we appreciate that some methods
+have much lower p-values distributions than other methods, for the same
+model and data.
 
 ``` r
 # Create volcano plots
-se_mini |>
+airway |>
 
     # Select the columns we want to plot
     rowData() |> 
@@ -993,7 +1042,7 @@ se_mini |>
         stat %in% c("PValue", "pvalue", "P.Value", "p.value") ~ "PValue"
     )) |>
   pivot_wider(names_from = "stat", values_from = "value") |>
-  unnest( logFC, PValue) |> 
+  unnest(c(logFC, PValue)) |> 
 
     # Plot
   ggplot(aes(x = logFC, y = PValue)) +
@@ -1006,10 +1055,7 @@ se_mini |>
   labs(title = "Volcano Plots by Method")
 ```
 
-    ## Warning: `unnest()` has a new interface. See `?unnest` for details.
-    ## ℹ Try `df %>% unnest(c(logFC, PValue))`, with `mutate()` if needed.
-
-    ## Warning: Removed 36 rows containing missing values or values outside the scale range
+    ## Warning: Removed 30 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
 ![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-volcano-plots-1-1.png)<!-- -->
@@ -1019,13 +1065,13 @@ allows us to compare the top genes across methods.
 
 ``` r
 # Create volcano plots
-se_mini |>
+airway |>
 
     # Select the columns we want to plot
     rowData() |> 
     as_tibble(rownames = ".feature") |> 
     select(
-            .feature,
+            symbol,
       ql__logFC, ql__PValue,
       lr_robust__logFC, lr_robust__PValue,
       voom__logFC, voom__P.Value,
@@ -1035,7 +1081,7 @@ se_mini |>
 
     # Pivot longer to get a tidy data frame
     pivot_longer(
-      - .feature,
+      - symbol,
       names_to = c("method", "stat"),
       values_to = "value", names_sep = "__"
     ) |>
@@ -1046,12 +1092,12 @@ se_mini |>
         stat %in% c("PValue", "pvalue", "P.Value", "p.value") ~ "PValue"
     )) |>
   pivot_wider(names_from = "stat", values_from = "value") |>
-  unnest( logFC, PValue) |> 
+  unnest(c(logFC, PValue)) |> 
 
     # Plot
   ggplot(aes(x = logFC, y = PValue)) +
   geom_point(aes(color = PValue < 0.05, size = PValue < 0.05)) +
-  ggrepel::geom_text_repel(aes(label = .feature), size = 2, max.overlaps = 10) +
+  ggrepel::geom_text_repel(aes(label = symbol), size = 2, max.overlaps = 20) +
   scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
   scale_size_manual(values = c("TRUE" = 0.5, "FALSE" = 0.1)) +
@@ -1060,28 +1106,33 @@ se_mini |>
   labs(title = "Volcano Plots by Method")
 ```
 
-    ## Warning: `unnest()` has a new interface. See `?unnest` for details.
-    ## ℹ Try `df %>% unnest(c(logFC, PValue))`, with `mutate()` if needed.
+    ## Warning: Values from `value` are not uniquely identified; output will contain list-cols.
+    ## • Use `values_fn = list` to suppress this warning.
+    ## • Use `values_fn = {summary_fun}` to summarise duplicates.
+    ## • Use the following dplyr code to identify duplicates.
+    ##   {data} |>
+    ##   dplyr::summarise(n = dplyr::n(), .by = c(symbol, method, stat)) |>
+    ##   dplyr::filter(n > 1L)
 
-    ## Warning: Removed 36 rows containing missing values or values outside the scale range
+    ## Warning: Removed 30 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-    ## Warning: Removed 36 rows containing missing values or values outside the scale range
+    ## Warning: Removed 10474 rows containing missing values or values outside the scale range
     ## (`geom_text_repel()`).
 
-    ## Warning: ggrepel: 329 unlabeled data points (too many overlaps). Consider
+    ## Warning: ggrepel: 13800 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
-    ## Warning: ggrepel: 381 unlabeled data points (too many overlaps). Consider
+    ## Warning: ggrepel: 13834 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
-    ## Warning: ggrepel: 385 unlabeled data points (too many overlaps). Consider
+    ## Warning: ggrepel: 13826 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
-    ## Warning: ggrepel: 379 unlabeled data points (too many overlaps). Consider
+    ## Warning: ggrepel: 13833 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
-    ## Warning: ggrepel: 374 unlabeled data points (too many overlaps). Consider
+    ## Warning: ggrepel: 13834 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
 ![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-volcano-plots-2-1.png)<!-- -->
@@ -1095,10 +1146,10 @@ approach for testing specific comparisons in complex designs.
 
 ``` r
 # Using contrasts for more complex comparisons
-se_mini |>
+airway |>
     test_differential_expression(
-        ~ 0 + condition,                  
-        .contrasts = c("conditionTRUE - conditionFALSE"),
+        ~ 0 + dex,                  
+        .contrasts = c("dextrt - dexuntrt"),
         method = "edgeR_quasi_likelihood", 
         prefix = "contrasts__"
     ) |> 
@@ -1118,30 +1169,29 @@ se_mini |>
     ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
     ## generated.
 
-    ## tidybulk says: The design column names are "conditionFALSE, conditionTRUE"
+    ## tidybulk says: The design column names are "dextrt, dexuntrt"
 
     ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$edgeR_quasi_likelihood_object`
     ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$edgeR_quasi_likelihood_fit`
 
-    ## # A tibble: 394 × 5
-    ##    contrasts__logFC___conditionT…¹ contrasts__logCPM___…² contrasts__F___condi…³
+    ## # A tibble: 15,926 × 5
+    ##    contrasts__logFC___dextrt...d…¹ contrasts__logCPM___…² contrasts__F___dextr…³
     ##                              <dbl>                  <dbl>                  <dbl>
-    ##  1                           3.60                    9.31                  2.93 
-    ##  2                           2.47                    5.94                 12.5  
-    ##  3                           2.47                   12.9                   7.65 
-    ##  4                           2.07                   10.7                   3.83 
-    ##  5                           3.42                   12.7                   2.11 
-    ##  6                           1.26                    5.65                  0.390
-    ##  7                          -0.983                   8.98                  1.11 
-    ##  8                          -8.43                   12.8                  29.0  
-    ##  9                           2.21                   10.9                   1.97 
-    ## 10                           0.784                   4.75                  0.390
-    ## # ℹ 384 more rows
-    ## # ℹ abbreviated names: ¹​contrasts__logFC___conditionTRUE...conditionFALSE,
-    ## #   ²​contrasts__logCPM___conditionTRUE...conditionFALSE,
-    ## #   ³​contrasts__F___conditionTRUE...conditionFALSE
-    ## # ℹ 2 more variables: contrasts__PValue___conditionTRUE...conditionFALSE <dbl>,
-    ## #   contrasts__FDR___conditionTRUE...conditionFALSE <dbl>
+    ##  1                         -0.388                    5.06                 6.82  
+    ##  2                          0.195                    4.61                 5.98  
+    ##  3                          0.0239                   3.48                 0.0566
+    ##  4                         -0.124                    1.48                 0.214 
+    ##  5                          0.432                    8.09                 2.94  
+    ##  6                         -0.250                    5.91                 6.08  
+    ##  7                         -0.0387                   4.84                 0.0327
+    ##  8                         -0.497                    4.12                 7.07  
+    ##  9                         -0.140                    3.12                 1.03  
+    ## 10                         -0.0527                   7.04                 0.0331
+    ## # ℹ 15,916 more rows
+    ## # ℹ abbreviated names: ¹​contrasts__logFC___dextrt...dexuntrt,
+    ## #   ²​contrasts__logCPM___dextrt...dexuntrt, ³​contrasts__F___dextrt...dexuntrt
+    ## # ℹ 2 more variables: contrasts__PValue___dextrt...dexuntrt <dbl>,
+    ## #   contrasts__FDR___dextrt...dexuntrt <dbl>
 
 ### Differential Expression with minimum fold change (TREAT method)
 
@@ -1150,10 +1200,10 @@ for testing significance relative to a fold-change threshold.
 
 ``` r
 # Using contrasts for more complex comparisons
-se_mini |>
+airway |>
     test_differential_expression(
-        ~ 0 + condition,                  
-        .contrasts = c("conditionTRUE - conditionFALSE"),
+        ~ 0 + dex,                  
+        .contrasts = c("dextrt - dexuntrt"),
         method = "edgeR_quasi_likelihood", 
         test_above_log2_fold_change = 2, 
         prefix = "treat__"
@@ -1164,30 +1214,30 @@ se_mini |>
   select(contains("treat"))
 ```
 
-    ## tidybulk says: The design column names are "conditionFALSE, conditionTRUE"
+    ## tidybulk says: The design column names are "dextrt, dexuntrt"
 
     ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$edgeR_quasi_likelihood_object`
     ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$edgeR_quasi_likelihood_fit`
 
-    ## # A tibble: 394 × 5
-    ##    treat__logFC___conditionTRUE.…¹ treat__unshrunk.logF…² treat__logCPM___cond…³
+    ## # A tibble: 15,926 × 5
+    ##    treat__logFC___dextrt...dexun…¹ treat__unshrunk.logF…² treat__logCPM___dext…³
     ##                              <dbl>                  <dbl>                  <dbl>
-    ##  1                           3.60                   3.60                    9.31
-    ##  2                           2.47                   2.49                    5.94
-    ##  3                           2.47                   2.47                   12.9 
-    ##  4                           2.07                   2.07                   10.7 
-    ##  5                           3.42                   3.42                   12.7 
-    ##  6                           1.26                   1.27                    5.65
-    ##  7                          -0.983                 -0.983                   8.98
-    ##  8                          -8.43                  -8.43                   12.8 
-    ##  9                           2.21                   2.21                   10.9 
-    ## 10                           0.784                  0.790                   4.75
-    ## # ℹ 384 more rows
-    ## # ℹ abbreviated names: ¹​treat__logFC___conditionTRUE...conditionFALSE,
-    ## #   ²​treat__unshrunk.logFC___conditionTRUE...conditionFALSE,
-    ## #   ³​treat__logCPM___conditionTRUE...conditionFALSE
-    ## # ℹ 2 more variables: treat__PValue___conditionTRUE...conditionFALSE <dbl>,
-    ## #   treat__FDR___conditionTRUE...conditionFALSE <dbl>
+    ##  1                         -0.388                 -0.388                    5.06
+    ##  2                          0.195                  0.195                    4.61
+    ##  3                          0.0239                 0.0240                   3.48
+    ##  4                         -0.124                 -0.124                    1.48
+    ##  5                          0.432                  0.433                    8.09
+    ##  6                         -0.250                 -0.250                    5.91
+    ##  7                         -0.0387                -0.0387                   4.84
+    ##  8                         -0.497                 -0.497                    4.12
+    ##  9                         -0.140                 -0.140                    3.12
+    ## 10                         -0.0527                -0.0527                   7.04
+    ## # ℹ 15,916 more rows
+    ## # ℹ abbreviated names: ¹​treat__logFC___dextrt...dexuntrt,
+    ## #   ²​treat__unshrunk.logFC___dextrt...dexuntrt,
+    ## #   ³​treat__logCPM___dextrt...dexuntrt
+    ## # ℹ 2 more variables: treat__PValue___dextrt...dexuntrt <dbl>,
+    ## #   treat__FDR___dextrt...dexuntrt <dbl>
 
 ### Mixed Models for Complex Designs
 
@@ -1196,50 +1246,68 @@ linear mixed models for RNA-seq data.
 
 ``` r
 # Using glmmSeq for mixed models
-se_mini = se_mini |>
-  keep_abundant(formula_design = ~ condition) |>
+airway |>
+  keep_abundant(formula_design = ~ dex) |>
+  
+  # Select 100 genes in the interest of execution time
+  _[1:100,] |>
+
+  # Fit model
   test_differential_expression(
-    ~ condition + (1|Cell.type), 
+    ~ dex + (1|cell), 
     method = "glmmseq_lme4", 
+    cores = 1,
     prefix = "glmmseq__"
   ) 
 ```
 
     ## 
-    ## n = 5 samples, 4 individuals
+    ## n = 8 samples, 4 individuals
 
-    ## Time difference of 1.962443 mins
+    ## Time difference of 33.12868 secs
 
-    ## Errors in 1 gene(s): PTGER2
+    ## tidybulk says: to access the DE object do
+    ## `metadata(.)$tidybulk$glmmseq_lme4_object`
 
-    ## tidybulk says: to access the DE object do `attr(..., "internals")$glmmseq_lme4_object`
-    ## tidybulk says: to access the raw results (fitted GLM) do `attr(..., "internals")$glmmseq_lme4_fit`
+    ## tidybulk says: to access the raw results (fitted GLM) do
+    ## `metadata(.)$tidybulk$glmmseq_lme4_fit`
+
+    ## class: RangedSummarizedExperiment 
+    ## dim: 100 8 
+    ## metadata(2): '' tidybulk
+    ## assays(4): counts counts_tmm counts_upperquartile counts_RLE
+    ## rownames(100): ENSG00000000003 ENSG00000000419 ... ENSG00000006114
+    ##   ENSG00000006118
+    ## rowData names(63): gene_id gene_name ... glmmseq__P_dex
+    ##   glmmseq__P_dex_adjusted
+    ## colnames(8): SRR1039508 SRR1039509 ... SRR1039520 SRR1039521
+    ## colData names(16): SampleName cell ... PC2 cluster_kmeans
 
 ``` r
-  se_mini |>
+  airway |>
   pivot_transcript() 
 ```
 
-    ## # A tibble: 391 × 56
-    ##    .feature entrez gene_name .abundant ql__logFC ql__logCPM  ql__F ql__PValue
-    ##    <chr>    <chr>  <chr>     <lgl>         <dbl>      <dbl>  <dbl>      <dbl>
-    ##  1 ABCB4    5244   ABCB4     TRUE          3.60        9.31  2.93     0.139  
-    ##  2 ABCB9    23457  ABCB9     TRUE          2.47        5.94 12.5      0.0112 
-    ##  3 ACAP1    9744   ACAP1     TRUE          2.47       12.9   7.65     0.0341 
-    ##  4 ACP5     54     ACP5      TRUE          2.07       10.7   3.83     0.1000 
-    ##  5 ADAM28   10863  ADAM28    TRUE          3.42       12.7   2.11     0.199  
-    ##  6 ADAMDEC1 27299  ADAMDEC1  TRUE          1.26        5.65  0.390    0.554  
-    ##  7 ADRB2    154    ADRB2     TRUE         -0.983       8.98  1.11     0.333  
-    ##  8 AIF1     199    AIF1      TRUE         -8.43       12.8  29.0      0.00168
-    ##  9 AIM2     9447   AIM2      TRUE          2.21       10.9   1.97     0.212  
-    ## 10 ALOX15   246    ALOX15    TRUE          0.784       4.75  0.390    0.553  
-    ## # ℹ 381 more rows
-    ## # ℹ 48 more variables: ql__FDR <dbl>, lr_robust__logFC <dbl>,
-    ## #   lr_robust__logCPM <dbl>, lr_robust__LR <dbl>, lr_robust__PValue <dbl>,
-    ## #   lr_robust__FDR <dbl>, deseq2__baseMean <dbl>, deseq2__log2FoldChange <dbl>,
-    ## #   deseq2__lfcSE <dbl>, deseq2__stat <dbl>, deseq2__pvalue <dbl>,
-    ## #   deseq2__padj <dbl>, voom__logFC <dbl>, voom__AveExpr <dbl>, voom__t <dbl>,
-    ## #   voom__P.Value <dbl>, voom__adj.P.Val <dbl>, voom__B <dbl>, …
+    ## # A tibble: 15,926 × 41
+    ##    .feature  gene_id gene_name entrezid gene_biotype gene_seq_start gene_seq_end
+    ##    <chr>     <chr>   <chr>        <int> <chr>                 <int>        <int>
+    ##  1 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       99883667     99894988
+    ##  2 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       49551404     49575092
+    ##  3 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      169818772    169863408
+    ##  4 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      169631245    169823221
+    ##  5 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      196621008    196716634
+    ##  6 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      143815948    143832827
+    ##  7 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       53362139     53481768
+    ##  8 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       41040684     41067715
+    ##  9 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       24683489     24743424
+    ## 10 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       24742284     24799466
+    ## # ℹ 15,916 more rows
+    ## # ℹ 34 more variables: seq_name <chr>, seq_strand <int>,
+    ## #   seq_coord_system <int>, symbol <chr>, .abundant <lgl>, ql__logFC <dbl>,
+    ## #   ql__logCPM <dbl>, ql__F <dbl>, ql__PValue <dbl>, ql__FDR <dbl>,
+    ## #   lr_robust__logFC <dbl>, lr_robust__logCPM <dbl>, lr_robust__LR <dbl>,
+    ## #   lr_robust__PValue <dbl>, lr_robust__FDR <dbl>, deseq2__baseMean <dbl>,
+    ## #   deseq2__log2FoldChange <dbl>, deseq2__lfcSE <dbl>, deseq2__stat <dbl>, …
 
 ### Gene Description
 
@@ -1249,7 +1317,7 @@ results.
 
 ``` r
 # Add gene descriptions using the original SummarizedExperiment
-se_mini |> 
+airway |> 
 
     describe_transcript() |>
 
@@ -1264,17 +1332,15 @@ se_mini |>
 
     ## 
 
-    ## 
-
     ## # A tibble: 6 × 7
-    ##   .feature description             ql__logFC ql__logCPM ql__F ql__PValue ql__FDR
-    ##   <chr>    <chr>                       <dbl>      <dbl> <dbl>      <dbl>   <dbl>
-    ## 1 ABCB9    ATP binding cassette s…      2.47       5.94  12.5 0.0112     0.0332 
-    ## 2 AIF1     allograft inflammatory…     -8.43      12.8   29.0 0.00168    0.0107 
-    ## 3 ANGPT4   angiopoietin 4              -2.96       5.62  14.4 0.00764    0.0257 
-    ## 4 APOBEC3A apolipoprotein B mRNA …     -8.92      11.1   80.0 0.0000692  0.00317
-    ## 5 AQP9     aquaporin 9                -11.1       10.3   93.1 0.00000500 0.00197
-    ## 6 ASGR1    asialoglycoprotein rec…     -9.29       9.07  24.1 0.00105    0.00787
+    ##   .feature        description ql__logFC ql__logCPM ql__F ql__PValue ql__FDR
+    ##   <chr>           <lgl>           <dbl>      <dbl> <dbl>      <dbl>   <dbl>
+    ## 1 ENSG00000002834 NA             -0.389      8.39   16.3  0.00301   0.0319 
+    ## 2 ENSG00000003096 NA              0.929      4.16   31.2  0.000358  0.00883
+    ## 3 ENSG00000003402 NA             -1.17       6.90   65.0  0.0000224 0.00226
+    ## 4 ENSG00000003987 NA             -0.967      0.347  17.3  0.00255   0.0290 
+    ## 5 ENSG00000004059 NA             -0.359      5.84   17.1  0.00260   0.0292 
+    ## 6 ENSG00000004487 NA              0.309      5.86   19.8  0.00164   0.0222
 
 ## Step 4: Batch Effect Correction
 
@@ -1284,16 +1350,16 @@ RNA-seq data.
 
 ``` r
 # Adjust for batch effects
-se_mini = se_mini |>
+airway = airway |>
   adjust_abundance(
-      .factor_unwanted = time, 
-      .factor_of_interest = condition, 
+      .factor_unwanted = cell, 
+      .factor_of_interest = dex, 
     method = "combat_seq", 
       abundance = "counts_tmm"
   )
 ```
 
-    ## Found 2 batches
+    ## Found 4 batches
     ## Using null model in ComBat-seq.
     ## Adjusting for 1 covariate(s) or covariate level(s)
     ## Estimating dispersions
@@ -1303,26 +1369,132 @@ se_mini = se_mini |>
 
 ``` r
 # Scatter plot of adjusted vs unadjusted
-left_join(
-    se_mini |> assay("counts_tmm") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts_tmm") ,
-    se_mini |> assay("counts_tmm_adjusted") |> as_tibble(rownames = ".feature") |> pivot_longer(cols = -.feature, names_to = ".sample", values_to = "counts_tmm_adjusted") ,
-    by = c(".feature", ".sample")
-  ) |>
+airway |> 
+  
+  # Subset genes to speed up plotting
+  _[1:100,] |> 
+  select(symbol, .sample, counts_tmm, counts_tmm_adjusted) |> 
+  
   ggplot(aes(x = counts_tmm + 1, y = counts_tmm_adjusted + 1)) +
   geom_point(aes(color = .sample), size = 0.1) +
-  ggrepel::geom_text_repel(aes(label = .feature), size = 2, max.overlaps = 10) +
+  ggrepel::geom_text_repel(aes(label = symbol), size = 2, max.overlaps = 20) +
   scale_x_log10() +
   scale_y_log10() +
   my_theme +
   labs(title = "Scatter plot of adjusted vs unadjusted")
 ```
 
-    ## Warning: ggrepel: 1927 unlabeled data points (too many overlaps). Consider
+    ## tidySummarizedExperiment says: Key columns are missing. A data frame is returned for independent data analysis.
+
+    ## Warning: Removed 16 rows containing missing values or values outside the scale range
+    ## (`geom_text_repel()`).
+
+    ## Warning: ggrepel: 768 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
 ![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/batch-correction-adjust-abundance-1.png)<!-- -->
 
-## Step 5: Cellularity Analysis
+## Step 5: Gene Enrichment Analysis
+
+Gene Set Enrichment Analysis (GSEA) ([Subramanian et al.
+2005](#ref-subramanian2005gsea)) is used for gene set enrichment.
+
+``` r
+# Run gene rank enrichment (GSEA style)
+gene_rank_res =
+  airway |>
+
+    # Filter for genes with entrez IDs
+  filter(!entrez |> is.na()) |>
+
+  # Test gene rank
+  test_gene_rank(
+    .entrez = entrez,
+    .arrange_desc = lr_robust__logFC,
+    species = "Homo sapiens",
+    gene_sets = c("H", "C2", "C5")
+  )
+```
+
+``` r
+# Inspect significant gene sets (example for C2 collection)
+gene_rank_res |>
+  filter(gs_collection == "C2") |>
+  dplyr::select(-fit) |>
+  unnest(test) |>
+  filter(p.adjust < 0.05)
+```
+
+#### Visualize enrichment
+
+``` r
+  library(enrichplot)
+  library(patchwork)
+  gene_rank_res |>
+    unnest(test) |>
+    head() |>
+    mutate(plot = pmap(
+      list(fit, ID, idx_for_plotting, p.adjust),
+      ~ enrichplot::gseaplot2(
+        ..1, geneSetID = ..3,
+        title = sprintf("%s \nadj pvalue %s", ..2, round(..4, 2)),
+        base_size = 6, rel_heights = c(1.5, 0.5), subplots = c(1, 2)
+      )
+    )) |>
+    pull(plot) 
+```
+
+Gene Ontology overrepresentation analysis ([Ashburner et al.
+2000](#ref-ashburner2000go)) is used for functional enrichment.
+
+``` r
+# Test gene overrepresentation
+airway_overrep = 
+  airway |>
+  
+  # Label genes to test overrepresentation of
+  mutate(genes_to_test = ql__FDR < 0.05) |>
+  
+    # Filter for genes with entrez IDs
+  filter(!entrez |> is.na()) |>
+  
+  test_gene_overrepresentation(
+    .entrez = entrez,
+    species = "Homo sapiens",
+    .do_test = genes_to_test,
+    gene_sets = c("H", "C2", "C5")
+  )
+
+  airway_overrep
+```
+
+EGSEA ([Alhamdoosh et al. 2017](#ref-alhamdoosh2017egsea)) is used for
+ensemble gene set enrichment analysis. EGSEA is a method that combines
+multiple gene set enrichment analysis methods to provide a more robust
+and comprehensive analysis of gene set enrichment. It creates a
+web-based interactive tool that allows you to explore the results of the
+gene set enrichment analysis.
+
+``` r
+library(EGSEA)
+# Test gene enrichment
+  airway |> 
+
+  # Filter for genes with entrez IDs
+  filter(!entrez |> is.na()) |>
+
+  # Test gene enrichment
+  test_gene_enrichment(
+    .formula = ~dex,
+    .entrez = entrez,
+    species = "human", 
+    gene_sets = "h",
+    methods = c("roast"),  # Use a more robust method
+    cores = 1
+  )
+```
+
+## Step 6: Cellularity Analysis
 
 CIBERSORT ([Newman et al. 2015](#ref-newman2015cibersort)) is used for
 cell type deconvolution.
@@ -1352,10 +1524,11 @@ The `tidybulk` package provides several methods for deconvolution:
 ### Example Usage
 
 ``` r
-se_mini = 
-
-se_mini |> 
-deconvolve_cellularity(method = "cibersort", cores = 1, prefix = "cibersort__") 
+airway = 
+  airway |> 
+  
+  filter(!symbol |> is.na()) |> 
+  deconvolve_cellularity(method = "cibersort", cores = 1, prefix = "cibersort__", feature_column = "symbol") 
 ```
 
 For the rest of the methods, you need to install the `immunedeconv`
@@ -1366,23 +1539,23 @@ if (!requireNamespace("immunedeconv")) BiocManager::install("immunedeconv")
 ```
 
 ``` r
-se_mini = 
+airway = 
 
-se_mini |> 
+airway |> 
 # Example using LLSR
-deconvolve_cellularity(method = "llsr", prefix = "llsr__") |> 
+deconvolve_cellularity(method = "llsr", prefix = "llsr__", feature_column = "symbol") |> 
 
 # Example using EPIC
-deconvolve_cellularity(method = "epic", prefix = "epic__") |> 
+deconvolve_cellularity(method = "epic", cores = 1, prefix = "epic__") |> 
 
 # Example using MCP-counter
-deconvolve_cellularity(method = "mcp_counter", prefix = "mcp__") |> 
+deconvolve_cellularity(method = "mcp_counter", cores = 1, prefix = "mcp__") |> 
 
 # Example using quanTIseq
-deconvolve_cellularity(method = "quantiseq", prefix = "quantiseq__") |> 
+deconvolve_cellularity(method = "quantiseq", cores = 1, prefix = "quantiseq__") |> 
 
 # Example using xCell
-deconvolve_cellularity(method = "xcell", prefix = "xcell__")
+deconvolve_cellularity(method = "xcell", cores = 1, prefix = "xcell__")
 ```
 
 ### Plotting Results
@@ -1392,7 +1565,7 @@ method:
 
 ``` r
 # Visualize CIBERSORT results
-se_mini  |>
+airway   |>
   pivot_sample() |>
   select(.sample, contains("cibersort__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -1408,7 +1581,7 @@ se_mini  |>
 
 ``` r
  # Repeat similar plotting for LLSR, EPIC, MCP-counter, quanTIseq, and xCell
-se_mini  |>
+airway   |>
   pivot_sample() |>
   select(.sample, contains("llsr__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -1419,7 +1592,7 @@ se_mini  |>
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   labs(title = "LLSR Cell Type Proportions")
 
-  se_mini    |>
+  airway     |>
   pivot_sample() |>
   select(.sample, contains("epic__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -1430,7 +1603,7 @@ se_mini  |>
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   labs(title = "EPIC Cell Type Proportions")
 
-  se_mini    |>
+  airway     |>
   pivot_sample() |>
   select(.sample, contains("mcp__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -1441,7 +1614,7 @@ se_mini  |>
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   labs(title = "MCP-counter Cell Type Proportions")
 
-  se_mini    |>
+  airway     |>
   pivot_sample() |>
   select(.sample, contains("quantiseq__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -1452,7 +1625,7 @@ se_mini  |>
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   labs(title = "quanTIseq Cell Type Proportions")
 
-  se_mini    |>
+  airway     |>
   pivot_sample() |>
   select(.sample, contains("xcell__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
@@ -1464,349 +1637,6 @@ se_mini  |>
   labs(title = "xCell Cell Type Proportions")
 ```
 
-## Step 6: Gene Enrichment Analysis
-
-Gene Set Enrichment Analysis (GSEA) ([Subramanian et al.
-2005](#ref-subramanian2005gsea)) is used for gene set enrichment.
-
-``` r
-# Run gene rank enrichment (GSEA style)
-gene_rank_res =
-  se_mini |>
-
-    # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
-
-  # Test gene rank
-  test_gene_rank(
-    .entrez = entrez,
-    .arrange_desc = lr_robust__logFC,
-    species = "Homo sapiens",
-    gene_sets = c("H", "C2", "C5")
-  )
-```
-
-    ## 
-
-    ## using 'fgsea' for GSEA analysis, please cite Korotkevich et al (2019).
-
-    ## preparing geneSet collections...
-
-    ## GSEA analysis...
-
-    ## leading edge analysis...
-
-    ## done...
-
-    ## using 'fgsea' for GSEA analysis, please cite Korotkevich et al (2019).
-
-    ## preparing geneSet collections...
-
-    ## GSEA analysis...
-
-    ## leading edge analysis...
-
-    ## done...
-
-    ## using 'fgsea' for GSEA analysis, please cite Korotkevich et al (2019).
-
-    ## preparing geneSet collections...
-
-    ## GSEA analysis...
-
-    ## leading edge analysis...
-
-    ## done...
-
-    ## Warning: There was 1 warning in `mutate()`.
-    ## ℹ In argument: `fit = map(...)`.
-    ## Caused by warning in `fgseaMultilevel()`:
-    ## ! For some pathways, in reality P-values are less than 1e-10. You can set the `eps` argument to zero for better estimation.
-
-``` r
-# Inspect significant gene sets (example for C2 collection)
-gene_rank_res |>
-  filter(gs_collection == "C2") |>
-  dplyr::select(-fit) |>
-  unnest(test) |>
-  filter(p.adjust < 0.05)
-```
-
-    ## # A tibble: 65 × 13
-    ##    gs_collection idx_for_plotting ID         Description setSize enrichmentScore
-    ##    <chr>                    <int> <chr>      <chr>         <int>           <dbl>
-    ##  1 C2                           1 REACTOME_… REACTOME_N…      32          -0.770
-    ##  2 C2                           2 SMID_BREA… SMID_BREAS…     105           0.539
-    ##  3 C2                           3 FULCHER_I… FULCHER_IN…      42          -0.684
-    ##  4 C2                           4 REACTOME_… REACTOME_I…      73          -0.586
-    ##  5 C2                           5 RUTELLA_R… RUTELLA_RE…      36          -0.679
-    ##  6 C2                           6 CHEN_META… CHEN_METAB…      67          -0.570
-    ##  7 C2                           7 SMID_BREA… SMID_BREAS…      82           0.504
-    ##  8 C2                           8 LIU_OVARI… LIU_OVARIA…     130          -0.475
-    ##  9 C2                           9 RUTELLA_R… RUTELLA_RE…      39          -0.644
-    ## 10 C2                          10 SMIRNOV_C… SMIRNOV_CI…      23          -0.737
-    ## # ℹ 55 more rows
-    ## # ℹ 7 more variables: NES <dbl>, pvalue <dbl>, p.adjust <dbl>, qvalue <dbl>,
-    ## #   rank <dbl>, leading_edge <chr>, core_enrichment <chr>
-
-# Visualize enrichment
-
-``` r
-  library(enrichplot)
-```
-
-    ## Warning: package 'enrichplot' was built under R version 4.5.1
-
-    ## enrichplot v1.28.4 Learn more at https://yulab-smu.top/contribution-knowledge-mining/
-    ## 
-    ## Please cite:
-    ## 
-    ## Guangchuang Yu, Li-Gen Wang, Yanyan Han and Qing-Yu He.
-    ## clusterProfiler: an R package for comparing biological themes among
-    ## gene clusters. OMICS: A Journal of Integrative Biology. 2012,
-    ## 16(5):284-287
-
-    ## 
-    ## Attaching package: 'enrichplot'
-
-    ## The following object is masked from 'package:GGally':
-    ## 
-    ##     ggtable
-
-``` r
-  library(patchwork)
-  gene_rank_res |>
-    unnest(test) |>
-    head() |>
-    mutate(plot = pmap(
-      list(fit, ID, idx_for_plotting, p.adjust),
-      ~ enrichplot::gseaplot2(
-        ..1, geneSetID = ..3,
-        title = sprintf("%s \nadj pvalue %s", ..2, round(..4, 2)),
-        base_size = 6, rel_heights = c(1.5, 0.5), subplots = c(1, 2)
-      )
-    )) |>
-    pull(plot) 
-```
-
-    ## Warning: There were 2 warnings in `mutate()`.
-    ## The first warning was:
-    ## ℹ In argument: `plot = pmap(...)`.
-    ## Caused by warning:
-    ## ! `aes_()` was deprecated in ggplot2 3.0.0.
-    ## ℹ Please use tidy evaluation idioms with `aes()`
-    ## ℹ The deprecated feature was likely used in the enrichplot package.
-    ##   Please report the issue at
-    ##   <https://github.com/GuangchuangYu/enrichplot/issues>.
-    ## ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
-
-    ## [[1]]
-
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-1.png)<!-- -->
-
-    ## 
-    ## [[2]]
-
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-2.png)<!-- -->
-
-    ## 
-    ## [[3]]
-
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-3.png)<!-- -->
-
-    ## 
-    ## [[4]]
-
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-4.png)<!-- -->
-
-    ## 
-    ## [[5]]
-
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-5.png)<!-- -->
-
-    ## 
-    ## [[6]]
-
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-6.png)<!-- -->
-
-Gene Ontology overrepresentation analysis ([Ashburner et al.
-2000](#ref-ashburner2000go)) is used for functional enrichment.
-
-``` r
-# Test gene overrepresentation
-se_mini_overrep = 
-  se_mini |>
-  
-  # Label genes to test overrepresentation of
-  mutate(genes_to_test = ql__FDR < 0.05) |>
-  
-    # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
-  
-  test_gene_overrepresentation(
-    .entrez = entrez,
-    species = "Homo sapiens",
-    .do_test = genes_to_test,
-    gene_sets = c("H", "C2", "C5")
-  )
-
-  se_mini_overrep
-```
-
-    ## # A tibble: 1,450 × 13
-    ##    gs_collection ID      Description GeneRatio BgRatio RichFactor FoldEnrichment
-    ##    <chr>         <chr>   <chr>       <chr>     <chr>        <dbl>          <dbl>
-    ##  1 C2            SMID_B… SMID_BREAS… 36/152    484/22…     0.0744          11.0 
-    ##  2 C5            GOBP_I… GOBP_IMMUN… 31/148    380/19…     0.0816          10.8 
-    ##  3 C2            JAATIN… JAATINEN_H… 24/152    235/22…     0.102           15.0 
-    ##  4 C2            MCLACH… MCLACHLAN_… 24/152    264/22…     0.0909          13.4 
-    ##  5 C5            GOCC_E… GOCC_EXTER… 29/148    403/19…     0.0720           9.51
-    ##  6 C2            POOLA_… POOLA_INVA… 24/152    292/22…     0.0822          12.1 
-    ##  7 C5            GOMF_I… GOMF_IMMUN… 20/148    157/19…     0.127           16.8 
-    ##  8 C2            BLANCO… BLANCO_MEL… 19/152    174/22…     0.109           16.1 
-    ##  9 C5            GOBP_L… GOBP_LEUKO… 22/148    236/19…     0.0932          12.3 
-    ## 10 C5            GOBP_L… GOBP_LEUKO… 26/148    396/19…     0.0657           8.67
-    ## # ℹ 1,440 more rows
-    ## # ℹ 6 more variables: zScore <dbl>, pvalue <dbl>, p.adjust <dbl>, qvalue <dbl>,
-    ## #   Count <int>, entrez <list>
-
-EGSEA ([Alhamdoosh et al. 2017](#ref-alhamdoosh2017egsea)) is used for
-ensemble gene set enrichment analysis. EGSEA is a method that combines
-multiple gene set enrichment analysis methods to provide a more robust
-and comprehensive analysis of gene set enrichment. It creates a
-web-based interactive tool that allows you to explore the results of the
-gene set enrichment analysis.
-
-``` r
-library(EGSEA)
-```
-
-    ## Loading required package: gage
-
-    ## Loading required package: AnnotationDbi
-
-    ## 
-    ## Attaching package: 'AnnotationDbi'
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     select
-
-    ## Loading required package: topGO
-
-    ## Warning: package 'topGO' was built under R version 4.5.1
-
-    ## Loading required package: graph
-
-    ## 
-    ## Attaching package: 'graph'
-
-    ## The following object is masked from 'package:stringr':
-    ## 
-    ##     boundary
-
-    ## Loading required package: GO.db
-
-    ## Loading required package: SparseM
-
-    ## 
-    ## groupGOTerms:    GOBPTerm, GOMFTerm, GOCCTerm environments built.
-
-    ## 
-    ## Attaching package: 'topGO'
-
-    ## The following object is masked from 'package:gage':
-    ## 
-    ##     geneData
-
-    ## The following object is masked from 'package:IRanges':
-    ## 
-    ##     members
-
-    ## Loading required package: pathview
-
-    ## ##############################################################################
-    ## Pathview is an open source software package distributed under GNU General
-    ## Public License version 3 (GPLv3). Details of GPLv3 is available at
-    ## http://www.gnu.org/licenses/gpl-3.0.html. Particullary, users are required to
-    ## formally cite the original Pathview paper (not just mention it) in publications
-    ## or products. For details, do citation("pathview") within R.
-    ## 
-    ## The pathview downloads and uses KEGG data. Non-academic uses may require a KEGG
-    ## license agreement (details at http://www.kegg.jp/kegg/legal.html).
-    ## ##############################################################################
-
-    ## 
-
-    ## 
-
-    ## 
-
-``` r
-# Test gene enrichment
-  se_mini |> 
-
-  # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
-
-  # Test gene enrichment
-  test_gene_enrichment(
-    .formula = ~condition,
-    .entrez = entrez,
-    species = "human", 
-    gene_sets = "h"
-  )
-```
-
-    ## tidybulk says: The design column names are "(Intercept), conditionTRUE"
-
-    ## [1] "Loading MSigDB Gene Sets ... "
-    ## [1] "Loaded gene sets for the collection h ..."
-    ## [1] "Indexed the collection h ..."
-    ## [1] "Created annotation for the collection h ..."
-
-    ## EGSEA analysis has started
-
-    ## ##------ Mon Jul 28 13:59:55 2025 ------##
-
-    ## The argument 'contrast' is recommended to be a matrix object.
-    ## See Vignette or Help.
-
-    ## Log fold changes are estimated using limma package ...
-
-    ## limma DE analysis is carried out ...
-
-    ## EGSEA is running on the provided data and h collection
-
-    ## 
-
-    ## ##------ Mon Jul 28 13:59:56 2025 ------##
-
-    ## EGSEA analysis took 1.55 seconds.
-
-    ## EGSEA analysis has completed
-
-    ## EGSEA HTML report is being generated ...
-
-    ## ##------ Mon Jul 28 13:59:56 2025 ------##
-
-    ## Report pages and figures are being generated for the h collection ...
-
-    ##    Heat maps are being generated for top-ranked gene sets 
-    ## based on logFC ...
-
-    ##    Summary plots are being generated ...
-
-    ##    Comparison summary plots are being generated  ...
-
-    ## ##------ Mon Jul 28 14:01:28 2025 ------##
-
-    ## EGSEA report generation took 91.398 seconds.
-
-    ## EGSEA report has been generated.
-
-    ## # A tibble: 0 × 0
-
 ## Bibliography
 
 `tidybulk` allows you to get the bibliography of all methods used in our
@@ -1814,7 +1644,7 @@ workflow.
 
 ``` r
 # Get bibliography of all methods used in our workflow
-se_mini |> get_bibliography()
+airway |> get_bibliography()
 ```
 
     ##  @Article{tidybulk,
@@ -1835,6 +1665,91 @@ se_mini |> get_bibliography()
     ##   pages={1686},
     ##   year={2019}
     ##  }
+    ## @article{robinson2010edger,
+    ##   title={edgeR: a Bioconductor package for differential expression analysis of digital gene expression data},
+    ##   author={Robinson, Mark D and McCarthy, Davis J and Smyth, Gordon K},
+    ##   journal={Bioinformatics},
+    ##   volume={26},
+    ##   number={1},
+    ##   pages={139--140},
+    ##   year={2010},
+    ##   publisher={Oxford University Press}
+    ##  }
+    ## @article{robinson2010scaling,
+    ##   title={A scaling normalization method for differential expression analysis of RNA-seq data},
+    ##   author={Robinson, Mark D and Oshlack, Alicia},
+    ##   journal={Genome biology},
+    ##   volume={11},
+    ##   number={3},
+    ##   pages={1--9},
+    ##   year={2010},
+    ##   publisher={BioMed Central}
+    ##  }
+    ## @incollection{smyth2005limma,
+    ##   title={Limma: linear models for microarray data},
+    ##   author={Smyth, Gordon K},
+    ##   booktitle={Bioinformatics and computational biology solutions using R and Bioconductor},
+    ##   pages={397--420},
+    ##   year={2005},
+    ##   publisher={Springer}
+    ##  }
+    ## @Manual{,
+    ##     title = {R: A Language and Environment for Statistical Computing},
+    ##     author = {{R Core Team}},
+    ##     organization = {R Foundation for Statistical Computing},
+    ##     address = {Vienna, Austria},
+    ##     year = {2020},
+    ##     url = {https://www.R-project.org/},
+    ##   }
+    ## @article{lund2012detecting,
+    ##   title={Detecting differential expression in RNA-sequence data using quasi-likelihood with shrunken dispersion estimates},
+    ##   author={Lund, Steven P and Nettleton, Dan and McCarthy, Davis J and Smyth, Gordon K},
+    ##   journal={Statistical applications in genetics and molecular biology},
+    ##   volume={11},
+    ##   number={5},
+    ##   year={2012},
+    ##   publisher={De Gruyter}
+    ##     }
+    ## @article{zhou2014robustly,
+    ##   title={Robustly detecting differential expression in RNA sequencing data using observation weights},
+    ##   author={Zhou, Xiaobei and Lindsay, Helen and Robinson, Mark D},
+    ##   journal={Nucleic acids research},
+    ##   volume={42},
+    ##   number={11},
+    ##   pages={e91--e91},
+    ##   year={2014},
+    ##   publisher={Oxford University Press}
+    ##  }
+    ## @article{love2014moderated,
+    ##   title={Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2},
+    ##   author={Love, Michael I and Huber, Wolfgang and Anders, Simon},
+    ##   journal={Genome biology},
+    ##   volume={15},
+    ##   number={12},
+    ##   pages={550},
+    ##   year={2014},
+    ##   publisher={Springer}
+    ##  }
+    ## @article{law2014voom,
+    ##   title={voom: Precision weights unlock linear model analysis tools for RNA-seq read counts},
+    ##   author={Law, Charity W and Chen, Yunshun and Shi, Wei and Smyth, Gordon K},
+    ##   journal={Genome biology},
+    ##   volume={15},
+    ##   number={2},
+    ##   pages={R29},
+    ##   year={2014},
+    ##   publisher={Springer}
+    ##     }
+    ## @article{liu2015weight,
+    ##   title={Why weight? Modelling sample and observational level variability improves power in RNA-seq analyses},
+    ##   author={Liu, Ruijie and Holik, Aliaksei Z and Su, Shian and Jansz, Natasha and Chen, Kelan and Leong, Huei San and Blewitt, Marnie E and Asselin-Labat, Marie-Liesse and Smyth, Gordon K and Ritchie, Matthew E},
+    ##   journal={Nucleic acids research},
+    ##   volume={43},
+    ##   number={15},
+    ##   pages={e97--e97},
+    ##   year={2015},
+    ##   publisher={Oxford University Press}
+    ##     }
     ## @article{leek2012sva,
     ##   title={The sva package for removing batch effects and other unwanted variation in high-throughput experiments},
     ##   author={Leek, Jeffrey T and Johnson, W Evan and Parker, Hilary S and Jaffe, Andrew E and Storey, John D},
@@ -1879,118 +1794,55 @@ sessionInfo()
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] EGSEA_1.36.0                    pathview_1.48.0                
-    ##  [3] topGO_2.60.1                    SparseM_1.84-2                 
-    ##  [5] GO.db_3.21.0                    graph_1.86.0                   
-    ##  [7] AnnotationDbi_1.70.0            gage_2.58.0                    
-    ##  [9] patchwork_1.3.1                 enrichplot_1.28.4              
-    ## [11] GGally_2.3.0                    DESeq2_1.48.1                  
-    ## [13] edgeR_4.6.3                     limma_3.64.1                   
-    ## [15] tidySummarizedExperiment_1.19.4 SummarizedExperiment_1.38.1    
-    ## [17] Biobase_2.68.0                  GenomicRanges_1.60.0           
-    ## [19] GenomeInfoDb_1.44.1             IRanges_2.42.0                 
-    ## [21] S4Vectors_0.46.0                BiocGenerics_0.54.0            
-    ## [23] generics_0.1.4                  MatrixGenerics_1.20.0          
-    ## [25] matrixStats_1.5.0               tidybulk_1.99.1                
-    ## [27] ttservice_0.5.3                 ggrepel_0.9.6                  
-    ## [29] magrittr_2.0.3                  lubridate_1.9.4                
-    ## [31] forcats_1.0.0                   stringr_1.5.1                  
-    ## [33] dplyr_1.1.4                     purrr_1.1.0                    
-    ## [35] readr_2.1.5                     tidyr_1.3.1                    
-    ## [37] tibble_3.3.0                    ggplot2_3.5.2.9002             
-    ## [39] tidyverse_2.0.0                 knitr_1.50                     
+    ##  [1] GGally_2.3.0                    DESeq2_1.48.1                  
+    ##  [3] edgeR_4.6.3                     limma_3.64.1                   
+    ##  [5] tidySummarizedExperiment_1.19.4 airway_1.28.0                  
+    ##  [7] SummarizedExperiment_1.38.1     Biobase_2.68.0                 
+    ##  [9] GenomicRanges_1.60.0            GenomeInfoDb_1.44.1            
+    ## [11] IRanges_2.42.0                  S4Vectors_0.46.0               
+    ## [13] BiocGenerics_0.54.0             generics_0.1.4                 
+    ## [15] MatrixGenerics_1.20.0           matrixStats_1.5.0              
+    ## [17] tidybulk_1.99.2                 ttservice_0.5.3                
+    ## [19] ggrepel_0.9.6                   magrittr_2.0.3                 
+    ## [21] lubridate_1.9.4                 forcats_1.0.0                  
+    ## [23] stringr_1.5.1                   dplyr_1.1.4                    
+    ## [25] purrr_1.1.0                     readr_2.1.5                    
+    ## [27] tidyr_1.3.1                     tibble_3.3.0                   
+    ## [29] ggplot2_3.5.2.9002              tidyverse_2.0.0                
+    ## [31] knitr_1.50                     
     ## 
     ## loaded via a namespace (and not attached):
-    ##   [1] fs_1.6.6                    GSVA_2.2.0                 
-    ##   [3] bitops_1.0-9                R2HTML_2.3.4               
-    ##   [5] httr_1.4.7                  RColorBrewer_1.1-3         
-    ##   [7] numDeriv_2016.8-1.1         Rgraphviz_2.52.0           
-    ##   [9] doRNG_1.8.6.2               tools_4.5.0                
-    ##  [11] backports_1.5.0             utf8_1.2.6                 
-    ##  [13] R6_2.6.1                    DT_0.33                    
-    ##  [15] HDF5Array_1.36.0            sn_2.1.1                   
-    ##  [17] lazyeval_0.2.2              mgcv_1.9-3                 
-    ##  [19] rhdf5filters_1.20.0         withr_3.0.2                
-    ##  [21] preprocessCore_1.70.0       cli_3.6.5                  
-    ##  [23] sandwich_3.1-1              labeling_0.4.3             
-    ##  [25] KEGGgraph_1.68.0            mvtnorm_1.3-3              
-    ##  [27] S7_0.2.0                    genefilter_1.90.0          
-    ##  [29] PADOG_1.50.0                proxy_0.4-27               
-    ##  [31] yulab.utils_0.2.0           gson_0.1.0                 
-    ##  [33] DOSE_4.2.0                  R.utils_2.13.0             
-    ##  [35] HTMLUtils_0.1.9             plotrix_3.8-4              
-    ##  [37] rstudioapi_0.17.1           RSQLite_2.4.2              
-    ##  [39] gridGraphics_0.5-1          hwriter_1.3.2.1            
-    ##  [41] gtools_3.9.5                Matrix_1.7-3               
-    ##  [43] abind_1.4-8                 R.methodsS3_1.8.2          
-    ##  [45] lifecycle_1.0.4             multcomp_1.4-28            
-    ##  [47] yaml_2.3.10                 mathjaxr_1.8-0             
-    ##  [49] KEGGdzPathwaysGEO_1.46.0    gplots_3.2.0               
-    ##  [51] rhdf5_2.52.1                qvalue_2.40.0              
-    ##  [53] SparseArray_1.8.1           grid_4.5.0                 
-    ##  [55] blob_1.2.4                  crayon_1.5.3               
-    ##  [57] ggtangle_0.0.7              lattice_0.22-7             
-    ##  [59] beachmat_2.24.0             msigdbr_25.1.1             
-    ##  [61] cowplot_1.2.0               annotate_1.86.1            
-    ##  [63] KEGGREST_1.48.1             magick_2.8.7               
-    ##  [65] pillar_1.11.0               fgsea_1.34.2               
-    ##  [67] hgu133plus2.db_3.13.0       hgu133a.db_3.13.0          
-    ##  [69] rjson_0.2.23                widyr_0.1.5                
-    ##  [71] codetools_0.2-20            fastmatch_1.1-6            
-    ##  [73] mutoss_0.1-13               glue_1.8.0                 
-    ##  [75] ggfun_0.2.0                 data.table_1.17.8          
-    ##  [77] Rdpack_2.6.4                vctrs_0.6.5                
-    ##  [79] png_0.1-8                   treeio_1.32.0              
-    ##  [81] org.Mm.eg.db_3.21.0         gtable_0.3.6               
-    ##  [83] org.Rn.eg.db_3.21.0         assertthat_0.2.1           
-    ##  [85] cachem_1.1.0                xfun_0.52                  
-    ##  [87] rbibutils_2.3               S4Arrays_1.8.1             
-    ##  [89] survival_3.8-3              SingleCellExperiment_1.30.1
-    ##  [91] iterators_1.0.14            statmod_1.5.0              
-    ##  [93] TH.data_1.1-3               ellipsis_0.3.2             
-    ##  [95] nlme_3.1-168                ggtree_3.16.3              
-    ##  [97] bit64_4.6.0-1               rprojroot_2.1.0            
-    ##  [99] SnowballC_0.7.1             irlba_2.3.5.1              
-    ## [101] KernSmooth_2.23-26          colorspace_2.1-1           
-    ## [103] DBI_1.2.3                   mnormt_2.1.1               
-    ## [105] tidyselect_1.2.1            bit_4.6.0                  
-    ## [107] compiler_4.5.0              curl_6.4.0                 
-    ## [109] h5mread_1.0.1               TFisher_0.2.0              
-    ## [111] DelayedArray_0.34.1         plotly_4.11.0              
-    ## [113] scales_1.4.0                caTools_1.18.3             
-    ## [115] SpatialExperiment_1.18.1    digest_0.6.37              
-    ## [117] rmarkdown_2.29              XVector_0.48.0             
-    ## [119] htmltools_0.5.8.1           pkgconfig_2.0.3            
-    ## [121] sparseMatrixStats_1.20.0    fastmap_1.2.0              
-    ## [123] rlang_1.1.6                 htmlwidgets_1.6.4          
-    ## [125] UCSC.utils_1.4.0            farver_2.1.2               
-    ## [127] zoo_1.8-14                  jsonlite_2.0.0             
-    ## [129] BiocParallel_1.42.1         GOSemSim_2.34.0            
-    ## [131] tokenizers_0.3.0            R.oo_1.27.1                
-    ## [133] BiocSingular_1.24.0         RCurl_1.98-1.17            
-    ## [135] GenomeInfoDbData_1.2.14     ggplotify_0.1.2            
-    ## [137] Rhdf5lib_1.30.0             Rcpp_1.1.0                 
-    ## [139] ape_5.8-1                   babelgene_22.9             
-    ## [141] stringi_1.8.7               MASS_7.3-65                
-    ## [143] globaltest_5.62.0           plyr_1.8.9                 
-    ## [145] org.Hs.eg.db_3.21.0         ggstats_0.10.0             
-    ## [147] parallel_4.5.0              Biostrings_2.76.0          
-    ## [149] splines_4.5.0               multtest_2.64.0            
-    ## [151] hms_1.1.3                   qqconf_1.3.2               
-    ## [153] locfit_1.5-9.12             igraph_2.1.4               
-    ## [155] rngtools_1.5.2              EGSEAdata_1.36.0           
-    ## [157] reshape2_1.4.4              ScaledMatrix_1.16.0        
-    ## [159] XML_3.99-0.18               GSA_1.03.3                 
-    ## [161] evaluate_1.0.4              metap_1.12                 
-    ## [163] tidytext_0.4.2              foreach_1.5.2              
-    ## [165] tzdb_0.5.0                  rsvd_1.0.5                 
-    ## [167] broom_1.0.8                 xtable_1.8-4               
-    ## [169] e1071_1.7-16                tidytree_0.4.6             
-    ## [171] janeaustenr_1.0.0           viridisLite_0.4.2          
-    ## [173] class_7.3-23                clusterProfiler_4.16.0     
-    ## [175] aplot_0.2.8                 safe_3.48.0                
-    ## [177] memoise_2.0.1               timechange_0.3.0           
-    ## [179] sva_3.56.0                  GSEABase_1.70.0
+    ##  [1] DBI_1.2.3               widyr_0.1.5             rlang_1.1.6            
+    ##  [4] tidytext_0.4.2          e1071_1.7-16            compiler_4.5.0         
+    ##  [7] RSQLite_2.4.2           mgcv_1.9-3              reshape2_1.4.4         
+    ## [10] png_0.1-8               vctrs_0.6.5             sva_3.56.0             
+    ## [13] pkgconfig_2.0.3         crayon_1.5.3            fastmap_1.2.0          
+    ## [16] backports_1.5.0         XVector_0.48.0          ellipsis_0.3.2         
+    ## [19] labeling_0.4.3          utf8_1.2.6              rmarkdown_2.29         
+    ## [22] tzdb_0.5.0              preprocessCore_1.70.0   UCSC.utils_1.4.0       
+    ## [25] bit_4.6.0               xfun_0.52               cachem_1.1.0           
+    ## [28] jsonlite_2.0.0          blob_1.2.4              SnowballC_0.7.1        
+    ## [31] DelayedArray_0.34.1     BiocParallel_1.42.1     broom_1.0.8            
+    ## [34] parallel_4.5.0          R6_2.6.1                stringi_1.8.7          
+    ## [37] RColorBrewer_1.1-3      genefilter_1.90.0       Rcpp_1.1.0             
+    ## [40] org.Mm.eg.db_3.21.0     splines_4.5.0           Matrix_1.7-3           
+    ## [43] timechange_0.3.0        tidyselect_1.2.1        rstudioapi_0.17.1      
+    ## [46] abind_1.4-8             yaml_2.3.10             codetools_0.2-20       
+    ## [49] plyr_1.8.9              lattice_0.22-7          withr_3.0.2            
+    ## [52] KEGGREST_1.48.1         S7_0.2.0                evaluate_1.0.4         
+    ## [55] survival_3.8-3          proxy_0.4-27            ggstats_0.10.0         
+    ## [58] Biostrings_2.76.0       pillar_1.11.0           janeaustenr_1.0.0      
+    ## [61] plotly_4.11.0           rprojroot_2.1.0         hms_1.1.3              
+    ## [64] scales_1.4.0            xtable_1.8-4            class_7.3-23           
+    ## [67] glue_1.8.0              lazyeval_0.2.2          tools_4.5.0            
+    ## [70] data.table_1.17.8       tokenizers_0.3.0        annotate_1.86.1        
+    ## [73] locfit_1.5-9.12         XML_3.99-0.18           grid_4.5.0             
+    ## [76] AnnotationDbi_1.70.0    nlme_3.1-168            GenomeInfoDbData_1.2.14
+    ## [79] cli_3.6.5               S4Arrays_1.8.1          viridisLite_0.4.2      
+    ## [82] gtable_0.3.6            digest_0.6.37           SparseArray_1.8.1      
+    ## [85] org.Hs.eg.db_3.21.0     htmlwidgets_1.6.4       farver_2.1.2           
+    ## [88] memoise_2.0.1           htmltools_0.5.8.1       lifecycle_1.0.4        
+    ## [91] httr_1.4.7              statmod_1.5.0           bit64_4.6.0-1
 
 <div id="refs" class="references csl-bib-body hanging-indent"
 entry-spacing="0">
