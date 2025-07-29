@@ -30,3 +30,4 @@ renv/settings.json
 .Rprofile
 tidybulk.Rcheck/*
 ..Rcheck/*
+vignettes/cache/*
