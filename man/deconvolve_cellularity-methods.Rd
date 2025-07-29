@@ -13,6 +13,7 @@ deconvolve_cellularity(
   reference = NULL,
   method = "cibersort",
   prefix = "",
+  feature_column = NULL,
   ...
 )
 
@@ -22,6 +23,7 @@ deconvolve_cellularity(
   reference = NULL,
   method = "cibersort",
   prefix = "",
+  feature_column = NULL,
   ...
 )
 
@@ -31,6 +33,7 @@ deconvolve_cellularity(
   reference = NULL,
   method = "cibersort",
   prefix = "",
+  feature_column = NULL,
   ...
 )
 }
@@ -44,6 +47,8 @@ deconvolve_cellularity(
 \item{method}{A character string. The method to be used. Available methods: "cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell". If a vector is provided, an error will be thrown. Default is all available methods.}
 
 \item{prefix}{A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.}
+
+\item{feature_column}{A character string. The name of a column in rowData to use as feature names instead of rownames. If NULL (default), rownames are used.}
 
 \item{...}{Further parameters passed to the function Cibersort}
 }
@@ -71,6 +76,14 @@ CIBERSORT(Y = data, X = reference, ...)
 
 # Subsetting for time efficiency
 tidybulk::se_mini |> deconvolve_cellularity(cores = 1)
+
+# Using a feature column from rowData instead of rownames
+# First, add a feature column to rowData
+se_with_features <- tidybulk::se_mini
+rowData(se_with_features)$gene_symbol <- rownames(se_with_features)
+
+# Use the feature column for deconvolution
+se_with_features |> deconvolve_cellularity(feature_column = "gene_symbol", cores = 1)
 
 }
 \references{

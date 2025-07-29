@@ -18,6 +18,7 @@
 #' @param reference A data frame. The methods cibersort and llsr can accept a custom rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. For exampler tidybulk::X_cibersort. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.
 #' @param method A character string. The method to be used. Available methods: "cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell". If a vector is provided, an error will be thrown. Default is all available methods.
 #' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
+#' @param feature_column A character string. The name of a column in rowData to use as feature names instead of rownames. If NULL (default), rownames are used.
 #' @param ... Further parameters passed to the function Cibersort
 #'
 #' @details This function infers the cell type composition of our samples
@@ -37,6 +38,14 @@
 #' # Subsetting for time efficiency
 #' tidybulk::se_mini |> deconvolve_cellularity(cores = 1)
 #'
+#' # Using a feature column from rowData instead of rownames
+#' # First, add a feature column to rowData
+#' se_with_features <- tidybulk::se_mini
+#' rowData(se_with_features)$gene_symbol <- rownames(se_with_features)
+#' 
+#' # Use the feature column for deconvolution
+#' se_with_features |> deconvolve_cellularity(feature_column = "gene_symbol", cores = 1)
+#'
 #' @references
 #' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
 #'
@@ -55,6 +64,7 @@ setGeneric("deconvolve_cellularity", function(.data,
                                               reference = NULL,
                                               method = "cibersort",
                                               prefix = "",
+                                              feature_column = NULL,
                                               
                                               ...)
   standardGeneric("deconvolve_cellularity"))
@@ -71,6 +81,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 #' @param reference Reference matrix or method-specific handle (see Details).
 #' @param method   Character string naming the deconvolution method.
 #' @param prefix   Optional prefix to prepend to output column names.
+#' @param feature_column A character string. The name of a column in rowData to use as feature names instead of rownames. If NULL (default), rownames are used.
 #' @param ...      Additional arguments passed through to the underlying
 #'                 deconvolution function.
 #'
@@ -93,12 +104,14 @@ setGeneric("deconvolve_cellularity", function(.data,
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr select
 #' @importFrom tidyr gather spread
-#' @importFrom SummarizedExperiment assays colData
+#' @importFrom SummarizedExperiment assays colData rowData
 #' @keywords internal
+#' @noRd
 .deconvolve_cellularity_se = function(.data,
                                       reference = X_cibersort,
                                       method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
                                       prefix = "",
+                                      feature_column = NULL,
                                       ...) {
   
   # Fix NOTEs
@@ -122,6 +135,18 @@ setGeneric("deconvolve_cellularity", function(.data,
     assays() |>
     as.list()
   my_assay = my_assay[[get_assay_scaled_if_exists_SE(.data)]]
+  
+  # Use feature_column from rowData if provided, otherwise use rownames
+  if (!is.null(feature_column)) {
+    if (!feature_column %in% colnames(rowData(.data))) {
+      stop(paste("tidybulk says: feature_column '", feature_column, "' not found in rowData. Available columns:", paste(colnames(rowData(.data)), collapse = ", ")))
+    }
+    feature_names = rowData(.data)[, feature_column, drop = TRUE]
+    if (any(is.na(feature_names)) || any(feature_names == "")) {
+      stop(paste("tidybulk says: feature_column '", feature_column, "' contains missing or empty values"))
+    }
+    rownames(my_assay) = feature_names
+  }
   
   # 	  # Change row names
   # 	  if (quo_is_symbolic(.transcript)) {

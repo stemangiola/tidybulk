@@ -26,6 +26,38 @@ test_that("deconvolve_cellularity throws error with multiple methods", {
   )
 })
 
+test_that("deconvolve_cellularity with feature_column works correctly", {
+  # Add a test column to rowData with valid gene names
+  se_test <- se_mini
+  rowData(se_test)$test_feature <- rownames(se_test)
+  
+  # Test with valid feature_column
+  res <- se_test |> deconvolve_cellularity(feature_column = "test_feature", cores = 1)
+  expect_no_error(res)
+  
+  # Test that it throws error with non-existent column
+  expect_error(
+    se_test |> deconvolve_cellularity(feature_column = "non_existent_column", cores = 1),
+    "feature_column ' non_existent_column ' not found in rowData"
+  )
+  
+  # Test that it throws error with column containing NA values
+  rowData(se_test)$na_feature <- rowData(se_test)$test_feature
+  rowData(se_test)$na_feature[1] <- NA
+  expect_error(
+    se_test |> deconvolve_cellularity(feature_column = "na_feature", cores = 1),
+    "feature_column ' na_feature ' contains missing or empty values"
+  )
+  
+  # Test that it throws error with column containing empty values
+  rowData(se_test)$empty_feature <- rowData(se_test)$test_feature
+  rowData(se_test)$empty_feature[1] <- ""
+  expect_error(
+    se_test |> deconvolve_cellularity(feature_column = "empty_feature", cores = 1),
+    "feature_column ' empty_feature ' contains missing or empty values"
+  )
+})
+
 test_that("deconvolve_cellularity with EPIC works correctly", {
   # Skip EPIC as it requires additional packages
   skip("EPIC requires additional Bioconductor packages")
