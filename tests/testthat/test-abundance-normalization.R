@@ -1,6 +1,8 @@
 context('Abundance Normalization Functions')
 
-data("se_mini")
+library(airway)
+data(airway)
+se_mini <- airway[1:100, 1:5]
 data("breast_tcga_mini_SE")
 
 library(dplyr)
@@ -18,7 +20,7 @@ test_that("scale_abundance works correctly", {
 
 test_that("scale_abundance with subset works correctly", {
   res <- se_mini |> identify_abundant() |> scale_abundance(
-    .subset_for_scaling = .abundant & grepl("^A", .feature)
+    .subset_for_scaling = .abundant & grepl("^ENSG", .feature)
   )
   
   expect_true("counts_scaled" %in% names(SummarizedExperiment::assays(res)))
@@ -46,12 +48,12 @@ test_that("quantile_normalise_abundance with preprocessCore works correctly", {
 test_that("adjust_abundance adds adjusted assay correctly", {
   # Add a batch column to se_mini
   se_mini2 <- se_mini
-  # Create a batch variable with two groups
-  colData(se_mini2)$batch <- rep(1:2, length.out = ncol(se_mini2))
+  # Create a batch variable with two groups (not confounded with dex)
+  colData(se_mini2)$batch <- c(1, 1, 2, 2, 1)
   # Run identify_abundant and adjust_abundance
   res <- se_mini2 |> identify_abundant() |> adjust_abundance(
     .factor_unwanted = batch,
-    .factor_of_interest = condition,
+    .factor_of_interest = dex,
     method = "combat_seq"
   )
   # Check that an adjusted assay is present
@@ -68,7 +70,7 @@ test_that("fill_missing_abundance works correctly", {
 
 # Test impute_missing_abundance function
 test_that("impute_missing_abundance works correctly", {
-  res <- se_mini |> impute_missing_abundance(.formula = ~ condition)
+  res <- se_mini |> impute_missing_abundance(.formula = ~ dex)
   
   expect_no_error(res)
 }) 
@@ -90,15 +92,15 @@ test_that("scale_abundance default suffix still works", {
 
 test_that("adjust_abundance on custom assay creates correct adjusted assay name", {
   se_mini2 <- se_mini
-  # Create a batch variable with two groups
-  colData(se_mini2)$batch <- rep(1:2, length.out = ncol(se_mini2))
+  # Create a batch variable with two groups (not confounded with dex)
+  colData(se_mini2)$batch <- c(1, 1, 2, 2, 1)
   # Create a custom assay
   SummarizedExperiment::assays(se_mini2)[["my_custom_assay"]] <- SummarizedExperiment::assay(se_mini2, "counts") + 1
   # Run identify_abundant and adjust_abundance on the custom assay
   res <- se_mini2 |> identify_abundant(abundance = "my_custom_assay") |> adjust_abundance(
     abundance = "my_custom_assay",
     .factor_unwanted = batch,
-    .factor_of_interest = condition,
+    .factor_of_interest = dex,
     method = "combat_seq"
   )
   # Check that the adjusted assay name is correct

@@ -81,6 +81,7 @@ library(ggplot2)
 library(ggrepel)
 library(tidybulk)
 library(tidySummarizedExperiment)
+library(airway)
 
 my_theme = 	
 	theme_bw() +
@@ -97,8 +98,28 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
-data(se_mini)
-# tibble_counts = tidybulk::se_mini |> tidybulk() |> as_tibble()
+# Load airway dataset
+data(airway)
+
+# Add gene symbol and entrez for better annotation
+airway <-
+  airway |> 
+  mutate(symbol = AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                                        keys = .feature,
+                                        keytype = "ENSEMBL",
+                                        column = "SYMBOL",
+                                        multiVals = "first"
+  )) |> 
+  
+  mutate(entrez = AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                                      keys = .feature,
+                                      keytype = "ENSEMBL",
+                                      column = "ENTREZID",
+                                      multiVals = "first"
+)) 
+
+# Convert dex to factor for proper differential expression analysis
+colData(airway)$dex = as.factor(colData(airway)$dex)
 
 ```
 
@@ -109,8 +130,8 @@ tidybulk provide the `aggregate_duplicates` function to aggregate duplicated tra
 <div class="column-left">
 TidyTranscriptomics
 ```{r aggregate, message=FALSE, warning=FALSE, results='hide', class.source='yellow', eval=FALSE}
-rowData(se_mini)$gene_name = rownames(se_mini)
-se_mini.aggr = se_mini |> aggregate_duplicates(.transcript = gene_name)
+rowData(airway)$gene_name = rownames(airway)
+airway.aggr = airway |> aggregate_duplicates(.transcript = gene_name)
 ```
 </div>
 <div class="column-right">
@@ -138,7 +159,7 @@ We may want to compensate for sequencing depth, scaling the transcript abundance
 <div class="column-left">
 TidyTranscriptomics
 ```{r normalise}
-se_mini.norm = se_mini |> identify_abundant(factor_of_interest = condition) |> scale_abundance()
+airway.norm = airway |> identify_abundant(factor_of_interest = dex) |> scale_abundance()
 ```
 
 </div>
@@ -158,15 +179,15 @@ norm_counts.table <- cpm(dgList)
 <div style="clear:both;"></div>
 
 ```{r, include=FALSE}
-se_mini.norm |> select(`counts`, counts_scaled, .abundant, everything())
+airway.norm |> select(`counts`, counts_scaled, .abundant, everything())
 ```
 
-We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by cell type.
+We can easily plot the scaled density to check the scaling outcome. On the x axis we have the log scaled counts, on the y axes we have the density, data is grouped by sample and coloured by treatment.
 
 
 ```{r plot_normalise, fig.width = 10, fig.height = 10}
-se_mini.norm |>
-	ggplot(aes(counts_scaled + 1, group=.sample, color=`Cell.type`)) +
+airway.norm |>
+	ggplot(aes(counts_scaled + 1, group=.sample, color=`dex`)) +
 	geom_density() +
 	scale_x_log10() +
 	my_theme
@@ -179,7 +200,7 @@ We may want to identify and filter variable transcripts.
 <div class="column-left">
 TidyTranscriptomics
 ```{r filter variable}
-se_mini.norm.variable = se_mini.norm |> keep_variable()
+airway.norm.variable = airway.norm |> keep_variable()
 ```
 </div>
 <div class="column-right">
@@ -200,7 +221,7 @@ norm_counts.table$cell_type = tibble_counts[
 		tibble_counts$sample,
 		rownames(norm_counts.table)
 	),
-	"Cell.type"
+	"cell"
 ]
 ```
 
@@ -217,8 +238,8 @@ We may want to reduce the dimensions of our data, for example using PCA or MDS a
 <div class="column-left">
 TidyTranscriptomics
 ```{r mds}
-se_mini.norm.MDS =
-  se_mini.norm |>
+airway.norm.MDS =
+  airway.norm |>
   reduce_dimensions(method="MDS", .dims = 2)
 
 ```
@@ -237,20 +258,20 @@ cmds = cmds %$%
 
 cmds$cell_type = tibble_counts[
 	match(tibble_counts$sample, rownames(cmds)),
-	"Cell.type"
+	"cell"
 ]
 ```
 </div>
 <div style="clear:both;"></div>
 
-On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.
+On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by treatment.
 
 ```{r plot_mds, fig.width = 10, fig.height = 10, eval=FALSE}
-se_mini.norm.MDS |> pivot_sample()  |> select(contains("Dim"), everything())
+airway.norm.MDS |> pivot_sample()  |> select(contains("Dim"), everything())
 
-se_mini.norm.MDS |>
+airway.norm.MDS |>
 	pivot_sample() |>
-  GGally::ggpairs(columns = 9:11, ggplot2::aes(colour=`Cell.type`))
+  GGally::ggpairs(columns = 9:11, ggplot2::aes(colour=`dex`))
 
 
 ```
@@ -260,8 +281,8 @@ se_mini.norm.MDS |>
 <div class="column-left">
 TidyTranscriptomics
 ```{r pca, message=FALSE, warning=FALSE, results='hide'}
-se_mini.norm.PCA =
-  se_mini.norm |>
+airway.norm.PCA =
+  airway.norm |>
   reduce_dimensions(method="PCA", .dims = 2)
 ```
 </div>
@@ -274,68 +295,24 @@ variance = pc$sdev^2
 variance = (variance / sum(variance))[1:6]
 pc$cell_type = counts[
 	match(counts$sample, rownames(pc)),
-	"Cell.type"
+	"cell"
 ]
 ```
 </div>
 <div style="clear:both;"></div>
 
-On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.
+On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by treatment.
 
 ```{r plot_pca, fig.width = 10, fig.height = 10, eval=FALSE}
 
-se_mini.norm.PCA |> pivot_sample() |> select(contains("PC"), everything())
+airway.norm.PCA |> pivot_sample() |> select(contains("PC"), everything())
 
-se_mini.norm.PCA |>
+airway.norm.PCA |>
 	 pivot_sample() |>
-  GGally::ggpairs(columns = 11:13, ggplot2::aes(colour=`Cell.type`))
-```
-
-**tSNE**
-<div class="column-left">
-TidyTranscriptomics
-```{r tsne, message=FALSE, warning=FALSE, results='hide'}
-se_mini.norm.tSNE =
-	breast_tcga_mini_SE |>
-	identify_abundant() |>
-	reduce_dimensions(
-		method = "tSNE",
-		perplexity=10,
-		pca_scale =TRUE
-	)
+  GGally::ggpairs(columns = 11:13, ggplot2::aes(colour=`dex`))
 ```
 
 
-</div>
-<div class="column-right">
-Standard procedure (comparative purpose)
-```{r, eval=FALSE}
-count_m_log = log(count_m + 1)
-
-tsne = Rtsne::Rtsne(
-	t(count_m_log),
-	perplexity=10,
-		pca_scale =TRUE
-)$Y
-tsne$cell_type = tibble_counts[
-	match(tibble_counts$sample, rownames(tsne)),
-	"Cell.type"
-]
-```
-</div>
-<div style="clear:both;"></div>
-
-Plot
-
-```{r}
-se_mini.norm.tSNE |>
-	pivot_sample() |>
-	select(contains("tSNE"), everything()) 
-
-se_mini.norm.tSNE |>
-	pivot_sample() |>
-	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=Call)) + geom_point() + my_theme
-```
 
 ## Rotate `dimensions`
 
@@ -343,8 +320,8 @@ We may want to rotate the reduced dimensions (or any two numeric columns really)
 <div class="column-left">
 TidyTranscriptomics
 ```{r rotate}
-se_mini.norm.MDS.rotated =
-  se_mini.norm.MDS |>
+airway.norm.MDS.rotated =
+  airway.norm.MDS |>
 	rotate_dimensions(`Dim1`, `Dim2`, rotation_degrees = 45)
 ```
 </div>
@@ -361,29 +338,29 @@ rotation = function(m, d) {
 mds_r = pca |> rotation(rotation_degrees)
 mds_r$cell_type = counts[
 	match(counts$sample, rownames(mds_r)),
-	"Cell.type"
+	"cell"
 ]
 ```
 </div>
 <div style="clear:both;"></div>
 
 **Original**
-On the x and y axes axis we have the first two reduced dimensions, data is coloured by cell type.
+On the x and y axes axis we have the first two reduced dimensions, data is coloured by treatment.
 
 ```{r plot_rotate_1, fig.width = 10, fig.height = 10}
-se_mini.norm.MDS.rotated |>
-	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`Cell.type` )) +
+airway.norm.MDS.rotated |>
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=`dex` )) +
   geom_point() +
   my_theme
 ```
 
 **Rotated**
-On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by cell type.
+On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by treatment.
 
 ```{r plot_rotate_2, fig.width = 10, fig.height = 10}
-se_mini.norm.MDS.rotated |>
+airway.norm.MDS.rotated |>
 	pivot_sample() |>
-	ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`Cell.type` )) +
+	ggplot(aes(x=`Dim1_rotated_45`, y=`Dim2_rotated_45`, color=`dex` )) +
   geom_point() +
   my_theme
 ```
@@ -394,11 +371,11 @@ We may want to test for differential transcription between sample-wise factors o
 <div class="column-left">
 TidyTranscriptomics
 ```{r de, message=FALSE, warning=FALSE, results='hide'}
-se_mini.de =
-	se_mini |>
-	test_differential_expression( ~ condition, method = "edgeR_quasi_likelihood") |>
+airway.de =
+	airway |>
+	test_differential_expression( ~ dex, method = "edgeR_quasi_likelihood") |>
   pivot_transcript()
-se_mini.de
+airway.de
 ```
 </div>
 <div class="column-right">
@@ -421,12 +398,12 @@ topTags(qlf, n=Inf)
 
 The functon `test_differential_expression` operated with contrasts too. The constrasts hve the name of the design matrix (generally <NAME_COLUMN_COVARIATE><VALUES_OF_COVARIATE>)
 ```{r de contrast, message=FALSE, warning=FALSE, results='hide', eval=FALSE}
-se_mini.de =
-	se_mini |>
-	identify_abundant(factor_of_interest = condition) |>
+airway.de =
+	airway |>
+	identify_abundant(factor_of_interest = dex) |>
 	test_differential_expression(
-		~ 0 + condition,                  
-		.contrasts = c( "conditionTRUE - conditionFALSE"),
+		~ 0 + dex,                  
+		.contrasts = c( "dexuntrt - dextrt"),
 		method = "edgeR_quasi_likelihood"
 	) |> 
   pivot_transcript()
@@ -439,8 +416,8 @@ We may want to adjust `counts` for (known) unwanted variation. `adjust_abundance
 <div class="column-left">
 TidyTranscriptomics
 ```{r adjust, message=FALSE, warning=FALSE, results='hide'}
-se_mini.norm.adj =
-	se_mini.norm 	|> adjust_abundance(	.factor_unwanted = time, .factor_of_interest = condition, method="combat")
+airway.norm.adj =
+	airway.norm 	|> adjust_abundance(	.factor_unwanted = cell, .factor_of_interest = dex, method="combat")
 
 
 ```
@@ -468,7 +445,7 @@ count_m_log.sva =
 count_m_log.sva = ceiling(exp(count_m_log.sva) -1)
 count_m_log.sva$cell_type = counts[
 	match(counts$sample, rownames(count_m_log.sva)),
-	"Cell.type"
+	"cell"
 ]
 
 ```
@@ -479,14 +456,16 @@ count_m_log.sva$cell_type = counts[
 
 We may want to infer the cell type composition of our samples (with the algorithm Cibersort; Newman et al., 10.1038/nmeth.3337). `deconvolve_cellularity` takes as arguments a tibble, column names (as symbols; for `sample`, `transcript` and `count`) and returns a tibble with additional columns for the adjusted  cell type proportions.
 
+*Note: Cellularity deconvolution requires gene symbols that match the reference data. The airway dataset uses Ensembl IDs, so this example is commented out.*
 
 <div class="column-left">
 TidyTranscriptomics
-```{r cibersort}
-se_mini.cibersort =
-	se_mini |>
-	deconvolve_cellularity( cores=1, prefix = "cibersort__") |> 
-  pivot_sample()
+```{r cibersort, eval=FALSE}
+# Requires gene symbols that match reference data
+# airway.cibersort =
+# 	airway |>
+# 	deconvolve_cellularity( cores=1, prefix = "cibersort__") |> 
+#   pivot_sample()
 
 ```
 </div>
@@ -494,7 +473,7 @@ se_mini.cibersort =
 Standard procedure (comparative purpose)
 ```{r, eval=FALSE}
 
-source(‘CIBERSORT.R’)
+source("CIBERSORT.R")
 count_m |> write.table("mixture_file.txt")
 results <- CIBERSORT(
 	"sig_matrix_file.txt",
@@ -503,28 +482,28 @@ results <- CIBERSORT(
 )
 results$cell_type = tibble_counts[
 	match(tibble_counts$sample, rownames(results)),
-	"Cell.type"
+	"cell"
 ]
 
 ```
 </div>
 <div style="clear:both;"></div>
 
-With the new annotated data frame, we can plot the distributions of cell types across samples, and compare them with the nominal cell type labels to check for the purity of isolation. On the x axis we have the cell types inferred by Cibersort, on the y axis we have the inferred proportions. The data is facetted and coloured by nominal cell types (annotation given by the researcher after FACS sorting).
+*Note: The plotting code is commented out as the deconvolution step is not executed.*
 
 ```{r plot_cibersort, eval=FALSE}
-se_mini.cibersort |>
-	pivot_longer(
-		names_to= "Cell_type_inferred", 
-		values_to = "proportion", 
-		names_prefix ="cibersort__", 
-		cols=contains("cibersort__")
-	) |>
-  ggplot(aes(x=Cell_type_inferred, y=proportion, fill=Cell.type)) +
-  geom_boxplot() +
-  facet_wrap(~Cell.type) +
-  my_theme +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
+# airway.cibersort |>
+# 	pivot_longer(
+# 		names_to= "Cell_type_inferred", 
+# 		values_to = "proportion", 
+# 		names_prefix ="cibersort__", 
+# 		cols=contains("cibersort__")
+# 	) |>
+#   ggplot(aes(x=Cell_type_inferred, y=proportion, fill=cell)) +
+#   geom_boxplot() +
+#   facet_wrap(~cell) +
+#   my_theme +
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), aspect.ratio=1/5)
 
 ```
 
@@ -535,8 +514,8 @@ We may want to cluster our samples based on the transcriptomic profiles. `cluste
 <div class="column-left">
 TidyTranscriptomics
 ```{r cluster}
-se_mini.norm.cluster =
-	se_mini.norm |>
+airway.norm.cluster =
+	airway.norm |>
 	cluster_elements(method="kmeans", centers = 2)
 ```
 </div>
@@ -562,9 +541,9 @@ We may want to test for differential abundance between conditions. `test_differe
 <div class="column-left">
 TidyTranscriptomics
 ```{r differential}
-se_mini.norm.de =
-	se_mini.norm |>
-	test_differential_abundance(~ condition, method="edgeR_quasi_likelihood")
+airway.norm.de =
+	airway.norm |>
+	test_differential_abundance(~ dex, method="edgeR_quasi_likelihood")
 ```
 </div>
 <div class="column-right">
@@ -574,7 +553,7 @@ library(edgeR)
 
 count_m_log = log(count_m + 1)
 
-design = model.matrix(~ condition, data = annotation)
+design = model.matrix(~ dex, data = annotation)
 
 dge = DGEList(counts = count_m)
 dge = calcNormFactors(dge)

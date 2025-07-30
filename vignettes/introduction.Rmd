@@ -176,23 +176,22 @@ library(tidySummarizedExperiment)
 Here we will add a gene symbol column to the `airway` object. This will be used to interpret the differential expression analysis, and to deconvolve the cellularity.
 
 ```{r}
+library(org.Hs.eg.db)
+library(AnnotationDbi)
+
 # Add gene symbol and entrez
 airway <-
-  airway |> 
-  mutate(symbol = AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
-                                        keys = .feature,
-                                        keytype = "ENSEMBL",
-                                        column = "SYMBOL",
-                                        multiVals = "first"
-  )) |> 
+  airway |>
   
-  mutate(entrez = AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
+  mutate(entrezid = mapIds(org.Hs.eg.db,
                                       keys = .feature,
                                       keytype = "ENSEMBL",
                                       column = "ENTREZID",
                                       multiVals = "first"
 )) 
 
+detach("package:org.Hs.eg.db", unload = TRUE)
+detach("package:AnnotationDbi", unload = TRUE)
 ```
 
 # Installation Guide
@@ -928,12 +927,12 @@ gene_rank_res =
   airway |>
 
     # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
-  aggregate_duplicates(.transcript = entrez) |> 
+  filter(!entrezid |> is.na()) |>
+  aggregate_duplicates(.transcript = entrezid) |> 
 
   # Test gene rank
   test_gene_rank(
-    .entrez = entrez,
+    .entrez = entrezid,
     .arrange_desc = lr_robust__logFC,
     species = "Homo sapiens",
     gene_sets = c("H", "C2", "C5")
@@ -965,7 +964,7 @@ gene_rank_res |>
       )
     )) |>
     pull(plot) 
-
+detach("package:enrichplot", unload = TRUE)
 ```
 
 Gene Ontology overrepresentation analysis [@ashburner2000go] is used for functional enrichment. 
@@ -979,10 +978,10 @@ airway_overrep =
   mutate(genes_to_test = ql__FDR < 0.05) |>
   
     # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
+  filter(!entrezid |> is.na()) |>
   
   test_gene_overrepresentation(
-    .entrez = entrez,
+    .entrez = entrezid,
     species = "Homo sapiens",
     .do_test = genes_to_test,
     gene_sets = c("H", "C2", "C5")
@@ -999,19 +998,19 @@ library(EGSEA)
   airway |> 
 
   # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
-  aggregate_duplicates(.transcript = entrez) |> 
+  filter(!entrezid |> is.na()) |>
+  aggregate_duplicates(.transcript = entrezid) |> 
 
   # Test gene enrichment
   test_gene_enrichment(
     .formula = ~dex,
-    .entrez = entrez,
+    .entrez = entrezid,
     species = "human", 
     gene_sets = "h",
     methods = c("roast"),  # Use a more robust method
     cores = 2
   )
-
+detach("package:EGSEA", unload = TRUE)
 ```
 
 ## Step 6: Cellularity Analysis

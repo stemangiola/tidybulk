@@ -69,7 +69,7 @@ setGeneric("describe_transcript", function(.data )
     # Human
     tryCatch(suppressMessages(AnnotationDbi::mapIds(
       org.Hs.eg.db::org.Hs.eg.db,
-      keys = my_transcripts,  #ensembl_symbol_mapping$transcript |> unique,
+      keys = my_transcripts,  
       column = "GENENAME",
       keytype = "SYMBOL",
       multiVals = "first"
@@ -80,7 +80,7 @@ setGeneric("describe_transcript", function(.data )
     c(
       tryCatch(suppressMessages(AnnotationDbi::mapIds(
         org.Mm.eg.db::org.Mm.eg.db,
-        keys = my_transcripts,  #ensembl_symbol_mapping$transcript |> unique,
+        keys = my_transcripts,  
         column = "GENENAME",
         keytype = "SYMBOL",
         multiVals = "first"

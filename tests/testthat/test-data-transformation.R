@@ -1,6 +1,8 @@
 context('Data Transformation Functions')
 
-data("se_mini")
+library(airway)
+data(airway)
+se_mini <- airway[1:100, 1:5]
 data("breast_tcga_mini_SE")
 
 library(dplyr)
@@ -27,19 +29,19 @@ test_that("pivot_sample works correctly and preserves expected columns", {
   # Check that sample names are preserved in .sample column
   expect_equal(result$.sample, rownames(original_colData))
   
-  # Check specific expected columns based on the test data
-  expect_true("Cell.type" %in% names(result))
-  expect_true("time" %in% names(result))
-  expect_true("condition" %in% names(result))
-  expect_true("days" %in% names(result))
-  expect_true("dead" %in% names(result))
+  # Check specific expected columns based on the airway data
+  expect_true("SampleName" %in% names(result))
+  expect_true("cell" %in% names(result))
+  expect_true("dex" %in% names(result))
+  expect_true("albut" %in% names(result))
+  expect_true("Run" %in% names(result))
   expect_true(".sample" %in% names(result))
   
-  # Check that condition values are preserved
-  expect_true(all(result$condition %in% c(TRUE, FALSE)))
+  # Check that dex values are preserved (should be logical)
+  expect_true(all(result$dex %in% c("trt", "untrt")))
   
-  # Check that the result has the expected number of columns (5 + 1 for .sample)
-  expect_equal(ncol(result), 6)
+  # Check that the result has the expected number of columns (8 + 1 for .sample)
+  expect_equal(ncol(result), 10)
 })
 
 test_that("pivot_transcript works correctly and preserves expected columns", {
@@ -53,8 +55,10 @@ test_that("pivot_transcript works correctly and preserves expected columns", {
   expect_true(inherits(result, "tbl_df"))
   
   # Check that all original rowData columns are preserved (plus .feature)
-  # The entrez column is preserved as "entrez" in the output
-  expected_cols <- c(".feature", "entrez")
+  # The airway dataset has rich gene annotation data
+  expected_cols <- c(".feature", "entrezid", "gene_biotype", "gene_id", "gene_name", 
+                     "gene_seq_end", "gene_seq_start", "GRangesList", 
+                     "seq_coord_system", "seq_name", "seq_strand", "symbol")
   expect_equal(sort(names(result)), sort(expected_cols))
   
   # Check that the number of rows matches the number of features/transcripts
@@ -63,12 +67,14 @@ test_that("pivot_transcript works correctly and preserves expected columns", {
   # Check that feature names are preserved in .feature column
   expect_equal(result$.feature, rownames(original_rowData))
   
-  # Check specific expected columns based on the test data
-  expect_true("entrez" %in% names(result))  # This is the entrez column
+  # Check specific expected columns based on the airway data
+  expect_true("gene_name" %in% names(result))  # This is the gene_name column
   expect_true(".feature" %in% names(result))
+  expect_true("symbol" %in% names(result))
+  expect_true("entrezid" %in% names(result))
   
-  # Check that the result has the expected number of columns (1 + 1 for .feature)
-  expect_equal(ncol(result), 2)
+  # Check that the result has the expected number of columns (12 total)
+  expect_equal(ncol(result), 12)
 })
 
 test_that("pivot_sample handles additional colData columns correctly", {
@@ -81,7 +87,8 @@ test_that("pivot_sample handles additional colData columns correctly", {
   result <- se_modified |> pivot_sample()
   
   # Check that all original columns plus new ones are preserved
-  expected_cols <- c(".sample", "Cell.type", "time", "condition", "days", "dead", 
+  expected_cols <- c(".sample", "SampleName", "cell", "dex", "albut", "Run", 
+                     "avgLength", "Experiment", "Sample", "BioSample",
                      "extra_column", "numeric_column")
   expect_equal(sort(names(result)), sort(expected_cols))
   
@@ -100,8 +107,11 @@ test_that("pivot_transcript handles additional rowData columns correctly", {
   result <- se_modified |> pivot_transcript()
   
   # Check that all original columns plus new ones are preserved
-  # The entrez column is preserved as "entrez" and additional columns are preserved
-  expected_cols <- c(".feature", "entrez", "extra_column", "numeric_column")
+  # The airway dataset has rich gene annotation data plus additional columns
+  expected_cols <- c(".feature", "entrezid", "gene_biotype", "gene_id", "gene_name", 
+                     "gene_seq_end", "gene_seq_start", "GRangesList", 
+                     "seq_coord_system", "seq_name", "seq_strand", "symbol",
+                     "extra_column", "numeric_column")
   expect_equal(sort(names(result)), sort(expected_cols))
   
   # Check that new columns have correct values
@@ -112,17 +122,15 @@ test_that("pivot_transcript handles additional rowData columns correctly", {
 test_that("pivot_sample preserves data types correctly", {
   result <- se_mini |> pivot_sample()
   
-  # Check that logical columns remain logical
-  expect_true(is.logical(result$condition))
-  # Note: dead is actually numeric, not logical
-  expect_true(is.numeric(result$dead))
-  
-  # Check that character columns remain character
-  expect_true(is.character(result$Cell.type))
-  expect_true(is.character(result$time))
+  # Check that factor columns remain factor (airway dataset uses factors)
+  expect_true(is.factor(result$dex))
+  expect_true(is.factor(result$SampleName))
+  expect_true(is.factor(result$cell))
+  expect_true(is.factor(result$albut))
+  expect_true(is.factor(result$Run))
   
   # Check that numeric columns remain numeric
-  expect_true(is.numeric(result$days))
+  expect_true(is.numeric(result$avgLength))
   
   # Check that .sample column is character
   expect_true(is.character(result$.sample))
@@ -132,7 +140,7 @@ test_that("pivot_transcript preserves data types correctly", {
   result <- se_mini |> pivot_transcript()
   
   # Check that character columns remain character
-  expect_true(is.character(result$entrez))  # This is the entrez column
+  expect_true(is.character(result$gene_name))  # This is the gene_name column
   expect_true(is.character(result$.feature))
 })
 
@@ -144,7 +152,7 @@ test_that("as_matrix works correctly", {
 
 # Test aggregate_duplicates function
 test_that("aggregate_duplicates works correctly", {
-  # Skip this test as the test data has NA entrez values
+  # Skip this test as the test data has NA gene_name values
   skip("aggregate_duplicates requires non-NA transcript values")
 })
 

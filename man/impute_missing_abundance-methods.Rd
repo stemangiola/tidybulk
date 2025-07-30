@@ -68,13 +68,12 @@ impute_missing_abundance() takes as input A `tbl` (with at least three columns f
 This function imputes the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 }
 \examples{
-
-
-res =
-	impute_missing_abundance(
-		tidybulk::se_mini,
-	~ condition
-)
+#' library(airway)
+#' data(airway)
+#' se_mini <- airway[1:100, 1:5]
+#' 
+#' se_mini |>
+#'   impute_missing_abundance(.formula = ~ dex)
 
 }
 \references{
