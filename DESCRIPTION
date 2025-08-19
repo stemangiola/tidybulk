@@ -87,7 +87,8 @@ Suggests:
     MASS,
     pkgconfig,
     enrichplot,
-    patchwork
+    patchwork,
+    airway
 VignetteBuilder: 
     knitr
 RdMacros:

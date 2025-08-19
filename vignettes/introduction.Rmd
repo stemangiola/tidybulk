@@ -175,7 +175,7 @@ library(tidySummarizedExperiment)
 
 Here we will add a gene symbol column to the `airway` object. This will be used to interpret the differential expression analysis, and to deconvolve the cellularity.
 
-```{r}
+```{r add-gene-symbol}
 library(org.Hs.eg.db)
 library(AnnotationDbi)
 
@@ -1077,7 +1077,7 @@ Visualize the cell type proportions as a stacked barplot for each method:
 # Visualize CIBERSORT results
 airway	 |>
   pivot_sample() |>
-  select(.sample, contains("cibersort__")) |>
+  dplyr::select(.sample, contains("cibersort__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
   ggplot(aes(x = .sample, y = proportion, fill = Cell_type_inferred)) +
   geom_bar(stat = "identity") +

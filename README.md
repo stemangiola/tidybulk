@@ -1,7 +1,7 @@
 tidybulk: An R tidy framework for modular transcriptomic data analysis
 ================
 Stefano Mangiola
-2025-07-29
+2025-07-30
 
 <!-- badges: start -->
 
@@ -147,29 +147,46 @@ library(tidySummarizedExperiment)
     ## 
     ##     tidy
 
-    ## The following object is masked from 'package:tidybulk':
-    ## 
-    ##     se
-
 Here we will add a gene symbol column to the `airway` object. This will
 be used to interpret the differential expression analysis, and to
 deconvolve the cellularity.
 
 ``` r
-# Add gene symbol
-airway <-
-  airway |> 
-  mutate(symbol = AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
-                                        keys = .feature,
-                                        keytype = "ENSEMBL",
-                                        column = "SYMBOL",
-                                        multiVals = "first"
-  )) 
+library(org.Hs.eg.db)
 ```
+
+    ## Loading required package: AnnotationDbi
+
+    ## 
+    ## Attaching package: 'AnnotationDbi'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     select
 
     ## 
 
+``` r
+library(AnnotationDbi)
+
+# Add gene symbol and entrez
+airway <-
+  airway |>
+  
+  mutate(entrezid = mapIds(org.Hs.eg.db,
+                                      keys = .feature,
+                                      keytype = "ENSEMBL",
+                                      column = "ENTREZID",
+                                      multiVals = "first"
+)) 
+```
+
     ## 'select()' returned 1:many mapping between keys and columns
+
+``` r
+detach("package:org.Hs.eg.db", unload = TRUE)
+detach("package:AnnotationDbi", unload = TRUE)
+```
 
 # Installation Guide
 
@@ -1117,23 +1134,20 @@ airway |>
     ## Warning: Removed 30 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-    ## Warning: Removed 10474 rows containing missing values or values outside the scale range
+    ## Warning: Removed 30 rows containing missing values or values outside the scale range
     ## (`geom_text_repel()`).
 
-    ## Warning: ggrepel: 13800 unlabeled data points (too many overlaps). Consider
+    ## Warning: ggrepel: 15885 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
-    ## Warning: ggrepel: 13834 unlabeled data points (too many overlaps). Consider
+    ## Warning: ggrepel: 15926 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
-    ## Warning: ggrepel: 13826 unlabeled data points (too many overlaps). Consider
+    ## Warning: ggrepel: 15916 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
-    ## Warning: ggrepel: 13833 unlabeled data points (too many overlaps). Consider
-    ## increasing max.overlaps
-
-    ## Warning: ggrepel: 13834 unlabeled data points (too many overlaps). Consider
-    ## increasing max.overlaps
+    ## Warning: ggrepel: 15925 unlabeled data points (too many overlaps). Consider increasing max.overlaps
+    ## ggrepel: 15925 unlabeled data points (too many overlaps). Consider increasing max.overlaps
 
 ![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-volcano-plots-2-1.png)<!-- -->
 
@@ -1332,6 +1346,8 @@ airway |>
 
     ## 
 
+    ## 
+
     ## # A tibble: 6 × 7
     ##   .feature        description ql__logFC ql__logCPM ql__F ql__PValue ql__FDR
     ##   <chr>           <lgl>           <dbl>      <dbl> <dbl>      <dbl>   <dbl>
@@ -1386,10 +1402,7 @@ airway |>
 
     ## tidySummarizedExperiment says: Key columns are missing. A data frame is returned for independent data analysis.
 
-    ## Warning: Removed 16 rows containing missing values or values outside the scale range
-    ## (`geom_text_repel()`).
-
-    ## Warning: ggrepel: 768 unlabeled data points (too many overlaps). Consider
+    ## Warning: ggrepel: 784 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
 ![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/batch-correction-adjust-abundance-1.png)<!-- -->
@@ -1405,16 +1418,56 @@ gene_rank_res =
   airway |>
 
     # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
+  filter(!entrezid |> is.na()) |>
+  aggregate_duplicates(.transcript = entrezid) |> 
 
   # Test gene rank
   test_gene_rank(
-    .entrez = entrez,
+    .entrez = entrezid,
     .arrange_desc = lr_robust__logFC,
     species = "Homo sapiens",
     gene_sets = c("H", "C2", "C5")
   )
 ```
+
+    ## 
+
+    ## using 'fgsea' for GSEA analysis, please cite Korotkevich et al (2019).
+
+    ## preparing geneSet collections...
+
+    ## GSEA analysis...
+
+    ## leading edge analysis...
+
+    ## done...
+
+    ## using 'fgsea' for GSEA analysis, please cite Korotkevich et al (2019).
+
+    ## preparing geneSet collections...
+
+    ## GSEA analysis...
+
+    ## leading edge analysis...
+
+    ## done...
+
+    ## using 'fgsea' for GSEA analysis, please cite Korotkevich et al (2019).
+
+    ## preparing geneSet collections...
+
+    ## GSEA analysis...
+
+    ## leading edge analysis...
+
+    ## done...
+
+    ## Warning: There were 2 warnings in `mutate()`.
+    ## The first warning was:
+    ## ℹ In argument: `fit = map(...)`.
+    ## Caused by warning in `fgseaMultilevel()`:
+    ## ! For some of the pathways the P-values were likely overestimated. For such pathways log2err is set to NA.
+    ## ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
 
 ``` r
 # Inspect significant gene sets (example for C2 collection)
@@ -1425,10 +1478,48 @@ gene_rank_res |>
   filter(p.adjust < 0.05)
 ```
 
+    ## # A tibble: 143 × 13
+    ##    gs_collection idx_for_plotting ID         Description setSize enrichmentScore
+    ##    <chr>                    <int> <chr>      <chr>         <int>           <dbl>
+    ##  1 C2                           1 CHEN_LVAD… CHEN_LVAD_…      87          -0.738
+    ##  2 C2                           2 VECCHI_GA… VECCHI_GAS…     221          -0.552
+    ##  3 C2                           3 FEKIR_HEP… FEKIR_HEPA…      32          -0.825
+    ##  4 C2                           4 BOQUEST_S… BOQUEST_ST…     389          -0.437
+    ##  5 C2                           5 SHEDDEN_L… SHEDDEN_LU…     157          -0.552
+    ##  6 C2                           6 CHARAFE_B… CHARAFE_BR…     405          -0.424
+    ##  7 C2                           7 WP_OVERVI… WP_OVERVIE…      29           0.778
+    ##  8 C2                           8 HOSHIDA_L… HOSHIDA_LI…     194          -0.489
+    ##  9 C2                           9 BLANCO_ME… BLANCO_MEL…     145           0.505
+    ## 10 C2                          10 ZWANG_CLA… ZWANG_CLAS…     189          -0.478
+    ## # ℹ 133 more rows
+    ## # ℹ 7 more variables: NES <dbl>, pvalue <dbl>, p.adjust <dbl>, qvalue <dbl>,
+    ## #   rank <dbl>, leading_edge <chr>, core_enrichment <chr>
+
 #### Visualize enrichment
 
 ``` r
   library(enrichplot)
+```
+
+    ## Warning: package 'enrichplot' was built under R version 4.5.1
+
+    ## enrichplot v1.28.4 Learn more at https://yulab-smu.top/contribution-knowledge-mining/
+    ## 
+    ## Please cite:
+    ## 
+    ## T Wu, E Hu, S Xu, M Chen, P Guo, Z Dai, T Feng, L Zhou, W Tang, L Zhan,
+    ## X Fu, S Liu, X Bo, and G Yu. clusterProfiler 4.0: A universal
+    ## enrichment tool for interpreting omics data. The Innovation. 2021,
+    ## 2(3):100141
+
+    ## 
+    ## Attaching package: 'enrichplot'
+
+    ## The following object is masked from 'package:GGally':
+    ## 
+    ##     ggtable
+
+``` r
   library(patchwork)
   gene_rank_res |>
     unnest(test) |>
@@ -1444,6 +1535,53 @@ gene_rank_res |>
     pull(plot) 
 ```
 
+    ## Warning: There were 2 warnings in `mutate()`.
+    ## The first warning was:
+    ## ℹ In argument: `plot = pmap(...)`.
+    ## Caused by warning:
+    ## ! `aes_()` was deprecated in ggplot2 3.0.0.
+    ## ℹ Please use tidy evaluation idioms with `aes()`
+    ## ℹ The deprecated feature was likely used in the enrichplot package.
+    ##   Please report the issue at
+    ##   <https://github.com/GuangchuangYu/enrichplot/issues>.
+    ## ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+
+    ## [[1]]
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-1.png)<!-- -->
+
+    ## 
+    ## [[2]]
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-2.png)<!-- -->
+
+    ## 
+    ## [[3]]
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-3.png)<!-- -->
+
+    ## 
+    ## [[4]]
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-4.png)<!-- -->
+
+    ## 
+    ## [[5]]
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-5.png)<!-- -->
+
+    ## 
+    ## [[6]]
+
+![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-6.png)<!-- -->
+
+``` r
+detach("package:enrichplot", unload = TRUE)
+```
+
+    ## Warning: 'enrichplot' namespace cannot be unloaded:
+    ##   namespace 'enrichplot' is imported by 'clusterProfiler' so cannot be unloaded
+
 Gene Ontology overrepresentation analysis ([Ashburner et al.
 2000](#ref-ashburner2000go)) is used for functional enrichment.
 
@@ -1456,10 +1594,10 @@ airway_overrep =
   mutate(genes_to_test = ql__FDR < 0.05) |>
   
     # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
+  filter(!entrezid |> is.na()) |>
   
   test_gene_overrepresentation(
-    .entrez = entrez,
+    .entrez = entrezid,
     species = "Homo sapiens",
     .do_test = genes_to_test,
     gene_sets = c("H", "C2", "C5")
@@ -1467,6 +1605,23 @@ airway_overrep =
 
   airway_overrep
 ```
+
+    ## # A tibble: 5,291 × 13
+    ##    gs_collection ID      Description GeneRatio BgRatio RichFactor FoldEnrichment
+    ##    <chr>         <chr>   <chr>       <chr>     <chr>        <dbl>          <dbl>
+    ##  1 C2            PASINI… PASINI_SUZ… 88/1848   316/22…      0.278           3.37
+    ##  2 C2            CHARAF… CHARAFE_BR… 108/1848  465/22…      0.232           2.81
+    ##  3 C2            REN_AL… REN_ALVEOL… 98/1848   407/22…      0.241           2.92
+    ##  4 C2            CHARAF… CHARAFE_BR… 105/1848  456/22…      0.230           2.79
+    ##  5 C2            CHEN_L… CHEN_LVAD_… 45/1848   102/22…      0.441           5.34
+    ##  6 C2            BOQUES… BOQUEST_ST… 96/1848   428/22…      0.224           2.72
+    ##  7 C2            LIM_MA… LIM_MAMMAR… 103/1848  479/22…      0.215           2.60
+    ##  8 C2            LIU_PR… LIU_PROSTA… 104/1848  495/22…      0.210           2.54
+    ##  9 C2            LU_AGI… LU_AGING_B… 70/1848   264/22…      0.265           3.21
+    ## 10 C2            ONDER_… ONDER_CDH1… 67/1848   257/22…      0.261           3.16
+    ## # ℹ 5,281 more rows
+    ## # ℹ 6 more variables: zScore <dbl>, pvalue <dbl>, p.adjust <dbl>, qvalue <dbl>,
+    ## #   Count <int>, entrez <list>
 
 EGSEA ([Alhamdoosh et al. 2017](#ref-alhamdoosh2017egsea)) is used for
 ensemble gene set enrichment analysis. EGSEA is a method that combines
@@ -1477,21 +1632,133 @@ gene set enrichment analysis.
 
 ``` r
 library(EGSEA)
+```
+
+    ## Loading required package: gage
+
+    ## Loading required package: AnnotationDbi
+
+    ## 
+    ## Attaching package: 'AnnotationDbi'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     select
+
+    ## Loading required package: topGO
+
+    ## Warning: package 'topGO' was built under R version 4.5.1
+
+    ## Loading required package: graph
+
+    ## 
+    ## Attaching package: 'graph'
+
+    ## The following object is masked from 'package:stringr':
+    ## 
+    ##     boundary
+
+    ## Loading required package: GO.db
+
+    ## Loading required package: SparseM
+
+    ## 
+    ## groupGOTerms:    GOBPTerm, GOMFTerm, GOCCTerm environments built.
+
+    ## 
+    ## Attaching package: 'topGO'
+
+    ## The following object is masked from 'package:gage':
+    ## 
+    ##     geneData
+
+    ## The following object is masked from 'package:IRanges':
+    ## 
+    ##     members
+
+    ## Loading required package: pathview
+
+    ## ##############################################################################
+    ## Pathview is an open source software package distributed under GNU General
+    ## Public License version 3 (GPLv3). Details of GPLv3 is available at
+    ## http://www.gnu.org/licenses/gpl-3.0.html. Particullary, users are required to
+    ## formally cite the original Pathview paper (not just mention it) in publications
+    ## or products. For details, do citation("pathview") within R.
+    ## 
+    ## The pathview downloads and uses KEGG data. Non-academic uses may require a KEGG
+    ## license agreement (details at http://www.kegg.jp/kegg/legal.html).
+    ## ##############################################################################
+
+    ## 
+
+    ## 
+
+    ## 
+
+``` r
 # Test gene enrichment
   airway |> 
 
   # Filter for genes with entrez IDs
-  filter(!entrez |> is.na()) |>
+  filter(!entrezid |> is.na()) |>
+  aggregate_duplicates(.transcript = entrezid) |> 
 
   # Test gene enrichment
   test_gene_enrichment(
     .formula = ~dex,
-    .entrez = entrez,
+    .entrez = entrezid,
     species = "human", 
     gene_sets = "h",
     methods = c("roast"),  # Use a more robust method
-    cores = 1
+    cores = 2
   )
+```
+
+    ## tidybulk says: The design column names are "(Intercept), dexuntrt"
+
+    ## [1] "Loading MSigDB Gene Sets ... "
+    ## [1] "Loaded gene sets for the collection h ..."
+    ## [1] "Indexed the collection h ..."
+    ## [1] "Created annotation for the collection h ..."
+
+    ## EGSEA analysis has started
+
+    ## ##------ Wed Jul 30 20:04:06 2025 ------##
+
+    ## The argument 'contrast' is recommended to be a matrix object.
+    ## See Vignette or Help.
+
+    ## Log fold changes are estimated using limma package ...
+
+    ## limma DE analysis is carried out ...
+
+    ## EGSEA is running on the provided data and h collection
+
+    ## ..roast*
+
+    ## ##------ Wed Jul 30 20:04:08 2025 ------##
+
+    ## EGSEA analysis took 2.27999999999997 seconds.
+    ## EGSEA analysis has completed
+    ## EGSEA HTML report is being generated ...
+
+    ## ##------ Wed Jul 30 20:04:08 2025 ------##
+
+    ## Report pages and figures are being generated for the h collection ...
+    ##    Heat maps are being generated for top-ranked gene sets 
+    ## based on logFC ... 
+    ##    Summary plots are being generated ... 
+    ##    Comparison summary plots are being generated  ...
+
+    ## ##------ Wed Jul 30 20:04:54 2025 ------##
+
+    ## EGSEA report generation took 45.628 seconds.
+    ## EGSEA report has been generated.
+
+    ## # A tibble: 0 × 0
+
+``` r
+detach("package:EGSEA", unload = TRUE)
 ```
 
 ## Step 6: Cellularity Analysis
@@ -1567,7 +1834,7 @@ method:
 # Visualize CIBERSORT results
 airway   |>
   pivot_sample() |>
-  select(.sample, contains("cibersort__")) |>
+  dplyr::select(.sample, contains("cibersort__")) |>
   pivot_longer(cols = -1, names_to = "Cell_type_inferred", values_to = "proportion") |>
   ggplot(aes(x = .sample, y = proportion, fill = Cell_type_inferred)) +
   geom_bar(stat = "identity") +
@@ -1794,55 +2061,119 @@ sessionInfo()
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] GGally_2.3.0                    DESeq2_1.48.1                  
-    ##  [3] edgeR_4.6.3                     limma_3.64.1                   
-    ##  [5] tidySummarizedExperiment_1.19.4 airway_1.28.0                  
-    ##  [7] SummarizedExperiment_1.38.1     Biobase_2.68.0                 
-    ##  [9] GenomicRanges_1.60.0            GenomeInfoDb_1.44.1            
-    ## [11] IRanges_2.42.0                  S4Vectors_0.46.0               
-    ## [13] BiocGenerics_0.54.0             generics_0.1.4                 
-    ## [15] MatrixGenerics_1.20.0           matrixStats_1.5.0              
-    ## [17] tidybulk_1.99.2                 ttservice_0.5.3                
-    ## [19] ggrepel_0.9.6                   magrittr_2.0.3                 
-    ## [21] lubridate_1.9.4                 forcats_1.0.0                  
-    ## [23] stringr_1.5.1                   dplyr_1.1.4                    
-    ## [25] purrr_1.1.0                     readr_2.1.5                    
-    ## [27] tidyr_1.3.1                     tibble_3.3.0                   
-    ## [29] ggplot2_3.5.2.9002              tidyverse_2.0.0                
-    ## [31] knitr_1.50                     
+    ##  [1] pathview_1.48.0                 topGO_2.60.1                   
+    ##  [3] SparseM_1.84-2                  GO.db_3.21.0                   
+    ##  [5] graph_1.86.0                    AnnotationDbi_1.70.0           
+    ##  [7] gage_2.58.0                     patchwork_1.3.1                
+    ##  [9] GGally_2.3.0                    DESeq2_1.48.1                  
+    ## [11] edgeR_4.6.3                     limma_3.64.1                   
+    ## [13] tidySummarizedExperiment_1.19.4 airway_1.28.0                  
+    ## [15] SummarizedExperiment_1.38.1     Biobase_2.68.0                 
+    ## [17] GenomicRanges_1.60.0            GenomeInfoDb_1.44.1            
+    ## [19] IRanges_2.42.0                  S4Vectors_0.46.0               
+    ## [21] BiocGenerics_0.54.0             generics_0.1.4                 
+    ## [23] MatrixGenerics_1.20.0           matrixStats_1.5.0              
+    ## [25] tidybulk_1.99.2                 ttservice_0.5.3                
+    ## [27] ggrepel_0.9.6                   magrittr_2.0.3                 
+    ## [29] lubridate_1.9.4                 forcats_1.0.0                  
+    ## [31] stringr_1.5.1                   dplyr_1.1.4                    
+    ## [33] purrr_1.1.0                     readr_2.1.5                    
+    ## [35] tidyr_1.3.1                     tibble_3.3.0                   
+    ## [37] ggplot2_3.5.2.9002              tidyverse_2.0.0                
+    ## [39] knitr_1.50                     
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] DBI_1.2.3               widyr_0.1.5             rlang_1.1.6            
-    ##  [4] tidytext_0.4.2          e1071_1.7-16            compiler_4.5.0         
-    ##  [7] RSQLite_2.4.2           mgcv_1.9-3              reshape2_1.4.4         
-    ## [10] png_0.1-8               vctrs_0.6.5             sva_3.56.0             
-    ## [13] pkgconfig_2.0.3         crayon_1.5.3            fastmap_1.2.0          
-    ## [16] backports_1.5.0         XVector_0.48.0          ellipsis_0.3.2         
-    ## [19] labeling_0.4.3          utf8_1.2.6              rmarkdown_2.29         
-    ## [22] tzdb_0.5.0              preprocessCore_1.70.0   UCSC.utils_1.4.0       
-    ## [25] bit_4.6.0               xfun_0.52               cachem_1.1.0           
-    ## [28] jsonlite_2.0.0          blob_1.2.4              SnowballC_0.7.1        
-    ## [31] DelayedArray_0.34.1     BiocParallel_1.42.1     broom_1.0.8            
-    ## [34] parallel_4.5.0          R6_2.6.1                stringi_1.8.7          
-    ## [37] RColorBrewer_1.1-3      genefilter_1.90.0       Rcpp_1.1.0             
-    ## [40] org.Mm.eg.db_3.21.0     splines_4.5.0           Matrix_1.7-3           
-    ## [43] timechange_0.3.0        tidyselect_1.2.1        rstudioapi_0.17.1      
-    ## [46] abind_1.4-8             yaml_2.3.10             codetools_0.2-20       
-    ## [49] plyr_1.8.9              lattice_0.22-7          withr_3.0.2            
-    ## [52] KEGGREST_1.48.1         S7_0.2.0                evaluate_1.0.4         
-    ## [55] survival_3.8-3          proxy_0.4-27            ggstats_0.10.0         
-    ## [58] Biostrings_2.76.0       pillar_1.11.0           janeaustenr_1.0.0      
-    ## [61] plotly_4.11.0           rprojroot_2.1.0         hms_1.1.3              
-    ## [64] scales_1.4.0            xtable_1.8-4            class_7.3-23           
-    ## [67] glue_1.8.0              lazyeval_0.2.2          tools_4.5.0            
-    ## [70] data.table_1.17.8       tokenizers_0.3.0        annotate_1.86.1        
-    ## [73] locfit_1.5-9.12         XML_3.99-0.18           grid_4.5.0             
-    ## [76] AnnotationDbi_1.70.0    nlme_3.1-168            GenomeInfoDbData_1.2.14
-    ## [79] cli_3.6.5               S4Arrays_1.8.1          viridisLite_0.4.2      
-    ## [82] gtable_0.3.6            digest_0.6.37           SparseArray_1.8.1      
-    ## [85] org.Hs.eg.db_3.21.0     htmlwidgets_1.6.4       farver_2.1.2           
-    ## [88] memoise_2.0.1           htmltools_0.5.8.1       lifecycle_1.0.4        
-    ## [91] httr_1.4.7              statmod_1.5.0           bit64_4.6.0-1
+    ##   [1] fs_1.6.6                    GSVA_2.2.0                 
+    ##   [3] bitops_1.0-9                R2HTML_2.3.4               
+    ##   [5] enrichplot_1.28.4           httr_1.4.7                 
+    ##   [7] RColorBrewer_1.1-3          numDeriv_2016.8-1.1        
+    ##   [9] Rgraphviz_2.52.0            doRNG_1.8.6.2              
+    ##  [11] tools_4.5.0                 backports_1.5.0            
+    ##  [13] utf8_1.2.6                  R6_2.6.1                   
+    ##  [15] DT_0.33                     HDF5Array_1.36.0           
+    ##  [17] sn_2.1.1                    lazyeval_0.2.2             
+    ##  [19] mgcv_1.9-3                  rhdf5filters_1.20.0        
+    ##  [21] withr_3.0.2                 preprocessCore_1.70.0      
+    ##  [23] cli_3.6.5                   sandwich_3.1-1             
+    ##  [25] labeling_0.4.3              KEGGgraph_1.68.0           
+    ##  [27] mvtnorm_1.3-3               S7_0.2.0                   
+    ##  [29] genefilter_1.90.0           proxy_0.4-27               
+    ##  [31] PADOG_1.50.0                yulab.utils_0.2.0          
+    ##  [33] gson_0.1.0                  DOSE_4.2.0                 
+    ##  [35] R.utils_2.13.0              HTMLUtils_0.1.9            
+    ##  [37] plotrix_3.8-4               rstudioapi_0.17.1          
+    ##  [39] RSQLite_2.4.2               gridGraphics_0.5-1         
+    ##  [41] hwriter_1.3.2.1             gtools_3.9.5               
+    ##  [43] Matrix_1.7-3                abind_1.4-8                
+    ##  [45] R.methodsS3_1.8.2           lifecycle_1.0.4            
+    ##  [47] multcomp_1.4-28             yaml_2.3.10                
+    ##  [49] mathjaxr_1.8-0              KEGGdzPathwaysGEO_1.46.0   
+    ##  [51] gplots_3.2.0                rhdf5_2.52.1               
+    ##  [53] qvalue_2.40.0               SparseArray_1.8.1          
+    ##  [55] grid_4.5.0                  blob_1.2.4                 
+    ##  [57] crayon_1.5.3                ggtangle_0.0.7             
+    ##  [59] lattice_0.22-7              beachmat_2.24.0            
+    ##  [61] msigdbr_25.1.1              cowplot_1.2.0              
+    ##  [63] annotate_1.86.1             KEGGREST_1.48.1            
+    ##  [65] magick_2.8.7                pillar_1.11.0              
+    ##  [67] fgsea_1.34.2                hgu133plus2.db_3.13.0      
+    ##  [69] hgu133a.db_3.13.0           rjson_0.2.23               
+    ##  [71] widyr_0.1.5                 codetools_0.2-20           
+    ##  [73] fastmatch_1.1-6             mutoss_0.1-13              
+    ##  [75] glue_1.8.0                  ggfun_0.2.0                
+    ##  [77] data.table_1.17.8           Rdpack_2.6.4               
+    ##  [79] vctrs_0.6.5                 png_0.1-8                  
+    ##  [81] treeio_1.32.0               org.Mm.eg.db_3.21.0        
+    ##  [83] gtable_0.3.6                org.Rn.eg.db_3.21.0        
+    ##  [85] assertthat_0.2.1            cachem_1.1.0               
+    ##  [87] xfun_0.52                   rbibutils_2.3              
+    ##  [89] S4Arrays_1.8.1              survival_3.8-3             
+    ##  [91] SingleCellExperiment_1.30.1 iterators_1.0.14           
+    ##  [93] statmod_1.5.0               TH.data_1.1-3              
+    ##  [95] ellipsis_0.3.2              nlme_3.1-168               
+    ##  [97] ggtree_3.16.3               bit64_4.6.0-1              
+    ##  [99] rprojroot_2.1.0             SnowballC_0.7.1            
+    ## [101] irlba_2.3.5.1               KernSmooth_2.23-26         
+    ## [103] colorspace_2.1-1            DBI_1.2.3                  
+    ## [105] mnormt_2.1.1                tidyselect_1.2.1           
+    ## [107] bit_4.6.0                   compiler_4.5.0             
+    ## [109] curl_6.4.0                  h5mread_1.0.1              
+    ## [111] TFisher_0.2.0               DelayedArray_0.34.1        
+    ## [113] plotly_4.11.0               scales_1.4.0               
+    ## [115] caTools_1.18.3              SpatialExperiment_1.18.1   
+    ## [117] digest_0.6.37               rmarkdown_2.29             
+    ## [119] XVector_0.48.0              htmltools_0.5.8.1          
+    ## [121] pkgconfig_2.0.3             sparseMatrixStats_1.20.0   
+    ## [123] fastmap_1.2.0               rlang_1.1.6                
+    ## [125] htmlwidgets_1.6.4           UCSC.utils_1.4.0           
+    ## [127] farver_2.1.2                zoo_1.8-14                 
+    ## [129] jsonlite_2.0.0              BiocParallel_1.42.1        
+    ## [131] GOSemSim_2.34.0             tokenizers_0.3.0           
+    ## [133] R.oo_1.27.1                 BiocSingular_1.24.0        
+    ## [135] RCurl_1.98-1.17             GenomeInfoDbData_1.2.14    
+    ## [137] ggplotify_0.1.2             Rhdf5lib_1.30.0            
+    ## [139] Rcpp_1.1.0                  ape_5.8-1                  
+    ## [141] babelgene_22.9              stringi_1.8.7              
+    ## [143] MASS_7.3-65                 globaltest_5.62.0          
+    ## [145] plyr_1.8.9                  org.Hs.eg.db_3.21.0        
+    ## [147] ggstats_0.10.0              parallel_4.5.0             
+    ## [149] Biostrings_2.76.0           splines_4.5.0              
+    ## [151] multtest_2.64.0             hms_1.1.3                  
+    ## [153] qqconf_1.3.2                locfit_1.5-9.12            
+    ## [155] igraph_2.1.4                rngtools_1.5.2             
+    ## [157] EGSEAdata_1.36.0            reshape2_1.4.4             
+    ## [159] ScaledMatrix_1.16.0         XML_3.99-0.18              
+    ## [161] GSA_1.03.3                  evaluate_1.0.4             
+    ## [163] metap_1.12                  tidytext_0.4.2             
+    ## [165] foreach_1.5.2               tzdb_0.5.0                 
+    ## [167] rsvd_1.0.5                  broom_1.0.8                
+    ## [169] xtable_1.8-4                e1071_1.7-16               
+    ## [171] tidytree_0.4.6              janeaustenr_1.0.0          
+    ## [173] class_7.3-23                viridisLite_0.4.2          
+    ## [175] clusterProfiler_4.16.0      aplot_0.2.8                
+    ## [177] safe_3.48.0                 memoise_2.0.1              
+    ## [179] timechange_0.3.0            sva_3.56.0                 
+    ## [181] GSEABase_1.70.0
 
 <div id="refs" class="references csl-bib-body hanging-indent"
 entry-spacing="0">

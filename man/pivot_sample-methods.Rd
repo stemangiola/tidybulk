@@ -32,11 +32,11 @@ pivot_sample() takes as input a `tbl` (with at least three columns for sample, f
 This functon extracts only sample-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to tidybulk function.
 }
 \examples{
-#' library(airway)
-#' data(airway)
-#' se_mini <- airway[1:100, 1:5]
-#' 
-#' 	pivot_sample(se_mini )
+library(airway)
+data(airway)
+se_mini <- airway[1:100, 1:5]
+
+	pivot_sample(se_mini )
 
 
 }
