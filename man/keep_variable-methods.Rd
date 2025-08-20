@@ -52,10 +52,18 @@ keep_variable() takes as input A `tbl` (with at least three columns for sample, 
 At the moment this function uses edgeR \url{https://doi.org/10.1093/bioinformatics/btp616}
 }
 \examples{
+## Load airway dataset for examples
+
+  data('airway', package = 'airway')
+  # Ensure a 'condition' column exists for examples expecting it
+
+    SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
 
 
 
-	keep_variable(tidybulk::se_mini, top = 500)
+
+
+	keep_variable(airway, top = 500)
 
 }
 \references{

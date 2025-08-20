@@ -7,27 +7,29 @@ test_that("filterByExpr filters by min.count and CPM.Cutoff (minimum_count_per_m
   data(airway)
   se = airway
   mat = assay(se)
+  filterByExpr_SE <- get("filterByExpr_SE", asNamespace("tidybulk"))
+  filterByExpr <- get("filterByExpr", asNamespace("tidybulk"))
 
   # Test default min.count filtering on SummarizedExperiment
-  keep_default_se <- tidybulk:::filterByExpr_SE(se, min.count = 10)
+  keep_default_se <- filterByExpr_SE(se, min.count = 10)
   expect_type(keep_default_se, "logical")
   expect_length(keep_default_se, nrow(se))
   expect_true(any(!keep_default_se))
 
   # Test default min.count filtering on matrix
-  keep_default <- tidybulk:::filterByExpr(mat, min.count = 10)
+  keep_default <- filterByExpr(mat, min.count = 10)
   expect_type(keep_default, "logical")
   expect_length(keep_default, nrow(mat))
   expect_true(any(!keep_default))
 
   # Test CPM.Cutoff filtering on matrix: compare two CPM cutoffs
-  keep_cpm10 <- tidybulk:::filterByExpr(mat, CPM.Cutoff = 10)
-  keep_cpm100 <- tidybulk:::filterByExpr(mat, CPM.Cutoff = 100)
+  keep_cpm10 <- filterByExpr(mat, CPM.Cutoff = 10)
+  keep_cpm100 <- filterByExpr(mat, CPM.Cutoff = 100)
   expect_true(sum(keep_cpm100) <= sum(keep_cpm10))
 
   # If all counts are high, all should be kept
   mat_high <- matrix(1000, nrow = 3, ncol = 4)
-  keep_all <- tidybulk:::filterByExpr(mat_high, min.count = 10)
+  keep_all <- filterByExpr(mat_high, min.count = 10)
   expect_true(all(keep_all))
 })
 

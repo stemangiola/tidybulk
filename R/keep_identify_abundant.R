@@ -30,17 +30,25 @@
 #' features passed the abundance threshold criteria.
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+#'
+#'
 #' # Basic usage
-#' se_mini |> identify_abundant()
+#' airway |> identify_abundant()
 #'
 #' # With custom thresholds
-#' se_mini |> identify_abundant(
+#' airway |> identify_abundant(
 #'   minimum_counts = 5,
 #'   minimum_proportion = 0.5
 #' )
 #'
 #' # Using a factor of interest
-#' se_mini |> identify_abundant(factor_of_interest = condition)
+#' airway |> identify_abundant(factor_of_interest = condition)
 #'
 #' @references
 #' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
@@ -150,7 +158,7 @@ setGeneric("identify_abundant", function(.data,
   if (!is.null(minimum_count_per_million)) {
     gene_to_exclude =
       .data |>
-      tidybulk:::filterByExpr_SE(
+      filterByExpr_SE(
         design = design,
         min.prop = minimum_proportion,
         CPM.Cutoff = minimum_count_per_million,
@@ -162,7 +170,7 @@ setGeneric("identify_abundant", function(.data,
   } else {
     gene_to_exclude =
       .data |>
-      tidybulk:::filterByExpr_SE(
+      filterByExpr_SE(
         min.count = minimum_counts,
         design = design,
         min.prop = minimum_proportion,
@@ -243,17 +251,25 @@ setMethod("identify_abundant",
 #' the abundance threshold criteria.
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+#'
+#'
 #' # Basic usage
-#' se_mini |> keep_abundant()
+#' airway |> keep_abundant()
 #'
 #' # With custom thresholds
-#' se_mini |> keep_abundant(
+#' airway |> keep_abundant(
 #'   minimum_counts = 5,
 #'   minimum_proportion = 0.5
 #' )
 #'
 #' # Using a factor of interest
-#' se_mini |> keep_abundant(factor_of_interest = condition)
+#' airway |> keep_abundant(factor_of_interest = condition)
 #'
 #' @references
 #' McCarthy, D. J., Chen, Y., & Smyth, G. K. (2012). Differential expression analysis of 

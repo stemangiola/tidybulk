@@ -29,11 +29,19 @@
 #'
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+#'
+#'
 #' library(airway)
 #' data(airway)
-#' se_mini <- airway[1:100, 1:5]
+#' airway <- airway[1:100, 1:5]
 #' 
-#' se_mini |>
+#' airway |>
 #'   impute_missing_abundance(.formula = ~ dex)
 #'
 #' @references

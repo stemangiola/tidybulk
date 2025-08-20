@@ -68,17 +68,25 @@ This function is similar to identify_abundant() but instead of adding an .abunda
 it filters out the low-abundance features directly.
 }
 \examples{
+## Load airway dataset for examples
+
+  data('airway', package = 'airway')
+  # Ensure a 'condition' column exists for examples expecting it
+
+    SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+
+
 # Basic usage
-se_mini |> keep_abundant()
+airway |> keep_abundant()
 
 # With custom thresholds
-se_mini |> keep_abundant(
+airway |> keep_abundant(
   minimum_counts = 5,
   minimum_proportion = 0.5
 )
 
 # Using a factor of interest
-se_mini |> keep_abundant(factor_of_interest = condition)
+airway |> keep_abundant(factor_of_interest = condition)
 
 }
 \references{

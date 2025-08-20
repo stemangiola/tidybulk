@@ -47,13 +47,21 @@
 #'
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+#'
+#'
 #'
 #' # Create a aggregation column
-#' se_mini = tidybulk::se_mini
-#' SummarizedExperiment::rowData(se_mini )$gene_name = rownames(se_mini )
+#' airway = airway
+#' SummarizedExperiment::rowData(airway )$gene_name = rownames(airway )
 #'
 #'    aggregate_duplicates(
-#'      se_mini,
+#'      airway,
 #'    .transcript = gene_name
 #'    )
 #'

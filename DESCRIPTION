@@ -16,11 +16,9 @@ Depends:
     ttservice (>= 0.3.6)
 Imports:
     tibble,
-    readr,
     dplyr (>= 1.1.0),
     magrittr,
     tidyr,
-    stringi,
     stringr,
     rlang,
     purrr,
@@ -75,6 +73,7 @@ Suggests:
     markdown,
     uwot,
     matrixStats,
+    preprocessCore,
     igraph,
     EGSEA,
     IRanges,

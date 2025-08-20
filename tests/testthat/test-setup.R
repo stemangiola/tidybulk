@@ -3,7 +3,7 @@ context('Test Setup and Common Functions')
 # Load test data
 library(airway)
 data(airway)
-se_mini <- airway[1:100, 1:5]
+airway_mini <- airway[1:100, 1:5]
 data("breast_tcga_mini_SE")
 
 # Load required libraries

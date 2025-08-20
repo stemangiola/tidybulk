@@ -28,9 +28,9 @@
 #' Undelying method:
 ## Get gene sets signatures
 #' my_gene_collection <- msigdbr::msigdbr(species = species)
-#' if (!is.null(gene_sets)) {
+#'
 #'   my_gene_collection <- filter(my_gene_collection, gs_collection %in% gene_sets)
-#' }
+#'
 #'
 #'	# Execute calculation
 #'	nest(data = -gs_collection) |>
@@ -51,12 +51,20 @@
 #'
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+#'
+#'
 #'
 #' print("Not run for build time.")
 #'
 #' \dontrun{
 #'
-#' df_entrez = tidybulk::se_mini
+#' df_entrez = airway
 #' df_entrez = mutate(df_entrez, do_test = .feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #' df_entrez  = df_entrez |> test_differential_abundance(~ condition)
 #'
@@ -69,6 +77,8 @@
 #'    gene_sets =c("C2"),
 #'  .arrange_desc = logFC
 #' 	)
+#'
+#'
 #' }
 #'
 #' @references

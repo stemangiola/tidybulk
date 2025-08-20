@@ -44,18 +44,28 @@
 #'     pair <- df |> arrange(dist) |> head(n = 1)
 #'     couples <- couples |> bind_rows(pair)
 #'     df <- df |> filter(!`sample 1` %in% (pair |> select(1:2) |> as.character()) & !`sample 2` %in% (pair |> select(1:2) |> as.character()))
+#'
 #'   }
 #'   couples
 #' }
 #'
 #'
 #'
+#'
 #' @return A tbl object with with dropped redundant elements (e.g., samples).
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
 #'
 #'
-#'  tidybulk::se_mini |>
+#'
+#'
+#'  airway |>
 #'  identify_abundant() |>
 #'    remove_redundancy(
 #' 	   .element = sample,

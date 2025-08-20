@@ -2,21 +2,21 @@ context('Dimensionality Reduction Functions')
 
 library(airway)
 data(airway)
-se_mini <- airway[1:100, 1:5]
+airway_mini <- airway[1:100, 1:5]
 
 library(dplyr)
 library(SummarizedExperiment)
 
 # Test reduce_dimensions function
 test_that("reduce_dimensions with PCA works correctly", {
-  res <- se_mini |> identify_abundant() |> reduce_dimensions(method = "PCA")
+  res <- airway_mini |> identify_abundant() |> reduce_dimensions(method = "PCA")
   
   expect_true("PC1" %in% names(SummarizedExperiment::colData(res)))
   expect_true("PC2" %in% names(SummarizedExperiment::colData(res)))
 })
 
 test_that("reduce_dimensions with MDS works correctly", {
-  res <- se_mini |> identify_abundant() |> reduce_dimensions(method = "MDS")
+  res <- airway_mini |> identify_abundant() |> reduce_dimensions(method = "MDS")
   
   # Check if any MDS columns exist
   col_names <- names(SummarizedExperiment::colData(res))
@@ -41,15 +41,15 @@ test_that("rotate_dimensions works correctly", {
 
 # Test remove_redundancy function
 test_that("remove_redundancy works correctly", {
-  res <- se_mini |> identify_abundant() |> remove_redundancy(method = "correlation")
+  res <- airway_mini |> identify_abundant() |> remove_redundancy(method = "correlation")
   
-  expect_true(nrow(res) <= nrow(se_mini))
+  expect_true(nrow(res) <= nrow(airway_mini))
 })
 
 test_that("remove_redundancy with correlation method works correctly", {
-  res <- se_mini |> identify_abundant() |> remove_redundancy(method = "correlation")
+  res <- airway_mini |> identify_abundant() |> remove_redundancy(method = "correlation")
   
-  expect_true(nrow(res) <= nrow(se_mini))
+  expect_true(nrow(res) <= nrow(airway_mini))
 })
 
 test_that("remove_redundancy with distance method works correctly", {

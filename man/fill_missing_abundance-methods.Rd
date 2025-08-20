@@ -36,10 +36,18 @@ fill_missing_abundance() takes as input A `tbl` (with at least three columns for
 This function fills the abundance of missing sample-transcript pair using the median of the sample group defined by the formula
 }
 \examples{
+## Load airway dataset for examples
+
+  data('airway', package = 'airway')
+  # Ensure a 'condition' column exists for examples expecting it
+
+    SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+
+
 
 print("Not run for build time.")
 
-# tidybulk::se_mini |>  fill_missing_abundance( fill_with = 0)
+# airway |>  fill_missing_abundance( fill_with = 0)
 
 }
 \references{

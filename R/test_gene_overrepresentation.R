@@ -30,9 +30,9 @@
 #' msigdb_data = msigdbr::msigdbr(species = species)
 #' 
 #' # Filter for specific gene collections if provided
-#' if (!is.null(gene_collections)) {
+#'
 #'   msigdb_data = filter(msigdb_data, gs_collection %in% gene_collections)
-#' }
+#'
 #' 
 #' # Process the data
 #' msigdb_data |>
@@ -54,10 +54,18 @@
 #'
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+#'
+#'
 #'
 #' print("Not run for build time.")
 #'
-#' # se_mini = tidybulk::se_mini[!rowData(tidybulk::se_mini)$entrez |> is.na(),] |> aggregate_duplicates(.transcript = entrez)
+#' # airway = airway[!rowData(airway)$entrez |> is.na(),] |> aggregate_duplicates(.transcript = entrez)
 #' # df_entrez = mutate(df_entrez, do_test = feature %in% c("TNFRSF4", "PLCH2", "PADI4", "PAX7"))
 #'
 #' \dontrun{

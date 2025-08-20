@@ -38,8 +38,16 @@ describe_transcript
 describe_transcript
 }
 \examples{
+## Load airway dataset for examples
 
-describe_transcript(tidybulk::se_mini)
+  data('airway', package = 'airway')
+  # Ensure a 'condition' column exists for examples expecting it
+
+    SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+
+
+
+describe_transcript(airway)
 
 }
 \references{

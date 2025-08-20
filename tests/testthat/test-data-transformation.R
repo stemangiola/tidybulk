@@ -2,7 +2,7 @@ context('Data Transformation Functions')
 
 library(airway)
 data(airway)
-se_mini <- airway[1:100, 1:5]
+airway_mini <- airway[1:100, 1:5]
 data("breast_tcga_mini_SE")
 
 library(dplyr)
@@ -11,10 +11,10 @@ library(SummarizedExperiment)
 # Test pivot functions with comprehensive column validation
 test_that("pivot_sample works correctly and preserves expected columns", {
   # Get original colData structure
-  original_colData <- colData(se_mini)
+  original_colData <- colData(airway_mini)
   
   # Test pivot_sample functionality
-  result <- se_mini |> pivot_sample()
+  result <- airway_mini |> pivot_sample()
   
   # Check that the result is a tibble
   expect_true(inherits(result, "tbl_df"))
@@ -46,10 +46,10 @@ test_that("pivot_sample works correctly and preserves expected columns", {
 
 test_that("pivot_transcript works correctly and preserves expected columns", {
   # Get original rowData structure
-  original_rowData <- rowData(se_mini)
+  original_rowData <- rowData(airway_mini)
   
   # Test pivot_transcript functionality
-  result <- se_mini |> pivot_transcript()
+  result <- airway_mini |> pivot_transcript()
   
   # Check that the result is a tibble
   expect_true(inherits(result, "tbl_df"))
@@ -79,7 +79,7 @@ test_that("pivot_transcript works correctly and preserves expected columns", {
 
 test_that("pivot_sample handles additional colData columns correctly", {
   # Create a modified version with extra columns
-  se_modified <- se_mini
+  se_modified <- airway_mini
   colData(se_modified)$extra_column <- rep("test", nrow(colData(se_modified)))
   colData(se_modified)$numeric_column <- 1:nrow(colData(se_modified))
   
@@ -99,7 +99,7 @@ test_that("pivot_sample handles additional colData columns correctly", {
 
 test_that("pivot_transcript handles additional rowData columns correctly", {
   # Create a modified version with extra columns
-  se_modified <- se_mini
+  se_modified <- airway_mini
   rowData(se_modified)$extra_column <- rep("test", nrow(rowData(se_modified)))
   rowData(se_modified)$numeric_column <- 1:nrow(rowData(se_modified))
   
@@ -120,7 +120,7 @@ test_that("pivot_transcript handles additional rowData columns correctly", {
 })
 
 test_that("pivot_sample preserves data types correctly", {
-  result <- se_mini |> pivot_sample()
+  result <- airway_mini |> pivot_sample()
   
   # Check that factor columns remain factor (airway dataset uses factors)
   expect_true(is.factor(result$dex))
@@ -137,7 +137,7 @@ test_that("pivot_sample preserves data types correctly", {
 })
 
 test_that("pivot_transcript preserves data types correctly", {
-  result <- se_mini |> pivot_transcript()
+  result <- airway_mini |> pivot_transcript()
   
   # Check that character columns remain character
   expect_true(is.character(result$gene_name))  # This is the gene_name column

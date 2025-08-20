@@ -2,7 +2,7 @@ context('Utility Functions')
 
 library(airway)
 data(airway)
-se_mini <- airway[1:100, 1:5]
+airway_mini <- airway[1:100, 1:5]
 breast_tcga_mini_SE <- airway[1:200, 1:8]
 
 library(dplyr)
@@ -10,7 +10,7 @@ library(SummarizedExperiment)
 
 # Test describe_transcript function
 test_that("describe_transcript works correctly", {
-  res <- se_mini |> describe_transcript()
+  res <- airway_mini |> describe_transcript()
   
   expect_no_error(res)
 })
@@ -22,7 +22,7 @@ test_that("describe_transcript with custom parameters works correctly", {
 
 # Test get_bibliography function
 test_that("get_bibliography works correctly", {
-  res <- se_mini |> get_bibliography()
+  res <- airway_mini |> get_bibliography()
   
   expect_no_error(res)
 })

@@ -2,7 +2,7 @@ context('Validation and Utility Functions')
 
 library(airway)
 data(airway)
-se_mini <- airway[1:100, 1:5]
+airway_mini <- airway[1:100, 1:5]
 breast_tcga_mini_SE <- airway[1:200, 1:8]
 
 library(dplyr)

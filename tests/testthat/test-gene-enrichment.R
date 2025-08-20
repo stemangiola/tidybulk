@@ -2,7 +2,7 @@ context('Gene Enrichment Functions')
 
 library(airway)
 data(airway)
-se_mini <- airway[1:100, 1:5]
+airway_mini <- airway[1:100, 1:5]
 data("breast_tcga_mini_SE")
 
 library(dplyr)
@@ -12,7 +12,7 @@ library(EGSEA)
 
 # Add entrez and symbol mapping for gene enrichment tests
 if(requireNamespace("org.Hs.eg.db", quietly = TRUE)) {
-  se_mini <- se_mini |>
+  airway_mini <- airway_mini |>
     mutate(symbol = mapIds(org.Hs.eg.db::org.Hs.eg.db,
                           keys = .feature,
                           keytype = "ENSEMBL",
@@ -33,7 +33,7 @@ test_that("test_gene_enrichment works correctly", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -85,7 +85,7 @@ test_that("test_gene_enrichment handles different gene sets", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -129,7 +129,7 @@ test_that("test_gene_enrichment handles custom gene sets", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -170,7 +170,7 @@ test_that("test_gene_enrichment handles different methods", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -211,7 +211,7 @@ test_that("test_gene_enrichment handles different species", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -252,7 +252,7 @@ test_that("test_gene_enrichment handles multiple cores", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -293,7 +293,7 @@ test_that("test_gene_enrichment handles missing entrez IDs", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -326,7 +326,7 @@ test_that("test_gene_enrichment handles empty results", {
   skip_if_not_installed("edgeR")
   
   # Create a dataset with no significant genes
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -367,7 +367,7 @@ test_that("test_gene_enrichment handles different formula specifications", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -408,7 +408,7 @@ test_that("test_gene_enrichment handles different abundance specifications", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -450,7 +450,7 @@ test_that("test_gene_enrichment handles different significance thresholds", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -491,7 +491,7 @@ test_that("test_gene_enrichment handles different log fold change thresholds", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -532,7 +532,7 @@ test_that("test_gene_enrichment handles different action specifications", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -580,7 +580,7 @@ test_that("test_gene_rank works correctly", {
   skip_if_not_installed("enrichplot")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -624,7 +624,7 @@ test_that("test_gene_rank handles different gene set collections", {
   skip_if_not_installed("enrichplot")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -655,7 +655,7 @@ test_that("test_gene_rank handles custom gene sets", {
   skip_if_not_installed("enrichplot")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -702,7 +702,7 @@ test_that("test_gene_rank validates species parameter", {
   skip_if_not_installed("msigdbr")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,
@@ -737,7 +737,7 @@ test_that("test_gene_rank validates entrez parameter", {
   skip_if_not_installed("enrichplot")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
       .formula = ~ dex,

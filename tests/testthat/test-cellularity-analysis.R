@@ -2,7 +2,7 @@ context('Cellularity Analysis Functions')
 
 library(airway)
 data(airway)
-se_mini <- airway[1:100, 1:5]
+airway_mini <- airway[1:100, 1:5]
 
 library(dplyr)
 library(SummarizedExperiment)
@@ -11,7 +11,7 @@ library(SummarizedExperiment)
 
 test_that("deconvolve_cellularity throws error with multiple methods", {
   expect_error(
-    se_mini |> deconvolve_cellularity(method = c("cibersort", "llsr")),
+    airway_mini |> deconvolve_cellularity(method = c("cibersort", "llsr")),
     "Multiple methods provided"
   )
 })

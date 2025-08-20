@@ -1,7 +1,7 @@
 tidybulk: An R tidy framework for modular transcriptomic data analysis
 ================
 Stefano Mangiola
-2025-07-30
+2025-08-20
 
 <!-- badges: start -->
 
@@ -832,9 +832,9 @@ airway = airway |>
 
 It is important to check the quality of the fit. All methods produce a
 fit object that can be used for quality control. The fit object produced
-by each underlying method are stored in as attributes of the `se_mini`
-object. We can use them for example to perform quality control of the
-fit.
+by each underlying method are stored in as attributes of the
+`airway_mini` object. We can use them for example to perform quality
+control of the fit.
 
 #### For edgeR
 
@@ -848,6 +848,8 @@ library(edgeR)
     ## Warning: package 'edgeR' was built under R version 4.5.1
 
     ## Loading required package: limma
+
+    ## Warning: package 'limma' was built under R version 4.5.1
 
     ## 
     ## Attaching package: 'limma'
@@ -1535,17 +1537,6 @@ gene_rank_res |>
     pull(plot) 
 ```
 
-    ## Warning: There were 2 warnings in `mutate()`.
-    ## The first warning was:
-    ## ℹ In argument: `plot = pmap(...)`.
-    ## Caused by warning:
-    ## ! `aes_()` was deprecated in ggplot2 3.0.0.
-    ## ℹ Please use tidy evaluation idioms with `aes()`
-    ## ℹ The deprecated feature was likely used in the enrichplot package.
-    ##   Please report the issue at
-    ##   <https://github.com/GuangchuangYu/enrichplot/issues>.
-    ## ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
-
     ## [[1]]
 
 ![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-1.png)<!-- -->
@@ -1723,7 +1714,7 @@ library(EGSEA)
 
     ## EGSEA analysis has started
 
-    ## ##------ Wed Jul 30 20:04:06 2025 ------##
+    ## ##------ Wed Aug 20 14:41:38 2025 ------##
 
     ## The argument 'contrast' is recommended to be a matrix object.
     ## See Vignette or Help.
@@ -1736,13 +1727,13 @@ library(EGSEA)
 
     ## ..roast*
 
-    ## ##------ Wed Jul 30 20:04:08 2025 ------##
+    ## ##------ Wed Aug 20 14:41:42 2025 ------##
 
-    ## EGSEA analysis took 2.27999999999997 seconds.
+    ## EGSEA analysis took 3.66199999999998 seconds.
     ## EGSEA analysis has completed
     ## EGSEA HTML report is being generated ...
 
-    ## ##------ Wed Jul 30 20:04:08 2025 ------##
+    ## ##------ Wed Aug 20 14:41:42 2025 ------##
 
     ## Report pages and figures are being generated for the h collection ...
     ##    Heat maps are being generated for top-ranked gene sets 
@@ -1750,9 +1741,9 @@ library(EGSEA)
     ##    Summary plots are being generated ... 
     ##    Comparison summary plots are being generated  ...
 
-    ## ##------ Wed Jul 30 20:04:54 2025 ------##
+    ## ##------ Wed Aug 20 14:42:40 2025 ------##
 
-    ## EGSEA report generation took 45.628 seconds.
+    ## EGSEA report generation took 58.602 seconds.
     ## EGSEA report has been generated.
 
     ## # A tibble: 0 × 0
@@ -2066,7 +2057,7 @@ sessionInfo()
     ##  [5] graph_1.86.0                    AnnotationDbi_1.70.0           
     ##  [7] gage_2.58.0                     patchwork_1.3.1                
     ##  [9] GGally_2.3.0                    DESeq2_1.48.1                  
-    ## [11] edgeR_4.6.3                     limma_3.64.1                   
+    ## [11] edgeR_4.6.3                     limma_3.64.3                   
     ## [13] tidySummarizedExperiment_1.19.4 airway_1.28.0                  
     ## [15] SummarizedExperiment_1.38.1     Biobase_2.68.0                 
     ## [17] GenomicRanges_1.60.0            GenomeInfoDb_1.44.1            
@@ -2079,7 +2070,7 @@ sessionInfo()
     ## [31] stringr_1.5.1                   dplyr_1.1.4                    
     ## [33] purrr_1.1.0                     readr_2.1.5                    
     ## [35] tidyr_1.3.1                     tibble_3.3.0                   
-    ## [37] ggplot2_3.5.2.9002              tidyverse_2.0.0                
+    ## [37] ggplot2_3.5.2                   tidyverse_2.0.0                
     ## [39] knitr_1.50                     
     ## 
     ## loaded via a namespace (and not attached):
@@ -2126,7 +2117,7 @@ sessionInfo()
     ##  [81] treeio_1.32.0               org.Mm.eg.db_3.21.0        
     ##  [83] gtable_0.3.6                org.Rn.eg.db_3.21.0        
     ##  [85] assertthat_0.2.1            cachem_1.1.0               
-    ##  [87] xfun_0.52                   rbibutils_2.3              
+    ##  [87] xfun_0.53                   rbibutils_2.3              
     ##  [89] S4Arrays_1.8.1              survival_3.8-3             
     ##  [91] SingleCellExperiment_1.30.1 iterators_1.0.14           
     ##  [93] statmod_1.5.0               TH.data_1.1-3              

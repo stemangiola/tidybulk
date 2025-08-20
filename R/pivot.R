@@ -19,11 +19,19 @@
 #'
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+#'
+#'
 #' library(airway)
 #' data(airway)
-#' se_mini <- airway[1:100, 1:5]
+#' airway <- airway[1:100, 1:5]
 #' 
-#' 	pivot_transcript(se_mini 	)
+#' 	pivot_transcript(airway 	)
 #'
 #' @references
 #' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
@@ -58,11 +66,19 @@ setGeneric("pivot_transcript", function(.data
 #'
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+#'
+#'
 #' library(airway)
 #' data(airway)
-#' se_mini <- airway[1:100, 1:5]
+#' airway <- airway[1:100, 1:5]
 #' 
-#' 	pivot_sample(se_mini )
+#' 	pivot_sample(airway )
 #'
 #'
 #' @docType methods

@@ -32,9 +32,17 @@ get_bibliography() takes as input a `tidybulk`
 This methods returns the bibliography list of your workflow from the metadata of a tidybulk object (metadata(.)$tidybulk$methods_used) or from the internals for backward compatibility (attr(., "internals"))
 }
 \examples{
+## Load airway dataset for examples
+
+  data('airway', package = 'airway')
+  # Ensure a 'condition' column exists for examples expecting it
+
+    SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
 
 
-get_bibliography(tidybulk::se_mini)
+
+
+get_bibliography(airway)
 
 }
 \references{

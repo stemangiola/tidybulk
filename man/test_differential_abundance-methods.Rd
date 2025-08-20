@@ -174,30 +174,39 @@ dispersion = counts |> edgeR::estimateDisp(design = design) %$% tagwise.dispersi
   )
 }
 \examples{
+## Load airway dataset for examples
+
+  data('airway', package = 'airway')
+  # Ensure a 'condition' column exists for examples expecting it
+
+    SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+
+
 
  # edgeR (default method)
 
- tidybulk::se_mini |>
+ airway |>
  identify_abundant() |>
-	test_differential_abundance( ~ condition )
+	test_differential_abundance( ~ condition, method = "edgeR_quasi_likelihood" )
 
  # You can also explicitly specify the method
- tidybulk::se_mini |>
+ airway |>
  identify_abundant() |>
 	test_differential_abundance( ~ condition, method = "edgeR_quasi_likelihood" )
 
 	# The function `test_differential_abundance` operates with contrasts too
 
- tidybulk::se_mini |>
+ airway |>
  identify_abundant(factor_of_interest = condition) |>
  test_differential_abundance(
 	    ~ 0 + condition,
-	    contrasts = c( "conditionTRUE - conditionFALSE")
+	    contrasts = c( "conditiontrt - conditionuntrt"),
+    method = "edgeR_quasi_likelihood"
  )
 
  # DESeq2 - equivalent for limma-voom
 
-my_se_mini = tidybulk::se_mini
+my_se_mini = airway
 my_se_mini$condition  = factor(my_se_mini$condition)
 
 # demontrating with `fitType` that you can access any arguments to DESeq()
@@ -214,20 +223,20 @@ res <- my_se_mini  |>
 
 # Use random intercept and random effect models
 
- se_mini[1:50,] |>
+ airway[1:50,] |>
   identify_abundant(factor_of_interest = condition) |>
   test_differential_abundance(
-    ~ condition + (1 + condition | time),
+    ~ condition + (1 + condition | cell),
     method = "glmmseq_lme4", cores = 1
   )
 
 # confirm that lfcThreshold was used
-\dontrun{
-    res |>
-        mcols() |>
-        DESeq2::DESeqResults() |>
-        DESeq2::plotMA()
-}
+# Not run to keep the example fast
+# res |>
+#     mcols() |>
+#     DESeq2::DESeqResults() |>
+#     DESeq2::plotMA()
+
 
 # The function `test_differential_abundance` operates with contrasts too
 
@@ -235,9 +244,9 @@ res <- my_se_mini  |>
  identify_abundant() |>
  test_differential_abundance(
 	    ~ 0 + condition,
-	    contrasts = list(c("condition", "TRUE", "FALSE")),
+	    contrasts = list(c("condition", "trt", "untrt")),
 	    method="deseq2",
-         fitType="local"
+     fitType="local"
  )
 
 }

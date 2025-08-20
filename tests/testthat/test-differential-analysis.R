@@ -2,7 +2,7 @@ context('Differential Analysis Functions')
 
 library(airway)
 data(airway)
-se_mini <- airway[1:100, 1:5]
+airway_mini <- airway[1:100, 1:5]
 data("breast_tcga_mini_SE")
 
 library(dplyr)
@@ -10,7 +10,7 @@ library(SummarizedExperiment)
 
 # Test test_differential_abundance function
 test_that("test_differential_abundance with edgeR works correctly", {
-  res <- se_mini |> 
+  res <- airway_mini |> 
     identify_abundant() |> 
     test_differential_abundance(
       .formula = ~ dex,
@@ -28,7 +28,7 @@ test_that("test_differential_abundance with DESeq2 works correctly", {
 })
 
 test_that("test_differential_abundance with limma works correctly", {
-  res <- se_mini |> 
+  res <- airway_mini |> 
     identify_abundant() |> 
     test_differential_abundance(
       .formula = ~ dex,
@@ -43,11 +43,11 @@ test_that("test_differential_abundance with limma works correctly", {
 # Test colData preservation and usage
 test_that("test_differential_abundance preserves colData correctly", {
   # Store original colData
-  original_colData <- colData(se_mini)
+  original_colData <- colData(airway_mini)
   original_colData_names <- names(original_colData)
   
   # Run differential abundance test
-  res <- se_mini |> 
+  res <- airway_mini |> 
     identify_abundant() |> 
     test_differential_abundance(
       .formula = ~ dex,
@@ -67,7 +67,7 @@ test_that("test_differential_abundance preserves colData correctly", {
   expect_true(all(colData(res)$dex %in% c("trt", "untrt")))
   
   # Check that the function can handle colData with additional columns
-  se_with_extra <- se_mini
+  se_with_extra <- airway_mini
   colData(se_with_extra)$extra_column <- rep("test", nrow(colData(se_with_extra)))
   
   res_with_extra <- se_with_extra |> 

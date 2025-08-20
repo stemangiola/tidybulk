@@ -2,7 +2,7 @@ context('Abundance Normalization Functions')
 
 library(airway)
 data(airway)
-se_mini <- airway[1:100, 1:5]
+airway_mini <- airway[1:100, 1:5]
 data("breast_tcga_mini_SE")
 
 library(dplyr)
@@ -10,7 +10,7 @@ library(SummarizedExperiment)
 
 # Test scale_abundance function
 test_that("scale_abundance works correctly", {
-  res <- se_mini |> identify_abundant() |> scale_abundance()
+  res <- airway_mini |> identify_abundant() |> scale_abundance()
   
   expect_equal(
     names(SummarizedExperiment::assays(res)),
@@ -19,7 +19,7 @@ test_that("scale_abundance works correctly", {
 })
 
 test_that("scale_abundance with subset works correctly", {
-  res <- se_mini |> identify_abundant() |> scale_abundance(
+  res <- airway_mini |> identify_abundant() |> scale_abundance(
     .subset_for_scaling = .abundant & grepl("^ENSG", .feature)
   )
   
@@ -28,7 +28,7 @@ test_that("scale_abundance with subset works correctly", {
 
 # Test quantile_normalise_abundance function
 test_that("quantile_normalise_abundance works correctly", {
-  res <- se_mini |> quantile_normalise_abundance()
+  res <- airway_mini |> quantile_normalise_abundance()
   
   # Check if any normalized assay exists
   assay_names <- names(SummarizedExperiment::assays(res))
@@ -36,7 +36,7 @@ test_that("quantile_normalise_abundance works correctly", {
 })
 
 test_that("quantile_normalise_abundance with preprocessCore works correctly", {
-  res <- se_mini |> quantile_normalise_abundance(method = "preprocesscore_normalize_quantiles_use_target")
+  res <- airway_mini |> quantile_normalise_abundance(method = "preprocesscore_normalize_quantiles_use_target")
   
   # Check if any normalized assay exists
   assay_names <- names(SummarizedExperiment::assays(res))
@@ -46,8 +46,8 @@ test_that("quantile_normalise_abundance with preprocessCore works correctly", {
 # Test adjust_abundance function
 
 test_that("adjust_abundance adds adjusted assay correctly", {
-  # Add a batch column to se_mini
-  se_mini2 <- se_mini
+  # Add a batch column to airway_mini
+  se_mini2 <- airway_mini
   # Create a batch variable with two groups (not confounded with dex)
   colData(se_mini2)$batch <- c(1, 1, 2, 2, 1)
   # Run identify_abundant and adjust_abundance
@@ -70,7 +70,7 @@ test_that("fill_missing_abundance works correctly", {
 
 # Test impute_missing_abundance function
 test_that("impute_missing_abundance works correctly", {
-  res <- se_mini |> impute_missing_abundance(.formula = ~ dex)
+  res <- airway_mini |> impute_missing_abundance(.formula = ~ dex)
   
   expect_no_error(res)
 }) 
@@ -78,20 +78,20 @@ test_that("impute_missing_abundance works correctly", {
 # Test scale_abundance with custom suffix
 
 test_that("scale_abundance uses custom suffix correctly", {
-  res <- se_mini |> identify_abundant() |> scale_abundance(suffix = "_custom")
+  res <- airway_mini |> identify_abundant() |> scale_abundance(suffix = "_custom")
   expect_true("counts_custom" %in% names(SummarizedExperiment::assays(res)))
   expect_false("counts_scaled" %in% names(SummarizedExperiment::assays(res)))
 })
 
 test_that("scale_abundance default suffix still works", {
-  res <- se_mini |> identify_abundant() |> scale_abundance()
+  res <- airway_mini |> identify_abundant() |> scale_abundance()
   expect_true("counts_scaled" %in% names(SummarizedExperiment::assays(res)))
 }) 
 
 # Test adjust_abundance on a custom assay
 
 test_that("adjust_abundance on custom assay creates correct adjusted assay name", {
-  se_mini2 <- se_mini
+  se_mini2 <- airway_mini
   # Create a batch variable with two groups (not confounded with dex)
   colData(se_mini2)$batch <- c(1, 1, 2, 2, 1)
   # Create a custom assay
