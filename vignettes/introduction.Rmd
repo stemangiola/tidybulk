@@ -133,7 +133,10 @@ Mangiola, Stefano, Ramyar Molania, Ruining Dong, Maria A. Doyle, and Anthony T. 
 
 ```{r setup-libraries-and-theme, echo=FALSE, include=FALSE}
 library(knitr)
-library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(purrr)
 library(magrittr)
 library(ggplot2)
 library(ggrepel)
