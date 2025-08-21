@@ -49,7 +49,9 @@ vignette: >
 [![Bioconductor status](https://bioconductor.org/shields/build/release/bioc/tidybulk.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/tidybulk/)
 <!-- badges: end -->
 
-# <img src="`r ifelse(knitr::pandoc_to() %in% c('html', 'html4'), '../inst/logo.svg', 'inst/logo.svg')`" height="139px" width="120px"/>
+```{r, echo=FALSE, out.height='139px', out.width='120px'}
+knitr::include_graphics("../inst/logo.svg")
+```
 
 **tidybulk** is a powerful R package designed for modular transcriptomic data analysis that brings transcriptomics to the tidyverse.
 
@@ -57,7 +59,8 @@ vignette: >
 
 Tidybulk provides a unified interface for comprehensive transcriptomic data analysis with seamless integration of SummarizedExperiment objects and tidyverse principles. It streamlines the entire workflow from raw data to biological insights.
 
-# <img src="`r ifelse(knitr::pandoc_to() %in% c('html', 'html4'), '../inst/new_SE_usage-01.png', 'inst/new_SE_usage-01.png')`" width="100%"/>
+
+
 
 
 
