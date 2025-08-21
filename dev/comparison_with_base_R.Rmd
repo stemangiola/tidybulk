@@ -80,7 +80,7 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 
-tibble_counts = tidybulk::se_mini %>% tidybulk() %>% as_tibble()
+tibble_counts = tidybulk::airway_mini %>% tidybulk() %>% as_tibble()
 
 ```
 
@@ -89,7 +89,7 @@ In this article we show some examples of the differences in coding between tidyb
 ## Create `tidybulk` tibble. 
 
 ```{r}
-tt = se_mini
+tt = airway_mini
 ```
 
 ## Aggregate duplicated `transcripts`
