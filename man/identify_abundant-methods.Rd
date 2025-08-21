@@ -90,17 +90,25 @@ A feature is considered abundant if it has CPM > minimum_counts in at least mini
 of samples in at least one experimental group (defined by factor_of_interest or design).
 }
 \examples{
+## Load airway dataset for examples
+
+  data('airway', package = 'airway')
+  # Ensure a 'condition' column exists for examples expecting it
+
+    SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+
+
 # Basic usage
-se_mini |> identify_abundant()
+airway |> identify_abundant()
 
 # With custom thresholds
-se_mini |> identify_abundant(
+airway |> identify_abundant(
   minimum_counts = 5,
   minimum_proportion = 0.5
 )
 
 # Using a factor of interest
-se_mini |> identify_abundant(factor_of_interest = condition)
+airway |> identify_abundant(factor_of_interest = condition)
 
 }
 \references{

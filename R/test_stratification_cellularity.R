@@ -42,9 +42,17 @@
 #'
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+#'
+#'
 #' # Examples commented out due to deprecation
 #' # # Example with survival analysis
-#' # tidybulk::se_mini |>
+#' # airway |>
 #' # test_stratification_cellularity(
 #' # 	survival::Surv(days, dead) ~ .,
 #' # 	method = "cibersort",

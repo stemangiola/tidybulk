@@ -5,8 +5,16 @@
 #' @return A tbl
 #'
 #' @examples
+#' ## Load airway dataset for examples
 #'
-#' describe_transcript(tidybulk::se_mini)
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+#'
+#'
+#'
+#' describe_transcript(airway)
 #'
 #' @references
 #' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
@@ -69,7 +77,7 @@ setGeneric("describe_transcript", function(.data )
     # Human
     tryCatch(suppressMessages(AnnotationDbi::mapIds(
       org.Hs.eg.db::org.Hs.eg.db,
-      keys = my_transcripts,  #ensembl_symbol_mapping$transcript |> unique,
+      keys = my_transcripts,  
       column = "GENENAME",
       keytype = "SYMBOL",
       multiVals = "first"
@@ -80,7 +88,7 @@ setGeneric("describe_transcript", function(.data )
     c(
       tryCatch(suppressMessages(AnnotationDbi::mapIds(
         org.Mm.eg.db::org.Mm.eg.db,
-        keys = my_transcripts,  #ensembl_symbol_mapping$transcript |> unique,
+        keys = my_transcripts,  
         column = "GENENAME",
         keytype = "SYMBOL",
         multiVals = "first"

@@ -1,14 +1,15 @@
 context('Utility Functions')
 
-data("se_mini")
-data("breast_tcga_mini_SE")
+library(airway)
+data(airway)
+airway_mini <- airway[1:100, 1:5]
 
 library(dplyr)
 library(SummarizedExperiment)
 
 # Test describe_transcript function
 test_that("describe_transcript works correctly", {
-  res <- se_mini |> describe_transcript()
+  res <- airway_mini |> describe_transcript()
   
   expect_no_error(res)
 })
@@ -20,7 +21,7 @@ test_that("describe_transcript with custom parameters works correctly", {
 
 # Test get_bibliography function
 test_that("get_bibliography works correctly", {
-  res <- se_mini |> get_bibliography()
+  res <- airway_mini |> get_bibliography()
   
   expect_no_error(res)
 })

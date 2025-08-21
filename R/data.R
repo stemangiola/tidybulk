@@ -1,32 +1,9 @@
 #' Cibersort reference
+#' 
+#' @references Newman, A. M., Liu, C. L., Green, M. R., Gentles, A. J., Feng, W., Xu, Y., Hoang, C. D., Diehn, M., & Alizadeh, A. A. (2015). Robust enumeration of cell subsets from tissue expression profiles. Nature Methods, 12(5), 453–457. https://doi.org/10.1038/nmeth.3337
 #'
 #'
 "X_cibersort"
-
-#' Counts with ensembl annotation
-#'
-#'
-"counts_ensembl"
-
-#' Data set
-#'
-#'
-"ensembl_symbol_mapping"
-
-#' flybaseIDs
-#'
-#'
-"flybaseIDs"
-
-#' SummarizedExperiment
-#'
-#'
-"se"
-
-#' SummarizedExperiment mini for vignette
-#'
-#'
-"se_mini"
 
 #' Needed for vignette vignette_manuscript_signature_tsne
 #'
@@ -42,11 +19,6 @@
 #'
 #'
 "vignette_manuscript_signature_tsne2"
-
-#' Needed for vignette breast_tcga_mini_SE
-#'
-#'
-"breast_tcga_mini_SE"
 
 #' Needed for tests tximeta_summarizeToGene_object, It is SummarizedExperiment from tximeta
 #'

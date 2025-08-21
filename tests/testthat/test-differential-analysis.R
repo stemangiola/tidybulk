@@ -1,17 +1,18 @@
 context('Differential Analysis Functions')
 
-data("se_mini")
-data("breast_tcga_mini_SE")
+library(airway)
+data(airway)
+airway_mini <- airway[1:100, 1:5]
 
 library(dplyr)
 library(SummarizedExperiment)
 
 # Test test_differential_abundance function
 test_that("test_differential_abundance with edgeR works correctly", {
-  res <- se_mini |> 
+  res <- airway_mini |> 
     identify_abundant() |> 
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   
@@ -26,10 +27,10 @@ test_that("test_differential_abundance with DESeq2 works correctly", {
 })
 
 test_that("test_differential_abundance with limma works correctly", {
-  res <- se_mini |> 
+  res <- airway_mini |> 
     identify_abundant() |> 
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "limma_voom"
     )
   
@@ -41,14 +42,14 @@ test_that("test_differential_abundance with limma works correctly", {
 # Test colData preservation and usage
 test_that("test_differential_abundance preserves colData correctly", {
   # Store original colData
-  original_colData <- colData(se_mini)
+  original_colData <- colData(airway_mini)
   original_colData_names <- names(original_colData)
   
   # Run differential abundance test
-  res <- se_mini |> 
+  res <- airway_mini |> 
     identify_abundant() |> 
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   
@@ -60,18 +61,18 @@ test_that("test_differential_abundance preserves colData correctly", {
   # Check that sample names are preserved
   expect_equal(rownames(colData(res)), rownames(original_colData))
   
-  # Check that condition column is still present and usable
-  expect_true("condition" %in% names(colData(res)))
-  expect_true(all(colData(res)$condition %in% c(TRUE, FALSE)))
+  # Check that dex column is still present and usable
+  expect_true("dex" %in% names(colData(res)))
+  expect_true(all(colData(res)$dex %in% c("trt", "untrt")))
   
   # Check that the function can handle colData with additional columns
-  se_with_extra <- se_mini
+  se_with_extra <- airway_mini
   colData(se_with_extra)$extra_column <- rep("test", nrow(colData(se_with_extra)))
   
   res_with_extra <- se_with_extra |> 
     identify_abundant() |> 
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   

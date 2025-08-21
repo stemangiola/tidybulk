@@ -17,3 +17,5 @@ README.Rmd
 ^\.github$
 ^_pkgdown.yml
 ^egsea_report*
+^vignettes/egsea*
+^tests/testthat/egsea*

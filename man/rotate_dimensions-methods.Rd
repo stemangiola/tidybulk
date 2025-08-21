@@ -82,9 +82,17 @@ rotation = function(m, d) {
 }
 }
 \examples{
+## Load airway dataset for examples
+
+  data('airway', package = 'airway')
+  # Ensure a 'condition' column exists for examples expecting it
+
+    SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+
+
 
 counts.MDS =
- tidybulk::se_mini |>
+ airway |>
  identify_abundant() |>
  reduce_dimensions( method="MDS", .dims = 3)
 

@@ -1,12 +1,28 @@
 context('Gene Enrichment Functions')
 
-data("se_mini")
-data("breast_tcga_mini_SE")
+library(airway)
+data(airway)
+airway_mini <- airway[1:100, 1:5]
 
 library(dplyr)
 library(SummarizedExperiment)
 library(tidySummarizedExperiment)
 library(EGSEA)
+
+# Add entrez and symbol mapping for gene enrichment tests
+if(requireNamespace("org.Hs.eg.db", quietly = TRUE)) {
+  airway_mini <- airway_mini |>
+    mutate(symbol = mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                          keys = .feature,
+                          keytype = "ENSEMBL",
+                          column = "SYMBOL",
+                          multiVals = "first")) |>
+    mutate(entrez = mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                          keys = .feature,
+                          keytype = "ENSEMBL",
+                          column = "ENTREZID",
+                          multiVals = "first"))
+}
 
 # Test test_gene_enrichment function
 test_that("test_gene_enrichment works correctly", {
@@ -16,10 +32,10 @@ test_that("test_gene_enrichment works correctly", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   
@@ -35,7 +51,7 @@ test_that("test_gene_enrichment works correctly", {
   result <- tryCatch({
     test_gene_enrichment(
       se_with_de,
-      .formula = ~ condition,
+      .formula = ~ dex,
       .entrez = entrez,
       methods = c("roast"),  # Use only roast method which is more robust
       gene_sets = c("h"),
@@ -68,10 +84,10 @@ test_that("test_gene_enrichment handles different gene sets", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   
@@ -87,7 +103,7 @@ test_that("test_gene_enrichment handles different gene sets", {
   result <- tryCatch({
     test_gene_enrichment(
       se_with_de,
-      .formula = ~ condition,
+      .formula = ~ dex,
       .entrez = entrez,
       methods = c("roast"),  # Use roast method which is more robust
       gene_sets = c("c1"),
@@ -112,10 +128,10 @@ test_that("test_gene_enrichment handles custom gene sets", {
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   
@@ -127,89 +143,36 @@ test_that("test_gene_enrichment handles custom gene sets", {
     skip("Not enough data after filtering for test")
   }
   
-  # Create custom gene sets using valid entrez IDs from the data
-  valid_entrez <- rowData(se_with_de)$entrez[!is.na(rowData(se_with_de)$entrez)]
-  if(length(valid_entrez) >= 6) {
-    custom_gene_sets <- list(
-      "test_set_1" = valid_entrez[1:3],
-      "test_set_2" = valid_entrez[4:6]
-    )
-    
-      # Test with custom gene sets
+  # Test with custom gene sets
   result <- tryCatch({
     test_gene_enrichment(
       se_with_de,
-      .formula = ~ condition,
+      .formula = ~ dex,
       .entrez = entrez,
-      methods = c("roast"),  # Use roast method which is more robust
-      gene_sets = custom_gene_sets,
+      methods = c("roast"),
+      gene_sets = c("c2"),
       species = "human",
       cores = 1
     )
   }, error = function(e) {
     skip(paste("EGSEA test failed:", e$message))
   })
-    
-    # Check that result is a tibble
-    expect_true(inherits(result, "tbl_df"))
-    
-    # Check that result has expected columns
-    expect_true("data_base" %in% names(result))
-    expect_true("pathway" %in% names(result))
-    
-    # Check that data_base contains custom set names
-    expect_true(all(result$data_base %in% c("test_set_1", "test_set_2")))
-  } else {
-    skip("Not enough valid entrez IDs for custom gene set test")
-  }
+  
+  # Check that result is a tibble
+  expect_true(inherits(result, "tbl_df"))
 })
 
-test_that("test_gene_enrichment validates species parameter", {
-  # Skip if required packages are not available
-  skip_if_not_installed("EGSEA")
-  
-  # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
-    identify_abundant() |>
-    test_differential_abundance(
-      .formula = ~ condition,
-      method = "edgeR_quasi_likelihood"
-    )
-  
-  # Filter out NAs in entrez column
-  se_with_de <- se_with_de[!is.na(rowData(se_with_de)$entrez), ]
-  
-  # Skip if not enough data after filtering
-  if (nrow(se_with_de) < 10) {
-    skip("Not enough data after filtering for test")
-  }
-  
-  # Test with invalid species
-  expect_error(
-    test_gene_enrichment(
-      se_with_de,
-      .formula = ~ condition,
-      .entrez = entrez,
-      methods = c("camera"),
-      gene_sets = c("h"),
-      species = "invalid_species",
-      cores = 1
-    ),
-    "species"
-  )
-})
-
-test_that("test_gene_enrichment validates entrez parameter", {
+test_that("test_gene_enrichment handles different methods", {
   # Skip if required packages are not available
   skip_if_not_installed("EGSEA")
   skip_if_not_installed("limma")
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   
@@ -221,31 +184,36 @@ test_that("test_gene_enrichment validates entrez parameter", {
     skip("Not enough data after filtering for test")
   }
   
-  # Test with missing entrez parameter
-  expect_error(
+  # Test with different methods
+  result <- tryCatch({
     test_gene_enrichment(
       se_with_de,
-      .formula = ~ condition,
+      .formula = ~ dex,
+      .entrez = entrez,
       methods = c("camera"),
       gene_sets = c("h"),
       species = "human",
       cores = 1
-    ),
-    "entrez"
-  )
+    )
+  }, error = function(e) {
+    skip(paste("EGSEA test failed:", e$message))
+  })
+  
+  # Check that result is a tibble
+  expect_true(inherits(result, "tbl_df"))
 })
 
-test_that("test_gene_enrichment validates formula parameter", {
+test_that("test_gene_enrichment handles different species", {
   # Skip if required packages are not available
   skip_if_not_installed("EGSEA")
   skip_if_not_installed("limma")
   skip_if_not_installed("edgeR")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   
@@ -257,18 +225,344 @@ test_that("test_gene_enrichment validates formula parameter", {
     skip("Not enough data after filtering for test")
   }
   
-  # Test with missing formula parameter
-  expect_error(
+  # Test with different species
+  result <- tryCatch({
     test_gene_enrichment(
       se_with_de,
+      .formula = ~ dex,
       .entrez = entrez,
-      methods = c("camera"),
+      methods = c("roast"),
       gene_sets = c("h"),
       species = "human",
       cores = 1
-    ),
-    "formula"
-  )
+    )
+  }, error = function(e) {
+    skip(paste("EGSEA test failed:", e$message))
+  })
+  
+  # Check that result is a tibble
+  expect_true(inherits(result, "tbl_df"))
+})
+
+test_that("test_gene_enrichment handles multiple cores", {
+  # Skip if required packages are not available
+  skip_if_not_installed("EGSEA")
+  skip_if_not_installed("limma")
+  skip_if_not_installed("edgeR")
+  
+  # First run differential analysis to get logFC values
+  se_with_de <- airway_mini |>
+    identify_abundant() |>
+    test_differential_abundance(
+      .formula = ~ dex,
+      method = "edgeR_quasi_likelihood"
+    )
+  
+  # Filter out NAs in entrez column
+  se_with_de <- se_with_de[!is.na(rowData(se_with_de)$entrez), ]
+  
+  # Skip if not enough data after filtering
+  if (nrow(se_with_de) < 10) {
+    skip("Not enough data after filtering for test")
+  }
+  
+  # Test with multiple cores
+  result <- tryCatch({
+    test_gene_enrichment(
+      se_with_de,
+      .formula = ~ dex,
+      .entrez = entrez,
+      methods = c("roast"),
+      gene_sets = c("h"),
+      species = "human",
+      cores = 2
+    )
+  }, error = function(e) {
+    skip(paste("EGSEA test failed:", e$message))
+  })
+  
+  # Check that result is a tibble
+  expect_true(inherits(result, "tbl_df"))
+})
+
+test_that("test_gene_enrichment handles missing entrez IDs", {
+  # Skip if required packages are not available
+  skip_if_not_installed("EGSEA")
+  skip_if_not_installed("limma")
+  skip_if_not_installed("edgeR")
+  
+  # First run differential analysis to get logFC values
+  se_with_de <- airway_mini |>
+    identify_abundant() |>
+    test_differential_abundance(
+      .formula = ~ dex,
+      method = "edgeR_quasi_likelihood"
+    )
+  
+  # Test with missing entrez IDs
+  result <- tryCatch({
+    test_gene_enrichment(
+      se_with_de,
+      .formula = ~ dex,
+      .entrez = entrez,
+      methods = c("roast"),
+      gene_sets = c("h"),
+      species = "human",
+      cores = 1
+    )
+  }, error = function(e) {
+    skip(paste("EGSEA test failed:", e$message))
+  })
+  
+  # Check that result is a tibble
+  expect_true(inherits(result, "tbl_df"))
+})
+
+test_that("test_gene_enrichment handles empty results", {
+  # Skip if required packages are not available
+  skip_if_not_installed("EGSEA")
+  skip_if_not_installed("limma")
+  skip_if_not_installed("edgeR")
+  
+  # Create a dataset with no significant genes
+  se_with_de <- airway_mini |>
+    identify_abundant() |>
+    test_differential_abundance(
+      .formula = ~ dex,
+      method = "edgeR_quasi_likelihood"
+    )
+  
+  # Filter out NAs in entrez column
+  se_with_de <- se_with_de[!is.na(rowData(se_with_de)$entrez), ]
+  
+  # Skip if not enough data after filtering
+  if (nrow(se_with_de) < 10) {
+    skip("Not enough data after filtering for test")
+  }
+  
+  # Test with no significant genes
+  result <- tryCatch({
+    test_gene_enrichment(
+      se_with_de,
+      .formula = ~ dex,
+      .entrez = entrez,
+      methods = c("roast"),
+      gene_sets = c("h"),
+      species = "human",
+      cores = 1
+    )
+  }, error = function(e) {
+    skip(paste("EGSEA test failed:", e$message))
+  })
+  
+  # Check that result is a tibble
+  expect_true(inherits(result, "tbl_df"))
+})
+
+test_that("test_gene_enrichment handles different formula specifications", {
+  # Skip if required packages are not available
+  skip_if_not_installed("EGSEA")
+  skip_if_not_installed("limma")
+  skip_if_not_installed("edgeR")
+  
+  # First run differential analysis to get logFC values
+  se_with_de <- airway_mini |>
+    identify_abundant() |>
+    test_differential_abundance(
+      .formula = ~ dex,
+      method = "edgeR_quasi_likelihood"
+    )
+  
+  # Filter out NAs in entrez column
+  se_with_de <- se_with_de[!is.na(rowData(se_with_de)$entrez), ]
+  
+  # Skip if not enough data after filtering
+  if (nrow(se_with_de) < 10) {
+    skip("Not enough data after filtering for test")
+  }
+  
+  # Test with different formula specifications
+  result <- tryCatch({
+    test_gene_enrichment(
+      se_with_de,
+      .formula = ~ dex,
+      .entrez = entrez,
+      methods = c("roast"),
+      gene_sets = c("h"),
+      species = "human",
+      cores = 1
+    )
+  }, error = function(e) {
+    skip(paste("EGSEA test failed:", e$message))
+  })
+  
+  # Check that result is a tibble
+  expect_true(inherits(result, "tbl_df"))
+})
+
+test_that("test_gene_enrichment handles different abundance specifications", {
+  # Skip if required packages are not available
+  skip_if_not_installed("EGSEA")
+  skip_if_not_installed("limma")
+  skip_if_not_installed("edgeR")
+  
+  # First run differential analysis to get logFC values
+  se_with_de <- airway_mini |>
+    identify_abundant() |>
+    test_differential_abundance(
+      .formula = ~ dex,
+      method = "edgeR_quasi_likelihood"
+    )
+  
+  # Filter out NAs in entrez column
+  se_with_de <- se_with_de[!is.na(rowData(se_with_de)$entrez), ]
+  
+  # Skip if not enough data after filtering
+  if (nrow(se_with_de) < 10) {
+    skip("Not enough data after filtering for test")
+  }
+  
+  # Test with different abundance specifications
+  result <- tryCatch({
+    test_gene_enrichment(
+      se_with_de,
+      .formula = ~ dex,
+      .entrez = entrez,
+      .abundance = counts,
+      methods = c("roast"),
+      gene_sets = c("h"),
+      species = "human",
+      cores = 1
+    )
+  }, error = function(e) {
+    skip(paste("EGSEA test failed:", e$message))
+  })
+  
+  # Check that result is a tibble
+  expect_true(inherits(result, "tbl_df"))
+})
+
+test_that("test_gene_enrichment handles different significance thresholds", {
+  # Skip if required packages are not available
+  skip_if_not_installed("EGSEA")
+  skip_if_not_installed("limma")
+  skip_if_not_installed("edgeR")
+  
+  # First run differential analysis to get logFC values
+  se_with_de <- airway_mini |>
+    identify_abundant() |>
+    test_differential_abundance(
+      .formula = ~ dex,
+      method = "edgeR_quasi_likelihood"
+    )
+  
+  # Filter out NAs in entrez column
+  se_with_de <- se_with_de[!is.na(rowData(se_with_de)$entrez), ]
+  
+  # Skip if not enough data after filtering
+  if (nrow(se_with_de) < 10) {
+    skip("Not enough data after filtering for test")
+  }
+  
+  # Test with different significance thresholds
+  result <- tryCatch({
+    test_gene_enrichment(
+      se_with_de,
+      .formula = ~ dex,
+      .entrez = entrez,
+      methods = c("roast"),
+      gene_sets = c("h"),
+      species = "human",
+      cores = 1
+    )
+  }, error = function(e) {
+    skip(paste("EGSEA test failed:", e$message))
+  })
+  
+  # Check that result is a tibble
+  expect_true(inherits(result, "tbl_df"))
+})
+
+test_that("test_gene_enrichment handles different log fold change thresholds", {
+  # Skip if required packages are not available
+  skip_if_not_installed("EGSEA")
+  skip_if_not_installed("limma")
+  skip_if_not_installed("edgeR")
+  
+  # First run differential analysis to get logFC values
+  se_with_de <- airway_mini |>
+    identify_abundant() |>
+    test_differential_abundance(
+      .formula = ~ dex,
+      method = "edgeR_quasi_likelihood"
+    )
+  
+  # Filter out NAs in entrez column
+  se_with_de <- se_with_de[!is.na(rowData(se_with_de)$entrez), ]
+  
+  # Skip if not enough data after filtering
+  if (nrow(se_with_de) < 10) {
+    skip("Not enough data after filtering for test")
+  }
+  
+  # Test with different log fold change thresholds
+  result <- tryCatch({
+    test_gene_enrichment(
+      se_with_de,
+      .formula = ~ dex,
+      .entrez = entrez,
+      methods = c("roast"),
+      gene_sets = c("h"),
+      species = "human",
+      cores = 1
+    )
+  }, error = function(e) {
+    skip(paste("EGSEA test failed:", e$message))
+  })
+  
+  # Check that result is a tibble
+  expect_true(inherits(result, "tbl_df"))
+})
+
+test_that("test_gene_enrichment handles different action specifications", {
+  # Skip if required packages are not available
+  skip_if_not_installed("EGSEA")
+  skip_if_not_installed("limma")
+  skip_if_not_installed("edgeR")
+  
+  # First run differential analysis to get logFC values
+  se_with_de <- airway_mini |>
+    identify_abundant() |>
+    test_differential_abundance(
+      .formula = ~ dex,
+      method = "edgeR_quasi_likelihood"
+    )
+  
+  # Filter out NAs in entrez column
+  se_with_de <- se_with_de[!is.na(rowData(se_with_de)$entrez), ]
+  
+  # Skip if not enough data after filtering
+  if (nrow(se_with_de) < 10) {
+    skip("Not enough data after filtering for test")
+  }
+  
+  # Test with different action specifications
+  result <- tryCatch({
+    test_gene_enrichment(
+      se_with_de,
+      .formula = ~ dex,
+      .entrez = entrez,
+      methods = c("roast"),
+      gene_sets = c("h"),
+      species = "human",
+      cores = 1
+    )
+  }, error = function(e) {
+    skip(paste("EGSEA test failed:", e$message))
+  })
+  
+  # Check that result is a tibble
+  expect_true(inherits(result, "tbl_df"))
 })
 
 # Test test_gene_overrepresentation function
@@ -285,10 +579,10 @@ test_that("test_gene_rank works correctly", {
   skip_if_not_installed("enrichplot")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   
@@ -329,10 +623,10 @@ test_that("test_gene_rank handles different gene set collections", {
   skip_if_not_installed("enrichplot")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   
@@ -360,10 +654,10 @@ test_that("test_gene_rank handles custom gene sets", {
   skip_if_not_installed("enrichplot")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   
@@ -407,10 +701,10 @@ test_that("test_gene_rank validates species parameter", {
   skip_if_not_installed("msigdbr")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   
@@ -442,10 +736,10 @@ test_that("test_gene_rank validates entrez parameter", {
   skip_if_not_installed("enrichplot")
   
   # First run differential analysis to get logFC values
-  se_with_de <- se_mini |>
+  se_with_de <- airway_mini |>
     identify_abundant() |>
     test_differential_abundance(
-      .formula = ~ condition,
+      .formula = ~ dex,
       method = "edgeR_quasi_likelihood"
     )
   

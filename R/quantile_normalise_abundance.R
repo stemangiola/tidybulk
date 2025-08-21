@@ -37,9 +37,17 @@
 #'
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
 #'
 #'
-#'  tidybulk::se_mini |>
+#'
+#'
+#'  airway |>
 #'    quantile_normalise_abundance()
 #'
 #' @references
@@ -131,11 +139,18 @@ setGeneric("quantile_normalise_abundance", function(.data,
       assay(my_assay) |>
       as.matrix()
     
-    if(is.null(target_distribution)) target_distribution = preprocessCore::normalize.quantiles.determine.target(.data_norm)
+    if(is.null(target_distribution)) {
+      if (!requireNamespace("preprocessCore", quietly = TRUE)) {
+        stop("tidybulk says: The method 'preprocesscore_normalize_quantiles_use_target' requires the 'preprocessCore' package.")
+      }
+      target_fun <- get("normalize.quantiles.determine.target", asNamespace("preprocessCore"))
+      target_distribution <- target_fun(.data_norm)
+    }
     
+    norm_fun <- get("normalize.quantiles.use.target", asNamespace("preprocessCore"))
     .data_norm =
-      .data_norm |>
-      preprocessCore::normalize.quantiles.use.target(
+      norm_fun(
+        .data_norm,
         target = target_distribution
       )
     

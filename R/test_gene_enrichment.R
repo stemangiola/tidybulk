@@ -66,28 +66,36 @@
 #'
 #'
 #' @examples
-#' \dontrun{
+#' ## Load airway dataset for examples
 #'
-#' library(SummarizedExperiment)
-#' se = tidybulk::se_mini
-#' rowData( se)$entrez = rownames(se )
-#' df_entrez = aggregate_duplicates(se,.transcript = entrez )
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
+#'
+#'
+#' library(tidySummarizedExperiment)
 #'
 #' library("EGSEA")
+#'
+#' \dontrun{
+#' df_entrez <- airway |>
+#'   mutate(entrez = .feature) |>
+#'   aggregate_duplicates(.transcript = entrez )
 #'
 #' 	test_gene_enrichment(
 #'			df_entrez,
 #'			~ condition,
-#'			.sample = sample,
 #'			.entrez = entrez,
 #'			.abundance = count,
-#'          methods = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
-#'          gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
+#'			methods = c("roast" , "safe", "gage"  ,  "padog" , "globaltest", "ora" ),
+#'			gene_sets = c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "kegg_disease", "kegg_metabolism", "kegg_signaling"),
 #'			species="human",
 #'			cores = 2
 #'		)
+#' }
 #'
-#'}
+#'
 #'
 #' @references
 #' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7

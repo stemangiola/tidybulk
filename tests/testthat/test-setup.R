@@ -1,8 +1,9 @@
 context('Test Setup and Common Functions')
 
 # Load test data
-data("se_mini")
-data("breast_tcga_mini_SE")
+library(airway)
+data(airway)
+airway_mini <- airway[1:100, 1:5]
 
 # Load required libraries
 library(dplyr)

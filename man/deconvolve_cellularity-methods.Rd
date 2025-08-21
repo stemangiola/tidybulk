@@ -72,18 +72,38 @@ Underlying method:
 CIBERSORT(Y = data, X = reference, ...)
 }
 \examples{
+## Load airway dataset for examples
+
+  data('airway', package = 'airway')
+  # Ensure a 'condition' column exists for examples expecting it
+
+    SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
 
 
-# Subsetting for time efficiency
-tidybulk::se_mini |> deconvolve_cellularity(cores = 1)
 
-# Using a feature column from rowData instead of rownames
-# First, add a feature column to rowData
-se_with_features <- tidybulk::se_mini
-rowData(se_with_features)$gene_symbol <- rownames(se_with_features)
 
-# Use the feature column for deconvolution
-se_with_features |> deconvolve_cellularity(feature_column = "gene_symbol", cores = 1)
+# Map ENSEMBL rownames to SYMBOLs for compatibility with reference signatures
+ 
+library(tidySummarizedExperiment)
+library(org.Hs.eg.db)
+
+\dontrun{
+airway |>
+mutate(gene_symbol = AnnotationDbi::mapIds(
+  org.Hs.eg.db::org.Hs.eg.db,
+  keys = .feature,
+  keytype = 'ENSEMBL',
+  column = 'SYMBOL',
+  multiVals = 'first'
+)) |>
+mutate(gene_symbol = ifelse(is.na(gene_symbol) | gene_symbol == '', .feature, gene_symbol)) |>
+deconvolve_cellularity(feature_column = 'gene_symbol', cores = 1)
+}
+
+# Alternatively, if you already have a feature column in rowData
+# se_with_features <- airway
+# rowData(se_with_features)$gene_symbol <- rownames(se_with_features)
+# se_with_features |> deconvolve_cellularity(feature_column = 'gene_symbol', cores = 1)
 
 }
 \references{

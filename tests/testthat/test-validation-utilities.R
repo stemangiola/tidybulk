@@ -1,7 +1,8 @@
 context('Validation and Utility Functions')
 
-data("se_mini")
-data("breast_tcga_mini_SE")
+library(airway)
+data(airway)
+airway_mini <- airway[1:100, 1:5]
 
 library(dplyr)
 library(SummarizedExperiment)

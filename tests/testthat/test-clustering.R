@@ -1,14 +1,15 @@
 context('Clustering Functions')
 
-data("se_mini")
-data("breast_tcga_mini_SE")
+library(airway)
+data(airway)
+airway_mini <- airway[1:100, 1:5]
 
 library(dplyr)
 library(SummarizedExperiment)
 
 # Test cluster_elements function
 test_that("cluster_elements with kmeans works correctly", {
-  res <- cluster_elements(se_mini, method = "kmeans", centers = 2)
+  res <- cluster_elements(airway_mini, method = "kmeans", centers = 2)
   
   expect_true("cluster_kmeans" %in% names(SummarizedExperiment::colData(res)))
   expect_equal(

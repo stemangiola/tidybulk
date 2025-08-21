@@ -42,16 +42,31 @@
 #'
 #'
 #' @examples
+#' ## Load airway dataset for examples
+#'
+#'   data('airway', package = 'airway')
+#'   # Ensure a 'condition' column exists for examples expecting it
+#'
+#'     SummarizedExperiment::colData(airway)$condition <- as.factor(SummarizedExperiment::colData(airway)$dex)
 #'
 #'
 #'
-#' cm = tidybulk::se_mini
-#' cm$batch = 0
-#' cm$batch[colnames(cm) %in% c("SRR1740035", "SRR1740043")] = 1
+#'
+#'
+#' cm = airway
+#' # Create a balanced two-level batch within each condition to avoid confounding
+#' cond <- SummarizedExperiment::colData(cm)$condition
+#' cm$batch <- rep(NA_character_, ncol(cm))
+#' for (lev in unique(cond)) {
+#'   idx <- which(cond == lev)
+#'   cm$batch[idx] <- rep(c('A','B'), length.out = length(idx))
+#'
+#' }
+#' cm$batch <- as.factor(cm$batch)
 #'
 #' cm |>
 #' identify_abundant() |>
-#'	adjust_abundance(	.factor_unwanted = batch, .factor_of_interest =  condition, method="combat"	)
+#'	adjust_abundance(	.factor_unwanted = batch, .factor_of_interest =  condition, method="combat_seq"	)
 #'
 #' @references
 #' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7

@@ -1,40 +1,42 @@
 
 library(SummarizedExperiment)
+library(airway)
 
 # Use testthat 3e style
 test_that("filterByExpr filters by min.count and CPM.Cutoff (minimum_count_per_million)", {
-  se = tidybulk::se
+  data(airway)
+  se = airway
   mat = assay(se)
-# Removed unnecessary print statements
+  filterByExpr_SE <- get("filterByExpr_SE", asNamespace("tidybulk"))
+  filterByExpr <- get("filterByExpr", asNamespace("tidybulk"))
 
   # Test default min.count filtering on SummarizedExperiment
-  keep_default_se <- tidybulk:::filterByExpr_SE(se, min.count = 10)
+  keep_default_se <- filterByExpr_SE(se, min.count = 10)
   expect_type(keep_default_se, "logical")
   expect_length(keep_default_se, nrow(se))
   expect_true(any(!keep_default_se))
 
   # Test default min.count filtering on matrix
-  keep_default <- tidybulk:::filterByExpr(mat, min.count = 10)
+  keep_default <- filterByExpr(mat, min.count = 10)
   expect_type(keep_default, "logical")
   expect_length(keep_default, nrow(mat))
   expect_true(any(!keep_default))
 
   # Test CPM.Cutoff filtering on matrix: compare two CPM cutoffs
-  keep_cpm10 <- tidybulk:::filterByExpr(mat, CPM.Cutoff = 10)
-  keep_cpm100 <- tidybulk:::filterByExpr(mat, CPM.Cutoff = 100)
+  keep_cpm10 <- filterByExpr(mat, CPM.Cutoff = 10)
+  keep_cpm100 <- filterByExpr(mat, CPM.Cutoff = 100)
   expect_true(sum(keep_cpm100) <= sum(keep_cpm10))
 
   # If all counts are high, all should be kept
   mat_high <- matrix(1000, nrow = 3, ncol = 4)
-  keep_all <- tidybulk:::filterByExpr(mat_high, min.count = 10)
+  keep_all <- filterByExpr(mat_high, min.count = 10)
   expect_true(all(keep_all))
 })
 
 test_that("keep_abundant works with minimum_counts and minimum_count_per_million", {
-  se = tidybulk::se
+  data(airway)
+  se = airway
   colnames_cd <- colnames(colData(se))
-  print("colData(se) columns:")
-  print(colnames_cd)
 
   # Using minimum_counts
   se_abundant_10 <- tidybulk::keep_abundant(se, minimum_counts = 10)
@@ -54,10 +56,9 @@ test_that("keep_abundant works with minimum_counts and minimum_count_per_million
 })
 
 test_that("keep_abundant works with factor_of_interest", {
-  se = tidybulk::se
+  data(airway)
+  se = airway
   colnames_cd <- colnames(colData(se))
-  print("colData(se) columns:")
-  print(colnames_cd)
   
   # Use the first available column as factor_of_interest
   factor_col <- colnames_cd[1]
@@ -72,7 +73,8 @@ test_that("keep_abundant works with factor_of_interest", {
 })
 
 test_that("identify_abundant works with minimum_counts and minimum_count_per_million", {
-  se = tidybulk::se
+  data(airway)
+  se = airway
   
   # Test with minimum_counts only
   se_abundant_10 <- tidybulk::identify_abundant(se, minimum_counts = 10)
@@ -92,7 +94,8 @@ test_that("identify_abundant works with minimum_counts and minimum_count_per_mil
 }) 
 
 test_that("identify_abundant and keep_abundant work with design argument", {
-  se = tidybulk::se
+  data(airway)
+  se = airway
   # Use the first available column as a factor for the design
   design <- model.matrix(~ dex + cell, data = colData(se))
 
@@ -115,14 +118,15 @@ test_that("identify_abundant and keep_abundant work with design argument", {
 
   se_keep_cpm10 <- tidybulk::keep_abundant(se, minimum_count_per_million = 10, design = design)
   se_keep_cpm100 <- tidybulk::keep_abundant(se, minimum_count_per_million = 100, design = design)
-  expect_true(nrow(se_keep_cpm100) <= nrow(se_keep_cpm10))
+  expect_true(nrow(se_keep_cpm100) <= nrow(se_keep_10))
 
   se_keep_both <- tidybulk::keep_abundant(se, minimum_counts = 100, minimum_count_per_million = 100, design = design)
   expect_equal(nrow(se_keep_both), nrow(se_keep_cpm100))
 }) 
 
 test_that("identify_abundant and keep_abundant work with formula_design argument", {
-  se = tidybulk::se
+  data(airway)
+  se = airway
   # Use a formula for design
   formula <- ~ dex + cell
 
@@ -145,7 +149,7 @@ test_that("identify_abundant and keep_abundant work with formula_design argument
 
   se_keep_cpm10 <- tidybulk::keep_abundant(se, minimum_count_per_million = 10, formula_design = formula)
   se_keep_cpm100 <- tidybulk::keep_abundant(se, minimum_count_per_million = 100, formula_design = formula)
-  expect_true(nrow(se_keep_cpm100) <= nrow(se_keep_cpm10))
+  expect_true(nrow(se_keep_cpm100) <= nrow(se_keep_10))
 
   se_keep_both <- tidybulk::keep_abundant(se, minimum_counts = 100, minimum_count_per_million = 100, formula_design = formula)
   expect_equal(nrow(se_keep_both), nrow(se_keep_cpm100))

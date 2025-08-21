@@ -85,9 +85,17 @@ Underlying method
 edgeR::calcNormFactors(.data, method = c("TMM","TMMwsp","RLE","upperquartile"))
 }
 \examples{
+## Load airway dataset for examples
+
+  data('airway', package = 'airway')
+  # Ensure a 'condition' column exists for examples expecting it
+
+    SummarizedExperiment::colData(airway)$condition <- SummarizedExperiment::colData(airway)$dex
 
 
- tidybulk::se_mini |>
+
+
+ airway |>
    identify_abundant() |>
    scale_abundance()
 
