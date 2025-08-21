@@ -1617,7 +1617,7 @@ setMethod("keep_variable",
 
   # Check if package is installed, otherwise install
   check_and_install_packages("edgeR")
-browser()
+  # browser()
   # Get gene to exclude
   # If minimum_count_per_million is provided, use it and ignore minimum_counts
   if (!is.null(minimum_count_per_million)) {
