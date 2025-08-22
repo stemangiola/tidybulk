@@ -1242,6 +1242,10 @@ get_differential_transcript_abundance_deseq2_SE <- function(.data,
         }
 
 	my_contrasts = .contrasts
+    
+       if (!inherits(assays(.data)[[1]], 'matrix')){
+           assays(.data)[[1]] <- as.matrix(assays(.data)[[1]])
+       }
 
 	# If no assay is specified take first
 	my_assay = ifelse(
