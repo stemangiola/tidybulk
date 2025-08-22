@@ -343,14 +343,12 @@ standardGeneric("test_gene_enrichment"))
       ) |>
       arrange(sort_column) |>
       
-      # Add webpage - check if pathway column exists and create web_page
-      (function(data) {
-        if ("pathway" %in% names(data) && nrow(data) > 0) {
-          mutate(data, web_page = sprintf(gsea_web_page, pathway))
-        } else {
-          data
-        }
-      })() |>
+      # Ensure required columns exist
+      mutate(
+        data_base = if("data_base" %in% names(.)) data_base else NA_character_,
+        pathway = if("pathway" %in% names(.)) pathway else NA_character_,
+        web_page = if("pathway" %in% names(.) && nrow(.) > 0) sprintf(gsea_web_page, pathway) else NA_character_
+      ) |>
       # Select columns that exist
       (function(data) {
         available_cols <- names(data)
@@ -392,10 +390,16 @@ standardGeneric("test_gene_enrichment"))
           mutate(data_base = .y)
       ) |>
       arrange(sort_column) |>
+      # Ensure required columns exist
+      mutate(
+        data_base = if("data_base" %in% names(.)) data_base else NA_character_,
+        pathway = if("pathway" %in% names(.)) pathway else NA_character_,
+        web_page = if("pathway" %in% names(.) && nrow(.) > 0) sprintf(gsea_web_page, pathway) else NA_character_
+      ) |>
       # Select columns that exist
       (function(data) {
         available_cols <- names(data)
-        select_cols <- c("data_base", "pathway", sort_column)
+        select_cols <- c("data_base", "pathway", "web_page", sort_column)
         existing_cols <- select_cols[select_cols %in% available_cols]
         if (length(existing_cols) > 0) {
           select(data, all_of(existing_cols), everything())
