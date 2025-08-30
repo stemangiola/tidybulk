@@ -1,7 +1,7 @@
 Type: Package
 Package: tidybulk
 Title: Brings transcriptomics to the tidyverse 
-Version: 1.21.1
+Version: 1.99.2
 Authors@R: c(person("Stefano", "Mangiola", email = "mangiolastefano@gmail.com",
                   role = c("aut", "cre")),
             person("Maria", "Doyle", email = "Maria.Doyle@petermac.org",
@@ -16,16 +16,13 @@ Depends:
     ttservice (>= 0.3.6)
 Imports:
     tibble,
-    readr,
     dplyr (>= 1.1.0),
     magrittr,
     tidyr,
-    stringi,
     stringr,
     rlang,
     purrr,
     tidyselect,
-    preprocessCore,
     stats,
     parallel,
     utils,
@@ -76,6 +73,7 @@ Suggests:
     markdown,
     uwot,
     matrixStats,
+    preprocessCore,
     igraph,
     EGSEA,
     IRanges,
@@ -86,7 +84,10 @@ Suggests:
     lme4,
     glmmTMB,
     MASS,
-    pkgconfig
+    pkgconfig,
+    enrichplot,
+    patchwork,
+    airway
 VignetteBuilder: 
     knitr
 RdMacros:

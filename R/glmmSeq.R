@@ -19,7 +19,10 @@ car_relatives <- function (term, names, factors)
                                         function(term2) is.relative(term, term2))]
 }
 
-#' @importFrom stats pchisq
+#' @importFrom stats pchisq coef vcov AIC logLik anova predict
+#' @importFrom methods slot new
+#' @importFrom parallel makeCluster clusterExport parLapply stopCluster
+#' @importFrom stats update.formula
 organiseStats = function (resultList, test.stat)
 {
   statsList <- lapply(resultList, "[[", "stats")
@@ -452,7 +455,7 @@ setClass("GlmmSeq", slots = list(
 glmmSeq = function (modelFormula, countdata, metadata, id = NULL, dispersion = NA,
                     sizeFactors = NULL, reduced = NULL, modelData = NULL, designMatrix = NULL,
                     method = c("lme4", "glmmTMB"), control = NULL, family = glmmTMB::nbinom2,
-                    cores = 1, removeSingles = FALSE, zeroCount = 0.125, verbose = TRUE,
+                    cores = parallel::detectCores(), removeSingles = FALSE, zeroCount = 0.125, verbose = TRUE,
                     returnList = FALSE, progress = FALSE, max_rows_for_matrix_multiplication = Inf, avoid_forking = FALSE, ...)
 {
   glmmcall <- match.call(expand.dots = TRUE)

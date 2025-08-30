@@ -1,0 +1,123 @@
+#' Resolve Complete Confounders of Non-Interest
+#'
+#' This function identifies and resolves complete confounders among specified factors of non-interest within a `SummarizedExperiment` object.
+#' Complete confounders occur when the levels of one factor are entirely predictable based on the levels of another factor.
+#' Such relationships can interfere with downstream analyses by introducing redundancy or collinearity.
+#'
+#' The function systematically examines pairs of specified factors and determines whether they are completely confounded.
+#' If a pair of factors is found to be confounded, one of the factors is adjusted or removed to resolve the issue.
+#' The adjusted `SummarizedExperiment` object is returned, preserving all assays and metadata except the resolved factors.
+#'
+#' @param se A `SummarizedExperiment` object. This object contains assay data, row data (e.g., gene annotations), and column data (e.g., sample annotations).
+#' @param ... Factors of non-interest (column names from `colData(se)`) to examine for complete confounders.
+#'
+#' @details
+#' Complete confounders of non-interest can create dependencies between variables that may bias statistical models or violate their assumptions.
+#' This function systematically addresses this by:
+#' 1. Creating new columns with the suffix "___altered" for each specified factor to preserve original values
+#' 2. Identifying pairs of factors in the specified columns that are fully confounded
+#' 3. Resolving confounding by adjusting one of the factors in the "___altered" columns
+#' 
+#' The function creates new columns with the "___altered" suffix to store the modified values while preserving the original data. This allows users to compare the original and adjusted values if needed.
+#'
+#' The resolution strategy depends on the analysis context and can be modified in the helper function
+#' `resolve_complete_confounders_of_non_interest_pair_SE()`. By default, the function adjusts one of the confounded factors in the "___altered" columns.
+#'
+#' @return
+#' A `SummarizedExperiment` object with resolved confounders. The object retains its structure, including assays and metadata,
+#' but the column data (`colData`) is updated with new "___altered" columns containing the resolved factors.
+#'
+#' @examples
+#' # Load necessary libraries
+#'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' library(SummarizedExperiment)
+#' library(dplyr)
+#'
+#' # Sample annotations
+#' sample_annotations <- data.frame(
+#'   sample_id = paste0("Sample", seq(1, 9)),
+#'   factor_of_interest = c(rep("treated", 4), rep("untreated", 5)),
+#'   A = c("a1", "a2", "a1", "a2", "a1", "a2", "a1", "a2", "a3"),
+#'   B = c("b1", "b1", "b2", "b1", "b1", "b1", "b2", "b1", "b3"),
+#'   C = c("c1", "c1", "c1", "c1", "c1", "c1", "c1", "c1", "c3"),
+#'   stringsAsFactors = FALSE
+#' )
+#'
+#' # Simulated assay data
+#' assay_data <- matrix(rnorm(100 * 9), nrow = 100, ncol = 9)
+#'
+#' # Row data (e.g., gene annotations)
+#' row_data <- data.frame(gene_id = paste0("Gene", seq_len(100)))
+#'
+#' # Create SummarizedExperiment object
+#' se <- SummarizedExperiment(
+#'   assays = list(counts = assay_data),
+#'   rowData = row_data,
+#'   colData = DataFrame(sample_annotations)
+#' )
+#'
+#' # Apply the function to resolve confounders
+#' se_resolved <- resolve_complete_confounders_of_non_interest(se, A, B, C)
+#'
+#' # View the updated column data
+#' colData(se_resolved)
+#'
+#' @seealso
+#' \code{\link[SummarizedExperiment]{SummarizedExperiment}} for creating and handling `SummarizedExperiment` objects.
+#'
+#' @importFrom dplyr select
+#' @importFrom rlang set_names
+#' @importFrom tibble as_tibble
+#' @export
+setGeneric("resolve_complete_confounders_of_non_interest", function(se, ...) {
+  standardGeneric("resolve_complete_confounders_of_non_interest")
+})
+
+
+
+#' @importFrom dplyr select
+#' @importFrom rlang set_names
+#' @importFrom tibble as_tibble
+#' @importFrom SummarizedExperiment as.data.frame
+#' @importFrom S4Vectors DataFrame
+.resolve_complete_confounders_of_non_interest <- function(se, ...){
+  
+  colData(se) =
+    colData(se) |>
+    as.data.frame() |>
+    .resolve_complete_confounders_of_non_interest_df(...) |>
+    DataFrame()
+  
+  se
+  
+}
+
+#' resolve_complete_confounders_of_non_interest
+#'
+#' @docType methods
+#' @rdname resolve_complete_confounders_of_non_interest-methods
+#' @param se A `SummarizedExperiment` object
+#' @param ... Factors of non-interest (column names from `colData(se)`) to examine for complete confounders
+#'
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("resolve_complete_confounders_of_non_interest",
+          "SummarizedExperiment",
+          .resolve_complete_confounders_of_non_interest)
+
+#' resolve_complete_confounders_of_non_interest
+#'
+#' @docType methods
+#' @rdname resolve_complete_confounders_of_non_interest-methods
+#' @param se A `SummarizedExperiment` object
+#' @param ... Factors of non-interest (column names from `colData(se)`) to examine for complete confounders
+#'
+#' @return A consistent object (to the input) with additional columns for the statistics from the hypothesis test (e.g.,  log fold change, p-value and false discovery rate).
+setMethod("resolve_complete_confounders_of_non_interest",
+          "RangedSummarizedExperiment",
+          .resolve_complete_confounders_of_non_interest)
+
+
+

@@ -36,7 +36,9 @@
 #' @keywords internal
 #'
 #' @importFrom parallel mclapply
-#' @importFrom stats cor
+#' @importFrom stats cor sd
+#' @importFrom utils install.packages
+
 #'
 #'
 CoreAlg <- function(X, y, cores = 3){
@@ -175,7 +177,7 @@ doPerm <- function(perm, X, Y, cores = 3){
 }
 
 # MADE BY STEFANO TO ALLOW PARALLELISM
-call_core = function(itor, Y, X, P, pval, CoreAlg){
+call_core = function(itor, Y, X, P, pval, CoreAlg, cores = 1){
   ##################################
   ## Analyze the first mixed sample
   ##################################
@@ -186,7 +188,7 @@ call_core = function(itor, Y, X, P, pval, CoreAlg){
   y <- (y - mean(y)) / sd(y)
 
   #run SVR core algorithm
-  result <- CoreAlg(X, y, cores = 1)
+  result <- CoreAlg(X, y, cores = cores)
 
   #get results
   w <- result$w
@@ -207,7 +209,7 @@ call_core = function(itor, Y, X, P, pval, CoreAlg){
 #'
 #' @keywords internal
 #'
-my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE){
+my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = parallel::detectCores(), exp_transform = FALSE){
 
 
   #read in data
@@ -251,7 +253,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
   if(length(which(colSums(Y)==0))>0)
     warning(sprintf(
       "tidybulk says: the samples %s were ignored for decovolution as they have 0 counts for the deconvolution signature genes",
-      colnames(Y)[colSums(Y)==0] %>% paste(collapse = ", ")
+      colnames(Y)[colSums(Y)==0] |> paste(collapse = ", ")
     ))
   Y=Y[,colSums(Y)>0, drop=FALSE]
 
@@ -262,7 +264,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
   if(length(which(matrixStats::colSds(Y)==0))>0)
     warning(sprintf(
       "tidybulk says: the samples %s were ignored for decovolution as they have standard deviation of 0 for the deconvolution signature genes",
-      colnames(Y)[matrixStats::colSds(Y)==0] %>% paste(collapse = ", ")
+      colnames(Y)[matrixStats::colSds(Y)==0] |> paste(collapse = ", ")
     ))
   Y = Y[,matrixStats::colSds(Y)>0,drop=FALSE]
 
@@ -293,7 +295,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
       ##################################
 
 
-      out <- call_core(itor, Y, X, P, pval, CoreAlg)
+      out <- call_core(itor, Y, X, P, pval, CoreAlg, cores)
       if(itor == 1) {output <- out}
       else {output <- rbind(output, out)}
       itor <- itor + 1
@@ -304,7 +306,7 @@ my_CIBERSORT <- function(Y, X, perm=0, QN=TRUE, cores = 3, exp_transform = FALSE
 
   # If Linux of Mac
   else {
-    output <- parallel::mclapply(1:mix, call_core, Y, X, P, pval, CoreAlg, mc.cores=cores)
+    output <- parallel::mclapply(1:mix, call_core, Y, X, P, pval, CoreAlg, cores, mc.cores=cores)
     output= matrix(unlist(output), nrow=length(output), byrow=TRUE)
 
   }
