@@ -26,6 +26,7 @@ knit: >
         
         # Set knitr options for both renders
         knitr::opts_knit$set(root.dir = proj_root)
+        knitr::opts_chunk$set(fig.path = "README_files/figure-gfm/")
         
         rmarkdown::render(
             x,
@@ -181,16 +182,20 @@ Here we will add a gene symbol column to the `airway` object. This will be used 
 library(org.Hs.eg.db)
 library(AnnotationDbi)
 
-# Add gene symbol and entrez
-airway <-
-  airway |>
-  
-  mutate(entrezid = mapIds(org.Hs.eg.db,
-                                      keys = .feature,
+# Add gene symbol and entrez for better annotation
+rowData(airway)$symbol = AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                                        keys = rownames(airway),
+                                        keytype = "ENSEMBL",
+                                        column = "SYMBOL",
+                                        multiVals = "first"
+)
+
+rowData(airway)$entrezid = AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                                      keys = rownames(airway),
                                       keytype = "ENSEMBL",
                                       column = "ENTREZID",
                                       multiVals = "first"
-)) 
+) 
 
 detach("package:org.Hs.eg.db", unload = TRUE)
 detach("package:AnnotationDbi", unload = TRUE)

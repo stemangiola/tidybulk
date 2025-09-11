@@ -263,7 +263,7 @@ ggplot(as_tibble(airway), aes(counts + 1, group = .sample, color = `dex`)) +
   labs(title = "Raw counts by treatment (before any filtering)")
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/plot-raw-counts-1.png)<!-- -->
+![](README_files/figure-gfm/plot-raw-counts-1.png)<!-- -->
 
 ## Step 1: Data Preprocessing
 
@@ -415,7 +415,7 @@ airway_abundant_all |>
     labs(title = "Counts after abundance filtering (tidybulk default)")
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/filtering-density-plot-comparison-1.png)<!-- -->
+![](README_files/figure-gfm/filtering-density-plot-comparison-1.png)<!-- -->
 
 Update the `airway` object with the filtered data:
 
@@ -487,7 +487,7 @@ ggplot(as_tibble(airway_all), aes(counts + 1, group = .sample, color = method)) 
   labs(title = "Counts after removing redundant transcripts")
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/preprocessing-remove-redundancy-1.png)<!-- -->
+![](README_files/figure-gfm/preprocessing-remove-redundancy-1.png)<!-- -->
 
 ### Filter Variable Transcripts
 
@@ -552,7 +552,7 @@ ggplot(as_tibble(airway_all), aes(counts + 1, group = .sample, color = method)) 
   labs(title = "Counts after variable filtering")
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/filtering-variable-summary-and-plot-1.png)<!-- -->
+![](README_files/figure-gfm/filtering-variable-summary-and-plot-1.png)<!-- -->
 
 ### Scale Abundance
 
@@ -623,7 +623,7 @@ ggplot(as_tibble(airway_scaled_all), aes(counts + 1, group = .sample, color = me
   labs(title = "Scaled counts by method (after scaling)")
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/normalization-visualize-scaling-1.png)<!-- -->
+![](README_files/figure-gfm/normalization-visualize-scaling-1.png)<!-- -->
 
 ## Step 2: Exploratory Data Analysis
 
@@ -684,7 +684,7 @@ airway |>
     labs(title = "MDS Analysis")
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/eda-plot-dimensionality-reduction-1.png)<!-- -->
+![](README_files/figure-gfm/eda-plot-dimensionality-reduction-1.png)<!-- -->
 
 ``` r
 # PCA plot
@@ -696,7 +696,7 @@ airway |>
     labs(title = "PCA Analysis")
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/eda-plot-dimensionality-reduction-2.png)<!-- -->
+![](README_files/figure-gfm/eda-plot-dimensionality-reduction-2.png)<!-- -->
 
 ### Clustering Analysis
 
@@ -715,7 +715,7 @@ airway = airway |>
   labs(title = "K-means Clustering")
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/eda-clustering-analysis-1.png)<!-- -->
+![](README_files/figure-gfm/eda-clustering-analysis-1.png)<!-- -->
 
 ## Step 3: Differential Expression Analysis
 
@@ -863,7 +863,7 @@ metadata(airway)$tidybulk$edgeR_quasi_likelihood_object |>
   plotBCV()
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-edgeR-object-1.png)<!-- -->
+![](README_files/figure-gfm/differential-expression-edgeR-object-1.png)<!-- -->
 
 Plot the log-fold change vs mean plot.
 
@@ -874,7 +874,7 @@ metadata(airway)$tidybulk$edgeR_quasi_likelihood_fit |>
   plotMD()
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-edgeR-fit-1.png)<!-- -->
+![](README_files/figure-gfm/differential-expression-edgeR-fit-1.png)<!-- -->
 
 #### For DESeq2
 
@@ -887,7 +887,7 @@ metadata(airway)$tidybulk$DESeq2_object |>
   plotDispEsts()
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-DESeq2-object-1.png)<!-- -->
+![](README_files/figure-gfm/differential-expression-DESeq2-object-1.png)<!-- -->
 
 Plot the log-fold change vs mean plot.
 
@@ -898,7 +898,7 @@ metadata(airway)$tidybulk$DESeq2_object |>
   plotMA()
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-DESeq2-fit-1.png)<!-- -->
+![](README_files/figure-gfm/differential-expression-DESeq2-fit-1.png)<!-- -->
 
 ### Histograms of p-values across methods
 
@@ -936,7 +936,7 @@ different methods, we can easily compare the p-values across methods.
     ## Warning: Removed 30 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-pvalue-histograms-1.png)<!-- -->
+![](README_files/figure-gfm/differential-expression-pvalue-histograms-1.png)<!-- -->
 
 ### Compare Results Across Methods
 
@@ -1008,7 +1008,7 @@ airway |>
     ## Warning in scale_y_continuous(trans = tidybulk::log10_reverse_trans()):
     ## log10_reverse transformation introduced infinite values.
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-pvalue-pairplot-1.png)<!-- -->
+![](README_files/figure-gfm/differential-expression-pvalue-pairplot-1.png)<!-- -->
 
 ### Pairplot of effect sizes across methods (GGpairs)
 
@@ -1023,7 +1023,7 @@ airway |>
   labs(title = "Pairplot of effect sizes across methods")
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-effectsize-pairplot-1.png)<!-- -->
+![](README_files/figure-gfm/differential-expression-effectsize-pairplot-1.png)<!-- -->
 
 ### Volcano Plots for Each Method
 
@@ -1077,7 +1077,7 @@ airway |>
     ## Warning: Removed 30 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-volcano-plots-1-1.png)<!-- -->
+![](README_files/figure-gfm/differential-expression-volcano-plots-1-1.png)<!-- -->
 
 Plotting independent y-axis scales for the p-values and effect sizes
 allows us to compare the top genes across methods.
@@ -1151,7 +1151,7 @@ airway |>
     ## Warning: ggrepel: 15925 unlabeled data points (too many overlaps). Consider increasing max.overlaps
     ## ggrepel: 15925 unlabeled data points (too many overlaps). Consider increasing max.overlaps
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/differential-expression-volcano-plots-2-1.png)<!-- -->
+![](README_files/figure-gfm/differential-expression-volcano-plots-2-1.png)<!-- -->
 
 ### Differential Expression with Contrasts
 
@@ -1407,7 +1407,7 @@ airway |>
     ## Warning: ggrepel: 784 unlabeled data points (too many overlaps). Consider
     ## increasing max.overlaps
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/batch-correction-adjust-abundance-1.png)<!-- -->
+![](README_files/figure-gfm/batch-correction-adjust-abundance-1.png)<!-- -->
 
 ## Step 5: Gene Enrichment Analysis
 
@@ -1539,32 +1539,32 @@ gene_rank_res |>
 
     ## [[1]]
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-1.png)<!-- -->
+![](README_files/figure-gfm/enrichment-visualize-gsea-plots-1.png)<!-- -->
 
     ## 
     ## [[2]]
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-2.png)<!-- -->
+![](README_files/figure-gfm/enrichment-visualize-gsea-plots-2.png)<!-- -->
 
     ## 
     ## [[3]]
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-3.png)<!-- -->
+![](README_files/figure-gfm/enrichment-visualize-gsea-plots-3.png)<!-- -->
 
     ## 
     ## [[4]]
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-4.png)<!-- -->
+![](README_files/figure-gfm/enrichment-visualize-gsea-plots-4.png)<!-- -->
 
     ## 
     ## [[5]]
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-5.png)<!-- -->
+![](README_files/figure-gfm/enrichment-visualize-gsea-plots-5.png)<!-- -->
 
     ## 
     ## [[6]]
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/enrichment-visualize-gsea-plots-6.png)<!-- -->
+![](README_files/figure-gfm/enrichment-visualize-gsea-plots-6.png)<!-- -->
 
 ``` r
 detach("package:enrichplot", unload = TRUE)
@@ -1835,7 +1835,7 @@ airway   |>
   labs(title = "CIBERSORT Cell Type Proportions")
 ```
 
-![](/Users/a1234450/Documents/GitHub/tidybulk/README_files/figure-gfm/deconvolution-plotting-1.png)<!-- -->
+![](README_files/figure-gfm/deconvolution-plotting-1.png)<!-- -->
 
 ``` r
  # Repeat similar plotting for LLSR, EPIC, MCP-counter, quanTIseq, and xCell
