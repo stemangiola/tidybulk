@@ -404,23 +404,18 @@ analysis, and to deconvolve the cellularity.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/AnnotationDbi" class="external-link">AnnotationDbi</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Add gene symbol and entrez for better annotation</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">symbol</span> <span class="op">=</span> <span class="fu">AnnotationDbi</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/AnnotationDb-class.html" class="external-link">mapIds</a></span><span class="op">(</span><span class="fu">org.Hs.eg.db</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/org.Hs.eg.db/man/org.Hs.egBASE.html" class="external-link">org.Hs.eg.db</a></span>,</span>
-<span>                                        keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span>,</span>
-<span>                                        keytype <span class="op">=</span> <span class="st">"ENSEMBL"</span>,</span>
-<span>                                        column <span class="op">=</span> <span class="st">"SYMBOL"</span>,</span>
-<span>                                        multiVals <span class="op">=</span> <span class="st">"first"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## 'select()' returned 1:many mapping between keys and columns</span></span></code></pre>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">entrezid</span> <span class="op">=</span> <span class="fu">AnnotationDbi</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/AnnotationDb-class.html" class="external-link">mapIds</a></span><span class="op">(</span><span class="fu">org.Hs.eg.db</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/org.Hs.eg.db/man/org.Hs.egBASE.html" class="external-link">org.Hs.eg.db</a></span>,</span>
-<span>                                      keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span>,</span>
+<span><span class="co"># Add gene symbol and entrez</span></span>
+<span><span class="va">airway</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">airway</span> <span class="op">|&gt;</span></span>
+<span>  </span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>entrezid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/AnnotationDb-class.html" class="external-link">mapIds</a></span><span class="op">(</span><span class="va">org.Hs.eg.db</span>,</span>
+<span>                                      keys <span class="op">=</span> <span class="va">.feature</span>,</span>
 <span>                                      keytype <span class="op">=</span> <span class="st">"ENSEMBL"</span>,</span>
 <span>                                      column <span class="op">=</span> <span class="st">"ENTREZID"</span>,</span>
 <span>                                      multiVals <span class="op">=</span> <span class="st">"first"</span></span>
-<span><span class="op">)</span> </span></code></pre></div>
+<span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## 'select()' returned 1:many mapping between keys and columns</span></span></code></pre>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/detach.html" class="external-link">detach</a></span><span class="op">(</span><span class="st">"package:org.Hs.eg.db"</span>, unload <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/detach.html" class="external-link">detach</a></span><span class="op">(</span><span class="st">"package:AnnotationDbi"</span>, unload <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -429,11 +424,11 @@ analysis, and to deconvolve the cellularity.</p>
 <h2 id="installation-guide">Installation Guide<a class="anchor" aria-label="anchor" href="#installation-guide"></a>
 </h2>
 <p><strong>Bioconductor</strong></p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"tidybulk"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Github</strong></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"stemangiola/tidybulk"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -449,7 +444,7 @@ expression analysis.</p>
 <code>SummarizedExperiment</code> object containing RNA-seq data from an
 experiment studying the effect of dexamethasone treatment on airway
 smooth muscle cells:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A SummarizedExperiment-tibble abstraction: 509,416 × 23</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># </span><span style="color: #555555;">Features=63677 | Samples=8 | Assays=counts</span></span></span>
@@ -474,7 +469,7 @@ smooth muscle cells:</p>
 this object as a <code>tibble</code>, making it compatible with
 tidyverse tools while maintaining its <code>SummarizedExperiment</code>
 nature:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "RangedSummarizedExperiment"</span></span>
 <span><span class="co">## attr(,"package")</span></span>
@@ -484,7 +479,7 @@ nature:</p>
 </h4>
 <p>Before analysis, we need to ensure our variables are in the correct
 format:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Convert dex to factor for proper differential expression analysis</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">dex</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">dex</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -492,7 +487,7 @@ format:</p>
 <h4 id="visualize-raw-counts">Visualize Raw Counts<a class="anchor" aria-label="anchor" href="#visualize-raw-counts"></a>
 </h4>
 <p>Visualize the distribution of raw counts before any filtering:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">counts</span> <span class="op">+</span> <span class="fl">1</span>, group <span class="op">=</span> <span class="va">.sample</span>, color <span class="op">=</span> <span class="va">`dex`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html" class="external-link">geom_density</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_log10</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -512,7 +507,7 @@ format:</p>
 <p>Transcript aggregation is a standard bioinformatics approach for
 gene-level summarization.</p>
 </blockquote>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add gene names to rowData</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">gene_name</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span></span>
 <span></span>
@@ -528,12 +523,12 @@ methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCar
 <div class="section level5">
 <h5 id="tidybulk-default-formula_design-and-cpm-threshold">1. tidybulk: Default, formula_design, and CPM threshold<a class="anchor" aria-label="anchor" href="#tidybulk-default-formula_design-and-cpm-threshold"></a>
 </h5>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Default (simple filtering)</span></span>
 <span><span class="va">airway_abundant_default</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/keep_abundant.html">keep_abundant</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in filterByExpr.DGEList(y, design = design, group = group, lib.size =</span></span>
 <span><span class="co">## lib.size, : All samples appear to belong to the same group.</span></span></code></pre>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># With factor_of_interest (recommended for complex designs)</span></span>
 <span><span class="va">airway_abundant_formula</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/keep_abundant.html">keep_abundant</a></span><span class="op">(</span>minimum_counts <span class="op">=</span> <span class="fl">10</span>, minimum_proportion <span class="op">=</span> <span class="fl">0.5</span>, factor_of_interest <span class="op">=</span> <span class="va">dex</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: The `factor_of_interest` argument of `keep_abundant()` is deprecated as of</span></span>
@@ -554,7 +549,7 @@ methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCar
 <span><span class="co">## <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
 <span><span class="co">## <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
 <span><span class="co">## <span style="color: #555555;">generated.</span></span></span></code></pre>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># With CPM threshold (using design parameter)</span></span>
 <span><span class="va">airway_abundant_cpm</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/keep_abundant.html">keep_abundant</a></span><span class="op">(</span>minimum_counts <span class="op">=</span> <span class="fl">10</span>, minimum_proportion <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in filterByExpr.DGEList(y, design = design, group = group, lib.size =</span></span>
@@ -563,7 +558,7 @@ methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCar
 <div class="section level5">
 <h5 id="summary-statistics-and-density-plots">2. Summary statistics and density plots<a class="anchor" aria-label="anchor" href="#summary-statistics-and-density-plots"></a>
 </h5>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Example: summary for default tidybulk filtering</span></span>
 <span><span class="co"># Before filtering</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">summarise</span><span class="op">(</span></span>
@@ -576,7 +571,7 @@ methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCar
 <span><span class="co">##   n_features min_count median_count max_count</span></span>
 <span><span class="co">##        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">63</span>677         0            0    <span style="text-decoration: underline;">513</span>766</span></span></code></pre>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># After filtering</span></span>
 <span><span class="va">airway_abundant_default</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">summarise</span><span class="op">(</span></span>
 <span>  n_features <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">.feature</span><span class="op">)</span>,</span>
@@ -588,7 +583,7 @@ methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCar
 <span><span class="co">##   n_features min_count median_count max_count</span></span>
 <span><span class="co">##        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">14</span>224         8          394    <span style="text-decoration: underline;">513</span>766</span></span></code></pre>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway_abundant_formula</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">summarise</span><span class="op">(</span></span>
 <span>  n_features <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">.feature</span><span class="op">)</span>,</span>
 <span>  min_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>,</span>
@@ -599,7 +594,7 @@ methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCar
 <span><span class="co">##   n_features min_count median_count max_count</span></span>
 <span><span class="co">##        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">15</span>926         0          310    <span style="text-decoration: underline;">513</span>766</span></span></code></pre>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway_abundant_cpm</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">summarise</span><span class="op">(</span></span>
 <span>  n_features <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">.feature</span><span class="op">)</span>,</span>
 <span>  min_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>,</span>
@@ -610,7 +605,7 @@ methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCar
 <span><span class="co">##   n_features min_count median_count max_count</span></span>
 <span><span class="co">##        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">14</span>224         8          394    <span style="text-decoration: underline;">513</span>766</span></span></code></pre>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Merge all methods into a single tibble</span></span>
 <span><span class="va">airway_abundant_all</span> <span class="op">=</span> </span>
 <span>  <span class="fu">bind_rows</span><span class="op">(</span></span>
@@ -631,7 +626,7 @@ methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCar
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Counts after abundance filtering (tidybulk default)"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/filtering-density-plot-comparison-1.png" width="960"></p>
 <p>Update the <code>airway</code> object with the filtered data:</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">=</span> <span class="va">airway_abundant_formula</span></span></code></pre></div>
 <blockquote>
 <p><strong>Tip:</strong> Use <code>formula_design</code> for complex
@@ -644,12 +639,12 @@ designs, and use the CPM threshold for library-size-aware filtering.</p>
 </h4>
 <p>Redundancy removal is a standard approach for reducing highly
 correlated features.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway_non_redundant</span> <span class="op">=</span> </span>
 <span>  <span class="va">airway</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/remove_redundancy-methods.html">remove_redundancy</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"correlation"</span>, top <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## Getting the 100 most variable genes</span></span></code></pre>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co"># Make  </span></span>
 <span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">summarise</span><span class="op">(</span></span>
@@ -662,7 +657,7 @@ correlated features.</p>
 <span><span class="co">##   n_features min_count median_count max_count</span></span>
 <span><span class="co">##        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">15</span>926         0          310    <span style="text-decoration: underline;">513</span>766</span></span></code></pre>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Summary statistics</span></span>
 <span><span class="va">airway_non_redundant</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">summarise</span><span class="op">(</span></span>
 <span>  n_features <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">.feature</span><span class="op">)</span>,</span>
@@ -674,7 +669,7 @@ correlated features.</p>
 <span><span class="co">##   n_features min_count median_count max_count</span></span>
 <span><span class="co">##        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">15</span>926         0          357    <span style="text-decoration: underline;">401</span>539</span></span></code></pre>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot before and after</span></span>
 <span><span class="co"># Merge before and after into a single tibble</span></span>
 <span><span class="va">airway_all</span> <span class="op">=</span> <span class="fu">bind_rows</span><span class="op">(</span></span>
@@ -698,7 +693,7 @@ correlated features.</p>
 <p>Variance-based feature selection using edgeR methodology <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCarthy,
 and Smyth 2010</a>)</span> is used for selecting informative
 features.</p>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway_variable</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/keep_variable-methods.html">keep_variable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Getting the 500 most variable genes</span></span></code></pre>
 </div>
@@ -706,7 +701,7 @@ features.</p>
 <h4 id="visualize-after-variable-filtering-variable-transcripts-optional">Visualize After Variable Filtering Variable Transcripts
 (optional)<a class="anchor" aria-label="anchor" href="#visualize-after-variable-filtering-variable-transcripts-optional"></a>
 </h4>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Before filtering</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">summarise</span><span class="op">(</span></span>
 <span>  n_features <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">.feature</span><span class="op">)</span>,</span>
@@ -718,7 +713,7 @@ features.</p>
 <span><span class="co">##   n_features min_count median_count max_count</span></span>
 <span><span class="co">##        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>      <span style="text-decoration: underline;">15</span>926         0          310    <span style="text-decoration: underline;">513</span>766</span></span></code></pre>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># After filtering</span></span>
 <span><span class="va">airway_variable</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">summarise</span><span class="op">(</span></span>
 <span>  n_features <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">.feature</span><span class="op">)</span>,</span>
@@ -730,7 +725,7 @@ features.</p>
 <span><span class="co">##   n_features min_count median_count max_count</span></span>
 <span><span class="co">##        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>        500         0           46     <span style="text-decoration: underline;">76</span>824</span></span></code></pre>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Density plot</span></span>
 <span><span class="co"># Merge before and after into a single tibble</span></span>
 <span><span class="va">airway_all</span> <span class="op">=</span> <span class="fu">bind_rows</span><span class="op">(</span></span>
@@ -753,7 +748,7 @@ features.</p>
 <p>Scale for sequencing depth using TMM <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCarthy, and Smyth
 2010</a>)</span>, upper quartile <span class="citation">(<a href="#ref-bullard2010uq">Bullard et al. 2010</a>)</span>, and RLE <span class="citation">(<a href="#ref-anders2010rle">Anders and Huber
 2010</a>)</span> normalization.</p>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">=</span> </span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="../reference/scale_abundance-methods.html">scale_abundance</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"TMM"</span>, suffix <span class="op">=</span> <span class="st">"_tmm"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -766,24 +761,24 @@ features.</p>
 <div class="section level4">
 <h4 id="visualize-after-scaling">Visualize After Scaling<a class="anchor" aria-label="anchor" href="#visualize-after-scaling"></a>
 </h4>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Before scaling</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="st">"counts"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. </span></span>
 <span><span class="co">##      7.38     71.38    325.56   1375.62    989.38 328812.62</span></span></code></pre>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="st">"counts_tmm"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. </span></span>
 <span><span class="co">##     10.50     97.19    444.13   1884.49   1350.66 457443.80</span></span></code></pre>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="st">"counts_upperquartile"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. </span></span>
 <span><span class="co">##     10.51     99.10    452.57   1918.62   1376.18 465420.93</span></span></code></pre>
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="st">"counts_RLE"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. </span></span>
 <span><span class="co">##     10.45     97.02    443.51   1881.64   1348.31 456680.75</span></span></code></pre>
-<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Merge all methods into a single tibble</span></span>
 <span><span class="va">airway_scaled_all</span> <span class="op">=</span> <span class="fu">bind_rows</span><span class="op">(</span></span>
 <span>  <span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="st">"counts"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span>rownames <span class="op">=</span> <span class="st">".feature"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">pivot_longer</span><span class="op">(</span>cols <span class="op">=</span> <span class="op">-</span><span class="va">.feature</span>, names_to <span class="op">=</span> <span class="st">".sample"</span>, values_to <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">mutate</span><span class="op">(</span>method <span class="op">=</span> <span class="st">"no_scaling"</span><span class="op">)</span>,</span>
@@ -811,7 +806,7 @@ features.</p>
 </h4>
 <p>Variance filtering is a standard preprocessing step for
 dimensionality reduction.</p>
-<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/HenrikBengtsson/matrixStats" class="external-link">matrixStats</a></span><span class="op">)</span></span>
 <span><span class="co"># Remove features with zero variance across samples</span></span>
 <span><span class="va">airway</span> <span class="op">=</span> <span class="va">airway</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/matrixStats/man/rowVars.html" class="external-link">rowVars</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="op">]</span></span></code></pre></div>
@@ -823,13 +818,13 @@ dimensionality reduction.</p>
 1964</a>)</span> using limma::plotMDS <span class="citation">(<a href="#ref-ritchie2015limma"><strong>ritchie2015limma?</strong></a>)</span>
 and PCA <span class="citation">(<a href="#ref-hotelling1933pca">Hotelling 1933</a>)</span> are used for
 dimensionality reduction.</p>
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"MDS"</span>, .dims <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Getting the 500 most variable genes</span></span></code></pre>
 <pre><code><span><span class="co">## [1] "MDS result_df colnames: sample, 1, 2"</span></span></code></pre>
 <pre><code><span><span class="co">## tidybulk says: to access the raw results do `metadata(.)$tidybulk$MDS`</span></span></code></pre>
-<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/reduce_dimensions-methods.html">reduce_dimensions</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"PCA"</span>, .dims <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Getting the 500 most variable genes</span></span></code></pre>
@@ -844,7 +839,7 @@ dimensionality reduction.</p>
 <div class="section level4">
 <h4 id="visualize-dimensionality-reduction-results">Visualize Dimensionality Reduction Results<a class="anchor" aria-label="anchor" href="#visualize-dimensionality-reduction-results"></a>
 </h4>
-<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># MDS plot</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -853,7 +848,7 @@ dimensionality reduction.</p>
 <span>    <span class="va">my_theme</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"MDS Analysis"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/eda-plot-dimensionality-reduction-1.png" width="960"></p>
-<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># PCA plot</span></span>
 <span>    <span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -868,7 +863,7 @@ dimensionality reduction.</p>
 </h4>
 <p>K-means clustering <span class="citation">(<a href="#ref-macqueen1967kmeans">MacQueen 1967</a>)</span> is used for
 unsupervised grouping.</p>
-<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/cluster_elements-methods.html">cluster_elements</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"kmeans"</span>, centers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
@@ -918,7 +913,7 @@ analysis tools for RNA-seq read counts</p></li>
 <li><p>Liu et al. (2015) Why weight? Modelling sample and observational
 level variability improves power in RNA-seq analyses</p></li>
 </ul>
-<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Standard differential expression analysis</span></span>
 <span><span class="va">airway</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span></span>
@@ -994,7 +989,7 @@ quality control of the fit.</p>
 </h5>
 <p>Plot the biological coefficient of variation (BCV) trend. This plot
 is helpful to understant the dispersion of the data.</p>
-<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioinf.wehi.edu.au/edgeR/" class="external-link">edgeR</a></span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Loading required package: limma</span></span></code></pre>
 <pre><code><span><span class="co">## </span></span>
@@ -1002,12 +997,12 @@ is helpful to understant the dispersion of the data.</p>
 <pre><code><span><span class="co">## The following object is masked from 'package:BiocGenerics':</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##     plotMA</span></span></code></pre>
-<div class="sourceCode" id="cb88"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb86"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Annotated-class.html" class="external-link">metadata</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">tidybulk</span><span class="op">$</span><span class="va">edgeR_quasi_likelihood_object</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/plotBCV.html" class="external-link">plotBCV</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/differential-expression-edgeR-object-1.png" width="700"></p>
 <p>Plot the log-fold change vs mean plot.</p>
-<div class="sourceCode" id="cb89"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioinf.wehi.edu.au/edgeR/" class="external-link">edgeR</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Annotated-class.html" class="external-link">metadata</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">tidybulk</span><span class="op">$</span><span class="va">edgeR_quasi_likelihood_fit</span> <span class="op">|&gt;</span></span>
@@ -1018,14 +1013,14 @@ is helpful to understant the dispersion of the data.</p>
 <h5 id="for-deseq2">For DESeq2<a class="anchor" aria-label="anchor" href="#for-deseq2"></a>
 </h5>
 <p>Plot the mean-variance trend.</p>
-<div class="sourceCode" id="cb90"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb88"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thelovelab/DESeq2" class="external-link">DESeq2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Annotated-class.html" class="external-link">metadata</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">tidybulk</span><span class="op">$</span><span class="va">DESeq2_object</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/dge.html" class="external-link">plotDispEsts</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/differential-expression-DESeq2-object-1.png" width="700"></p>
 <p>Plot the log-fold change vs mean plot.</p>
-<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb89"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thelovelab/DESeq2" class="external-link">DESeq2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Annotated-class.html" class="external-link">metadata</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">tidybulk</span><span class="op">$</span><span class="va">DESeq2_object</span> <span class="op">|&gt;</span></span>
@@ -1046,7 +1041,7 @@ to zero, created by the genuine signals.</p>
 <p>Thanks to the modularity of the <code>tidybulk</code> workflow, that
 can multiplex different methods, we can easily compare the p-values
 across methods.</p>
-<div class="sourceCode" id="cb92"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb90"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>    <span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1070,7 +1065,7 @@ across methods.</p>
 <div class="section level4">
 <h4 id="compare-results-across-methods">Compare Results Across Methods<a class="anchor" aria-label="anchor" href="#compare-results-across-methods"></a>
 </h4>
-<div class="sourceCode" id="cb94"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb92"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Summary statistics</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/AnnotationDb-class.html" class="external-link">select</a></span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"ql|lr_robust|voom|voom_weights|deseq2"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/AnnotationDb-class.html" class="external-link">select</a></span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"logFC"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span><span class="fu">summarise</span><span class="op">(</span><span class="fu">across</span><span class="op">(</span><span class="fu">everything</span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">min</span>, median <span class="op">=</span> <span class="va">median</span>, max <span class="op">=</span> <span class="va">max</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -1090,7 +1085,7 @@ across methods.</p>
 <div class="section level4">
 <h4 id="pairplot-of-pvalues-across-methods-ggpairs">Pairplot of pvalues across methods (GGpairs)<a class="anchor" aria-label="anchor" href="#pairplot-of-pvalues-across-methods-ggpairs"></a>
 </h4>
-<div class="sourceCode" id="cb97"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggobi.github.io/ggally/" class="external-link">GGally</a></span><span class="op">)</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1124,7 +1119,7 @@ across methods.</p>
 <div class="section level4">
 <h4 id="pairplot-of-effect-sizes-across-methods-ggpairs">Pairplot of effect sizes across methods (GGpairs)<a class="anchor" aria-label="anchor" href="#pairplot-of-effect-sizes-across-methods-ggpairs"></a>
 </h4>
-<div class="sourceCode" id="cb103"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb101"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggobi.github.io/ggally/" class="external-link">GGally</a></span><span class="op">)</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1142,7 +1137,7 @@ across methods.</p>
 expression results as a volcano plots we appreciate that some methods
 have much lower p-values distributions than other methods, for the same
 model and data.</p>
-<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb102"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create volcano plots</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span></span>
@@ -1187,7 +1182,7 @@ model and data.</p>
 <p><img src="introduction_files/figure-html/differential-expression-volcano-plots-1-1.png" width="960"></p>
 <p>Plotting independent y-axis scales for the p-values and effect sizes
 allows us to compare the top genes across methods.</p>
-<div class="sourceCode" id="cb106"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create volcano plots</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span></span>
@@ -1237,18 +1232,16 @@ allows us to compare the top genes across methods.</p>
 <span><span class="co">##   dplyr::filter(n &gt; 1L)</span></span></code></pre>
 <pre><code><span><span class="co">## Warning: Removed 30 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_point()`).</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: Removed 10474 rows containing missing values or values outside the scale range</span></span>
+<pre><code><span><span class="co">## Warning: Removed 30 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_text_repel()`).</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: ggrepel: 13801 unlabeled data points (too many overlaps). Consider</span></span>
+<pre><code><span><span class="co">## Warning: ggrepel: 15885 unlabeled data points (too many overlaps). Consider</span></span>
 <span><span class="co">## increasing max.overlaps</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: ggrepel: 13834 unlabeled data points (too many overlaps). Consider</span></span>
+<pre><code><span><span class="co">## Warning: ggrepel: 15926 unlabeled data points (too many overlaps). Consider</span></span>
 <span><span class="co">## increasing max.overlaps</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: ggrepel: 13826 unlabeled data points (too many overlaps). Consider</span></span>
+<pre><code><span><span class="co">## Warning: ggrepel: 15916 unlabeled data points (too many overlaps). Consider</span></span>
 <span><span class="co">## increasing max.overlaps</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: ggrepel: 13833 unlabeled data points (too many overlaps). Consider</span></span>
-<span><span class="co">## increasing max.overlaps</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: ggrepel: 13834 unlabeled data points (too many overlaps). Consider</span></span>
-<span><span class="co">## increasing max.overlaps</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: ggrepel: 15925 unlabeled data points (too many overlaps). Consider increasing max.overlaps</span></span>
+<span><span class="co">## ggrepel: 15925 unlabeled data points (too many overlaps). Consider increasing max.overlaps</span></span></code></pre>
 <p><img src="introduction_files/figure-html/differential-expression-volcano-plots-2-1.png" width="960"></p>
 </div>
 <div class="section level4">
@@ -1258,7 +1251,7 @@ allows us to compare the top genes across methods.</p>
 <strong>edgeR</strong> <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCarthy, and Smyth 2010</a>; <a href="#ref-chen2016edgeR">Chen, Lun, and Smyth 2016</a>)</span> is a
 standard statistical approach for testing specific comparisons in
 complex designs.</p>
-<div class="sourceCode" id="cb115"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb112"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using contrasts for more complex comparisons</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/test_differential_expression-methods.html">test_differential_expression</a></span><span class="op">(</span></span>
@@ -1307,7 +1300,7 @@ complex designs.</p>
 </h4>
 <p>TREAT method <span class="citation">(<a href="#ref-mccarthy2009treat">McCarthy and Smyth 2009</a>)</span> is
 used for testing significance relative to a fold-change threshold.</p>
-<div class="sourceCode" id="cb120"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb117"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using contrasts for more complex comparisons</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/test_differential_expression-methods.html">test_differential_expression</a></span><span class="op">(</span></span>
@@ -1350,7 +1343,7 @@ used for testing significance relative to a fold-change threshold.</p>
 <p>glmmSeq <span class="citation">(<a href="#ref-ma2020glmmseq">Ma et
 al. 2020</a>)</span> is used for generalized linear mixed models for
 RNA-seq data.</p>
-<div class="sourceCode" id="cb124"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb121"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using glmmSeq for mixed models</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/keep_abundant.html">keep_abundant</a></span><span class="op">(</span>formula_design <span class="op">=</span> <span class="op">~</span> <span class="va">dex</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1367,7 +1360,7 @@ RNA-seq data.</p>
 <span>  <span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## n = 8 samples, 4 individuals</span></span></code></pre>
-<pre><code><span><span class="co">## Time difference of 1.132517 mins</span></span></code></pre>
+<pre><code><span><span class="co">## Time difference of 1.123019 mins</span></span></code></pre>
 <pre><code><span><span class="co">## tidybulk says: to access the DE object do</span></span>
 <span><span class="co">## `metadata(.)$tidybulk$glmmseq_lme4_object`</span></span></code></pre>
 <pre><code><span><span class="co">## tidybulk says: to access the raw results (fitted GLM) do</span></span>
@@ -1394,7 +1387,7 @@ RNA-seq data.</p>
 <span><span class="co">## <span style="color: #949494;">#   cluster_kmeans &lt;fct&gt;, gene_id &lt;chr&gt;, gene_name &lt;chr&gt;, entrezid &lt;chr&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   gene_biotype &lt;chr&gt;, gene_seq_start &lt;int&gt;, gene_seq_end &lt;int&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   seq_name &lt;chr&gt;, seq_strand &lt;int&gt;, seq_coord_system &lt;int&gt;, symbol &lt;chr&gt;, …</span></span></span></code></pre>
-<div class="sourceCode" id="cb130"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb127"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/pivot_transcript-methods.html">pivot_transcript</a></span><span class="op">(</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 15,926 × 41</span></span></span>
@@ -1424,7 +1417,7 @@ RNA-seq data.</p>
 <p>With tidybulk, retrieving gene descriptions is straightforward,
 making it easy to enhance the interpretability of your differential
 expression results.</p>
-<div class="sourceCode" id="cb132"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb129"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add gene descriptions using the original SummarizedExperiment</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> </span>
 <span></span>
@@ -1456,7 +1449,7 @@ expression results.</p>
 <p>ComBat-seq <span class="citation">(<a href="#ref-zhang2017combatseq">Zhang, Parmigiani, and Johnson
 2020</a>)</span> is used for batch effect correction in RNA-seq
 data.</p>
-<div class="sourceCode" id="cb136"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb133"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Adjust for batch effects</span></span>
 <span><span class="va">airway</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/adjust_abundance-methods.html">adjust_abundance</a></span><span class="op">(</span></span>
@@ -1472,7 +1465,7 @@ data.</p>
 <span><span class="co">## Fitting the GLM model</span></span>
 <span><span class="co">## Shrinkage off - using GLM estimates for parameters</span></span>
 <span><span class="co">## Adjusting the data</span></span></code></pre>
-<div class="sourceCode" id="cb138"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb135"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Scatter plot of adjusted vs unadjusted</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> </span>
 <span>  </span>
@@ -1488,9 +1481,7 @@ data.</p>
 <span>  <span class="va">my_theme</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Scatter plot of adjusted vs unadjusted"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## tidySummarizedExperiment says: Key columns are missing. A data frame is returned for independent data analysis.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: Removed 16 rows containing missing values or values outside the scale range</span></span>
-<span><span class="co">## (`geom_text_repel()`).</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: ggrepel: 773 unlabeled data points (too many overlaps). Consider</span></span>
+<pre><code><span><span class="co">## Warning: ggrepel: 789 unlabeled data points (too many overlaps). Consider</span></span>
 <span><span class="co">## increasing max.overlaps</span></span></code></pre>
 <p><img src="introduction_files/figure-html/batch-correction-adjust-abundance-1.png" width="700"></p>
 </div>
@@ -1499,7 +1490,7 @@ data.</p>
 </h3>
 <p>Gene Set Enrichment Analysis (GSEA) <span class="citation">(<a href="#ref-subramanian2005gsea">Subramanian et al. 2005</a>)</span> is
 used for gene set enrichment.</p>
-<div class="sourceCode" id="cb142"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb138"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run gene rank enrichment (GSEA style)</span></span>
 <span><span class="va">gene_rank_res</span> <span class="op">=</span></span>
 <span>  <span class="va">airway</span> <span class="op">|&gt;</span></span>
@@ -1537,7 +1528,7 @@ used for gene set enrichment.</p>
 <span><span class="co">## Caused by warning in `fgseaMultilevel()`:</span></span>
 <span><span class="co">## <span style="color: #BBBB00;">!</span> For some of the pathways the P-values were likely overestimated. For such pathways log2err is set to NA.</span></span>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span></code></pre>
-<div class="sourceCode" id="cb160"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb156"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Inspect significant gene sets (example for C2 collection)</span></span>
 <span><span class="va">gene_rank_res</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">gs_collection</span> <span class="op">==</span> <span class="st">"C2"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1563,7 +1554,7 @@ used for gene set enrichment.</p>
 <div class="section level5">
 <h5 id="visualize-enrichment">Visualize enrichment<a class="anchor" aria-label="anchor" href="#visualize-enrichment"></a>
 </h5>
-<div class="sourceCode" id="cb162"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb158"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yulab-smu.top/contribution-knowledge-mining/" class="external-link">enrichplot</a></span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## enrichplot v1.29.2 Learn more at https://yulab-smu.top/contribution-knowledge-mining/</span></span>
 <span><span class="co">## </span></span>
@@ -1577,7 +1568,7 @@ used for gene set enrichment.</p>
 <pre><code><span><span class="co">## The following object is masked from 'package:GGally':</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##     ggtable</span></span></code></pre>
-<div class="sourceCode" id="cb166"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb162"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
 <span>  <span class="va">gene_rank_res</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">unnest</span><span class="op">(</span><span class="va">test</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1608,13 +1599,13 @@ used for gene set enrichment.</p>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## [[6]]</span></span></code></pre>
 <p><img src="introduction_files/figure-html/enrichment-visualize-gsea-plots-6.png" width="700"></p>
-<div class="sourceCode" id="cb173"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb169"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/detach.html" class="external-link">detach</a></span><span class="op">(</span><span class="st">"package:enrichplot"</span>, unload <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: 'enrichplot' namespace cannot be unloaded:</span></span>
 <span><span class="co">##   namespace 'enrichplot' is imported by 'clusterProfiler' so cannot be unloaded</span></span></code></pre>
 <p>Gene Ontology overrepresentation analysis <span class="citation">(<a href="#ref-ashburner2000go">Ashburner et al. 2000</a>)</span> is used
 for functional enrichment.</p>
-<div class="sourceCode" id="cb175"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb171"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Test gene overrepresentation</span></span>
 <span><span class="va">airway_overrep</span> <span class="op">=</span> </span>
 <span>  <span class="va">airway</span> <span class="op">|&gt;</span></span>
@@ -1655,7 +1646,7 @@ combines multiple gene set enrichment analysis methods to provide a more
 robust and comprehensive analysis of gene set enrichment. It creates a
 web-based interactive tool that allows you to explore the results of the
 gene set enrichment analysis.</p>
-<div class="sourceCode" id="cb177"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb173"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">EGSEA</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Loading required package: gage</span></span></code></pre>
 <pre><code><span><span class="co">## Loading required package: AnnotationDbi</span></span></code></pre>
@@ -1692,7 +1683,7 @@ gene set enrichment analysis.</p>
 <pre><code><span><span class="co">## </span></span></code></pre>
 <pre><code><span><span class="co">## </span></span></code></pre>
 <pre><code><span><span class="co">## </span></span></code></pre>
-<div class="sourceCode" id="cb195"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb191"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Test gene enrichment</span></span>
 <span>  <span class="va">airway</span> <span class="op">|&gt;</span> </span>
 <span></span>
@@ -1715,29 +1706,29 @@ gene set enrichment analysis.</p>
 <span><span class="co">## [1] "Indexed the collection h ..."</span></span>
 <span><span class="co">## [1] "Created annotation for the collection h ..."</span></span></code></pre>
 <pre><code><span><span class="co">## EGSEA analysis has started</span></span></code></pre>
-<pre><code><span><span class="co">## ##------ Thu Sep 11 06:15:14 2025 ------##</span></span></code></pre>
+<pre><code><span><span class="co">## ##------ Thu Sep 11 06:28:39 2025 ------##</span></span></code></pre>
 <pre><code><span><span class="co">## The argument 'contrast' is recommended to be a matrix object.</span></span>
 <span><span class="co">## See Vignette or Help.</span></span></code></pre>
 <pre><code><span><span class="co">## Log fold changes are estimated using limma package ...</span></span></code></pre>
 <pre><code><span><span class="co">## limma DE analysis is carried out ...</span></span></code></pre>
 <pre><code><span><span class="co">## EGSEA is running on the provided data and h collection</span></span></code></pre>
 <pre><code><span><span class="co">## ..roast*</span></span></code></pre>
-<pre><code><span><span class="co">## ##------ Thu Sep 11 06:15:16 2025 ------##</span></span></code></pre>
-<pre><code><span><span class="co">## EGSEA analysis took 2.505 seconds.</span></span>
+<pre><code><span><span class="co">## ##------ Thu Sep 11 06:28:41 2025 ------##</span></span></code></pre>
+<pre><code><span><span class="co">## EGSEA analysis took 2.43999999999994 seconds.</span></span>
 <span><span class="co">## EGSEA analysis has completed</span></span>
 <span><span class="co">## EGSEA HTML report is being generated ...</span></span></code></pre>
-<pre><code><span><span class="co">## ##------ Thu Sep 11 06:15:16 2025 ------##</span></span></code></pre>
+<pre><code><span><span class="co">## ##------ Thu Sep 11 06:28:41 2025 ------##</span></span></code></pre>
 <pre><code><span><span class="co">## Report pages and figures are being generated for the h collection ...</span></span>
 <span><span class="co">##    Heat maps are being generated for top-ranked gene sets </span></span>
 <span><span class="co">## based on logFC ... </span></span>
 <span><span class="co">##    Summary plots are being generated ... </span></span>
 <span><span class="co">##    Comparison summary plots are being generated  ...</span></span></code></pre>
-<pre><code><span><span class="co">## ##------ Thu Sep 11 06:16:13 2025 ------##</span></span></code></pre>
-<pre><code><span><span class="co">## EGSEA report generation took 56.598 seconds.</span></span>
+<pre><code><span><span class="co">## ##------ Thu Sep 11 06:29:38 2025 ------##</span></span></code></pre>
+<pre><code><span><span class="co">## EGSEA report generation took 56.6450000000001 seconds.</span></span>
 <span><span class="co">## EGSEA report has been generated.</span></span></code></pre>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 0 × 3</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 3 variables: data_base &lt;chr&gt;, pathway &lt;chr&gt;, web_page &lt;chr&gt;</span></span></span></code></pre>
-<div class="sourceCode" id="cb212"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb208"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/detach.html" class="external-link">detach</a></span><span class="op">(</span><span class="st">"package:EGSEA"</span>, unload <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -1780,7 +1771,7 @@ Performs cell type enrichment analysis.</li>
 <div class="section level4">
 <h4 id="example-usage">Example Usage<a class="anchor" aria-label="anchor" href="#example-usage"></a>
 </h4>
-<div class="sourceCode" id="cb213"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb209"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">=</span> </span>
 <span>  <span class="va">airway</span> <span class="op">|&gt;</span> </span>
 <span>  </span>
@@ -1788,9 +1779,9 @@ Performs cell type enrichment analysis.</li>
 <span>  <span class="fu"><a href="../reference/deconvolve_cellularity-methods.html">deconvolve_cellularity</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"cibersort"</span>, cores <span class="op">=</span> <span class="fl">1</span>, prefix <span class="op">=</span> <span class="st">"cibersort__"</span>, feature_column <span class="op">=</span> <span class="st">"symbol"</span><span class="op">)</span> </span></code></pre></div>
 <p>For the rest of the methods, you need to install the
 <code>immunedeconv</code> package.</p>
-<div class="sourceCode" id="cb214"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb210"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"immunedeconv"</span><span class="op">)</span><span class="op">)</span> <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"immunedeconv"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb215"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb211"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">=</span> </span>
 <span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> </span>
@@ -1814,7 +1805,7 @@ Performs cell type enrichment analysis.</li>
 </h4>
 <p>Visualize the cell type proportions as a stacked barplot for each
 method:</p>
-<div class="sourceCode" id="cb216"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb212"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Visualize CIBERSORT results</span></span>
 <span><span class="va">airway</span>   <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1827,7 +1818,7 @@ method:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"CIBERSORT Cell Type Proportions"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/deconvolution-plotting-1.png" width="960"></p>
-<div class="sourceCode" id="cb217"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb213"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span> <span class="co"># Repeat similar plotting for LLSR, EPIC, MCP-counter, quanTIseq, and xCell</span></span>
 <span><span class="va">airway</span>   <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1890,7 +1881,7 @@ method:</p>
 </h3>
 <p><code>tidybulk</code> allows you to get the bibliography of all
 methods used in our workflow.</p>
-<div class="sourceCode" id="cb218"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb214"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get bibliography of all methods used in our workflow</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/get_bibliography-methods.html">get_bibliography</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##  @Article{tidybulk,</span></span>
@@ -2016,7 +2007,7 @@ methods used in our workflow.</p>
 <span><span class="co">##   year={2015},</span></span>
 <span><span class="co">##   publisher={Nature Publishing Group}</span></span>
 <span><span class="co">##  }</span></span></code></pre>
-<div class="sourceCode" id="cb220"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb216"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.5.1 (2025-06-13)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
