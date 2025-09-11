@@ -81,14 +81,9 @@
 <div class="section level1">
 <div class="page-header"><h1 id="tidybulk-an-r-tidy-framework-for-modular-transcriptomic-data-analysis">tidybulk: An R tidy framework for modular transcriptomic data analysis<a class="anchor" aria-label="anchor" href="#tidybulk-an-r-tidy-framework-for-modular-transcriptomic-data-analysis"></a>
 </h1></div>
-<p>Stefano Mangiola 2025-08-20</p>
+<p>Stefano Mangiola 2025-09-11</p>
 <!-- badges: start -->
 
-</div>
-<div class="section level1">
-<h1 id="section">
-<img src="inst/logo.svg" height="139px" width="120px"><a class="anchor" aria-label="anchor" href="#section"></a>
-</h1>
 <p><strong>tidybulk</strong> is a powerful R package designed for modular transcriptomic data analysis that brings transcriptomics to the tidyverse.</p>
 <div class="section level2">
 <h2 id="why-tidybulk">Why tidybulk?<a class="anchor" aria-label="anchor" href="#why-tidybulk"></a>
@@ -390,8 +385,8 @@
 <span>  <span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>  </span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>entrezid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/AnnotationDb-class.html" class="external-link">mapIds</a></span><span class="op">(</span><span class="va">org.Hs.eg.db</span>,</span>
-<span>                                      keys <span class="op">=</span> <span class="va">.feature</span>,</span>
-<span>                                      keytype <span class="op">=</span> <span class="st">"ENSEMBL"</span>,</span>
+<span>                                      keys <span class="op">=</span> <span class="va">gene_name</span>,</span>
+<span>                                      keytype <span class="op">=</span> <span class="st">"SYMBOL"</span>,</span>
 <span>                                      column <span class="op">=</span> <span class="st">"ENTREZID"</span>,</span>
 <span>                                      multiVals <span class="op">=</span> <span class="st">"first"</span></span>
 <span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
@@ -425,7 +420,7 @@
 <code class="sourceCode R"><span><span class="va">airway</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="do">## class: RangedSummarizedExperiment </span></span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="do">## dim: 63677 8 </span></span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="do">## metadata(1): ''</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="do">## metadata(2): '' latest_mutate_scope_report</span></span>
 <span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="do">## assays(1): counts</span></span>
 <span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="do">## rownames(63677): ENSG00000000003 ENSG00000000005 ... ENSG00000273492</span></span>
 <span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="do">##   ENSG00000273493</span></span>
@@ -478,11 +473,11 @@
 <div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="do">## tidybulk says: your object does not have duplicates along the gene_name column. The input dataset is returned.</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="abundance-filtering-tidybulk-approaches-only">Abundance Filtering: tidybulk approaches only<a class="anchor" aria-label="anchor" href="#abundance-filtering-tidybulk-approaches-only"></a>
+<h3 id="abundance-filtering">Abundance Filtering<a class="anchor" aria-label="anchor" href="#abundance-filtering"></a>
 </h3>
-<p>Abundance filtering can be performed using tidybulk’s built-in methods (<a href="#ref-robinson2010edger">Robinson, McCarthy, and Smyth 2010</a>; <a href="#ref-chen2016edgeR">Chen, Lun, and Smyth 2016</a>).</p>
+<p>Abundance filtering can be performed using established methods (<a href="#ref-robinson2010edger">Robinson, McCarthy, and Smyth 2010</a>; <a href="#ref-chen2016edgeR">Chen, Lun, and Smyth 2016</a>).</p>
 <div class="section level4">
-<h4 id="id_1-tidybulk-default-formula_design-and-cpm-threshold">1. tidybulk: Default, formula_design, and CPM threshold<a class="anchor" aria-label="anchor" href="#id_1-tidybulk-default-formula_design-and-cpm-threshold"></a>
+<h4 id="run-multiple-methods">Run multiple methods<a class="anchor" aria-label="anchor" href="#run-multiple-methods"></a>
 </h4>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Default (simple filtering)</span></span>
@@ -518,7 +513,7 @@
 <span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="do">## lib.size, : All samples appear to belong to the same group.</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="id_2-summary-statistics-and-density-plots">2. Summary statistics and density plots<a class="anchor" aria-label="anchor" href="#id_2-summary-statistics-and-density-plots"></a>
+<h4 id="compare-methods">Compare methods<a class="anchor" aria-label="anchor" href="#compare-methods"></a>
 </h4>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Example: summary for default tidybulk filtering</span></span>
@@ -1307,7 +1302,7 @@
 <div class="sourceCode" id="cb94"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" tabindex="-1"></a><span class="do">## </span></span>
 <span id="cb94-2"><a href="#cb94-2" tabindex="-1"></a><span class="do">## n = 8 samples, 4 individuals</span></span>
 <span id="cb94-3"><a href="#cb94-3" tabindex="-1"></a></span>
-<span id="cb94-4"><a href="#cb94-4" tabindex="-1"></a><span class="do">## Time difference of 33.12868 secs</span></span>
+<span id="cb94-4"><a href="#cb94-4" tabindex="-1"></a><span class="do">## Time difference of 36.80137 secs</span></span>
 <span id="cb94-5"><a href="#cb94-5" tabindex="-1"></a></span>
 <span id="cb94-6"><a href="#cb94-6" tabindex="-1"></a><span class="do">## tidybulk says: to access the DE object do</span></span>
 <span id="cb94-7"><a href="#cb94-7" tabindex="-1"></a><span class="do">## `metadata(.)$tidybulk$glmmseq_lme4_object`</span></span>
@@ -1317,7 +1312,7 @@
 <span id="cb94-11"><a href="#cb94-11" tabindex="-1"></a></span>
 <span id="cb94-12"><a href="#cb94-12" tabindex="-1"></a><span class="do">## class: RangedSummarizedExperiment </span></span>
 <span id="cb94-13"><a href="#cb94-13" tabindex="-1"></a><span class="do">## dim: 100 8 </span></span>
-<span id="cb94-14"><a href="#cb94-14" tabindex="-1"></a><span class="do">## metadata(2): '' tidybulk</span></span>
+<span id="cb94-14"><a href="#cb94-14" tabindex="-1"></a><span class="do">## metadata(3): '' latest_mutate_scope_report tidybulk</span></span>
 <span id="cb94-15"><a href="#cb94-15" tabindex="-1"></a><span class="do">## assays(4): counts counts_tmm counts_upperquartile counts_RLE</span></span>
 <span id="cb94-16"><a href="#cb94-16" tabindex="-1"></a><span class="do">## rownames(100): ENSG00000000003 ENSG00000000419 ... ENSG00000006114</span></span>
 <span id="cb94-17"><a href="#cb94-17" tabindex="-1"></a><span class="do">##   ENSG00000006118</span></span>
@@ -1330,17 +1325,17 @@
 <span>  <span class="fu"><a href="reference/pivot_transcript-methods.html">pivot_transcript</a></span><span class="op">(</span><span class="op">)</span> </span></code></pre></div>
 <div class="sourceCode" id="cb96"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" tabindex="-1"></a><span class="do">## # A tibble: 15,926 × 41</span></span>
 <span id="cb96-2"><a href="#cb96-2" tabindex="-1"></a><span class="do">##    .feature  gene_id gene_name entrezid gene_biotype gene_seq_start gene_seq_end</span></span>
-<span id="cb96-3"><a href="#cb96-3" tabindex="-1"></a><span class="do">##    &lt;chr&gt;     &lt;chr&gt;   &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;                 &lt;int&gt;        &lt;int&gt;</span></span>
-<span id="cb96-4"><a href="#cb96-4" tabindex="-1"></a><span class="do">##  1 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       99883667     99894988</span></span>
-<span id="cb96-5"><a href="#cb96-5" tabindex="-1"></a><span class="do">##  2 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       49551404     49575092</span></span>
-<span id="cb96-6"><a href="#cb96-6" tabindex="-1"></a><span class="do">##  3 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      169818772    169863408</span></span>
-<span id="cb96-7"><a href="#cb96-7" tabindex="-1"></a><span class="do">##  4 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      169631245    169823221</span></span>
-<span id="cb96-8"><a href="#cb96-8" tabindex="-1"></a><span class="do">##  5 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      196621008    196716634</span></span>
-<span id="cb96-9"><a href="#cb96-9" tabindex="-1"></a><span class="do">##  6 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      143815948    143832827</span></span>
-<span id="cb96-10"><a href="#cb96-10" tabindex="-1"></a><span class="do">##  7 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       53362139     53481768</span></span>
-<span id="cb96-11"><a href="#cb96-11" tabindex="-1"></a><span class="do">##  8 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       41040684     41067715</span></span>
-<span id="cb96-12"><a href="#cb96-12" tabindex="-1"></a><span class="do">##  9 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       24683489     24743424</span></span>
-<span id="cb96-13"><a href="#cb96-13" tabindex="-1"></a><span class="do">## 10 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       24742284     24799466</span></span>
+<span id="cb96-3"><a href="#cb96-3" tabindex="-1"></a><span class="do">##    &lt;chr&gt;     &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;                 &lt;int&gt;        &lt;int&gt;</span></span>
+<span id="cb96-4"><a href="#cb96-4" tabindex="-1"></a><span class="do">##  1 ENSG0000… ENSG00… ENSG0000… 7105     protein_cod…       99883667     99894988</span></span>
+<span id="cb96-5"><a href="#cb96-5" tabindex="-1"></a><span class="do">##  2 ENSG0000… ENSG00… ENSG0000… 8813     protein_cod…       49551404     49575092</span></span>
+<span id="cb96-6"><a href="#cb96-6" tabindex="-1"></a><span class="do">##  3 ENSG0000… ENSG00… ENSG0000… 57147    protein_cod…      169818772    169863408</span></span>
+<span id="cb96-7"><a href="#cb96-7" tabindex="-1"></a><span class="do">##  4 ENSG0000… ENSG00… ENSG0000… &lt;NA&gt;     protein_cod…      169631245    169823221</span></span>
+<span id="cb96-8"><a href="#cb96-8" tabindex="-1"></a><span class="do">##  5 ENSG0000… ENSG00… ENSG0000… 3075     protein_cod…      196621008    196716634</span></span>
+<span id="cb96-9"><a href="#cb96-9" tabindex="-1"></a><span class="do">##  6 ENSG0000… ENSG00… ENSG0000… 2519     protein_cod…      143815948    143832827</span></span>
+<span id="cb96-10"><a href="#cb96-10" tabindex="-1"></a><span class="do">##  7 ENSG0000… ENSG00… ENSG0000… 2729     protein_cod…       53362139     53481768</span></span>
+<span id="cb96-11"><a href="#cb96-11" tabindex="-1"></a><span class="do">##  8 ENSG0000… ENSG00… ENSG0000… 4800     protein_cod…       41040684     41067715</span></span>
+<span id="cb96-12"><a href="#cb96-12" tabindex="-1"></a><span class="do">##  9 ENSG0000… ENSG00… ENSG0000… 90529    protein_cod…       24683489     24743424</span></span>
+<span id="cb96-13"><a href="#cb96-13" tabindex="-1"></a><span class="do">## 10 ENSG0000… ENSG00… ENSG0000… 57185    protein_cod…       24742284     24799466</span></span>
 <span id="cb96-14"><a href="#cb96-14" tabindex="-1"></a><span class="do">## # ℹ 15,916 more rows</span></span>
 <span id="cb96-15"><a href="#cb96-15" tabindex="-1"></a><span class="do">## # ℹ 34 more variables: seq_name &lt;chr&gt;, seq_strand &lt;int&gt;,</span></span>
 <span id="cb96-16"><a href="#cb96-16" tabindex="-1"></a><span class="do">## #   seq_coord_system &lt;int&gt;, symbol &lt;chr&gt;, .abundant &lt;lgl&gt;, ql__logFC &lt;dbl&gt;,</span></span>
@@ -1487,20 +1482,20 @@
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">fit</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">unnest</span><span class="op">(</span><span class="va">test</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">p.adjust</span> <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb106"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" tabindex="-1"></a><span class="do">## # A tibble: 143 × 13</span></span>
+<div class="sourceCode" id="cb106"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" tabindex="-1"></a><span class="do">## # A tibble: 91 × 13</span></span>
 <span id="cb106-2"><a href="#cb106-2" tabindex="-1"></a><span class="do">##    gs_collection idx_for_plotting ID         Description setSize enrichmentScore</span></span>
 <span id="cb106-3"><a href="#cb106-3" tabindex="-1"></a><span class="do">##    &lt;chr&gt;                    &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;         &lt;int&gt;           &lt;dbl&gt;</span></span>
-<span id="cb106-4"><a href="#cb106-4" tabindex="-1"></a><span class="do">##  1 C2                           1 CHEN_LVAD… CHEN_LVAD_…      87          -0.738</span></span>
-<span id="cb106-5"><a href="#cb106-5" tabindex="-1"></a><span class="do">##  2 C2                           2 VECCHI_GA… VECCHI_GAS…     221          -0.552</span></span>
-<span id="cb106-6"><a href="#cb106-6" tabindex="-1"></a><span class="do">##  3 C2                           3 FEKIR_HEP… FEKIR_HEPA…      32          -0.825</span></span>
-<span id="cb106-7"><a href="#cb106-7" tabindex="-1"></a><span class="do">##  4 C2                           4 BOQUEST_S… BOQUEST_ST…     389          -0.437</span></span>
-<span id="cb106-8"><a href="#cb106-8" tabindex="-1"></a><span class="do">##  5 C2                           5 SHEDDEN_L… SHEDDEN_LU…     157          -0.552</span></span>
-<span id="cb106-9"><a href="#cb106-9" tabindex="-1"></a><span class="do">##  6 C2                           6 CHARAFE_B… CHARAFE_BR…     405          -0.424</span></span>
-<span id="cb106-10"><a href="#cb106-10" tabindex="-1"></a><span class="do">##  7 C2                           7 WP_OVERVI… WP_OVERVIE…      29           0.778</span></span>
-<span id="cb106-11"><a href="#cb106-11" tabindex="-1"></a><span class="do">##  8 C2                           8 HOSHIDA_L… HOSHIDA_LI…     194          -0.489</span></span>
-<span id="cb106-12"><a href="#cb106-12" tabindex="-1"></a><span class="do">##  9 C2                           9 BLANCO_ME… BLANCO_MEL…     145           0.505</span></span>
-<span id="cb106-13"><a href="#cb106-13" tabindex="-1"></a><span class="do">## 10 C2                          10 ZWANG_CLA… ZWANG_CLAS…     189          -0.478</span></span>
-<span id="cb106-14"><a href="#cb106-14" tabindex="-1"></a><span class="do">## # ℹ 133 more rows</span></span>
+<span id="cb106-4"><a href="#cb106-4" tabindex="-1"></a><span class="do">##  1 C2                           1 CHEN_LVAD… CHEN_LVAD_…      83          -0.726</span></span>
+<span id="cb106-5"><a href="#cb106-5" tabindex="-1"></a><span class="do">##  2 C2                           2 VECCHI_GA… VECCHI_GAS…     205          -0.574</span></span>
+<span id="cb106-6"><a href="#cb106-6" tabindex="-1"></a><span class="do">##  3 C2                           3 FEKIR_HEP… FEKIR_HEPA…      27          -0.840</span></span>
+<span id="cb106-7"><a href="#cb106-7" tabindex="-1"></a><span class="do">##  4 C2                           4 BOQUEST_S… BOQUEST_ST…     375          -0.436</span></span>
+<span id="cb106-8"><a href="#cb106-8" tabindex="-1"></a><span class="do">##  5 C2                           5 WP_OVERVI… WP_OVERVIE…      28           0.788</span></span>
+<span id="cb106-9"><a href="#cb106-9" tabindex="-1"></a><span class="do">##  6 C2                           6 SHEDDEN_L… SHEDDEN_LU…     154          -0.554</span></span>
+<span id="cb106-10"><a href="#cb106-10" tabindex="-1"></a><span class="do">##  7 C2                           7 BLANCO_ME… BLANCO_MEL…     142           0.527</span></span>
+<span id="cb106-11"><a href="#cb106-11" tabindex="-1"></a><span class="do">##  8 C2                           8 CHARAFE_B… CHARAFE_BR…     388          -0.416</span></span>
+<span id="cb106-12"><a href="#cb106-12" tabindex="-1"></a><span class="do">##  9 C2                           9 HOSHIDA_L… HOSHIDA_LI…     188          -0.502</span></span>
+<span id="cb106-13"><a href="#cb106-13" tabindex="-1"></a><span class="do">## 10 C2                          10 MEBARKI_H… MEBARKI_HC…     427           0.380</span></span>
+<span id="cb106-14"><a href="#cb106-14" tabindex="-1"></a><span class="do">## # ℹ 81 more rows</span></span>
 <span id="cb106-15"><a href="#cb106-15" tabindex="-1"></a><span class="do">## # ℹ 7 more variables: NES &lt;dbl&gt;, pvalue &lt;dbl&gt;, p.adjust &lt;dbl&gt;, qvalue &lt;dbl&gt;,</span></span>
 <span id="cb106-16"><a href="#cb106-16" tabindex="-1"></a><span class="do">## #   rank &lt;dbl&gt;, leading_edge &lt;chr&gt;, core_enrichment &lt;chr&gt;</span></span></code></pre></div>
 <div class="section level4">
@@ -1514,20 +1509,21 @@
 <span id="cb108-4"><a href="#cb108-4" tabindex="-1"></a><span class="do">## </span></span>
 <span id="cb108-5"><a href="#cb108-5" tabindex="-1"></a><span class="do">## Please cite:</span></span>
 <span id="cb108-6"><a href="#cb108-6" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb108-7"><a href="#cb108-7" tabindex="-1"></a><span class="do">## T Wu, E Hu, S Xu, M Chen, P Guo, Z Dai, T Feng, L Zhou, W Tang, L Zhan,</span></span>
-<span id="cb108-8"><a href="#cb108-8" tabindex="-1"></a><span class="do">## X Fu, S Liu, X Bo, and G Yu. clusterProfiler 4.0: A universal</span></span>
-<span id="cb108-9"><a href="#cb108-9" tabindex="-1"></a><span class="do">## enrichment tool for interpreting omics data. The Innovation. 2021,</span></span>
-<span id="cb108-10"><a href="#cb108-10" tabindex="-1"></a><span class="do">## 2(3):100141</span></span>
-<span id="cb108-11"><a href="#cb108-11" tabindex="-1"></a></span>
-<span id="cb108-12"><a href="#cb108-12" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb108-13"><a href="#cb108-13" tabindex="-1"></a><span class="do">## Attaching package: 'enrichplot'</span></span>
-<span id="cb108-14"><a href="#cb108-14" tabindex="-1"></a></span>
-<span id="cb108-15"><a href="#cb108-15" tabindex="-1"></a><span class="do">## The following object is masked from 'package:GGally':</span></span>
-<span id="cb108-16"><a href="#cb108-16" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb108-17"><a href="#cb108-17" tabindex="-1"></a><span class="do">##     ggtable</span></span></code></pre></div>
+<span id="cb108-7"><a href="#cb108-7" tabindex="-1"></a><span class="do">## Guangchuang Yu. Gene Ontology Semantic Similarity Analysis Using</span></span>
+<span id="cb108-8"><a href="#cb108-8" tabindex="-1"></a><span class="do">## GOSemSim. In: Kidder B. (eds) Stem Cell Transcriptional Networks.</span></span>
+<span id="cb108-9"><a href="#cb108-9" tabindex="-1"></a><span class="do">## Methods in Molecular Biology. 2020, 2117:207-215. Humana, New York, NY.</span></span>
+<span id="cb108-10"><a href="#cb108-10" tabindex="-1"></a></span>
+<span id="cb108-11"><a href="#cb108-11" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb108-12"><a href="#cb108-12" tabindex="-1"></a><span class="do">## Attaching package: 'enrichplot'</span></span>
+<span id="cb108-13"><a href="#cb108-13" tabindex="-1"></a></span>
+<span id="cb108-14"><a href="#cb108-14" tabindex="-1"></a><span class="do">## The following object is masked from 'package:GGally':</span></span>
+<span id="cb108-15"><a href="#cb108-15" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb108-16"><a href="#cb108-16" tabindex="-1"></a><span class="do">##     ggtable</span></span></code></pre></div>
 <div class="sourceCode" id="cb109"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
-<span>  <span class="va">gene_rank_res</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" tabindex="-1"></a><span class="do">## Warning: package 'patchwork' was built under R version 4.5.1</span></span></code></pre></div>
+<div class="sourceCode" id="cb111"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>  <span class="va">gene_rank_res</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">unnest</span><span class="op">(</span><span class="va">test</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">mutate</span><span class="op">(</span>plot <span class="op">=</span> <span class="fu">pmap</span><span class="op">(</span></span>
@@ -1539,29 +1535,29 @@
 <span>      <span class="op">)</span></span>
 <span>    <span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">pull</span><span class="op">(</span><span class="va">plot</span><span class="op">)</span> </span></code></pre></div>
-<div class="sourceCode" id="cb110"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" tabindex="-1"></a><span class="do">## [[1]]</span></span></code></pre></div>
+<div class="sourceCode" id="cb112"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" tabindex="-1"></a><span class="do">## [[1]]</span></span></code></pre></div>
 <p><img src="README_files/figure-gfm/enrichment-visualize-gsea-plots-1.png"><!-- --></p>
-<div class="sourceCode" id="cb111"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb111-2"><a href="#cb111-2" tabindex="-1"></a><span class="do">## [[2]]</span></span></code></pre></div>
-<p><img src="README_files/figure-gfm/enrichment-visualize-gsea-plots-2.png"><!-- --></p>
-<div class="sourceCode" id="cb112"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb112-2"><a href="#cb112-2" tabindex="-1"></a><span class="do">## [[3]]</span></span></code></pre></div>
-<p><img src="README_files/figure-gfm/enrichment-visualize-gsea-plots-3.png"><!-- --></p>
 <div class="sourceCode" id="cb113"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb113-2"><a href="#cb113-2" tabindex="-1"></a><span class="do">## [[4]]</span></span></code></pre></div>
-<p><img src="README_files/figure-gfm/enrichment-visualize-gsea-plots-4.png"><!-- --></p>
+<span id="cb113-2"><a href="#cb113-2" tabindex="-1"></a><span class="do">## [[2]]</span></span></code></pre></div>
+<p><img src="README_files/figure-gfm/enrichment-visualize-gsea-plots-2.png"><!-- --></p>
 <div class="sourceCode" id="cb114"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb114-2"><a href="#cb114-2" tabindex="-1"></a><span class="do">## [[5]]</span></span></code></pre></div>
-<p><img src="README_files/figure-gfm/enrichment-visualize-gsea-plots-5.png"><!-- --></p>
+<span id="cb114-2"><a href="#cb114-2" tabindex="-1"></a><span class="do">## [[3]]</span></span></code></pre></div>
+<p><img src="README_files/figure-gfm/enrichment-visualize-gsea-plots-3.png"><!-- --></p>
 <div class="sourceCode" id="cb115"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb115-2"><a href="#cb115-2" tabindex="-1"></a><span class="do">## [[6]]</span></span></code></pre></div>
+<span id="cb115-2"><a href="#cb115-2" tabindex="-1"></a><span class="do">## [[4]]</span></span></code></pre></div>
+<p><img src="README_files/figure-gfm/enrichment-visualize-gsea-plots-4.png"><!-- --></p>
+<div class="sourceCode" id="cb116"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb116-2"><a href="#cb116-2" tabindex="-1"></a><span class="do">## [[5]]</span></span></code></pre></div>
+<p><img src="README_files/figure-gfm/enrichment-visualize-gsea-plots-5.png"><!-- --></p>
+<div class="sourceCode" id="cb117"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb117-2"><a href="#cb117-2" tabindex="-1"></a><span class="do">## [[6]]</span></span></code></pre></div>
 <p><img src="README_files/figure-gfm/enrichment-visualize-gsea-plots-6.png"><!-- --></p>
-<div class="sourceCode" id="cb116"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/detach.html" class="external-link">detach</a></span><span class="op">(</span><span class="st">"package:enrichplot"</span>, unload <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb117"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" tabindex="-1"></a><span class="do">## Warning: 'enrichplot' namespace cannot be unloaded:</span></span>
-<span id="cb117-2"><a href="#cb117-2" tabindex="-1"></a><span class="do">##   namespace 'enrichplot' is imported by 'clusterProfiler' so cannot be unloaded</span></span></code></pre></div>
-<p>Gene Ontology overrepresentation analysis (<a href="#ref-ashburner2000go">Ashburner et al. 2000</a>) is used for functional enrichment.</p>
 <div class="sourceCode" id="cb118"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/detach.html" class="external-link">detach</a></span><span class="op">(</span><span class="st">"package:enrichplot"</span>, unload <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb119"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" tabindex="-1"></a><span class="do">## Warning: 'enrichplot' namespace cannot be unloaded:</span></span>
+<span id="cb119-2"><a href="#cb119-2" tabindex="-1"></a><span class="do">##   namespace 'enrichplot' is imported by 'clusterProfiler' so cannot be unloaded</span></span></code></pre></div>
+<p>Gene Ontology overrepresentation analysis (<a href="#ref-ashburner2000go">Ashburner et al. 2000</a>) is used for functional enrichment.</p>
+<div class="sourceCode" id="cb120"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Test gene overrepresentation</span></span>
 <span><span class="va">airway_overrep</span> <span class="op">=</span> </span>
 <span>  <span class="va">airway</span> <span class="op">|&gt;</span></span>
@@ -1580,86 +1576,79 @@
 <span>  <span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">airway_overrep</span></span></code></pre></div>
-<div class="sourceCode" id="cb119"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" tabindex="-1"></a><span class="do">## # A tibble: 5,291 × 13</span></span>
-<span id="cb119-2"><a href="#cb119-2" tabindex="-1"></a><span class="do">##    gs_collection ID      Description GeneRatio BgRatio RichFactor FoldEnrichment</span></span>
-<span id="cb119-3"><a href="#cb119-3" tabindex="-1"></a><span class="do">##    &lt;chr&gt;         &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;          &lt;dbl&gt;</span></span>
-<span id="cb119-4"><a href="#cb119-4" tabindex="-1"></a><span class="do">##  1 C2            PASINI… PASINI_SUZ… 88/1848   316/22…      0.278           3.37</span></span>
-<span id="cb119-5"><a href="#cb119-5" tabindex="-1"></a><span class="do">##  2 C2            CHARAF… CHARAFE_BR… 108/1848  465/22…      0.232           2.81</span></span>
-<span id="cb119-6"><a href="#cb119-6" tabindex="-1"></a><span class="do">##  3 C2            REN_AL… REN_ALVEOL… 98/1848   407/22…      0.241           2.92</span></span>
-<span id="cb119-7"><a href="#cb119-7" tabindex="-1"></a><span class="do">##  4 C2            CHARAF… CHARAFE_BR… 105/1848  456/22…      0.230           2.79</span></span>
-<span id="cb119-8"><a href="#cb119-8" tabindex="-1"></a><span class="do">##  5 C2            CHEN_L… CHEN_LVAD_… 45/1848   102/22…      0.441           5.34</span></span>
-<span id="cb119-9"><a href="#cb119-9" tabindex="-1"></a><span class="do">##  6 C2            BOQUES… BOQUEST_ST… 96/1848   428/22…      0.224           2.72</span></span>
-<span id="cb119-10"><a href="#cb119-10" tabindex="-1"></a><span class="do">##  7 C2            LIM_MA… LIM_MAMMAR… 103/1848  479/22…      0.215           2.60</span></span>
-<span id="cb119-11"><a href="#cb119-11" tabindex="-1"></a><span class="do">##  8 C2            LIU_PR… LIU_PROSTA… 104/1848  495/22…      0.210           2.54</span></span>
-<span id="cb119-12"><a href="#cb119-12" tabindex="-1"></a><span class="do">##  9 C2            LU_AGI… LU_AGING_B… 70/1848   264/22…      0.265           3.21</span></span>
-<span id="cb119-13"><a href="#cb119-13" tabindex="-1"></a><span class="do">## 10 C2            ONDER_… ONDER_CDH1… 67/1848   257/22…      0.261           3.16</span></span>
-<span id="cb119-14"><a href="#cb119-14" tabindex="-1"></a><span class="do">## # ℹ 5,281 more rows</span></span>
-<span id="cb119-15"><a href="#cb119-15" tabindex="-1"></a><span class="do">## # ℹ 6 more variables: zScore &lt;dbl&gt;, pvalue &lt;dbl&gt;, p.adjust &lt;dbl&gt;, qvalue &lt;dbl&gt;,</span></span>
-<span id="cb119-16"><a href="#cb119-16" tabindex="-1"></a><span class="do">## #   Count &lt;int&gt;, entrez &lt;list&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb121"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" tabindex="-1"></a><span class="do">## # A tibble: 5,346 × 13</span></span>
+<span id="cb121-2"><a href="#cb121-2" tabindex="-1"></a><span class="do">##    gs_collection ID      Description GeneRatio BgRatio RichFactor FoldEnrichment</span></span>
+<span id="cb121-3"><a href="#cb121-3" tabindex="-1"></a><span class="do">##    &lt;chr&gt;         &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;          &lt;dbl&gt;</span></span>
+<span id="cb121-4"><a href="#cb121-4" tabindex="-1"></a><span class="do">##  1 C2            PASINI… PASINI_SUZ… 86/1759   316/22…      0.272           3.46</span></span>
+<span id="cb121-5"><a href="#cb121-5" tabindex="-1"></a><span class="do">##  2 C2            CHARAF… CHARAFE_BR… 103/1759  465/22…      0.222           2.82</span></span>
+<span id="cb121-6"><a href="#cb121-6" tabindex="-1"></a><span class="do">##  3 C2            CHARAF… CHARAFE_BR… 101/1759  456/22…      0.221           2.82</span></span>
+<span id="cb121-7"><a href="#cb121-7" tabindex="-1"></a><span class="do">##  4 C2            REN_AL… REN_ALVEOL… 94/1759   407/22…      0.231           2.94</span></span>
+<span id="cb121-8"><a href="#cb121-8" tabindex="-1"></a><span class="do">##  5 C2            ONDER_… ONDER_CDH1… 67/1759   257/22…      0.261           3.32</span></span>
+<span id="cb121-9"><a href="#cb121-9" tabindex="-1"></a><span class="do">##  6 C2            CHEN_L… CHEN_LVAD_… 40/1759   102/22…      0.392           4.99</span></span>
+<span id="cb121-10"><a href="#cb121-10" tabindex="-1"></a><span class="do">##  7 C2            LIU_PR… LIU_PROSTA… 99/1759   495/22…      0.2             2.54</span></span>
+<span id="cb121-11"><a href="#cb121-11" tabindex="-1"></a><span class="do">##  8 C2            BOQUES… BOQUEST_ST… 90/1759   428/22…      0.210           2.68</span></span>
+<span id="cb121-12"><a href="#cb121-12" tabindex="-1"></a><span class="do">##  9 C2            LU_AGI… LU_AGING_B… 66/1759   264/22…      0.25            3.18</span></span>
+<span id="cb121-13"><a href="#cb121-13" tabindex="-1"></a><span class="do">## 10 C2            LIM_MA… LIM_MAMMAR… 95/1759   479/22…      0.198           2.52</span></span>
+<span id="cb121-14"><a href="#cb121-14" tabindex="-1"></a><span class="do">## # ℹ 5,336 more rows</span></span>
+<span id="cb121-15"><a href="#cb121-15" tabindex="-1"></a><span class="do">## # ℹ 6 more variables: zScore &lt;dbl&gt;, pvalue &lt;dbl&gt;, p.adjust &lt;dbl&gt;, qvalue &lt;dbl&gt;,</span></span>
+<span id="cb121-16"><a href="#cb121-16" tabindex="-1"></a><span class="do">## #   Count &lt;int&gt;, entrez &lt;list&gt;</span></span></code></pre></div>
 <p>EGSEA (<a href="#ref-alhamdoosh2017egsea">Alhamdoosh et al. 2017</a>) is used for ensemble gene set enrichment analysis. EGSEA is a method that combines multiple gene set enrichment analysis methods to provide a more robust and comprehensive analysis of gene set enrichment. It creates a web-based interactive tool that allows you to explore the results of the gene set enrichment analysis.</p>
-<div class="sourceCode" id="cb120"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">EGSEA</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb121"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" tabindex="-1"></a><span class="do">## Loading required package: gage</span></span>
-<span id="cb121-2"><a href="#cb121-2" tabindex="-1"></a></span>
-<span id="cb121-3"><a href="#cb121-3" tabindex="-1"></a><span class="do">## Loading required package: AnnotationDbi</span></span>
-<span id="cb121-4"><a href="#cb121-4" tabindex="-1"></a></span>
-<span id="cb121-5"><a href="#cb121-5" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb121-6"><a href="#cb121-6" tabindex="-1"></a><span class="do">## Attaching package: 'AnnotationDbi'</span></span>
-<span id="cb121-7"><a href="#cb121-7" tabindex="-1"></a></span>
-<span id="cb121-8"><a href="#cb121-8" tabindex="-1"></a><span class="do">## The following object is masked from 'package:dplyr':</span></span>
-<span id="cb121-9"><a href="#cb121-9" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb121-10"><a href="#cb121-10" tabindex="-1"></a><span class="do">##     select</span></span>
-<span id="cb121-11"><a href="#cb121-11" tabindex="-1"></a></span>
-<span id="cb121-12"><a href="#cb121-12" tabindex="-1"></a><span class="do">## Loading required package: topGO</span></span>
-<span id="cb121-13"><a href="#cb121-13" tabindex="-1"></a></span>
-<span id="cb121-14"><a href="#cb121-14" tabindex="-1"></a><span class="do">## Warning: package 'topGO' was built under R version 4.5.1</span></span>
-<span id="cb121-15"><a href="#cb121-15" tabindex="-1"></a></span>
-<span id="cb121-16"><a href="#cb121-16" tabindex="-1"></a><span class="do">## Loading required package: graph</span></span>
-<span id="cb121-17"><a href="#cb121-17" tabindex="-1"></a></span>
-<span id="cb121-18"><a href="#cb121-18" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb121-19"><a href="#cb121-19" tabindex="-1"></a><span class="do">## Attaching package: 'graph'</span></span>
-<span id="cb121-20"><a href="#cb121-20" tabindex="-1"></a></span>
-<span id="cb121-21"><a href="#cb121-21" tabindex="-1"></a><span class="do">## The following object is masked from 'package:stringr':</span></span>
-<span id="cb121-22"><a href="#cb121-22" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb121-23"><a href="#cb121-23" tabindex="-1"></a><span class="do">##     boundary</span></span>
-<span id="cb121-24"><a href="#cb121-24" tabindex="-1"></a></span>
-<span id="cb121-25"><a href="#cb121-25" tabindex="-1"></a><span class="do">## Loading required package: GO.db</span></span>
-<span id="cb121-26"><a href="#cb121-26" tabindex="-1"></a></span>
-<span id="cb121-27"><a href="#cb121-27" tabindex="-1"></a><span class="do">## Loading required package: SparseM</span></span>
-<span id="cb121-28"><a href="#cb121-28" tabindex="-1"></a></span>
-<span id="cb121-29"><a href="#cb121-29" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb121-30"><a href="#cb121-30" tabindex="-1"></a><span class="do">## groupGOTerms:    GOBPTerm, GOMFTerm, GOCCTerm environments built.</span></span>
-<span id="cb121-31"><a href="#cb121-31" tabindex="-1"></a></span>
-<span id="cb121-32"><a href="#cb121-32" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb121-33"><a href="#cb121-33" tabindex="-1"></a><span class="do">## Attaching package: 'topGO'</span></span>
-<span id="cb121-34"><a href="#cb121-34" tabindex="-1"></a></span>
-<span id="cb121-35"><a href="#cb121-35" tabindex="-1"></a><span class="do">## The following object is masked from 'package:gage':</span></span>
-<span id="cb121-36"><a href="#cb121-36" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb121-37"><a href="#cb121-37" tabindex="-1"></a><span class="do">##     geneData</span></span>
-<span id="cb121-38"><a href="#cb121-38" tabindex="-1"></a></span>
-<span id="cb121-39"><a href="#cb121-39" tabindex="-1"></a><span class="do">## The following object is masked from 'package:IRanges':</span></span>
-<span id="cb121-40"><a href="#cb121-40" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb121-41"><a href="#cb121-41" tabindex="-1"></a><span class="do">##     members</span></span>
-<span id="cb121-42"><a href="#cb121-42" tabindex="-1"></a></span>
-<span id="cb121-43"><a href="#cb121-43" tabindex="-1"></a><span class="do">## Loading required package: pathview</span></span>
-<span id="cb121-44"><a href="#cb121-44" tabindex="-1"></a></span>
-<span id="cb121-45"><a href="#cb121-45" tabindex="-1"></a><span class="do">## ##############################################################################</span></span>
-<span id="cb121-46"><a href="#cb121-46" tabindex="-1"></a><span class="do">## Pathview is an open source software package distributed under GNU General</span></span>
-<span id="cb121-47"><a href="#cb121-47" tabindex="-1"></a><span class="do">## Public License version 3 (GPLv3). Details of GPLv3 is available at</span></span>
-<span id="cb121-48"><a href="#cb121-48" tabindex="-1"></a><span class="do">## http://www.gnu.org/licenses/gpl-3.0.html. Particullary, users are required to</span></span>
-<span id="cb121-49"><a href="#cb121-49" tabindex="-1"></a><span class="do">## formally cite the original Pathview paper (not just mention it) in publications</span></span>
-<span id="cb121-50"><a href="#cb121-50" tabindex="-1"></a><span class="do">## or products. For details, do citation("pathview") within R.</span></span>
-<span id="cb121-51"><a href="#cb121-51" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb121-52"><a href="#cb121-52" tabindex="-1"></a><span class="do">## The pathview downloads and uses KEGG data. Non-academic uses may require a KEGG</span></span>
-<span id="cb121-53"><a href="#cb121-53" tabindex="-1"></a><span class="do">## license agreement (details at http://www.kegg.jp/kegg/legal.html).</span></span>
-<span id="cb121-54"><a href="#cb121-54" tabindex="-1"></a><span class="do">## ##############################################################################</span></span>
-<span id="cb121-55"><a href="#cb121-55" tabindex="-1"></a></span>
-<span id="cb121-56"><a href="#cb121-56" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb121-57"><a href="#cb121-57" tabindex="-1"></a></span>
-<span id="cb121-58"><a href="#cb121-58" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb121-59"><a href="#cb121-59" tabindex="-1"></a></span>
-<span id="cb121-60"><a href="#cb121-60" tabindex="-1"></a><span class="do">## </span></span></code></pre></div>
 <div class="sourceCode" id="cb122"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">EGSEA</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb123"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" tabindex="-1"></a><span class="do">## Loading required package: gage</span></span>
+<span id="cb123-2"><a href="#cb123-2" tabindex="-1"></a></span>
+<span id="cb123-3"><a href="#cb123-3" tabindex="-1"></a><span class="do">## Loading required package: AnnotationDbi</span></span>
+<span id="cb123-4"><a href="#cb123-4" tabindex="-1"></a></span>
+<span id="cb123-5"><a href="#cb123-5" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb123-6"><a href="#cb123-6" tabindex="-1"></a><span class="do">## Attaching package: 'AnnotationDbi'</span></span>
+<span id="cb123-7"><a href="#cb123-7" tabindex="-1"></a></span>
+<span id="cb123-8"><a href="#cb123-8" tabindex="-1"></a><span class="do">## The following object is masked from 'package:dplyr':</span></span>
+<span id="cb123-9"><a href="#cb123-9" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb123-10"><a href="#cb123-10" tabindex="-1"></a><span class="do">##     select</span></span>
+<span id="cb123-11"><a href="#cb123-11" tabindex="-1"></a></span>
+<span id="cb123-12"><a href="#cb123-12" tabindex="-1"></a><span class="do">## Loading required package: topGO</span></span>
+<span id="cb123-13"><a href="#cb123-13" tabindex="-1"></a></span>
+<span id="cb123-14"><a href="#cb123-14" tabindex="-1"></a><span class="do">## Warning: package 'topGO' was built under R version 4.5.1</span></span>
+<span id="cb123-15"><a href="#cb123-15" tabindex="-1"></a></span>
+<span id="cb123-16"><a href="#cb123-16" tabindex="-1"></a><span class="do">## Loading required package: graph</span></span>
+<span id="cb123-17"><a href="#cb123-17" tabindex="-1"></a></span>
+<span id="cb123-18"><a href="#cb123-18" tabindex="-1"></a><span class="do">## Loading required package: GO.db</span></span>
+<span id="cb123-19"><a href="#cb123-19" tabindex="-1"></a></span>
+<span id="cb123-20"><a href="#cb123-20" tabindex="-1"></a><span class="do">## Loading required package: SparseM</span></span>
+<span id="cb123-21"><a href="#cb123-21" tabindex="-1"></a></span>
+<span id="cb123-22"><a href="#cb123-22" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb123-23"><a href="#cb123-23" tabindex="-1"></a><span class="do">## groupGOTerms:    GOBPTerm, GOMFTerm, GOCCTerm environments built.</span></span>
+<span id="cb123-24"><a href="#cb123-24" tabindex="-1"></a></span>
+<span id="cb123-25"><a href="#cb123-25" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb123-26"><a href="#cb123-26" tabindex="-1"></a><span class="do">## Attaching package: 'topGO'</span></span>
+<span id="cb123-27"><a href="#cb123-27" tabindex="-1"></a></span>
+<span id="cb123-28"><a href="#cb123-28" tabindex="-1"></a><span class="do">## The following object is masked from 'package:gage':</span></span>
+<span id="cb123-29"><a href="#cb123-29" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb123-30"><a href="#cb123-30" tabindex="-1"></a><span class="do">##     geneData</span></span>
+<span id="cb123-31"><a href="#cb123-31" tabindex="-1"></a></span>
+<span id="cb123-32"><a href="#cb123-32" tabindex="-1"></a><span class="do">## The following object is masked from 'package:IRanges':</span></span>
+<span id="cb123-33"><a href="#cb123-33" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb123-34"><a href="#cb123-34" tabindex="-1"></a><span class="do">##     members</span></span>
+<span id="cb123-35"><a href="#cb123-35" tabindex="-1"></a></span>
+<span id="cb123-36"><a href="#cb123-36" tabindex="-1"></a><span class="do">## Loading required package: pathview</span></span>
+<span id="cb123-37"><a href="#cb123-37" tabindex="-1"></a></span>
+<span id="cb123-38"><a href="#cb123-38" tabindex="-1"></a><span class="do">## ##############################################################################</span></span>
+<span id="cb123-39"><a href="#cb123-39" tabindex="-1"></a><span class="do">## Pathview is an open source software package distributed under GNU General</span></span>
+<span id="cb123-40"><a href="#cb123-40" tabindex="-1"></a><span class="do">## Public License version 3 (GPLv3). Details of GPLv3 is available at</span></span>
+<span id="cb123-41"><a href="#cb123-41" tabindex="-1"></a><span class="do">## http://www.gnu.org/licenses/gpl-3.0.html. Particullary, users are required to</span></span>
+<span id="cb123-42"><a href="#cb123-42" tabindex="-1"></a><span class="do">## formally cite the original Pathview paper (not just mention it) in publications</span></span>
+<span id="cb123-43"><a href="#cb123-43" tabindex="-1"></a><span class="do">## or products. For details, do citation("pathview") within R.</span></span>
+<span id="cb123-44"><a href="#cb123-44" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb123-45"><a href="#cb123-45" tabindex="-1"></a><span class="do">## The pathview downloads and uses KEGG data. Non-academic uses may require a KEGG</span></span>
+<span id="cb123-46"><a href="#cb123-46" tabindex="-1"></a><span class="do">## license agreement (details at http://www.kegg.jp/kegg/legal.html).</span></span>
+<span id="cb123-47"><a href="#cb123-47" tabindex="-1"></a><span class="do">## ##############################################################################</span></span>
+<span id="cb123-48"><a href="#cb123-48" tabindex="-1"></a></span>
+<span id="cb123-49"><a href="#cb123-49" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb123-50"><a href="#cb123-50" tabindex="-1"></a></span>
+<span id="cb123-51"><a href="#cb123-51" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb123-52"><a href="#cb123-52" tabindex="-1"></a></span>
+<span id="cb123-53"><a href="#cb123-53" tabindex="-1"></a><span class="do">## </span></span></code></pre></div>
+<div class="sourceCode" id="cb124"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Test gene enrichment</span></span>
 <span>  <span class="va">airway</span> <span class="op">|&gt;</span> </span>
 <span></span>
@@ -1676,49 +1665,49 @@
 <span>    methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"roast"</span><span class="op">)</span>,  <span class="co"># Use a more robust method</span></span>
 <span>    cores <span class="op">=</span> <span class="fl">2</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb123"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" tabindex="-1"></a><span class="do">## tidybulk says: The design column names are "(Intercept), dexuntrt"</span></span>
-<span id="cb123-2"><a href="#cb123-2" tabindex="-1"></a></span>
-<span id="cb123-3"><a href="#cb123-3" tabindex="-1"></a><span class="do">## [1] "Loading MSigDB Gene Sets ... "</span></span>
-<span id="cb123-4"><a href="#cb123-4" tabindex="-1"></a><span class="do">## [1] "Loaded gene sets for the collection h ..."</span></span>
-<span id="cb123-5"><a href="#cb123-5" tabindex="-1"></a><span class="do">## [1] "Indexed the collection h ..."</span></span>
-<span id="cb123-6"><a href="#cb123-6" tabindex="-1"></a><span class="do">## [1] "Created annotation for the collection h ..."</span></span>
-<span id="cb123-7"><a href="#cb123-7" tabindex="-1"></a></span>
-<span id="cb123-8"><a href="#cb123-8" tabindex="-1"></a><span class="do">## EGSEA analysis has started</span></span>
-<span id="cb123-9"><a href="#cb123-9" tabindex="-1"></a></span>
-<span id="cb123-10"><a href="#cb123-10" tabindex="-1"></a><span class="do">## ##------ Wed Aug 20 14:41:38 2025 ------##</span></span>
-<span id="cb123-11"><a href="#cb123-11" tabindex="-1"></a></span>
-<span id="cb123-12"><a href="#cb123-12" tabindex="-1"></a><span class="do">## The argument 'contrast' is recommended to be a matrix object.</span></span>
-<span id="cb123-13"><a href="#cb123-13" tabindex="-1"></a><span class="do">## See Vignette or Help.</span></span>
-<span id="cb123-14"><a href="#cb123-14" tabindex="-1"></a></span>
-<span id="cb123-15"><a href="#cb123-15" tabindex="-1"></a><span class="do">## Log fold changes are estimated using limma package ...</span></span>
-<span id="cb123-16"><a href="#cb123-16" tabindex="-1"></a></span>
-<span id="cb123-17"><a href="#cb123-17" tabindex="-1"></a><span class="do">## limma DE analysis is carried out ...</span></span>
-<span id="cb123-18"><a href="#cb123-18" tabindex="-1"></a></span>
-<span id="cb123-19"><a href="#cb123-19" tabindex="-1"></a><span class="do">## EGSEA is running on the provided data and h collection</span></span>
-<span id="cb123-20"><a href="#cb123-20" tabindex="-1"></a></span>
-<span id="cb123-21"><a href="#cb123-21" tabindex="-1"></a><span class="do">## ..roast*</span></span>
-<span id="cb123-22"><a href="#cb123-22" tabindex="-1"></a></span>
-<span id="cb123-23"><a href="#cb123-23" tabindex="-1"></a><span class="do">## ##------ Wed Aug 20 14:41:42 2025 ------##</span></span>
-<span id="cb123-24"><a href="#cb123-24" tabindex="-1"></a></span>
-<span id="cb123-25"><a href="#cb123-25" tabindex="-1"></a><span class="do">## EGSEA analysis took 3.66199999999998 seconds.</span></span>
-<span id="cb123-26"><a href="#cb123-26" tabindex="-1"></a><span class="do">## EGSEA analysis has completed</span></span>
-<span id="cb123-27"><a href="#cb123-27" tabindex="-1"></a><span class="do">## EGSEA HTML report is being generated ...</span></span>
-<span id="cb123-28"><a href="#cb123-28" tabindex="-1"></a></span>
-<span id="cb123-29"><a href="#cb123-29" tabindex="-1"></a><span class="do">## ##------ Wed Aug 20 14:41:42 2025 ------##</span></span>
-<span id="cb123-30"><a href="#cb123-30" tabindex="-1"></a></span>
-<span id="cb123-31"><a href="#cb123-31" tabindex="-1"></a><span class="do">## Report pages and figures are being generated for the h collection ...</span></span>
-<span id="cb123-32"><a href="#cb123-32" tabindex="-1"></a><span class="do">##    Heat maps are being generated for top-ranked gene sets </span></span>
-<span id="cb123-33"><a href="#cb123-33" tabindex="-1"></a><span class="do">## based on logFC ... </span></span>
-<span id="cb123-34"><a href="#cb123-34" tabindex="-1"></a><span class="do">##    Summary plots are being generated ... </span></span>
-<span id="cb123-35"><a href="#cb123-35" tabindex="-1"></a><span class="do">##    Comparison summary plots are being generated  ...</span></span>
-<span id="cb123-36"><a href="#cb123-36" tabindex="-1"></a></span>
-<span id="cb123-37"><a href="#cb123-37" tabindex="-1"></a><span class="do">## ##------ Wed Aug 20 14:42:40 2025 ------##</span></span>
-<span id="cb123-38"><a href="#cb123-38" tabindex="-1"></a></span>
-<span id="cb123-39"><a href="#cb123-39" tabindex="-1"></a><span class="do">## EGSEA report generation took 58.602 seconds.</span></span>
-<span id="cb123-40"><a href="#cb123-40" tabindex="-1"></a><span class="do">## EGSEA report has been generated.</span></span>
-<span id="cb123-41"><a href="#cb123-41" tabindex="-1"></a></span>
-<span id="cb123-42"><a href="#cb123-42" tabindex="-1"></a><span class="do">## # A tibble: 0 × 0</span></span></code></pre></div>
-<div class="sourceCode" id="cb124"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb125"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" tabindex="-1"></a><span class="do">## tidybulk says: The design column names are "(Intercept), dexuntrt"</span></span>
+<span id="cb125-2"><a href="#cb125-2" tabindex="-1"></a></span>
+<span id="cb125-3"><a href="#cb125-3" tabindex="-1"></a><span class="do">## [1] "Loading MSigDB Gene Sets ... "</span></span>
+<span id="cb125-4"><a href="#cb125-4" tabindex="-1"></a><span class="do">## [1] "Loaded gene sets for the collection h ..."</span></span>
+<span id="cb125-5"><a href="#cb125-5" tabindex="-1"></a><span class="do">## [1] "Indexed the collection h ..."</span></span>
+<span id="cb125-6"><a href="#cb125-6" tabindex="-1"></a><span class="do">## [1] "Created annotation for the collection h ..."</span></span>
+<span id="cb125-7"><a href="#cb125-7" tabindex="-1"></a></span>
+<span id="cb125-8"><a href="#cb125-8" tabindex="-1"></a><span class="do">## EGSEA analysis has started</span></span>
+<span id="cb125-9"><a href="#cb125-9" tabindex="-1"></a></span>
+<span id="cb125-10"><a href="#cb125-10" tabindex="-1"></a><span class="do">## ##------ Thu Sep 11 15:54:13 2025 ------##</span></span>
+<span id="cb125-11"><a href="#cb125-11" tabindex="-1"></a></span>
+<span id="cb125-12"><a href="#cb125-12" tabindex="-1"></a><span class="do">## The argument 'contrast' is recommended to be a matrix object.</span></span>
+<span id="cb125-13"><a href="#cb125-13" tabindex="-1"></a><span class="do">## See Vignette or Help.</span></span>
+<span id="cb125-14"><a href="#cb125-14" tabindex="-1"></a></span>
+<span id="cb125-15"><a href="#cb125-15" tabindex="-1"></a><span class="do">## Log fold changes are estimated using limma package ...</span></span>
+<span id="cb125-16"><a href="#cb125-16" tabindex="-1"></a></span>
+<span id="cb125-17"><a href="#cb125-17" tabindex="-1"></a><span class="do">## limma DE analysis is carried out ...</span></span>
+<span id="cb125-18"><a href="#cb125-18" tabindex="-1"></a></span>
+<span id="cb125-19"><a href="#cb125-19" tabindex="-1"></a><span class="do">## EGSEA is running on the provided data and h collection</span></span>
+<span id="cb125-20"><a href="#cb125-20" tabindex="-1"></a></span>
+<span id="cb125-21"><a href="#cb125-21" tabindex="-1"></a><span class="do">## ..roast*</span></span>
+<span id="cb125-22"><a href="#cb125-22" tabindex="-1"></a></span>
+<span id="cb125-23"><a href="#cb125-23" tabindex="-1"></a><span class="do">## ##------ Thu Sep 11 15:54:15 2025 ------##</span></span>
+<span id="cb125-24"><a href="#cb125-24" tabindex="-1"></a></span>
+<span id="cb125-25"><a href="#cb125-25" tabindex="-1"></a><span class="do">## EGSEA analysis took 2.05200000000002 seconds.</span></span>
+<span id="cb125-26"><a href="#cb125-26" tabindex="-1"></a><span class="do">## EGSEA analysis has completed</span></span>
+<span id="cb125-27"><a href="#cb125-27" tabindex="-1"></a><span class="do">## EGSEA HTML report is being generated ...</span></span>
+<span id="cb125-28"><a href="#cb125-28" tabindex="-1"></a></span>
+<span id="cb125-29"><a href="#cb125-29" tabindex="-1"></a><span class="do">## ##------ Thu Sep 11 15:54:15 2025 ------##</span></span>
+<span id="cb125-30"><a href="#cb125-30" tabindex="-1"></a></span>
+<span id="cb125-31"><a href="#cb125-31" tabindex="-1"></a><span class="do">## Report pages and figures are being generated for the h collection ...</span></span>
+<span id="cb125-32"><a href="#cb125-32" tabindex="-1"></a><span class="do">##    Heat maps are being generated for top-ranked gene sets </span></span>
+<span id="cb125-33"><a href="#cb125-33" tabindex="-1"></a><span class="do">## based on logFC ... </span></span>
+<span id="cb125-34"><a href="#cb125-34" tabindex="-1"></a><span class="do">##    Summary plots are being generated ... </span></span>
+<span id="cb125-35"><a href="#cb125-35" tabindex="-1"></a><span class="do">##    Comparison summary plots are being generated  ...</span></span>
+<span id="cb125-36"><a href="#cb125-36" tabindex="-1"></a></span>
+<span id="cb125-37"><a href="#cb125-37" tabindex="-1"></a><span class="do">## ##------ Thu Sep 11 15:55:02 2025 ------##</span></span>
+<span id="cb125-38"><a href="#cb125-38" tabindex="-1"></a></span>
+<span id="cb125-39"><a href="#cb125-39" tabindex="-1"></a><span class="do">## EGSEA report generation took 46.962 seconds.</span></span>
+<span id="cb125-40"><a href="#cb125-40" tabindex="-1"></a><span class="do">## EGSEA report has been generated.</span></span>
+<span id="cb125-41"><a href="#cb125-41" tabindex="-1"></a></span>
+<span id="cb125-42"><a href="#cb125-42" tabindex="-1"></a><span class="do">## # A tibble: 0 × 0</span></span></code></pre></div>
+<div class="sourceCode" id="cb126"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/detach.html" class="external-link">detach</a></span><span class="op">(</span><span class="st">"package:EGSEA"</span>, unload <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -1749,16 +1738,16 @@
 <div class="section level3">
 <h3 id="example-usage">Example Usage<a class="anchor" aria-label="anchor" href="#example-usage"></a>
 </h3>
-<div class="sourceCode" id="cb125"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb127"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">=</span> </span>
 <span>  <span class="va">airway</span> <span class="op">|&gt;</span> </span>
 <span>  </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">symbol</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/deconvolve_cellularity-methods.html">deconvolve_cellularity</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"cibersort"</span>, cores <span class="op">=</span> <span class="fl">1</span>, prefix <span class="op">=</span> <span class="st">"cibersort__"</span>, feature_column <span class="op">=</span> <span class="st">"symbol"</span><span class="op">)</span> </span></code></pre></div>
 <p>For the rest of the methods, you need to install the <code>immunedeconv</code> package.</p>
-<div class="sourceCode" id="cb126"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb128"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"immunedeconv"</span><span class="op">)</span><span class="op">)</span> <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"immunedeconv"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb127"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb129"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">=</span> </span>
 <span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> </span>
@@ -1781,7 +1770,7 @@
 <h3 id="plotting-results">Plotting Results<a class="anchor" aria-label="anchor" href="#plotting-results"></a>
 </h3>
 <p>Visualize the cell type proportions as a stacked barplot for each method:</p>
-<div class="sourceCode" id="cb128"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb130"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Visualize CIBERSORT results</span></span>
 <span><span class="va">airway</span>   <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1794,7 +1783,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"CIBERSORT Cell Type Proportions"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="README_files/figure-gfm/deconvolution-plotting-1.png"><!-- --></p>
-<div class="sourceCode" id="cb129"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb131"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span> <span class="co"># Repeat similar plotting for LLSR, EPIC, MCP-counter, quanTIseq, and xCell</span></span>
 <span><span class="va">airway</span>   <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/pivot_sample-methods.html">pivot_sample</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1856,266 +1845,272 @@
 <h2 id="bibliography">Bibliography<a class="anchor" aria-label="anchor" href="#bibliography"></a>
 </h2>
 <p><code>tidybulk</code> allows you to get the bibliography of all methods used in our workflow.</p>
-<div class="sourceCode" id="cb130"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb132"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get bibliography of all methods used in our workflow</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="reference/get_bibliography-methods.html">get_bibliography</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb131"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb131-1"><a href="#cb131-1" tabindex="-1"></a><span class="do">##  @Article{tidybulk,</span></span>
-<span id="cb131-2"><a href="#cb131-2" tabindex="-1"></a><span class="do">##   title = {tidybulk: an R tidy framework for modular transcriptomic data analysis},</span></span>
-<span id="cb131-3"><a href="#cb131-3" tabindex="-1"></a><span class="do">##   author = {Stefano Mangiola and Ramyar Molania and Ruining Dong and Maria A. Doyle &amp; Anthony T. Papenfuss},</span></span>
-<span id="cb131-4"><a href="#cb131-4" tabindex="-1"></a><span class="do">##   journal = {Genome Biology},</span></span>
-<span id="cb131-5"><a href="#cb131-5" tabindex="-1"></a><span class="do">##   year = {2021},</span></span>
-<span id="cb131-6"><a href="#cb131-6" tabindex="-1"></a><span class="do">##   volume = {22},</span></span>
-<span id="cb131-7"><a href="#cb131-7" tabindex="-1"></a><span class="do">##   number = {42},</span></span>
-<span id="cb131-8"><a href="#cb131-8" tabindex="-1"></a><span class="do">##   url = {https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02233-7},</span></span>
-<span id="cb131-9"><a href="#cb131-9" tabindex="-1"></a><span class="do">##   }</span></span>
-<span id="cb131-10"><a href="#cb131-10" tabindex="-1"></a><span class="do">## @article{wickham2019welcome,</span></span>
-<span id="cb131-11"><a href="#cb131-11" tabindex="-1"></a><span class="do">##   title={Welcome to the Tidyverse},</span></span>
-<span id="cb131-12"><a href="#cb131-12" tabindex="-1"></a><span class="do">##   author={Wickham, Hadley and Averick, Mara and Bryan, Jennifer and Chang, Winston and McGowan, Lucy D'Agostino and Francois, Romain and Grolemund, Garrett and Hayes, Alex and Henry, Lionel and Hester, Jim and others},</span></span>
-<span id="cb131-13"><a href="#cb131-13" tabindex="-1"></a><span class="do">##   journal={Journal of Open Source Software},</span></span>
-<span id="cb131-14"><a href="#cb131-14" tabindex="-1"></a><span class="do">##   volume={4},</span></span>
-<span id="cb131-15"><a href="#cb131-15" tabindex="-1"></a><span class="do">##   number={43},</span></span>
-<span id="cb131-16"><a href="#cb131-16" tabindex="-1"></a><span class="do">##   pages={1686},</span></span>
-<span id="cb131-17"><a href="#cb131-17" tabindex="-1"></a><span class="do">##   year={2019}</span></span>
-<span id="cb131-18"><a href="#cb131-18" tabindex="-1"></a><span class="do">##  }</span></span>
-<span id="cb131-19"><a href="#cb131-19" tabindex="-1"></a><span class="do">## @article{robinson2010edger,</span></span>
-<span id="cb131-20"><a href="#cb131-20" tabindex="-1"></a><span class="do">##   title={edgeR: a Bioconductor package for differential expression analysis of digital gene expression data},</span></span>
-<span id="cb131-21"><a href="#cb131-21" tabindex="-1"></a><span class="do">##   author={Robinson, Mark D and McCarthy, Davis J and Smyth, Gordon K},</span></span>
-<span id="cb131-22"><a href="#cb131-22" tabindex="-1"></a><span class="do">##   journal={Bioinformatics},</span></span>
-<span id="cb131-23"><a href="#cb131-23" tabindex="-1"></a><span class="do">##   volume={26},</span></span>
-<span id="cb131-24"><a href="#cb131-24" tabindex="-1"></a><span class="do">##   number={1},</span></span>
-<span id="cb131-25"><a href="#cb131-25" tabindex="-1"></a><span class="do">##   pages={139--140},</span></span>
-<span id="cb131-26"><a href="#cb131-26" tabindex="-1"></a><span class="do">##   year={2010},</span></span>
-<span id="cb131-27"><a href="#cb131-27" tabindex="-1"></a><span class="do">##   publisher={Oxford University Press}</span></span>
-<span id="cb131-28"><a href="#cb131-28" tabindex="-1"></a><span class="do">##  }</span></span>
-<span id="cb131-29"><a href="#cb131-29" tabindex="-1"></a><span class="do">## @article{robinson2010scaling,</span></span>
-<span id="cb131-30"><a href="#cb131-30" tabindex="-1"></a><span class="do">##   title={A scaling normalization method for differential expression analysis of RNA-seq data},</span></span>
-<span id="cb131-31"><a href="#cb131-31" tabindex="-1"></a><span class="do">##   author={Robinson, Mark D and Oshlack, Alicia},</span></span>
-<span id="cb131-32"><a href="#cb131-32" tabindex="-1"></a><span class="do">##   journal={Genome biology},</span></span>
-<span id="cb131-33"><a href="#cb131-33" tabindex="-1"></a><span class="do">##   volume={11},</span></span>
-<span id="cb131-34"><a href="#cb131-34" tabindex="-1"></a><span class="do">##   number={3},</span></span>
-<span id="cb131-35"><a href="#cb131-35" tabindex="-1"></a><span class="do">##   pages={1--9},</span></span>
-<span id="cb131-36"><a href="#cb131-36" tabindex="-1"></a><span class="do">##   year={2010},</span></span>
-<span id="cb131-37"><a href="#cb131-37" tabindex="-1"></a><span class="do">##   publisher={BioMed Central}</span></span>
-<span id="cb131-38"><a href="#cb131-38" tabindex="-1"></a><span class="do">##  }</span></span>
-<span id="cb131-39"><a href="#cb131-39" tabindex="-1"></a><span class="do">## @incollection{smyth2005limma,</span></span>
-<span id="cb131-40"><a href="#cb131-40" tabindex="-1"></a><span class="do">##   title={Limma: linear models for microarray data},</span></span>
-<span id="cb131-41"><a href="#cb131-41" tabindex="-1"></a><span class="do">##   author={Smyth, Gordon K},</span></span>
-<span id="cb131-42"><a href="#cb131-42" tabindex="-1"></a><span class="do">##   booktitle={Bioinformatics and computational biology solutions using R and Bioconductor},</span></span>
-<span id="cb131-43"><a href="#cb131-43" tabindex="-1"></a><span class="do">##   pages={397--420},</span></span>
-<span id="cb131-44"><a href="#cb131-44" tabindex="-1"></a><span class="do">##   year={2005},</span></span>
-<span id="cb131-45"><a href="#cb131-45" tabindex="-1"></a><span class="do">##   publisher={Springer}</span></span>
-<span id="cb131-46"><a href="#cb131-46" tabindex="-1"></a><span class="do">##  }</span></span>
-<span id="cb131-47"><a href="#cb131-47" tabindex="-1"></a><span class="do">## @Manual{,</span></span>
-<span id="cb131-48"><a href="#cb131-48" tabindex="-1"></a><span class="do">##     title = {R: A Language and Environment for Statistical Computing},</span></span>
-<span id="cb131-49"><a href="#cb131-49" tabindex="-1"></a><span class="do">##     author = {{R Core Team}},</span></span>
-<span id="cb131-50"><a href="#cb131-50" tabindex="-1"></a><span class="do">##     organization = {R Foundation for Statistical Computing},</span></span>
-<span id="cb131-51"><a href="#cb131-51" tabindex="-1"></a><span class="do">##     address = {Vienna, Austria},</span></span>
-<span id="cb131-52"><a href="#cb131-52" tabindex="-1"></a><span class="do">##     year = {2020},</span></span>
-<span id="cb131-53"><a href="#cb131-53" tabindex="-1"></a><span class="do">##     url = {https://www.R-project.org/},</span></span>
-<span id="cb131-54"><a href="#cb131-54" tabindex="-1"></a><span class="do">##   }</span></span>
-<span id="cb131-55"><a href="#cb131-55" tabindex="-1"></a><span class="do">## @article{lund2012detecting,</span></span>
-<span id="cb131-56"><a href="#cb131-56" tabindex="-1"></a><span class="do">##   title={Detecting differential expression in RNA-sequence data using quasi-likelihood with shrunken dispersion estimates},</span></span>
-<span id="cb131-57"><a href="#cb131-57" tabindex="-1"></a><span class="do">##   author={Lund, Steven P and Nettleton, Dan and McCarthy, Davis J and Smyth, Gordon K},</span></span>
-<span id="cb131-58"><a href="#cb131-58" tabindex="-1"></a><span class="do">##   journal={Statistical applications in genetics and molecular biology},</span></span>
-<span id="cb131-59"><a href="#cb131-59" tabindex="-1"></a><span class="do">##   volume={11},</span></span>
-<span id="cb131-60"><a href="#cb131-60" tabindex="-1"></a><span class="do">##   number={5},</span></span>
-<span id="cb131-61"><a href="#cb131-61" tabindex="-1"></a><span class="do">##   year={2012},</span></span>
-<span id="cb131-62"><a href="#cb131-62" tabindex="-1"></a><span class="do">##   publisher={De Gruyter}</span></span>
-<span id="cb131-63"><a href="#cb131-63" tabindex="-1"></a><span class="do">##     }</span></span>
-<span id="cb131-64"><a href="#cb131-64" tabindex="-1"></a><span class="do">## @article{zhou2014robustly,</span></span>
-<span id="cb131-65"><a href="#cb131-65" tabindex="-1"></a><span class="do">##   title={Robustly detecting differential expression in RNA sequencing data using observation weights},</span></span>
-<span id="cb131-66"><a href="#cb131-66" tabindex="-1"></a><span class="do">##   author={Zhou, Xiaobei and Lindsay, Helen and Robinson, Mark D},</span></span>
-<span id="cb131-67"><a href="#cb131-67" tabindex="-1"></a><span class="do">##   journal={Nucleic acids research},</span></span>
-<span id="cb131-68"><a href="#cb131-68" tabindex="-1"></a><span class="do">##   volume={42},</span></span>
-<span id="cb131-69"><a href="#cb131-69" tabindex="-1"></a><span class="do">##   number={11},</span></span>
-<span id="cb131-70"><a href="#cb131-70" tabindex="-1"></a><span class="do">##   pages={e91--e91},</span></span>
-<span id="cb131-71"><a href="#cb131-71" tabindex="-1"></a><span class="do">##   year={2014},</span></span>
-<span id="cb131-72"><a href="#cb131-72" tabindex="-1"></a><span class="do">##   publisher={Oxford University Press}</span></span>
-<span id="cb131-73"><a href="#cb131-73" tabindex="-1"></a><span class="do">##  }</span></span>
-<span id="cb131-74"><a href="#cb131-74" tabindex="-1"></a><span class="do">## @article{love2014moderated,</span></span>
-<span id="cb131-75"><a href="#cb131-75" tabindex="-1"></a><span class="do">##   title={Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2},</span></span>
-<span id="cb131-76"><a href="#cb131-76" tabindex="-1"></a><span class="do">##   author={Love, Michael I and Huber, Wolfgang and Anders, Simon},</span></span>
-<span id="cb131-77"><a href="#cb131-77" tabindex="-1"></a><span class="do">##   journal={Genome biology},</span></span>
-<span id="cb131-78"><a href="#cb131-78" tabindex="-1"></a><span class="do">##   volume={15},</span></span>
-<span id="cb131-79"><a href="#cb131-79" tabindex="-1"></a><span class="do">##   number={12},</span></span>
-<span id="cb131-80"><a href="#cb131-80" tabindex="-1"></a><span class="do">##   pages={550},</span></span>
-<span id="cb131-81"><a href="#cb131-81" tabindex="-1"></a><span class="do">##   year={2014},</span></span>
-<span id="cb131-82"><a href="#cb131-82" tabindex="-1"></a><span class="do">##   publisher={Springer}</span></span>
-<span id="cb131-83"><a href="#cb131-83" tabindex="-1"></a><span class="do">##  }</span></span>
-<span id="cb131-84"><a href="#cb131-84" tabindex="-1"></a><span class="do">## @article{law2014voom,</span></span>
-<span id="cb131-85"><a href="#cb131-85" tabindex="-1"></a><span class="do">##   title={voom: Precision weights unlock linear model analysis tools for RNA-seq read counts},</span></span>
-<span id="cb131-86"><a href="#cb131-86" tabindex="-1"></a><span class="do">##   author={Law, Charity W and Chen, Yunshun and Shi, Wei and Smyth, Gordon K},</span></span>
-<span id="cb131-87"><a href="#cb131-87" tabindex="-1"></a><span class="do">##   journal={Genome biology},</span></span>
-<span id="cb131-88"><a href="#cb131-88" tabindex="-1"></a><span class="do">##   volume={15},</span></span>
-<span id="cb131-89"><a href="#cb131-89" tabindex="-1"></a><span class="do">##   number={2},</span></span>
-<span id="cb131-90"><a href="#cb131-90" tabindex="-1"></a><span class="do">##   pages={R29},</span></span>
-<span id="cb131-91"><a href="#cb131-91" tabindex="-1"></a><span class="do">##   year={2014},</span></span>
-<span id="cb131-92"><a href="#cb131-92" tabindex="-1"></a><span class="do">##   publisher={Springer}</span></span>
-<span id="cb131-93"><a href="#cb131-93" tabindex="-1"></a><span class="do">##     }</span></span>
-<span id="cb131-94"><a href="#cb131-94" tabindex="-1"></a><span class="do">## @article{liu2015weight,</span></span>
-<span id="cb131-95"><a href="#cb131-95" tabindex="-1"></a><span class="do">##   title={Why weight? Modelling sample and observational level variability improves power in RNA-seq analyses},</span></span>
-<span id="cb131-96"><a href="#cb131-96" tabindex="-1"></a><span class="do">##   author={Liu, Ruijie and Holik, Aliaksei Z and Su, Shian and Jansz, Natasha and Chen, Kelan and Leong, Huei San and Blewitt, Marnie E and Asselin-Labat, Marie-Liesse and Smyth, Gordon K and Ritchie, Matthew E},</span></span>
-<span id="cb131-97"><a href="#cb131-97" tabindex="-1"></a><span class="do">##   journal={Nucleic acids research},</span></span>
-<span id="cb131-98"><a href="#cb131-98" tabindex="-1"></a><span class="do">##   volume={43},</span></span>
-<span id="cb131-99"><a href="#cb131-99" tabindex="-1"></a><span class="do">##   number={15},</span></span>
-<span id="cb131-100"><a href="#cb131-100" tabindex="-1"></a><span class="do">##   pages={e97--e97},</span></span>
-<span id="cb131-101"><a href="#cb131-101" tabindex="-1"></a><span class="do">##   year={2015},</span></span>
-<span id="cb131-102"><a href="#cb131-102" tabindex="-1"></a><span class="do">##   publisher={Oxford University Press}</span></span>
-<span id="cb131-103"><a href="#cb131-103" tabindex="-1"></a><span class="do">##     }</span></span>
-<span id="cb131-104"><a href="#cb131-104" tabindex="-1"></a><span class="do">## @article{leek2012sva,</span></span>
-<span id="cb131-105"><a href="#cb131-105" tabindex="-1"></a><span class="do">##   title={The sva package for removing batch effects and other unwanted variation in high-throughput experiments},</span></span>
-<span id="cb131-106"><a href="#cb131-106" tabindex="-1"></a><span class="do">##   author={Leek, Jeffrey T and Johnson, W Evan and Parker, Hilary S and Jaffe, Andrew E and Storey, John D},</span></span>
-<span id="cb131-107"><a href="#cb131-107" tabindex="-1"></a><span class="do">##   journal={Bioinformatics},</span></span>
-<span id="cb131-108"><a href="#cb131-108" tabindex="-1"></a><span class="do">##   volume={28},</span></span>
-<span id="cb131-109"><a href="#cb131-109" tabindex="-1"></a><span class="do">##   number={6},</span></span>
-<span id="cb131-110"><a href="#cb131-110" tabindex="-1"></a><span class="do">##   pages={882--883},</span></span>
-<span id="cb131-111"><a href="#cb131-111" tabindex="-1"></a><span class="do">##   year={2012},</span></span>
-<span id="cb131-112"><a href="#cb131-112" tabindex="-1"></a><span class="do">##   publisher={Oxford University Press}</span></span>
-<span id="cb131-113"><a href="#cb131-113" tabindex="-1"></a><span class="do">##  }</span></span>
-<span id="cb131-114"><a href="#cb131-114" tabindex="-1"></a><span class="do">## @article{newman2015robust,</span></span>
-<span id="cb131-115"><a href="#cb131-115" tabindex="-1"></a><span class="do">##   title={Robust enumeration of cell subsets from tissue expression profiles},</span></span>
-<span id="cb131-116"><a href="#cb131-116" tabindex="-1"></a><span class="do">##   author={Newman, Aaron M and Liu, Chih Long and Green, Michael R and Gentles, Andrew J and Feng, Weiguo and Xu, Yue and Hoang, Chuong D and Diehn, Maximilian and Alizadeh, Ash A},</span></span>
-<span id="cb131-117"><a href="#cb131-117" tabindex="-1"></a><span class="do">##   journal={Nature methods},</span></span>
-<span id="cb131-118"><a href="#cb131-118" tabindex="-1"></a><span class="do">##   volume={12},</span></span>
-<span id="cb131-119"><a href="#cb131-119" tabindex="-1"></a><span class="do">##   number={5},</span></span>
-<span id="cb131-120"><a href="#cb131-120" tabindex="-1"></a><span class="do">##   pages={453--457},</span></span>
-<span id="cb131-121"><a href="#cb131-121" tabindex="-1"></a><span class="do">##   year={2015},</span></span>
-<span id="cb131-122"><a href="#cb131-122" tabindex="-1"></a><span class="do">##   publisher={Nature Publishing Group}</span></span>
-<span id="cb131-123"><a href="#cb131-123" tabindex="-1"></a><span class="do">##  }</span></span></code></pre></div>
-<div class="sourceCode" id="cb132"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb133"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb133-1"><a href="#cb133-1" tabindex="-1"></a><span class="do">##  @Article{tidybulk,</span></span>
+<span id="cb133-2"><a href="#cb133-2" tabindex="-1"></a><span class="do">##   title = {tidybulk: an R tidy framework for modular transcriptomic data analysis},</span></span>
+<span id="cb133-3"><a href="#cb133-3" tabindex="-1"></a><span class="do">##   author = {Stefano Mangiola and Ramyar Molania and Ruining Dong and Maria A. Doyle &amp; Anthony T. Papenfuss},</span></span>
+<span id="cb133-4"><a href="#cb133-4" tabindex="-1"></a><span class="do">##   journal = {Genome Biology},</span></span>
+<span id="cb133-5"><a href="#cb133-5" tabindex="-1"></a><span class="do">##   year = {2021},</span></span>
+<span id="cb133-6"><a href="#cb133-6" tabindex="-1"></a><span class="do">##   volume = {22},</span></span>
+<span id="cb133-7"><a href="#cb133-7" tabindex="-1"></a><span class="do">##   number = {42},</span></span>
+<span id="cb133-8"><a href="#cb133-8" tabindex="-1"></a><span class="do">##   url = {https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02233-7},</span></span>
+<span id="cb133-9"><a href="#cb133-9" tabindex="-1"></a><span class="do">##   }</span></span>
+<span id="cb133-10"><a href="#cb133-10" tabindex="-1"></a><span class="do">## @article{wickham2019welcome,</span></span>
+<span id="cb133-11"><a href="#cb133-11" tabindex="-1"></a><span class="do">##   title={Welcome to the Tidyverse},</span></span>
+<span id="cb133-12"><a href="#cb133-12" tabindex="-1"></a><span class="do">##   author={Wickham, Hadley and Averick, Mara and Bryan, Jennifer and Chang, Winston and McGowan, Lucy D'Agostino and Francois, Romain and Grolemund, Garrett and Hayes, Alex and Henry, Lionel and Hester, Jim and others},</span></span>
+<span id="cb133-13"><a href="#cb133-13" tabindex="-1"></a><span class="do">##   journal={Journal of Open Source Software},</span></span>
+<span id="cb133-14"><a href="#cb133-14" tabindex="-1"></a><span class="do">##   volume={4},</span></span>
+<span id="cb133-15"><a href="#cb133-15" tabindex="-1"></a><span class="do">##   number={43},</span></span>
+<span id="cb133-16"><a href="#cb133-16" tabindex="-1"></a><span class="do">##   pages={1686},</span></span>
+<span id="cb133-17"><a href="#cb133-17" tabindex="-1"></a><span class="do">##   year={2019}</span></span>
+<span id="cb133-18"><a href="#cb133-18" tabindex="-1"></a><span class="do">##  }</span></span>
+<span id="cb133-19"><a href="#cb133-19" tabindex="-1"></a><span class="do">## @article{robinson2010edger,</span></span>
+<span id="cb133-20"><a href="#cb133-20" tabindex="-1"></a><span class="do">##   title={edgeR: a Bioconductor package for differential expression analysis of digital gene expression data},</span></span>
+<span id="cb133-21"><a href="#cb133-21" tabindex="-1"></a><span class="do">##   author={Robinson, Mark D and McCarthy, Davis J and Smyth, Gordon K},</span></span>
+<span id="cb133-22"><a href="#cb133-22" tabindex="-1"></a><span class="do">##   journal={Bioinformatics},</span></span>
+<span id="cb133-23"><a href="#cb133-23" tabindex="-1"></a><span class="do">##   volume={26},</span></span>
+<span id="cb133-24"><a href="#cb133-24" tabindex="-1"></a><span class="do">##   number={1},</span></span>
+<span id="cb133-25"><a href="#cb133-25" tabindex="-1"></a><span class="do">##   pages={139--140},</span></span>
+<span id="cb133-26"><a href="#cb133-26" tabindex="-1"></a><span class="do">##   year={2010},</span></span>
+<span id="cb133-27"><a href="#cb133-27" tabindex="-1"></a><span class="do">##   publisher={Oxford University Press}</span></span>
+<span id="cb133-28"><a href="#cb133-28" tabindex="-1"></a><span class="do">##  }</span></span>
+<span id="cb133-29"><a href="#cb133-29" tabindex="-1"></a><span class="do">## @article{robinson2010scaling,</span></span>
+<span id="cb133-30"><a href="#cb133-30" tabindex="-1"></a><span class="do">##   title={A scaling normalization method for differential expression analysis of RNA-seq data},</span></span>
+<span id="cb133-31"><a href="#cb133-31" tabindex="-1"></a><span class="do">##   author={Robinson, Mark D and Oshlack, Alicia},</span></span>
+<span id="cb133-32"><a href="#cb133-32" tabindex="-1"></a><span class="do">##   journal={Genome biology},</span></span>
+<span id="cb133-33"><a href="#cb133-33" tabindex="-1"></a><span class="do">##   volume={11},</span></span>
+<span id="cb133-34"><a href="#cb133-34" tabindex="-1"></a><span class="do">##   number={3},</span></span>
+<span id="cb133-35"><a href="#cb133-35" tabindex="-1"></a><span class="do">##   pages={1--9},</span></span>
+<span id="cb133-36"><a href="#cb133-36" tabindex="-1"></a><span class="do">##   year={2010},</span></span>
+<span id="cb133-37"><a href="#cb133-37" tabindex="-1"></a><span class="do">##   publisher={BioMed Central}</span></span>
+<span id="cb133-38"><a href="#cb133-38" tabindex="-1"></a><span class="do">##  }</span></span>
+<span id="cb133-39"><a href="#cb133-39" tabindex="-1"></a><span class="do">## @incollection{smyth2005limma,</span></span>
+<span id="cb133-40"><a href="#cb133-40" tabindex="-1"></a><span class="do">##   title={Limma: linear models for microarray data},</span></span>
+<span id="cb133-41"><a href="#cb133-41" tabindex="-1"></a><span class="do">##   author={Smyth, Gordon K},</span></span>
+<span id="cb133-42"><a href="#cb133-42" tabindex="-1"></a><span class="do">##   booktitle={Bioinformatics and computational biology solutions using R and Bioconductor},</span></span>
+<span id="cb133-43"><a href="#cb133-43" tabindex="-1"></a><span class="do">##   pages={397--420},</span></span>
+<span id="cb133-44"><a href="#cb133-44" tabindex="-1"></a><span class="do">##   year={2005},</span></span>
+<span id="cb133-45"><a href="#cb133-45" tabindex="-1"></a><span class="do">##   publisher={Springer}</span></span>
+<span id="cb133-46"><a href="#cb133-46" tabindex="-1"></a><span class="do">##  }</span></span>
+<span id="cb133-47"><a href="#cb133-47" tabindex="-1"></a><span class="do">## @Manual{,</span></span>
+<span id="cb133-48"><a href="#cb133-48" tabindex="-1"></a><span class="do">##     title = {R: A Language and Environment for Statistical Computing},</span></span>
+<span id="cb133-49"><a href="#cb133-49" tabindex="-1"></a><span class="do">##     author = {{R Core Team}},</span></span>
+<span id="cb133-50"><a href="#cb133-50" tabindex="-1"></a><span class="do">##     organization = {R Foundation for Statistical Computing},</span></span>
+<span id="cb133-51"><a href="#cb133-51" tabindex="-1"></a><span class="do">##     address = {Vienna, Austria},</span></span>
+<span id="cb133-52"><a href="#cb133-52" tabindex="-1"></a><span class="do">##     year = {2020},</span></span>
+<span id="cb133-53"><a href="#cb133-53" tabindex="-1"></a><span class="do">##     url = {https://www.R-project.org/},</span></span>
+<span id="cb133-54"><a href="#cb133-54" tabindex="-1"></a><span class="do">##   }</span></span>
+<span id="cb133-55"><a href="#cb133-55" tabindex="-1"></a><span class="do">## @article{lund2012detecting,</span></span>
+<span id="cb133-56"><a href="#cb133-56" tabindex="-1"></a><span class="do">##   title={Detecting differential expression in RNA-sequence data using quasi-likelihood with shrunken dispersion estimates},</span></span>
+<span id="cb133-57"><a href="#cb133-57" tabindex="-1"></a><span class="do">##   author={Lund, Steven P and Nettleton, Dan and McCarthy, Davis J and Smyth, Gordon K},</span></span>
+<span id="cb133-58"><a href="#cb133-58" tabindex="-1"></a><span class="do">##   journal={Statistical applications in genetics and molecular biology},</span></span>
+<span id="cb133-59"><a href="#cb133-59" tabindex="-1"></a><span class="do">##   volume={11},</span></span>
+<span id="cb133-60"><a href="#cb133-60" tabindex="-1"></a><span class="do">##   number={5},</span></span>
+<span id="cb133-61"><a href="#cb133-61" tabindex="-1"></a><span class="do">##   year={2012},</span></span>
+<span id="cb133-62"><a href="#cb133-62" tabindex="-1"></a><span class="do">##   publisher={De Gruyter}</span></span>
+<span id="cb133-63"><a href="#cb133-63" tabindex="-1"></a><span class="do">##     }</span></span>
+<span id="cb133-64"><a href="#cb133-64" tabindex="-1"></a><span class="do">## @article{zhou2014robustly,</span></span>
+<span id="cb133-65"><a href="#cb133-65" tabindex="-1"></a><span class="do">##   title={Robustly detecting differential expression in RNA sequencing data using observation weights},</span></span>
+<span id="cb133-66"><a href="#cb133-66" tabindex="-1"></a><span class="do">##   author={Zhou, Xiaobei and Lindsay, Helen and Robinson, Mark D},</span></span>
+<span id="cb133-67"><a href="#cb133-67" tabindex="-1"></a><span class="do">##   journal={Nucleic acids research},</span></span>
+<span id="cb133-68"><a href="#cb133-68" tabindex="-1"></a><span class="do">##   volume={42},</span></span>
+<span id="cb133-69"><a href="#cb133-69" tabindex="-1"></a><span class="do">##   number={11},</span></span>
+<span id="cb133-70"><a href="#cb133-70" tabindex="-1"></a><span class="do">##   pages={e91--e91},</span></span>
+<span id="cb133-71"><a href="#cb133-71" tabindex="-1"></a><span class="do">##   year={2014},</span></span>
+<span id="cb133-72"><a href="#cb133-72" tabindex="-1"></a><span class="do">##   publisher={Oxford University Press}</span></span>
+<span id="cb133-73"><a href="#cb133-73" tabindex="-1"></a><span class="do">##  }</span></span>
+<span id="cb133-74"><a href="#cb133-74" tabindex="-1"></a><span class="do">## @article{love2014moderated,</span></span>
+<span id="cb133-75"><a href="#cb133-75" tabindex="-1"></a><span class="do">##   title={Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2},</span></span>
+<span id="cb133-76"><a href="#cb133-76" tabindex="-1"></a><span class="do">##   author={Love, Michael I and Huber, Wolfgang and Anders, Simon},</span></span>
+<span id="cb133-77"><a href="#cb133-77" tabindex="-1"></a><span class="do">##   journal={Genome biology},</span></span>
+<span id="cb133-78"><a href="#cb133-78" tabindex="-1"></a><span class="do">##   volume={15},</span></span>
+<span id="cb133-79"><a href="#cb133-79" tabindex="-1"></a><span class="do">##   number={12},</span></span>
+<span id="cb133-80"><a href="#cb133-80" tabindex="-1"></a><span class="do">##   pages={550},</span></span>
+<span id="cb133-81"><a href="#cb133-81" tabindex="-1"></a><span class="do">##   year={2014},</span></span>
+<span id="cb133-82"><a href="#cb133-82" tabindex="-1"></a><span class="do">##   publisher={Springer}</span></span>
+<span id="cb133-83"><a href="#cb133-83" tabindex="-1"></a><span class="do">##  }</span></span>
+<span id="cb133-84"><a href="#cb133-84" tabindex="-1"></a><span class="do">## @article{law2014voom,</span></span>
+<span id="cb133-85"><a href="#cb133-85" tabindex="-1"></a><span class="do">##   title={voom: Precision weights unlock linear model analysis tools for RNA-seq read counts},</span></span>
+<span id="cb133-86"><a href="#cb133-86" tabindex="-1"></a><span class="do">##   author={Law, Charity W and Chen, Yunshun and Shi, Wei and Smyth, Gordon K},</span></span>
+<span id="cb133-87"><a href="#cb133-87" tabindex="-1"></a><span class="do">##   journal={Genome biology},</span></span>
+<span id="cb133-88"><a href="#cb133-88" tabindex="-1"></a><span class="do">##   volume={15},</span></span>
+<span id="cb133-89"><a href="#cb133-89" tabindex="-1"></a><span class="do">##   number={2},</span></span>
+<span id="cb133-90"><a href="#cb133-90" tabindex="-1"></a><span class="do">##   pages={R29},</span></span>
+<span id="cb133-91"><a href="#cb133-91" tabindex="-1"></a><span class="do">##   year={2014},</span></span>
+<span id="cb133-92"><a href="#cb133-92" tabindex="-1"></a><span class="do">##   publisher={Springer}</span></span>
+<span id="cb133-93"><a href="#cb133-93" tabindex="-1"></a><span class="do">##     }</span></span>
+<span id="cb133-94"><a href="#cb133-94" tabindex="-1"></a><span class="do">## @article{liu2015weight,</span></span>
+<span id="cb133-95"><a href="#cb133-95" tabindex="-1"></a><span class="do">##   title={Why weight? Modelling sample and observational level variability improves power in RNA-seq analyses},</span></span>
+<span id="cb133-96"><a href="#cb133-96" tabindex="-1"></a><span class="do">##   author={Liu, Ruijie and Holik, Aliaksei Z and Su, Shian and Jansz, Natasha and Chen, Kelan and Leong, Huei San and Blewitt, Marnie E and Asselin-Labat, Marie-Liesse and Smyth, Gordon K and Ritchie, Matthew E},</span></span>
+<span id="cb133-97"><a href="#cb133-97" tabindex="-1"></a><span class="do">##   journal={Nucleic acids research},</span></span>
+<span id="cb133-98"><a href="#cb133-98" tabindex="-1"></a><span class="do">##   volume={43},</span></span>
+<span id="cb133-99"><a href="#cb133-99" tabindex="-1"></a><span class="do">##   number={15},</span></span>
+<span id="cb133-100"><a href="#cb133-100" tabindex="-1"></a><span class="do">##   pages={e97--e97},</span></span>
+<span id="cb133-101"><a href="#cb133-101" tabindex="-1"></a><span class="do">##   year={2015},</span></span>
+<span id="cb133-102"><a href="#cb133-102" tabindex="-1"></a><span class="do">##   publisher={Oxford University Press}</span></span>
+<span id="cb133-103"><a href="#cb133-103" tabindex="-1"></a><span class="do">##     }</span></span>
+<span id="cb133-104"><a href="#cb133-104" tabindex="-1"></a><span class="do">## @article{leek2012sva,</span></span>
+<span id="cb133-105"><a href="#cb133-105" tabindex="-1"></a><span class="do">##   title={The sva package for removing batch effects and other unwanted variation in high-throughput experiments},</span></span>
+<span id="cb133-106"><a href="#cb133-106" tabindex="-1"></a><span class="do">##   author={Leek, Jeffrey T and Johnson, W Evan and Parker, Hilary S and Jaffe, Andrew E and Storey, John D},</span></span>
+<span id="cb133-107"><a href="#cb133-107" tabindex="-1"></a><span class="do">##   journal={Bioinformatics},</span></span>
+<span id="cb133-108"><a href="#cb133-108" tabindex="-1"></a><span class="do">##   volume={28},</span></span>
+<span id="cb133-109"><a href="#cb133-109" tabindex="-1"></a><span class="do">##   number={6},</span></span>
+<span id="cb133-110"><a href="#cb133-110" tabindex="-1"></a><span class="do">##   pages={882--883},</span></span>
+<span id="cb133-111"><a href="#cb133-111" tabindex="-1"></a><span class="do">##   year={2012},</span></span>
+<span id="cb133-112"><a href="#cb133-112" tabindex="-1"></a><span class="do">##   publisher={Oxford University Press}</span></span>
+<span id="cb133-113"><a href="#cb133-113" tabindex="-1"></a><span class="do">##  }</span></span>
+<span id="cb133-114"><a href="#cb133-114" tabindex="-1"></a><span class="do">## @article{newman2015robust,</span></span>
+<span id="cb133-115"><a href="#cb133-115" tabindex="-1"></a><span class="do">##   title={Robust enumeration of cell subsets from tissue expression profiles},</span></span>
+<span id="cb133-116"><a href="#cb133-116" tabindex="-1"></a><span class="do">##   author={Newman, Aaron M and Liu, Chih Long and Green, Michael R and Gentles, Andrew J and Feng, Weiguo and Xu, Yue and Hoang, Chuong D and Diehn, Maximilian and Alizadeh, Ash A},</span></span>
+<span id="cb133-117"><a href="#cb133-117" tabindex="-1"></a><span class="do">##   journal={Nature methods},</span></span>
+<span id="cb133-118"><a href="#cb133-118" tabindex="-1"></a><span class="do">##   volume={12},</span></span>
+<span id="cb133-119"><a href="#cb133-119" tabindex="-1"></a><span class="do">##   number={5},</span></span>
+<span id="cb133-120"><a href="#cb133-120" tabindex="-1"></a><span class="do">##   pages={453--457},</span></span>
+<span id="cb133-121"><a href="#cb133-121" tabindex="-1"></a><span class="do">##   year={2015},</span></span>
+<span id="cb133-122"><a href="#cb133-122" tabindex="-1"></a><span class="do">##   publisher={Nature Publishing Group}</span></span>
+<span id="cb133-123"><a href="#cb133-123" tabindex="-1"></a><span class="do">##  }</span></span></code></pre></div>
+<div class="sourceCode" id="cb134"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb133"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb133-1"><a href="#cb133-1" tabindex="-1"></a><span class="do">## R version 4.5.0 (2025-04-11)</span></span>
-<span id="cb133-2"><a href="#cb133-2" tabindex="-1"></a><span class="do">## Platform: x86_64-apple-darwin20</span></span>
-<span id="cb133-3"><a href="#cb133-3" tabindex="-1"></a><span class="do">## Running under: macOS Sonoma 14.6.1</span></span>
-<span id="cb133-4"><a href="#cb133-4" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb133-5"><a href="#cb133-5" tabindex="-1"></a><span class="do">## Matrix products: default</span></span>
-<span id="cb133-6"><a href="#cb133-6" tabindex="-1"></a><span class="do">## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib </span></span>
-<span id="cb133-7"><a href="#cb133-7" tabindex="-1"></a><span class="do">## LAPACK: /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1</span></span>
-<span id="cb133-8"><a href="#cb133-8" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb133-9"><a href="#cb133-9" tabindex="-1"></a><span class="do">## locale:</span></span>
-<span id="cb133-10"><a href="#cb133-10" tabindex="-1"></a><span class="do">## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
-<span id="cb133-11"><a href="#cb133-11" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb133-12"><a href="#cb133-12" tabindex="-1"></a><span class="do">## time zone: Australia/Adelaide</span></span>
-<span id="cb133-13"><a href="#cb133-13" tabindex="-1"></a><span class="do">## tzcode source: internal</span></span>
-<span id="cb133-14"><a href="#cb133-14" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb133-15"><a href="#cb133-15" tabindex="-1"></a><span class="do">## attached base packages:</span></span>
-<span id="cb133-16"><a href="#cb133-16" tabindex="-1"></a><span class="do">## [1] stats4    stats     graphics  grDevices utils     datasets  methods  </span></span>
-<span id="cb133-17"><a href="#cb133-17" tabindex="-1"></a><span class="do">## [8] base     </span></span>
-<span id="cb133-18"><a href="#cb133-18" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb133-19"><a href="#cb133-19" tabindex="-1"></a><span class="do">## other attached packages:</span></span>
-<span id="cb133-20"><a href="#cb133-20" tabindex="-1"></a><span class="do">##  [1] pathview_1.48.0                 topGO_2.60.1                   </span></span>
-<span id="cb133-21"><a href="#cb133-21" tabindex="-1"></a><span class="do">##  [3] SparseM_1.84-2                  GO.db_3.21.0                   </span></span>
-<span id="cb133-22"><a href="#cb133-22" tabindex="-1"></a><span class="do">##  [5] graph_1.86.0                    AnnotationDbi_1.70.0           </span></span>
-<span id="cb133-23"><a href="#cb133-23" tabindex="-1"></a><span class="do">##  [7] gage_2.58.0                     patchwork_1.3.1                </span></span>
-<span id="cb133-24"><a href="#cb133-24" tabindex="-1"></a><span class="do">##  [9] GGally_2.3.0                    DESeq2_1.48.1                  </span></span>
-<span id="cb133-25"><a href="#cb133-25" tabindex="-1"></a><span class="do">## [11] edgeR_4.6.3                     limma_3.64.3                   </span></span>
-<span id="cb133-26"><a href="#cb133-26" tabindex="-1"></a><span class="do">## [13] tidySummarizedExperiment_1.19.4 airway_1.28.0                  </span></span>
-<span id="cb133-27"><a href="#cb133-27" tabindex="-1"></a><span class="do">## [15] SummarizedExperiment_1.38.1     Biobase_2.68.0                 </span></span>
-<span id="cb133-28"><a href="#cb133-28" tabindex="-1"></a><span class="do">## [17] GenomicRanges_1.60.0            GenomeInfoDb_1.44.1            </span></span>
-<span id="cb133-29"><a href="#cb133-29" tabindex="-1"></a><span class="do">## [19] IRanges_2.42.0                  S4Vectors_0.46.0               </span></span>
-<span id="cb133-30"><a href="#cb133-30" tabindex="-1"></a><span class="do">## [21] BiocGenerics_0.54.0             generics_0.1.4                 </span></span>
-<span id="cb133-31"><a href="#cb133-31" tabindex="-1"></a><span class="do">## [23] MatrixGenerics_1.20.0           matrixStats_1.5.0              </span></span>
-<span id="cb133-32"><a href="#cb133-32" tabindex="-1"></a><span class="do">## [25] tidybulk_1.99.2                 ttservice_0.5.3                </span></span>
-<span id="cb133-33"><a href="#cb133-33" tabindex="-1"></a><span class="do">## [27] ggrepel_0.9.6                   magrittr_2.0.3                 </span></span>
-<span id="cb133-34"><a href="#cb133-34" tabindex="-1"></a><span class="do">## [29] lubridate_1.9.4                 forcats_1.0.0                  </span></span>
-<span id="cb133-35"><a href="#cb133-35" tabindex="-1"></a><span class="do">## [31] stringr_1.5.1                   dplyr_1.1.4                    </span></span>
-<span id="cb133-36"><a href="#cb133-36" tabindex="-1"></a><span class="do">## [33] purrr_1.1.0                     readr_2.1.5                    </span></span>
-<span id="cb133-37"><a href="#cb133-37" tabindex="-1"></a><span class="do">## [35] tidyr_1.3.1                     tibble_3.3.0                   </span></span>
-<span id="cb133-38"><a href="#cb133-38" tabindex="-1"></a><span class="do">## [37] ggplot2_3.5.2                   tidyverse_2.0.0                </span></span>
-<span id="cb133-39"><a href="#cb133-39" tabindex="-1"></a><span class="do">## [39] knitr_1.50                     </span></span>
-<span id="cb133-40"><a href="#cb133-40" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb133-41"><a href="#cb133-41" tabindex="-1"></a><span class="do">## loaded via a namespace (and not attached):</span></span>
-<span id="cb133-42"><a href="#cb133-42" tabindex="-1"></a><span class="do">##   [1] fs_1.6.6                    GSVA_2.2.0                 </span></span>
-<span id="cb133-43"><a href="#cb133-43" tabindex="-1"></a><span class="do">##   [3] bitops_1.0-9                R2HTML_2.3.4               </span></span>
-<span id="cb133-44"><a href="#cb133-44" tabindex="-1"></a><span class="do">##   [5] enrichplot_1.28.4           httr_1.4.7                 </span></span>
-<span id="cb133-45"><a href="#cb133-45" tabindex="-1"></a><span class="do">##   [7] RColorBrewer_1.1-3          numDeriv_2016.8-1.1        </span></span>
-<span id="cb133-46"><a href="#cb133-46" tabindex="-1"></a><span class="do">##   [9] Rgraphviz_2.52.0            doRNG_1.8.6.2              </span></span>
-<span id="cb133-47"><a href="#cb133-47" tabindex="-1"></a><span class="do">##  [11] tools_4.5.0                 backports_1.5.0            </span></span>
-<span id="cb133-48"><a href="#cb133-48" tabindex="-1"></a><span class="do">##  [13] utf8_1.2.6                  R6_2.6.1                   </span></span>
-<span id="cb133-49"><a href="#cb133-49" tabindex="-1"></a><span class="do">##  [15] DT_0.33                     HDF5Array_1.36.0           </span></span>
-<span id="cb133-50"><a href="#cb133-50" tabindex="-1"></a><span class="do">##  [17] sn_2.1.1                    lazyeval_0.2.2             </span></span>
-<span id="cb133-51"><a href="#cb133-51" tabindex="-1"></a><span class="do">##  [19] mgcv_1.9-3                  rhdf5filters_1.20.0        </span></span>
-<span id="cb133-52"><a href="#cb133-52" tabindex="-1"></a><span class="do">##  [21] withr_3.0.2                 preprocessCore_1.70.0      </span></span>
-<span id="cb133-53"><a href="#cb133-53" tabindex="-1"></a><span class="do">##  [23] cli_3.6.5                   sandwich_3.1-1             </span></span>
-<span id="cb133-54"><a href="#cb133-54" tabindex="-1"></a><span class="do">##  [25] labeling_0.4.3              KEGGgraph_1.68.0           </span></span>
-<span id="cb133-55"><a href="#cb133-55" tabindex="-1"></a><span class="do">##  [27] mvtnorm_1.3-3               S7_0.2.0                   </span></span>
-<span id="cb133-56"><a href="#cb133-56" tabindex="-1"></a><span class="do">##  [29] genefilter_1.90.0           proxy_0.4-27               </span></span>
-<span id="cb133-57"><a href="#cb133-57" tabindex="-1"></a><span class="do">##  [31] PADOG_1.50.0                yulab.utils_0.2.0          </span></span>
-<span id="cb133-58"><a href="#cb133-58" tabindex="-1"></a><span class="do">##  [33] gson_0.1.0                  DOSE_4.2.0                 </span></span>
-<span id="cb133-59"><a href="#cb133-59" tabindex="-1"></a><span class="do">##  [35] R.utils_2.13.0              HTMLUtils_0.1.9            </span></span>
-<span id="cb133-60"><a href="#cb133-60" tabindex="-1"></a><span class="do">##  [37] plotrix_3.8-4               rstudioapi_0.17.1          </span></span>
-<span id="cb133-61"><a href="#cb133-61" tabindex="-1"></a><span class="do">##  [39] RSQLite_2.4.2               gridGraphics_0.5-1         </span></span>
-<span id="cb133-62"><a href="#cb133-62" tabindex="-1"></a><span class="do">##  [41] hwriter_1.3.2.1             gtools_3.9.5               </span></span>
-<span id="cb133-63"><a href="#cb133-63" tabindex="-1"></a><span class="do">##  [43] Matrix_1.7-3                abind_1.4-8                </span></span>
-<span id="cb133-64"><a href="#cb133-64" tabindex="-1"></a><span class="do">##  [45] R.methodsS3_1.8.2           lifecycle_1.0.4            </span></span>
-<span id="cb133-65"><a href="#cb133-65" tabindex="-1"></a><span class="do">##  [47] multcomp_1.4-28             yaml_2.3.10                </span></span>
-<span id="cb133-66"><a href="#cb133-66" tabindex="-1"></a><span class="do">##  [49] mathjaxr_1.8-0              KEGGdzPathwaysGEO_1.46.0   </span></span>
-<span id="cb133-67"><a href="#cb133-67" tabindex="-1"></a><span class="do">##  [51] gplots_3.2.0                rhdf5_2.52.1               </span></span>
-<span id="cb133-68"><a href="#cb133-68" tabindex="-1"></a><span class="do">##  [53] qvalue_2.40.0               SparseArray_1.8.1          </span></span>
-<span id="cb133-69"><a href="#cb133-69" tabindex="-1"></a><span class="do">##  [55] grid_4.5.0                  blob_1.2.4                 </span></span>
-<span id="cb133-70"><a href="#cb133-70" tabindex="-1"></a><span class="do">##  [57] crayon_1.5.3                ggtangle_0.0.7             </span></span>
-<span id="cb133-71"><a href="#cb133-71" tabindex="-1"></a><span class="do">##  [59] lattice_0.22-7              beachmat_2.24.0            </span></span>
-<span id="cb133-72"><a href="#cb133-72" tabindex="-1"></a><span class="do">##  [61] msigdbr_25.1.1              cowplot_1.2.0              </span></span>
-<span id="cb133-73"><a href="#cb133-73" tabindex="-1"></a><span class="do">##  [63] annotate_1.86.1             KEGGREST_1.48.1            </span></span>
-<span id="cb133-74"><a href="#cb133-74" tabindex="-1"></a><span class="do">##  [65] magick_2.8.7                pillar_1.11.0              </span></span>
-<span id="cb133-75"><a href="#cb133-75" tabindex="-1"></a><span class="do">##  [67] fgsea_1.34.2                hgu133plus2.db_3.13.0      </span></span>
-<span id="cb133-76"><a href="#cb133-76" tabindex="-1"></a><span class="do">##  [69] hgu133a.db_3.13.0           rjson_0.2.23               </span></span>
-<span id="cb133-77"><a href="#cb133-77" tabindex="-1"></a><span class="do">##  [71] widyr_0.1.5                 codetools_0.2-20           </span></span>
-<span id="cb133-78"><a href="#cb133-78" tabindex="-1"></a><span class="do">##  [73] fastmatch_1.1-6             mutoss_0.1-13              </span></span>
-<span id="cb133-79"><a href="#cb133-79" tabindex="-1"></a><span class="do">##  [75] glue_1.8.0                  ggfun_0.2.0                </span></span>
-<span id="cb133-80"><a href="#cb133-80" tabindex="-1"></a><span class="do">##  [77] data.table_1.17.8           Rdpack_2.6.4               </span></span>
-<span id="cb133-81"><a href="#cb133-81" tabindex="-1"></a><span class="do">##  [79] vctrs_0.6.5                 png_0.1-8                  </span></span>
-<span id="cb133-82"><a href="#cb133-82" tabindex="-1"></a><span class="do">##  [81] treeio_1.32.0               org.Mm.eg.db_3.21.0        </span></span>
-<span id="cb133-83"><a href="#cb133-83" tabindex="-1"></a><span class="do">##  [83] gtable_0.3.6                org.Rn.eg.db_3.21.0        </span></span>
-<span id="cb133-84"><a href="#cb133-84" tabindex="-1"></a><span class="do">##  [85] assertthat_0.2.1            cachem_1.1.0               </span></span>
-<span id="cb133-85"><a href="#cb133-85" tabindex="-1"></a><span class="do">##  [87] xfun_0.53                   rbibutils_2.3              </span></span>
-<span id="cb133-86"><a href="#cb133-86" tabindex="-1"></a><span class="do">##  [89] S4Arrays_1.8.1              survival_3.8-3             </span></span>
-<span id="cb133-87"><a href="#cb133-87" tabindex="-1"></a><span class="do">##  [91] SingleCellExperiment_1.30.1 iterators_1.0.14           </span></span>
-<span id="cb133-88"><a href="#cb133-88" tabindex="-1"></a><span class="do">##  [93] statmod_1.5.0               TH.data_1.1-3              </span></span>
-<span id="cb133-89"><a href="#cb133-89" tabindex="-1"></a><span class="do">##  [95] ellipsis_0.3.2              nlme_3.1-168               </span></span>
-<span id="cb133-90"><a href="#cb133-90" tabindex="-1"></a><span class="do">##  [97] ggtree_3.16.3               bit64_4.6.0-1              </span></span>
-<span id="cb133-91"><a href="#cb133-91" tabindex="-1"></a><span class="do">##  [99] rprojroot_2.1.0             SnowballC_0.7.1            </span></span>
-<span id="cb133-92"><a href="#cb133-92" tabindex="-1"></a><span class="do">## [101] irlba_2.3.5.1               KernSmooth_2.23-26         </span></span>
-<span id="cb133-93"><a href="#cb133-93" tabindex="-1"></a><span class="do">## [103] colorspace_2.1-1            DBI_1.2.3                  </span></span>
-<span id="cb133-94"><a href="#cb133-94" tabindex="-1"></a><span class="do">## [105] mnormt_2.1.1                tidyselect_1.2.1           </span></span>
-<span id="cb133-95"><a href="#cb133-95" tabindex="-1"></a><span class="do">## [107] bit_4.6.0                   compiler_4.5.0             </span></span>
-<span id="cb133-96"><a href="#cb133-96" tabindex="-1"></a><span class="do">## [109] curl_6.4.0                  h5mread_1.0.1              </span></span>
-<span id="cb133-97"><a href="#cb133-97" tabindex="-1"></a><span class="do">## [111] TFisher_0.2.0               DelayedArray_0.34.1        </span></span>
-<span id="cb133-98"><a href="#cb133-98" tabindex="-1"></a><span class="do">## [113] plotly_4.11.0               scales_1.4.0               </span></span>
-<span id="cb133-99"><a href="#cb133-99" tabindex="-1"></a><span class="do">## [115] caTools_1.18.3              SpatialExperiment_1.18.1   </span></span>
-<span id="cb133-100"><a href="#cb133-100" tabindex="-1"></a><span class="do">## [117] digest_0.6.37               rmarkdown_2.29             </span></span>
-<span id="cb133-101"><a href="#cb133-101" tabindex="-1"></a><span class="do">## [119] XVector_0.48.0              htmltools_0.5.8.1          </span></span>
-<span id="cb133-102"><a href="#cb133-102" tabindex="-1"></a><span class="do">## [121] pkgconfig_2.0.3             sparseMatrixStats_1.20.0   </span></span>
-<span id="cb133-103"><a href="#cb133-103" tabindex="-1"></a><span class="do">## [123] fastmap_1.2.0               rlang_1.1.6                </span></span>
-<span id="cb133-104"><a href="#cb133-104" tabindex="-1"></a><span class="do">## [125] htmlwidgets_1.6.4           UCSC.utils_1.4.0           </span></span>
-<span id="cb133-105"><a href="#cb133-105" tabindex="-1"></a><span class="do">## [127] farver_2.1.2                zoo_1.8-14                 </span></span>
-<span id="cb133-106"><a href="#cb133-106" tabindex="-1"></a><span class="do">## [129] jsonlite_2.0.0              BiocParallel_1.42.1        </span></span>
-<span id="cb133-107"><a href="#cb133-107" tabindex="-1"></a><span class="do">## [131] GOSemSim_2.34.0             tokenizers_0.3.0           </span></span>
-<span id="cb133-108"><a href="#cb133-108" tabindex="-1"></a><span class="do">## [133] R.oo_1.27.1                 BiocSingular_1.24.0        </span></span>
-<span id="cb133-109"><a href="#cb133-109" tabindex="-1"></a><span class="do">## [135] RCurl_1.98-1.17             GenomeInfoDbData_1.2.14    </span></span>
-<span id="cb133-110"><a href="#cb133-110" tabindex="-1"></a><span class="do">## [137] ggplotify_0.1.2             Rhdf5lib_1.30.0            </span></span>
-<span id="cb133-111"><a href="#cb133-111" tabindex="-1"></a><span class="do">## [139] Rcpp_1.1.0                  ape_5.8-1                  </span></span>
-<span id="cb133-112"><a href="#cb133-112" tabindex="-1"></a><span class="do">## [141] babelgene_22.9              stringi_1.8.7              </span></span>
-<span id="cb133-113"><a href="#cb133-113" tabindex="-1"></a><span class="do">## [143] MASS_7.3-65                 globaltest_5.62.0          </span></span>
-<span id="cb133-114"><a href="#cb133-114" tabindex="-1"></a><span class="do">## [145] plyr_1.8.9                  org.Hs.eg.db_3.21.0        </span></span>
-<span id="cb133-115"><a href="#cb133-115" tabindex="-1"></a><span class="do">## [147] ggstats_0.10.0              parallel_4.5.0             </span></span>
-<span id="cb133-116"><a href="#cb133-116" tabindex="-1"></a><span class="do">## [149] Biostrings_2.76.0           splines_4.5.0              </span></span>
-<span id="cb133-117"><a href="#cb133-117" tabindex="-1"></a><span class="do">## [151] multtest_2.64.0             hms_1.1.3                  </span></span>
-<span id="cb133-118"><a href="#cb133-118" tabindex="-1"></a><span class="do">## [153] qqconf_1.3.2                locfit_1.5-9.12            </span></span>
-<span id="cb133-119"><a href="#cb133-119" tabindex="-1"></a><span class="do">## [155] igraph_2.1.4                rngtools_1.5.2             </span></span>
-<span id="cb133-120"><a href="#cb133-120" tabindex="-1"></a><span class="do">## [157] EGSEAdata_1.36.0            reshape2_1.4.4             </span></span>
-<span id="cb133-121"><a href="#cb133-121" tabindex="-1"></a><span class="do">## [159] ScaledMatrix_1.16.0         XML_3.99-0.18              </span></span>
-<span id="cb133-122"><a href="#cb133-122" tabindex="-1"></a><span class="do">## [161] GSA_1.03.3                  evaluate_1.0.4             </span></span>
-<span id="cb133-123"><a href="#cb133-123" tabindex="-1"></a><span class="do">## [163] metap_1.12                  tidytext_0.4.2             </span></span>
-<span id="cb133-124"><a href="#cb133-124" tabindex="-1"></a><span class="do">## [165] foreach_1.5.2               tzdb_0.5.0                 </span></span>
-<span id="cb133-125"><a href="#cb133-125" tabindex="-1"></a><span class="do">## [167] rsvd_1.0.5                  broom_1.0.8                </span></span>
-<span id="cb133-126"><a href="#cb133-126" tabindex="-1"></a><span class="do">## [169] xtable_1.8-4                e1071_1.7-16               </span></span>
-<span id="cb133-127"><a href="#cb133-127" tabindex="-1"></a><span class="do">## [171] tidytree_0.4.6              janeaustenr_1.0.0          </span></span>
-<span id="cb133-128"><a href="#cb133-128" tabindex="-1"></a><span class="do">## [173] class_7.3-23                viridisLite_0.4.2          </span></span>
-<span id="cb133-129"><a href="#cb133-129" tabindex="-1"></a><span class="do">## [175] clusterProfiler_4.16.0      aplot_0.2.8                </span></span>
-<span id="cb133-130"><a href="#cb133-130" tabindex="-1"></a><span class="do">## [177] safe_3.48.0                 memoise_2.0.1              </span></span>
-<span id="cb133-131"><a href="#cb133-131" tabindex="-1"></a><span class="do">## [179] timechange_0.3.0            sva_3.56.0                 </span></span>
-<span id="cb133-132"><a href="#cb133-132" tabindex="-1"></a><span class="do">## [181] GSEABase_1.70.0</span></span></code></pre></div>
+<div class="sourceCode" id="cb135"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1" tabindex="-1"></a><span class="do">## R version 4.5.0 (2025-04-11)</span></span>
+<span id="cb135-2"><a href="#cb135-2" tabindex="-1"></a><span class="do">## Platform: x86_64-apple-darwin20</span></span>
+<span id="cb135-3"><a href="#cb135-3" tabindex="-1"></a><span class="do">## Running under: macOS Sonoma 14.6.1</span></span>
+<span id="cb135-4"><a href="#cb135-4" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb135-5"><a href="#cb135-5" tabindex="-1"></a><span class="do">## Matrix products: default</span></span>
+<span id="cb135-6"><a href="#cb135-6" tabindex="-1"></a><span class="do">## BLAS:   /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRblas.0.dylib </span></span>
+<span id="cb135-7"><a href="#cb135-7" tabindex="-1"></a><span class="do">## LAPACK: /Library/Frameworks/R.framework/Versions/4.5-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1</span></span>
+<span id="cb135-8"><a href="#cb135-8" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb135-9"><a href="#cb135-9" tabindex="-1"></a><span class="do">## locale:</span></span>
+<span id="cb135-10"><a href="#cb135-10" tabindex="-1"></a><span class="do">## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
+<span id="cb135-11"><a href="#cb135-11" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb135-12"><a href="#cb135-12" tabindex="-1"></a><span class="do">## time zone: Australia/Adelaide</span></span>
+<span id="cb135-13"><a href="#cb135-13" tabindex="-1"></a><span class="do">## tzcode source: internal</span></span>
+<span id="cb135-14"><a href="#cb135-14" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb135-15"><a href="#cb135-15" tabindex="-1"></a><span class="do">## attached base packages:</span></span>
+<span id="cb135-16"><a href="#cb135-16" tabindex="-1"></a><span class="do">## [1] stats4    stats     graphics  grDevices utils     datasets  methods  </span></span>
+<span id="cb135-17"><a href="#cb135-17" tabindex="-1"></a><span class="do">## [8] base     </span></span>
+<span id="cb135-18"><a href="#cb135-18" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb135-19"><a href="#cb135-19" tabindex="-1"></a><span class="do">## other attached packages:</span></span>
+<span id="cb135-20"><a href="#cb135-20" tabindex="-1"></a><span class="do">##  [1] pathview_1.48.0                 topGO_2.60.1                   </span></span>
+<span id="cb135-21"><a href="#cb135-21" tabindex="-1"></a><span class="do">##  [3] SparseM_1.84-2                  GO.db_3.21.0                   </span></span>
+<span id="cb135-22"><a href="#cb135-22" tabindex="-1"></a><span class="do">##  [5] graph_1.86.0                    AnnotationDbi_1.70.0           </span></span>
+<span id="cb135-23"><a href="#cb135-23" tabindex="-1"></a><span class="do">##  [7] gage_2.58.0                     patchwork_1.3.2                </span></span>
+<span id="cb135-24"><a href="#cb135-24" tabindex="-1"></a><span class="do">##  [9] GGally_2.3.0                    DESeq2_1.48.1                  </span></span>
+<span id="cb135-25"><a href="#cb135-25" tabindex="-1"></a><span class="do">## [11] edgeR_4.6.3                     limma_3.64.3                   </span></span>
+<span id="cb135-26"><a href="#cb135-26" tabindex="-1"></a><span class="do">## [13] tidySummarizedExperiment_1.19.7 airway_1.28.0                  </span></span>
+<span id="cb135-27"><a href="#cb135-27" tabindex="-1"></a><span class="do">## [15] SummarizedExperiment_1.38.1     Biobase_2.68.0                 </span></span>
+<span id="cb135-28"><a href="#cb135-28" tabindex="-1"></a><span class="do">## [17] GenomicRanges_1.60.0            GenomeInfoDb_1.44.2            </span></span>
+<span id="cb135-29"><a href="#cb135-29" tabindex="-1"></a><span class="do">## [19] IRanges_2.42.0                  S4Vectors_0.46.0               </span></span>
+<span id="cb135-30"><a href="#cb135-30" tabindex="-1"></a><span class="do">## [21] BiocGenerics_0.54.0             generics_0.1.4                 </span></span>
+<span id="cb135-31"><a href="#cb135-31" tabindex="-1"></a><span class="do">## [23] MatrixGenerics_1.20.0           matrixStats_1.5.0              </span></span>
+<span id="cb135-32"><a href="#cb135-32" tabindex="-1"></a><span class="do">## [25] tidybulk_1.99.2                 ttservice_0.5.3                </span></span>
+<span id="cb135-33"><a href="#cb135-33" tabindex="-1"></a><span class="do">## [27] ggrepel_0.9.6                   ggplot2_3.5.2                  </span></span>
+<span id="cb135-34"><a href="#cb135-34" tabindex="-1"></a><span class="do">## [29] magrittr_2.0.3                  purrr_1.1.0                    </span></span>
+<span id="cb135-35"><a href="#cb135-35" tabindex="-1"></a><span class="do">## [31] tibble_3.3.0                    tidyr_1.3.1                    </span></span>
+<span id="cb135-36"><a href="#cb135-36" tabindex="-1"></a><span class="do">## [33] dplyr_1.1.4                     knitr_1.50                     </span></span>
+<span id="cb135-37"><a href="#cb135-37" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb135-38"><a href="#cb135-38" tabindex="-1"></a><span class="do">## loaded via a namespace (and not attached):</span></span>
+<span id="cb135-39"><a href="#cb135-39" tabindex="-1"></a><span class="do">##   [1] SpatialExperiment_1.18.1    R.methodsS3_1.8.2          </span></span>
+<span id="cb135-40"><a href="#cb135-40" tabindex="-1"></a><span class="do">##   [3] GSEABase_1.70.0             DT_0.33                    </span></span>
+<span id="cb135-41"><a href="#cb135-41" tabindex="-1"></a><span class="do">##   [5] Biostrings_2.76.0           HDF5Array_1.36.0           </span></span>
+<span id="cb135-42"><a href="#cb135-42" tabindex="-1"></a><span class="do">##   [7] TH.data_1.1-3               vctrs_0.6.5                </span></span>
+<span id="cb135-43"><a href="#cb135-43" tabindex="-1"></a><span class="do">##   [9] ggtangle_0.0.7              digest_0.6.37              </span></span>
+<span id="cb135-44"><a href="#cb135-44" tabindex="-1"></a><span class="do">##  [11] png_0.1-8                   proxy_0.4-27               </span></span>
+<span id="cb135-45"><a href="#cb135-45" tabindex="-1"></a><span class="do">##  [13] org.Mm.eg.db_3.21.0         magick_2.8.7               </span></span>
+<span id="cb135-46"><a href="#cb135-46" tabindex="-1"></a><span class="do">##  [15] MASS_7.3-65                 reshape2_1.4.4             </span></span>
+<span id="cb135-47"><a href="#cb135-47" tabindex="-1"></a><span class="do">##  [17] foreach_1.5.2               qvalue_2.40.0              </span></span>
+<span id="cb135-48"><a href="#cb135-48" tabindex="-1"></a><span class="do">##  [19] withr_3.0.2                 xfun_0.53                  </span></span>
+<span id="cb135-49"><a href="#cb135-49" tabindex="-1"></a><span class="do">##  [21] ggfun_0.2.0                 ggpubr_0.6.1               </span></span>
+<span id="cb135-50"><a href="#cb135-50" tabindex="-1"></a><span class="do">##  [23] ellipsis_0.3.2              survival_3.8-3             </span></span>
+<span id="cb135-51"><a href="#cb135-51" tabindex="-1"></a><span class="do">##  [25] doRNG_1.8.6.2               memoise_2.0.1              </span></span>
+<span id="cb135-52"><a href="#cb135-52" tabindex="-1"></a><span class="do">##  [27] HTMLUtils_0.1.9             clusterProfiler_4.16.0     </span></span>
+<span id="cb135-53"><a href="#cb135-53" tabindex="-1"></a><span class="do">##  [29] emmeans_1.11.2              gson_0.1.0                 </span></span>
+<span id="cb135-54"><a href="#cb135-54" tabindex="-1"></a><span class="do">##  [31] hgu133a.db_3.13.0           tidytree_0.4.6             </span></span>
+<span id="cb135-55"><a href="#cb135-55" tabindex="-1"></a><span class="do">##  [33] zoo_1.8-14                  gtools_3.9.5               </span></span>
+<span id="cb135-56"><a href="#cb135-56" tabindex="-1"></a><span class="do">##  [35] KEGGgraph_1.68.0            pbapply_1.7-4              </span></span>
+<span id="cb135-57"><a href="#cb135-57" tabindex="-1"></a><span class="do">##  [37] R.oo_1.27.1                 Formula_1.2-5              </span></span>
+<span id="cb135-58"><a href="#cb135-58" tabindex="-1"></a><span class="do">##  [39] KEGGREST_1.48.1             httr_1.4.7                 </span></span>
+<span id="cb135-59"><a href="#cb135-59" tabindex="-1"></a><span class="do">##  [41] rstatix_0.7.2               rhdf5filters_1.20.0        </span></span>
+<span id="cb135-60"><a href="#cb135-60" tabindex="-1"></a><span class="do">##  [43] rhdf5_2.52.1                rstudioapi_0.17.1          </span></span>
+<span id="cb135-61"><a href="#cb135-61" tabindex="-1"></a><span class="do">##  [45] UCSC.utils_1.4.0            DOSE_4.2.0                 </span></span>
+<span id="cb135-62"><a href="#cb135-62" tabindex="-1"></a><span class="do">##  [47] babelgene_22.9              curl_7.0.0                 </span></span>
+<span id="cb135-63"><a href="#cb135-63" tabindex="-1"></a><span class="do">##  [49] ScaledMatrix_1.16.0         h5mread_1.0.1              </span></span>
+<span id="cb135-64"><a href="#cb135-64" tabindex="-1"></a><span class="do">##  [51] TFisher_0.2.0               GenomeInfoDbData_1.2.14    </span></span>
+<span id="cb135-65"><a href="#cb135-65" tabindex="-1"></a><span class="do">##  [53] SparseArray_1.8.1           xtable_1.8-4               </span></span>
+<span id="cb135-66"><a href="#cb135-66" tabindex="-1"></a><span class="do">##  [55] stringr_1.5.1               evaluate_1.0.5             </span></span>
+<span id="cb135-67"><a href="#cb135-67" tabindex="-1"></a><span class="do">##  [57] S4Arrays_1.8.1              preprocessCore_1.70.0      </span></span>
+<span id="cb135-68"><a href="#cb135-68" tabindex="-1"></a><span class="do">##  [59] irlba_2.3.5.1               colorspace_2.1-1           </span></span>
+<span id="cb135-69"><a href="#cb135-69" tabindex="-1"></a><span class="do">##  [61] Rgraphviz_2.52.0            ggtree_3.16.3              </span></span>
+<span id="cb135-70"><a href="#cb135-70" tabindex="-1"></a><span class="do">##  [63] lattice_0.22-7              genefilter_1.90.0          </span></span>
+<span id="cb135-71"><a href="#cb135-71" tabindex="-1"></a><span class="do">##  [65] XML_3.99-0.18               cowplot_1.2.0              </span></span>
+<span id="cb135-72"><a href="#cb135-72" tabindex="-1"></a><span class="do">##  [67] class_7.3-23                pillar_1.11.0              </span></span>
+<span id="cb135-73"><a href="#cb135-73" tabindex="-1"></a><span class="do">##  [69] nlme_3.1-168                iterators_1.0.14           </span></span>
+<span id="cb135-74"><a href="#cb135-74" tabindex="-1"></a><span class="do">##  [71] caTools_1.18.3              compiler_4.5.0             </span></span>
+<span id="cb135-75"><a href="#cb135-75" tabindex="-1"></a><span class="do">##  [73] beachmat_2.24.0             stringi_1.8.7              </span></span>
+<span id="cb135-76"><a href="#cb135-76" tabindex="-1"></a><span class="do">##  [75] KEGGdzPathwaysGEO_1.46.0    tokenizers_0.3.0           </span></span>
+<span id="cb135-77"><a href="#cb135-77" tabindex="-1"></a><span class="do">##  [77] minqa_1.2.8                 plyr_1.8.9                 </span></span>
+<span id="cb135-78"><a href="#cb135-78" tabindex="-1"></a><span class="do">##  [79] msigdbr_25.1.1              crayon_1.5.3               </span></span>
+<span id="cb135-79"><a href="#cb135-79" tabindex="-1"></a><span class="do">##  [81] abind_1.4-8                 gridGraphics_0.5-1         </span></span>
+<span id="cb135-80"><a href="#cb135-80" tabindex="-1"></a><span class="do">##  [83] sn_2.1.1                    locfit_1.5-9.12            </span></span>
+<span id="cb135-81"><a href="#cb135-81" tabindex="-1"></a><span class="do">##  [85] org.Hs.eg.db_3.21.0         bit_4.6.0                  </span></span>
+<span id="cb135-82"><a href="#cb135-82" tabindex="-1"></a><span class="do">##  [87] mathjaxr_1.8-0              sandwich_3.1-1             </span></span>
+<span id="cb135-83"><a href="#cb135-83" tabindex="-1"></a><span class="do">##  [89] fastmatch_1.1-6             codetools_0.2-20           </span></span>
+<span id="cb135-84"><a href="#cb135-84" tabindex="-1"></a><span class="do">##  [91] multcomp_1.4-28             BiocSingular_1.24.0        </span></span>
+<span id="cb135-85"><a href="#cb135-85" tabindex="-1"></a><span class="do">##  [93] e1071_1.7-16                plotly_4.11.0              </span></span>
+<span id="cb135-86"><a href="#cb135-86" tabindex="-1"></a><span class="do">##  [95] hgu133plus2.db_3.13.0       tidytext_0.4.2             </span></span>
+<span id="cb135-87"><a href="#cb135-87" tabindex="-1"></a><span class="do">##  [97] multtest_2.64.0             org.Rn.eg.db_3.21.0        </span></span>
+<span id="cb135-88"><a href="#cb135-88" tabindex="-1"></a><span class="do">##  [99] splines_4.5.0               Rcpp_1.1.0                 </span></span>
+<span id="cb135-89"><a href="#cb135-89" tabindex="-1"></a><span class="do">## [101] sparseMatrixStats_1.20.0    blob_1.2.4                 </span></span>
+<span id="cb135-90"><a href="#cb135-90" tabindex="-1"></a><span class="do">## [103] utf8_1.2.6                  lme4_1.1-37                </span></span>
+<span id="cb135-91"><a href="#cb135-91" tabindex="-1"></a><span class="do">## [105] fs_1.6.6                    Rdpack_2.6.4               </span></span>
+<span id="cb135-92"><a href="#cb135-92" tabindex="-1"></a><span class="do">## [107] GSVA_2.2.0                  ggsignif_0.6.4             </span></span>
+<span id="cb135-93"><a href="#cb135-93" tabindex="-1"></a><span class="do">## [109] ggplotify_0.1.2             estimability_1.5.1         </span></span>
+<span id="cb135-94"><a href="#cb135-94" tabindex="-1"></a><span class="do">## [111] Matrix_1.7-3                statmod_1.5.0              </span></span>
+<span id="cb135-95"><a href="#cb135-95" tabindex="-1"></a><span class="do">## [113] pkgconfig_2.0.3             tools_4.5.0                </span></span>
+<span id="cb135-96"><a href="#cb135-96" tabindex="-1"></a><span class="do">## [115] cachem_1.1.0                rbibutils_2.3              </span></span>
+<span id="cb135-97"><a href="#cb135-97" tabindex="-1"></a><span class="do">## [117] RSQLite_2.4.3               viridisLite_0.4.2          </span></span>
+<span id="cb135-98"><a href="#cb135-98" tabindex="-1"></a><span class="do">## [119] globaltest_5.62.0           DBI_1.2.3                  </span></span>
+<span id="cb135-99"><a href="#cb135-99" tabindex="-1"></a><span class="do">## [121] numDeriv_2016.8-1.1         fastmap_1.2.0              </span></span>
+<span id="cb135-100"><a href="#cb135-100" tabindex="-1"></a><span class="do">## [123] rmarkdown_2.29              scales_1.4.0               </span></span>
+<span id="cb135-101"><a href="#cb135-101" tabindex="-1"></a><span class="do">## [125] grid_4.5.0                  pbmcapply_1.5.1            </span></span>
+<span id="cb135-102"><a href="#cb135-102" tabindex="-1"></a><span class="do">## [127] metap_1.12                  broom_1.0.8                </span></span>
+<span id="cb135-103"><a href="#cb135-103" tabindex="-1"></a><span class="do">## [129] coda_0.19-4.1               ggstats_0.10.0             </span></span>
+<span id="cb135-104"><a href="#cb135-104" tabindex="-1"></a><span class="do">## [131] carData_3.0-5               farver_2.1.2               </span></span>
+<span id="cb135-105"><a href="#cb135-105" tabindex="-1"></a><span class="do">## [133] reformulas_0.4.1            mgcv_1.9-3                 </span></span>
+<span id="cb135-106"><a href="#cb135-106" tabindex="-1"></a><span class="do">## [135] yaml_2.3.10                 cli_3.6.5                  </span></span>
+<span id="cb135-107"><a href="#cb135-107" tabindex="-1"></a><span class="do">## [137] safe_3.48.0                 lifecycle_1.0.4            </span></span>
+<span id="cb135-108"><a href="#cb135-108" tabindex="-1"></a><span class="do">## [139] glmmTMB_1.1.11              mvtnorm_1.3-3              </span></span>
+<span id="cb135-109"><a href="#cb135-109" tabindex="-1"></a><span class="do">## [141] backports_1.5.0             BiocParallel_1.42.1        </span></span>
+<span id="cb135-110"><a href="#cb135-110" tabindex="-1"></a><span class="do">## [143] widyr_0.1.5                 annotate_1.86.1            </span></span>
+<span id="cb135-111"><a href="#cb135-111" tabindex="-1"></a><span class="do">## [145] gtable_0.3.6                rjson_0.2.23               </span></span>
+<span id="cb135-112"><a href="#cb135-112" tabindex="-1"></a><span class="do">## [147] parallel_4.5.0              ape_5.8-1                  </span></span>
+<span id="cb135-113"><a href="#cb135-113" tabindex="-1"></a><span class="do">## [149] SnowballC_0.7.1             jsonlite_2.0.0             </span></span>
+<span id="cb135-114"><a href="#cb135-114" tabindex="-1"></a><span class="do">## [151] bitops_1.0-9                bit64_4.6.0-1              </span></span>
+<span id="cb135-115"><a href="#cb135-115" tabindex="-1"></a><span class="do">## [153] assertthat_0.2.1            qqconf_1.3.2               </span></span>
+<span id="cb135-116"><a href="#cb135-116" tabindex="-1"></a><span class="do">## [155] yulab.utils_0.2.0           PADOG_1.50.0               </span></span>
+<span id="cb135-117"><a href="#cb135-117" tabindex="-1"></a><span class="do">## [157] mutoss_0.1-13               janeaustenr_1.0.0          </span></span>
+<span id="cb135-118"><a href="#cb135-118" tabindex="-1"></a><span class="do">## [159] GOSemSim_2.34.0             R.utils_2.13.0             </span></span>
+<span id="cb135-119"><a href="#cb135-119" tabindex="-1"></a><span class="do">## [161] lazyeval_0.2.2              htmltools_0.5.8.1          </span></span>
+<span id="cb135-120"><a href="#cb135-120" tabindex="-1"></a><span class="do">## [163] enrichplot_1.28.4           glue_1.8.0                 </span></span>
+<span id="cb135-121"><a href="#cb135-121" tabindex="-1"></a><span class="do">## [165] XVector_0.48.0              RCurl_1.98-1.17            </span></span>
+<span id="cb135-122"><a href="#cb135-122" tabindex="-1"></a><span class="do">## [167] rprojroot_2.1.0             treeio_1.32.0              </span></span>
+<span id="cb135-123"><a href="#cb135-123" tabindex="-1"></a><span class="do">## [169] mnormt_2.1.1                boot_1.3-31                </span></span>
+<span id="cb135-124"><a href="#cb135-124" tabindex="-1"></a><span class="do">## [171] igraph_2.1.4                TMB_1.9.17                 </span></span>
+<span id="cb135-125"><a href="#cb135-125" tabindex="-1"></a><span class="do">## [173] glmmSeq_0.5.5               R6_2.6.1                   </span></span>
+<span id="cb135-126"><a href="#cb135-126" tabindex="-1"></a><span class="do">## [175] sva_3.56.0                  SingleCellExperiment_1.30.1</span></span>
+<span id="cb135-127"><a href="#cb135-127" tabindex="-1"></a><span class="do">## [177] gplots_3.2.0                labeling_0.4.3             </span></span>
+<span id="cb135-128"><a href="#cb135-128" tabindex="-1"></a><span class="do">## [179] rngtools_1.5.2              R2HTML_2.3.4               </span></span>
+<span id="cb135-129"><a href="#cb135-129" tabindex="-1"></a><span class="do">## [181] Rhdf5lib_1.30.0             aplot_0.2.8                </span></span>
+<span id="cb135-130"><a href="#cb135-130" tabindex="-1"></a><span class="do">## [183] nloptr_2.2.1                DelayedArray_0.34.1        </span></span>
+<span id="cb135-131"><a href="#cb135-131" tabindex="-1"></a><span class="do">## [185] tidyselect_1.2.1            plotrix_3.8-4              </span></span>
+<span id="cb135-132"><a href="#cb135-132" tabindex="-1"></a><span class="do">## [187] car_3.1-3                   rsvd_1.0.5                 </span></span>
+<span id="cb135-133"><a href="#cb135-133" tabindex="-1"></a><span class="do">## [189] KernSmooth_2.23-26          S7_0.2.0                   </span></span>
+<span id="cb135-134"><a href="#cb135-134" tabindex="-1"></a><span class="do">## [191] data.table_1.17.8           htmlwidgets_1.6.4          </span></span>
+<span id="cb135-135"><a href="#cb135-135" tabindex="-1"></a><span class="do">## [193] fgsea_1.34.2                RColorBrewer_1.1-3         </span></span>
+<span id="cb135-136"><a href="#cb135-136" tabindex="-1"></a><span class="do">## [195] hwriter_1.3.2.1             rlang_1.1.6                </span></span>
+<span id="cb135-137"><a href="#cb135-137" tabindex="-1"></a><span class="do">## [197] lmerTest_3.1-3              GSA_1.03.3                 </span></span>
+<span id="cb135-138"><a href="#cb135-138" tabindex="-1"></a><span class="do">## [199] EGSEAdata_1.36.0</span></span></code></pre></div>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-alhamdoosh2017egsea" class="csl-entry">
 Alhamdoosh, M, M Ng, NJ Wilson, JM Sheridan, H Huynh, MJ Wilson, and ME Ritchie. 2017. “Combining Multiple Tools Outperforms Individual Methods in Gene Set Enrichment Analyses.” <em>Bioinformatics</em> 33 (3): 414–24.

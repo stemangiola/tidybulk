@@ -409,8 +409,8 @@ analysis, and to deconvolve the cellularity.</p>
 <span>  <span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span>  </span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>entrezid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/AnnotationDb-class.html" class="external-link">mapIds</a></span><span class="op">(</span><span class="va">org.Hs.eg.db</span>,</span>
-<span>                                      keys <span class="op">=</span> <span class="va">.feature</span>,</span>
-<span>                                      keytype <span class="op">=</span> <span class="st">"ENSEMBL"</span>,</span>
+<span>                                      keys <span class="op">=</span> <span class="va">gene_name</span>,</span>
+<span>                                      keytype <span class="op">=</span> <span class="st">"SYMBOL"</span>,</span>
 <span>                                      column <span class="op">=</span> <span class="st">"ENTREZID"</span>,</span>
 <span>                                      multiVals <span class="op">=</span> <span class="st">"first"</span></span>
 <span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
@@ -516,12 +516,13 @@ gene-level summarization.</p>
 <pre><code><span><span class="co">## tidybulk says: your object does not have duplicates along the gene_name column. The input dataset is returned.</span></span></code></pre>
 </div>
 <div class="section level4">
-<h4 id="abundance-filtering-tidybulk-approaches-only">Abundance Filtering: tidybulk approaches only<a class="anchor" aria-label="anchor" href="#abundance-filtering-tidybulk-approaches-only"></a>
+<h4 id="abundance-filtering">Abundance Filtering<a class="anchor" aria-label="anchor" href="#abundance-filtering"></a>
 </h4>
-<p>Abundance filtering can be performed using tidybulk’s built-in
-methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCarthy, and Smyth 2010</a>; <a href="#ref-chen2016edgeR">Chen, Lun, and Smyth 2016</a>)</span>.</p>
+<p>Abundance filtering can be performed using established methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCarthy,
+and Smyth 2010</a>; <a href="#ref-chen2016edgeR">Chen, Lun, and Smyth
+2016</a>)</span>.</p>
 <div class="section level5">
-<h5 id="tidybulk-default-formula_design-and-cpm-threshold">1. tidybulk: Default, formula_design, and CPM threshold<a class="anchor" aria-label="anchor" href="#tidybulk-default-formula_design-and-cpm-threshold"></a>
+<h5 id="run-multiple-methods">Run multiple methods<a class="anchor" aria-label="anchor" href="#run-multiple-methods"></a>
 </h5>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Default (simple filtering)</span></span>
@@ -556,7 +557,7 @@ methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCar
 <span><span class="co">## lib.size, : All samples appear to belong to the same group.</span></span></code></pre>
 </div>
 <div class="section level5">
-<h5 id="summary-statistics-and-density-plots">2. Summary statistics and density plots<a class="anchor" aria-label="anchor" href="#summary-statistics-and-density-plots"></a>
+<h5 id="compare-methods">Compare methods<a class="anchor" aria-label="anchor" href="#compare-methods"></a>
 </h5>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Example: summary for default tidybulk filtering</span></span>
@@ -1360,7 +1361,7 @@ RNA-seq data.</p>
 <span>  <span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## n = 8 samples, 4 individuals</span></span></code></pre>
-<pre><code><span><span class="co">## Time difference of 1.123019 mins</span></span></code></pre>
+<pre><code><span><span class="co">## Time difference of 1.21114 mins</span></span></code></pre>
 <pre><code><span><span class="co">## tidybulk says: to access the DE object do</span></span>
 <span><span class="co">## `metadata(.)$tidybulk$glmmseq_lme4_object`</span></span></code></pre>
 <pre><code><span><span class="co">## tidybulk says: to access the raw results (fitted GLM) do</span></span>
@@ -1396,7 +1397,7 @@ RNA-seq data.</p>
 <span><span class="co">## <span style="color: #BCBCBC;"> 1</span> ENSG0000… ENSG00… ENSG0000… 7105     protein_cod…       99<span style="text-decoration: underline;">883</span>667     99<span style="text-decoration: underline;">894</span>988</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 2</span> ENSG0000… ENSG00… ENSG0000… 8813     protein_cod…       49<span style="text-decoration: underline;">551</span>404     49<span style="text-decoration: underline;">575</span>092</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 3</span> ENSG0000… ENSG00… ENSG0000… 57147    protein_cod…      169<span style="text-decoration: underline;">818</span>772    169<span style="text-decoration: underline;">863</span>408</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> ENSG0000… ENSG00… ENSG0000… 55732    protein_cod…      169<span style="text-decoration: underline;">631</span>245    169<span style="text-decoration: underline;">823</span>221</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> ENSG0000… ENSG00… ENSG0000… <span style="color: #BB0000;">NA</span>       protein_cod…      169<span style="text-decoration: underline;">631</span>245    169<span style="text-decoration: underline;">823</span>221</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 5</span> ENSG0000… ENSG00… ENSG0000… 3075     protein_cod…      196<span style="text-decoration: underline;">621</span>008    196<span style="text-decoration: underline;">716</span>634</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 6</span> ENSG0000… ENSG00… ENSG0000… 2519     protein_cod…      143<span style="text-decoration: underline;">815</span>948    143<span style="text-decoration: underline;">832</span>827</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 7</span> ENSG0000… ENSG00… ENSG0000… 2729     protein_cod…       53<span style="text-decoration: underline;">362</span>139     53<span style="text-decoration: underline;">481</span>768</span></span>
@@ -1522,12 +1523,10 @@ used for gene set enrichment.</p>
 <pre><code><span><span class="co">## GSEA analysis...</span></span></code></pre>
 <pre><code><span><span class="co">## leading edge analysis...</span></span></code></pre>
 <pre><code><span><span class="co">## done...</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: There were 2 warnings in `mutate()`.</span></span>
-<span><span class="co">## The first warning was:</span></span>
+<pre><code><span><span class="co">## Warning: There was 1 warning in `mutate()`.</span></span>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> In argument: `fit = map(...)`.</span></span>
 <span><span class="co">## Caused by warning in `fgseaMultilevel()`:</span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> For some of the pathways the P-values were likely overestimated. For such pathways log2err is set to NA.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span></code></pre>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> For some pathways, in reality P-values are less than 1e-10. You can set the `eps` argument to zero for better estimation.</span></span></code></pre>
 <div class="sourceCode" id="cb156"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Inspect significant gene sets (example for C2 collection)</span></span>
 <span><span class="va">gene_rank_res</span> <span class="op">|&gt;</span></span>
@@ -1535,20 +1534,20 @@ used for gene set enrichment.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">fit</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">unnest</span><span class="op">(</span><span class="va">test</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">p.adjust</span> <span class="op">&lt;</span> <span class="fl">0.05</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 162 × 13</span></span></span>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 102 × 13</span></span></span>
 <span><span class="co">##    gs_collection idx_for_plotting ID         Description setSize enrichmentScore</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> C2                           1 CHEN_LVAD… CHEN_LVAD_…      87          -<span style="color: #BB0000;">0.738</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> C2                           2 VECCHI_GA… VECCHI_GAS…     221          -<span style="color: #BB0000;">0.552</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> C2                           3 FEKIR_HEP… FEKIR_HEPA…      32          -<span style="color: #BB0000;">0.825</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> C2                           4 SHEDDEN_L… SHEDDEN_LU…     157          -<span style="color: #BB0000;">0.552</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> C2                           5 BOQUEST_S… BOQUEST_ST…     389          -<span style="color: #BB0000;">0.437</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> C2                           6 CHARAFE_B… CHARAFE_BR…     405          -<span style="color: #BB0000;">0.424</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> C2                           7 WP_OVERVI… WP_OVERVIE…      29           0.778</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> C2                           8 MEBARKI_H… MEBARKI_HC…     460           0.379</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> C2                           9 BLANCO_ME… BLANCO_MEL…     145           0.505</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> C2                          10 HOSHIDA_L… HOSHIDA_LI…     194          -<span style="color: #BB0000;">0.489</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ 152 more rows</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> C2                           1 CHEN_LVAD… CHEN_LVAD_…      83          -<span style="color: #BB0000;">0.726</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> C2                           2 VECCHI_GA… VECCHI_GAS…     205          -<span style="color: #BB0000;">0.574</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> C2                           3 FEKIR_HEP… FEKIR_HEPA…      27          -<span style="color: #BB0000;">0.840</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> C2                           4 SHEDDEN_L… SHEDDEN_LU…     154          -<span style="color: #BB0000;">0.554</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> C2                           5 BOQUEST_S… BOQUEST_ST…     375          -<span style="color: #BB0000;">0.436</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> C2                           6 WP_OVERVI… WP_OVERVIE…      28           0.788</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> C2                           7 BLANCO_ME… BLANCO_MEL…     142           0.527</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> C2                           8 CHARAFE_B… CHARAFE_BR…     388          -<span style="color: #BB0000;">0.416</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> C2                           9 HOSHIDA_L… HOSHIDA_LI…     188          -<span style="color: #BB0000;">0.502</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> C2                          10 YAO_TEMPO… YAO_TEMPOR…      55          -<span style="color: #BB0000;">0.656</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 92 more rows</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 7 more variables: NES &lt;dbl&gt;, pvalue &lt;dbl&gt;, p.adjust &lt;dbl&gt;, qvalue &lt;dbl&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   rank &lt;dbl&gt;, leading_edge &lt;chr&gt;, core_enrichment &lt;chr&gt;</span></span></span></code></pre>
 <div class="section level5">
@@ -1560,9 +1559,9 @@ used for gene set enrichment.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## Please cite:</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## Guangchuang Yu. Gene Ontology Semantic Similarity Analysis Using</span></span>
-<span><span class="co">## GOSemSim. In: Kidder B. (eds) Stem Cell Transcriptional Networks.</span></span>
-<span><span class="co">## Methods in Molecular Biology. 2020, 2117:207-215. Humana, New York, NY.</span></span></code></pre>
+<span><span class="co">## S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang,</span></span>
+<span><span class="co">## W Xie, T Wu, L Xie, G Yu. Using clusterProfiler to characterize</span></span>
+<span><span class="co">## multiomics data. Nature Protocols. 2024, 19(11):3292-3320</span></span></code></pre>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Attaching package: 'enrichplot'</span></span></code></pre>
 <pre><code><span><span class="co">## The following object is masked from 'package:GGally':</span></span>
@@ -1624,20 +1623,20 @@ for functional enrichment.</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">airway_overrep</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 5,291 × 13</span></span></span>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 5,346 × 13</span></span></span>
 <span><span class="co">##    gs_collection ID      Description GeneRatio BgRatio RichFactor FoldEnrichment</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> C2            PASINI… PASINI_SUZ… 88/1848   316/22…      0.278           3.37</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> C2            CHARAF… CHARAFE_BR… 108/1848  465/22…      0.232           2.81</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> C2            REN_AL… REN_ALVEOL… 98/1848   407/22…      0.241           2.92</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> C2            CHARAF… CHARAFE_BR… 105/1848  456/22…      0.230           2.79</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> C2            CHEN_L… CHEN_LVAD_… 45/1848   102/22…      0.441           5.34</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> C2            BOQUES… BOQUEST_ST… 96/1848   428/22…      0.224           2.72</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> C2            LIM_MA… LIM_MAMMAR… 103/1848  479/22…      0.215           2.60</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> C2            LIU_PR… LIU_PROSTA… 104/1848  495/22…      0.210           2.54</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> C2            LU_AGI… LU_AGING_B… 70/1848   264/22…      0.265           3.21</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> C2            ONDER_… ONDER_CDH1… 67/1848   257/22…      0.261           3.16</span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ 5,281 more rows</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> C2            PASINI… PASINI_SUZ… 86/1759   316/22…      0.272           3.46</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> C2            CHARAF… CHARAFE_BR… 103/1759  465/22…      0.222           2.82</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> C2            CHARAF… CHARAFE_BR… 101/1759  456/22…      0.221           2.82</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> C2            REN_AL… REN_ALVEOL… 94/1759   407/22…      0.231           2.94</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> C2            ONDER_… ONDER_CDH1… 67/1759   257/22…      0.261           3.32</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> C2            CHEN_L… CHEN_LVAD_… 40/1759   102/22…      0.392           4.99</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> C2            LIU_PR… LIU_PROSTA… 99/1759   495/22…      0.2             2.54</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> C2            BOQUES… BOQUEST_ST… 90/1759   428/22…      0.210           2.68</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> C2            LU_AGI… LU_AGING_B… 66/1759   264/22…      0.25            3.18</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> C2            LIM_MA… LIM_MAMMAR… 95/1759   479/22…      0.198           2.52</span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 5,336 more rows</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 6 more variables: zScore &lt;dbl&gt;, pvalue &lt;dbl&gt;, p.adjust &lt;dbl&gt;, qvalue &lt;dbl&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   Count &lt;int&gt;, entrez &lt;list&gt;</span></span></span></code></pre>
 <p>EGSEA <span class="citation">(<a href="#ref-alhamdoosh2017egsea">Alhamdoosh et al. 2017</a>)</span> is
@@ -1706,25 +1705,25 @@ gene set enrichment analysis.</p>
 <span><span class="co">## [1] "Indexed the collection h ..."</span></span>
 <span><span class="co">## [1] "Created annotation for the collection h ..."</span></span></code></pre>
 <pre><code><span><span class="co">## EGSEA analysis has started</span></span></code></pre>
-<pre><code><span><span class="co">## ##------ Thu Sep 11 06:28:39 2025 ------##</span></span></code></pre>
+<pre><code><span><span class="co">## ##------ Thu Sep 11 07:52:58 2025 ------##</span></span></code></pre>
 <pre><code><span><span class="co">## The argument 'contrast' is recommended to be a matrix object.</span></span>
 <span><span class="co">## See Vignette or Help.</span></span></code></pre>
 <pre><code><span><span class="co">## Log fold changes are estimated using limma package ...</span></span></code></pre>
 <pre><code><span><span class="co">## limma DE analysis is carried out ...</span></span></code></pre>
 <pre><code><span><span class="co">## EGSEA is running on the provided data and h collection</span></span></code></pre>
 <pre><code><span><span class="co">## ..roast*</span></span></code></pre>
-<pre><code><span><span class="co">## ##------ Thu Sep 11 06:28:41 2025 ------##</span></span></code></pre>
-<pre><code><span><span class="co">## EGSEA analysis took 2.43999999999994 seconds.</span></span>
+<pre><code><span><span class="co">## ##------ Thu Sep 11 07:53:00 2025 ------##</span></span></code></pre>
+<pre><code><span><span class="co">## EGSEA analysis took 2.30599999999993 seconds.</span></span>
 <span><span class="co">## EGSEA analysis has completed</span></span>
 <span><span class="co">## EGSEA HTML report is being generated ...</span></span></code></pre>
-<pre><code><span><span class="co">## ##------ Thu Sep 11 06:28:41 2025 ------##</span></span></code></pre>
+<pre><code><span><span class="co">## ##------ Thu Sep 11 07:53:00 2025 ------##</span></span></code></pre>
 <pre><code><span><span class="co">## Report pages and figures are being generated for the h collection ...</span></span>
 <span><span class="co">##    Heat maps are being generated for top-ranked gene sets </span></span>
 <span><span class="co">## based on logFC ... </span></span>
 <span><span class="co">##    Summary plots are being generated ... </span></span>
 <span><span class="co">##    Comparison summary plots are being generated  ...</span></span></code></pre>
-<pre><code><span><span class="co">## ##------ Thu Sep 11 06:29:38 2025 ------##</span></span></code></pre>
-<pre><code><span><span class="co">## EGSEA report generation took 56.6450000000001 seconds.</span></span>
+<pre><code><span><span class="co">## ##------ Thu Sep 11 07:53:58 2025 ------##</span></span></code></pre>
+<pre><code><span><span class="co">## EGSEA report generation took 57.456 seconds.</span></span>
 <span><span class="co">## EGSEA report has been generated.</span></span></code></pre>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 0 × 3</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 3 variables: data_base &lt;chr&gt;, pathway &lt;chr&gt;, web_page &lt;chr&gt;</span></span></span></code></pre>
