@@ -22,10 +22,9 @@ vignette: >
   %\usepackage[UTF-8]{inputenc}
 knit: >
     (function(x, ...){
-        proj_root <- rprojroot::find_package_root_file() |> normalizePath()
+        proj_root <- rprojroot::find_package_root_file()
         
         # Set knitr options for both renders
-        knitr::opts_knit$set(root.dir = proj_root)
         knitr::opts_chunk$set(fig.path = "README_files/figure-gfm/")
         
         rmarkdown::render(
@@ -33,11 +32,16 @@ knit: >
             output_file = "README.md",
             output_format = "github_document",
             output_dir = proj_root,
-            knit_root_dir = proj_root,
             params = list(
                 demo_metadata = FALSE
             )
         )
+        
+        # Fix absolute paths to relative paths
+        readme_content <- readLines(file.path(proj_root, "README.md"))
+        readme_content <- gsub("/Users/[^/]+/Documents/GitHub/tidybulk/README_files/figure-gfm/", 
+                              "README_files/figure-gfm/", readme_content)
+        writeLines(readme_content, file.path(proj_root, "README.md"))
     })
 ---
 
@@ -187,8 +191,8 @@ airway <-
   airway |>
   
   mutate(entrezid = mapIds(org.Hs.eg.db,
-                                      keys = .feature,
-                                      keytype = "ENSEMBL",
+                                      keys = gene_name,
+                                      keytype = "SYMBOL",
                                       column = "ENTREZID",
                                       multiVals = "first"
 )) 
@@ -265,11 +269,11 @@ rowData(airway)$gene_name = rownames(airway)
 airway = airway |> aggregate_duplicates(.transcript = gene_name, aggregation_function = mean)
 ```
 
-### Abundance Filtering: tidybulk approaches only
+### Abundance Filtering
 
-Abundance filtering can be performed using tidybulk's built-in methods [@robinson2010edger; @chen2016edgeR].
+Abundance filtering can be performed using established methods [@robinson2010edger; @chen2016edgeR].
 
-#### 1. tidybulk: Default, formula_design, and CPM threshold
+#### Run multiple methods
 
 ```{r filtering-abundance-methods}
 # Default (simple filtering)
@@ -283,7 +287,7 @@ airway_abundant_cpm = airway |> keep_abundant(minimum_counts = 10, minimum_propo
 
 ```
 
-#### 2. Summary statistics and density plots
+#### Compare methods 
 
 ```{r filtering-summary-statistics, fig.width = 10, fig.height = 10}
 # Example: summary for default tidybulk filtering

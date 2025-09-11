@@ -1,7 +1,7 @@
 tidybulk: An R tidy framework for modular transcriptomic data analysis
 ================
 Stefano Mangiola
-2025-08-20
+2025-09-11
 
 <!-- badges: start -->
 
@@ -11,8 +11,6 @@ status](https://github.com/stemangiola/tidybulk/workflows/R-CMD-check/badge.svg)
 [![Bioconductor
 status](https://bioconductor.org/shields/build/release/bioc/tidybulk.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/tidybulk/)
 <!-- badges: end -->
-
-# <img src="inst/logo.svg" height="139px" width="120px"/>
 
 **tidybulk** is a powerful R package designed for modular transcriptomic
 data analysis that brings transcriptomics to the tidyverse.
@@ -174,8 +172,8 @@ airway <-
   airway |>
   
   mutate(entrezid = mapIds(org.Hs.eg.db,
-                                      keys = .feature,
-                                      keytype = "ENSEMBL",
+                                      keys = gene_name,
+                                      keytype = "SYMBOL",
                                       column = "ENTREZID",
                                       multiVals = "first"
 )) 
@@ -221,7 +219,7 @@ airway
 
     ## class: RangedSummarizedExperiment 
     ## dim: 63677 8 
-    ## metadata(1): ''
+    ## metadata(2): '' latest_mutate_scope_report
     ## assays(1): counts
     ## rownames(63677): ENSG00000000003 ENSG00000000005 ... ENSG00000273492
     ##   ENSG00000273493
@@ -284,13 +282,13 @@ airway = airway |> aggregate_duplicates(.transcript = gene_name, aggregation_fun
 
     ## tidybulk says: your object does not have duplicates along the gene_name column. The input dataset is returned.
 
-### Abundance Filtering: tidybulk approaches only
+### Abundance Filtering
 
-Abundance filtering can be performed using tidybulk’s built-in methods
+Abundance filtering can be performed using established methods
 ([Robinson, McCarthy, and Smyth 2010](#ref-robinson2010edger); [Chen,
 Lun, and Smyth 2016](#ref-chen2016edgeR)).
 
-#### 1. tidybulk: Default, formula_design, and CPM threshold
+#### Run multiple methods
 
 ``` r
 # Default (simple filtering)
@@ -333,7 +331,7 @@ airway_abundant_cpm = airway |> keep_abundant(minimum_counts = 10, minimum_propo
     ## Warning in filterByExpr.DGEList(y, design = design, group = group, lib.size =
     ## lib.size, : All samples appear to belong to the same group.
 
-#### 2. Summary statistics and density plots
+#### Compare methods
 
 ``` r
 # Example: summary for default tidybulk filtering
@@ -1280,7 +1278,7 @@ airway |>
     ## 
     ## n = 8 samples, 4 individuals
 
-    ## Time difference of 33.12868 secs
+    ## Time difference of 36.80137 secs
 
     ## tidybulk says: to access the DE object do
     ## `metadata(.)$tidybulk$glmmseq_lme4_object`
@@ -1290,7 +1288,7 @@ airway |>
 
     ## class: RangedSummarizedExperiment 
     ## dim: 100 8 
-    ## metadata(2): '' tidybulk
+    ## metadata(3): '' latest_mutate_scope_report tidybulk
     ## assays(4): counts counts_tmm counts_upperquartile counts_RLE
     ## rownames(100): ENSG00000000003 ENSG00000000419 ... ENSG00000006114
     ##   ENSG00000006118
@@ -1306,17 +1304,17 @@ airway |>
 
     ## # A tibble: 15,926 × 41
     ##    .feature  gene_id gene_name entrezid gene_biotype gene_seq_start gene_seq_end
-    ##    <chr>     <chr>   <chr>        <int> <chr>                 <int>        <int>
-    ##  1 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       99883667     99894988
-    ##  2 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       49551404     49575092
-    ##  3 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      169818772    169863408
-    ##  4 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      169631245    169823221
-    ##  5 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      196621008    196716634
-    ##  6 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…      143815948    143832827
-    ##  7 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       53362139     53481768
-    ##  8 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       41040684     41067715
-    ##  9 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       24683489     24743424
-    ## 10 ENSG0000… ENSG00… ENSG0000…       NA protein_cod…       24742284     24799466
+    ##    <chr>     <chr>   <chr>     <chr>    <chr>                 <int>        <int>
+    ##  1 ENSG0000… ENSG00… ENSG0000… 7105     protein_cod…       99883667     99894988
+    ##  2 ENSG0000… ENSG00… ENSG0000… 8813     protein_cod…       49551404     49575092
+    ##  3 ENSG0000… ENSG00… ENSG0000… 57147    protein_cod…      169818772    169863408
+    ##  4 ENSG0000… ENSG00… ENSG0000… <NA>     protein_cod…      169631245    169823221
+    ##  5 ENSG0000… ENSG00… ENSG0000… 3075     protein_cod…      196621008    196716634
+    ##  6 ENSG0000… ENSG00… ENSG0000… 2519     protein_cod…      143815948    143832827
+    ##  7 ENSG0000… ENSG00… ENSG0000… 2729     protein_cod…       53362139     53481768
+    ##  8 ENSG0000… ENSG00… ENSG0000… 4800     protein_cod…       41040684     41067715
+    ##  9 ENSG0000… ENSG00… ENSG0000… 90529    protein_cod…       24683489     24743424
+    ## 10 ENSG0000… ENSG00… ENSG0000… 57185    protein_cod…       24742284     24799466
     ## # ℹ 15,916 more rows
     ## # ℹ 34 more variables: seq_name <chr>, seq_strand <int>,
     ## #   seq_coord_system <int>, symbol <chr>, .abundant <lgl>, ql__logFC <dbl>,
@@ -1480,20 +1478,20 @@ gene_rank_res |>
   filter(p.adjust < 0.05)
 ```
 
-    ## # A tibble: 143 × 13
+    ## # A tibble: 91 × 13
     ##    gs_collection idx_for_plotting ID         Description setSize enrichmentScore
     ##    <chr>                    <int> <chr>      <chr>         <int>           <dbl>
-    ##  1 C2                           1 CHEN_LVAD… CHEN_LVAD_…      87          -0.738
-    ##  2 C2                           2 VECCHI_GA… VECCHI_GAS…     221          -0.552
-    ##  3 C2                           3 FEKIR_HEP… FEKIR_HEPA…      32          -0.825
-    ##  4 C2                           4 BOQUEST_S… BOQUEST_ST…     389          -0.437
-    ##  5 C2                           5 SHEDDEN_L… SHEDDEN_LU…     157          -0.552
-    ##  6 C2                           6 CHARAFE_B… CHARAFE_BR…     405          -0.424
-    ##  7 C2                           7 WP_OVERVI… WP_OVERVIE…      29           0.778
-    ##  8 C2                           8 HOSHIDA_L… HOSHIDA_LI…     194          -0.489
-    ##  9 C2                           9 BLANCO_ME… BLANCO_MEL…     145           0.505
-    ## 10 C2                          10 ZWANG_CLA… ZWANG_CLAS…     189          -0.478
-    ## # ℹ 133 more rows
+    ##  1 C2                           1 CHEN_LVAD… CHEN_LVAD_…      83          -0.726
+    ##  2 C2                           2 VECCHI_GA… VECCHI_GAS…     205          -0.574
+    ##  3 C2                           3 FEKIR_HEP… FEKIR_HEPA…      27          -0.840
+    ##  4 C2                           4 BOQUEST_S… BOQUEST_ST…     375          -0.436
+    ##  5 C2                           5 WP_OVERVI… WP_OVERVIE…      28           0.788
+    ##  6 C2                           6 SHEDDEN_L… SHEDDEN_LU…     154          -0.554
+    ##  7 C2                           7 BLANCO_ME… BLANCO_MEL…     142           0.527
+    ##  8 C2                           8 CHARAFE_B… CHARAFE_BR…     388          -0.416
+    ##  9 C2                           9 HOSHIDA_L… HOSHIDA_LI…     188          -0.502
+    ## 10 C2                          10 MEBARKI_H… MEBARKI_HC…     427           0.380
+    ## # ℹ 81 more rows
     ## # ℹ 7 more variables: NES <dbl>, pvalue <dbl>, p.adjust <dbl>, qvalue <dbl>,
     ## #   rank <dbl>, leading_edge <chr>, core_enrichment <chr>
 
@@ -1509,10 +1507,9 @@ gene_rank_res |>
     ## 
     ## Please cite:
     ## 
-    ## T Wu, E Hu, S Xu, M Chen, P Guo, Z Dai, T Feng, L Zhou, W Tang, L Zhan,
-    ## X Fu, S Liu, X Bo, and G Yu. clusterProfiler 4.0: A universal
-    ## enrichment tool for interpreting omics data. The Innovation. 2021,
-    ## 2(3):100141
+    ## Guangchuang Yu. Gene Ontology Semantic Similarity Analysis Using
+    ## GOSemSim. In: Kidder B. (eds) Stem Cell Transcriptional Networks.
+    ## Methods in Molecular Biology. 2020, 2117:207-215. Humana, New York, NY.
 
     ## 
     ## Attaching package: 'enrichplot'
@@ -1523,6 +1520,11 @@ gene_rank_res |>
 
 ``` r
   library(patchwork)
+```
+
+    ## Warning: package 'patchwork' was built under R version 4.5.1
+
+``` r
   gene_rank_res |>
     unnest(test) |>
     head() |>
@@ -1597,20 +1599,20 @@ airway_overrep =
   airway_overrep
 ```
 
-    ## # A tibble: 5,291 × 13
+    ## # A tibble: 5,346 × 13
     ##    gs_collection ID      Description GeneRatio BgRatio RichFactor FoldEnrichment
     ##    <chr>         <chr>   <chr>       <chr>     <chr>        <dbl>          <dbl>
-    ##  1 C2            PASINI… PASINI_SUZ… 88/1848   316/22…      0.278           3.37
-    ##  2 C2            CHARAF… CHARAFE_BR… 108/1848  465/22…      0.232           2.81
-    ##  3 C2            REN_AL… REN_ALVEOL… 98/1848   407/22…      0.241           2.92
-    ##  4 C2            CHARAF… CHARAFE_BR… 105/1848  456/22…      0.230           2.79
-    ##  5 C2            CHEN_L… CHEN_LVAD_… 45/1848   102/22…      0.441           5.34
-    ##  6 C2            BOQUES… BOQUEST_ST… 96/1848   428/22…      0.224           2.72
-    ##  7 C2            LIM_MA… LIM_MAMMAR… 103/1848  479/22…      0.215           2.60
-    ##  8 C2            LIU_PR… LIU_PROSTA… 104/1848  495/22…      0.210           2.54
-    ##  9 C2            LU_AGI… LU_AGING_B… 70/1848   264/22…      0.265           3.21
-    ## 10 C2            ONDER_… ONDER_CDH1… 67/1848   257/22…      0.261           3.16
-    ## # ℹ 5,281 more rows
+    ##  1 C2            PASINI… PASINI_SUZ… 86/1759   316/22…      0.272           3.46
+    ##  2 C2            CHARAF… CHARAFE_BR… 103/1759  465/22…      0.222           2.82
+    ##  3 C2            CHARAF… CHARAFE_BR… 101/1759  456/22…      0.221           2.82
+    ##  4 C2            REN_AL… REN_ALVEOL… 94/1759   407/22…      0.231           2.94
+    ##  5 C2            ONDER_… ONDER_CDH1… 67/1759   257/22…      0.261           3.32
+    ##  6 C2            CHEN_L… CHEN_LVAD_… 40/1759   102/22…      0.392           4.99
+    ##  7 C2            LIU_PR… LIU_PROSTA… 99/1759   495/22…      0.2             2.54
+    ##  8 C2            BOQUES… BOQUEST_ST… 90/1759   428/22…      0.210           2.68
+    ##  9 C2            LU_AGI… LU_AGING_B… 66/1759   264/22…      0.25            3.18
+    ## 10 C2            LIM_MA… LIM_MAMMAR… 95/1759   479/22…      0.198           2.52
+    ## # ℹ 5,336 more rows
     ## # ℹ 6 more variables: zScore <dbl>, pvalue <dbl>, p.adjust <dbl>, qvalue <dbl>,
     ## #   Count <int>, entrez <list>
 
@@ -1641,13 +1643,6 @@ library(EGSEA)
     ## Warning: package 'topGO' was built under R version 4.5.1
 
     ## Loading required package: graph
-
-    ## 
-    ## Attaching package: 'graph'
-
-    ## The following object is masked from 'package:stringr':
-    ## 
-    ##     boundary
 
     ## Loading required package: GO.db
 
@@ -1714,7 +1709,7 @@ library(EGSEA)
 
     ## EGSEA analysis has started
 
-    ## ##------ Wed Aug 20 14:41:38 2025 ------##
+    ## ##------ Thu Sep 11 15:54:13 2025 ------##
 
     ## The argument 'contrast' is recommended to be a matrix object.
     ## See Vignette or Help.
@@ -1727,13 +1722,13 @@ library(EGSEA)
 
     ## ..roast*
 
-    ## ##------ Wed Aug 20 14:41:42 2025 ------##
+    ## ##------ Thu Sep 11 15:54:15 2025 ------##
 
-    ## EGSEA analysis took 3.66199999999998 seconds.
+    ## EGSEA analysis took 2.05200000000002 seconds.
     ## EGSEA analysis has completed
     ## EGSEA HTML report is being generated ...
 
-    ## ##------ Wed Aug 20 14:41:42 2025 ------##
+    ## ##------ Thu Sep 11 15:54:15 2025 ------##
 
     ## Report pages and figures are being generated for the h collection ...
     ##    Heat maps are being generated for top-ranked gene sets 
@@ -1741,9 +1736,9 @@ library(EGSEA)
     ##    Summary plots are being generated ... 
     ##    Comparison summary plots are being generated  ...
 
-    ## ##------ Wed Aug 20 14:42:40 2025 ------##
+    ## ##------ Thu Sep 11 15:55:02 2025 ------##
 
-    ## EGSEA report generation took 58.602 seconds.
+    ## EGSEA report generation took 46.962 seconds.
     ## EGSEA report has been generated.
 
     ## # A tibble: 0 × 0
@@ -2055,116 +2050,122 @@ sessionInfo()
     ##  [1] pathview_1.48.0                 topGO_2.60.1                   
     ##  [3] SparseM_1.84-2                  GO.db_3.21.0                   
     ##  [5] graph_1.86.0                    AnnotationDbi_1.70.0           
-    ##  [7] gage_2.58.0                     patchwork_1.3.1                
+    ##  [7] gage_2.58.0                     patchwork_1.3.2                
     ##  [9] GGally_2.3.0                    DESeq2_1.48.1                  
     ## [11] edgeR_4.6.3                     limma_3.64.3                   
-    ## [13] tidySummarizedExperiment_1.19.4 airway_1.28.0                  
+    ## [13] tidySummarizedExperiment_1.19.7 airway_1.28.0                  
     ## [15] SummarizedExperiment_1.38.1     Biobase_2.68.0                 
-    ## [17] GenomicRanges_1.60.0            GenomeInfoDb_1.44.1            
+    ## [17] GenomicRanges_1.60.0            GenomeInfoDb_1.44.2            
     ## [19] IRanges_2.42.0                  S4Vectors_0.46.0               
     ## [21] BiocGenerics_0.54.0             generics_0.1.4                 
     ## [23] MatrixGenerics_1.20.0           matrixStats_1.5.0              
     ## [25] tidybulk_1.99.2                 ttservice_0.5.3                
-    ## [27] ggrepel_0.9.6                   magrittr_2.0.3                 
-    ## [29] lubridate_1.9.4                 forcats_1.0.0                  
-    ## [31] stringr_1.5.1                   dplyr_1.1.4                    
-    ## [33] purrr_1.1.0                     readr_2.1.5                    
-    ## [35] tidyr_1.3.1                     tibble_3.3.0                   
-    ## [37] ggplot2_3.5.2                   tidyverse_2.0.0                
-    ## [39] knitr_1.50                     
+    ## [27] ggrepel_0.9.6                   ggplot2_3.5.2                  
+    ## [29] magrittr_2.0.3                  purrr_1.1.0                    
+    ## [31] tibble_3.3.0                    tidyr_1.3.1                    
+    ## [33] dplyr_1.1.4                     knitr_1.50                     
     ## 
     ## loaded via a namespace (and not attached):
-    ##   [1] fs_1.6.6                    GSVA_2.2.0                 
-    ##   [3] bitops_1.0-9                R2HTML_2.3.4               
-    ##   [5] enrichplot_1.28.4           httr_1.4.7                 
-    ##   [7] RColorBrewer_1.1-3          numDeriv_2016.8-1.1        
-    ##   [9] Rgraphviz_2.52.0            doRNG_1.8.6.2              
-    ##  [11] tools_4.5.0                 backports_1.5.0            
-    ##  [13] utf8_1.2.6                  R6_2.6.1                   
-    ##  [15] DT_0.33                     HDF5Array_1.36.0           
-    ##  [17] sn_2.1.1                    lazyeval_0.2.2             
-    ##  [19] mgcv_1.9-3                  rhdf5filters_1.20.0        
-    ##  [21] withr_3.0.2                 preprocessCore_1.70.0      
-    ##  [23] cli_3.6.5                   sandwich_3.1-1             
-    ##  [25] labeling_0.4.3              KEGGgraph_1.68.0           
-    ##  [27] mvtnorm_1.3-3               S7_0.2.0                   
-    ##  [29] genefilter_1.90.0           proxy_0.4-27               
-    ##  [31] PADOG_1.50.0                yulab.utils_0.2.0          
-    ##  [33] gson_0.1.0                  DOSE_4.2.0                 
-    ##  [35] R.utils_2.13.0              HTMLUtils_0.1.9            
-    ##  [37] plotrix_3.8-4               rstudioapi_0.17.1          
-    ##  [39] RSQLite_2.4.2               gridGraphics_0.5-1         
-    ##  [41] hwriter_1.3.2.1             gtools_3.9.5               
-    ##  [43] Matrix_1.7-3                abind_1.4-8                
-    ##  [45] R.methodsS3_1.8.2           lifecycle_1.0.4            
-    ##  [47] multcomp_1.4-28             yaml_2.3.10                
-    ##  [49] mathjaxr_1.8-0              KEGGdzPathwaysGEO_1.46.0   
-    ##  [51] gplots_3.2.0                rhdf5_2.52.1               
-    ##  [53] qvalue_2.40.0               SparseArray_1.8.1          
-    ##  [55] grid_4.5.0                  blob_1.2.4                 
-    ##  [57] crayon_1.5.3                ggtangle_0.0.7             
-    ##  [59] lattice_0.22-7              beachmat_2.24.0            
-    ##  [61] msigdbr_25.1.1              cowplot_1.2.0              
-    ##  [63] annotate_1.86.1             KEGGREST_1.48.1            
-    ##  [65] magick_2.8.7                pillar_1.11.0              
-    ##  [67] fgsea_1.34.2                hgu133plus2.db_3.13.0      
-    ##  [69] hgu133a.db_3.13.0           rjson_0.2.23               
-    ##  [71] widyr_0.1.5                 codetools_0.2-20           
-    ##  [73] fastmatch_1.1-6             mutoss_0.1-13              
-    ##  [75] glue_1.8.0                  ggfun_0.2.0                
-    ##  [77] data.table_1.17.8           Rdpack_2.6.4               
-    ##  [79] vctrs_0.6.5                 png_0.1-8                  
-    ##  [81] treeio_1.32.0               org.Mm.eg.db_3.21.0        
-    ##  [83] gtable_0.3.6                org.Rn.eg.db_3.21.0        
-    ##  [85] assertthat_0.2.1            cachem_1.1.0               
-    ##  [87] xfun_0.53                   rbibutils_2.3              
-    ##  [89] S4Arrays_1.8.1              survival_3.8-3             
-    ##  [91] SingleCellExperiment_1.30.1 iterators_1.0.14           
-    ##  [93] statmod_1.5.0               TH.data_1.1-3              
-    ##  [95] ellipsis_0.3.2              nlme_3.1-168               
-    ##  [97] ggtree_3.16.3               bit64_4.6.0-1              
-    ##  [99] rprojroot_2.1.0             SnowballC_0.7.1            
-    ## [101] irlba_2.3.5.1               KernSmooth_2.23-26         
-    ## [103] colorspace_2.1-1            DBI_1.2.3                  
-    ## [105] mnormt_2.1.1                tidyselect_1.2.1           
-    ## [107] bit_4.6.0                   compiler_4.5.0             
-    ## [109] curl_6.4.0                  h5mread_1.0.1              
-    ## [111] TFisher_0.2.0               DelayedArray_0.34.1        
-    ## [113] plotly_4.11.0               scales_1.4.0               
-    ## [115] caTools_1.18.3              SpatialExperiment_1.18.1   
-    ## [117] digest_0.6.37               rmarkdown_2.29             
-    ## [119] XVector_0.48.0              htmltools_0.5.8.1          
-    ## [121] pkgconfig_2.0.3             sparseMatrixStats_1.20.0   
-    ## [123] fastmap_1.2.0               rlang_1.1.6                
-    ## [125] htmlwidgets_1.6.4           UCSC.utils_1.4.0           
-    ## [127] farver_2.1.2                zoo_1.8-14                 
-    ## [129] jsonlite_2.0.0              BiocParallel_1.42.1        
-    ## [131] GOSemSim_2.34.0             tokenizers_0.3.0           
-    ## [133] R.oo_1.27.1                 BiocSingular_1.24.0        
-    ## [135] RCurl_1.98-1.17             GenomeInfoDbData_1.2.14    
-    ## [137] ggplotify_0.1.2             Rhdf5lib_1.30.0            
-    ## [139] Rcpp_1.1.0                  ape_5.8-1                  
-    ## [141] babelgene_22.9              stringi_1.8.7              
-    ## [143] MASS_7.3-65                 globaltest_5.62.0          
-    ## [145] plyr_1.8.9                  org.Hs.eg.db_3.21.0        
-    ## [147] ggstats_0.10.0              parallel_4.5.0             
-    ## [149] Biostrings_2.76.0           splines_4.5.0              
-    ## [151] multtest_2.64.0             hms_1.1.3                  
-    ## [153] qqconf_1.3.2                locfit_1.5-9.12            
-    ## [155] igraph_2.1.4                rngtools_1.5.2             
-    ## [157] EGSEAdata_1.36.0            reshape2_1.4.4             
-    ## [159] ScaledMatrix_1.16.0         XML_3.99-0.18              
-    ## [161] GSA_1.03.3                  evaluate_1.0.4             
-    ## [163] metap_1.12                  tidytext_0.4.2             
-    ## [165] foreach_1.5.2               tzdb_0.5.0                 
-    ## [167] rsvd_1.0.5                  broom_1.0.8                
-    ## [169] xtable_1.8-4                e1071_1.7-16               
-    ## [171] tidytree_0.4.6              janeaustenr_1.0.0          
-    ## [173] class_7.3-23                viridisLite_0.4.2          
-    ## [175] clusterProfiler_4.16.0      aplot_0.2.8                
-    ## [177] safe_3.48.0                 memoise_2.0.1              
-    ## [179] timechange_0.3.0            sva_3.56.0                 
-    ## [181] GSEABase_1.70.0
+    ##   [1] SpatialExperiment_1.18.1    R.methodsS3_1.8.2          
+    ##   [3] GSEABase_1.70.0             DT_0.33                    
+    ##   [5] Biostrings_2.76.0           HDF5Array_1.36.0           
+    ##   [7] TH.data_1.1-3               vctrs_0.6.5                
+    ##   [9] ggtangle_0.0.7              digest_0.6.37              
+    ##  [11] png_0.1-8                   proxy_0.4-27               
+    ##  [13] org.Mm.eg.db_3.21.0         magick_2.8.7               
+    ##  [15] MASS_7.3-65                 reshape2_1.4.4             
+    ##  [17] foreach_1.5.2               qvalue_2.40.0              
+    ##  [19] withr_3.0.2                 xfun_0.53                  
+    ##  [21] ggfun_0.2.0                 ggpubr_0.6.1               
+    ##  [23] ellipsis_0.3.2              survival_3.8-3             
+    ##  [25] doRNG_1.8.6.2               memoise_2.0.1              
+    ##  [27] HTMLUtils_0.1.9             clusterProfiler_4.16.0     
+    ##  [29] emmeans_1.11.2              gson_0.1.0                 
+    ##  [31] hgu133a.db_3.13.0           tidytree_0.4.6             
+    ##  [33] zoo_1.8-14                  gtools_3.9.5               
+    ##  [35] KEGGgraph_1.68.0            pbapply_1.7-4              
+    ##  [37] R.oo_1.27.1                 Formula_1.2-5              
+    ##  [39] KEGGREST_1.48.1             httr_1.4.7                 
+    ##  [41] rstatix_0.7.2               rhdf5filters_1.20.0        
+    ##  [43] rhdf5_2.52.1                rstudioapi_0.17.1          
+    ##  [45] UCSC.utils_1.4.0            DOSE_4.2.0                 
+    ##  [47] babelgene_22.9              curl_7.0.0                 
+    ##  [49] ScaledMatrix_1.16.0         h5mread_1.0.1              
+    ##  [51] TFisher_0.2.0               GenomeInfoDbData_1.2.14    
+    ##  [53] SparseArray_1.8.1           xtable_1.8-4               
+    ##  [55] stringr_1.5.1               evaluate_1.0.5             
+    ##  [57] S4Arrays_1.8.1              preprocessCore_1.70.0      
+    ##  [59] irlba_2.3.5.1               colorspace_2.1-1           
+    ##  [61] Rgraphviz_2.52.0            ggtree_3.16.3              
+    ##  [63] lattice_0.22-7              genefilter_1.90.0          
+    ##  [65] XML_3.99-0.18               cowplot_1.2.0              
+    ##  [67] class_7.3-23                pillar_1.11.0              
+    ##  [69] nlme_3.1-168                iterators_1.0.14           
+    ##  [71] caTools_1.18.3              compiler_4.5.0             
+    ##  [73] beachmat_2.24.0             stringi_1.8.7              
+    ##  [75] KEGGdzPathwaysGEO_1.46.0    tokenizers_0.3.0           
+    ##  [77] minqa_1.2.8                 plyr_1.8.9                 
+    ##  [79] msigdbr_25.1.1              crayon_1.5.3               
+    ##  [81] abind_1.4-8                 gridGraphics_0.5-1         
+    ##  [83] sn_2.1.1                    locfit_1.5-9.12            
+    ##  [85] org.Hs.eg.db_3.21.0         bit_4.6.0                  
+    ##  [87] mathjaxr_1.8-0              sandwich_3.1-1             
+    ##  [89] fastmatch_1.1-6             codetools_0.2-20           
+    ##  [91] multcomp_1.4-28             BiocSingular_1.24.0        
+    ##  [93] e1071_1.7-16                plotly_4.11.0              
+    ##  [95] hgu133plus2.db_3.13.0       tidytext_0.4.2             
+    ##  [97] multtest_2.64.0             org.Rn.eg.db_3.21.0        
+    ##  [99] splines_4.5.0               Rcpp_1.1.0                 
+    ## [101] sparseMatrixStats_1.20.0    blob_1.2.4                 
+    ## [103] utf8_1.2.6                  lme4_1.1-37                
+    ## [105] fs_1.6.6                    Rdpack_2.6.4               
+    ## [107] GSVA_2.2.0                  ggsignif_0.6.4             
+    ## [109] ggplotify_0.1.2             estimability_1.5.1         
+    ## [111] Matrix_1.7-3                statmod_1.5.0              
+    ## [113] pkgconfig_2.0.3             tools_4.5.0                
+    ## [115] cachem_1.1.0                rbibutils_2.3              
+    ## [117] RSQLite_2.4.3               viridisLite_0.4.2          
+    ## [119] globaltest_5.62.0           DBI_1.2.3                  
+    ## [121] numDeriv_2016.8-1.1         fastmap_1.2.0              
+    ## [123] rmarkdown_2.29              scales_1.4.0               
+    ## [125] grid_4.5.0                  pbmcapply_1.5.1            
+    ## [127] metap_1.12                  broom_1.0.8                
+    ## [129] coda_0.19-4.1               ggstats_0.10.0             
+    ## [131] carData_3.0-5               farver_2.1.2               
+    ## [133] reformulas_0.4.1            mgcv_1.9-3                 
+    ## [135] yaml_2.3.10                 cli_3.6.5                  
+    ## [137] safe_3.48.0                 lifecycle_1.0.4            
+    ## [139] glmmTMB_1.1.11              mvtnorm_1.3-3              
+    ## [141] backports_1.5.0             BiocParallel_1.42.1        
+    ## [143] widyr_0.1.5                 annotate_1.86.1            
+    ## [145] gtable_0.3.6                rjson_0.2.23               
+    ## [147] parallel_4.5.0              ape_5.8-1                  
+    ## [149] SnowballC_0.7.1             jsonlite_2.0.0             
+    ## [151] bitops_1.0-9                bit64_4.6.0-1              
+    ## [153] assertthat_0.2.1            qqconf_1.3.2               
+    ## [155] yulab.utils_0.2.0           PADOG_1.50.0               
+    ## [157] mutoss_0.1-13               janeaustenr_1.0.0          
+    ## [159] GOSemSim_2.34.0             R.utils_2.13.0             
+    ## [161] lazyeval_0.2.2              htmltools_0.5.8.1          
+    ## [163] enrichplot_1.28.4           glue_1.8.0                 
+    ## [165] XVector_0.48.0              RCurl_1.98-1.17            
+    ## [167] rprojroot_2.1.0             treeio_1.32.0              
+    ## [169] mnormt_2.1.1                boot_1.3-31                
+    ## [171] igraph_2.1.4                TMB_1.9.17                 
+    ## [173] glmmSeq_0.5.5               R6_2.6.1                   
+    ## [175] sva_3.56.0                  SingleCellExperiment_1.30.1
+    ## [177] gplots_3.2.0                labeling_0.4.3             
+    ## [179] rngtools_1.5.2              R2HTML_2.3.4               
+    ## [181] Rhdf5lib_1.30.0             aplot_0.2.8                
+    ## [183] nloptr_2.2.1                DelayedArray_0.34.1        
+    ## [185] tidyselect_1.2.1            plotrix_3.8-4              
+    ## [187] car_3.1-3                   rsvd_1.0.5                 
+    ## [189] KernSmooth_2.23-26          S7_0.2.0                   
+    ## [191] data.table_1.17.8           htmlwidgets_1.6.4          
+    ## [193] fgsea_1.34.2                RColorBrewer_1.1-3         
+    ## [195] hwriter_1.3.2.1             rlang_1.1.6                
+    ## [197] lmerTest_3.1-3              GSA_1.03.3                 
+    ## [199] EGSEAdata_1.36.0
 
 <div id="refs" class="references csl-bib-body hanging-indent"
 entry-spacing="0">
