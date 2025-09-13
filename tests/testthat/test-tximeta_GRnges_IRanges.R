@@ -7,10 +7,10 @@ test_that("tximeta 1",{
 
 
   SummarizedExperiment::rbind(duplicate, tximeta_summarizeToGene_object)  %>%
-  aggregate_duplicates(.transcript = gene_id)
+  aggregate_duplicates(feature = "gene_id")
 
   tximeta_summarizeToGene_object  %>%
-    aggregate_duplicates(.transcript = gene_id)
+    aggregate_duplicates(feature = "gene_id")
 
 })
 

@@ -247,7 +247,7 @@ Aggregate duplicated transcripts (e.g., isoforms, ensembl IDs):
 
 ```{r preprocessing-aggregate-duplicates}
 # Aggregate duplicates
-airway = airway |> aggregate_duplicates(.transcript = gene_name, aggregation_function = mean)
+airway = airway |> aggregate_duplicates(transcript = gene_name, aggregation_function = mean)
 ```
 
 ### Abundance Filtering
@@ -944,7 +944,7 @@ gene_rank_res =
 
     # Filter for genes with entrez IDs
   filter(!entrezid |> is.na()) |>
-  aggregate_duplicates(.transcript = entrezid) |> 
+  aggregate_duplicates(transcript = entrezid) |> 
 
   # Test gene rank
   test_gene_rank(
@@ -1015,7 +1015,7 @@ library(EGSEA)
 
   # Filter for genes with entrez IDs
   filter(!entrezid |> is.na()) |>
-  aggregate_duplicates(.transcript = entrezid) |> 
+  aggregate_duplicates(transcript = entrezid) |> 
 
   # Test gene enrichment
   test_gene_enrichment(

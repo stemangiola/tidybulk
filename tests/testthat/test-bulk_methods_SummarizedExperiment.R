@@ -194,7 +194,7 @@ test_that("Aggregate duplicated transcript - SummarizedExperiment",{
       else .x
     })
   
-  res =  aggregate_duplicates(se,	.transcript = bla )
+  res =  aggregate_duplicates(se,	feature = "bla" )
   
   
   # Check that the aggregated gene exists and original genes are gone
@@ -476,7 +476,7 @@ test_that("filter variable - no object",{
 # 				input_df,
 # 				.transcript = b, .sample = a), d = entrez
 # 			),
-# 			.transcript = d,
+# 			feature = "d",
 # 			.sample = a,
 # 			.abundance = c
 # 		) |> identify_abundant(a, b, c, formula_design = ~  condition) |>

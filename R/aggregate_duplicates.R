@@ -6,8 +6,11 @@
 #'
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_is_null quo_name
+#' @importFrom rlang quo
+#' @importFrom lifecycle deprecate_warn
 #' @importFrom dplyr group_by summarise arrange select left_join
 #' @importFrom dplyr across select_if as_tibble pull
+#' @importFrom dplyr n
 #' @importFrom methods is
 #' @importFrom tibble as_tibble
 #' @importFrom SummarizedExperiment rowData colData SummarizedExperiment
@@ -17,12 +20,14 @@
 #' @importFrom S4Vectors as.data.frame
 #' @importFrom utils capture.output
 #' @importFrom crayon blue
+#' @importFrom purrr map
 #'
 #'
 #' @name aggregate_duplicates
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
-#' @param .transcript The name of the transcript/gene column
+#' @param .transcript DEPRECATED The name of the transcript/gene column (deprecated, use `feature` instead)
+#' @param feature The name of the feature column as a character string
 #' @param .abundance The name of the transcript/gene abundance column
 #' @param aggregation_function A function for counts aggregation (e.g., sum,  median, or mean)
 #' @param keep_integer A boolean. Whether to force the aggregated counts to integer
@@ -62,7 +67,7 @@
 #'
 #'    aggregate_duplicates(
 #'      airway,
-#'    .transcript = gene_name
+#'    feature = "gene_name"
 #'    )
 #'
 #' @references
@@ -81,6 +86,7 @@ setGeneric("aggregate_duplicates", function(.data,
                                             
                                             
                                             .transcript = NULL,
+                                            feature = NULL,
                                             .abundance = NULL,
                                             aggregation_function = sum,
                                             keep_integer = TRUE,
@@ -98,7 +104,8 @@ setGeneric("aggregate_duplicates", function(.data,
 .aggregate_duplicates_se = function(.data,
                                     
                                     
-                                    
+                                    .transcript = NULL,
+                                    feature = NULL,
                                     .abundance = NULL,
                                     aggregation_function = sum,
                                     keep_integer = TRUE,
@@ -107,16 +114,40 @@ setGeneric("aggregate_duplicates", function(.data,
   # Fix NOTEs
   . = NULL
   
-  # Make col names
-  .transcript = enquo(.transcript)
+  # Capture .transcript as quosure if it's not NULL
+  if (!is.null(.transcript)) {
+    .transcript = enquo(.transcript)
+  }
+  
+  # Handle parameter deprecation
+  if (!is.null(.transcript) && !is.null(feature)) {
+    stop("tidybulk says: Please provide either `.transcript` or `feature`, not both.")
+  }
+  
+  if (!is.null(.transcript)) {
+    lifecycle::deprecate_warn(
+      when = "2.0.0",
+      what = "aggregate_duplicates(.transcript)",
+      with = "aggregate_duplicates(feature)",
+      details = "Please use `feature` parameter with a character string instead of `.transcript` with a quoted expression."
+    )
+    
+    # .transcript should already be a quosure from the function signature
+    # No need to modify it
+  } else if (!is.null(feature)) {
+    # Convert character string to quosure
+    .transcript = quo(!!as.symbol(feature))
+  } else {
+    .transcript = quo(NULL)
+  }
   
   
-  if(quo_is_null(.transcript)) stop("tidybulk says: using SummarizedExperiment with aggregate_duplicates, you need to specify .transcript parameter. It should be a feature-wise column (e.g. gene symbol) that you want to collapse he features with (e.g. ensembl). It cannot be the representation of rownames(SummarizedExperiment), as those are unique by definition, and not part of rowData per-se.")
+  if(quo_is_null(.transcript)) stop("tidybulk says: using SummarizedExperiment with aggregate_duplicates, you need to specify feature parameter. It should be a feature-wise column (e.g. gene symbol) that you want to collapse the features with (e.g. ensembl). It cannot be the representation of rownames(SummarizedExperiment), as those are unique by definition, and not part of rowData per-se.")
   
   if(!quo_name(.transcript) %in% colnames( .data |> rowData()))
-    stop("tidybulk says: the .transcript argument must be a feature-wise column names. The feature-wise information can be found with rowData()")
+    stop("tidybulk says: the feature argument must be a feature-wise column names. The feature-wise information can be found with rowData()")
   if( !is.null(.abundance))
-    warning("tidybulk says: for SummarizedExperiment objects only the argument .transcript (feature ID to collapse) is considered")
+    warning("tidybulk says: for SummarizedExperiment objects only the argument feature (feature ID to collapse) is considered")
   
   collapse_function = function(x){ x |> unique() |> paste(collapse = "___")	}
   
