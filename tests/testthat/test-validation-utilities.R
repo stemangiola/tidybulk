@@ -24,14 +24,21 @@ test_that("check_if_wrong_input works correctly", {
 })
 
 # Test utility functions
-test_that("log10_reverse_trans works correctly", {
-  # Skip utility functions as they're not available
-  skip("utility functions not available")
-})
-
 test_that("logit_trans works correctly", {
-  # Skip utility functions as they're not available
-  skip("utility functions not available")
+  library(ggplot2)
+  
+  # Test that the function returns a transform object
+  trans_obj <- logit_trans()
+  expect_s3_class(trans_obj, "transform")
+  
+  # Test transformation functions
+  test_values <- c(0.1, 0.5, 0.9)
+  transformed <- trans_obj$transform(test_values)
+  expect_equal(transformed, qlogis(test_values))
+  
+  # Test inverse transformation
+  inverse_transformed <- trans_obj$inverse(transformed)
+  expect_equal(inverse_transformed, test_values, tolerance = 1e-10)
 })
 
 # Test tidySummarizedExperiment functions

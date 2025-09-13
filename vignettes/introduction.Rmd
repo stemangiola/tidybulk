@@ -729,7 +729,7 @@ airway |>
 	# Plot
   ggplot(aes(x = logFC, y = PValue)) +
   geom_point(aes(color = PValue < 0.05, size = PValue < 0.05)) +
-  scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
+  scale_y_log10_reverse() +
   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
   scale_size_manual(values = c("TRUE" = 0.5, "FALSE" = 0.1)) +
   facet_wrap(~method) +
@@ -773,7 +773,7 @@ airway |>
   ggplot(aes(x = logFC, y = PValue)) +
   geom_point(aes(color = PValue < 0.05, size = PValue < 0.05)) +
   ggrepel::geom_text_repel(aes(label = symbol), size = 2, max.overlaps = 20) +
-  scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
+  scale_y_log10_reverse() +
   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
   scale_size_manual(values = c("TRUE" = 0.5, "FALSE" = 0.1)) +
   facet_wrap(~method, scales = "free_y") +

@@ -32,10 +32,55 @@ test_that("resolve_complete_confounders_of_non_interest works correctly", {
   skip("resolve_complete_confounders_of_non_interest has formula compatibility issues")
 })
 
-# Test ggplot functions
-test_that("ggplot functions work correctly", {
-  # Skip ggplot as it's not available
-  skip("ggplot functions not available")
+# Test ggplot transformation functions
+test_that("log10_reverse_trans works correctly", {
+  library(ggplot2)
+  library(tibble)
+  
+  # Test that the function returns a transform object
+  trans_obj <- log10_reverse_trans()
+  expect_s3_class(trans_obj, "transform")
+  
+  # Test transformation functions
+  test_values <- c(0.001, 0.01, 0.1, 0.5)
+  transformed <- trans_obj$transform(test_values)
+  expect_equal(transformed, -log10(test_values))
+  
+  # Test inverse transformation
+  inverse_transformed <- trans_obj$inverse(transformed)
+  expect_equal(inverse_transformed, test_values, tolerance = 1e-10)
+  
+  # Test breaks function
+  breaks_result <- trans_obj$breaks(test_values)
+  expect_type(breaks_result, "double")
+  expect_true(length(breaks_result) > 0)
+})
+
+test_that("scale_y_log10_reverse works correctly", {
+  library(ggplot2)
+  library(tibble)
+  
+  # Test that the function returns a scale object
+  scale_obj <- scale_y_log10_reverse()
+  expect_s3_class(scale_obj, "ScaleContinuousPosition")
+  
+  # Test with custom parameters
+  scale_obj_custom <- scale_y_log10_reverse(breaks = 7, digits = 3)
+  expect_s3_class(scale_obj_custom, "ScaleContinuousPosition")
+  
+  # Test that it works in a plot
+  test_data <- tibble(
+    pvalue = c(0.0001, 0.001, 0.01, 0.05, 0.1, 0.5),
+    fold_change = 1:6
+  )
+  
+  # Should not throw an error
+  expect_no_error({
+    p <- test_data |>
+      ggplot(aes(fold_change, pvalue)) +
+      geom_point() +
+      scale_y_log10_reverse()
+  })
 })
 
 # Test bibliography function
