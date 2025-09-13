@@ -8,18 +8,14 @@ output:
     toc_float: true
 bibliography: references.bib
 link-citations: true
-abstract: >
-  Tidybulk is a comprehensive R package for modular transcriptomic data analysis that brings transcriptomics 
-  to the tidyverse. It provides a unified interface for data transformation, normalization, filtering, 
-  dimensionality reduction, clustering, differential analysis, cellularity analysis, and gene enrichment 
-  with seamless integration of SummarizedExperiment objects and tidyverse principles.
+
 keywords: "transcriptomics, RNA-seq, differential expression, data analysis, tidyverse, SummarizedExperiment, 
   bioinformatics, genomics, gene expression, clustering, dimensionality reduction, cellularity analysis, 
   gene enrichment, R package"
 vignette: >
-  %\VignetteEngine{knitr::knitr}
   %\VignetteIndexEntry{Overview of the tidybulk package}
-  %\usepackage[UTF-8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 <!-- badges: start -->
@@ -142,7 +138,6 @@ library(magrittr)
 library(forcats)
 library(ggplot2)
 library(ggrepel)
-library(tidybulk)
 library(SummarizedExperiment)
 library(tidybulk)
 
@@ -192,6 +187,8 @@ airway <-
                                       column = "ENTREZID",
                                       multiVals = "first"
 )) 
+
+
 
 detach("package:org.Hs.eg.db", unload = TRUE)
 detach("package:AnnotationDbi", unload = TRUE)
@@ -270,7 +267,7 @@ airway_abundant_cpm = airway |> keep_abundant(minimum_count_per_million  = 10, m
 
 #### Compare methods 
 
-```{r filtering-summary-statistics, fig.width = 10, fig.height = 10}
+```{r filtering-summary-statistics, fig.width = 10, fig.height = 10, warning = FALSE}
 # Example: summary for default tidybulk filtering
 # Before filtering
 airway |> summarise(
