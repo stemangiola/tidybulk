@@ -118,11 +118,14 @@
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>.sample <span class="op">=</span> <span class="st">"A"</span>, .transcript <span class="op">=</span> <span class="st">"CD3G"</span>, count <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">as_SummarizedExperiment</span><span class="op">(</span>.sample <span class="op">=</span> <span class="va">.sample</span>, .transcript <span class="op">=</span> <span class="va">.transcript</span>, .abundance <span class="op">=</span> <span class="va">count</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A SummarizedExperiment-tibble abstraction: 1 × 5</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># </span><span style="color: #555555;">Features=1 | Samples=1 | Assays=count</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .feature .sample count.x count.y .transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> CD3G     A             1       1 CD3G       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class: SummarizedExperiment </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 1 1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): count</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(1): CD3G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(1): .transcript</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colnames(1): A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(1): count</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

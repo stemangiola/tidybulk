@@ -82,7 +82,7 @@ interfaces</h1>
                         <h4 data-toc-skip class="author">Stefano
 Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2025-09-11</h4>
+            <h4 data-toc-skip class="date">2025-09-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/master/vignettes/comparison_coding.Rmd" class="external-link"><code>vignettes/comparison_coding.Rmd</code></a></small>
       <div class="hidden name"><code>comparison_coding.Rmd</code></div>
@@ -157,7 +157,7 @@ and factors and boolean are appended as characters.</p>
 <div class="column-left">
 <p>TidyTranscriptomics</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">gene_name</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">gene_name</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span></span>
 <span><span class="va">airway.aggr</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/aggregate_duplicates-methods.html">aggregate_duplicates</a></span><span class="op">(</span>.transcript <span class="op">=</span> <span class="va">gene_name</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="column-right">
@@ -172,7 +172,7 @@ and factors and boolean are appended as characters.</p>
 <span>        <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span></span>
 <span>            <span class="fu">matrixStats</span><span class="fu">:::</span><span class="fu">colSums</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">df</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">dge_list.nr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">"rbind"</span>, <span class="va">dge_list.nr</span><span class="op">)</span></span>
+<span><span class="va">dge_list.nr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">"rbind"</span>, <span class="va">dge_list.nr</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dge_list.nr</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dge_list</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div style="clear:both;">
@@ -247,15 +247,15 @@ density, data is grouped by sample and coloured by treatment.</p>
 <span><span class="va">x</span> <span class="op">=</span> <span class="va">norm_counts.table</span></span>
 <span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="op">(</span><span class="va">x</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">s</span>,decreasing<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">s</span>,decreasing<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">o</span><span class="op">[</span><span class="fl">1L</span><span class="op">:</span><span class="va">top</span><span class="op">]</span>,,drop<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span></span>
 <span></span>
-<span><span class="va">norm_counts.table</span> <span class="op">=</span> <span class="va">norm_counts.table</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">norm_counts.table</span> <span class="op">=</span> <span class="va">norm_counts.table</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">norm_counts.table</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span></span>
 <span>        <span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">norm_counts.table</span><span class="op">)</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">norm_counts.table</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>    <span class="st">"cell"</span></span>
 <span><span class="op">]</span></span></code></pre></div>
@@ -298,7 +298,7 @@ the reduced dimensions.</p>
 <span>    <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Dim%s"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cmds</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">cmds</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">cmds</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    <span class="st">"cell"</span></span>
 <span><span class="op">]</span></span></code></pre></div>
 </div>
@@ -329,7 +329,7 @@ is coloured by treatment.</p>
 <span><span class="va">variance</span> <span class="op">=</span> <span class="va">pc</span><span class="op">$</span><span class="va">sdev</span><span class="op">^</span><span class="fl">2</span></span>
 <span><span class="va">variance</span> <span class="op">=</span> <span class="op">(</span><span class="va">variance</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">variance</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span>
 <span><span class="va">pc</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pc</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pc</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    <span class="st">"cell"</span></span>
 <span><span class="op">]</span></span></code></pre></div>
 </div>
@@ -375,7 +375,7 @@ default, or as specified in the input arguments.
 <span><span class="op">}</span></span>
 <span><span class="va">mds_r</span> <span class="op">=</span> <span class="va">pca</span> <span class="op">|&gt;</span> <span class="fu">rotation</span><span class="op">(</span><span class="va">rotation_degrees</span><span class="op">)</span></span>
 <span><span class="va">mds_r</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">mds_r</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">mds_r</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    <span class="st">"cell"</span></span>
 <span><span class="op">]</span></span></code></pre></div>
 </div>
@@ -493,7 +493,7 @@ unwanted covariates is allowed at a time.</p>
 <span></span>
 <span><span class="va">count_m_log.sva</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">count_m_log.sva</span><span class="op">)</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">count_m_log.sva</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">count_m_log.sva</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">count_m_log.sva</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    <span class="st">"cell"</span></span>
 <span><span class="op">]</span></span></code></pre></div>
 </div>
@@ -533,7 +533,7 @@ is commented out.</em></p>
 <span>    perm<span class="op">=</span><span class="fl">100</span>, QN<span class="op">=</span><span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">=</span> <span class="va">tibble_counts</span><span class="op">[</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">tibble_counts</span><span class="op">$</span><span class="va">sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    <span class="st">"cell"</span></span>
 <span><span class="op">]</span></span></code></pre></div>
 </div>
@@ -579,7 +579,7 @@ with additional columns for the cluster labels.</p>
 <span><span class="va">count_m_log</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">count_m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">count_m_log_centered</span> <span class="op">=</span> <span class="va">count_m_log</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">count_m_log</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">kmeans_result</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/kmeans.html" class="external-link">kmeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">count_m_log_centered</span><span class="op">)</span>, centers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">kmeans_result</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/kmeans.html" class="external-link">kmeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">count_m_log_centered</span><span class="op">)</span>, centers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cluster_labels</span> <span class="op">=</span> <span class="va">kmeans_result</span><span class="op">$</span><span class="va">cluster</span></span></code></pre></div>
 </div>

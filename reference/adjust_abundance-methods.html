@@ -195,8 +195,8 @@ At the moment just an unwanted covariate is allowed at a time using Combat (DOI:
 <span class="r-in"><span><span class="co"># Create a balanced two-level batch within each condition to avoid confounding</span></span></span>
 <span class="r-in"><span><span class="va">cond</span> <span class="op">&lt;-</span> <span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">cm</span><span class="op">)</span><span class="op">$</span><span class="va">condition</span></span></span>
 <span class="r-in"><span><span class="va">cm</span><span class="op">$</span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA_character_</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">cm</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">lev</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cond</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">cond</span> <span class="op">==</span> <span class="va">lev</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">lev</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cond</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">cond</span> <span class="op">==</span> <span class="va">lev</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">cm</span><span class="op">$</span><span class="va">batch</span><span class="op">[</span><span class="va">idx</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'A'</span>,<span class="st">'B'</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">idx</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
@@ -213,26 +213,15 @@ At the moment just an unwanted covariate is allowed at a time using Combat (DOI:
 <span class="r-out co"><span class="r-pr">#&gt;</span> Fitting the GLM model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Shrinkage off - using GLM estimates for parameters</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Adjusting the data</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A SummarizedExperiment-tibble abstraction: 509,416 × 27</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># </span><span style="color: #555555;">Features=63677 | Samples=8 | Assays=counts, counts_adjusted</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    .feature    .sample counts counts_adjusted SampleName cell  dex   albut Run  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ENSG000000… SRR103…    679             694 GSM1275862 N613… untrt untrt SRR1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ENSG000000… SRR103…      0               0 GSM1275862 N613… untrt untrt SRR1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ENSG000000… SRR103…    467             455 GSM1275862 N613… untrt untrt SRR1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ENSG000000… SRR103…    260             256 GSM1275862 N613… untrt untrt SRR1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ENSG000000… SRR103…     60              56 GSM1275862 N613… untrt untrt SRR1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ENSG000000… SRR103…      0               0 GSM1275862 N613… untrt untrt SRR1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ENSG000000… SRR103…   <span style="text-decoration: underline;">3</span>251            <span style="text-decoration: underline;">3</span>879 GSM1275862 N613… untrt untrt SRR1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ENSG000000… SRR103…   <span style="text-decoration: underline;">1</span>433            <span style="text-decoration: underline;">1</span>465 GSM1275862 N613… untrt untrt SRR1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ENSG000000… SRR103…    519             569 GSM1275862 N613… untrt untrt SRR1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ENSG000000… SRR103…    394             374 GSM1275862 N613… untrt untrt SRR1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 40 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 18 more variables: avgLength &lt;int&gt;, Experiment &lt;fct&gt;, Sample &lt;fct&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   BioSample &lt;fct&gt;, condition &lt;fct&gt;, batch &lt;fct&gt;, gene_id &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   gene_name &lt;chr&gt;, entrezid &lt;int&gt;, gene_biotype &lt;chr&gt;, gene_seq_start &lt;int&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   gene_seq_end &lt;int&gt;, seq_name &lt;chr&gt;, seq_strand &lt;int&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   seq_coord_system &lt;int&gt;, symbol &lt;chr&gt;, .abundant &lt;lgl&gt;, GRangesList &lt;list&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class: RangedSummarizedExperiment </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 63677 8 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(2): '' tidybulk</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> assays(2): counts counts_adjusted</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(63677): ENSG00000000003 ENSG00000000005 ... ENSG00000273492</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ENSG00000273493</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(11): gene_id gene_name ... symbol .abundant</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colnames(8): SRR1039508 SRR1039509 ... SRR1039520 SRR1039521</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colData names(11): SampleName cell ... condition batch</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
