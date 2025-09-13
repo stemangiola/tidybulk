@@ -20,39 +20,6 @@ vignette: >
   %\VignetteEngine{knitr::knitr}
   %\VignetteIndexEntry{Overview of the tidybulk package}
   %\usepackage[UTF-8]{inputenc}
-knit: >
-    (function(x, ...){
-        # Check if we're running under pkgdown by looking at the call stack
-        call_stack <- sys.calls()
-        is_pkgdown <- any(grepl("pkgdown", sapply(call_stack, function(x) deparse(x)[1]), ignore.case = TRUE))
-        
-        # Only use custom knitting for README generation, not for pkgdown
-        if (is_pkgdown) {
-            # Let pkgdown handle the vignette normally
-            return(NULL)
-        }
-        
-        proj_root <- rprojroot::find_package_root_file()
-        
-        # Set knitr options for both renders
-        knitr::opts_chunk$set(fig.path = "README_files/figure-gfm/")
-        
-        rmarkdown::render(
-            x,
-            output_file = "README.md",
-            output_format = "github_document",
-            output_dir = proj_root,
-            params = list(
-                demo_metadata = FALSE
-            )
-        )
-        
-        # Fix absolute paths to relative paths
-        readme_content <- readLines(file.path(proj_root, "README.md"))
-        readme_content <- gsub("/Users/[^/]+/Documents/GitHub/tidybulk/README_files/figure-gfm/", 
-                              "README_files/figure-gfm/", readme_content)
-        writeLines(readme_content, file.path(proj_root, "README.md"))
-    })
 ---
 
 <!-- badges: start -->
@@ -144,6 +111,10 @@ All functions are directly compatible with `SummarizedExperiment` objects and fo
 Mangiola, Stefano, Ramyar Molania, Ruining Dong, Maria A. Doyle, and Anthony T. Papenfuss. 2021. "Tidybulk: An R tidy framework for modular transcriptomic data analysis." Genome Biology 22 (42). https://doi.org/10.1186/s13059-020-02233-7
 
 [Genome Biology - tidybulk: an R tidy framework for modular transcriptomic data analysis](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02233-7)
+
+# Full vignette
+
+[HERE](https://stemangiola.github.io/tidybulk/)
 
 # Installation Guide
 
