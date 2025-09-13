@@ -792,7 +792,7 @@ Contrast-based differential expression analysis, is available for most methods. 
 airway |>
 	test_differential_expression(
 		~ 0 + dex,                  
-		.contrasts = c("dextrt - dexuntrt"),
+		contrasts  = c("dextrt - dexuntrt"),
         method = "edgeR_quasi_likelihood", 
 		prefix = "contrasts__"
 	) |> 
@@ -809,7 +809,7 @@ airway |>
 airway |>
 	test_differential_expression(
 		~ 0 + dex,                  
-		.contrasts = list(c("dex", "trt", "untrt")),
+		contrasts  = list(c("dex", "trt", "untrt")),
 		method = "DESeq2",
 		prefix = "contrasts__"
   ) |>
@@ -824,7 +824,7 @@ airway |>
 airway |>
 	test_differential_expression(
 		~ 0 + dex,                  
-		.contrasts = c("dextrt - dexuntrt"),
+		contrasts  = c("dextrt - dexuntrt"),
 		method = "limma_voom",
 		prefix = "contrasts__"
 	) |>
@@ -842,7 +842,7 @@ TREAT method [@mccarthy2009treat] is used for testing significance relative to a
 airway |>
 	test_differential_expression(
 		~ 0 + dex,                  
-		.contrasts = c("dextrt - dexuntrt"),
+		contrasts  = c("dextrt - dexuntrt"),
         method = "edgeR_quasi_likelihood", 
 		test_above_log2_fold_change = 2, 
 		prefix = "treat__"
