@@ -22,6 +22,16 @@ vignette: >
   %\usepackage[UTF-8]{inputenc}
 knit: >
     (function(x, ...){
+        # Check if we're running under pkgdown by looking at the call stack
+        call_stack <- sys.calls()
+        is_pkgdown <- any(grepl("pkgdown", sapply(call_stack, function(x) deparse(x)[1]), ignore.case = TRUE))
+        
+        # Only use custom knitting for README generation, not for pkgdown
+        if (is_pkgdown) {
+            # Let pkgdown handle the vignette normally
+            return(NULL)
+        }
+        
         proj_root <- rprojroot::find_package_root_file()
         
         # Set knitr options for both renders
@@ -135,6 +145,22 @@ Mangiola, Stefano, Ramyar Molania, Ruining Dong, Maria A. Doyle, and Anthony T. 
 
 [Genome Biology - tidybulk: an R tidy framework for modular transcriptomic data analysis](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02233-7)
 
+# Installation Guide
+
+**Bioconductor**
+
+```{r install-bioconductor, message=FALSE, eval=FALSE}
+if (!requireNamespace("BiocManager")) install.packages("BiocManager")
+BiocManager::install("tidybulk")
+```
+
+**Github**
+
+```{r install-github, message=FALSE, eval=FALSE}
+devtools::install_github("stemangiola/tidybulk")
+```
+
+
 ```{r setup-libraries-and-theme, echo=FALSE, include=FALSE}
 library(knitr)
 library(dplyr)
@@ -142,6 +168,7 @@ library(tidyr)
 library(tibble)
 library(purrr)
 library(magrittr)
+library(forcats)
 library(ggplot2)
 library(ggrepel)
 library(tidybulk)
@@ -164,8 +191,6 @@ my_theme =
 		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
 	)
 ```
-
-
 
 In this vignette we will use the `airway` dataset, a `SummarizedExperiment` object containing RNA-seq data from an experiment studying the effect of dexamethasone treatment on airway smooth muscle cells. This dataset is available in the [airway](https://bioconductor.org/packages/airway/) package.
 
@@ -201,20 +226,6 @@ detach("package:org.Hs.eg.db", unload = TRUE)
 detach("package:AnnotationDbi", unload = TRUE)
 ```
 
-# Installation Guide
-
-**Bioconductor**
-
-```{r install-bioconductor, message=FALSE, eval=FALSE}
-if (!requireNamespace("BiocManager")) install.packages("BiocManager")
-BiocManager::install("tidybulk")
-```
-
-**Github**
-
-```{r install-github, message=FALSE, eval=FALSE}
-devtools::install_github("stemangiola/tidybulk")
-```
 
 # Comprehensive Example Pipeline
 
@@ -228,7 +239,7 @@ We will use the `airway` dataset, a `SummarizedExperiment` object containing RNA
 airway
 ```
 
-Loading `tidySummarizedExperiment` automatically abstracts this object as a `tibble`, making it compatible with tidyverse tools while maintaining its `SummarizedExperiment` nature:
+Loading `tidySummarizedExperiment` makes the `SummarizedExperiment` objects compatible with tidyverse tools while maintaining its `SummarizedExperiment` nature. This is useful because it allows us to use the `tidyverse` tools to manipulate the data.
 
 ```{r check-se-class}
 class(airway)
@@ -240,14 +251,16 @@ Before analysis, we need to ensure our variables are in the correct format:
 
 ```{r convert-condition-to-factor}
 # Convert dex to factor for proper differential expression analysis
-colData(airway)$dex = as.factor(colData(airway)$dex)
+airway = airway |>
+  mutate(dex = as.factor(dex))
 ```
 
 ### Visualize Raw Counts
 Visualize the distribution of raw counts before any filtering:
 
 ```{r plot-raw-counts, fig.width = 10, fig.height = 10}
-ggplot(as_tibble(airway), aes(counts + 1, group = .sample, color = `dex`)) +
+airway |>
+  ggplot(aes(counts + 1, group = .sample, color = dex)) +
   geom_density() +
   scale_x_log10() +
   my_theme +
@@ -262,9 +275,6 @@ Aggregate duplicated transcripts (e.g., isoforms, ensembl IDs):
 > Transcript aggregation is a standard bioinformatics approach for gene-level summarization.
 
 ```{r preprocessing-aggregate-duplicates}
-# Add gene names to rowData
-rowData(airway)$gene_name = rownames(airway)
-
 # Aggregate duplicates
 airway = airway |> aggregate_duplicates(.transcript = gene_name, aggregation_function = mean)
 ```
@@ -277,13 +287,13 @@ Abundance filtering can be performed using established methods [@robinson2010edg
 
 ```{r filtering-abundance-methods}
 # Default (simple filtering)
-airway_abundant_default = airway |> keep_abundant()
+airway_abundant_default = airway |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5)
 
 # With factor_of_interest (recommended for complex designs)
 airway_abundant_formula = airway |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5, factor_of_interest = dex)
 
 # With CPM threshold (using design parameter)
-airway_abundant_cpm = airway |> keep_abundant(minimum_counts = 10, minimum_proportion = 0.5)
+airway_abundant_cpm = airway |> keep_abundant(minimum_count_per_million  = 10, minimum_proportion = 0.5, factor_of_interest = dex)
 
 ```
 
@@ -292,7 +302,7 @@ airway_abundant_cpm = airway |> keep_abundant(minimum_counts = 10, minimum_propo
 ```{r filtering-summary-statistics, fig.width = 10, fig.height = 10}
 # Example: summary for default tidybulk filtering
 # Before filtering
-airway |> as_tibble() |> summarise(
+airway |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -300,21 +310,21 @@ airway |> as_tibble() |> summarise(
 )
 
 # After filtering
-airway_abundant_default |> as_tibble() |> summarise(
+airway_abundant_default |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
   max_count = max(counts)
 )
 
-airway_abundant_formula |> as_tibble() |> summarise(
+airway_abundant_formula |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
   max_count = max(counts)
 )
 
-airway_abundant_cpm |> as_tibble() |> summarise(
+airway_abundant_cpm |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -334,11 +344,10 @@ airway_abundant_all =
 
 # Density plot across methods
 airway_abundant_all |> 
-  as_tibble() |> 
   ggplot(aes(counts + 1, group = .sample, color = method)) +
     geom_density() +
     scale_x_log10() +
-    facet_wrap(~method) +
+    facet_wrap(~fct_relevel(method, "no filter", "default", "formula", "cpm")) +
     my_theme +
     labs(title = "Counts after abundance filtering (tidybulk default)")
 ```
@@ -358,11 +367,11 @@ Redundancy removal is a standard approach for reducing highly correlated feature
 ```{r preprocessing-remove-redundancy}
 airway_non_redundant = 
   airway |> 
-  remove_redundancy(method = "correlation", top = 100) 
+  remove_redundancy(method = "correlation", top = 100, of_samples = FALSE) 
 
   # Make  
 
-airway |> as_tibble() |> summarise(
+airway |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -370,7 +379,7 @@ airway |> as_tibble() |> summarise(
 )
 
 # Summary statistics
-airway_non_redundant |> as_tibble() |> summarise(
+airway_non_redundant |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -385,10 +394,11 @@ airway_all = bind_rows(
 )
 
 # Density plot
-ggplot(as_tibble(airway_all), aes(counts + 1, group = .sample, color = method)) +
+airway_all |>
+  ggplot(aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
-  facet_wrap(~method) +
+  facet_wrap(~fct_relevel(method, "before", "after")) +
   my_theme +
   labs(title = "Counts after removing redundant transcripts")
 
@@ -407,7 +417,7 @@ airway_variable = airway |> keep_variable()
 ### Visualize After Variable Filtering Variable Transcripts (optional)
 ```{r filtering-variable-summary-and-plot, fig.width = 10, fig.height = 10}
 # Before filtering
-airway |> as_tibble() |> summarise(
+airway |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -415,7 +425,7 @@ airway |> as_tibble() |> summarise(
 )
 
 # After filtering
-airway_variable |> as_tibble() |> summarise(
+airway_variable |> summarise(
   n_features = n_distinct(.feature),
   min_count = min(counts),
   median_count = median(counts),
@@ -430,10 +440,11 @@ airway_all = bind_rows(
 )
 
 # Density plot
-ggplot(as_tibble(airway_all), aes(counts + 1, group = .sample, color = method)) +
+airway_all |>
+  ggplot(aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
-  facet_wrap(~method) +
+  facet_wrap(~fct_relevel(method, "before", "after")) +
   my_theme +
   labs(title = "Counts after variable filtering")
 ```
@@ -472,10 +483,11 @@ airway_scaled_all = bind_rows(
 
 
 # Density plot
-ggplot(as_tibble(airway_scaled_all), aes(counts + 1, group = .sample, color = method)) +
+airway_scaled_all |>
+  ggplot(aes(counts + 1, group = .sample, color = method)) +
   geom_density() +
   scale_x_log10() +
-  facet_wrap(~method) +
+  facet_wrap(~fct_relevel(method, "no_scaling", "TMM", "upperquartile", "RLE")) +
   my_theme +
   labs(title = "Scaled counts by method (after scaling)")
 ```
@@ -545,27 +557,21 @@ airway = airway |>
 
 ## Step 3: Differential Expression Analysis
 
-This workflow uses 
-
-**edgeR quasi-likelihood** [@robinson2010edger; @chen2016edgeR]
-**edgeR robust likelihood ratio** [@chen2016edgeR], 
-**DESeq2** [@love2014deseq2], 
-**limma-voom** [@law2014voom], and 
-**limma-voom with sample weights** [@liu2015voomweights] for differential expression analysis.
 
 ### Basic Differential Expression
 
 **Methods:**
 
-- **edgeR quasi-likelihood:** Quasi-likelihood F-tests for differential expression
+- **edgeR quasi-likelihood:** Quasi-likelihood F-tests for differential expression [@robinson2010edger; @chen2016edgeR]
 
-- **edgeR robust likelihood ratio:** Robust likelihood ratio tests
+- **edgeR robust likelihood ratio:** Robust likelihood ratio tests [@chen2016edgeR]
 
-- **DESeq2:** Negative binomial distribution with dispersion estimation
+- **DESeq2:** Negative binomial distribution with dispersion estimation [@love2014deseq2]
 
-- **limma-voom:** Linear modeling with empirical Bayes moderation
+- **limma-voom:** Linear modeling with empirical Bayes moderation [@law2014voom]
 
-- **limma-voom with sample weights:** Enhanced voom with quality weights
+- **limma-voom with sample weights:** Enhanced voom with quality weights [@liu2015voomweights]
+
 **References:**
 
 - Robinson et al. (2010) edgeR: a Bioconductor package for differential expression analysis
@@ -578,7 +584,7 @@ This workflow uses
 
 - Liu et al. (2015) Why weight? Modelling sample and observational level variability improves power in RNA-seq analyses
 
-```{r differential-expression-multiple-methods}
+```{r differential-expression-multiple-methods, message = FALSE}
 # Standard differential expression analysis
 airway = airway |>
 
@@ -657,8 +663,7 @@ Thanks to the modularity of the `tidybulk` workflow, that can multiplex differen
 
 ```{r differential-expression-pvalue-histograms, fig.width = 10, fig.height = 10}
 	airway |>
-  rowData() |> 
-  as_tibble() |> 
+  pivot_transcript() |>
   select(
     ql__PValue, 
     lr_robust__PValue, 
@@ -680,22 +685,24 @@ Thanks to the modularity of the `tidybulk` workflow, that can multiplex differen
 
 ```{r differential-expression-summary-statistics}
 # Summary statistics
-airway |> rowData() |> as_tibble() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
-summarise(across(everything(), list(min = min, median = median, max = max), na.rm = TRUE))
+airway |> 
+  pivot_transcript() |> 
+  select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> 
+  select(contains("logFC")) |> 
+  summarise(across(everything(), list(min = min, median = median, max = max), na.rm = TRUE))
 
 ```
 
 
 ### Pairplot of pvalues across methods (GGpairs)
 
-```{r differential-expression-pvalue-pairplot, fig.width = 10, fig.height = 10, message = FALSE}
+```{r differential-expression-pvalue-pairplot, fig.width = 10, fig.height = 10, message = FALSE, warning=FALSE}
 
 library(GGally)
 airway |> 
-  rowData() |> 
-  as_tibble() |> 
+  pivot_transcript() |> 
   select(ql__PValue, lr_robust__PValue, voom__P.Value, voom_weights__P.Value, deseq2__pvalue) |> 
-  ggpairs(columns = 1:5) +
+  ggpairs(columns = 1:5, size = 0.5) +
   scale_x_continuous(trans = tidybulk::log10_reverse_trans()) +
   scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
   my_theme +
@@ -704,13 +711,12 @@ airway |>
 
 ### Pairplot of effect sizes across methods (GGpairs)
 
-```{r differential-expression-effectsize-pairplot, fig.width = 10, fig.height = 10, message = FALSE}
+```{r differential-expression-effectsize-pairplot, fig.width = 10, fig.height = 10, message = FALSE, warning=FALSE}
 library(GGally)
 airway |> 
-  rowData() |> 
-  as_tibble() |> 
+  pivot_transcript() |> 
   select(ql__logFC, lr_robust__logFC, voom__logFC, voom_weights__logFC, deseq2__log2FoldChange) |> 
-  ggpairs(columns = 1:5) +
+  ggpairs(columns = 1:5, size = 0.5) +
   my_theme +
   labs(title = "Pairplot of effect sizes across methods")
 ```
@@ -724,8 +730,7 @@ Visualising the significance and effect size of the differential expression resu
 airway |>
 
 	# Select the columns we want to plot
-    rowData() |> 
-    as_tibble(rownames = ".feature") |> 
+    pivot_transcript() |> 
     select(
 			.feature,
       ql__logFC, ql__PValue,
@@ -768,8 +773,7 @@ Plotting independent y-axis scales for the p-values and effect sizes allows us t
 airway |>
 
 	# Select the columns we want to plot
-    rowData() |> 
-    as_tibble(rownames = ".feature") |> 
+    pivot_transcript() |> 
     select(
 			symbol,
       ql__logFC, ql__PValue,
@@ -808,7 +812,9 @@ airway |>
 
 ### Differential Expression with Contrasts
 
-Contrast-based differential expression analysis using **edgeR** [@robinson2010edger; @chen2016edgeR] is a standard statistical approach for testing specific comparisons in complex designs.
+Contrast-based differential expression analysis, is available for most methods. It is a standard statistical approach for testing specific comparisons in complex designs.
+
+#### For edgeR
 
 ```{r differential-expression-contrasts}
 # Using contrasts for more complex comparisons
@@ -824,6 +830,37 @@ airway |>
   pivot_transcript() |>
   select(contains("contrasts"))
 ```
+
+#### For DESeq2
+
+```{r differential-expression-contrasts-DESeq2}
+# Using contrasts for more complex comparisons
+airway |>
+	test_differential_expression(
+		~ 0 + dex,                  
+		.contrasts = list(c("dex", "trt", "untrt")),
+		method = "DESeq2",
+		prefix = "contrasts__"
+  ) |>
+  pivot_transcript() |>
+  select(contains("contrasts"))
+```
+
+#### For limma-voom
+
+```{r differential-expression-contrasts-limma-voom}
+# Using contrasts for more complex comparisons
+airway |>
+	test_differential_expression(
+		~ 0 + dex,                  
+		.contrasts = c("dextrt - dexuntrt"),
+		method = "limma_voom",
+		prefix = "contrasts__"
+	) |>
+  pivot_transcript() |>
+  select(contains("contrasts"))
+```
+
 
 ### Differential Expression with minimum fold change (TREAT method)
 
@@ -885,7 +922,8 @@ airway |>
 
 	# Print the gene statistics
 	pivot_transcript() |> 
-	dplyr::select(.feature, description, contains("ql")) |> 
+  filter(description |> is.na() |> not()) |>
+	select(.feature, description, contains("ql")) |> 
 	head()
 
 ```
