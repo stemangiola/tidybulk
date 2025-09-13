@@ -208,6 +208,12 @@ setGeneric("aggregate_duplicates", function(.data,
         .x = .x[match(new_row_data[,quo_name(.transcript)], rownames(.x)),,drop=FALSE]
         rownames(.x) = rownames(new_row_data)
         
+        # Apply keep_integer logic
+        if(keep_integer && is.numeric(.x)) {
+          .x = round(.x)
+          storage.mode(.x) = "integer"
+        }
+        
         if(is_data_frame) .x = .x |> as.data.frame()
         .x
       }
