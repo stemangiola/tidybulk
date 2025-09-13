@@ -10,6 +10,7 @@
 aggregate_duplicates(
   .data,
   .transcript = NULL,
+  feature = NULL,
   .abundance = NULL,
   aggregation_function = sum,
   keep_integer = TRUE,
@@ -19,6 +20,7 @@ aggregate_duplicates(
 \S4method{aggregate_duplicates}{SummarizedExperiment}(
   .data,
   .transcript = NULL,
+  feature = NULL,
   .abundance = NULL,
   aggregation_function = sum,
   keep_integer = TRUE,
@@ -28,6 +30,7 @@ aggregate_duplicates(
 \S4method{aggregate_duplicates}{RangedSummarizedExperiment}(
   .data,
   .transcript = NULL,
+  feature = NULL,
   .abundance = NULL,
   aggregation_function = sum,
   keep_integer = TRUE,
@@ -37,7 +40,9 @@ aggregate_duplicates(
 \arguments{
 \item{.data}{A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))}
 
-\item{.transcript}{The name of the transcript/gene column}
+\item{.transcript}{DEPRECATED The name of the transcript/gene column (deprecated, use `feature` instead)}
+
+\item{feature}{The name of the feature column as a character string}
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
@@ -89,7 +94,7 @@ SummarizedExperiment::rowData(airway )$gene_name = rownames(airway )
 
    aggregate_duplicates(
      airway,
-   .transcript = gene_name
+   feature = "gene_name"
    )
 
 }
