@@ -147,53 +147,6 @@ airway = airway |>
     test_differential_expression(~ dex, method = "limma_voom_sample_weights", prefix = "voom_weights__") 
 ```
 
-    ## Warning: The `.abundance` argument of `test_differential_abundance()` is deprecated as
-    ## of tidybulk 2.0.0.
-    ## ℹ Please use the `abundance` argument instead.
-    ## ℹ The deprecated feature was likely used in the tidybulk package.
-    ##   Please report the issue at <https://github.com/stemangiola/tidybulk/issues>.
-    ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-    ## generated.
-
-    ## =====================================
-    ## tidybulk says: All testing methods use raw counts, irrespective of if scale_abundance
-    ## or adjust_abundance have been calculated. Therefore, it is essential to add covariates
-    ## such as batch effects (if applicable) in the formula.
-    ## =====================================
-    ## tidybulk says: The design column names are "(Intercept), dexuntrt"
-    ## 
-    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$edgeR_quasi_likelihood_object`
-    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$edgeR_quasi_likelihood_fit`
-    ## tidybulk says: The design column names are "(Intercept), dexuntrt"
-    ## 
-    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$edger_robust_likelihood_ratio_object`
-    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$edger_robust_likelihood_ratio_fit`
-    ## estimating size factors
-    ## 
-    ## estimating dispersions
-    ## 
-    ## gene-wise dispersion estimates
-    ## 
-    ## mean-dispersion relationship
-    ## 
-    ## final dispersion estimates
-    ## 
-    ## fitting model and testing
-    ## 
-    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$DESeq2_object`
-    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$DESeq2_fit`
-    ## tidybulk says: The design column names are "(Intercept), dexuntrt"
-    ## 
-    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$limma_voom_object`
-    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$limma_voom_fit`
-    ## tidybulk says: The design column names are "(Intercept), dexuntrt"
-    ## 
-    ## tidybulk says: to access the DE object do `metadata(.)$tidybulk$limma_voom_sample_weights_object`
-    ## tidybulk says: to access the raw results (fitted GLM) do `metadata(.)$tidybulk$limma_voom_sample_weights_fit`
-    ## This message is displayed once per session.
-
-
 
 ### Histograms of p-values across methods
 
@@ -274,34 +227,6 @@ airway |>
   my_theme +
   labs(title = "Pairplot of p-values across methods")
 ```
-
-    ## Warning in ggally_statistic(data = data, mapping = mapping, na.rm = na.rm, :
-    ## Removed 30 rows containing missing values
-
-    ## Warning in ggally_statistic(data = data, mapping = mapping, na.rm = na.rm, :
-    ## Removed 30 rows containing missing values
-    ## Warning in ggally_statistic(data = data, mapping = mapping, na.rm = na.rm, :
-    ## Removed 30 rows containing missing values
-    ## Warning in ggally_statistic(data = data, mapping = mapping, na.rm = na.rm, :
-    ## Removed 30 rows containing missing values
-
-    ## Warning in scale_y_continuous(trans = tidybulk::log10_reverse_trans()):
-    ## log10_reverse transformation introduced infinite values.
-
-    ## Warning: Removed 30 rows containing missing values or values outside the scale range
-    ## (`geom_point()`).
-    ## Removed 30 rows containing missing values or values outside the scale range
-    ## (`geom_point()`).
-    ## Removed 30 rows containing missing values or values outside the scale range
-    ## (`geom_point()`).
-    ## Removed 30 rows containing missing values or values outside the scale range
-    ## (`geom_point()`).
-
-    ## Warning: Removed 30 rows containing non-finite outside the scale range
-    ## (`stat_density()`).
-
-    ## Warning in scale_y_continuous(trans = tidybulk::log10_reverse_trans()):
-    ## log10_reverse transformation introduced infinite values.
 
 ![](README_files/figure-gfm/differential-expression-pvalue-pairplot-1.png)<!-- -->
 
