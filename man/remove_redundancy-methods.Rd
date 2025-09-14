@@ -111,7 +111,6 @@ select_closest_pairs = function(df) {
   }
   couples
 }
-}
 \examples{
 ## Load airway dataset for examples
 
