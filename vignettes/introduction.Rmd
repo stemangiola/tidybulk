@@ -1005,7 +1005,7 @@ airway_overrep =
 
 EGSEA [@alhamdoosh2017egsea] is used for ensemble gene set enrichment analysis. EGSEA is a method that combines multiple gene set enrichment analysis methods to provide a more robust and comprehensive analysis of gene set enrichment. It creates a web-based interactive tool that allows you to explore the results of the gene set enrichment analysis.
 
-```{r enrichment-egsea-analysis}
+```{r enrichment-egsea-analysis, eval=FALSE}
 library(EGSEA)
 # Test gene enrichment
   airway |> 

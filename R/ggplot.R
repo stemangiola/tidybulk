@@ -1,7 +1,23 @@
 
+#' Log10 reverse transformation for ggplot2
+#'
+#' Creates a transformation that applies -log10(x) to data, useful for
+#' visualizing p-values or other values where smaller values should be
+#' displayed larger.
+#'
+#' @return A transformation object that can be used with ggplot2's scale functions
+#'
+#' @examples
+#' \dontrun{
+#' library(ggplot2)
+#' # Example usage with p-values
+#' ggplot(data, aes(x = pvalue)) +
+#'   geom_histogram() +
+#'   scale_x_continuous(trans = log10_reverse_trans())
+#' }
+#'
 #' @importFrom scales trans_new
 #' @importFrom scales label_scientific
-#' @noRd
 #' @export
 log10_reverse_trans <- function() {
   trans <- function(x) -log10(x)

@@ -17,6 +17,6 @@ if(getRversion() >= "2.15.1") {
     "ncbi_gene", "fit", "FDR", "constrast", "adj.P.Val", "group_id", 
     "parameter", "CI", "lower", "upper", "term", "sample a", "sample b",
     "abundance", "element", "feature", "rc", "correlation",
-    "buildCustomIdx", "buildIdx", "egsea", "normalize.quantiles"
+    "buildCustomIdx", "buildIdx", "egsea", "normalize.quantiles", "deconvolute", "data_base"
   ))
 } 

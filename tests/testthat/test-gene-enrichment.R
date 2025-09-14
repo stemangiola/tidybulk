@@ -7,21 +7,30 @@ airway_mini <- airway[1:100, 1:5]
 library(dplyr)
 library(SummarizedExperiment)
 library(tidySummarizedExperiment)
+library(tidybulk)
 library(EGSEA)
 
 # Add entrez and symbol mapping for gene enrichment tests
 if(requireNamespace("org.Hs.eg.db", quietly = TRUE)) {
-  airway_mini <- airway_mini |>
-    mutate(symbol = mapIds(org.Hs.eg.db::org.Hs.eg.db,
-                          keys = .feature,
+  # Get gene names from rownames
+  gene_names <- rownames(airway_mini)
+  
+  # Map gene symbols and entrez IDs
+  symbol_mapping <- mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                          keys = gene_names,
                           keytype = "ENSEMBL",
                           column = "SYMBOL",
-                          multiVals = "first")) |>
-    mutate(entrez = mapIds(org.Hs.eg.db::org.Hs.eg.db,
-                          keys = .feature,
+                          multiVals = "first")
+  
+  entrez_mapping <- mapIds(org.Hs.eg.db::org.Hs.eg.db,
+                          keys = gene_names,
                           keytype = "ENSEMBL",
                           column = "ENTREZID",
-                          multiVals = "first"))
+                          multiVals = "first")
+  
+  # Add mappings to rowData
+  SummarizedExperiment::rowData(airway_mini)$symbol <- symbol_mapping
+  SummarizedExperiment::rowData(airway_mini)$entrez <- entrez_mapping
 }
 
 # Test test_gene_enrichment function

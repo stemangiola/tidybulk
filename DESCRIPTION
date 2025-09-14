@@ -1,7 +1,7 @@
 Type: Package
 Package: tidybulk
 Title: Brings transcriptomics to the tidyverse 
-Version: 1.99.2
+Version: 1.99.3
 Authors@R: c(person("Stefano", "Mangiola", email = "mangiolastefano@gmail.com",
                   role = c("aut", "cre")),
             person("Maria", "Doyle", email = "Maria.Doyle@petermac.org",
@@ -28,6 +28,7 @@ Imports:
     utils,
     lifecycle,
     scales,
+    ggplot2,
     SummarizedExperiment,
     GenomicRanges,
     methods,
@@ -54,7 +55,6 @@ Suggests:
     Seurat,
     KernSmooth,
     Rtsne,
-    ggplot2,
     widyr,
     clusterProfiler,
     msigdbr,
@@ -95,7 +95,7 @@ RdMacros:
 Biarch: true
 biocViews: AssayDomain, Infrastructure, RNASeq, DifferentialExpression, GeneExpression, Normalization, Clustering, QualityControl, Sequencing, Transcription, Transcriptomics
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 RoxygenNote: 7.3.2
 LazyDataCompression: xz
 URL: https://github.com/stemangiola/tidybulk
