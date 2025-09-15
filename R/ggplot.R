@@ -122,6 +122,79 @@ scale_y_log10_reverse <- function(breaks = 5, digits = 2, ...) {
   )
 }
 
+#' scale_x_log10_reverse
+#'
+#' `r lifecycle::badge("maturing")`
+#'
+#' @description A wrapper function that provides evenly spaced ticks with scientific notation for log10 reverse transformed x-axis. This is particularly useful for plots showing p-values or other values where smaller values should be displayed larger. The function applies a log10 transformation and reverses the axis to better visualize p-values without hard transforming the data, while maintaining the original p-value scale for interpretation. This allows you to see the full range of p-values with proper scaling while keeping the original values readable.
+#'
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom scales label_scientific
+#'
+#' @param breaks Number of breaks to display (default: 5)
+#' @param digits Number of digits for scientific notation (default: 2)
+#' @param ... Additional arguments passed to scale_x_continuous
+#'
+#' @return A ggplot2 scale object
+#'
+#' @examples
+#'
+#' library(ggplot2)
+#' library(tibble)
+#'
+#' # Create test data
+#' test_data <- tibble(
+#'   pvalue = c(0.0001, 0.001, 0.01, 0.05, 0.1, 0.5),
+#'   fold_change = 1:6
+#' )
+#'
+#' # Use the wrapper function
+#' test_data |>
+#'   ggplot(aes(pvalue, fold_change)) +
+#'   geom_point() +
+#'   scale_x_log10_reverse()
+#'
+#' @references
+#' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
+#'
+#' Wickham, H. (2016). ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York. https://ggplot2.tidyverse.org
+#'
+#' @export
+scale_x_log10_reverse <- function(breaks = 5, digits = 2, ...) {
+  
+  # Function to create evenly spaced breaks for log10_reverse transformation
+  create_even_breaks <- function(pvalues, n = breaks) {
+    # Remove zeros and get finite values
+    pvalues <- pvalues[pvalues > 0 & is.finite(pvalues)]
+    
+    if (length(pvalues) == 0) return(numeric(0))
+    
+    # Transform to log10 space
+    trans_values <- -log10(pvalues)
+    
+    # Create evenly spaced breaks in transformed space
+    min_trans <- min(trans_values)
+    max_trans <- max(trans_values)
+    even_breaks <- seq(min_trans, max_trans, length.out = n)
+    
+    # Convert back to original space
+    10^(-even_breaks)
+  }
+  
+  # Create a custom breaks function that will be called by ggplot2
+  breaks_func <- function(x) {
+    create_even_breaks(x, n = breaks)
+  }
+  
+  # Return the scale with custom breaks and scientific notation
+  scale_x_continuous(
+    trans = "log10_reverse",
+    breaks = breaks_func,
+    labels = label_scientific(digits = digits),
+    ...
+  )
+}
+
 #' logit scale
 #'
 #' `r lifecycle::badge("maturing")`
