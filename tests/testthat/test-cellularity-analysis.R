@@ -6,6 +6,7 @@ airway_mini <- airway[1:100, 1:5]
 
 library(dplyr)
 library(SummarizedExperiment)
+library(tidybulk)
 
 # Test deconvolve_cellularity function
 

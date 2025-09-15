@@ -42,7 +42,7 @@ deconvolve_cellularity(
 
 \item{.abundance}{The name of the transcript/gene abundance column}
 
-\item{reference}{A data frame. The methods cibersort and llsr can accept a custom rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. For exampler tidybulk::X_cibersort. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.}
+\item{reference}{A data frame. The methods cibersort and llsr can accept a custom rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. If NULL, the default reference for each algorithm will be used. For cibersort and llsr, the default is obtained via `get_X_cibersort()`. For llsr will be LM22.}
 
 \item{method}{A character string. The method to be used. Available methods: "cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell". If a vector is provided, an error will be thrown. Default is all available methods.}
 
@@ -104,6 +104,10 @@ deconvolve_cellularity(feature_column = 'gene_symbol', cores = 1)
 # se_with_features <- airway
 # rowData(se_with_features)$gene_symbol <- rownames(se_with_features)
 # se_with_features |> deconvolve_cellularity(feature_column = 'gene_symbol', cores = 1)
+
+# Using a custom reference matrix
+# custom_ref <- get_X_cibersort()  # Get the default Cibersort reference
+# se_with_features |> deconvolve_cellularity(reference = custom_ref, feature_column = 'gene_symbol', cores = 1)
 
 }
 \references{

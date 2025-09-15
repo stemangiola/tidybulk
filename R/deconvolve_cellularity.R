@@ -1,3 +1,26 @@
+#' Get Cibersort reference data
+#'
+#' @description This function loads and returns the X_cibersort reference matrix used for 
+#' cell type deconvolution with the Cibersort and LLSR methods. The reference matrix 
+#' contains gene expression signatures for 22 immune cell types.
+#'
+#' @return The X_cibersort reference matrix with genes as rows and cell types as columns
+#' @export
+#'
+#' @examples
+#' # Get the default Cibersort reference matrix
+#' ref_matrix <- get_X_cibersort()
+#' 
+#' # Use with deconvolve_cellularity
+#' # se |> deconvolve_cellularity(reference = get_X_cibersort(), method = "cibersort")
+#'
+#' @references Newman, A. M., Liu, C. L., Green, M. R., Gentles, A. J., Feng, W., Xu, Y., Hoang, C. D., Diehn, M., & Alizadeh, A. A. (2015). Robust enumeration of cell subsets from tissue expression profiles. Nature Methods, 12(5), 453-457. doi:10.1038/nmeth.3337
+get_X_cibersort <- function() {
+  # Load the data object
+  data(X_cibersort, envir = environment())
+  return(X_cibersort)
+}
+
 #' Get cell type proportions from samples
 #'
 #' `r lifecycle::badge("maturing")`
@@ -15,7 +38,7 @@
 #'
 #' @param .data A `tbl` (with at least three columns for sample, feature and transcript abundance) or `SummarizedExperiment` (more convenient if abstracted to tibble with library(tidySummarizedExperiment))
 #' @param .abundance The name of the transcript/gene abundance column
-#' @param reference A data frame. The methods cibersort and llsr can accept a custom rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. For exampler tidybulk::X_cibersort. The transcript/cell_type data frame of integer transcript abundance. If NULL, the default reference for each algorithm will be used. For llsr will be LM22.
+#' @param reference A data frame. The methods cibersort and llsr can accept a custom rectangular dataframe with genes as rows names, cell types as column names and gene-transcript abundance as values. If NULL, the default reference for each algorithm will be used. For cibersort and llsr, the default is obtained via `get_X_cibersort()`. For llsr will be LM22.
 #' @param method A character string. The method to be used. Available methods: "cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell". If a vector is provided, an error will be thrown. Default is all available methods.
 #' @param prefix A character string. The prefix you would like to add to the result columns. It is useful if you want to reshape data.
 #' @param feature_column A character string. The name of a column in rowData to use as feature names instead of rownames. If NULL (default), rownames are used.
@@ -65,6 +88,10 @@
 #' # se_with_features <- airway
 #' # rowData(se_with_features)$gene_symbol <- rownames(se_with_features)
 #' # se_with_features |> deconvolve_cellularity(feature_column = 'gene_symbol', cores = 1)
+#'
+#' # Using a custom reference matrix
+#' # custom_ref <- get_X_cibersort()  # Get the default Cibersort reference
+#' # se_with_features |> deconvolve_cellularity(reference = custom_ref, feature_column = 'gene_symbol', cores = 1)
 #'
 #' @references
 #' Mangiola, S., Molania, R., Dong, R., Doyle, M. A., & Papenfuss, A. T. (2021). tidybulk: an R tidy framework for modular transcriptomic data analysis. Genome Biology, 22(1), 42. doi:10.1186/s13059-020-02233-7
@@ -118,7 +145,6 @@ setGeneric("deconvolve_cellularity", function(.data,
 #'
 #' @family deconvolution helpers
 #'
-
 #' @importFrom purrr map
 #' @importFrom rlang quo_is_symbolic quo_name
 #' @importFrom tibble as_tibble
@@ -128,7 +154,7 @@ setGeneric("deconvolve_cellularity", function(.data,
 #' @keywords internal
 #' @noRd
 .deconvolve_cellularity_se = function(.data,
-                                      reference = X_cibersort,
+                                      reference = NULL,
                                       method = c("cibersort", "llsr", "epic", "mcp_counter", "quantiseq", "xcell"),
                                       prefix = "",
                                       feature_column = NULL,
@@ -186,8 +212,8 @@ setGeneric("deconvolve_cellularity", function(.data,
       # Check if package is installed, otherwise install
       check_and_install_packages(c("class", "e1071", "preprocessCore"))
       
-      # Choose reference
-      reference = if (is.null(reference)) X_cibersort else reference
+      # Use provided reference or default to get_X_cibersort()
+      reference = if (is.null(reference)) get_X_cibersort() else reference
       
       # Validate reference
       validate_signature_SE(my_assay, reference)
@@ -198,8 +224,8 @@ setGeneric("deconvolve_cellularity", function(.data,
         select(-`P-value`,-Correlation,-RMSE)
     } else if (method |> tolower() |> equals("llsr")) {
       
-      # Choose reference
-      reference = if (is.null(reference)) X_cibersort else reference
+      # Use provided reference or default to get_X_cibersort()
+      reference = if (is.null(reference)) get_X_cibersort() else reference
       
       # Validate reference
       validate_signature_SE(my_assay, reference)
