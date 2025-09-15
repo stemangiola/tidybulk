@@ -80,6 +80,7 @@ rotation = function(m, d) {
     c(`1` = sin(r), `2` = cos(r))
   ) |> as_matrix()) %*% m)
 }
+}
 \examples{
 ## Load airway dataset for examples
 

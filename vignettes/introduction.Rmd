@@ -671,8 +671,8 @@ airway |>
   pivot_transcript() |> 
   select(ql__PValue, lr_robust__PValue, voom__P.Value, voom_weights__P.Value, deseq2__pvalue) |> 
   ggpairs(columns = 1:5, size = 0.5) +
-  scale_x_continuous(trans = tidybulk::log10_reverse_trans()) +
-  scale_y_continuous(trans = tidybulk::log10_reverse_trans()) +
+  scale_y_log10_reverse() +
+  scale_x_log10_reverse() +
   my_theme +
   labs(title = "Pairplot of p-values across methods")
 ```
