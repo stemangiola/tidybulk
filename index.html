@@ -380,9 +380,8 @@
 <p>Inspection of the raw p-value histogram provides a rapid check of differential-expression results. When no gene is truly differentially expressed, the p-values follow a uniform U(0,1) distribution across the interval 0–1, so the histogram appears flat <a href="https://bioconductor.org/help/course-materials/2014/useR2014/Workflows.html" class="external-link">Source</a>. In a more realistic scenario where only a subset of genes changes, this uniform background is still present but an obvious spike emerges close to zero, created by the genuine signals.</p>
 <p>Thanks to the modularity of the <code>tidybulk</code> workflow, that can multiplex different methods, we can easily compare the p-values across methods.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>    <span class="va">airway</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">as_tibble</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<code class="sourceCode R"><span><span class="va">airway</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/pivot_transcript-methods.html">pivot_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">select</span><span class="op">(</span></span>
 <span>    <span class="va">ql__PValue</span>, </span>
 <span>    <span class="va">lr_robust__PValue</span>, </span>
@@ -405,7 +404,7 @@
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Summary statistics</span></span>
-<span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">as_tibble</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"ql|lr_robust|voom|voom_weights|deseq2"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"logFC"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="reference/pivot_transcript-methods.html">pivot_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"ql|lr_robust|voom|voom_weights|deseq2"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"logFC"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span><span class="fu">summarise</span><span class="op">(</span><span class="fu">across</span><span class="op">(</span><span class="fu">everything</span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">min</span>, median <span class="op">=</span> <span class="va">median</span>, max <span class="op">=</span> <span class="va">max</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="do">## Warning: There was 1 warning in `summarise()`.</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="do">## ℹ In argument: `across(...)`.</span></span>
@@ -429,8 +428,7 @@
 <div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="do">## Warning: package 'GGally' was built under R version 4.5.1</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">as_tibble</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/pivot_transcript-methods.html">pivot_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">ql__PValue</span>, <span class="va">lr_robust__PValue</span>, <span class="va">voom__P.Value</span>, <span class="va">voom_weights__P.Value</span>, <span class="va">deseq2__pvalue</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html" class="external-link">ggpairs</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>trans <span class="op">=</span> <span class="fu">tidybulk</span><span class="fu">::</span><span class="fu"><a href="reference/log10_reverse_trans.html">log10_reverse_trans</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -445,8 +443,7 @@
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggobi.github.io/ggally/" class="external-link">GGally</a></span><span class="op">)</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">as_tibble</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/pivot_transcript-methods.html">pivot_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">ql__logFC</span>, <span class="va">lr_robust__logFC</span>, <span class="va">voom__logFC</span>, <span class="va">voom_weights__logFC</span>, <span class="va">deseq2__log2FoldChange</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html" class="external-link">ggpairs</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="va">my_theme</span> <span class="op">+</span></span>
@@ -456,11 +453,11 @@
 <div class="section level3">
 <h3 id="quality-control">Quality Control<a class="anchor" aria-label="anchor" href="#quality-control"></a>
 </h3>
-<p>It is important to check the quality of the fit. All methods produce a fit object that can be used for quality control. The fit object produced by each underlying method are stored in as attributes of the <code>airway_mini</code> object. We can use them for example to perform quality control of the fit.</p>
+<p>It is important to check the quality of the fit. All methods produce a fit object that can be used for quality control. The fit object produced by each underlying method is stored as an attribute of the <code>airway_mini</code> object. We can use them, for example, to perform quality control of the fit.</p>
 <div class="section level4">
 <h4 id="for-edger">For edgeR<a class="anchor" aria-label="anchor" href="#for-edger"></a>
 </h4>
-<p>Plot the biological coefficient of variation (BCV) trend. This plot is helpful to understant the dispersion of the data.</p>
+<p>Plot the biological coefficient of variation (BCV) trend. This plot is helpful in understanding the dispersion of the data.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioinf.wehi.edu.au/edgeR/" class="external-link">edgeR</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -485,7 +482,7 @@
 <span><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Annotated-class.html" class="external-link">metadata</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span><span class="op">$</span><span class="va">tidybulk</span><span class="op">$</span><span class="va">DESeq2_object</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/dge.html" class="external-link">plotDispEsts</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="README_files/figure-gfm/differential-expression-DESeq2-object-1.png"><!-- --></p>
-<p>Plot the log-fold change vs mean plot.</p>
+<p>Plot the log-fold change vs the mean plot.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thelovelab/DESeq2" class="external-link">DESeq2</a></span><span class="op">)</span></span>
 <span></span>
@@ -497,14 +494,13 @@
 <div class="section level3">
 <h3 id="volcano-plots-for-each-method">Volcano Plots for Each Method<a class="anchor" aria-label="anchor" href="#volcano-plots-for-each-method"></a>
 </h3>
-<p>Visualising the significance and effect size of the differential expression results as a volcano plots we appreciate that some methods have much lower p-values distributions than other methods, for the same model and data.</p>
+<p>Visualising the significance and effect size of the differential expression results as a volcano plot, we appreciate that some methods have much lower p-value distributions than other methods, for the same model and data.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create volcano plots</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span></span>
 <span></span>
 <span>    <span class="co"># Select the columns we want to plot</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu">as_tibble</span><span class="op">(</span>rownames <span class="op">=</span> <span class="st">".feature"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="reference/pivot_transcript-methods.html">pivot_transcript</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu">select</span><span class="op">(</span></span>
 <span>            <span class="va">.feature</span>,</span>
 <span>      <span class="va">ql__logFC</span>, <span class="va">ql__PValue</span>,</span>
