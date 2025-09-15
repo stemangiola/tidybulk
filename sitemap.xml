@@ -17,6 +17,7 @@
 <url><loc>/reference/describe_transcript-methods.html</loc></url>
 <url><loc>/reference/dot-rotate_dimensions_se.html</loc></url>
 <url><loc>/reference/fill_missing_abundance-methods.html</loc></url>
+<url><loc>/reference/get_X_cibersort.html</loc></url>
 <url><loc>/reference/get_bibliography-methods.html</loc></url>
 <url><loc>/reference/identify_abundant-methods.html</loc></url>
 <url><loc>/reference/impute_missing_abundance-methods.html</loc></url>
@@ -36,6 +37,8 @@
 <url><loc>/reference/resolve_complete_confounders_of_non_interest.html</loc></url>
 <url><loc>/reference/rotate_dimensions-methods.html</loc></url>
 <url><loc>/reference/scale_abundance-methods.html</loc></url>
+<url><loc>/reference/scale_x_log10_reverse.html</loc></url>
+<url><loc>/reference/scale_y_log10_reverse.html</loc></url>
 <url><loc>/reference/test_differential_abundance-methods.html</loc></url>
 <url><loc>/reference/test_differential_expression-methods.html</loc></url>
 <url><loc>/reference/test_gene_enrichment-methods.html</loc></url>
