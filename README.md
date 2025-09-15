@@ -163,9 +163,8 @@ Thanks to the modularity of the `tidybulk` workflow, that can multiplex
 different methods, we can easily compare the p-values across methods.
 
 ``` r
-    airway |>
-  rowData() |> 
-  as_tibble() |> 
+airway |>
+  pivot_transcript() |> 
   select(
     ql__PValue, 
     lr_robust__PValue, 
@@ -190,7 +189,7 @@ different methods, we can easily compare the p-values across methods.
 
 ``` r
 # Summary statistics
-airway |> rowData() |> as_tibble() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
+airway |> pivot_transcript() |> select(contains("ql|lr_robust|voom|voom_weights|deseq2")) |> select(contains("logFC")) |> 
 summarise(across(everything(), list(min = min, median = median, max = max), na.rm = TRUE))
 ```
 
@@ -218,8 +217,7 @@ library(GGally)
 
 ``` r
 airway |> 
-  rowData() |> 
-  as_tibble() |> 
+  pivot_transcript() |> 
   select(ql__PValue, lr_robust__PValue, voom__P.Value, voom_weights__P.Value, deseq2__pvalue) |> 
   ggpairs(columns = 1:5) +
   scale_x_continuous(trans = tidybulk::log10_reverse_trans()) +
@@ -235,8 +233,7 @@ airway |>
 ``` r
 library(GGally)
 airway |> 
-  rowData() |> 
-  as_tibble() |> 
+  pivot_transcript() |> 
   select(ql__logFC, lr_robust__logFC, voom__logFC, voom_weights__logFC, deseq2__log2FoldChange) |> 
   ggpairs(columns = 1:5) +
   my_theme +
@@ -250,14 +247,14 @@ airway |>
 
 It is important to check the quality of the fit. All methods produce a
 fit object that can be used for quality control. The fit object produced
-by each underlying method are stored in as attributes of the
-`airway_mini` object. We can use them for example to perform quality
+by each underlying method is stored as an attribute of the
+`airway_mini` object. We can use them, for example, to perform quality
 control of the fit.
 
 #### For edgeR
 
 Plot the biological coefficient of variation (BCV) trend. This plot is
-helpful to understant the dispersion of the data.
+helpful in understanding the dispersion of the data.
 
 ``` r
 library(edgeR)
@@ -294,7 +291,7 @@ metadata(airway)$tidybulk$DESeq2_object |>
 
 ![](README_files/figure-gfm/differential-expression-DESeq2-object-1.png)<!-- -->
 
-Plot the log-fold change vs mean plot.
+Plot the log-fold change vs the mean plot.
 
 ``` r
 library(DESeq2)
@@ -309,8 +306,8 @@ metadata(airway)$tidybulk$DESeq2_object |>
 ### Volcano Plots for Each Method
 
 Visualising the significance and effect size of the differential
-expression results as a volcano plots we appreciate that some methods
-have much lower p-values distributions than other methods, for the same
+expression results as a volcano plot, we appreciate that some methods
+have much lower p-value distributions than other methods, for the same
 model and data.
 
 ``` r
@@ -318,8 +315,7 @@ model and data.
 airway |>
 
     # Select the columns we want to plot
-    rowData() |> 
-    as_tibble(rownames = ".feature") |> 
+    pivot_transcript() |> 
     select(
             .feature,
       ql__logFC, ql__PValue,
