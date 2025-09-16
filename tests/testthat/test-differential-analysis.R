@@ -16,9 +16,23 @@ test_that("test_differential_abundance with edgeR works correctly", {
       method = "edgeR_quasi_likelihood"
     )
   
+  # Check that required columns exist
   expect_true("logFC" %in% names(SummarizedExperiment::rowData(res)))
   expect_true("PValue" %in% names(SummarizedExperiment::rowData(res)))
   expect_true("FDR" %in% names(SummarizedExperiment::rowData(res)))
+  
+  # Check that logFC values are reasonable (not all NA or infinite)
+  logfc_values <- SummarizedExperiment::rowData(res)$logFC
+  expect_true(any(!is.na(logfc_values)))
+  expect_true(any(!is.infinite(logfc_values)))
+  
+  # Check that P-values are in valid range
+  p_values <- SummarizedExperiment::rowData(res)$PValue
+  expect_true(all(p_values >= 0 & p_values <= 1, na.rm = TRUE))
+  
+  # Check that FDR values are in valid range
+  fdr_values <- SummarizedExperiment::rowData(res)$FDR
+  expect_true(all(fdr_values >= 0 & fdr_values <= 1, na.rm = TRUE))
 })
 
 test_that("test_differential_abundance with DESeq2 works correctly", {
@@ -34,9 +48,23 @@ test_that("test_differential_abundance with limma works correctly", {
       method = "limma_voom"
     )
   
+  # Check that required columns exist
   expect_true("logFC" %in% names(SummarizedExperiment::rowData(res)))
   expect_true("P.Value" %in% names(SummarizedExperiment::rowData(res)))
   expect_true("adj.P.Val" %in% names(SummarizedExperiment::rowData(res)))
+  
+  # Check that logFC values are reasonable (not all NA or infinite)
+  logfc_values <- SummarizedExperiment::rowData(res)$logFC
+  expect_true(any(!is.na(logfc_values)))
+  expect_true(any(!is.infinite(logfc_values)))
+  
+  # Check that P-values are in valid range
+  p_values <- SummarizedExperiment::rowData(res)$P.Value
+  expect_true(all(p_values >= 0 & p_values <= 1, na.rm = TRUE))
+  
+  # Check that adjusted P-values are in valid range
+  adj_p_values <- SummarizedExperiment::rowData(res)$adj.P.Val
+  expect_true(all(adj_p_values >= 0 & adj_p_values <= 1, na.rm = TRUE))
 })
 
 # Test colData preservation and usage
