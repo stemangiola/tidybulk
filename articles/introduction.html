@@ -82,7 +82,7 @@ transcriptomic data analysis</h1>
                         <h4 data-toc-skip class="author">Stefano
 Mangiola</h4>
             
-            <h4 data-toc-skip class="date">2025-09-16</h4>
+            <h4 data-toc-skip class="date">2025-10-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stemangiola/tidybulk/blob/master/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -512,9 +512,8 @@ gene-level summarization.</p>
 <div class="section level4">
 <h4 id="abundance-filtering">Abundance Filtering<a class="anchor" aria-label="anchor" href="#abundance-filtering"></a>
 </h4>
-<p>Abundance filtering can be performed using established methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCarthy,
-and Smyth 2010</a>; <a href="#ref-chen2016edgeR">Chen, Lun, and Smyth
-2016</a>)</span>.</p>
+<p>Abundance filtering can be performed using established methods <span class="citation">(<a href="#ref-robinson2010edger">Robinson et al.
+2010</a>; <a href="#ref-chen2016edgeR">Chen et al. 2016</a>)</span>.</p>
 <div class="section level5">
 <h5 id="run-multiple-methods">Run multiple methods<a class="anchor" aria-label="anchor" href="#run-multiple-methods"></a>
 </h5>
@@ -697,9 +696,8 @@ correlated features.</p>
 <h4 id="filter-variable-transcripts">Filter Variable Transcripts<a class="anchor" aria-label="anchor" href="#filter-variable-transcripts"></a>
 </h4>
 <p>Keep only the most variable transcripts for downstream analysis.</p>
-<p>Variance-based feature selection using edgeR methodology <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCarthy,
-and Smyth 2010</a>)</span> is used for selecting informative
-features.</p>
+<p>Variance-based feature selection using edgeR methodology <span class="citation">(<a href="#ref-robinson2010edger">Robinson et al.
+2010</a>)</span> is used for selecting informative features.</p>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway_variable</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/keep_variable-methods.html">keep_variable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Getting the 500 most variable genes</span></span></code></pre>
@@ -763,9 +761,10 @@ features.</p>
 <div class="section level4">
 <h4 id="scale-abundance">Scale Abundance<a class="anchor" aria-label="anchor" href="#scale-abundance"></a>
 </h4>
-<p>Scale for sequencing depth using TMM <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCarthy, and Smyth
-2010</a>)</span>, upper quartile <span class="citation">(<a href="#ref-bullard2010uq">Bullard et al. 2010</a>)</span>, and RLE <span class="citation">(<a href="#ref-anders2010rle">Anders and Huber
-2010</a>)</span> normalization.</p>
+<p>Scale for sequencing depth using TMM <span class="citation">(<a href="#ref-robinson2010edger">Robinson et al. 2010</a>)</span>, upper
+quartile <span class="citation">(<a href="#ref-bullard2010uq">Bullard et
+al. 2010</a>)</span>, and RLE <span class="citation">(<a href="#ref-anders2010rle">Anders and Huber 2010</a>)</span>
+normalization.</p>
 <div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">airway</span> <span class="op">=</span> </span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span> </span>
@@ -904,13 +903,12 @@ unsupervised grouping.</p>
 <p><strong>Methods:</strong></p>
 <ul>
 <li><p><strong>edgeR quasi-likelihood:</strong> Quasi-likelihood F-tests
-for differential expression <span class="citation">(<a href="#ref-robinson2010edger">Robinson, McCarthy, and Smyth 2010</a>; <a href="#ref-chen2016edgeR">Chen, Lun, and Smyth 2016</a>)</span></p></li>
+for differential expression <span class="citation">(<a href="#ref-robinson2010edger">Robinson et al. 2010</a>; <a href="#ref-chen2016edgeR">Chen et al. 2016</a>)</span></p></li>
 <li><p><strong>edgeR robust likelihood ratio:</strong> Robust likelihood
-ratio tests <span class="citation">(<a href="#ref-chen2016edgeR">Chen,
-Lun, and Smyth 2016</a>)</span></p></li>
+ratio tests <span class="citation">(<a href="#ref-chen2016edgeR">Chen et
+al. 2016</a>)</span></p></li>
 <li><p><strong>DESeq2:</strong> Negative binomial distribution with
-dispersion estimation <span class="citation">(<a href="#ref-love2014deseq2">Love, Huber, and Anders
-2014</a>)</span></p></li>
+dispersion estimation <span class="citation">(<a href="#ref-love2014deseq2">Love et al. 2014</a>)</span></p></li>
 <li><p><strong>limma-voom:</strong> Linear modeling with empirical Bayes
 moderation <span class="citation">(<a href="#ref-law2014voom">Law et al.
 2014</a>)</span></p></li>
@@ -1371,9 +1369,8 @@ used for testing significance relative to a fold-change threshold.</p>
 <div class="section level4">
 <h4 id="mixed-models-for-complex-designs">Mixed Models for Complex Designs<a class="anchor" aria-label="anchor" href="#mixed-models-for-complex-designs"></a>
 </h4>
-<p>glmmSeq <span class="citation">(<a href="#ref-ma2020glmmseq">Ma et
-al. 2020</a>)</span> is used for generalized linear mixed models for
-RNA-seq data.</p>
+<p>glmmSeq <span class="citation">(<a href="#ref-ma2020glmmseq"><span class="nocase">Ma et al.</span> 2020</a>)</span> is used for generalized
+linear mixed models for RNA-seq data.</p>
 <div class="sourceCode" id="cb136"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using glmmSeq for mixed models</span></span>
 <span><span class="va">airway</span> <span class="op">|&gt;</span></span>
@@ -1391,7 +1388,7 @@ RNA-seq data.</p>
 <span>  <span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## n = 8 samples, 4 individuals</span></span></code></pre>
-<pre><code><span><span class="co">## Time difference of 1.237547 mins</span></span></code></pre>
+<pre><code><span><span class="co">## Time difference of 1.271983 mins</span></span></code></pre>
 <pre><code><span><span class="co">## tidybulk says: to access the DE object do</span></span>
 <span><span class="co">## `metadata(.)$tidybulk$glmmseq_lme4_object`</span></span></code></pre>
 <pre><code><span><span class="co">## tidybulk says: to access the raw results (fitted GLM) do</span></span>
@@ -1478,9 +1475,8 @@ expression results.</p>
 <div class="section level3">
 <h3 id="step-4-batch-effect-correction">Step 4: Batch Effect Correction<a class="anchor" aria-label="anchor" href="#step-4-batch-effect-correction"></a>
 </h3>
-<p>ComBat-seq <span class="citation">(<a href="#ref-zhang2017combatseq">Zhang, Parmigiani, and Johnson
-2020</a>)</span> is used for batch effect correction in RNA-seq
-data.</p>
+<p>ComBat-seq <span class="citation">(<a href="#ref-zhang2017combatseq">Zhang et al. 2020</a>)</span> is used for
+batch effect correction in RNA-seq data.</p>
 <div class="sourceCode" id="cb148"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Adjust for batch effects</span></span>
 <span><span class="va">airway</span> <span class="op">=</span> <span class="va">airway</span> <span class="op">|&gt;</span></span>
@@ -1520,8 +1516,8 @@ data.</p>
 <div class="section level3">
 <h3 id="step-5-gene-enrichment-analysis">Step 5: Gene Enrichment Analysis<a class="anchor" aria-label="anchor" href="#step-5-gene-enrichment-analysis"></a>
 </h3>
-<p>Gene Set Enrichment Analysis (GSEA) <span class="citation">(<a href="#ref-subramanian2005gsea">Subramanian et al. 2005</a>)</span> is
-used for gene set enrichment.</p>
+<p>Gene Set Enrichment Analysis (GSEA) <span class="citation">(<a href="#ref-subramanian2005gsea"><span class="nocase">Subramanian et
+al.</span> 2005</a>)</span> is used for gene set enrichment.</p>
 <div class="sourceCode" id="cb153"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run gene rank enrichment (GSEA style)</span></span>
 <span><span class="va">gene_rank_res</span> <span class="op">=</span></span>
@@ -1641,8 +1637,8 @@ used for gene set enrichment.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/detach.html" class="external-link">detach</a></span><span class="op">(</span><span class="st">"package:enrichplot"</span>, unload <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: 'enrichplot' namespace cannot be unloaded:</span></span>
 <span><span class="co">##   namespace 'enrichplot' is imported by 'clusterProfiler' so cannot be unloaded</span></span></code></pre>
-<p>Gene Ontology overrepresentation analysis <span class="citation">(<a href="#ref-ashburner2000go">Ashburner et al. 2000</a>)</span> is used
-for functional enrichment.</p>
+<p>Gene Ontology overrepresentation analysis <span class="citation">(<a href="#ref-ashburner2000go"><span class="nocase">Ashburner et al.</span>
+2000</a>)</span> is used for functional enrichment.</p>
 <div class="sourceCode" id="cb187"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Test gene overrepresentation</span></span>
 <span><span class="va">airway_overrep</span> <span class="op">=</span> </span>
@@ -1984,7 +1980,7 @@ methods used in our workflow.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.5.1 (2025-06-13)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">## Running under: Ubuntu 24.04.2 LTS</span></span>
+<span><span class="co">## Running under: Ubuntu 24.04.3 LTS</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
@@ -2007,28 +2003,28 @@ methods used in our workflow.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
 <span><span class="co">##  [1] patchwork_1.3.2                 GGally_2.4.0                   </span></span>
-<span><span class="co">##  [3] DESeq2_1.49.4                   edgeR_4.7.4                    </span></span>
-<span><span class="co">##  [5] limma_3.65.4                    tidySummarizedExperiment_1.19.0</span></span>
+<span><span class="co">##  [3] DESeq2_1.49.4                   edgeR_4.7.5                    </span></span>
+<span><span class="co">##  [5] limma_3.65.5                    tidySummarizedExperiment_1.19.0</span></span>
 <span><span class="co">##  [7] airway_1.29.0                   tidybulk_1.99.4                </span></span>
-<span><span class="co">##  [9] ttservice_0.5.3                 SummarizedExperiment_1.39.1    </span></span>
-<span><span class="co">## [11] Biobase_2.69.1                  GenomicRanges_1.61.3           </span></span>
-<span><span class="co">## [13] Seqinfo_0.99.2                  IRanges_2.43.1                 </span></span>
-<span><span class="co">## [15] S4Vectors_0.47.1                BiocGenerics_0.55.1            </span></span>
+<span><span class="co">##  [9] ttservice_0.5.3                 SummarizedExperiment_1.39.2    </span></span>
+<span><span class="co">## [11] Biobase_2.69.1                  GenomicRanges_1.61.5           </span></span>
+<span><span class="co">## [13] Seqinfo_0.99.2                  IRanges_2.43.5                 </span></span>
+<span><span class="co">## [15] S4Vectors_0.47.4                BiocGenerics_0.55.1            </span></span>
 <span><span class="co">## [17] generics_0.1.4                  MatrixGenerics_1.21.0          </span></span>
 <span><span class="co">## [19] matrixStats_1.5.0               ggrepel_0.9.6                  </span></span>
-<span><span class="co">## [21] ggplot2_4.0.0                   forcats_1.0.0                  </span></span>
+<span><span class="co">## [21] ggplot2_4.0.0                   forcats_1.0.1                  </span></span>
 <span><span class="co">## [23] magrittr_2.0.4                  purrr_1.1.0                    </span></span>
 <span><span class="co">## [25] tibble_3.3.0                    tidyr_1.3.1                    </span></span>
 <span><span class="co">## [27] dplyr_1.1.4                     knitr_1.50                     </span></span>
 <span><span class="co">## [29] BiocStyle_2.37.1               </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##   [1] splines_4.5.1          ggplotify_0.1.2        R.oo_1.27.1           </span></span>
+<span><span class="co">##   [1] splines_4.5.1          ggplotify_0.1.3        R.oo_1.27.1           </span></span>
 <span><span class="co">##   [4] preprocessCore_1.71.2  XML_3.99-0.19          lifecycle_1.0.4       </span></span>
 <span><span class="co">##   [7] Rdpack_2.6.4           rstatix_0.7.2          pbmcapply_1.5.1       </span></span>
 <span><span class="co">##  [10] lattice_0.22-7         MASS_7.3-65            backports_1.5.0       </span></span>
 <span><span class="co">##  [13] SnowballC_0.7.1        plotly_4.11.0          sass_0.4.10           </span></span>
-<span><span class="co">##  [16] rmarkdown_2.29         jquerylib_0.1.4        yaml_2.3.10           </span></span>
+<span><span class="co">##  [16] rmarkdown_2.30         jquerylib_0.1.4        yaml_2.3.10           </span></span>
 <span><span class="co">##  [19] ggtangle_0.0.7         cowplot_1.2.0          pbapply_1.7-4         </span></span>
 <span><span class="co">##  [22] DBI_1.2.3              minqa_1.2.8            RColorBrewer_1.1-3    </span></span>
 <span><span class="co">##  [25] abind_1.4-8            glmmTMB_1.1.12         R.utils_2.13.0        </span></span>
@@ -2039,7 +2035,7 @@ methods used in our workflow.</p>
 <span><span class="co">##  [40] DelayedArray_0.35.3    DOSE_4.3.0             tidyselect_1.2.1      </span></span>
 <span><span class="co">##  [43] aplot_0.2.9            farver_2.1.2           lme4_1.1-37           </span></span>
 <span><span class="co">##  [46] jsonlite_2.0.0         e1071_1.7-16           ellipsis_0.3.2        </span></span>
-<span><span class="co">##  [49] Formula_1.2-5          survival_3.8-3         systemfonts_1.2.3     </span></span>
+<span><span class="co">##  [49] Formula_1.2-5          survival_3.8-3         systemfonts_1.3.1     </span></span>
 <span><span class="co">##  [52] tools_4.5.1            treeio_1.33.0          ragg_1.5.0            </span></span>
 <span><span class="co">##  [55] Rcpp_1.1.0             glue_1.8.0             SparseArray_1.9.1     </span></span>
 <span><span class="co">##  [58] xfun_0.53              mgcv_1.9-3             qvalue_2.41.0         </span></span>
@@ -2055,31 +2051,30 @@ methods used in our workflow.</p>
 <span><span class="co">##  [88] clusterProfiler_4.17.0 janeaustenr_1.0.0      htmltools_0.5.8.1     </span></span>
 <span><span class="co">##  [91] carData_3.0-5          fgsea_1.35.6           bookdown_0.44         </span></span>
 <span><span class="co">##  [94] TMB_1.9.17             scales_1.4.0           png_0.1-8             </span></span>
-<span><span class="co">##  [97] reformulas_0.4.1       ggfun_0.2.0            reshape2_1.4.4        </span></span>
-<span><span class="co">## [100] widyr_0.1.5            nlme_3.1-168           curl_7.0.0            </span></span>
-<span><span class="co">## [103] nloptr_2.2.1           org.Hs.eg.db_3.21.0    proxy_0.4-27          </span></span>
-<span><span class="co">## [106] cachem_1.1.0           zoo_1.8-14             stringr_1.5.2         </span></span>
-<span><span class="co">## [109] parallel_4.5.1         AnnotationDbi_1.71.1   desc_1.4.3            </span></span>
-<span><span class="co">## [112] pillar_1.11.0          grid_4.5.1             vctrs_0.6.5           </span></span>
-<span><span class="co">## [115] ggpubr_0.6.1           car_3.1-3              xtable_1.8-4          </span></span>
-<span><span class="co">## [118] evaluate_1.0.5         cli_3.6.5              locfit_1.5-9.12       </span></span>
-<span><span class="co">## [121] compiler_4.5.1         rlang_1.1.6            crayon_1.5.3          </span></span>
-<span><span class="co">## [124] tidytext_0.4.3         ggsignif_0.6.4         labeling_0.4.3        </span></span>
-<span><span class="co">## [127] plyr_1.8.9             fs_1.6.6               stringi_1.8.7         </span></span>
-<span><span class="co">## [130] viridisLite_0.4.2      BiocParallel_1.43.4    assertthat_0.2.1      </span></span>
-<span><span class="co">## [133] babelgene_22.9         lmerTest_3.1-3         Biostrings_2.77.2     </span></span>
-<span><span class="co">## [136] lazyeval_0.2.2         GOSemSim_2.35.1        Matrix_1.7-4          </span></span>
-<span><span class="co">## [139] bit64_4.6.0-1          KEGGREST_1.49.1        statmod_1.5.0         </span></span>
-<span><span class="co">## [142] rbibutils_2.3          igraph_2.1.4           broom_1.0.10          </span></span>
-<span><span class="co">## [145] memoise_2.0.1          bslib_0.9.0            ggtree_3.17.1         </span></span>
-<span><span class="co">## [148] fastmatch_1.1-6        bit_4.6.0              gson_0.1.0            </span></span>
-<span><span class="co">## [151] ape_5.8-1</span></span></code></pre>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<span><span class="co">##  [97] reformulas_0.4.1       ggfun_0.2.0            uuid_1.2-1            </span></span>
+<span><span class="co">## [100] reshape2_1.4.4         widyr_0.1.5            nlme_3.1-168          </span></span>
+<span><span class="co">## [103] curl_7.0.0             nloptr_2.2.1           org.Hs.eg.db_3.21.0   </span></span>
+<span><span class="co">## [106] proxy_0.4-27           cachem_1.1.0           zoo_1.8-14            </span></span>
+<span><span class="co">## [109] stringr_1.5.2          parallel_4.5.1         AnnotationDbi_1.71.1  </span></span>
+<span><span class="co">## [112] desc_1.4.3             pillar_1.11.1          grid_4.5.1            </span></span>
+<span><span class="co">## [115] vctrs_0.6.5            ggpubr_0.6.1           car_3.1-3             </span></span>
+<span><span class="co">## [118] xtable_1.8-4           evaluate_1.0.5         cli_3.6.5             </span></span>
+<span><span class="co">## [121] locfit_1.5-9.12        compiler_4.5.1         rlang_1.1.6           </span></span>
+<span><span class="co">## [124] crayon_1.5.3           tidytext_0.4.3         ggsignif_0.6.4        </span></span>
+<span><span class="co">## [127] labeling_0.4.3         plyr_1.8.9             fs_1.6.6              </span></span>
+<span><span class="co">## [130] ggiraph_0.9.1          stringi_1.8.7          viridisLite_0.4.2     </span></span>
+<span><span class="co">## [133] BiocParallel_1.43.4    assertthat_0.2.1       babelgene_22.9        </span></span>
+<span><span class="co">## [136] lmerTest_3.1-3         Biostrings_2.77.2      lazyeval_0.2.2        </span></span>
+<span><span class="co">## [139] GOSemSim_2.35.1        Matrix_1.7-4           bit64_4.6.0-1         </span></span>
+<span><span class="co">## [142] KEGGREST_1.49.1        statmod_1.5.0          rbibutils_2.3         </span></span>
+<span><span class="co">## [145] igraph_2.1.4           broom_1.0.10           memoise_2.0.1         </span></span>
+<span><span class="co">## [148] bslib_0.9.0            ggtree_3.99.0          fastmatch_1.1-6       </span></span>
+<span><span class="co">## [151] bit_4.6.0              gson_0.1.0             ape_5.8-1</span></span></code></pre>
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-alhamdoosh2017egsea" class="csl-entry">
-Alhamdoosh, M, M Ng, NJ Wilson, JM Sheridan, H Huynh, MJ Wilson, and ME
-Ritchie. 2017. <span>“Combining Multiple Tools Outperforms Individual
-Methods in Gene Set Enrichment Analyses.”</span> <em>Bioinformatics</em>
-33 (3): 414–24.
+Alhamdoosh, M, M Ng, NJ Wilson, et al. 2017. <span>“Combining Multiple
+Tools Outperforms Individual Methods in Gene Set Enrichment
+Analyses.”</span> <em>Bioinformatics</em> 33 (3): 414–24.
 </div>
 <div id="ref-anders2010rle" class="csl-entry">
 Anders, Simon, and Wolfgang Huber. 2010. <span>“Differential Expression
@@ -2087,10 +2082,9 @@ Analysis for Sequence Count Data.”</span> <em>Genome Biology</em> 11
 (10): R106.
 </div>
 <div id="ref-ashburner2000go" class="csl-entry">
-Ashburner, Michael, Catherine A Ball, Judith A Blake, David Botstein,
-Heather Butler, J Michael Cherry, J Michael Davis, et al. 2000.
-<span>“Gene Ontology: Tool for the Unification of Biology.”</span>
-<em>Nature Genetics</em> 25 (1): 25–29.
+<span class="nocase">Ashburner, Michael, Catherine A Ball, Judith A
+Blake, et al.</span> 2000. <span>“Gene Ontology: Tool for the
+Unification of Biology.”</span> <em>Nature Genetics</em> 25 (1): 25–29.
 </div>
 <div id="ref-bullard2010uq" class="csl-entry">
 Bullard, James H, Elizabeth Purdom, Kasper D Hansen, and Sandrine
@@ -2120,11 +2114,10 @@ Law, Charity W, Yunshun Chen, Wei Shi, and Gordon K Smyth. 2014.
 RNA-Seq Read Counts.”</span> <em>Genome Biology</em> 15 (2): R29.
 </div>
 <div id="ref-liu2015voomweights" class="csl-entry">
-Liu, Rui, Anna Z Holik, Shian Su, Nikolas Jansz, Yunshun Chen, Hsiu S
-Leong, Marnie E Blewitt, Marie-Liesse Asselin-Labat, Gordon K Smyth, and
-Matthew E Ritchie. 2015. <span>“Why Weight? Modelling Sample and
-Observational Level Variability Improves Power in RNA-Seq
-Analyses.”</span> <em>Nucleic Acids Research</em> 43 (15): e97–97.
+Liu, Rui, Anna Z Holik, Shian Su, et al. 2015. <span>“Why Weight?
+Modelling Sample and Observational Level Variability Improves Power in
+RNA-Seq Analyses.”</span> <em>Nucleic Acids Research</em> 43 (15):
+e97–97.
 </div>
 <div id="ref-love2014deseq2" class="csl-entry">
 Love, Michael I, Wolfgang Huber, and Simon Anders. 2014.
@@ -2132,16 +2125,16 @@ Love, Michael I, Wolfgang Huber, and Simon Anders. 2014.
 Data with DESeq2.”</span> <em>Genome Biology</em> 15 (12): 550.
 </div>
 <div id="ref-ma2020glmmseq" class="csl-entry">
-Ma, Shuang, Bing Zhang, Laura M LaFave, Amanda S Earl, Zhicheng Chiang,
-Yuling Hu, Jun Ding, et al. 2020. <span>“A General Linear Mixed Model
-for Differential Expression Analysis of Single-Cell RNA-Seq
-Data.”</span> <em>Nature Communications</em> 11 (1): 1–11.
+<span class="nocase">Ma, Shuang, Bing Zhang, Laura M LaFave, et
+al.</span> 2020. <span>“A General Linear Mixed Model for Differential
+Expression Analysis of Single-Cell RNA-Seq Data.”</span> <em>Nature
+Communications</em> 11 (1): 1–11.
 </div>
 <div id="ref-macqueen1967kmeans" class="csl-entry">
 MacQueen, J. 1967. <span>“Some Methods for Classification and Analysis
-of Multivariate Observations.”</span> In <em>Proceedings of the Fifth
-Berkeley Symposium on Mathematical Statistics and Probability</em>,
-1:281–97. 14. Oakland, CA, USA.
+of Multivariate Observations.”</span> <em>Proceedings of the Fifth
+Berkeley Symposium on Mathematical Statistics and Probability</em> 1:
+281–97.
 </div>
 <div id="ref-mccarthy2009treat" class="csl-entry">
 McCarthy, Davis J, and Gordon K Smyth. 2009. <span>“Testing Significance
@@ -2149,10 +2142,9 @@ Relative to a Fold-Change Threshold Is a TREAT.”</span>
 <em>Bioinformatics</em> 25 (6): 765–71.
 </div>
 <div id="ref-newman2015cibersort" class="csl-entry">
-Newman, Aaron M, Chih Long Liu, Michael R Green, Andrew J Gentles,
-Weiguo Feng, Yue Xu, Chuong D Hoang, Maximilian Diehn, and Ash A
-Alizadeh. 2015. <span>“Robust Enumeration of Cell Subsets from Tissue
-Expression Profiles.”</span> <em>Nature Methods</em> 12 (5): 453–57.
+Newman, Aaron M, Chih Long Liu, Michael R Green, et al. 2015.
+<span>“Robust Enumeration of Cell Subsets from Tissue Expression
+Profiles.”</span> <em>Nature Methods</em> 12 (5): 453–57.
 </div>
 <div id="ref-robinson2010edger" class="csl-entry">
 Robinson, Mark D, Davis J McCarthy, and Gordon K Smyth. 2010.
@@ -2161,11 +2153,11 @@ Analysis of Digital Gene Expression Data.”</span>
 <em>Bioinformatics</em> 26 (1): 139–40.
 </div>
 <div id="ref-subramanian2005gsea" class="csl-entry">
-Subramanian, Aravind, Pablo Tamayo, Vamsi K Mootha, Sayan Mukherjee,
-Benjamin L Ebert, Michael A Gillette, Amanda Paulovich, et al. 2005.
-<span>“Gene Set Enrichment Analysis: A Knowledge-Based Approach for
-Interpreting Genome-Wide Expression Profiles.”</span> <em>Proceedings of
-the National Academy of Sciences</em> 102 (43): 15545–50.
+<span class="nocase">Subramanian, Aravind, Pablo Tamayo, Vamsi K Mootha,
+et al.</span> 2005. <span>“Gene Set Enrichment Analysis: A
+Knowledge-Based Approach for Interpreting Genome-Wide Expression
+Profiles.”</span> <em>Proceedings of the National Academy of
+Sciences</em> 102 (43): 15545–50.
 </div>
 <div id="ref-zhang2017combatseq" class="csl-entry">
 Zhang, Yu, Giovanni Parmigiani, and W Evan Johnson. 2020.
